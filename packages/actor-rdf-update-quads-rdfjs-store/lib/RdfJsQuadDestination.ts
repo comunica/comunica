@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations */
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { stringToTerm, termToString } from 'rdf-string';
 import EventEmitter = NodeJS.EventEmitter;
 

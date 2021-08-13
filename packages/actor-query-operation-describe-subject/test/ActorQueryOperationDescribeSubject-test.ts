@@ -1,9 +1,9 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputQuads } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { ActorQueryOperationDescribeSubject } from '../lib/ActorQueryOperationDescribeSubject';
 const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');

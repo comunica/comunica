@@ -8,8 +8,8 @@ import type {
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';

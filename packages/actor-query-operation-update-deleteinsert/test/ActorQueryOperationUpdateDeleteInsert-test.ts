@@ -6,7 +6,6 @@ import {
   Bindings, KEY_CONTEXT_READONLY,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -27,9 +26,9 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal('1') }),
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('3') }),
+          Bindings({ '?a': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('2') }),
+          Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,

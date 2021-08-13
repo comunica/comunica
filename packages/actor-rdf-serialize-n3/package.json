@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@types/n3": "^1.4.4",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "n3": "^1.6.3",
     "rdf-string": "^1.5.0"
   },

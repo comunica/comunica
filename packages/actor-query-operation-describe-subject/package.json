@@ -34,7 +34,7 @@
   "dependencies": {
     "@comunica/actor-query-operation-union": "^1.21.1",
     "@comunica/types": "^1.21.1",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "asynciterator": "^3.2.0",
     "rdf-data-factory": "^1.0.3",
     "sparqlalgebrajs": "^3.0.0"

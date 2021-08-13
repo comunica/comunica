@@ -14,10 +14,10 @@ import type { IActionQueryOperation,
   IActorQueryOperationOutputBoolean,
   IActorQueryOperationOutputQuads } from '@comunica/types';
 import { DataSourceUtils } from '@comunica/utils-datasource';
+import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
 

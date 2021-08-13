@@ -1,7 +1,7 @@
 import type { Readable } from 'stream';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import { Bus } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { ActorRdfMetadataPrimaryTopic } from '../lib/ActorRdfMetadataPrimaryTopic';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');

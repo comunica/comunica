@@ -1,6 +1,6 @@
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { PagedAsyncRdfIterator } from '../lib/PagedAsyncRdfIterator';
 const DF = new DataFactory();
 

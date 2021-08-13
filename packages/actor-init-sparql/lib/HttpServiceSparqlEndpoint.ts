@@ -9,9 +9,9 @@ import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActorQueryOperationOutput,
   IActorQueryOperationOutputQuads, IActorQueryOperationOutputUpdate } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import minimist = require('minimist');
-import type * as RDF from 'rdf-js';
 import { newEngineDynamic } from '..';
 import { ActorInitSparql } from './ActorInitSparql';
 import type { IQueryOptions } from './QueryDynamic';

@@ -3,8 +3,8 @@ import { Actor } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 import type { Bindings, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 
 /**
  * A comunica actor for joining 2 binding streams.

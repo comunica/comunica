@@ -5,9 +5,9 @@ import {
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream,
   IActorQueryOperationOutputBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 
 import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpLeftDeepSmallestSort } from '../lib/ActorQueryOperationBgpLeftDeepSmallestSort';

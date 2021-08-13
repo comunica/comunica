@@ -1,5 +1,5 @@
 import type { Bindings } from '@comunica/types';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 
 /**

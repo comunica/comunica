@@ -7,9 +7,9 @@ import type {
   IActorRdfMetadataExtractOutput,
 } from '@comunica/bus-rdf-metadata-extract';
 import type { ActionContext, IActorTest, Mediator } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
 import * as _ from 'lodash';
-import type * as RDF from 'rdf-js';
 import { MediatedPagedAsyncRdfIterator } from '../lib/MediatedPagedAsyncRdfIterator';
 import { PagedAsyncRdfIterator } from '../lib/PagedAsyncRdfIterator';
 

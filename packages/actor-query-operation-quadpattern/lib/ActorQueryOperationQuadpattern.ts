@@ -5,9 +5,9 @@ import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@co
 import type { BindingsStream,
   IActionQueryOperation, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { QuadTermName } from 'rdf-terms';
 import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';

@@ -1,10 +1,10 @@
 import { Readable } from 'stream';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { ActorRdfResolveQuadPatternRdfJsSource, RdfJsQuadSource } from '..';
 import 'jest-rdf';
 

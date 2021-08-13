@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.21.1",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "asynciterator": "^3.2.0"
   },
   "peerDependencies": {

@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
 import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica SPARQL CSV SPARQL Serialize Actor.

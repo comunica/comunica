@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.21.1",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "@types/xml": "^1.0.2",
     "xml": "^1.0.1"
   },

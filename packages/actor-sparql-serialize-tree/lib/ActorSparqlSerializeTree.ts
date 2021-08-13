@@ -5,7 +5,7 @@ import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serial
 import type { ActionContext } from '@comunica/core';
 import { ensureActionContext } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/types';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import type { IConverterSettings, ISchema } from 'sparqljson-to-tree';
 import { Converter } from 'sparqljson-to-tree';
 

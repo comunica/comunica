@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@comunica/types": "^1.21.1",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "rdf-string": "^1.5.0",
     "sparqlalgebrajs": "^3.0.0"
   },

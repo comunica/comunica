@@ -4,10 +4,10 @@ import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@co
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';

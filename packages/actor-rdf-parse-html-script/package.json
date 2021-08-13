@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-parse-html": "^1.21.1",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "relative-to-absolute-iri": "^1.0.5"
   },
   "peerDependencies": {

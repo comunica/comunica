@@ -1,6 +1,6 @@
 /* eslint-disable id-length */
 import type { Bindings } from '@comunica/types';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { stringToTerm, termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 

@@ -6,9 +6,9 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**

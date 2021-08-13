@@ -4,9 +4,9 @@
 jest.unmock('follow-redirects');
 
 import { KeysInitSparql } from '@comunica/context-entries';
+import type * as RDF from '@rdfjs/types';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import type { ActorInitSparql, IQueryResultUpdate } from '../../index-browser';
 import { newEngine } from '../../index-browser';
 import type { IQueryResultBindings } from '../../lib/ActorInitSparql-browser';

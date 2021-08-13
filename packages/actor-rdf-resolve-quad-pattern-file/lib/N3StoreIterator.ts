@@ -1,6 +1,6 @@
+import type * as RDF from '@rdfjs/types';
 import { BufferedIterator } from 'asynciterator';
 import type { Store } from 'n3';
-import type * as RDF from 'rdf-js';
 
 export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
   protected readonly store: Store;

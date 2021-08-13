@@ -1,8 +1,8 @@
 import { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
-import type * as RDF from 'rdf-js';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 
 const arrayifyStream = require('arrayify-stream');

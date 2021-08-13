@@ -2,7 +2,7 @@ import { PassThrough, Readable } from 'stream';
 import { KeysInitSparql } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * @deprecated Import this constant from @comunica/context-entries.

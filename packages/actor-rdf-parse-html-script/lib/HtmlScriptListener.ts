@@ -4,7 +4,7 @@ import type { IActionHandleRdfParse, IActorOutputHandleRdfParse,
 import type { IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
 import type { Actor, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
 
 /**
