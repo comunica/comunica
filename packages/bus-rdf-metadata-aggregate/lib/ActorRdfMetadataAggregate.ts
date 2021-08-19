@@ -7,10 +7,6 @@ export abstract class ActorRdfMetadataAggregate
   public constructor(args: IActorArgs<IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>) {
     super(args);
   }
-
-  public async test(action: IActionRdfMetadataAggregate): Promise<IActorTest> {
-    return true;
-  }
 }
 
 export interface IActionRdfMetadataAggregate extends IAction {
