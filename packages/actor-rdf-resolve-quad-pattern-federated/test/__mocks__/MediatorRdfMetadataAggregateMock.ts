@@ -4,40 +4,21 @@ export const mockedMediatorAgg = {
   mediate(action: IActionRdfMetadataAggregate) {
     const { metadata, subMetadata, empty } = action;
 
+    let aggregatedMetadata: Record<string, any> = {};
     if (empty) {
-      return Promise.resolve({ aggregatedMetadata: { totalItems: 0 }});
-    }
-
-    let newTotalItems = 0;
-    const hasTotalItems =
-        (record: Record<string, any> | undefined): boolean => Boolean(record) && record!.totalItems !== undefined;
-    let resultRecord = {};
-
-    // Submetadata IS defined
-    const metadataHasTotalItems = hasTotalItems(metadata);
-    const subMetadataHasTotalItems = hasTotalItems(subMetadata);
-
-    if (!metadataHasTotalItems || !subMetadataHasTotalItems) {
-      // Neither metadata or submetadata has totalItems
-      newTotalItems = Number.POSITIVE_INFINITY;
+      // Set metadata for an empty source
+      aggregatedMetadata = { totalItems: 0 };
+    } else if ((metadata === undefined) || !Number.isFinite(metadata.totalItems)) {
+      // Set totalItems to infinity
+      aggregatedMetadata = { ...metadata, ...subMetadata, totalItems: Number.POSITIVE_INFINITY };
     } else {
-      // Metadata has total items & submetadata has total items
-      newTotalItems = Number(metadata!.totalItems) + Number(subMetadata!.totalItems);
+      // Set totalItems to the sum of metadata and subMetadata's totalItems
+      aggregatedMetadata = { ...metadata,
+        ...subMetadata,
+        totalItems: Number(metadata.totalItems) + Number(subMetadata!.totalItems) };
     }
 
-    resultRecord = {
-      ...subMetadata,
-      ...metadata,
-      totalItems: newTotalItems,
-    };
-
-    return Promise.resolve(
-      {
-        aggregatedMetadata: {
-          ...resultRecord,
-        },
-      },
-    );
+    return Promise.resolve({ aggregatedMetadata });
   }
   ,
 };
