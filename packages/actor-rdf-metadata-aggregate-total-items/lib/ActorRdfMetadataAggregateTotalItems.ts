@@ -2,7 +2,6 @@ import type { IActionRdfMetadataAggregate,
   IActorRdfMetadataAggregateOutput } from '@comunica/bus-rdf-metadata-aggregate';
 import { ActorRdfMetadataAggregate } from '@comunica/bus-rdf-metadata-aggregate';
 import type { IActorArgs, IActorTest } from '@comunica/core';
-import type { Record } from 'immutable';
 
 /**
  * A comunica Total Items RDF Metadata Aggregate Actor.
