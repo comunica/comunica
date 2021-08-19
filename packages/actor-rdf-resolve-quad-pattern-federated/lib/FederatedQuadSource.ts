@@ -251,7 +251,8 @@ export class FederatedQuadSource implements IQuadSource {
             this.isSourceEmpty(source, pattern = this.algebraFactory
               .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
-        this.checkPushEmptyPattern({ totalItems: 0 }, source, pattern);
+        const { aggregatedMetadata } = await this.mediatorAggregate.mediate({ empty: true });
+        this.checkPushEmptyPattern(aggregatedMetadata, source, pattern);
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
@@ -295,8 +296,12 @@ export class FederatedQuadSource implements IQuadSource {
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
-      collectedSourceMetadata.push({ totalItems: 0 });
-      emitFinalMetadata();
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.mediatorAggregate.mediate({ empty: true })
+        .then(({ aggregatedMetadata }) => {
+          collectedSourceMetadata.push(aggregatedMetadata);
+          emitFinalMetadata();
+        });
     }
 
     return it;

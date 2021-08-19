@@ -19,6 +19,11 @@ describe('ActorRdfMetadataAggregateTotalItems', () => {
       return expect(actor.test({ metadata: {}, subMetadata: {}})).resolves.toBeTruthy();
     });
 
+    it('should return 0 totalItems when parameter empty is true', () => {
+      return expect(actor.run({ metadata: {}, empty: true }))
+        .resolves.toEqual({ aggregatedMetadata: { totalItems: 0 }});
+    });
+
     it('should return the sum of totalItems in metadata and submetadata', () => {
       return expect(actor.run({ metadata: { totalItems: 1 }, subMetadata: { totalItems: 1 }}))
         .resolves.toEqual({ aggregatedMetadata: { totalItems: 2 }});

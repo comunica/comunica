@@ -3,7 +3,10 @@ import type { Record } from 'immutable';
 
 export const mockedMediatorAgg = {
   mediate(action: IActionRdfMetadataAggregate) {
-    const { metadata, subMetadata } = action;
+    const { metadata, subMetadata, empty } = action;
+    if (empty) {
+      return Promise.resolve({ aggregatedMetadata: { totalItems: 0 }});
+    }
     let newTotalItems = 0;
     const isEmptyRecord = (r: Record<string, any>) => Object.keys(r).length === 0;
     const hasTotalItems = (r: Record<string, any>) => r && r.totalItems !== undefined;

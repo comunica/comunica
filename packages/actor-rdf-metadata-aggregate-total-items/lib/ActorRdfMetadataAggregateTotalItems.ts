@@ -17,19 +17,23 @@ export class ActorRdfMetadataAggregateTotalItems extends ActorRdfMetadataAggrega
   }
 
   public async run(action: IActionRdfMetadataAggregate): Promise<IActorRdfMetadataAggregateOutput> {
-    const { metadata, subMetadata } = action;
+    const { metadata, subMetadata, empty } = action;
+
+    if (empty) {
+      return Promise.resolve({ aggregatedMetadata: { totalItems: 0 }});
+    }
 
     let newTotalItems = 0;
-    const hasTotalItems = (record: Record<string, any>): boolean => record.totalItems !== undefined;
+    const hasTotalItems = (record: Record<string, any> | undefined): boolean => Boolean(record) && record!.totalItems;
     let resultRecord = {};
 
     // Submetadata IS defined
     const metadataHasTotalItems = hasTotalItems(metadata);
-    const subMetadataHasTotalItems = hasTotalItems(subMetadata!);
+    const subMetadataHasTotalItems = hasTotalItems(subMetadata);
 
     if (metadataHasTotalItems && subMetadataHasTotalItems) {
       // Metadata has total items & submetadata has total items
-      newTotalItems = Number(metadata.totalItems) + Number(subMetadata!.totalItems);
+      newTotalItems = Number(metadata!.totalItems) + Number(subMetadata!.totalItems);
     } else if (!metadataHasTotalItems && !subMetadataHasTotalItems) {
       // Neither metadata or submetadata has totalItems
       newTotalItems = Number.POSITIVE_INFINITY;

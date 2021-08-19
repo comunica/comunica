@@ -10,8 +10,9 @@ export abstract class ActorRdfMetadataAggregate
 }
 
 export interface IActionRdfMetadataAggregate extends IAction {
-  metadata: Record<string, any>;
+  metadata?: Record<string, any>;
   subMetadata?: Record<string, any>;
+  empty?: boolean;
 }
 
 export interface IActorRdfMetadataAggregateOutput extends IActorOutput {
