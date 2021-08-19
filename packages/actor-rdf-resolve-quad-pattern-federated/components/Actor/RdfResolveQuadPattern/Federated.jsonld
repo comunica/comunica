@@ -27,11 +27,11 @@
         },
         {
           "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorRdfMetadataAggregate",
-          "comment": "todo",
+          "comment": "The RDF Metadata Aggregate mediator",
           "required": true,
           "unique": true
         }
-        
+
       ],
       "constructorArguments": [
         {

@@ -24,7 +24,10 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated/^1.0.0/components/context.jsonld"
+     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-aggregate/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^1.0.0/components/context.jsonld"
+
   ],
   "actors": [
     ...
@@ -33,6 +36,11 @@ After installing, this package can be added to your engine's configuration as fo
       "@type": "ActorRdfResolveQuadPatternFederated",
       "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern"
+      },
+      "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorRdfMetadataAggregate": {
+        "@id": "config-sets:resolve-federated.json#mediatorRdfMetadataAggregate",
+        "@type": "MediatorAll",
+        "cc:Mediator/bus": { "@id": "cbrma:Bus/RdfMetadataAggregate" }
       }
     }
   ]
@@ -42,3 +50,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
+* `carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorRdfMetadataAggregate`: A mediator over the [RDF Metadata Aggregate bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
