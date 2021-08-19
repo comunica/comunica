@@ -182,9 +182,9 @@ export class FederatedQuadSource implements IQuadSource {
     return sourceId;
   }
 
-  private checkPushEmptyPattern(md: Record<string, any> | undefined, source: IDataSource,
+  private checkPushEmptyPattern(metadata: Record<string, any> | undefined, source: IDataSource,
     pattern: RDF.BaseQuad | undefined): void {
-    if (this.skipEmptyPatterns && !md && pattern && !this.isSourceEmpty(source, pattern)) {
+    if (this.skipEmptyPatterns && !metadata && pattern && !this.isSourceEmpty(source, pattern)) {
       this.emptyPatterns.get(source)!.push(pattern);
     }
   }
