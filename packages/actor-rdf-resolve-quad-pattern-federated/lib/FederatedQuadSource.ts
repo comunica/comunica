@@ -185,7 +185,7 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   private checkPushEmptyPattern(md: Record<string, any> | undefined, source: IDataSource,
-    pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>): void {
+    pattern: RDF.BaseQuad | undefined): void {
     if (this.skipEmptyPatterns && !md && pattern && !this.isSourceEmpty(source, pattern)) {
       this.emptyPatterns.get(source)!.push(pattern);
     }
@@ -193,8 +193,8 @@ export class FederatedQuadSource implements IQuadSource {
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     let it = new AsyncIterator<RDF.Quad>();
-
     const collectedSourceMetadata: Record<string, any>[] = [];
+    // Bookkeeping counters
     let nMetadataObjects = 0;
     let nMetadataObjectsReduced = 0;
     type IReducer = (action: IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
@@ -203,7 +203,16 @@ export class FederatedQuadSource implements IQuadSource {
       const finalMetadata = collectedSourceMetadata.pop();
       it.setProperty('metadata', finalMetadata);
     };
-    // Anonymous function for reducing the metadata collected from the sources.
+    /**
+     * Anonymous function for reducing the metadata collected from the sources.
+     * If the collectedSourceMetadata has atleast two metadata records,
+     * these two metadata records will be popped from collectedSourceMetadata and subsequently reduced.
+     * The reduced result (i.e. aggregatedMetadata) is pushed onto collectedSourceMetadata,
+     * and nMetadataObjectsReduced is updated accordingly for bookkeeping.
+     * If we have processed the last source, or all metadata records have been reduced, the final metadata is emitted.
+     * @param reducer {IReducer}
+     * @param last {boolean} indicating whether the last source is being processed.
+     */
     const reduce = async(reducer: IReducer, last: boolean): Promise<void> => {
       if (collectedSourceMetadata.length >= 2) {
         // Push reduced result back onto the collected source metadata array
