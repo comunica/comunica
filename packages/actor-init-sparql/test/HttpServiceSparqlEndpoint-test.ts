@@ -46,6 +46,8 @@ import { mocked } from 'ts-jest/utils';
 
 describe('HttpServiceSparqlEndpoint', () => {
   beforeEach(() => {
+    process.exit = <any> jest.fn();
+
     // Assume worker thread in all tests by default
     (<any> cluster).isMaster = false;
     jest.clearAllMocks();
@@ -510,9 +512,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         await instance.run(stdout, stderr);
 
         // Simulate listening event
-        const dummyWorker = new EventEmitter();
-        (<any> dummyWorker).process = {
-          kill: jest.fn(),
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.send = jest.fn();
+        dummyWorker.process = {
+          pid: 123,
         };
         (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
@@ -521,21 +524,22 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(setTimeout).toHaveBeenCalledTimes(1);
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalled();
+        expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
         jest.runAllTimers();
 
-        expect((<any> dummyWorker).process.kill).toHaveBeenCalledWith('SIGKILL');
+        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
       });
 
       it('should handle worker end messages before timeout is reached', async() => {
         await instance.run(stdout, stderr);
 
         // Simulate listening event
-        const dummyWorker = new EventEmitter();
-        (<any> dummyWorker).process = {
-          kill: jest.fn(),
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.send = jest.fn();
+        dummyWorker.process = {
+          pid: 123,
         };
         (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
@@ -544,26 +548,29 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(setTimeout).toHaveBeenCalledTimes(1);
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalled();
+        expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate end event
         dummyWorker.emit('message', 'end');
 
         expect(clearTimeout).toHaveBeenCalledTimes(1);
 
-        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalledWith('SIGKILL');
+        expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
         jest.runAllTimers();
+
+        expect(dummyWorker.send).not.toHaveBeenCalled();
       });
 
       it('should handle worker end messages after timeout is reached', async() => {
         await instance.run(stdout, stderr);
 
         // Simulate listening event
-        const dummyWorker = new EventEmitter();
-        (<any> dummyWorker).process = {
-          kill: jest.fn(),
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.send = jest.fn();
+        dummyWorker.process = {
+          pid: 123,
         };
         (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
@@ -572,12 +579,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(setTimeout).toHaveBeenCalledTimes(1);
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalled();
+        expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
         jest.runAllTimers();
 
-        expect((<any> dummyWorker).process.kill).toHaveBeenCalledWith('SIGKILL');
+        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
 
         // Simulate end event
         dummyWorker.emit('message', 'end');
@@ -1208,6 +1215,61 @@ describe('HttpServiceSparqlEndpoint', () => {
         response.emit('close');
         expect(process.send).toHaveBeenCalledTimes(2);
         expect(process.send).toHaveBeenCalledWith('end');
+      });
+
+      it('should handle shutdown messages', async() => {
+        let shutdownListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'message') {
+            shutdownListener = listener;
+          }
+        };
+        const engine = await newEngineDynamic();
+        engine.query = () => ({ type: 'bindings' });
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true);
+
+        expect(process.exit).not.toHaveBeenCalled();
+
+        shutdownListener('shutdown');
+
+        expect(process.exit).toHaveBeenCalledTimes(1);
+        expect(response.end).toHaveBeenCalledWith('!TIMED OUT!');
+      });
+
+      it('should ignore non-shutdown messages', async() => {
+        let shutdownListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'message') {
+            shutdownListener = listener;
+          }
+        };
+        const engine = await newEngineDynamic();
+        engine.query = () => ({ type: 'bindings' });
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true);
+
+        expect(process.exit).not.toHaveBeenCalled();
+
+        shutdownListener('other');
+
+        expect(process.exit).not.toHaveBeenCalled();
       });
 
       it('should fallback to simple for updates if media type is falsy', async() => {

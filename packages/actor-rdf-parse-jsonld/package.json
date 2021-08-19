@@ -41,9 +41,9 @@
   },
   "dependencies": {
     "@comunica/context-entries": "^1.21.1",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "jsonld-context-parser": "^2.1.2",
-    "jsonld-streaming-parser": "^2.3.2",
+    "jsonld-streaming-parser": "^2.4.0",
     "stream-to-string": "^1.2.0"
   },
   "jest": {

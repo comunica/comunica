@@ -4,8 +4,8 @@ import type { IActionRdfParse,
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { JsonLdParser } from 'jsonld-streaming-parser';
-import type * as RDF from 'rdf-js';
 import { DocumentLoaderMediated } from './DocumentLoaderMediated';
 
 /**

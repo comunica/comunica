@@ -1,6 +1,6 @@
 import type { Bindings as _Bindings, BindingsStream } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';

@@ -16,7 +16,7 @@ import type {
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 

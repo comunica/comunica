@@ -14,6 +14,10 @@ export enum KeysHttp {
    * @range {string} Authentication for a source as a "username:password"-pair.
    */
   auth = '@comunica/bus-http:auth',
+  /**
+   * @range {(input: RequestInfo, init?: RequestInit) => Promise<Response>} Fetch function implementation.
+   */
+  fetch = '@comunica/bus-http:fetch',
 }
 
 export enum KeysHttpMemento {

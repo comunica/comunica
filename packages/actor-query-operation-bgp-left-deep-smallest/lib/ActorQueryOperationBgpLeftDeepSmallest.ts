@@ -11,8 +11,8 @@ import type {
   IActorQueryOperationOutputBindings,
   PatternBindings,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { QuadTermName } from 'rdf-terms';
 import { mapTerms } from 'rdf-terms';

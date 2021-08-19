@@ -5,10 +5,10 @@ import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-
 import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
 const DF = new DataFactory();

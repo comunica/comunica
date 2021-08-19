@@ -2,7 +2,7 @@ import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunic
 import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { PagedAsyncRdfIterator } from './PagedAsyncRdfIterator';
 
 /**

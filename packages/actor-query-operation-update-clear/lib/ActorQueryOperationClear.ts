@@ -3,8 +3,8 @@ import type { IActorQueryOperationOutput,
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();

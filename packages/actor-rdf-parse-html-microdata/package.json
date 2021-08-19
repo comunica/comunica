@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "microdata-rdf-streaming-parser": "^1.1.0"
+    "microdata-rdf-streaming-parser": "^1.2.0"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-parse-html": "^1.17.0",

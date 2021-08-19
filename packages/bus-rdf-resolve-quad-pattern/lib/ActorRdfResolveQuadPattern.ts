@@ -1,8 +1,8 @@
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**

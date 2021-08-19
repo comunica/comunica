@@ -32,9 +32,9 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.21.1",
-    "@types/rdf-js": "*",
-    "graphql-ld": "^1.3.0",
-    "rdf-store-stream": "^1.2.0",
+    "@rdfjs/types": "*",
+    "graphql-ld": "^1.4.0",
+    "rdf-store-stream": "^1.3.0",
     "sparqlalgebrajs": "^3.0.0",
     "stream-to-string": "^1.2.0"
   },

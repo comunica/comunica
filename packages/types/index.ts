@@ -1,6 +1,6 @@
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Map } from 'immutable';
-import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**

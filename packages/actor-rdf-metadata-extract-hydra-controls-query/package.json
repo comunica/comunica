@@ -33,7 +33,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "@types/uritemplate": "^0.3.4",
     "uritemplate": "0.3.4"
   },

@@ -5,9 +5,9 @@ import {
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type { IActorQueryOperationOutputQuads } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 const DF = new DataFactory<RDF.BaseQuad>();
 

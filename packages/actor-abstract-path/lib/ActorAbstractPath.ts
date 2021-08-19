@@ -7,11 +7,11 @@ import {
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Term, Variable } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
   TransformIterator, EmptyIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';

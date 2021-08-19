@@ -8,7 +8,7 @@ import {
   ActorRdfResolveHypermedia,
 } from '@comunica/bus-rdf-resolve-hypermedia';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { RdfSourceQpf } from './RdfSourceQpf';
 
 /**

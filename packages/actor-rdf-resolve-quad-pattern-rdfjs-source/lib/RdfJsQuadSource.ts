@@ -1,7 +1,7 @@
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap as wrapAsyncIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 /**

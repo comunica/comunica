@@ -42,7 +42,7 @@
     "@comunica/core": "^1.21.1"
   },
   "dependencies": {
-    "jsonld-streaming-serializer": "^1.2.0"
+    "jsonld-streaming-serializer": "^1.3.0"
   },
   "jest": {
     "globals": {

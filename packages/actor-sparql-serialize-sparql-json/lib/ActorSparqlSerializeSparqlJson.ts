@@ -5,7 +5,7 @@ import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serial
 import type { ActionContext } from '@comunica/core';
 import type { Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean } from '@comunica/types';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica sparql-results+xml Serialize Actor.

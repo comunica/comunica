@@ -1,10 +1,10 @@
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
-import type * as RDF from 'rdf-js';
 
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
   public sourcesState?: ISourcesState;

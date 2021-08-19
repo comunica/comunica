@@ -6,10 +6,10 @@ import {
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { Bindings, BindingsStream } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { getTerms, getVariables, mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';

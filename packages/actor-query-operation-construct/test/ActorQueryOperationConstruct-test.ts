@@ -1,9 +1,9 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputQuads } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory<RDF.BaseQuad>();

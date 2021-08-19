@@ -1,7 +1,7 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 
 /**
  * A base actor for dereferencing URLs to quad streams and following pages.

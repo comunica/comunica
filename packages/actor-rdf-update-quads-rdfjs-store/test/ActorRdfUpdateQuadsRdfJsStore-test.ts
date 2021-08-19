@@ -1,8 +1,8 @@
 import { ActionContext, Bus } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { ActorRdfUpdateQuadsRdfJsStore } from '../lib/ActorRdfUpdateQuadsRdfJsStore';
 import { RdfJsQuadDestination } from '../lib/RdfJsQuadDestination';
 import 'jest-rdf';

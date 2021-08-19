@@ -9,7 +9,7 @@ import {
   ActorRdfResolveQuadPatternSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { FederatedQuadSource } from './FederatedQuadSource';
 
 /**

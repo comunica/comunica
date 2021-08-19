@@ -3,8 +3,8 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { ActionContext, IActorTest } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 const DF = new DataFactory();

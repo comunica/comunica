@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "*"
+    "@rdfjs/types": "*"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-metadata": "^1.0.0",

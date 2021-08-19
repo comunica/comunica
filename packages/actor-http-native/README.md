@@ -2,6 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-native.svg)](https://www.npmjs.com/package/@comunica/actor-http-native)
 
+**DEPRECATED: use the more flexible @comunica/actor-http-node-fetch instead without loss of performance.**
+
 An [HTTP](https://github.com/comunica/comunica/tree/master/packages/bus-http) actor that
 uses Node's request API (`XMLHttpRequest` in the browser) to perform HTTP requests.
 

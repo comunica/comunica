@@ -35,7 +35,7 @@ import type {
   Bindings,
   IQueryEngine,
 } from '@comunica/types';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**

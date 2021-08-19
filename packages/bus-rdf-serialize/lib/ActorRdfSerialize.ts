@@ -2,7 +2,7 @@ import type { IActionAbstractMediaTyped, IActorArgsMediaTyped,
   IActorTestAbstractMediaTyped, IActorOutputAbstractMediaTypedHandle } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica actor for RDF parse events.

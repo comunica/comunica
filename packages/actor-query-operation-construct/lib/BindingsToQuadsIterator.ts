@@ -1,8 +1,8 @@
 import type { Bindings, BindingsStream } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 const DF = new DataFactory();
 

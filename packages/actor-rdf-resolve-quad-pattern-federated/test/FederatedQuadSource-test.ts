@@ -1,9 +1,9 @@
 import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
-import type * as RDF from 'rdf-js';
 
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';

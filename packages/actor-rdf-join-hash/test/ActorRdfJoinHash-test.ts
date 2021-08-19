@@ -175,5 +175,19 @@ describe('ActorRdfJoinHash', () => {
           .toEqual(expected.map(bindingsToString).sort());
       });
     });
+
+    it('should hash to concatenation of values of variables', () => {
+      expect(ActorRdfJoinHash.hash(
+        Bindings({ '?x': DF.namedNode('http://www.example.org/instance#a'),
+          '?y': DF.namedNode('http://www.example.org/instance#b') }), [ '?x', '?y' ],
+      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
+    });
+
+    it('should not let hash being influenced by a variable that is not present in bindings', () => {
+      expect(ActorRdfJoinHash.hash(
+        Bindings({ '?x': DF.namedNode('http://www.example.org/instance#a'),
+          '?y': DF.namedNode('http://www.example.org/instance#b') }), [ '?x', '?y', '?z' ],
+      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
+    });
   });
 });

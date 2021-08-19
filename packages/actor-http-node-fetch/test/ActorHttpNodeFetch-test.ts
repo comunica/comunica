@@ -1,16 +1,19 @@
+import { Agent as HttpAgent } from 'http';
+import { Agent as HttpsAgent } from 'https';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
+import { mocked } from 'ts-jest/utils';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
 // Mock fetch
-(<any> global).fetch = (input: any, init: any) => {
+(<any> global).fetch = jest.fn((input: any, init: any) => {
   return Promise.resolve({
     status: input.url === 'https://www.google.com/' ? 200 : 404,
     ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn() }},
   });
-};
+});
 
 describe('ActorHttpNodeFetch', () => {
   let bus: any;
@@ -66,6 +69,30 @@ describe('ActorHttpNodeFetch', () => {
         .toMatchObject({ status: 200 });
     });
 
+    it('should run and pass a custom agent to node-fetch', async() => {
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
+
+      expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
+
+      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
+        .toBeInstanceOf(HttpsAgent);
+      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
+        .toBeInstanceOf(HttpAgent);
+    });
+
+    it('for custom agent options should run and pass a custom agent to node-fetch', async() => {
+      actor = new ActorHttpNodeFetch({ name: 'actor', bus, agentOptions: '{ "keepAlive": true, "maxSockets": 5 }' });
+
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
+
+      expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
+
+      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
+        .toBeInstanceOf(HttpsAgent);
+      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
+        .toBeInstanceOf(HttpAgent);
+    });
+
     it('should run without body response', () => {
       return expect(actor.run({ input: <Request> { url: 'NOBODY' }})).resolves
         .toMatchObject({ status: 404 });
@@ -95,7 +122,7 @@ describe('ActorHttpNodeFetch', () => {
         context: ActionContext({}),
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }) });
+        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything() });
     });
 
     it('should run with KeysHttp.includeCredentials', async() => {
@@ -109,6 +136,7 @@ describe('ActorHttpNodeFetch', () => {
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, {
         credentials: 'include',
         headers: new Headers({ 'user-agent': (<any> actor).userAgent }),
+        agent: expect.anything(),
       });
     });
 
@@ -122,10 +150,13 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },
-        { headers: new Headers({
-          Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
-          'user-agent': (<any> actor).userAgent,
-        }) },
+        {
+          headers: new Headers({
+            Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
+            'user-agent': (<any> actor).userAgent,
+          }),
+          agent: expect.anything(),
+        },
       );
     });
 
@@ -140,10 +171,13 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },
-        { headers: new Headers({
-          Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
-          'user-agent': (<any> actor).userAgent,
-        }) },
+        {
+          headers: new Headers({
+            Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
+            'user-agent': (<any> actor).userAgent,
+          }),
+          agent: expect.anything(),
+        },
       );
     });
 
@@ -159,11 +193,14 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },
-        { headers: new Headers({
-          Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
-          'Content-Type': 'image/jpeg',
-          'user-agent': (<any> actor).userAgent,
-        }) },
+        {
+          headers: new Headers({
+            Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
+            'Content-Type': 'image/jpeg',
+            'user-agent': (<any> actor).userAgent,
+          }),
+          agent: expect.anything(),
+        },
       );
     });
 
@@ -218,7 +255,7 @@ describe('ActorHttpNodeFetch', () => {
         init: { headers: new Headers({ 'user-agent': 'b' }) },
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': 'b' }) });
+        { headers: new Headers({ 'user-agent': 'b' }), agent: expect.anything() });
     });
 
     it('should set a user agent if none has been set', async() => {
@@ -228,7 +265,7 @@ describe('ActorHttpNodeFetch', () => {
         init: { headers: new Headers({}) },
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }) });
+        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything() });
     });
 
     it('should run and expose body.cancel', async() => {
@@ -240,6 +277,17 @@ describe('ActorHttpNodeFetch', () => {
       await response.body!.cancel(closeError);
 
       expect((<any> response.body).destroy).toHaveBeenCalledWith(closeError);
+    });
+
+    it('should run with a custom fetch function', async() => {
+      const customFetch = jest.fn(async() => ({}));
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({ [KeysHttp.fetch]: customFetch }),
+      });
+
+      expect(fetch).not.toHaveBeenCalled();
+      expect(customFetch).toHaveBeenCalled();
     });
   });
 });

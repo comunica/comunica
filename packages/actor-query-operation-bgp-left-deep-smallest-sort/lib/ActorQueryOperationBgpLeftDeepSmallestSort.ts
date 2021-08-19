@@ -5,8 +5,8 @@ import {
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';

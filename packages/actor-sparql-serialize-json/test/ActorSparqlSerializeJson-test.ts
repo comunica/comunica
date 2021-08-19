@@ -2,9 +2,9 @@ import { Readable } from 'stream';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type * as RDF from 'rdf-js';
 import { ActorSparqlSerializeJson } from '..';
 
 const DF = new DataFactory();

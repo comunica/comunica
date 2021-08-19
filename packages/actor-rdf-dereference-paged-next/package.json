@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@types/lru-cache": "^5.1.0",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "asynciterator": "^3.2.0",
     "lru-cache": "^6.0.0"
   },

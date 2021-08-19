@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica actor for rdf-metadata-extract events.

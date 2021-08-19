@@ -4,9 +4,9 @@ import { ActorHttp } from '@comunica/bus-http';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { ActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
-import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string-ttl';
 
 /**

@@ -5,7 +5,7 @@ import type {
 } from '@comunica/bus-rdf-update-quads';
 import { ActorRdfUpdateQuadsDestination } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import { RdfJsQuadDestination } from './RdfJsQuadDestination';
 
 /**

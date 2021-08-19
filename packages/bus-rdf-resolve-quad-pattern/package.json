@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "@comunica/context-entries": "^1.21.1",
-    "@types/rdf-js": "*",
+    "@rdfjs/types": "*",
     "asynciterator": "^3.2.0",
     "sparqlalgebrajs": "^3.0.0"
   },
