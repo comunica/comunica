@@ -207,6 +207,7 @@ export class FederatedQuadSource implements IQuadSource {
     const reduce = (reducer: IReducer, last: boolean): void => {
       if (collectedSourceMetadata.length >= 2) {
         // Push reduced result back onto the collected source metadata array
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         reducer({ metadata: collectedSourceMetadata.pop()!, subMetadata: collectedSourceMetadata.pop()! })
           .then(({ aggregatedMetadata }) => {
             collectedSourceMetadata.push(aggregatedMetadata);
@@ -215,7 +216,7 @@ export class FederatedQuadSource implements IQuadSource {
             if (nMetadataObjectsReduced === nMetadataObjects) {
               emitFinalMetadata();
             }
-          })
+          });
       } else if (last) {
         emitFinalMetadata();
       }
