@@ -22,7 +22,6 @@ export class ActorRdfMetadataAggregateTotalItems extends ActorRdfMetadataAggrega
     const { metadata, subMetadata } = action;
 
     let newTotalItems = 0;
-    const isEmptyRecord = (record: Record<string, any>): boolean => Object.keys(record).length === 0;
     const hasTotalItems = (record: Record<string, any>): boolean => record.totalItems !== undefined;
     let resultRecord = {};
 
