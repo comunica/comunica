@@ -216,7 +216,6 @@ export class FederatedQuadSource implements IQuadSource {
               emitFinalMetadata();
             }
           })
-          .catch(error => it.emit('error', error));
       } else if (last) {
         emitFinalMetadata();
       }
