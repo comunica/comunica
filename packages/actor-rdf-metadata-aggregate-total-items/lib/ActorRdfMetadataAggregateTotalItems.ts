@@ -8,8 +8,6 @@ import type { Record } from 'immutable';
  * A comunica Total Items RDF Metadata Aggregate Actor.
  */
 export class ActorRdfMetadataAggregateTotalItems extends ActorRdfMetadataAggregate {
-  public records: Record<string, any>[] = [];
-
   public constructor(args: IActorArgs<IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>) {
     super(args);
   }
