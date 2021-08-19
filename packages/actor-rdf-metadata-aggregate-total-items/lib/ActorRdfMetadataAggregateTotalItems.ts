@@ -26,28 +26,19 @@ export class ActorRdfMetadataAggregateTotalItems extends ActorRdfMetadataAggrega
     const hasTotalItems = (record: Record<string, any>): boolean => record.totalItems !== undefined;
     let resultRecord = {};
 
-    if (!subMetadata) {
-      // Submetadata not defined
-      resultRecord = metadata;
-    } else {
-      // Submetadata IS defined
-      const metadataHasTotalItems = hasTotalItems(metadata);
-      const subMetadataHasTotalItems = hasTotalItems(subMetadata);
+    // Submetadata IS defined
+    const metadataHasTotalItems = hasTotalItems(metadata);
+    const subMetadataHasTotalItems = hasTotalItems(subMetadata!);
 
-      if (metadataHasTotalItems && subMetadataHasTotalItems) {
-        // Metadata has total items & submetadata has total items
-        newTotalItems = Number(metadata.totalItems) + Number(subMetadata.totalItems);
-      } else if (!metadataHasTotalItems && !subMetadataHasTotalItems) {
-        // Neither metadata or submetadata has totalItems
-        newTotalItems = Number.POSITIVE_INFINITY;
-      } else if (!metadataHasTotalItems && subMetadata) {
-        // Metadata does not have total items
-        newTotalItems = subMetadata.totalItems;
-      } else if (isEmptyRecord(subMetadata)) {
-        newTotalItems = Number.POSITIVE_INFINITY;
-      } else {
-        throw new Error('CASE NOT COVERED YET');
-      }
+    if (metadataHasTotalItems && subMetadataHasTotalItems) {
+      // Metadata has total items & submetadata has total items
+      newTotalItems = Number(metadata.totalItems) + Number(subMetadata!.totalItems);
+    } else if (!metadataHasTotalItems && !subMetadataHasTotalItems) {
+      // Neither metadata or submetadata has totalItems
+      newTotalItems = Number.POSITIVE_INFINITY;
+    } else {
+      // Metadata does not have total items
+      newTotalItems = subMetadata!.totalItems;
     }
 
     resultRecord = {
