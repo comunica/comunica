@@ -204,20 +204,16 @@ export class FederatedQuadSource implements IQuadSource {
       it.setProperty('metadata', finalMetadata);
     };
     // Anonymous function for reducing the metadata collected from the sources.
-    const reduce = (reducer: IReducer, last: boolean): void => {
+    const reduce = async(reducer: IReducer, last: boolean): Promise<void> => {
       if (collectedSourceMetadata.length >= 2) {
         // Push reduced result back onto the collected source metadata array
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        reducer({ metadata: collectedSourceMetadata.pop()!, subMetadata: collectedSourceMetadata.pop()! })
-          .then(({ aggregatedMetadata }) => {
-            collectedSourceMetadata.push(aggregatedMetadata);
-            nMetadataObjectsReduced += 2;
-
-            if (nMetadataObjectsReduced === nMetadataObjects) {
-              emitFinalMetadata();
-            }
-          });
-      } else if (last) {
+        const { aggregatedMetadata } = await reducer({ metadata: collectedSourceMetadata.pop()!,
+          subMetadata: collectedSourceMetadata.pop()! });
+        collectedSourceMetadata.push(aggregatedMetadata);
+        nMetadataObjectsReduced += 2;
+      }
+      if (last || (nMetadataObjectsReduced === nMetadataObjects)) {
         emitFinalMetadata();
       }
     };
@@ -267,7 +263,7 @@ export class FederatedQuadSource implements IQuadSource {
         collectedSourceMetadata.push(outputMetadata);
         const myReducer: IReducer = action => this.mediatorAggregate.mediate(action);
         const last = i === this.sources.length - 1;
-        reduce(myReducer, last);
+        await reduce(myReducer, last);
       } else {
         emitFinalMetadata();
       }
