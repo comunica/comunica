@@ -343,7 +343,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const thisMediator: any = {
         mediate() {
           return {
-            body: streamifyString(``),
+            body: streamifyString(`this is a body`),
             headers: new Headers({ 'Content-Type': SparqlEndpointFetcher.CONTENTTYPE_SPARQL_JSON }),
             ok: false,
             status: 500,
@@ -366,7 +366,8 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       });
       const x = ActorQueryOperation.getSafeBindings(await thisActor.run(op)).bindingsStream;
       await expect(arrayifyStream(x))
-        .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://ex) response: Error!'));
+        .rejects.toThrow(new Error(`Invalid SPARQL endpoint response from http://ex (HTTP status 500):
+this is a body`));
     });
 
     it('should run and error for a fetching error', () => {

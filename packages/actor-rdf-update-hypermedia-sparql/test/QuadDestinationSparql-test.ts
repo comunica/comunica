@@ -64,7 +64,7 @@ describe('QuadDestinationSparql', () => {
       });
       body.cancel = jest.fn();
       await expect(destination.insert(new ArrayIterator([]))).rejects
-        .toThrow('Invalid SPARQL endpoint (abc) response: undefined');
+        .toThrow(`Invalid SPARQL endpoint response from abc (HTTP status 400):\nempty response`);
     });
   });
 

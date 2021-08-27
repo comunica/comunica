@@ -194,7 +194,7 @@ describe('RdfSourceSparql', () => {
         mediate() {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: streamifyString(``),
+            body: streamifyString(`empty body`),
             ok: false,
             status: 500,
             statusText: 'Error!',
@@ -205,7 +205,7 @@ describe('RdfSourceSparql', () => {
       await expect(arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
-        .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://example.org/sparql) response: Error!'));
+        .rejects.toThrow(new Error(`Invalid SPARQL endpoint response from http://example.org/sparql (HTTP status 500):\nempty body`));
     });
 
     it('should emit an error for invalid binding results', async() => {

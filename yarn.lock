@@ -5304,10 +5304,10 @@ fecha@^4.2.0:
   resolved "https://registry.yarnpkg.com/fecha/-/fecha-4.2.1.tgz#0a83ad8f86ef62a091e22bb5a039cd03d23eecce"
   integrity sha512-MMMQ0ludy/nBs1/o0zVOiKTpG7qMbonKUzjJgQFEuvq6INZ1OraKPRAWkBq5vlKLOUMpmNYG1JoN3oDPUQ9m3Q==
 
-fetch-sparql-endpoint@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-2.2.0.tgz#066089af4b0601dff7bb8a8891b4ff3372fe1be1"
-  integrity sha512-JfsV6hiSR8SRVEFFY7RWhMxzZKrODbRfQWlgbV3sSoIRAR2HEaSGELy+wIPYpDW4yOb1u8EOLlwLrMKhdVFDcQ==
+fetch-sparql-endpoint@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-2.3.1.tgz#1f3649767d906fd599d27d2222cb683ffef0979e"
+  integrity sha512-YGH73cbwkvj5g6A9CzIson5OFHql+leiW4b4ApdTQkzJIqzljAFBuWBKDEUmAbETqlWhY3poVj1jNEuIsnggTw==
   dependencies:
     "@rdfjs/types" "*"
     "@types/sparqljs" "^3.1.3"

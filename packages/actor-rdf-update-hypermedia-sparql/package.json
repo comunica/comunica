@@ -42,7 +42,7 @@
     "@comunica/bus-rdf-update-hypermedia": "^1.21.1"
   },
   "dependencies": {
-    "fetch-sparql-endpoint": "^2.2.0",
+    "fetch-sparql-endpoint": "^2.3.1",
     "rdf-string-ttl": "^1.1.0",
     "stream-to-string": "^1.2.0"
   },
