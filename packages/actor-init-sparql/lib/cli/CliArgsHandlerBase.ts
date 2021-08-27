@@ -1,0 +1,184 @@
+import { exec } from 'child_process';
+import { existsSync, readFileSync } from 'fs';
+import * as OS from 'os';
+import { KeysHttp, KeysInitSparql, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import { LoggerPretty } from '@comunica/logger-pretty';
+import type { Argv } from 'yargs';
+import type { ICliArgsHandler } from './ICliArgsHandler';
+
+/**
+ * Basic CLI arguments handler that handles common options.
+ */
+export class CliArgsHandlerBase implements ICliArgsHandler {
+  private readonly initialContext?: ActionContext;
+
+  public constructor(initialContext?: ActionContext) {
+    this.initialContext = initialContext;
+  }
+
+  public static getScriptOutput(command: string, fallback: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          resolve(fallback);
+        }
+        resolve((stdout || stderr).trimEnd());
+      });
+    });
+  }
+
+  public static isDevelopmentEnvironment(): boolean {
+    return existsSync(`${__dirname}/../../test`);
+  }
+
+  /**
+   * Converts an URL like 'hypermedia@http://user:passwd@example.com to an IDataSource
+   * @param {string} sourceString An url with possibly a type and authorization.
+   * @return {[id: string]: any} An IDataSource which represents the sourceString.
+   */
+  public static getSourceObjectFromString(sourceString: string): Record<string, any> {
+    const source: Record<string, any> = {};
+    const mediaTypeRegex = /^([^:]*)@/u;
+    const mediaTypeMatches = mediaTypeRegex.exec(sourceString);
+    if (mediaTypeMatches) {
+      source.type = mediaTypeMatches[1];
+      sourceString = sourceString.slice((<number> source.type.length) + 1);
+    }
+    const authRegex = /\/\/(.*:.*)@/u;
+    const authMatches = authRegex.exec(sourceString);
+    if (authMatches) {
+      const credentials = authMatches[1];
+      source.context = ActionContext({
+        [KeysHttp.auth]: decodeURIComponent(credentials),
+      });
+      sourceString = sourceString.slice(0, authMatches.index + 2) +
+        sourceString.slice(authMatches.index + credentials.length + 3);
+    }
+    source.value = sourceString;
+    return source;
+  }
+
+  public populateYargs(argumentsBuilder: Argv<any>): Argv<any> {
+    return argumentsBuilder
+      .command(
+        '$0 [sources...]',
+        'evaluates SPARQL queries',
+        () => {
+          // Do nothing
+        },
+        () => {
+          // Do nothing
+        },
+      )
+      .default('sources', [])
+      .hide('sources')
+      .wrap(160)
+      .version(false)
+      .options({
+        context: {
+          alias: 'c',
+          type: 'string',
+          describe: 'Use the given JSON context string or file (e.g., config.json)',
+        },
+        to: {
+          type: 'string',
+          describe: 'Destination for update queries',
+        },
+        baseIRI: {
+          alias: 'b',
+          type: 'string',
+          describe: 'base IRI for the query (e.g., http://example.org/)',
+        },
+        dateTime: {
+          alias: 'd',
+          type: 'string',
+          describe: 'sets a datetime for querying Memento-enabled archives',
+        },
+        logLevel: {
+          alias: 'l',
+          type: 'string',
+          describe: 'sets the log level (e.g., debug, info, warn, ...)',
+          default: 'warn',
+        },
+        lenient: {
+          type: 'boolean',
+          describe: 'if failing requests and parsing errors should be logged instead of causing a hard crash',
+        },
+        version: {
+          alias: 'v',
+          type: 'boolean',
+          describe: 'prints version information',
+        },
+      })
+      .exitProcess(false)
+      .fail(false)
+      .help(false);
+  }
+
+  public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
+    // Print version information
+    if (args.version) {
+      const comunicaVersion: string = require('../../package.json').version;
+      const dev: string = CliArgsHandlerBase.isDevelopmentEnvironment() ? '(dev)' : '';
+      const nodeVersion: string = process.version;
+      const npmVersion: string = await CliArgsHandlerBase.getScriptOutput('npm -v', '_NPM is unavailable_');
+      const yarnVersion: string = await CliArgsHandlerBase.getScriptOutput('yarn -v', '_Yarn is unavailable_');
+      const os = `${OS.platform()} (${OS.type()} ${OS.release()})`;
+
+      const message = `| software            | version
+| ------------------- | -------
+| Comunica Init Actor | ${comunicaVersion} ${dev}
+| node                | ${nodeVersion}
+| npm                 | ${npmVersion}
+| yarn                | ${yarnVersion}
+| Operating System    | ${os}
+`;
+
+      return Promise.reject(new Error(message));
+    }
+
+    // Inherit default context options
+    if (this.initialContext) {
+      Object.assign(context, this.initialContext.toJS());
+    }
+
+    // Define context
+    if (args.context) {
+      Object.assign(context, JSON.parse(existsSync(args.context) ? readFileSync(args.c, 'utf8') : args.context));
+    } else if (args.sources[0] && args.sources[0].startsWith('{')) {
+      // For backwards compatibility inline JSON
+      Object.assign(context, JSON.parse(args.sources[0]));
+      args.sources.shift();
+    }
+
+    // Add sources to context
+    if (args.sources.length > 0) {
+      context.sources = context.sources || [];
+      args.sources.forEach((sourceValue: string) => {
+        const source = CliArgsHandlerBase.getSourceObjectFromString(sourceValue);
+        context.sources.push(source);
+      });
+    }
+
+    // Add destination to context
+    if (args.to) {
+      context[KeysRdfUpdateQuads.destination] = args.to;
+    }
+
+    // Set the logger
+    if (!context.log) {
+      context.log = new LoggerPretty({ level: args.logLevel });
+    }
+
+    // Define the base IRI
+    if (args.baseIRI) {
+      context[KeysInitSparql.baseIRI] = args.baseIRI;
+    }
+
+    // Define lenient-mode
+    if (args.lenient) {
+      context[KeysInitSparql.lenient] = true;
+    }
+  }
+}

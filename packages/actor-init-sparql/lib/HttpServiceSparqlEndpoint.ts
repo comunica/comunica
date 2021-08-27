@@ -11,9 +11,12 @@ import type { IActorQueryOperationOutput,
   IActorQueryOperationOutputQuads, IActorQueryOperationOutputUpdate } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import minimist = require('minimist');
+import yargs from 'yargs';
 import { newEngineDynamic } from '..';
-import { ActorInitSparql } from './ActorInitSparql';
+import type { ICliArgsHandler } from '..';
+import type { ActorInitSparql } from './ActorInitSparql';
+import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
+import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
 import type { IQueryOptions } from './QueryDynamic';
 
 const quad = require('rdf-quad');
@@ -24,28 +27,6 @@ const quad = require('rdf-quad');
 export class HttpServiceSparqlEndpoint {
   public static readonly MIME_PLAIN = 'text/plain';
   public static readonly MIME_JSON = 'application/json';
-
-  public static readonly HELP_MESSAGE = `comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
-
-Usage:
-  comunica-sparql-http http://fragments.dbpedia.org/2015/en
-  comunica-sparql-http http://fragments.dbpedia.org/2015/en hypermedia@http://fragments.dbpedia.org/2016-04/en
-  comunica-sparql-http -c context.json 
-
-Options:
-  -d            the destination for update queries
-  -c            context should be a JSON object or the path to such a JSON file.
-  -p            the HTTP port to run on (default: 3000)
-  -t            the query execution timeout in seconds (default: 60)
-  -w            the number of worker threads (default: 1)
-  -b            base IRI for the query (e.g., http://example.org/)
-  -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
-  -i            a flag that enables cache invalidation before each query execution.
-  -u            enable update queries (by default only read queries are enabled)
-  --lenient     if failing requests and parsing errors should be logged instead of causing a hard crash
-  --help        print this help message
-  --version     prints version information
-`;
 
   public readonly engine: Promise<ActorInitSparql>;
 
@@ -76,14 +57,14 @@ Options:
    * @param {NodeJS.ProcessEnv} env The process env to get constants from.
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
    * @param {(code: number) => void} exit The callback to invoke to stop the script.
+   * @param {ICliArgsHandler[]} cliArgsHandlers Enables manipulation of the CLI arguments and their processing.
    * @return {Promise<void>} A promise that resolves when the server has been started.
    */
   public static async runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
     moduleRootPath: string, env: NodeJS.ProcessEnv,
-    defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
-    const args = minimist(argv);
+    defaultConfigPath: string, exit: (code: number) => void, cliArgsHandlers: ICliArgsHandler[] = []): Promise<void> {
     const options = await HttpServiceSparqlEndpoint
-      .generateConstructorArguments(args, moduleRootPath, env, defaultConfigPath, stderr, exit);
+      .generateConstructorArguments(argv, moduleRootPath, env, defaultConfigPath, stderr, exit, cliArgsHandlers);
 
     return new Promise<void>(resolve => {
       new HttpServiceSparqlEndpoint(options).run(stdout, stderr)
@@ -102,23 +83,46 @@ Options:
    * @param {string} moduleRootPath The path to the invoking module.
    * @param {NodeJS.ProcessEnv} env The process env to get constants from.
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
+   * @param {ICliArgsHandler[]} cliArgsHandlers Enables manipulation of the CLI arguments and their processing.
    */
-  public static async generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string,
+  public static async generateConstructorArguments(argv: string[], moduleRootPath: string,
     env: NodeJS.ProcessEnv, defaultConfigPath: string, stderr: Writable,
-    exit: (code: number) => void): Promise<IHttpServiceSparqlEndpointArgs> {
-    // Allow both files as direct JSON objects for context
-    let context: any = {};
+    exit: (code: number) => void, cliArgsHandlers: ICliArgsHandler[]): Promise<IHttpServiceSparqlEndpointArgs> {
+    // Populate yargs arguments object
+    cliArgsHandlers = [
+      new CliArgsHandlerBase(),
+      new CliArgsHandlerHttp(),
+      ...cliArgsHandlers,
+    ];
+    let argumentsBuilder = yargs({});
+    for (const cliArgsHandler of cliArgsHandlers) {
+      argumentsBuilder = cliArgsHandler.populateYargs(argumentsBuilder);
+    }
+
+    // Extract raw argument values from parsed yargs object, so that we can handle each of them hereafter
+    let args: Record<string, any>;
     try {
-      context = await ActorInitSparql.buildContext(args, false, HttpServiceSparqlEndpoint.HELP_MESSAGE);
+      args = await argumentsBuilder.parse(argv);
     } catch (error: unknown) {
-      stderr.write((<Error> error).message);
+      stderr.write(`${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n`);
+      return exit(1)!;
+    }
+
+    // Invoke args handlers to process any remaining args
+    const context: Record<string, any> = {};
+    try {
+      for (const cliArgsHandler of cliArgsHandlers) {
+        await cliArgsHandler.handleArgs(args, context);
+      }
+    } catch (error: unknown) {
+      stderr.write(`${(<Error>error).message}/n`);
       exit(1);
     }
 
-    const invalidateCacheBeforeQuery: boolean = args.i;
-    const port = Number.parseInt(args.p, 10) || 3_000;
-    const timeout = (Number.parseInt(args.t, 10) || 60) * 1_000;
-    const workers = Number.parseInt(args.w, 10) || 1;
+    const invalidateCacheBeforeQuery: boolean = args.invalidateCache;
+    const port = args.port;
+    const timeout = args.timeout * 1_000;
+    const workers = args.workers;
     context[KeysQueryOperation.readOnly] = !args.u;
 
     const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;

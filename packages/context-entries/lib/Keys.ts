@@ -80,6 +80,10 @@ export enum KeysInitSparql {
    * The callback-based extensionFunctionCreator context entry may be used instead, but not simultaneously.
    */
   extensionFunctions = '@comunica/actor-init-sparql:extensionFunctions',
+  /**
+   * @range {ICliArgsHandler[]} Enables manipulation of the CLI arguments and their processing.
+   */
+  cliArgsHandlers = '@comunica/actor-init-sparql:cliArgsHandlers',
 }
 
 export enum KeysQueryOperation {

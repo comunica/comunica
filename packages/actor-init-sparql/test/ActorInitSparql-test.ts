@@ -1,13 +1,21 @@
 /* eslint-disable mocha/max-top-level-suites */
-import { PassThrough, Readable } from 'stream';
+import { PassThrough, Readable, Transform } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import { ActorInit } from '@comunica/bus-init';
 import { Bindings } from '@comunica/bus-query-operation';
-import { KeysCore, KeysHttp, KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import {
+  KeysCore,
+  KeysHttp,
+  KeysHttpMemento, KeysHttpProxy,
+  KeysInitSparql,
+  KeysRdfResolveQuadPattern, KeysRdfUpdateQuads,
+} from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
+import { LoggerPretty } from '@comunica/logger-pretty';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
+import * as stringifyStream from 'stream-to-string';
 import {
   ActorInitSparql,
   KEY_CONTEXT_INITIALBINDINGS,
@@ -19,6 +27,8 @@ import type { IQueryResultQuads,
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
 } from '../lib/ActorInitSparql-browser';
+import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
+import type { ICliArgsHandler } from '../lib/cli/ICliArgsHandler';
 const DF = new DataFactory();
 
 describe('exported constants', () => {
@@ -63,7 +73,15 @@ describe('ActorInitSparql', () => {
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
         { mediaTypes: arg } :
-        { handle: { data: arg.handle.bindingsStream }}),
+        {
+          handle: {
+            data: arg.handle.bindingsStream
+              .pipe(new Transform({
+                objectMode: true,
+                transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
+              })),
+          },
+        }),
     };
     mediatorHttpInvalidate = {
       mediate: (arg: any) => Promise.resolve(true),
@@ -92,19 +110,23 @@ describe('ActorInitSparql', () => {
   });
 
   describe('An ActorInitSparql instance', () => {
-    const hypermedia = 'http://example.org/';
-    const hypermedia2 = 'hypermedia@http://example.org/';
-    const hypermedia3 = 'http://username:passwd@example.org/';
-    const hypermedia4 = 'hypermedia@http://username:passwd@example.org/';
-    const otherSource = 'other@http://example.org/';
+    const sourceHypermedia = 'http://example.org/';
+    const sourceHypermediaTagged = 'hypermedia@http://example.org/';
+    const sourceHypermediaAuth = 'http://username:passwd@example.org/';
+    const sourceHypermediaTaggedAuth = 'hypermedia@http://username:passwd@example.org/';
+    const sourceOther = 'other@http://example.org/';
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
-    const context: any = JSON.stringify({ hypermedia });
+    const context: any = JSON.stringify({ hypermedia: sourceHypermedia });
     let actor: ActorInitSparql;
+    let actorFixedQuery: ActorInitSparql;
+    let actorFixedContext: ActorInitSparql;
+    let actorFixedQueryAndContext: ActorInitSparql;
     const mediatorContextPreprocess: any = {
       mediate: (action: any) => Promise.resolve(action),
     };
 
     beforeEach(() => {
+      jest.resetAllMocks();
       const input = new Readable({ objectMode: true });
       input._read = () => {
         const triple = { a: 'triple' };
@@ -112,11 +134,13 @@ describe('ActorInitSparql', () => {
         input.push(null);
       };
       const factory = new Factory();
-      mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-        Promise.resolve({ bindingsStream: input }) :
-        Promise.reject(new Error('a'));
+      mediatorQueryOperation.mediate = (action: any) => {
+        return action.operation !== 'INVALID' ?
+          Promise.resolve({ bindingsStream: input }) :
+          Promise.reject(new Error('Invalid query'));
+      };
       mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
-        Promise.resolve(action.query) :
+        Promise.resolve({ operation: action.query }) :
         Promise.resolve({
           baseIRI: action.query.includes('BASE') ? 'myBaseIRI' : null,
           operation: factory.createProject(
@@ -146,49 +170,7 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor' },
       );
-    });
-
-    it('should test', () => {
-      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBeTruthy();
-    });
-
-    it('should run to stderr for no argv', () => {
-      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run to stderr on the -v option', () => {
-      return expect(actor.run({ argv: [ '-v' ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run to stderr on the -v option when not in a dev environment', () => {
-      (<any> actor).isDevelopmentEnvironment = () => false;
-      return expect(actor.run({ argv: [ '-v' ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run to stderr on the --version option', () => {
-      return expect(actor.run({ argv: [ '--version' ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run to stderr on the -h option', () => {
-      return expect(actor.run({ argv: [ '-h' ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run to stderr on the --help option', () => {
-      return expect(actor.run({ argv: [ '--help' ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run on the --listformats option', () => {
-      return expect(actor.run({ argv: [ '--listformats' ], env: {}, stdin: new PassThrough() })).resolves.toBeTruthy();
-    });
-
-    it('should have a default query format', async() => {
-      actor = new ActorInitSparql(
+      actorFixedQuery = new ActorInitSparql(
         { bus,
           contextKeyShortcuts,
           defaultQueryInputFormat: 'sparql',
@@ -204,15 +186,10 @@ describe('ActorInitSparql', () => {
           name: 'actor',
           queryString },
       );
-      const spy = jest.spyOn(actor, 'query');
-      await actor.run({ argv: [], env: {}, stdin: new PassThrough() });
-      expect(spy.mock.calls[0][1][KeysInitSparql.queryFormat]).toEqual('sparql');
-    });
-
-    it('should allow the query format to be changed with -i', async() => {
-      actor = new ActorInitSparql(
+      actorFixedContext = new ActorInitSparql(
         { bus,
           contextKeyShortcuts,
+          defaultQueryInputFormat: 'sparql',
           logger,
           mediatorContextPreprocess,
           mediatorHttpInvalidate,
@@ -223,118 +200,12 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
-          queryString },
+          context },
       );
-      const spy = jest.spyOn(actor, 'query');
-      await actor.run({ argv: [ '-i', 'graphql' ], env: {}, stdin: new PassThrough() });
-      expect(spy.mock.calls[0][1][KeysInitSparql.queryFormat]).toEqual('graphql');
-    });
-
-    it('should allow a media type to be passed with -t', async() => {
-      const med: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
-      };
-      actor = new ActorInitSparql(
+      actorFixedQueryAndContext = new ActorInitSparql(
         { bus,
           contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: med,
-          mediatorSparqlSerializeMediaTypeCombiner: med,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: med,
-          name: 'actor',
-          queryString },
-      );
-      expect((await actor.run({ argv: [ '-t', 'testtype' ], env: {}, stdin: new PassThrough() })).stdout)
-        .toEqual('testtype');
-    });
-
-    it('should default to media type application/json when a bindingsStream is returned', async() => {
-      const m1: any = {
-        mediate: (arg: any) => Promise.resolve({ type: 'bindings', bindingsStream: true }),
-      };
-      const m2: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
-      };
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation: m1,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: m2,
-          mediatorSparqlSerializeMediaTypeCombiner: m2,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
-          name: 'actor',
-          queryString },
-      );
-      expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
-        .toEqual('application/json');
-    });
-
-    it('should default to media type application/trig when a quadStream is returned', async() => {
-      const m1: any = {
-        mediate: (arg: any) => Promise.resolve({ type: 'quads', quadStream: true }),
-      };
-      const m2: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
-      };
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation: m1,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: m2,
-          mediatorSparqlSerializeMediaTypeCombiner: m2,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
-          name: 'actor',
-          queryString },
-      );
-      expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
-        .toEqual('application/trig');
-    });
-
-    it('should default to media type simple when a boolean is returned', async() => {
-      const m1: any = {
-        mediate: (arg: any) => Promise.resolve({ type: 'boolean', booleanResult: Promise.resolve(true) }),
-      };
-      const m2: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
-      };
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation: m1,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: m2,
-          mediatorSparqlSerializeMediaTypeCombiner: m2,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
-          name: 'actor',
-          queryString },
-      );
-      expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
-        .toEqual('simple');
-    });
-
-    it('should run for no argv when query is passed as a parameter', () => {
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
+          defaultQueryInputFormat: 'sparql',
           logger,
           mediatorContextPreprocess,
           mediatorHttpInvalidate,
@@ -345,225 +216,9 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
-          queryString },
+          queryString,
+          context },
       );
-      return actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should run for no argv when query and context are passed as a parameter', () => {
-      actor = new ActorInitSparql(
-        { bus,
-          context,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          queryString },
-      );
-      return actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should run to stderr for no argv when only a context is passed as parameter', () => {
-      actor = new ActorInitSparql(
-        { bus,
-          context,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor' },
-      );
-      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run to stderr for no argv when only a falsy query is passed as parameter', () => {
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          queryString: <any> null },
-      );
-      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should run with an hypermedia and query from argv', () => {
-      return actor.run({ argv: [ hypermedia, queryString ], env: {}, stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should run to stderr for an hypermedia without a query', () => {
-      return expect(actor.run({ argv: [ hypermedia ], env: {}, stdin: new PassThrough() })).resolves
-        .toHaveProperty('stderr');
-    });
-
-    it('should not run for an hypermedia and an invalid query', () => {
-      return expect(actor.run({ argv: [ hypermedia, 'INVALID' ], env: {}, stdin: new PassThrough() }))
-        .rejects.toBeTruthy();
-    });
-
-    it('should run with an hypermedia and query option from argv', () => {
-      return actor.run({ argv: [ hypermedia, '-q', queryString ], env: {}, stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should not run with an hypermedia and a empty query option', () => {
-      return expect(actor.run({ argv: [ hypermedia, '-q' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
-    });
-
-    it('should run with an hypermedia and query file option from argv', () => {
-      return actor.run({ argv: [ hypermedia, '-f', `${__dirname}/assets/all-100.sparql` ],
-        env: {},
-        stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should run with a tagged hypermedia and query file option from argv', () => {
-      return actor.run({ argv: [ hypermedia2, '-f', `${__dirname}/assets/all-100.sparql` ],
-        env: {},
-        stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should run with credentials in url and query file option from argv', async() => {
-      const spy = jest.spyOn(actor, 'query');
-      await actor.run({ argv: [ hypermedia3, '-f', `${__dirname}/assets/all-100.sparql` ],
-        env: {},
-        stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-      expect(spy.mock.calls[0][1][KeysRdfResolveQuadPattern.sources][0].context.get(KeysHttp.auth))
-        .toBe('username:passwd');
-    });
-
-    it('should run with a tagged hypermedia and credentials in url and query file option from argv', async() => {
-      const spy = jest.spyOn(actor, 'query');
-      await actor.run({ argv: [ hypermedia4, '-f', `${__dirname}/assets/all-100.sparql` ],
-        env: {},
-        stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-      expect(spy.mock.calls[0][1][KeysRdfResolveQuadPattern.sources][0].context.get(KeysHttp.auth))
-        .toBe('username:passwd');
-    });
-
-    it('should run with an other source type and query file option from argv', () => {
-      return actor.run({ argv: [ otherSource, '-f', `${__dirname}/assets/all-100.sparql` ],
-        env: {},
-        stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should run with multiple hypermedias and a query option', () => {
-      return expect(actor.run(
-        { argv: [ hypermedia, hypermedia, '-q', queryString ], env: {}, stdin: new PassThrough() },
-      ))
-        .resolves.toBeTruthy();
-    });
-
-    it('should run with multiple tagged hypermedias and a query option', () => {
-      return expect(actor.run(
-        { argv: [ hypermedia2, hypermedia2, '-q', queryString ], env: {}, stdin: new PassThrough() },
-      ))
-        .resolves.toBeTruthy();
-    });
-
-    it('should not run with an hypermedia and a empty query file option', () => {
-      return expect(actor.run({ argv: [ hypermedia, '-f' ], env: {}, stdin: new PassThrough() }))
-        .rejects.toBeTruthy();
-    });
-
-    it('should not run with an hypermedia and a query file option to an invalid path', () => {
-      return expect(actor.run({ argv: [ hypermedia, '-f', `${__dirname}filedoesnotexist.sparql` ],
-        env: {},
-        stdin: new PassThrough() })).rejects.toBeTruthy();
-    });
-
-    it('should run with query and a config file option from argv', () => {
-      return actor.run({ argv: [ queryString, '-c', `${__dirname}/assets/config.json` ],
-        env: {},
-        stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    describe('getScriptOutput', () => {
-      it('should return the fallback for a failing command', () => {
-        return expect(ActorInitSparql.getScriptOutput('acommandthatdefinitelydoesnotexist', 'fallback'))
-          .resolves.toEqual('fallback');
-      });
     });
 
     describe('invalidateHttpCache', () => {
@@ -642,189 +297,35 @@ describe('ActorInitSparql', () => {
         expect(result).toHaveProperty('context');
         expect(result.context!.get('the-answer')).toEqual(42);
       });
-    });
 
-    it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
-      const ctx = { sources: []};
-      const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryResultBindings> result).bindings();
-      expect(array).toEqual([{ a: 'triple' }]);
-    });
+      it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
+        const ctx = { sources: []};
+        const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
+        const array = await (<IQueryResultBindings> result).bindings();
+        expect(array).toEqual([{ a: 'triple' }]);
+      });
 
-    it('bindings() should return empty list if no solutions', async() => {
-      const ctx = { sources: []};
-      // Set input empty
-      const input = new Readable({ objectMode: true });
-      input._read = () => {
-        input.push(null);
-      };
-      mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-        Promise.resolve({ bindingsStream: input }) :
-        Promise.reject(new Error('a'));
-      const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryResultBindings> result).bindings();
-      expect(array).toEqual([]);
-    });
+      it('bindings() should return empty list if no solutions', async() => {
+        const ctx = { sources: []};
+        // Set input empty
+        const input = new Readable({ objectMode: true });
+        input._read = () => {
+          input.push(null);
+        };
+        mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
+          Promise.resolve({ bindingsStream: input }) :
+          Promise.reject(new Error('a'));
+        const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
+        const array = await (<IQueryResultBindings> result).bindings();
+        expect(array).toEqual([]);
+      });
 
-    it('should return a rejected promise on an invalid request', () => {
-      const ctx = { sources: []};
-      // Make it reject instead of reading input
-      mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
-      return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
-    });
-
-    it('should set datetime on the -d option', async() => {
-      const dt: Date = new Date();
-      const med: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
-      };
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: med,
-          mediatorSparqlSerializeMediaTypeCombiner: med,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: med,
-          name: 'actor',
-          queryString },
-      );
-      expect(await actor.run({
-        argv: [ hypermedia, queryString, '-d', dt.toISOString() ],
-        env: {},
-        stdin: new PassThrough(),
-      })).toBeTruthy();
-    });
-
-    it('should set logger on the -l option', async() => {
-      const med: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.context.get(KeysCore.log) }}),
-      };
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: med,
-          mediatorSparqlSerializeMediaTypeCombiner: med,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: med,
-          name: 'actor',
-          queryString },
-      );
-      expect((await actor.run({
-        argv: [ hypermedia, queryString, '-l', 'warn' ],
-        env: {},
-        stdin: new PassThrough(),
-      })).stdout).toMatchObject({ level: 'warn' });
-    });
-
-    it('should set baseIRI on the -b option', () => {
-      const relativeQuery = `
-select * where {
-graph <exists02.ttl> {
-  ?s ?p ex:o1
-  filter exists { ?s ?p ex:o2 }
-}
-`;
-      const baseIRI = 'http://example.org';
-      return actor.run({ argv: [ hypermedia, '-q', relativeQuery, '-b', baseIRI ], env: {}, stdin: new PassThrough() })
-        .then(result => {
-          return new Promise((resolve, reject) => {
-            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
-            (<any> result).stdout.on('end', resolve);
-          });
-        });
-    });
-
-    it('should set proxy on the -p option', async() => {
-      const proxy = 'http://proxy.org/';
-      const med: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
-      };
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: med,
-          mediatorSparqlSerializeMediaTypeCombiner: med,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: med,
-          name: 'actor',
-          queryString },
-      );
-      const spy = jest.spyOn(actor, 'query');
-      expect(await actor.run({
-        argv: [ hypermedia, queryString, '-p', proxy ],
-        env: {},
-        stdin: new PassThrough(),
-      })).toBeTruthy();
-      expect(spy.mock.calls[0][1]['@comunica/actor-http-proxy:httpProxyHandler'])
-        .toEqual(new ProxyHandlerStatic('http://proxy.org/'));
-    });
-
-    it('should set leniency on the --lenient flag', async() => {
-      const med: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
-      };
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize: med,
-          mediatorSparqlSerializeMediaTypeCombiner: med,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: med,
-          name: 'actor',
-          queryString },
-      );
-      const spy = jest.spyOn(actor, 'query');
-      expect(await actor.run({
-        argv: [ hypermedia, queryString, '--lenient' ],
-        env: {},
-        stdin: new PassThrough(),
-      })).toBeTruthy();
-      expect(spy.mock.calls[0][1]['@comunica/actor-init-sparql:lenient']).toBeTruthy();
-    });
-
-    it('should set the destination with the --to option', async() => {
-      actor = new ActorInitSparql(
-        { bus,
-          contextKeyShortcuts,
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          queryString },
-      );
-      const spy = jest.spyOn(actor, 'query');
-      expect(await actor.run({
-        argv: [ hypermedia, queryString, '--to', 'http://target.com/' ],
-        env: {},
-        stdin: new PassThrough(),
-      })).toBeTruthy();
-      expect(spy.mock.calls[0][1]['@comunica/bus-rdf-update-quads:destination']).toEqual('http://target.com/');
+      it('should return a rejected promise on an invalid request', () => {
+        const ctx = { sources: []};
+        // Make it reject instead of reading input
+        mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
+        return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
+      });
     });
 
     describe('getResultMediaTypeFormats', () => {
@@ -849,6 +350,665 @@ graph <exists02.ttl> {
         );
         return expect(actor.getResultMediaTypeFormats())
           .resolves.toEqual({ data: 'DATA' });
+      });
+    });
+
+    describe('test', () => {
+      it('should test', () => {
+        return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBeTruthy();
+      });
+    });
+
+    describe('run', () => {
+      it('emits to stderr for no argv', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('evaluates SPARQL queries');
+        expect(stderr).toContain('At least one source and query must be provided');
+      });
+
+      it('handles the -v options', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ '-v' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('Comunica Init Actor');
+        expect(stderr).toContain('dev');
+      });
+
+      it('handles the --version option', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ '--version' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('Comunica Init Actor');
+        expect(stderr).toContain('dev');
+      });
+
+      it('handles the -v option when not in a dev environment', async() => {
+        jest.spyOn(CliArgsHandlerBase, 'isDevelopmentEnvironment').mockReturnValue(false);
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ '-v' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('Comunica Init Actor');
+        expect(stderr).not.toContain('dev');
+      });
+
+      it('handles the -h option', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ '-h' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('evaluates SPARQL queries');
+        expect(stderr).toContain('At least one source and query must be provided');
+      });
+
+      it('handles the --help option', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ '--help' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('evaluates SPARQL queries');
+        expect(stderr).toContain('At least one source and query must be provided');
+      });
+
+      it('handles the --listformats option', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ '--listformats' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain('mediaTypes');
+      });
+
+      it('handles the media type option -t', async() => {
+        const spy = jest.spyOn(actor, 'resultToString');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, queryString, '-t', 'testtype' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(expect.anything(), 'testtype', expect.anything());
+      });
+
+      it('handles the old inline context form', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ `{ "bla": true }`, 'Q' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith('Q', {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysCore.log]: expect.any(LoggerPretty),
+          bla: true,
+        });
+      });
+
+      it('handles a hypermedia source and query', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('emits to stderr for a hypermedia source without a query', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('evaluates SPARQL queries');
+        expect(stderr).toContain('At least one source and query must be provided');
+      });
+
+      it('rejects for a hypermedia source and an invalid query', async() => {
+        await expect(actor.run({
+          argv: [ sourceHypermedia, 'INVALID' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).rejects.toThrowError('Invalid query');
+      });
+
+      it('handles a hypermedia source and query option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('emits to stderr with a hypermedia source and a empty query option', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('evaluates SPARQL queries');
+        expect(stderr).toContain('At least one source and query must be provided');
+      });
+
+      it('handles a hypermedia source and query file option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-f', `${__dirname}/assets/all-100.sparql` ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(`SELECT * WHERE {
+  ?s ?p ?o
+}
+LIMIT 100
+`, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('emits to stderr with a hypermedia source and a empty query file option', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-f' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stderr);
+        expect(stderr).toContain('evaluates SPARQL queries');
+        expect(stderr).toContain('At least one source and query must be provided');
+      });
+
+      it('rejects with a hypermedia source and a query file option to an invalid path', async() => {
+        await expect(actor.run({ argv: [ sourceHypermedia, '-f', `${__dirname}filedoesnotexist.sparql` ],
+          env: {},
+          stdin: new PassThrough() })).rejects.toThrowError('no such file or directory');
+      });
+
+      it('handles a tagged hypermedia source and query option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermediaTagged, '-q', queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('handles credentials in url and query option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermediaAuth, '-q', queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{
+            value: sourceHypermedia,
+            context: ActionContext({
+              [KeysHttp.auth]: 'username:passwd',
+            }),
+          }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('handles a tagged hypermedia and credentials in url and query option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermediaTaggedAuth, '-q', queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{
+            value: sourceHypermedia,
+            context: ActionContext({
+              [KeysHttp.auth]: 'username:passwd',
+            }),
+          }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('handles an other source type and query option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceOther, '-q', queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ type: 'other', value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('handles multiple hypermedia sources and a query option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, sourceHypermedia, '-q', queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('handles multiple tagged hypermedia sources and a query option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermediaTagged, sourceHypermediaTagged, '-q', queryString ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('handles query and a config file option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ queryString, '-c', `${__dirname}/assets/config.json` ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          entrypoint: 'http://example.org/',
+          [KeysCore.log]: expect.any(LoggerPretty),
+        });
+      });
+
+      it('handles the datetime -d option', async() => {
+        const dt: Date = new Date();
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '-d', dt.toISOString() ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysHttpMemento.datetime]: dt,
+        });
+      });
+
+      it('handles the logger -l option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: new LoggerPretty({ level: 'warn' }),
+        });
+      });
+
+      it('does not handle the logger -l option if the context already has a logger', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
+          env: {},
+          stdin: new PassThrough(),
+          context: ActionContext({
+            log: 'LOGGER',
+          }),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: 'LOGGER',
+        });
+      });
+
+      it('handles the baseIRI -b option', async() => {
+        const baseIRI = 'http://example.org';
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '-b', baseIRI ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.baseIRI]: baseIRI,
+        });
+      });
+
+      it('handles the proxy -p option', async() => {
+        const proxy = 'http://proxy.org/';
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '-p', proxy ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysHttpProxy.httpProxyHandler]: new ProxyHandlerStatic(proxy),
+        });
+      });
+
+      it('handles the --lenient flag', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--lenient' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.lenient]: true,
+        });
+      });
+
+      it('handles the destination --to option', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],
+          env: {},
+          stdin: new PassThrough(),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysRdfUpdateQuads.destination]: 'http://target.com/',
+        });
+      });
+
+      it('handles a cliArgsHandler', async() => {
+        const spy = jest.spyOn(actor, 'query');
+        const cliArgsHandler: ICliArgsHandler = {
+          populateYargs(args) {
+            return args.options({
+              bla: {
+                description: 'blabla',
+              },
+            });
+          },
+          async handleArgs(args, ctx) {
+            ctx.bla = args.bla;
+          },
+        };
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--bla', 'BLA' ],
+          env: {},
+          stdin: new PassThrough(),
+          context: ActionContext({
+            [KeysInitSparql.cliArgsHandlers]: [ cliArgsHandler ],
+          }),
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spy).toHaveBeenCalledWith(queryString, {
+          [KeysInitSparql.queryFormat]: 'sparql',
+          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.cliArgsHandlers]: [ cliArgsHandler ],
+          bla: 'BLA',
+        });
+      });
+
+      describe('output format', () => {
+        it('defaults to application/json for bindingsStream', async() => {
+          const m1: any = {
+            mediate: (arg: any) => Promise.resolve({ type: 'bindings', bindingsStream: true }),
+          };
+          const m2: any = {
+            mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
+          };
+          const actorThis = new ActorInitSparql(
+            { bus,
+              contextKeyShortcuts,
+              logger,
+              mediatorContextPreprocess,
+              mediatorHttpInvalidate,
+              mediatorOptimizeQueryOperation,
+              mediatorQueryOperation: m1,
+              mediatorSparqlParse,
+              mediatorSparqlSerialize: m2,
+              mediatorSparqlSerializeMediaTypeCombiner: m2,
+              mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
+              name: 'actor',
+              queryString },
+          );
+          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough() })).stdout)
+            .toEqual('application/json');
+        });
+
+        it('defaults to application/trig for quadStream', async() => {
+          const m1: any = {
+            mediate: (arg: any) => Promise.resolve({ type: 'quads', quadStream: true }),
+          };
+          const m2: any = {
+            mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
+          };
+          const actorThis = new ActorInitSparql(
+            { bus,
+              contextKeyShortcuts,
+              logger,
+              mediatorContextPreprocess,
+              mediatorHttpInvalidate,
+              mediatorOptimizeQueryOperation,
+              mediatorQueryOperation: m1,
+              mediatorSparqlParse,
+              mediatorSparqlSerialize: m2,
+              mediatorSparqlSerializeMediaTypeCombiner: m2,
+              mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
+              name: 'actor',
+              queryString },
+          );
+          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough() })).stdout)
+            .toEqual('application/trig');
+        });
+
+        it('defaults to simple for boolean', async() => {
+          const m1: any = {
+            mediate: (arg: any) => Promise.resolve({ type: 'boolean', booleanResult: Promise.resolve(true) }),
+          };
+          const m2: any = {
+            mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
+          };
+          const actorThis = new ActorInitSparql(
+            { bus,
+              contextKeyShortcuts,
+              logger,
+              mediatorContextPreprocess,
+              mediatorHttpInvalidate,
+              mediatorOptimizeQueryOperation,
+              mediatorQueryOperation: m1,
+              mediatorSparqlParse,
+              mediatorSparqlSerialize: m2,
+              mediatorSparqlSerializeMediaTypeCombiner: m2,
+              mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
+              name: 'actor',
+              queryString },
+          );
+          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough() })).stdout)
+            .toEqual('simple');
+        });
+      });
+
+      describe('for a fixed query', () => {
+        it('handles a single source', async() => {
+          const spy = jest.spyOn(actorFixedQuery, 'query');
+          const stdout = await stringifyStream(<any> (await actorFixedQuery.run({
+            argv: [ 'SOURCE' ],
+            env: {},
+            stdin: new PassThrough(),
+          })).stdout);
+          expect(stdout).toContain(`{"a":"triple"}`);
+          expect(spy).toHaveBeenCalledWith(queryString, {
+            [KeysInitSparql.queryFormat]: 'sparql',
+            [KeysInitSparql.queryTimestamp]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
+            [KeysCore.log]: expect.any(LoggerPretty),
+          });
+        });
+
+        it('handles the query format option -i', async() => {
+          const spy = jest.spyOn(actorFixedQuery, 'query');
+          const stdout = await stringifyStream(<any> (await actorFixedQuery.run({
+            argv: [ 'SOURCE', '-i', 'graphql' ],
+            env: {},
+            stdin: new PassThrough(),
+          })).stdout);
+          expect(stdout).toContain(`{"a":"triple"}`);
+          expect(spy).toHaveBeenCalledWith(queryString, {
+            [KeysInitSparql.queryFormat]: 'graphql',
+            [KeysInitSparql.queryTimestamp]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
+            [KeysCore.log]: expect.any(LoggerPretty),
+          });
+        });
+
+        it('emits to stderr for no args', async() => {
+          const stderr = await stringifyStream(<any> (await actorFixedQuery.run({
+            argv: [],
+            env: {},
+            stdin: new PassThrough(),
+          })).stderr);
+          expect(stderr).toContain('evaluates SPARQL queries');
+          expect(stderr).toContain('At least one source and query must be provided');
+        });
+
+        it('emits to stderr for no argv when the default query is falsy', async() => {
+          const actorThis = new ActorInitSparql(
+            { bus,
+              contextKeyShortcuts,
+              logger,
+              mediatorContextPreprocess,
+              mediatorHttpInvalidate,
+              mediatorOptimizeQueryOperation,
+              mediatorQueryOperation,
+              mediatorSparqlParse,
+              mediatorSparqlSerialize,
+              mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+              mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+              name: 'actor',
+              queryString: <any> null },
+          );
+
+          const stderr = await stringifyStream(<any> (await actorThis.run({
+            argv: [],
+            env: {},
+            stdin: new PassThrough(),
+          })).stderr);
+          expect(stderr).toContain('evaluates SPARQL queries');
+          expect(stderr).toContain('At least one source and query must be provided');
+        });
+      });
+
+      describe('for a fixed query and context', () => {
+        it('handles no args', async() => {
+          const spy = jest.spyOn(actorFixedQueryAndContext, 'query');
+          const stdout = await stringifyStream(<any> (await actorFixedQueryAndContext.run({
+            argv: [],
+            env: {},
+            stdin: new PassThrough(),
+          })).stdout);
+          expect(stdout).toContain(`{"a":"triple"}`);
+          expect(spy).toHaveBeenCalledWith(queryString, {
+            [KeysInitSparql.queryFormat]: 'sparql',
+            [KeysInitSparql.queryTimestamp]: expect.any(Date),
+            [KeysCore.log]: expect.any(LoggerPretty),
+            hypermedia: 'http://example.org/',
+          });
+        });
+      });
+
+      describe('for a fixed context', () => {
+        it('emits to stderr for no argv', async() => {
+          const stderr = await stringifyStream(<any> (await actorFixedContext.run({
+            argv: [],
+            env: {},
+            stdin: new PassThrough(),
+          })).stderr);
+          expect(stderr).toContain('evaluates SPARQL queries');
+          expect(stderr).toContain('At least one source and query must be provided');
+        });
       });
     });
   });
@@ -940,48 +1100,6 @@ graph <exists02.ttl> {
       // Make it reject instead of reading input
       mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
       return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
-    });
-  });
-
-  describe('getSourceObjectFromString', () => {
-    it('should correctly parse normal URL', () => {
-      const hypermedia = 'http://example.org/';
-      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/' });
-    });
-
-    it('should work with type annotation', () => {
-      const hypermedia = 'hypermedia@http://example.org/';
-      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', type: 'hypermedia' });
-    });
-
-    it('should work with authorization in url', () => {
-      const hypermedia = 'http://username:passwd@example.org/';
-      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', context: ActionContext({ [KeysHttp.auth]: 'username:passwd' }) });
-    });
-
-    it('should work with type annotation and authorization in url', () => {
-      const hypermedia = 'hypermedia@http://username:passwd@example.org/';
-      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/',
-          type: 'hypermedia',
-          context: ActionContext({ [KeysHttp.auth]: 'username:passwd' }) });
-    });
-
-    it('should work with empty username in authorization in url', () => {
-      const hypermedia = 'http://:passwd@example.org/';
-      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/',
-          context: ActionContext({ [KeysHttp.auth]: ':passwd' }) });
-    });
-
-    it('should work with empty password in authorization in url', () => {
-      const hypermedia = 'http://username:@example.org/';
-      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/',
-          context: ActionContext({ [KeysHttp.auth]: 'username:' }) });
     });
   });
 });
