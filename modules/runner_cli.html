@@ -123,13 +123,13 @@
 					<a name="runArgs" class="tsd-anchor"></a>
 					<h3>run<wbr>Args</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<span class="tsd-signature-symbol">(</span>configResourceUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, argv<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, stdin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.ReadStream</span>, stdout<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.WriteStream</span>, stderr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.WriteStream</span>, exit<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">never</span>, env<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.ProcessEnv</span>, runnerUri<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, properties<span class="tsd-signature-symbol">?: </span><a href="../interfaces/runner.ISetupProperties.html" class="tsd-signature-type" data-tsd-kind="Interface">ISetupProperties</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<span class="tsd-signature-symbol">(</span>configResourceUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, argv<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, stdin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.ReadStream</span>, stdout<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.WriteStream</span>, stderr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.WriteStream</span>, exit<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, env<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.ProcessEnv</span>, runnerUri<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, properties<span class="tsd-signature-symbol">?: </span><a href="../interfaces/runner.ISetupProperties.html" class="tsd-signature-type" data-tsd-kind="Interface">ISetupProperties</a>, context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/28a3c44/packages/runner-cli/lib/ArgsRunner.ts#L6">packages/runner-cli/lib/ArgsRunner.ts:6</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/8155391/packages/runner-cli/lib/ArgsRunner.ts#L7">packages/runner-cli/lib/ArgsRunner.ts:7</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -150,11 +150,11 @@
 									<h5>stderr: <span class="tsd-signature-type">NodeJS.WriteStream</span></h5>
 								</li>
 								<li>
-									<h5>exit: <span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">never</span></h5>
+									<h5>exit: <span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">never</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
@@ -164,7 +164,7 @@
 															<h5><span class="tsd-flag ts-flagOptional">Optional</span> code: <span class="tsd-signature-type">number</span></h5>
 														</li>
 													</ul>
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">never</span></h4>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 												</li>
 											</ul>
 										</li>
@@ -179,6 +179,9 @@
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> properties: <a href="../interfaces/runner.ISetupProperties.html" class="tsd-signature-type" data-tsd-kind="Interface">ISetupProperties</a></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -188,13 +191,13 @@
 					<a name="runArgsInProcess" class="tsd-anchor"></a>
 					<h3>run<wbr>Args<wbr>InProcess</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<wbr>InProcess<span class="tsd-signature-symbol">(</span>moduleRootPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, defaultConfigPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<wbr>InProcess<span class="tsd-signature-symbol">(</span>moduleRootPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, defaultConfigPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a><span class="tsd-signature-symbol">; </span>onDone<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/28a3c44/packages/runner-cli/lib/ArgsRunner.ts#L36">packages/runner-cli/lib/ArgsRunner.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/8155391/packages/runner-cli/lib/ArgsRunner.ts#L40">packages/runner-cli/lib/ArgsRunner.ts:40</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -205,6 +208,30 @@
 								<li>
 									<h5>defaultConfigPath: <span class="tsd-signature-type">string</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-symbol">{ </span>context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a><span class="tsd-signature-symbol">; </span>onDone<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></h5>
+										</li>
+										<li class="tsd-parameter">
+											<h5>on<wbr>Done<span class="tsd-signature-symbol">: </span>function</h5>
+											<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon">on<wbr>Done<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<aside class="tsd-sources">
+														<ul>
+															<li>Defined in <a href="https://github.com/comunica/comunica/blob/8155391/packages/runner-cli/lib/ArgsRunner.ts#L43">packages/runner-cli/lib/ArgsRunner.ts:43</a></li>
+														</ul>
+													</aside>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -214,19 +241,43 @@
 					<a name="runArgsInProcessStatic" class="tsd-anchor"></a>
 					<h3>run<wbr>Args<wbr>InProcess<wbr>Static</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<wbr>InProcess<wbr>Static<span class="tsd-signature-symbol">(</span>actor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<wbr>InProcess<wbr>Static<span class="tsd-signature-symbol">(</span>actor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a><span class="tsd-signature-symbol">; </span>onDone<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/28a3c44/packages/runner-cli/lib/ArgsRunner.ts#L53">packages/runner-cli/lib/ArgsRunner.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/8155391/packages/runner-cli/lib/ArgsRunner.ts#L69">packages/runner-cli/lib/ArgsRunner.ts:69</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>actor: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-symbol">{ </span>context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a><span class="tsd-signature-symbol">; </span>onDone<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></h5>
+										</li>
+										<li class="tsd-parameter">
+											<h5>on<wbr>Done<span class="tsd-signature-symbol">: </span>function</h5>
+											<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon">on<wbr>Done<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<aside class="tsd-sources">
+														<ul>
+															<li>Defined in <a href="https://github.com/comunica/comunica/blob/8155391/packages/runner-cli/lib/ArgsRunner.ts#L69">packages/runner-cli/lib/ArgsRunner.ts:69</a></li>
+														</ul>
+													</aside>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
