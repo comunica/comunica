@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-metadata",
-  "version": "1.21.1",
+  "version": "1.22.0",
   "description": "A comunica bus for rdf-metadata events.",
   "lsd:module": true,
   "main": "index.js",
@@ -37,7 +37,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.21.1"
+    "@comunica/core": "^1.22.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",

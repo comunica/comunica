@@ -1,6 +1,6 @@
 {
   "name": "@comunica/data-factory",
-  "version": "1.21.1",
+  "version": "1.22.0",
   "description": "RDFJS DataFactory utilities",
   "main": "index.js",
   "engines": {

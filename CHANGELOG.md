@@ -1,6 +1,43 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.22.0"></a>
+## [v1.22.0](https://github.com/comunica/comunica/compare/v1.21.3...v1.22.0) - 2021-08-30
+
+### Added
+* [Add support for SPARQL extension functions](https://github.com/comunica/comunica/commit/3e52660b7cafc63cbc84062035938c607ec0e0d5)
+* [Allow custom fetch function to be provided via context](https://github.com/comunica/comunica/commit/a89f88fc1bf63c6e5d8ec7d5aee4199cd8b01e58)
+* [Support AbortControllers in native http actor](https://github.com/comunica/comunica/commit/23baf6677cd6036b729a0fbd77a04e02373fc2ea)
+* [Report FILTER errors as warnings in the logger, Closes #767](https://github.com/comunica/comunica/commit/cf12a9af63078917c0577f1d4b7d023506eda9e5)
+* [Add SPARQL endpoint-based hypermedia update actor](https://github.com/comunica/comunica/commit/299848579c6f8d6570a169d7288d36849b806213)
+* Allow resource creation via HTTP PUT:
+  * [Add RDF update hypermedia actor for LDP PUT destinations](https://github.com/comunica/comunica/commit/db92b17a541f5121a03c0ab6976dbfe9841f5e1e)
+  * [Configure RDF update hypermedia actor for LDP PUT destinations](https://github.com/comunica/comunica/commit/d78c2a1b543d0dfcfd244780f6b1c730a6ba966a)
+  * [Allow RDF dereference actors to return on non-200 responses](https://github.com/comunica/comunica/commit/620a346794b428b281dd36831ee7d2d4a2407527)
+  * [Add metadata extractor for HTTP Accept-Put header](https://github.com/comunica/comunica/commit/4fdacaacad987647e008422ec04b63c20dc8d7d3)
+  * [Add metadata extractor for HTTP Allow header](https://github.com/comunica/comunica/commit/40224738062cceb7634ebbe2b81911ab5516c458)
+
+### Changed
+* [Refactor CLI arguments handling using yargs](https://github.com/comunica/comunica/commit/8155391e9dba0c4d9d04c08e3abc0999a11f329c)
+* [Optimize node-fetch HTTP actor and set as default](https://github.com/comunica/comunica/commit/a96547be4b112887a4e164496e2c6540737d8391)
+* [Include response body in dereference errors](https://github.com/comunica/comunica/commit/f6c2d5b2fe920808cf9ab98071da769f763c0515)
+* [Bump fetch-sparql-endpoint with improved error reporting for SPARQL endpoints](https://github.com/comunica/comunica/commit/b859e509a4e3d53c5348546978050c30f3d85f93)
+* [Update dependency htmlparser2 to v7 (#851)](https://github.com/comunica/comunica/commit/2291166a055549d5b30a0072ed3937d6d8e95cf4)
+* [Migrate to @rdfjs/types](https://github.com/comunica/comunica/commit/dfb903079605ce898f7206b0125eb60e89f993c8)
+* [Bump to sparqlalgebrajs 3](https://github.com/comunica/comunica/commit/51a34ac3ff150a48958d02d7828a092ae6a693dd)
+* [Notify downstream clients on worker timeout](https://github.com/comunica/comunica/commit/16191d399fe0cbd2ebd08cdadb2cd0c509bb9e79)
+* [Bump fetch-sparql-endpoint with AbortControllers](https://github.com/comunica/comunica/commit/c03af59507b9ad7aeedaa2f5251cb72fc0ef09bf)
+* [Make HTTP accept headers deterministic](https://github.com/comunica/comunica/commit/5ae9883a491aa325d31ad6b27de0a0a88b898d13)
+* [Add URL-based heuristic to determine SPARQL endpoints to top-level actor](https://github.com/comunica/comunica/commit/d1fd3aa0794c1fc1109b58335f1853e373ac8cb2)
+
+### Fixed
+* [Update to AsyncIterator 3.2.0 to fix memory issue](https://github.com/comunica/comunica/commit/b0aeb67743eb187ddfb4e6fe8b42df240f3a9de7)
+* [Fix http proxy not working with immutable node-fetch response](https://github.com/comunica/comunica/commit/da96cca3d667ec2439445f04408888faf88290cb)
+* [Fix invalid hash implementation for hash-join](https://github.com/comunica/comunica/commit/6b26e80ca3c06b19a153ce15ff5d2a07a833c40d)
+* [Fix node-fetch actor not supporting body.cancel](https://github.com/comunica/comunica/commit/bd06266b7f616880554e98f25b46776046ab7518)
+* [Do not reset sparql.js blank-node counter (Closes #836)](https://github.com/comunica/comunica/commit/38e33bf137cbd4836daea450142d4915a633371d)
+* [Fix SPARQL-based update actors not being able to handle quads](https://github.com/comunica/comunica/commit/65695538c92f0da329cd1c398a6736c348422c84)
+
 <a name="v1.21.3"></a>
 ## [v1.21.3](https://github.com/comunica/comunica/compare/v1.21.2...v1.21.3) - 2021-06-18
 

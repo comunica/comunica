@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-optimize-query-operation",
-  "version": "1.21.1",
+  "version": "1.22.0",
   "description": "A comunica bus for optimize-query-operation events.",
   "lsd:module": true,
   "main": "index.js",
@@ -31,14 +31,14 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/types": "^1.21.1",
+    "@comunica/types": "^1.22.0",
     "sparqlalgebrajs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.4.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.21.1"
+    "@comunica/core": "^1.22.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
