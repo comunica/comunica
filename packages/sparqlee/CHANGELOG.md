@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.10.0"></a>
+## [v1.10.0](https://github.com/comunica/sparqlee/compare/v1.9.0...v1.10.0) - 2021-08-30
+
+### Changed
+* [Migrate to @rdfjs/types](https://github.com/comunica/sparqlee/commit/0170205f6a06c4125138a6730f0ca736f65e874e)
+
 <a name="v1.9.0"></a>
 ## [v1.9.0](https://github.com/comunica/sparqlee/compare/v1.8.0...v1.9.0) - 2021-08-03
 
