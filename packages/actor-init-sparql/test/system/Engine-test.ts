@@ -3,7 +3,6 @@
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
 jest.unmock('follow-redirects');
 
-import { KeysInitSparql } from '@comunica/context-entries';
 import type * as RDF from '@rdfjs/types';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
@@ -125,33 +124,33 @@ describe('System test: ActorInitSparql', () => {
 
         it('rejects when record does not match', async() => {
           const context = <any> { sources: [ store ]};
-          context[KeysInitSparql.extensionFunctions] = baseFunctions;
+          context.extensionFunctions = baseFunctions;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ store ]};
-          context[KeysInitSparql.extensionFunctionCreator] = () => null;
+          context.extensionFunctionCreator = () => null;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('with results and pointless custom filter given by creator', async() => {
           const context = <any> { sources: [ store ]};
-          context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
+          context.extensionFunctionCreator = baseFunctionCreator;
           const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(result.bindingsStream)).length).toEqual(store.size);
         });
 
         it('with results and pointless custom filter given by record', async() => {
           const context = <any> { sources: [ store ]};
-          context[KeysInitSparql.extensionFunctions] = baseFunctions;
+          context.extensionFunctions = baseFunctions;
           const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(result.bindingsStream)).length).toEqual(4);
         });
 
         it('with results but all filtered away', async() => {
           const context = <any> { sources: [ store ]};
-          context[KeysInitSparql.extensionFunctionCreator] = () => () =>
+          context.extensionFunctionCreator = () => () =>
             DF.literal('false', booleanType);
           const result = <IQueryResultBindings> await engine.query(baseQuery('rejectAll'), context);
           expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
@@ -159,8 +158,8 @@ describe('System test: ActorInitSparql', () => {
 
         it('throws error when supplying both record and creator', async() => {
           const context = <any> { sources: [ store ]};
-          context[KeysInitSparql.extensionFunctions] = baseFunctions;
-          context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
+          context.extensionFunctions = baseFunctions;
+          context.extensionFunctionCreator = baseFunctionCreator;
           await expect(engine.query(baseQuery(funcAllow), context)).rejects
             .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
         });
@@ -173,7 +172,7 @@ describe('System test: ActorInitSparql', () => {
               BIND (func:to-upper-case(?o) AS ?caps)
         }
           `;
-          context[KeysInitSparql.extensionFunctions] = {
+          context.extensionFunctions = {
             async 'http://example.org/functions#to-upper-case'(args: RDF.Term[]) {
               const arg = args[0];
               if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
@@ -213,7 +212,7 @@ describe('System test: ActorInitSparql', () => {
           });
 
           it('can be evaluated', async() => {
-            context[KeysInitSparql.extensionFunctions] = {
+            context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(false),
             };
             const result = <IQueryResultBindings> await engine.query(complexQuery, context);
@@ -221,7 +220,7 @@ describe('System test: ActorInitSparql', () => {
           });
 
           it('can be truly async', async() => {
-            context[KeysInitSparql.extensionFunctions] = {
+            context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(true),
             };
             const result = <IQueryResultBindings> await engine.query(complexQuery, context);
