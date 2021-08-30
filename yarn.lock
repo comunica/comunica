@@ -2348,7 +2348,7 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.3.2.tgz#fc8c2825e4ed2142473b4a81064e6e081463d1b3"
   integrity sha512-eI5Yrz3Qv4KPUa/nSIAi0h+qX0XyewOliug5F2QAtuRg6Kjg6jfmxe1GIwoIRhZspD1A0RP8ANrPwvEXXtRFog==
 
-"@types/rdf-js@*", "@types/rdf-js@^4.0.0":
+"@types/rdf-js@*":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-4.0.2.tgz#a7eb0ff009915db2c980df97533d3ba7acad0c4b"
   integrity sha512-soR/+RMogGiDU1lrpuQl5ZL55/L1eq/JlR2dWx052Uh/RYs9okh3XZHFlIJXHZqjqyjEn4WdbOMfBj7vvc2WVQ==
@@ -10308,22 +10308,22 @@ sparqlalgebrajs@^3.0.0, sparqlalgebrajs@^3.0.1, sparqlalgebrajs@^3.0.2:
     rdf-string "^1.6.0"
     sparqljs "^3.4.2"
 
-sparqlee@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.9.0.tgz#abc2501e8b3ef05392a9bd330c5f1228ac760fa4"
-  integrity sha512-MXm5JRq1Ww+vsKIP1j8Df9JFAUsOqR5J26A5+vpt//V8bQzj95CfjJWNOweOFnPWmDwBpOhmt6WVIyvZXwW8iA==
+sparqlee@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.10.0.tgz#e1551baccd4e9d8f2cd93a0ec41c3da9ba4fef5b"
+  integrity sha512-rKuyXIIyEsRsACZC86yrN0m/rUhKZQl6HfqeIqAC+5WXE08PB/tGQ9RPxiwo+P6u6QEk2Sd/h6Yq1pnT0607JA==
   dependencies:
-    "@types/rdf-js" "^4.0.0"
+    "@rdfjs/types" "*"
     "@types/spark-md5" "^3.0.2"
     "@types/uuid" "^8.0.0"
     decimal.js "^10.2.0"
     hash.js "^1.1.7"
     immutable "^3.8.2"
-    rdf-data-factory "^1.0.3"
-    rdf-string "^1.5.0"
+    rdf-data-factory "^1.1.0"
+    rdf-string "^1.6.0"
     relative-to-absolute-iri "^1.0.6"
     spark-md5 "^3.0.1"
-    sparqlalgebrajs "^3.0.1"
+    sparqlalgebrajs "^3.0.2"
     uuid "^8.0.0"
 
 sparqljs@^3.1.2, sparqljs@^3.4.1, sparqljs@^3.4.2:
