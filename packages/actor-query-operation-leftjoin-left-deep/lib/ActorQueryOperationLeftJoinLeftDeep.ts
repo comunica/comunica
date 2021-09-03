@@ -56,17 +56,17 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
     // Only the left stream will be used.
     // The right stream is ignored and only its metadata and variables are used.
     const left = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
-      .mediate({ operation: pattern.left, context }));
+      .mediate({ operation: pattern.input[0], context }));
     const right = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
-      .mediate({ operation: pattern.right, context }));
+      .mediate({ operation: pattern.input[1], context }));
 
     // Close the right stream, since we don't need that one
     right.bindingsStream.close();
 
     // If an expression was defined, wrap the right operation in a filter expression.
     const rightOperation = pattern.expression ?
-      ActorQueryOperationLeftJoinLeftDeep.FACTORY.createFilter(pattern.right, pattern.expression) :
-      pattern.right;
+      ActorQueryOperationLeftJoinLeftDeep.FACTORY.createFilter(pattern.input[1], pattern.expression) :
+      pattern.input[1];
 
     // Create a left-deep stream with left and right.
     const bindingsStream = ActorQueryOperationLeftJoinLeftDeep.createLeftDeepStream(

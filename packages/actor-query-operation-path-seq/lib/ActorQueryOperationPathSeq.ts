@@ -7,9 +7,10 @@ import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { ActionContext, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 import type { Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
-
+import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
+
 /**
  * A comunica Path Seq Query Operation Actor.
  */
@@ -23,31 +24,40 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Seq> path.predicate;
-    const variable = this.generateVariable(path);
-    const varName = termToString(variable);
 
-    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
-      this.mediatorQueryOperation.mediate({
-        context, operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, variable, path.graph),
-      }),
-      this.mediatorQueryOperation.mediate({
-        context, operation: ActorAbstractPath.FACTORY.createPath(variable, predicate.right, path.object, path.graph),
-      }),
-    ])).map(op => ActorQueryOperation.getSafeBindings(op));
+    let joiner: RDF.Term = path.subject;
+    const generatedVariableNames: string[] = [];
+    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all(predicate.input
+      .map((subPredicate, i) => {
+        const nextJoiner = i === predicate.input.length - 1 ? path.object : this.generateVariable(path, `b${i}`);
+        const newOperation = this.mediatorQueryOperation.mediate({
+          context,
+          operation: ActorAbstractPath.FACTORY.createPath(joiner, subPredicate, nextJoiner, path.graph),
+        });
+
+        joiner = nextJoiner;
+        if (i < predicate.input.length - 1) {
+          generatedVariableNames.push(termToString(nextJoiner));
+        }
+
+        return newOperation;
+      })))
+      .map(ActorQueryOperation.getSafeBindings);
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
     // Remove the generated variable from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
-        push(item.delete(varName));
+        for (const generatedVariableName of generatedVariableNames) {
+          item = item.delete(generatedVariableName);
+        }
+        push(item);
         next();
       },
     });
 
     // Remove the generated variable from the list of variables
-    const variables = join.variables;
-    const indexOfVar = variables.indexOf(varName);
-    variables.splice(indexOfVar, 1);
+    const variables = join.variables.filter(variable => !generatedVariableNames.includes(variable));
     return { type: 'bindings', bindingsStream, variables, canContainUndefs: false };
   }
 }

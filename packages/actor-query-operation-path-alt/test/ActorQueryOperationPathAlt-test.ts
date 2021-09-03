@@ -72,7 +72,10 @@ describe('ActorQueryOperationPathAlt', () => {
     it('should support Alt paths', async() => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
-        factory.createAlt(factory.createLink(DF.namedNode('p1')), factory.createLink(DF.namedNode('p2'))),
+        factory.createAlt([
+          factory.createLink(DF.namedNode('p1')),
+          factory.createLink(DF.namedNode('p2')),
+        ]),
         DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));

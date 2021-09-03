@@ -19,16 +19,12 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Alt> path.predicate;
 
-    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
-      this.mediatorQueryOperation.mediate({
+    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all(predicate.input
+      .map(subPredicate => this.mediatorQueryOperation.mediate({
         context,
-        operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, path.object, path.graph),
-      }),
-      this.mediatorQueryOperation.mediate({
-        context,
-        operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.right, path.object, path.graph),
-      }),
-    ])).map(op => ActorQueryOperation.getSafeBindings(op));
+        operation: ActorAbstractPath.FACTORY.createPath(path.subject, subPredicate, path.object, path.graph),
+      }))))
+      .map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
     const variables = (<string[]> []).concat

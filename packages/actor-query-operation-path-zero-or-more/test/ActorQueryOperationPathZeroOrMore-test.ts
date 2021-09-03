@@ -24,12 +24,13 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
 
         if (arg.operation.type === 'union') {
           for (const name of QUAD_TERM_NAMES) {
-            if (arg.operation.left[name].termType === 'Variable' || arg.operation.left[name].termType === 'BlankNode') {
-              vars.push(termToString(arg.operation.left[name]));
+            if (arg.operation.input[0][name].termType === 'Variable' ||
+            arg.operation.input[0][name].termType === 'BlankNode') {
+              vars.push(termToString(arg.operation.input[0][name]));
             }
-            if (arg.operation.right[name].termType === 'Variable' ||
-            arg.operation.right[name].termType === 'BlankNode') {
-              vars.push(termToString(arg.operation.right[name]));
+            if (arg.operation.input[1][name].termType === 'Variable' ||
+            arg.operation.input[1][name].termType === 'BlankNode') {
+              vars.push(termToString(arg.operation.input[1][name]));
             }
           }
         } else {

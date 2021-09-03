@@ -20,10 +20,10 @@ export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperat
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const operation = Util.mapOperation(action.operation, {
       join(op: Algebra.Join, factory: Factory) {
-        if (op.left.type === 'bgp' && op.right.type === 'bgp') {
+        if (op.input.every(subInput => subInput.type === 'bgp')) {
           return {
             recurse: false,
-            result: factory.createBgp([ ...op.left.patterns, ...op.right.patterns ]),
+            result: factory.createBgp([].concat(...op.input.map(subInput => subInput.patterns))),
           };
         }
         return {

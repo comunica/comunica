@@ -177,10 +177,10 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createPath(
         termVariableA,
-        factory.createAlt(
+        factory.createAlt([
           factory.createNps([ DF.namedNode('A') ]),
           factory.createNps([ DF.namedNode('B') ]),
-        ),
+        ]),
         termVariableC,
         termNamedNode,
       ),
@@ -188,10 +188,10 @@ describe('materializeOperation', () => {
     ))
       .toEqual(factory.createPath(
         valueA,
-        factory.createAlt(
+        factory.createAlt([
           factory.createNps([ DF.namedNode('A') ]),
           factory.createNps([ DF.namedNode('B') ]),
-        ),
+        ]),
         termVariableC,
         termNamedNode,
       ));

@@ -52,20 +52,18 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
   public async runOperation(pattern: Algebra.Union, context: ActionContext):
   Promise<IActorQueryOperationOutputBindings> {
-    const outputs: IActorQueryOperationOutputBindings[] = (await Promise.all([
-      this.mediatorQueryOperation.mediate({ operation: pattern.left, context }),
-      this.mediatorQueryOperation.mediate({ operation: pattern.right, context }),
-    ])).map(ActorQueryOperation.getSafeBindings);
+    const outputs: IActorQueryOperationOutputBindings[] = (await Promise.all(pattern.input
+      .map(subOperation => this.mediatorQueryOperation.mediate({ operation: subOperation, context }))))
+      .map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
       (output: IActorQueryOperationOutputBindings) => output.bindingsStream,
     ), { autoStart: false });
-    const metadata: (() => Promise<Record<string, any>>) | undefined = outputs[0].metadata && outputs[1].metadata ?
+
+    const metadata: (() => Promise<Record<string, any>>) | undefined = outputs.every(output => output.metadata) ?
       () =>
-        Promise.all([
-          (<() => Promise<Record<string, any>>>outputs[0].metadata)(),
-          (<() => Promise<Record<string, any>>>outputs[1].metadata)(),
-        ]).then(ActorQueryOperationUnion.unionMetadata) :
+        Promise.all(outputs.map(output => (<() => Promise<Record<string, any>>>output.metadata)()))
+          .then(ActorQueryOperationUnion.unionMetadata) :
       undefined;
     const variables: string[] = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IActorQueryOperationOutputBindings) => output.variables),

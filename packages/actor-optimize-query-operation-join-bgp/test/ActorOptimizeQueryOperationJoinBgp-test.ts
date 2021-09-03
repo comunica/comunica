@@ -51,10 +51,10 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
     });
 
     it('should run on and not modify a join without inner BGPs', () => {
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-      );
+      ]);
       return expect(actor.run({ operation })).resolves.toMatchObject({ operation });
     });
 
@@ -63,10 +63,10 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         bgp1,
-      );
+      ]);
       return expect(actor.run({ operation })).resolves.toMatchObject({ operation });
     });
 
@@ -75,10 +75,10 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         bgp1,
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-      );
+      ]);
       return expect(actor.run({ operation })).resolves.toMatchObject({ operation });
     });
 
@@ -91,10 +91,10 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
         factory.createPattern(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
         factory.createPattern(DF.namedNode('s4'), DF.namedNode('p4'), DF.namedNode('o4')),
       ]);
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         bgp1,
         bgp2,
-      );
+      ]);
       const operationOut = factory.createBgp([
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),

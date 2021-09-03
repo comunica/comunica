@@ -245,7 +245,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      operation.left.rejectMetadata = true;
+      operation.input[0].rejectMetadata = true;
       const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
@@ -257,7 +257,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      operation.right.rejectMetadata = true;
+      operation.input[1].rejectMetadata = true;
       const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
@@ -269,8 +269,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      operation.left.rejectMetadata = true;
-      operation.right.rejectMetadata = true;
+      operation.input[0].rejectMetadata = true;
+      operation.input[1].rejectMetadata = true;
       const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });

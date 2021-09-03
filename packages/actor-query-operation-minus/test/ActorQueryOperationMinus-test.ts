@@ -85,17 +85,17 @@ describe('ActorQueryOperationMinus', () => {
     });
 
     it('should test on minus', () => {
-      const op: any = { operation: { type: 'minus', left, right }};
+      const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-minus', () => {
-      const op: any = { operation: { type: 'some-other-type', left, right }};
+      const op: any = { operation: { type: 'some-other-type', input: [ left, right ]}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op: any = { operation: { type: 'minus', left, right }};
+      const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
@@ -108,7 +108,7 @@ describe('ActorQueryOperationMinus', () => {
     });
 
     it('should run with a left stream without common variables', () => {
-      const op: any = { operation: { type: 'union', left, right: rightNoCommons }};
+      const op: any = { operation: { type: 'union', input: [ left, rightNoCommons ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
@@ -176,7 +176,7 @@ describe('ActorQueryOperationMinus', () => {
     });
 
     it('should run', () => {
-      const op: any = { operation: { type: 'minus', left, right }};
+      const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
@@ -246,7 +246,7 @@ describe('ActorQueryOperationMinus', () => {
     });
 
     it('should run', () => {
-      const op: any = { operation: { type: 'minus', left, right }};
+      const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
@@ -314,7 +314,7 @@ describe('ActorQueryOperationMinus', () => {
     });
 
     it('should run', () => {
-      const op: any = { operation: { type: 'minus', left, right }};
+      const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);

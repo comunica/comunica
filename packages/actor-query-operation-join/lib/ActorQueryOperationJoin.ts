@@ -1,9 +1,13 @@
-import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs,
+  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import {
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
+} from '@comunica/bus-query-operation';
 import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
-import type { ActionContext, IActorTest, Mediator } from '@comunica/core';
+import type { IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IActorQueryOperationOutput, ActionContext } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -22,12 +26,11 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
   }
 
   public async runOperation(pattern: Algebra.Join, context: ActionContext): Promise<IActorQueryOperationOutput> {
-    const left = this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
-    const right = this.mediatorQueryOperation.mediate({ operation: pattern.right, context });
+    const entries: IActorQueryOperationOutputBindings[] = (await Promise.all(pattern.input
+      .map(subOperation => this.mediatorQueryOperation.mediate({ operation: subOperation, context }))))
+      .map(ActorQueryOperation.getSafeBindings);
 
-    return this.mediatorJoin.mediate({
-      entries: [ ActorQueryOperation.getSafeBindings(await left), ActorQueryOperation.getSafeBindings(await right) ],
-    });
+    return this.mediatorJoin.mediate({ entries });
   }
 }
 

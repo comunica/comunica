@@ -80,10 +80,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     graph: Term, context: ActionContext): Promise<AsyncIterator<Bindings>> {
     // Construct path to obtain all graphs where subject exists
     const predVar = this.generateVariable(ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph));
-    const findGraphs = ActorAbstractPath.FACTORY.createUnion(
+    const findGraphs = ActorAbstractPath.FACTORY.createUnion([
       ActorAbstractPath.FACTORY.createPattern(subject, predVar, object, graph),
       ActorAbstractPath.FACTORY.createPattern(object, predVar, subject, graph),
-    );
+    ]);
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ context, operation: findGraphs }),
     );

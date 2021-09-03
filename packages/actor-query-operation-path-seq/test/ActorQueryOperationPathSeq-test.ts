@@ -19,7 +19,7 @@ describe('ActorQueryOperationPathSeq', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate(arg: any) {
+      mediate: jest.fn((arg: any) => {
         const vars: any = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
@@ -47,7 +47,7 @@ describe('ActorQueryOperationPathSeq', () => {
           type: 'bindings',
           variables: vars,
         });
-      },
+      }),
     };
 
     mediatorJoin = {
@@ -69,7 +69,7 @@ describe('ActorQueryOperationPathSeq', () => {
           metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
-          variables: [],
+          variables: arg.entries[0].variables.concat(arg.entries[1].variables),
         });
       },
     };
@@ -112,7 +112,10 @@ describe('ActorQueryOperationPathSeq', () => {
     it('should support Seq paths', async() => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
-        factory.createSeq(factory.createLink(DF.namedNode('p1')), factory.createLink(DF.namedNode('p2'))),
+        factory.createSeq([
+          factory.createLink(DF.namedNode('p1')),
+          factory.createLink(DF.namedNode('p2')),
+        ]),
         DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
@@ -122,14 +125,36 @@ describe('ActorQueryOperationPathSeq', () => {
         Bindings({ '?x': DF.namedNode('3') }),
         Bindings({ '?x': DF.namedNode('4') }),
       ]);
+
+      expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
+        context: undefined,
+        operation: factory.createPath(
+          DF.namedNode('s'),
+          factory.createLink(DF.namedNode('p1')),
+          DF.variable('b0'),
+        ),
+      });
+      expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
+        context: undefined,
+        operation: factory.createPath(
+          DF.variable('b0'),
+          factory.createLink(DF.namedNode('p2')),
+          DF.variable('x'),
+        ),
+      });
     });
 
-    it('should name variable bb because b already used', async() => {
-      const op: any = { operation: factory.createPath(
-        DF.namedNode('b'),
-        factory.createSeq(factory.createLink(DF.namedNode('p1')), factory.createLink(DF.namedNode('p2'))),
-        DF.variable('x'),
-      ) };
+    it('should name variable differently if it is already used', async() => {
+      const op: any = {
+        operation: factory.createPath(
+          DF.namedNode('b0'),
+          factory.createSeq([
+            factory.createLink(DF.namedNode('p1')),
+            factory.createLink(DF.namedNode('p2')),
+          ]),
+          DF.variable('x'),
+        ),
+      };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -137,6 +162,23 @@ describe('ActorQueryOperationPathSeq', () => {
         Bindings({ '?x': DF.namedNode('3') }),
         Bindings({ '?x': DF.namedNode('4') }),
       ]);
+
+      expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
+        context: undefined,
+        operation: factory.createPath(
+          DF.namedNode('b0'),
+          factory.createLink(DF.namedNode('p1')),
+          DF.variable('b0b'),
+        ),
+      });
+      expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
+        context: undefined,
+        operation: factory.createPath(
+          DF.variable('b0b'),
+          factory.createLink(DF.namedNode('p2')),
+          DF.variable('x'),
+        ),
+      });
     });
   });
 });

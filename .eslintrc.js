@@ -129,6 +129,7 @@ module.exports = {
     'unicorn/expiring-todo-comments': 'off',
     'unicorn/import-style': 'off',
     'unicorn/prefer-array-flat': 'off',
+    'unicorn/prefer-array-flat-map': 'off',
     'unicorn/prefer-spread': 'off',
   },
   overrides: [

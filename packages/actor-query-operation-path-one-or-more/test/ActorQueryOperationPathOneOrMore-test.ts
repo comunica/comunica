@@ -209,8 +209,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
     it('should support OneOrMore paths with 2 variables', async() => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
-        factory.createOneOrMorePath(factory.createSeq(factory.createLink(DF.namedNode('p')),
-          factory.createLink(DF.namedNode('p')))),
+        factory.createOneOrMorePath(factory.createSeq([
+          factory.createLink(DF.namedNode('p')),
+          factory.createLink(DF.namedNode('p')),
+        ])),
         DF.variable('y'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
@@ -228,8 +230,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
     it('should support OneOrMore paths with 2 variables and graph a variable', async() => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
-        factory.createOneOrMorePath(factory.createSeq(factory.createLink(DF.namedNode('p')),
-          factory.createLink(DF.namedNode('p')))),
+        factory.createOneOrMorePath(factory.createSeq([
+          factory.createLink(DF.namedNode('p')),
+          factory.createLink(DF.namedNode('p')),
+        ])),
         DF.variable('y'),
         DF.variable('g'),
       ),

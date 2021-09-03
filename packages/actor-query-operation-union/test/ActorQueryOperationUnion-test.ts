@@ -10,10 +10,10 @@ const DF = new DataFactory();
 describe('ActorQueryOperationUnion', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let left: any;
-  let leftNoMeta: any;
-  let right: any;
-  let rightUndef: any;
+  let op3: any;
+  let op3NoMeta: any;
+  let op2: any;
+  let op2Undef: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -26,39 +26,39 @@ describe('ActorQueryOperationUnion', () => {
         canContainUndefs: arg.operation.canContainUndefs,
       }),
     };
-    left = {
+    op3 = {
       metadata: () => Promise.resolve({ totalItems: 3 }),
       stream: new ArrayIterator([
         Bindings({ a: DF.literal('1') }),
         Bindings({ a: DF.literal('2') }),
         Bindings({ a: DF.literal('3') }),
-      ]),
+      ], { autoStart: false }),
       type: 'bindings',
       variables: [ 'a' ],
       canContainUndefs: false,
     };
-    leftNoMeta = {
+    op3NoMeta = {
       metadata: null,
       stream: new ArrayIterator([
         Bindings({ a: DF.literal('1') }),
         Bindings({ a: DF.literal('2') }),
         Bindings({ a: DF.literal('3') }),
-      ]),
+      ], { autoStart: false }),
       type: 'bindings',
       variables: [ 'a' ],
       canContainUndefs: false,
     };
-    right = {
+    op2 = {
       metadata: () => Promise.resolve({ totalItems: 2 }),
       stream: new ArrayIterator([
         Bindings({ b: DF.literal('1') }),
         Bindings({ b: DF.literal('2') }),
-      ]),
+      ], { autoStart: false }),
       type: 'bindings',
       variables: [ 'b' ],
       canContainUndefs: false,
     };
-    rightUndef = {
+    op2Undef = {
       metadata: () => Promise.resolve({ totalItems: 2 }),
       stream: new ArrayIterator([
         Bindings({ b: DF.literal('1') }),
@@ -194,17 +194,17 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should test on union', () => {
-      const op: any = { operation: { type: 'union', left, right }};
+      const op: any = { operation: { type: 'union', input: [ op3, op2 ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-union', () => {
-      const op: any = { operation: { type: 'some-other-type', left, right }};
+      const op: any = { operation: { type: 'some-other-type', input: [ op3, op2 ]}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', () => {
-      const op: any = { operation: { type: 'union', left, right }};
+    it('should run on two streams', () => {
+      const op: any = { operation: { type: 'union', input: [ op3, op2 ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
@@ -220,8 +220,27 @@ describe('ActorQueryOperationUnion', () => {
       });
     });
 
+    it('should run on three streams', () => {
+      const op: any = { operation: { type: 'union', input: [ op3, op2, op2Undef ]}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 7 });
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(true);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ b: DF.literal('1') }),
+          Bindings({ b: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ b: DF.literal('2') }),
+          Bindings({ b: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
+        ]);
+      });
+    });
+
     it('should run with a left stream without metadata', () => {
-      const op: any = { operation: { type: 'union', left: leftNoMeta, right }};
+      const op: any = { operation: { type: 'union', input: [ op3NoMeta, op2 ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a', 'b' ]);
@@ -238,7 +257,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run with a right stream with undefs', () => {
-      const op: any = { operation: { type: 'union', left, right: rightUndef }};
+      const op: any = { operation: { type: 'union', input: [ op3, op2Undef ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);

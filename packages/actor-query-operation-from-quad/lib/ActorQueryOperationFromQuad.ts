@@ -108,7 +108,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
                 .createPattern(pat.subject, pat.predicate, pat.object, graph))) :
             ActorQueryOperationFromQuad.FACTORY
               .createPath(operation.subject, operation.predicate, operation.object, graph);
-          return ActorQueryOperationFromQuad.FACTORY.createJoin(values, pattern);
+          return ActorQueryOperationFromQuad.FACTORY.createJoin([ values, pattern ]);
         }
         // If the pattern graph is a variable, take the union of the pattern applied to each available named graph
         return ActorQueryOperationFromQuad.unionOperations(namedGraphs.map(
@@ -142,12 +142,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     if (operations.length === 1) {
       return operations[0];
     }
-    if (operations.length === 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations[0], operations[1]);
-    }
-    if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations.shift()!,
-        this.joinOperations(operations));
+    if (operations.length > 1) {
+      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations);
     }
     throw new Error('A join can only be applied on at least one operation');
   }
@@ -161,12 +157,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     if (operations.length === 1) {
       return operations[0];
     }
-    if (operations.length === 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations[0], operations[1]);
-    }
-    if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations.shift()!,
-        this.unionOperations(operations));
+    if (operations.length > 1) {
+      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations);
     }
     throw new Error('A union can only be applied on at least one operation');
   }

@@ -24,10 +24,10 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
   public async runOperation(pattern: Algebra.Minus, context: ActionContext):
   Promise<IActorQueryOperationOutputBindings> {
     const buffer = ActorQueryOperation.getSafeBindings(
-      await this.mediatorQueryOperation.mediate({ operation: pattern.right, context }),
+      await this.mediatorQueryOperation.mediate({ operation: pattern.input[1], context }),
     );
     const output = ActorQueryOperation.getSafeBindings(
-      await this.mediatorQueryOperation.mediate({ operation: pattern.left, context }),
+      await this.mediatorQueryOperation.mediate({ operation: pattern.input[0], context }),
     );
 
     const commons: string[] = this.getCommonVariables(buffer.variables, output.variables);
