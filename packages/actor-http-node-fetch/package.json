@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-node-fetch",
-  "version": "1.22.0",
+  "version": "1.22.1",
   "description": "A node-fetch http actor",
   "lsd:module": true,
   "main": "index.js",
@@ -38,7 +38,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.22.0",
+    "@comunica/bus-http": "^1.22.1",
     "@comunica/core": "^1.22.0",
     "@comunica/mediatortype-time": "^1.22.0"
   },

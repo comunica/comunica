@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.22.1"></a>
+## [v1.22.1](https://github.com/comunica/comunica/compare/v1.22.0...v1.22.1) - 2021-09-22
+
+### Fixed
+* [Fix rare stream interruption before end](https://github.com/comunica/comunica/commit/93df41c4c03ddb1f307430b75ea15a4ef4edc9d1)
+
 <a name="v1.22.0"></a>
 ## [v1.22.0](https://github.com/comunica/comunica/compare/v1.21.3...v1.22.0) - 2021-08-30
 

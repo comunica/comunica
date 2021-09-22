@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-http",
-  "version": "1.22.0",
+  "version": "1.22.1",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": true,
   "main": "index.js",
