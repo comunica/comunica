@@ -1,7 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-
-import type { Bindings } from '../Types';
+import type { EvalContextAsync, EvalContextSync } from '../functions';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',
@@ -62,34 +61,11 @@ export type SyncExtensionExpression = IExpressionProps & {
   args: Expression[];
 };
 
-// Export type Application = SimpleApplication | SpecialApplication;
-export type SimpleApplication = (args: TermExpression[]) => TermExpression;
-export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
-
 export type OperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.Operator;
   args: Expression[];
   apply: SimpleApplication;
 };
-
-export type SpecialApplication<Term, BNode> = (context: IEvalContext<Term, BNode>) => Term;
-
-export type SpecialApplicationAsync = SpecialApplication<Promise<TermExpression>, Promise<RDF.BlankNode>>;
-export type EvalContextAsync = IEvalContext<Promise<TermExpression>, Promise<RDF.BlankNode>>;
-
-export type SpecialApplicationSync = SpecialApplication<TermExpression, RDF.BlankNode>;
-export type EvalContextSync = IEvalContext<TermExpression, RDF.BlankNode>;
-
-export interface IEvalContext<Term, BNode> {
-  args: Expression[];
-  mapping: Bindings;
-  context: {
-    now: Date;
-    baseIRI?: string;
-    bnode: (input?: string) => BNode;
-  };
-  evaluate: (expr: Expression, mapping: Bindings) => Term;
-}
 
 export type SpecialOperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.SpecialOperator;
@@ -112,3 +88,11 @@ export type VariableExpression = IExpressionProps & {
   expressionType: ExpressionType.Variable;
   name: string;
 };
+
+// Export type Application = SimpleApplication | SpecialApplication;
+export type SimpleApplication = (args: TermExpression[]) => TermExpression;
+export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
+
+export type SpecialApplicationAsync = (context: EvalContextAsync) => Promise<TermExpression>;
+
+export type SpecialApplicationSync = (context: EvalContextSync) => TermExpression;

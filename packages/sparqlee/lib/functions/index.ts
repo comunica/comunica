@@ -27,3 +27,5 @@ export const namedFunctions: NamedFunctionMap = <NamedFunctionMap> Object.fromEn
   Object.entries(namedDefinitions).map(([ key, val ]) =>
     [ key, new NamedFunction(<C.NamedOperator>key, val) ]),
 );
+export { SearchStack } from './OverloadTree';
+export { OverloadTree } from './OverloadTree';

@@ -48,10 +48,11 @@ Note: If you want to use *aggregates*, or *exists* you should check out the [str
 
 ### Config
 
-Sparqlee accepts an optional config argument, that is not required for simple use cases, but for feature completeness and spec compliance it should be populated fully.
+Sparqlee accepts an optional config argument, that is not required for simple use cases,
+but for feature completeness and spec compliance it should receive `now, baseIRI, exists, aggregate and bnode`.
 
 ```ts
-interface AsyncEvaluatorConfig {
+interface AsyncEvaluatorContext {
   now?: Date;
   baseIRI?: string;
 
@@ -59,6 +60,10 @@ interface AsyncEvaluatorConfig {
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
   bnode?: (input?: string) => Promise<RDF.BlankNode>;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) => (args: RDF.Term[]) => Promise<RDF.Term> | undefined;
+  overloadCache?: LRUCache<string, SomeInternalType>;
+  typeCache?: LRUCache<string, SomeInternalType>;
+  getSuperType?: (unknownType: string) => string;
+  enableExtendedXsdTypes?: boolean;
 }
 ```
 
@@ -66,7 +71,11 @@ See the [stream](#streams) and [context dependant function](#context_dependant_f
 
 ### Errors
 
-Sparqlee exports an Error class called `ExpressionError` from which all SPARQL related errors inherit. These might include unbound variables, wrong types, invalid lexical forms, and much more. More info on errors [here](lib/util/Errors.ts). These errors can be caught, and may impact program execution in an expected way. All other errors are unexpected, and are thus programmer mistakes or mistakes in this library.
+Sparqlee exports an Error class called `ExpressionError` from which all SPARQL related errors inherit.
+These might include unbound variables, wrong types, invalid lexical forms, and much more.
+More info on errors [here](lib/util/Errors.ts).
+These errors can be caught, and may impact program execution in an expected way. 
+All other errors are unexpected, and are thus programmer mistakes or mistakes in this library.
 
 There is also the utility function `isExpressionError` for detecting these cases.
 
@@ -87,7 +96,10 @@ try {
 
 ### Exists
 
-'Exists' operations are an annoying problem to tackle in the context of an expression evaluator, since they make the operation statefull and context dependant. They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you.
+'Exists' operations are an annoying problem to tackle in the context of an expression evaluator,
+since they make the operation statefull and context dependant.
+They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption.
+Sparqlee has therefore decided to delegate this responsibility back to you.
 
 You can, if you want, pass hooks to the evaluators of the shape:
 
@@ -95,7 +107,8 @@ You can, if you want, pass hooks to the evaluators of the shape:
 exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
 ```
 
-If Sparqlee encounters any or existence expression, it will call this hook with the relevant information so you can resolve it yourself. If these hooks are not present, but an existence expression is encountered, then an error is thrown.
+If Sparqlee encounters any or existence expression, it will call this hook with the relevant information so you can resolve it yourself.
+If these hooks are not present, but an existence expression is encountered, then an error is thrown.
 
 An example consumer/hook can be found in [Comunica](https://github.com/comunica/comunica/blob/master/packages/actor-query-operation-filter-sparqlee/lib/ActorQueryOperationFilterSparqlee.ts).;
 
@@ -142,6 +155,44 @@ config.extensionFunctionCreator = (functionName: RDF.NamedNode) => {
 }
 ```
 
+### Extended Xsd Types
+
+Using this flag we can use `Overload function caching` and `Super type discovery`.
+This flag makes the type system more powerful and reliable. In most cases however the old system works perfectly.
+Using this experimental system makes sparqlee a bit slower but more reliable using type promotion for example.
+
+### Overload function caching
+
+An overloadcache allows Sparqlee to cache the implementation of a function provided the argument types. 
+The cache is only used when setting the `enableExtendedXsdTypes` flag to true.
+When not providing a cache in the context, sparqlee will create one.
+The cache speeds up execution time significantly especially when evaluating a lot of bindings that mostly have the same types.
+This statement is backed up by the [integer addition benchmark](/benchmarks/integerAddition.ts).
+
+This cache can be reused across multiple evaluators. We don't recommend manual modification.
+
+### Super type discovery
+
+This is a feature only available using when `enableExtendedXsdTypes` is active.
+
+The `getSuperType` allow a user to use custom types and define their super relationship to other types.
+Example:
+```ts
+const superTypeDiscoverCallback = (unknownType: string) => {
+  if (unknownType === "http://example.org/label") {
+    return 'http://www.w3.org/2001/XMLSchema#string';
+  }
+  return 'term';
+}
+```
+This is helpful when performing queries over data that uses data-types that are a restriction on the known xsd data types.
+For example a datasource could define `ex:label = "good" | "bad"`. These are both strings,
+and we could for example call the `substr` function on these values.
+When we want to allow this in a type safe way, we need to check if `ex:label` is a restriction on string.
+
+The `typeCache` allows us to cache these super type relationships.
+This cache can be reused across multiple evaluators. We don't recommend manual modification.
+
 ### Binary
 
 Sparqlee also provides a binary for evaluating simple expressions from the command line. Example
@@ -164,13 +215,18 @@ Literal {
 
 ### Context dependant functions
 
-Some functions (BNODE, NOW, IRI) need a (statefull) context from the caller to function correctly according to the spec. This context can be passed as an argument to Sparqlee (see the [config section](#config) for exact types). If they are not passed, Sparqlee will use a naive implementation that might do the trick for simple use cases.
+Some functions (BNODE, NOW, IRI) need a (statefull) context from the caller to function correctly according to the spec.
+This context can be passed as an argument to Sparqlee (see the [config section](#config) for exact types).
+If they are not passed, Sparqlee will use a naive implementation that might do the trick for simple use cases.
 
 #### BNODE
 
 [spec](https://www.w3.org/TR/sparql11-query/#func-bnode)
 
-Blank nodes are very dependant on the rest of the SPARQL query, therefore, we provide the option of delegating the entire responsibility back to you by accepting a blank node constructor callback. If this is not found, we create a blank node with the given label, or we use uuid (v4) for argument-less calls to generate definitely unique blank nodes of the shape `blank_uuid`.
+Blank nodes are very dependant on the rest of the SPARQL query, therefore, 
+we provide the option of delegating the entire responsibility back to you by accepting a blank node constructor callback.
+If this is not found, we create a blank node with the given label,
+or we use uuid (v4) for argument-less calls to generate definitely unique blank nodes of the shape `blank_uuid`.
 
 `bnode(input?: string) => RDF.BlankNode`
 
@@ -178,13 +234,16 @@ Blank nodes are very dependant on the rest of the SPARQL query, therefore, we pr
 
 [spec](https://www.w3.org/TR/sparql11-query/#func-now)
 
-All calls to now in a query must return the same value, since we aren't aware of the rest of the query, you can provide a timestamp (`now: Date`). If it's not present, Sparqlee will use the timestamp of evaluator creation, this at least allows evaluation with multiple bindings to have the same `now` value.
+All calls to now in a query must return the same value, since we aren't aware of the rest of the query,
+you can provide a timestamp (`now: Date`). If it's not present, Sparqlee will use the timestamp of evaluator creation,
+this at least allows evaluation with multiple bindings to have the same `now` value.
 
 #### IRI
 
 [spec](https://www.w3.org/TR/sparql11-query/#func-iri)
 
-To be fully spec compliant, the IRI/URI functions should take into account base IRI of the query, which you can provide as `baseIRI: string` to the config.
+To be fully spec compliant, the IRI/URI functions should take into account base IRI of the query,
+which you can provide as `baseIRI: string` to the config.
 
 ## Spec compliance
 
@@ -308,12 +367,14 @@ To be fully spec compliant, the IRI/URI functions should take into account base 
 
 ### Adding or fixing functions
 
-Functions are defined in the [functions directory](lib/functions/), and you can add or fix them there. All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
+Functions are defined in the [functions directory](lib/functions/), and you can add or fix them there.
+All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
 
 Three kinds exists:
 
 - Regular functions: Functions with a uniform interface, that only need their arguments to calculate their result.
-- Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control over type checking and evaluation (these are mostly the functional forms).
+- Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control
+over type checking and evaluation (these are mostly the functional forms).
 - Named functions: which correspond to the SPARQLAlgebra Named Expressions.
 
 **TODO**: Explain this hot mess some more.
@@ -325,17 +386,33 @@ When you create one, the SPARQL Algebra expression that is passed will be transf
 
 ### Type System
 
-[See functions/Core.ts](./lib/functions/Core.ts)
+See [functions/Core.ts](./lib/functions/Core.ts), [funcions/OverloadTree.ts](.lib/funcions/OverloadTree.ts) and
+[util/TypeHandling.ts](./lib/util/TypeHandling.ts).
 
-The type system is tailored for doing (supposedly) quick evaluation of overloaded functions. A function object consists of a map of argument types to a concrete function implementation for those argument types.
+The type system is tailored for doing (supposedly) quick evaluation of overloaded functions.
 
-When a function object is called with some functions, it looks up a concrete implementation. If we can not find one, we consider the argument of invalid types.
+A function definition object consists of a tree-like structure with a type (e.g. `xsd:float`) at each internal node.
+Each level of the tree represents an argument of the function
+(e.g. function with arity two also has a tree of depth two).
+The leaves contain a function implementation matching the concrete types defined by the path of the tree.
 
-Since many derived types exist, we also associate every literal with it's primitive datatype when constructing a literal. This handles **subtype substitution**, as we define allowed types in function of these primitives types. Note: the derived type is not maintained after an operation on the term, since I found no functions for which this was relevant.
+When a function is called with some arguments, a depth first search,
+to find an implementation among all overloads matching the types of the arguments,
+is performed in the tree.
+If we can not find one, we consider the argument of invalid types.
 
-**Type promotion** is handled in a couple of ways. Firstly, a bit like C++ vtables, if we can not find a implementation for the concrete (primitive) types, we try to find an implementation for the term-types of all the arguments, if that fails, we look for an implementation on generic terms.
+We also handle **[subtype substitution](https://www.w3.org/TR/xpath-31/#dt-subtype-substitution)** for literal terms.
+What this means is that for every argument of the function and it's associated accepted type,
+we also accept all subtypes of that type for that argument.
+These sub/super-type relations define the following type tree:
+![type tree](docs/type-scheme.svg)
+So, when expecting an argument of type `xsd:integer` we could provide `xsd:long` instead and the
+function call would still succeed. The type of the term does not change in this operation.
 
-We also handle type promotion by explicitly coding for it. This is done in the arithmetic functions `+, -, *, /`.
+We also handle **[type promotion](https://www.w3.org/TR/xpath-31/#promotion)**,
+it defines some rules where a types can be promoted to another, even if there is no super-type relation.
+Examples include `xsd:float`  and `xsd:decimal` to `xsd:double`and `xsd:anyURI` to `xsd:string`.
+In this case, the datatype of the term will change to the type it is promoted to.
 
 ### Testing
 

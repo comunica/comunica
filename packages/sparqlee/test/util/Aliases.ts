@@ -19,6 +19,7 @@ export const defaultPrefixes: Record<string, string> = {
   rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
   fn: 'https://www.w3.org/TR/xpath-functions#',
   er: 'http://www.w3.org/2005/xqt-errors#',
+  example: 'https://example.org/',
 };
 
 /**
@@ -34,7 +35,8 @@ export function stringToTermPrefix(str: string, additionalPrefixes?: Record<stri
 
   const url = term.datatype.value;
   try {
-    const prefix = url.match(/.*:/ug)[0].slice(0, -1);
+    const matched = url.match(/.*:/ug);
+    const prefix = matched ? matched[0].slice(0, -1) : '';
     const prefixes: Record<string, string> = additionalPrefixes ?
       { ...defaultPrefixes, ...additionalPrefixes } :
       defaultPrefixes;
@@ -113,6 +115,7 @@ export const numeric: AliasMap = {
   '3i': '"3"^^xsd:integer',
   '4i': '"4"^^xsd:integer',
   '6i': '"6"^^xsd:integer',
+  '-6i': '"-6"^^xsd:integer',
   '12i': '"12"^^xsd:integer',
   '-5i': '"-5"^^xsd:integer',
 

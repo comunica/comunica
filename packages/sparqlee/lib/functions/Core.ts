@@ -1,32 +1,42 @@
-// eslint-disable-next-line no-redeclare
-import type { Map } from 'immutable';
-import { List } from 'immutable';
-
+import type * as RDF from '@rdfjs/types';
+import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type * as E from '../expressions';
+import type { Bindings } from '../Types';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
+import type { ISuperTypeProvider } from '../util/TypeHandling';
+import type { LegacyTree } from './LegacyTree';
+import type { ImplementationFunction, OverloadTree, OverLoadCache } from './OverloadTree';
 
-type Term = E.TermExpression;
+export interface IEvalSharedContext extends ICompleteSharedContext{
+  args: E.Expression[];
+  mapping: Bindings;
+}
+export interface IEvalContext<Term, BNode> extends IEvalSharedContext {
+  bnode?: (input?: string) => BNode;
+  evaluate: (expr: E.Expression, mapping: Bindings) => Term;
+}
+
+export type EvalContextAsync = IEvalContext<Promise<E.TermExpression>, Promise<RDF.BlankNode>>;
+export type EvalContextSync = IEvalContext<E.TermExpression, RDF.BlankNode>;
 
 // ----------------------------------------------------------------------------
 // Overloaded Functions
 // ----------------------------------------------------------------------------
 
-// Maps argument types on their specific implementation.
-export type OverloadMap = Map<List<ArgumentType>, E.SimpleApplication>;
-
 // Function and operator arguments are 'flattened' in the SPARQL spec.
 // If the argument is a literal, the datatype often also matters.
-export type ArgumentType = 'term' | E.TermType | C.Type;
+export type ExperimentalArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
+export type ArgumentType = 'term' | E.TermType | C.MainSparqlType;
 
 export interface IOverloadedDefinition {
   arity: number | number[];
-  overloads: OverloadMap;
+  overloads: { experimentalTree: OverloadTree; tree: LegacyTree };
 }
 
 export abstract class BaseFunction<Operator> {
   public arity: number | number[];
-  private readonly overloads: OverloadMap;
+  private readonly overloads: { experimentalTree: OverloadTree; tree: LegacyTree };
 
   protected constructor(public operator: Operator, definition: IOverloadedDefinition) {
     this.arity = definition.arity;
@@ -38,12 +48,15 @@ export abstract class BaseFunction<Operator> {
    * instance depending on the runtime types. We then just apply this function
    * to the args.
    */
-  public apply = (args: Term[]): Term => {
-    const concreteFunction = this.monomorph(args) || this.handleInvalidTypes(args);
-    return concreteFunction(args);
+  public apply = (args: E.TermExpression[], context: ICompleteSharedContext):
+  E.TermExpression => {
+    const concreteFunction =
+      this.monomorph(args, context.superTypeProvider, context.overloadCache, context.enableExtendedXsdTypes) ||
+      this.handleInvalidTypes(args);
+    return concreteFunction(context)(args);
   };
 
-  protected abstract handleInvalidTypes(args: Term[]): never;
+  protected abstract handleInvalidTypes(args: E.TermExpression[]): never;
 
   /**
    * We monomorph by checking the map of overloads for keys corresponding
@@ -56,28 +69,13 @@ export abstract class BaseFunction<Operator> {
    * for every concrete type when the function is generic over termtypes or
    * terms.
    */
-  private monomorph(args: Term[]): E.SimpleApplication {
-    return false ||
-      // TODO: Maybe use non primitive types first?
-      this.overloads.get(Typer.asConcreteTypes(args)) ||
-      this.overloads.get(Typer.asTermTypes(args)) ||
-      this.overloads.get(Typer.asGenericTerms(args));
+  private monomorph(args: E.TermExpression[], superTypeProvider: ISuperTypeProvider,
+    overloadCache: OverLoadCache, experimental: boolean): ImplementationFunction | undefined {
+    return experimental ?
+      this.overloads.experimentalTree.search(args, superTypeProvider, overloadCache) :
+      this.overloads.tree.search(args);
   }
 }
-
-const Typer = {
-  asConcreteTypes(args: Term[]): List<ArgumentType> {
-    return List(args.map((term: any) => term.type || term.termType));
-  },
-
-  asTermTypes(args: Term[]): List<E.TermType> {
-    return List(args.map((term: E.TermExpression) => term.termType));
-  },
-
-  asGenericTerms(args: Term[]): List<'term'> {
-    return <List<'term'>> List(Array.from({ length: args.length }).fill('term'));
-  },
-};
 
 // Regular Functions ----------------------------------------------------------
 
@@ -106,7 +104,7 @@ export class RegularFunction extends BaseFunction<C.RegularOperator> {
     super(op, definition);
   }
 
-  protected handleInvalidTypes(args: Term[]): never {
+  protected handleInvalidTypes(args: E.TermExpression[]): never {
     throw new Err.InvalidArgumentTypes(args, this.operator);
   }
 }
@@ -119,7 +117,7 @@ export class NamedFunction extends BaseFunction<C.NamedOperator> {
     super(op, definition);
   }
 
-  protected handleInvalidTypes(args: Term[]): never {
+  protected handleInvalidTypes(args: E.TermExpression[]): never {
     throw new Err.InvalidArgumentTypes(args, this.operator);
   }
 }
@@ -176,37 +174,4 @@ export interface ISpecialDefinition {
   applyAsync: E.SpecialApplicationAsync;
   applySync: E.SpecialApplicationSync;
   checkArity?: (args: E.Expression[]) => boolean;
-}
-
-// Type Promotion -------------------------------------------------------------
-
-const _promote: {[t in C.PrimitiveNumericType]: {[tt in C.PrimitiveNumericType]: C.PrimitiveNumericType }} = {
-  integer: {
-    integer: 'integer',
-    decimal: 'decimal',
-    float: 'float',
-    double: 'double',
-  },
-  decimal: {
-    integer: 'decimal',
-    decimal: 'decimal',
-    float: 'float',
-    double: 'double',
-  },
-  float: {
-    integer: 'float',
-    decimal: 'float',
-    float: 'float',
-    double: 'double',
-  },
-  double: {
-    integer: 'double',
-    decimal: 'double',
-    float: 'double',
-    double: 'double',
-  },
-};
-
-export function promote(left: C.PrimitiveNumericType, right: C.PrimitiveNumericType): C.PrimitiveNumericType {
-  return _promote[left][right];
 }

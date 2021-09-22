@@ -1,16 +1,16 @@
 import type { Algebra } from 'sparqlalgebrajs';
 import type { Bindings } from '../Types';
-import type { IAsyncEvaluatorConfig } from './AsyncEvaluator';
+import type { IAsyncEvaluatorContext } from './AsyncEvaluator';
 import { AsyncEvaluator } from './AsyncEvaluator';
-import { BaseAggregateEvaluator } from './BaseAggregateEvaluator';
+import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator';
 
 export class AsyncAggregateEvaluator extends BaseAggregateEvaluator {
   private readonly evaluator: AsyncEvaluator;
   private errorOccurred: boolean;
 
-  public constructor(expr: Algebra.AggregateExpression, config?: IAsyncEvaluatorConfig, throwError?: boolean) {
-    super(expr, throwError);
-    this.evaluator = new AsyncEvaluator(expr.expression, config);
+  public constructor(expr: Algebra.AggregateExpression, context?: IAsyncEvaluatorContext, throwError?: boolean) {
+    super(expr, AsyncEvaluator.completeContext(context || {}), throwError);
+    this.evaluator = new AsyncEvaluator(expr.expression, context);
     this.errorOccurred = false;
   }
 

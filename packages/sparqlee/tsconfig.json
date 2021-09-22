@@ -15,7 +15,11 @@
     "declaration": true,
     "importHelpers": false,
     "outDir": "./dist",
-    "noImplicitThis": true
+    "noImplicitThis": true,
+
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false
   },
   "include": [
     "index.ts",
@@ -23,6 +27,7 @@
     "bin/**/*.ts",
     "util/**/*.ts",
     "typings/**/*.d.ts",
+    "benchmarks/**/*.ts"
   ],
   "exclude": [
     "**/dist",

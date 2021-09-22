@@ -1,16 +1,16 @@
 import type { Algebra } from 'sparqlalgebrajs';
 import type { Bindings } from '../Types';
-import { BaseAggregateEvaluator } from './BaseAggregateEvaluator';
-import type { ISyncEvaluatorConfig } from './SyncEvaluator';
+import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator';
+import type { ISyncEvaluatorContext } from './SyncEvaluator';
 import { SyncEvaluator } from './SyncEvaluator';
 
 // TODO: Support hooks & change name to SyncAggregateEvaluator
 export class AggregateEvaluator extends BaseAggregateEvaluator {
   private readonly evaluator: SyncEvaluator;
 
-  public constructor(expr: Algebra.AggregateExpression, config?: ISyncEvaluatorConfig, throwError?: boolean) {
-    super(expr, throwError);
-    this.evaluator = new SyncEvaluator(expr.expression, config);
+  public constructor(expr: Algebra.AggregateExpression, context?: ISyncEvaluatorContext, throwError?: boolean) {
+    super(expr, SyncEvaluator.completeContext(context || {}), throwError);
+    this.evaluator = new SyncEvaluator(expr.expression, context);
   }
 
   public put(bindings: Bindings): void {

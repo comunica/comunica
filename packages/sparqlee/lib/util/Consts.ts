@@ -1,13 +1,18 @@
-import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
+export type KnownLiteralTypes = TypeAlias | TypeURL;
 
-const DF = new DataFactory();
+export enum TypeAlias {
+  // Numeric is everything defined in https://www.w3.org/TR/sparql11-query/#operandDataTypes
+  SPARQL_NUMERIC = 'SPARQL_NUMERIC',
+  /**
+   * Stringly is everything defined in https://www.w3.org/TR/sparql11-query/#func-strings
+   * In other words it is a simple literal, a plain literal with language tag, or a literal with datatype xsd:string
+   * In other words, since sparqlee transforms a simple literal to xsd_string. It is RDF_LANG_STRING or XSD_STRING.
+   * Reasons for this are mentioned here: w3c/sparql-12#112
+   */
+  SPARQL_STRINGLY = 'SPARQL_STRINGLY',
+  SPARQL_NON_LEXICAL = 'SPARQL_NON_LEXICAL',
+}
 
-export const TRUE_STR = '"true"^^xsd:boolean';
-export const FALSE_STR = '"false"^^xsd:boolean';
-export const EVB_ERR_STR = '"not an dateTime"^^xsd:dateTime';
-
-// TODO: Consider inlining all with 'const enum'
 export enum TypeURL {
   XSD_ANY_URI = 'http://www.w3.org/2001/XMLSchema#anyURI',
   XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string',
@@ -16,88 +21,54 @@ export enum TypeURL {
   XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean',
 
   XSD_DATE_TIME = 'http://www.w3.org/2001/XMLSchema#dateTime',
+  XSD_DATE_TIME_STAMP = 'http://www.w3.org/2001/XMLSchema#dateTimeStamp',
   XSD_DATE = 'http://www.w3.org/2001/XMLSchema#date',
 
   // Numeric types
-  XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer',
   XSD_DECIMAL = 'http://www.w3.org/2001/XMLSchema#decimal',
   XSD_FLOAT = 'http://www.w3.org/2001/XMLSchema#float',
   XSD_DOUBLE = 'http://www.w3.org/2001/XMLSchema#double',
 
   // Derived numeric types
+  XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer',
+
   XSD_NON_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonPositiveInteger',
   XSD_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#negativeInteger',
+
   XSD_LONG = 'http://www.w3.org/2001/XMLSchema#long',
   XSD_INT = 'http://www.w3.org/2001/XMLSchema#int',
   XSD_SHORT = 'http://www.w3.org/2001/XMLSchema#short',
   XSD_BYTE = 'http://www.w3.org/2001/XMLSchema#byte',
+
   XSD_NON_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonNegativeInteger',
+  XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
   XSD_UNSIGNED_LONG = 'http://www.w3.org/2001/XMLSchema#unsignedLong',
   XSD_UNSIGNED_INT = 'http://www.w3.org/2001/XMLSchema#unsignedInt',
   XSD_UNSIGNED_SHORT = 'http://www.w3.org/2001/XMLSchema#unsignedShort',
   XSD_UNSIGNED_BYTE = 'http://www.w3.org/2001/XMLSchema#unsignedByte',
-  XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
+
+  // Derived String Type
+  XSD_NORMALIZED_STRING = 'http://www.w3.org/2001/XMLSchema#normalizedString',
+  XSD_TOKEN = 'http://www.w3.org/2001/XMLSchema#token',
+  XSD_LANGUAGE = 'http://www.w3.org/2001/XMLSchema#language',
+  XSD_NM_TOKEN = 'http://www.w3.org/2001/XMLSchema#NMTOKEN',
+
+  XSD_NAME = 'http://www.w3.org/2001/XMLSchema#name',
+  XSD_NC_NAME = 'http://www.w3.org/2001/XMLSchema#NCName',
+  XSD_ENTITY = 'http://www.w3.org/2001/XMLSchema#ENTITY',
+  XSD_ID = 'http://www.w3.org/2001/XMLSchema#ID',
+  XSD_ID_REF = 'http://www.w3.org/2001/XMLSchema#IDREF',
 
   // Other types
+  XSD_DURATION = 'http://www.w3.org/2001/XMLSchema#duration',
+  XSD_YEAR_MONTH_DURATION = 'http://www.w3.org/2001/XMLSchema#yearMonthDuration',
   XSD_DAYTIME_DURATION = 'http://www.w3.org/2001/XMLSchema#dayTimeDuration',
 }
 
-export function make(dt: TypeURL): RDF.NamedNode {
-  return DF.namedNode(dt);
-}
-
-// https://www.w3.org/TR/sparql11-query/#operandDataTypes
-export enum NumericTypeURL {
-  // Numeric types
-  XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer',
-  XSD_DECIMAL = 'http://www.w3.org/2001/XMLSchema#decimal',
-  XSD_FLOAT = 'http://www.w3.org/2001/XMLSchema#float',
-  XSD_DOUBLE = 'http://www.w3.org/2001/XMLSchema#double',
-
-  // Derived numeric types
-  XSD_NON_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonPositiveInteger',
-  XSD_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#negativeInteger',
-  XSD_LONG = 'http://www.w3.org/2001/XMLSchema#long',
-  XSD_INT = 'http://www.w3.org/2001/XMLSchema#int',
-  XSD_SHORT = 'http://www.w3.org/2001/XMLSchema#short',
-  XSD_BYTE = 'http://www.w3.org/2001/XMLSchema#byte',
-  XSD_NON_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonNegativeInteger',
-  XSD_UNSIGNED_LONG = 'http://www.w3.org/2001/XMLSchema#unsignedLong',
-  XSD_UNSIGNED_INT = 'http://www.w3.org/2001/XMLSchema#unsignedInt',
-  XSD_UNSIGNED_SHORT = 'http://www.w3.org/2001/XMLSchema#unsignedShort',
-  XSD_UNSIGNED_BYTE = 'http://www.w3.org/2001/XMLSchema#unsignedByte',
-  XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
-}
-
-export enum DerivedIntegerTypeURL {
-  XSD_NON_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonPositiveInteger',
-  XSD_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#negativeInteger',
-  XSD_LONG = 'http://www.w3.org/2001/XMLSchema#long',
-  XSD_INT = 'http://www.w3.org/2001/XMLSchema#int',
-  XSD_SHORT = 'http://www.w3.org/2001/XMLSchema#short',
-  XSD_BYTE = 'http://www.w3.org/2001/XMLSchema#byte',
-  XSD_NON_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonNegativeInteger',
-  XSD_UNSIGNED_LONG = 'http://www.w3.org/2001/XMLSchema#unsignedLong',
-  XSD_UNSIGNED_INT = 'http://www.w3.org/2001/XMLSchema#unsignedInt',
-  XSD_UNSIGNED_SHORT = 'http://www.w3.org/2001/XMLSchema#unsignedShort',
-  XSD_UNSIGNED_BYTE = 'http://www.w3.org/2001/XMLSchema#unsignedByte',
-  XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
-}
-
-export const NumericTypeURLs: Set<string> = new Set(Object.values(NumericTypeURL));
-export const DerivedIntegerTypeURLs = new Set(Object.values(DerivedIntegerTypeURL));
-
-export const commonTerms: Record<string, RDF.Term> = {
-  true: DF.literal('true', DF.namedNode(TypeURL.XSD_BOOLEAN)),
-  false: DF.literal('false', DF.namedNode(TypeURL.XSD_BOOLEAN)),
-};
-
-// TODO: Rename to primitive
-// https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes
-export type Type =
+export type MainSparqlType =
   'string'
   | 'langString'
-  | 'date'
+  | 'dateTime'
   | 'boolean'
   | 'integer'
   | 'decimal'
@@ -106,59 +77,16 @@ export type Type =
   | 'other'
   | 'nonlexical';
 
-export type PrimitiveNumericType = 'integer' | 'decimal' | 'float' | 'double';
-export const PrimitiveNumericTypes = new Set([ 'integer', 'decimal', 'float', 'double' ]);
-
-export function type(typeURL: string): Type {
-  switch (typeURL) {
-    case null:
-    case undefined:
-    case '':
-    case TypeURL.XSD_ANY_URI: return 'string';
-    case TypeURL.XSD_STRING: return 'string';
-    case TypeURL.RDF_LANG_STRING: return 'langString';
-    case TypeURL.XSD_DATE_TIME: return 'date';
-    case TypeURL.XSD_BOOLEAN: return 'boolean';
-
-    case TypeURL.XSD_DECIMAL: return 'decimal';
-    case TypeURL.XSD_FLOAT: return 'float';
-    case TypeURL.XSD_DOUBLE: return 'double';
-    case TypeURL.XSD_INTEGER:
-    case TypeURL.XSD_NON_POSITIVE_INTEGER:
-    case TypeURL.XSD_NEGATIVE_INTEGER:
-    case TypeURL.XSD_LONG:
-    case TypeURL.XSD_INT:
-    case TypeURL.XSD_SHORT:
-    case TypeURL.XSD_BYTE:
-    case TypeURL.XSD_NON_NEGATIVE_INTEGER:
-    case TypeURL.XSD_UNSIGNED_LONG:
-    case TypeURL.XSD_UNSIGNED_INT:
-    case TypeURL.XSD_UNSIGNED_SHORT:
-    case TypeURL.XSD_UNSIGNED_BYTE:
-    case TypeURL.XSD_POSITIVE_INTEGER: return 'integer';
-    default: return 'other';
-  }
-}
-
-// If datatypes get lost or lose specificity during operations, we can insert a
-// concrete type, since categories should remain the same. This mostly (only)
-// relevant for integer subtypes.
-const _decategorize: Record<PrimitiveNumericType, TypeURL> = {
-  integer: TypeURL.XSD_INTEGER,
-  float: TypeURL.XSD_FLOAT,
-  double: TypeURL.XSD_DOUBLE,
-  decimal: TypeURL.XSD_DECIMAL,
-};
-
-export function decategorize(cat: PrimitiveNumericType): TypeURL {
-  return _decategorize[cat];
-}
+export type MainNumericSparqlType =
+  | 'integer'
+  | 'decimal'
+  | 'float'
+  | 'double';
 
 // ----------------------------------------------------------------------------
 // Operators
 // ----------------------------------------------------------------------------
 
-export type OperatorCategory = 'regular' | 'special';
 export type Operator = RegularOperator | SpecialOperator;
 
 // TODO: Remove unneeded double typing
@@ -196,8 +124,8 @@ export enum RegularOperator {
   STR = 'str',
   LANG = 'lang',
   DATATYPE = 'datatype',
-  // IRI = 'iri', (see special operators)
-  // URI = 'uri', (see special operators)
+  IRI = 'iri',
+  URI = 'uri',
   // BNODE = 'BNODE', (see special operators)
   STRDT = 'strdt',
   STRLANG = 'strlang',
@@ -231,7 +159,7 @@ export enum RegularOperator {
 
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
-  // NOW = 'now' (see special operators)
+  NOW = 'now',
   YEAR = 'year',
   MONTH = 'month',
   DAY = 'day',
@@ -272,9 +200,6 @@ export enum SpecialOperator {
   CONCAT = 'concat',
 
   // Context dependant functions
-  NOW = 'now',
-  IRI = 'iri',
-  URI = 'uri',
   BNODE = 'BNODE',
 }
 

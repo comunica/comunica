@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "bench": "yarn run build && node dist/benchmarks/*.js",
     "watch": "tsc --watch",
     "lint": "eslint . --ext .ts --cache",
     "test": "jest",
@@ -53,7 +54,7 @@
   "devDependencies": {
     "@rubensworks/eslint-config": "^1.0.1",
     "@types/benchmark": "^2.0.0",
-    "@types/jest": "^26.0.0",
+    "@types/jest": "^27.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
     "asynciterator": "^3.2.0",
@@ -75,11 +76,13 @@
   },
   "dependencies": {
     "@rdfjs/types": "*",
+    "@types/lru-cache": "^5.1.1",
     "@types/spark-md5": "^3.0.2",
     "@types/uuid": "^8.0.0",
     "decimal.js": "^10.2.0",
     "hash.js": "^1.1.7",
     "immutable": "^3.8.2",
+    "lru-cache": "^6.0.0",
     "rdf-data-factory": "^1.1.0",
     "rdf-string": "^1.6.0",
     "relative-to-absolute-iri": "^1.0.6",

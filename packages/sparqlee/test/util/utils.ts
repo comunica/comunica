@@ -1,3 +1,5 @@
+import * as LRUCache from 'lru-cache';
+import type { ICompleteSharedContext } from '../../lib/evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type { AliasMap } from './Aliases';
 import type { GeneralEvaluationConfig } from './generalEvaluation';
 import type { Notation } from './TestTable';
@@ -52,5 +54,17 @@ export function runTestTable(arg: TestTableConfig): void {
   }
 
   testTable.test();
+}
+
+export function getDefaultSharedContext(): ICompleteSharedContext {
+  return {
+    now: new Date(),
+    superTypeProvider: {
+      cache: new LRUCache(),
+      discoverer: () => 'term',
+    },
+    overloadCache: new LRUCache(),
+    enableExtendedXsdTypes: false,
+  };
 }
 
