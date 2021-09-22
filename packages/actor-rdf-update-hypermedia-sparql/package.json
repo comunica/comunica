@@ -42,7 +42,7 @@
     "@comunica/core": "^1.22.0"
   },
   "dependencies": {
-    "fetch-sparql-endpoint": "^2.3.1",
+    "fetch-sparql-endpoint": "^2.3.2",
     "rdf-string-ttl": "^1.1.0",
     "stream-to-string": "^1.2.0"
   },
