@@ -67,11 +67,28 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
  * by the terms bound to the variables in the given bindings.
  * @param {Operation} operation SPARQL algebra operation.
  * @param {Bindings} bindings A bindings object.
- * @param {boolean} strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
+ * @param options Options for materializations.
  * @return Algebra.Operation A new operation materialized with the given bindings.
  */
-export function materializeOperation(operation: Algebra.Operation, bindings: Bindings,
-  strictTargetVariables = false): Algebra.Operation {
+export function materializeOperation(
+  operation: Algebra.Operation,
+  bindings: Bindings,
+  options: {
+    /**
+     * If target variable bindings (such as on SELECT or BIND) should not be allowed.
+     */
+    strictTargetVariables?: boolean;
+    /**
+     * If filter expressions should be materialized
+     */
+    bindFilter?: boolean;
+  } = {},
+): Algebra.Operation {
+  options = {
+    strictTargetVariables: 'strictTargetVariables' in options ? options.strictTargetVariables : false,
+    bindFilter: 'bindFilter' in options ? options.bindFilter : true,
+  };
+
   return Util.mapOperation(operation, {
     path(op: Algebra.Path, factory: Factory) {
       // Materialize variables in a path expression.
@@ -103,12 +120,12 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
       // If strictTargetVariables is true, we throw if the extension target variable is attempted to be bound.
       // Otherwise, we remove the extend operation.
       if (bindings.has(termToString(op.variable))) {
-        if (strictTargetVariables) {
+        if (options.strictTargetVariables) {
           throw new Error(`Tried to bind variable ${termToString(op.variable)} in a BIND operator.`);
         } else {
           return {
             recurse: true,
-            result: materializeOperation(op.input, bindings, strictTargetVariables),
+            result: materializeOperation(op.input, bindings, options),
           };
         }
       }
@@ -121,7 +138,7 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
       // Materialize a group operation.
       // If strictTargetVariables is true, we throw if the group target variable is attempted to be bound.
       // Otherwise, we just filter out the bound variables.
-      if (strictTargetVariables) {
+      if (options.strictTargetVariables) {
         for (const variable of op.variables) {
           if (bindings.has(termToString(variable))) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a GROUP BY operator.`);
@@ -146,7 +163,7 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
       // Materialize a project operation.
       // If strictTargetVariables is true, we throw if the project target variable is attempted to be bound.
       // Otherwise, we just filter out the bound variables.
-      if (strictTargetVariables) {
+      if (options.strictTargetVariables) {
         for (const variable of op.variables) {
           if (variable.termType !== 'Wildcard' && bindings.has(termToString(variable))) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
@@ -168,12 +185,10 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
       const subBindings = hasWildcard ?
         bindings :
-        Bindings(op.variables.reduce<any>((acc, variable) => {
-          if (variable.termType !== 'Wildcard') {
-            const binding = bindings.get(termToString(variable));
-            if (binding) {
-              acc[termToString(variable)] = binding;
-            }
+        Bindings((<RDF.Variable[]>op.variables).reduce<any>((acc, variable) => {
+          const binding = bindings.get(termToString(variable));
+          if (binding) {
+            acc[termToString(variable)] = binding;
           }
           return acc;
         }, {}));
@@ -184,7 +199,7 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
           materializeOperation(
             op.input,
             subBindings,
-            strictTargetVariables,
+            options,
           ),
           variables,
         ),
@@ -194,7 +209,7 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
       // Materialize a values operation.
       // If strictTargetVariables is true, we throw if the values target variable is attempted to be bound.
       // Otherwise, we just filter out the bound variables and their bindings.
-      if (strictTargetVariables) {
+      if (options.strictTargetVariables) {
         for (const variable of op.variables) {
           if (bindings.has(termToString(variable))) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a VALUES operator.`);
@@ -221,6 +236,13 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
       };
     },
     expression(op: Algebra.Expression, factory: Factory) {
+      if (!options.bindFilter) {
+        return {
+          recurse: false,
+          result: op,
+        };
+      }
+
       if (op.expressionType === 'term') {
         // Materialize a term expression
         return {
@@ -234,7 +256,7 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
         // Materialize a bound aggregate operation.
         // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
         // Otherwise, we ignore this operation.
-        if (strictTargetVariables) {
+        if (options.strictTargetVariables) {
           throw new Error(`Tried to bind ${termToString(op.variable)} in a ${op.aggregator} aggregate.`);
         } else {
           return {

@@ -240,7 +240,7 @@ describe('materializeOperation', () => {
         factory.createTermExpression(termVariableA),
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a BIND operator.'));
   });
 
@@ -322,7 +322,7 @@ describe('materializeOperation', () => {
         ) ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a GROUP BY operator.'));
   });
 
@@ -366,7 +366,7 @@ describe('materializeOperation', () => {
         ) ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind ?a in a SUM aggregate.'));
   });
 
@@ -431,7 +431,7 @@ describe('materializeOperation', () => {
         [ termVariableB, termVariableD ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     ))
       .toEqual(factory.createProject(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
@@ -447,7 +447,7 @@ describe('materializeOperation', () => {
         [ termVariableA, termVariableD ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a SELECT operator.'));
   });
 
@@ -514,7 +514,7 @@ describe('materializeOperation', () => {
         [{ '?b': valueC }],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     ))
       .toEqual(factory.createValues(
         [ termVariableB, termVariableD ],
@@ -530,7 +530,7 @@ describe('materializeOperation', () => {
         [{ '?a': valueC, '?d': valueC }],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a VALUES operator.'));
   });
 
@@ -595,6 +595,33 @@ describe('materializeOperation', () => {
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(valueA),
+          factory.createTermExpression(termVariableB),
+        ]),
+      ));
+  });
+
+  it('should not modify a filter expression with matching variables with bindFilter: false', () => {
+    return expect(materializeOperation(
+      factory.createFilter(
+        factory.createBgp([
+          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        ]),
+        factory.createOperatorExpression('contains', [
+          factory.createTermExpression(termVariableA),
+          factory.createTermExpression(termVariableB),
+        ]),
+      ),
+      bindingsA,
+      { bindFilter: false },
+    ))
+      .toEqual(factory.createFilter(
+        factory.createBgp([
+          factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        ]),
+        factory.createOperatorExpression('contains', [
+          factory.createTermExpression(termVariableA),
           factory.createTermExpression(termVariableB),
         ]),
       ));
