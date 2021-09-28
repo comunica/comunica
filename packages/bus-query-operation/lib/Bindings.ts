@@ -217,11 +217,20 @@ export function materializeOperation(
         }
       } else {
         const variables = op.variables.filter(variable => !bindings.has(termToString(variable)));
-        const valueBindings = op.bindings.map(binding => {
+        const valueBindings: Record<string, RDF.Term>[] = <any> op.bindings.map(binding => {
           const newBinding = { ...binding };
-          bindings.forEach((value: RDF.NamedNode, key: string) => delete newBinding[key]);
-          return newBinding;
-        });
+          let valid = true;
+          bindings.forEach((value: RDF.NamedNode, key: string) => {
+            if (key in newBinding) {
+              if (!value.equals(newBinding[key])) {
+                // If the value of the binding is not equal, remove this binding completely from the VALUES clause
+                valid = false;
+              }
+              delete newBinding[key];
+            }
+          });
+          return valid ? newBinding : undefined;
+        }).filter(Boolean);
         return {
           recurse: true,
           result: factory.createValues(

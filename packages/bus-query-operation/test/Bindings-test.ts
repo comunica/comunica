@@ -538,7 +538,25 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createValues(
         [ termVariableA, termVariableD ],
-        [{ '?a': valueC, '?d': valueC }],
+        [{ '?a': valueA, '?d': valueC }],
+      ),
+      bindingsA,
+    ))
+      .toEqual(factory.createValues(
+        [ termVariableD ],
+        [{ '?d': valueC }],
+      ));
+  });
+
+  it('should modify a values operation with a binding variable equal to the target variable, ' +
+    'and a non-matching binding value', () => {
+    return expect(materializeOperation(
+      factory.createValues(
+        [ termVariableA, termVariableD ],
+        [
+          { '?a': valueA, '?d': valueC },
+          { '?a': valueC, '?d': valueC },
+        ],
       ),
       bindingsA,
     ))
