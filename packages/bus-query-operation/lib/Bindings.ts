@@ -157,12 +157,35 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
           result: op,
         };
       }
-      const variables = op.variables.filter(variable => variable.termType !== 'Wildcard' &&
+
+      const hasWildcard = op.variables.some(variable => variable.termType === 'Wildcard');
+      const variables = hasWildcard ?
+        op.variables :
+        op.variables.filter(variable => variable.termType !== 'Wildcard' &&
         !bindings.has(termToString(variable)));
+
+      // Only include projected variables in the sub-bindings that will be passed down recursively.
+      // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
+      const subBindings = hasWildcard ?
+        bindings :
+        Bindings(op.variables.reduce<any>((acc, variable) => {
+          if (variable.termType !== 'Wildcard') {
+            const binding = bindings.get(termToString(variable));
+            if (binding) {
+              acc[termToString(variable)] = binding;
+            }
+          }
+          return acc;
+        }, {}));
+
       return {
-        recurse: true,
+        recurse: false,
         result: factory.createProject(
-          op.input,
+          materializeOperation(
+            op.input,
+            subBindings,
+            strictTargetVariables,
+          ),
           variables,
         ),
       };

@@ -45,12 +45,14 @@ const termVariableD = DF.variable('d');
 const termDefaultGraph = DF.defaultGraph();
 
 const valueA = DF.literal('A');
+const valueB = DF.literal('B');
 const valueC = DF.literal('C');
 
 const bindingsEmpty = Bindings({});
 const bindingsA = Bindings({ '?a': DF.literal('A') });
 const bindingsC = Bindings({ '_:c': DF.literal('C') });
 const bindingsAC = Bindings({ '?a': valueA, '_:c': valueC });
+const bindingsAB = Bindings({ '?a': valueA, '?b': valueB });
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
@@ -412,7 +414,7 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableB, termVariableD ],
+        [ termVariableA, termVariableB, termVariableD ],
       ),
       bindingsA,
     ))
@@ -460,6 +462,34 @@ describe('materializeOperation', () => {
       .toEqual(factory.createProject(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableD ],
+      ));
+  });
+
+  it('should only modify variables in the project operation that are present in the projection range', () => {
+    return expect(materializeOperation(
+      factory.createProject(
+        factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        [ termVariableD, termVariableB ],
+      ),
+      bindingsAB,
+    ))
+      .toEqual(factory.createProject(
+        factory.createPattern(termVariableA, termNamedNode, valueB, termNamedNode),
+        [ termVariableD ],
+      ));
+  });
+
+  it('should modify all variables in the project operation with a wildcard range', () => {
+    return expect(materializeOperation(
+      factory.createProject(
+        factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        [ factory.createWildcardExpression().wildcard ],
+      ),
+      bindingsAB,
+    ))
+      .toEqual(factory.createProject(
+        factory.createPattern(valueA, termNamedNode, valueB, termNamedNode),
+        [ factory.createWildcardExpression().wildcard ],
       ));
   });
 
