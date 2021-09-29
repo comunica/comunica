@@ -1,0 +1,509 @@
+import { Bindings } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type {
+  IActionQueryOperation,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+} from '@comunica/types';
+import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
+import { Factory, Algebra } from 'sparqlalgebrajs';
+import { ActorRdfJoinMultiBind } from '../lib/ActorRdfJoinMultiBind';
+import Mock = jest.Mock;
+const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
+const FACTORY = new Factory();
+
+describe('ActorRdfJoinMultiBind', () => {
+  let bus: any;
+
+  beforeEach(() => {
+    bus = new Bus({ name: 'bus' });
+  });
+
+  describe('An ActorRdfJoinMultiBind instance', () => {
+    let context: ActionContext;
+    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+    IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+    let actor: ActorRdfJoinMultiBind;
+    let logSpy: Mock;
+
+    beforeEach(() => {
+      context = ActionContext({ a: 'b' });
+      mediatorQueryOperation = <any> {
+        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> => {
+          return {
+            bindingsStream: new ArrayIterator([
+              Bindings({ '?bound': DF.namedNode('ex:bound1') }),
+              Bindings({ '?bound': DF.namedNode('ex:bound2') }),
+              Bindings({ '?bound': DF.namedNode('ex:bound3') }),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({ totalItems: 3 }),
+            type: 'bindings',
+            variables: [ 'bound' ],
+            canContainUndefs: false,
+          };
+        }),
+      };
+      actor = new ActorRdfJoinMultiBind({ name: 'actor', bus, bindOrder: 'depth-first', mediatorQueryOperation });
+      logSpy = (<any> actor).logDebug = jest.fn();
+    });
+
+    describe('getIterations', () => {
+      it('should handle three entries', async() => {
+        expect(await actor.getIterations({
+          entries: [
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+              },
+              operation: <any> {},
+            },
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 2 }),
+              },
+              operation: <any> {},
+            },
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 5 }),
+              },
+              operation: <any> {},
+            },
+          ],
+        })).toEqual(16);
+      });
+
+      it('should reject on a right stream of type extend', async() => {
+        await expect(actor.getIterations({
+          entries: [
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+              },
+              operation: <any> { type: Algebra.types.EXTEND },
+            },
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 2 }),
+              },
+              operation: <any> {},
+            },
+          ],
+        })).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+      });
+
+      it('should reject on a right stream of type group', async() => {
+        await expect(actor.getIterations({
+          entries: [
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+              },
+              operation: <any> { type: Algebra.types.GROUP },
+            },
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 2 }),
+              },
+              operation: <any> {},
+            },
+          ],
+        })).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+      });
+
+      it('should not reject on a left stream of type group', async() => {
+        expect(await actor.getIterations({
+          entries: [
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+              },
+              operation: <any> {},
+            },
+            {
+              output: <any> {
+                metadata: () => Promise.resolve({ totalItems: 2 }),
+              },
+              operation: <any> { type: Algebra.types.GROUP },
+            },
+          ],
+        })).toEqual(6);
+      });
+    });
+
+    describe('createBindStream', () => {
+      it('throws when an unknown bind order is passed', async() => {
+        expect(() => (<any> ActorRdfJoinMultiBind).createBindStream('unknown'))
+          .toThrowError(`Received request for unknown bind order: unknown`);
+      });
+    });
+
+    describe('getLeftEntryIndex', () => {
+      it('picks the lowest of 2 entries', async() => {
+        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 3 }),
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+            },
+            operation: <any> {},
+          },
+        ])).toEqual(1);
+      });
+
+      it('picks the lowest of 3 entries', async() => {
+        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 3 }),
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 5 }),
+            },
+            operation: <any> {},
+          },
+        ])).toEqual(1);
+      });
+
+      it('picks the first of 3 equal entries', async() => {
+        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 3 }),
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 3 }),
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 3 }),
+            },
+            operation: <any> {},
+          },
+        ])).toEqual(0);
+      });
+
+      it('picks the first of 3 entries if there is an undef', async() => {
+        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 3 }),
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ totalItems: 5 }),
+              canContainUndefs: true,
+            },
+            operation: <any> {},
+          },
+        ])).toEqual(0);
+      });
+    });
+
+    describe('getOutput', () => {
+      it('should handle two entries (depth-first)', async() => {
+        const action = {
+          context,
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?b': DF.namedNode('ex:b1') }),
+                  Bindings({ '?b': DF.namedNode('ex:b2') }),
+                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+                type: 'bindings',
+                variables: [ 'a', 'b' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?a': DF.namedNode('ex:a1') }),
+                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 1 }),
+                type: 'bindings',
+                variables: [ 'a' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
+            },
+          ],
+        };
+        const output = await actor.getOutput(action);
+
+        // Validate output
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+        ]);
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.canContainUndefs).toEqual(false);
+
+        // Validate mock calls
+        expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
+        expect(logSpy.mock.calls[0][2]()).toEqual({
+          entry: action.entries[1].operation,
+          metadata: { totalItems: 1 },
+        });
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
+          operation: FACTORY.createJoin([
+            FACTORY.createPattern(DF.namedNode('ex:a1'), DF.namedNode('ex:p1'), DF.variable('b')),
+          ]),
+          context: ActionContext({
+            a: 'b',
+            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }],
+            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a1') }),
+          }),
+        });
+        expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
+          operation: FACTORY.createJoin([
+            FACTORY.createPattern(DF.namedNode('ex:a2'), DF.namedNode('ex:p1'), DF.variable('b')),
+          ]),
+          context: ActionContext({
+            a: 'b',
+            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }],
+            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a2') }),
+          }),
+        });
+      });
+
+      it('should handle two entries (breadth-first)', async() => {
+        actor = new ActorRdfJoinMultiBind({ name: 'actor', bus, bindOrder: 'breadth-first', mediatorQueryOperation });
+
+        const action = {
+          context,
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?b': DF.namedNode('ex:b1') }),
+                  Bindings({ '?b': DF.namedNode('ex:b2') }),
+                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+                type: 'bindings',
+                variables: [ 'a', 'b' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?a': DF.namedNode('ex:a1') }),
+                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 1 }),
+                type: 'bindings',
+                variables: [ 'a' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
+            },
+          ],
+        };
+        const output = await actor.getOutput(action);
+
+        // Validate output
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+        ]);
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.canContainUndefs).toEqual(false);
+      });
+
+      it('should handle two entries without context', async() => {
+        const action = {
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?b': DF.namedNode('ex:b1') }),
+                  Bindings({ '?b': DF.namedNode('ex:b2') }),
+                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+                type: 'bindings',
+                variables: [ 'a', 'b' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?a': DF.namedNode('ex:a1') }),
+                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 1 }),
+                type: 'bindings',
+                variables: [ 'a' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
+            },
+          ],
+        };
+        const output = await actor.getOutput(action);
+
+        // Validate output
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+        ]);
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.canContainUndefs).toEqual(false);
+      });
+
+      it('should handle three entries (depth-first)', async() => {
+        const action = {
+          context,
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?b': DF.namedNode('ex:b1') }),
+                  Bindings({ '?b': DF.namedNode('ex:b2') }),
+                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 3 }),
+                type: 'bindings',
+                variables: [ 'a', 'b' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?c': DF.namedNode('ex:c1') }),
+                  Bindings({ '?c': DF.namedNode('ex:c2') }),
+                  Bindings({ '?c': DF.namedNode('ex:c3') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 4 }),
+                type: 'bindings',
+                variables: [ 'a', 'c' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.variable('c')),
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  Bindings({ '?a': DF.namedNode('ex:a1') }),
+                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({ totalItems: 1 }),
+                type: 'bindings',
+                variables: [ 'a' ],
+                canContainUndefs: false,
+              },
+              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
+            },
+          ],
+        };
+        const output = await actor.getOutput(action);
+
+        // Validate output
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+        ]);
+        expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
+        expect(output.canContainUndefs).toEqual(false);
+
+        // Validate mock calls
+        expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
+        expect(logSpy.mock.calls[0][2]()).toEqual({
+          entry: action.entries[2].operation,
+          metadata: { totalItems: 1 },
+        });
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
+          operation: FACTORY.createJoin([
+            FACTORY.createPattern(DF.namedNode('ex:a1'), DF.namedNode('ex:p1'), DF.variable('b')),
+            FACTORY.createPattern(DF.namedNode('ex:a1'), DF.namedNode('ex:p2'), DF.variable('c')),
+          ]),
+          context: ActionContext({
+            a: 'b',
+            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }, { totalItems: 4 }],
+            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a1') }),
+          }),
+        });
+        expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
+          operation: FACTORY.createJoin([
+            FACTORY.createPattern(DF.namedNode('ex:a2'), DF.namedNode('ex:p1'), DF.variable('b')),
+            FACTORY.createPattern(DF.namedNode('ex:a2'), DF.namedNode('ex:p2'), DF.variable('c')),
+          ]),
+          context: ActionContext({
+            a: 'b',
+            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }, { totalItems: 4 }],
+            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a2') }),
+          }),
+        });
+      });
+    });
+  });
+});
