@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-left-deep-smallest/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-bgp-left-deep-smallest",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-bgp-left-deep-smallest",
-  "import": [
-    "files-caqoblds:components/Actor/QueryOperation/BgpLeftDeepSmallest.jsonld"
-  ]
-}

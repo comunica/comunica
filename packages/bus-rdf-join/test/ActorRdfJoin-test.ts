@@ -355,14 +355,14 @@ describe('ActorRdfJoin', () => {
   describe('run', () => {
     const instance = new Dummy();
 
-    it('returns an empty stream for empty input', () => {
+    it('returns a singleton stream for empty input', () => {
       action.entries = [];
 
       return instance.run(action).then(async(result: any) => {
-        expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
+        expect(await arrayifyStream(result.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(result.variables).toEqual([]);
         expect(result.canContainUndefs).toEqual(false);
-        return expect(await result.metadata()).toEqual({ totalItems: 0 });
+        return expect(await result.metadata()).toEqual({ totalItems: 1 });
       });
     });
 

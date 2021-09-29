@@ -929,6 +929,51 @@
     follow-redirects "^1.5.1"
     parse-link-header "^1.0.1"
 
+"@comunica/actor-query-operation-bgp-empty@^1.22.0":
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@comunica/actor-query-operation-bgp-empty/-/actor-query-operation-bgp-empty-1.22.0.tgz#8d9a57545a10531545a578c692b768b3cdb2acab"
+  integrity sha512-qitWhNrmehzvnNHZ98QuClOATyNRYte98OtR/C3trljMWjOrnC8pnstUHS5BN3bOBftRCBjO6ukJcnfgZFeNTQ==
+  dependencies:
+    "@comunica/types" "^1.22.0"
+    asynciterator "^3.2.0"
+    rdf-string "^1.5.0"
+    rdf-terms "^1.6.2"
+    sparqlalgebrajs "^3.0.0"
+
+"@comunica/actor-query-operation-bgp-left-deep-smallest-sort@^1.22.0":
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@comunica/actor-query-operation-bgp-left-deep-smallest-sort/-/actor-query-operation-bgp-left-deep-smallest-sort-1.22.0.tgz#0fe29383ef7ce433a53805abe012687e9bfd64d4"
+  integrity sha512-ybIKdhCQ+bDvoOfPTnNZGf0NXxdInNietzGVgtPMfPqB2JlsRvuleIMHcvZYOX+cKUdPUzFhGi59C9j55tKbiQ==
+  dependencies:
+    "@comunica/types" "^1.22.0"
+    "@rdfjs/types" "*"
+    asynciterator "^3.2.0"
+    rdf-string "^1.5.0"
+    rdf-terms "^1.6.2"
+    sparqlalgebrajs "^3.0.0"
+
+"@comunica/actor-query-operation-bgp-left-deep-smallest@^1.22.0":
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@comunica/actor-query-operation-bgp-left-deep-smallest/-/actor-query-operation-bgp-left-deep-smallest-1.22.0.tgz#47efa0a8703ca55801b6afcb3f58a269f470b591"
+  integrity sha512-c6u9knbOLh7W4JNGZh0Vc2dMCsDzm5/tjhhKttbvLuN8bGqvdx2Pxuv0beTyWSXhLXxeo6DkhtWAh/b+gtNBRw==
+  dependencies:
+    "@comunica/context-entries" "^1.22.0"
+    "@comunica/types" "^1.22.0"
+    "@rdfjs/types" "*"
+    asynciterator "^3.2.0"
+    rdf-string "^1.5.0"
+    rdf-terms "^1.6.2"
+    sparqlalgebrajs "^3.0.0"
+
+"@comunica/actor-query-operation-bgp-single@^1.22.0":
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@comunica/actor-query-operation-bgp-single/-/actor-query-operation-bgp-single-1.22.0.tgz#42a799555399a822b186837cadf2f0f52348f435"
+  integrity sha512-wxOO1Df9oRiAHUgZWx+o7zP+PZF/7kkHCueBWnvFA9Qqlw3naJLoFuAnhxSh1Ej4p5XGldjd1Bt/7VUFgfKOvQ==
+  dependencies:
+    "@comunica/context-entries" "^1.22.0"
+    "@comunica/types" "^1.22.0"
+    sparqlalgebrajs "^3.0.0"
+
 "@comunica/actor-rdf-parse-html-microdata@~1.21.1":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@comunica/actor-rdf-parse-html-microdata/-/actor-rdf-parse-html-microdata-1.21.1.tgz#ed021a65e2fa4145f4f008bfa7727f15ef59d5de"

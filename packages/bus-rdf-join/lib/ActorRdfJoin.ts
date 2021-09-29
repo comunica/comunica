@@ -1,9 +1,8 @@
-import { getMetadata } from '@comunica/bus-query-operation';
+import { Bindings, getMetadata } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { Bindings, IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -205,8 +204,8 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     if (action.entries.length === 0) {
       return {
-        bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        bindingsStream: new ArrayIterator([ Bindings({}) ], { autoStart: false }),
+        metadata: () => Promise.resolve({ totalItems: 1 }),
         type: 'bindings',
         variables: [],
         canContainUndefs: false,

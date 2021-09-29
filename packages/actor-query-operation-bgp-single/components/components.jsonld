@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-single/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-bgp-single",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-bgp-single",
-  "import": [
-    "files-caqobs:components/Actor/QueryOperation/BgpSingle.jsonld"
-  ]
-}
