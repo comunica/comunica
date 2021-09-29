@@ -1,4 +1,5 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
@@ -51,13 +52,13 @@ describe('ActorQueryOperationPathSeq', () => {
     };
 
     mediatorJoin = {
-      async mediate(arg: any) {
-        const left: Bindings[] = await arrayifyStream(arg.entries[0].bindingsStream);
-        const right: Bindings[] = await arrayifyStream(arg.entries[1].bindingsStream);
+      async mediate(arg: IActionRdfJoin) {
+        const left: Bindings[] = await arrayifyStream(arg.entries[0].output.bindingsStream);
+        const right: Bindings[] = await arrayifyStream(arg.entries[1].output.bindingsStream);
         const bindings = [];
         for (const l of left) {
           for (const r of right) {
-            const join = ActorRdfJoin.join(l, r);
+            const join = ActorRdfJoin.joinBindings(l, r);
             if (join) {
               bindings.push(join);
             }
@@ -69,7 +70,7 @@ describe('ActorQueryOperationPathSeq', () => {
           metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
-          variables: arg.entries[0].variables.concat(arg.entries[1].variables),
+          variables: arg.entries[0].output.variables.concat(arg.entries[1].output.variables),
         });
       },
     };

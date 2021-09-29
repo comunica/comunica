@@ -3,7 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { ActorRdfJoin, IActionRdfJoin, IJoinEntry } from '@comunica/bus-rdf-join';
 import type { ActionContext, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 import type { Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
@@ -27,12 +27,13 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
     let joiner: RDF.Term = path.subject;
     const generatedVariableNames: string[] = [];
-    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all(predicate.input
+    const entries: IJoinEntry[] = await Promise.all(predicate.input
       .map((subPredicate, i) => {
         const nextJoiner = i === predicate.input.length - 1 ? path.object : this.generateVariable(path, `b${i}`);
-        const newOperation = this.mediatorQueryOperation.mediate({
+        const operation = ActorAbstractPath.FACTORY.createPath(joiner, subPredicate, nextJoiner, path.graph);
+        const output = this.mediatorQueryOperation.mediate({
           context,
-          operation: ActorAbstractPath.FACTORY.createPath(joiner, subPredicate, nextJoiner, path.graph),
+          operation,
         });
 
         joiner = nextJoiner;
@@ -40,11 +41,14 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
           generatedVariableNames.push(termToString(nextJoiner));
         }
 
-        return newOperation;
-      })))
-      .map(ActorQueryOperation.getSafeBindings);
+        return { output, operation };
+      })
+      .map(async({ output, operation }) => ({
+        output: ActorQueryOperation.getSafeBindings(await output),
+        operation,
+      })));
 
-    const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
+    const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries, context }));
     // Remove the generated variable from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {

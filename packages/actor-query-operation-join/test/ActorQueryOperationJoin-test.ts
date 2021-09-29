@@ -1,4 +1,5 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import type { IJoinEntry } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
@@ -20,7 +21,7 @@ describe('ActorQueryOperationJoin', () => {
           Bindings({ a: DF.literal('1') }),
           Bindings({ a: DF.literal('2') }),
           Bindings({ a: DF.literal('3') }),
-        ]),
+        ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
@@ -29,7 +30,7 @@ describe('ActorQueryOperationJoin', () => {
     };
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new UnionIterator(arg.entries.map((entry: any) => entry.bindingsStream)),
+        bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
         metadata: () => Promise.resolve({ totalItems: 100 }),
         operated: arg,
         type: 'bindings',

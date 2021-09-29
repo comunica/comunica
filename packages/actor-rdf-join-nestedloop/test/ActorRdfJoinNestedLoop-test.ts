@@ -45,18 +45,24 @@ describe('ActorRdfJoinNestedLoop', () => {
       actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus });
       action = { entries: [
         {
-          bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ totalItems: 4 }),
-          type: 'bindings',
-          variables: [],
-          canContainUndefs: false,
+          output: {
+            bindingsStream: new ArrayIterator([], { autoStart: false }),
+            metadata: () => Promise.resolve({ totalItems: 4 }),
+            type: 'bindings',
+            variables: [],
+            canContainUndefs: false,
+          },
+          operation: <any> {},
         },
         {
-          bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ totalItems: 5 }),
-          type: 'bindings',
-          variables: [],
-          canContainUndefs: false,
+          output: {
+            bindingsStream: new ArrayIterator([], { autoStart: false }),
+            metadata: () => Promise.resolve({ totalItems: 5 }),
+            type: 'bindings',
+            variables: [],
+            canContainUndefs: false,
+          },
+          operation: <any> {},
         },
       ]};
     });
@@ -67,40 +73,40 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should handle undefs in left stream', () => {
-      action.entries[0].canContainUndefs = true;
+      action.entries[0].output.canContainUndefs = true;
       return expect(actor.test(action)).resolves
         .toEqual({ iterations: 20 });
     });
 
     it('should handle undefs in right stream', () => {
-      action.entries[1].canContainUndefs = true;
+      action.entries[1].output.canContainUndefs = true;
       return expect(actor.test(action)).resolves
         .toEqual({ iterations: 20 });
     });
 
     it('should handle undefs in left and right stream', () => {
-      action.entries[0].canContainUndefs = true;
-      action.entries[1].canContainUndefs = true;
+      action.entries[0].output.canContainUndefs = true;
+      action.entries[1].output.canContainUndefs = true;
       return expect(actor.test(action)).resolves
         .toEqual({ iterations: 20 });
     });
 
     it('should generate correct test metadata', async() => {
       await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0]).metadata()).totalItems *
-        (await (<any> action.entries[1]).metadata()).totalItems);
+        (await (<any> action.entries[0].output).metadata()).totalItems *
+        (await (<any> action.entries[1].output).metadata()).totalItems);
     });
 
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IActorQueryOperationOutputBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('totalItems',
-          (await (<any> action.entries[0]).metadata()).totalItems *
-          (await (<any> action.entries[1]).metadata()).totalItems);
+          (await (<any> action.entries[0].output).metadata()).totalItems *
+          (await (<any> action.entries[1].output).metadata()).totalItems);
       });
     });
 
     it('should not return metadata if there is no valid input', () => {
-      delete action.entries[0].metadata;
+      delete action.entries[0].output.metadata;
       return expect(actor.run(action)).resolves.not.toHaveProperty('metadata');
     });
 
@@ -112,10 +118,14 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join bindings with matching values', () => {
-      action.entries[0].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('a'), b: DF.literal('b') }) ]);
-      action.entries[0].variables = [ 'a', 'b' ];
-      action.entries[1].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('a'), c: DF.literal('c') }) ]);
-      action.entries[1].variables = [ 'a', 'c' ];
+      action.entries[0].output.bindingsStream = new ArrayIterator([
+        Bindings({ a: DF.literal('a'), b: DF.literal('b') }),
+      ]);
+      action.entries[0].output.variables = [ 'a', 'b' ];
+      action.entries[1].output.bindingsStream = new ArrayIterator([
+        Bindings({ a: DF.literal('a'), c: DF.literal('c') }),
+      ]);
+      action.entries[1].output.variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -125,10 +135,14 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should not join bindings with incompatible values', () => {
-      action.entries[0].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('a'), b: DF.literal('b') }) ]);
-      action.entries[0].variables = [ 'a', 'b' ];
-      action.entries[1].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('d'), c: DF.literal('c') }) ]);
-      action.entries[1].variables = [ 'a', 'c' ];
+      action.entries[0].output.bindingsStream = new ArrayIterator([
+        Bindings({ a: DF.literal('a'), b: DF.literal('b') }),
+      ]);
+      action.entries[0].output.variables = [ 'a', 'b' ];
+      action.entries[1].output.bindingsStream = new ArrayIterator([
+        Bindings({ a: DF.literal('d'), c: DF.literal('c') }),
+      ]);
+      action.entries[1].output.variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -136,7 +150,7 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join multiple bindings', () => {
-      action.entries[0].bindingsStream = new ArrayIterator([
+      action.entries[0].output.bindingsStream = new ArrayIterator([
         Bindings({ a: DF.literal('1'), b: DF.literal('2') }),
         Bindings({ a: DF.literal('1'), b: DF.literal('3') }),
         Bindings({ a: DF.literal('2'), b: DF.literal('2') }),
@@ -144,8 +158,8 @@ describe('ActorRdfJoinNestedLoop', () => {
         Bindings({ a: DF.literal('3'), b: DF.literal('3') }),
         Bindings({ a: DF.literal('3'), b: DF.literal('4') }),
       ]);
-      action.entries[0].variables = [ 'a', 'b' ];
-      action.entries[1].bindingsStream = new ArrayIterator([
+      action.entries[0].output.variables = [ 'a', 'b' ];
+      action.entries[1].output.bindingsStream = new ArrayIterator([
         Bindings({ a: DF.literal('1'), c: DF.literal('4') }),
         Bindings({ a: DF.literal('1'), c: DF.literal('5') }),
         Bindings({ a: DF.literal('2'), c: DF.literal('6') }),
@@ -153,7 +167,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         Bindings({ a: DF.literal('0'), c: DF.literal('4') }),
         Bindings({ a: DF.literal('0'), c: DF.literal('4') }),
       ]);
-      action.entries[1].variables = [ 'a', 'c' ];
+      action.entries[1].output.variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         const expected = [
           Bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('4') }),
@@ -174,17 +188,17 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join multiple bindings with undefs', () => {
-      action.entries[0].bindingsStream = new ArrayIterator([
+      action.entries[0].output.bindingsStream = new ArrayIterator([
         Bindings({ a: DF.literal('1'), b: DF.literal('2') }),
         Bindings({ a: DF.literal('2'), b: DF.literal('3') }),
       ]);
-      action.entries[0].variables = [ 'a', 'b' ];
-      action.entries[1].bindingsStream = new ArrayIterator([
+      action.entries[0].output.variables = [ 'a', 'b' ];
+      action.entries[1].output.bindingsStream = new ArrayIterator([
         Bindings({ a: DF.literal('1'), c: DF.literal('4') }),
         Bindings({ c: DF.literal('5') }),
       ]);
-      action.entries[1].canContainUndefs = true;
-      action.entries[1].variables = [ 'a', 'c' ];
+      action.entries[1].output.canContainUndefs = true;
+      action.entries[1].output.variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         const expected = [
           Bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('4') }),

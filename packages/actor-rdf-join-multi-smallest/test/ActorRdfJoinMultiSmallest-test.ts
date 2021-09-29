@@ -58,112 +58,142 @@ describe('ActorRdfJoinMultiSmallest', () => {
       action3 = {
         entries: [
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 4 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 4 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 5 }),
-            type: 'bindings',
-            variables: [ 'a', 'c' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+                Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 5 }),
+              type: 'bindings',
+              variables: [ 'a', 'c' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 2 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
         ],
       };
       action4 = {
         entries: [
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 4 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 4 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 5 }),
-            type: 'bindings',
-            variables: [ 'a', 'c' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+                Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 5 }),
+              type: 'bindings',
+              variables: [ 'a', 'c' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 2 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
-              Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 2 }),
-            type: 'bindings',
-            variables: [ 'a', 'd' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
+                Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+              type: 'bindings',
+              variables: [ 'a', 'd' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
         ],
       };
       action3PartialMeta = {
         entries: [
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 4 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 4 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
-            ]),
-            metadata: () => Promise.resolve({}),
-            type: 'bindings',
-            variables: [ 'a', 'c' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+                Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+              ]),
+              metadata: () => Promise.resolve({}),
+              type: 'bindings',
+              variables: [ 'a', 'c' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 2 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
         ],
       };
@@ -209,7 +239,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 4 streams', async() => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ 'a', 'c', 'd', 'b' ]);
+      expect(output.variables).toEqual([ 'a', 'c', 'b', 'd' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 80 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1'), d: DF.literal('d1') }),

@@ -57,78 +57,99 @@ describe('ActorRdfJoinMultiSequential', () => {
       action3 = {
         entries: [
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 4 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 4 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 5 }),
-            type: 'bindings',
-            variables: [ 'a', 'c' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+                Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 5 }),
+              type: 'bindings',
+              variables: [ 'a', 'c' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 2 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
         ],
       };
       action4 = {
         entries: [
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 4 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 4 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 5 }),
-            type: 'bindings',
-            variables: [ 'a', 'c' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+                Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 5 }),
+              type: 'bindings',
+              variables: [ 'a', 'c' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 2 }),
-            type: 'bindings',
-            variables: [ 'a', 'b' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+                Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+              type: 'bindings',
+              variables: [ 'a', 'b' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
           {
-            bindingsStream: new ArrayIterator([
-              Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
-              Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
-            ]),
-            metadata: () => Promise.resolve({ totalItems: 2 }),
-            type: 'bindings',
-            variables: [ 'a', 'd' ],
-            canContainUndefs: false,
+            output: {
+              bindingsStream: new ArrayIterator([
+                Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
+                Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
+              ]),
+              metadata: () => Promise.resolve({ totalItems: 2 }),
+              type: 'bindings',
+              variables: [ 'a', 'd' ],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
         ],
       };

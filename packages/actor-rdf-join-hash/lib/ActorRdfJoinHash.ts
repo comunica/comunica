@@ -32,10 +32,10 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
   public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     const variables = ActorRdfJoin.overlappingVariables(action);
     const join = new HashJoin<Bindings, string, Bindings>(
-      action.entries[0].bindingsStream,
-      action.entries[1].bindingsStream,
+      action.entries[0].output.bindingsStream,
+      action.entries[1].output.bindingsStream,
       entry => ActorRdfJoinHash.hash(entry, variables),
-      <any> ActorRdfJoin.join,
+      <any> ActorRdfJoin.joinBindings,
     );
     return {
       type: 'bindings',
@@ -47,6 +47,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    return (await getMetadata(action.entries[0])).totalItems + (await getMetadata(action.entries[1])).totalItems;
+    return (await getMetadata(action.entries[0].output)).totalItems +
+      (await getMetadata(action.entries[1].output)).totalItems;
   }
 }

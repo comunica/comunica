@@ -1,3 +1,4 @@
+import { getMetadata } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
@@ -5,6 +6,7 @@ import type { Bindings, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -34,8 +36,12 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    */
   protected canHandleUndefs: boolean;
 
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
-    limitEntries?: number, limitEntriesMin?: boolean, canHandleUndefs?: boolean) {
+  public constructor(
+    args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
+    limitEntries?: number,
+    limitEntriesMin?: boolean,
+    canHandleUndefs?: boolean,
+  ) {
     super(args);
     this.limitEntries = limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = limitEntriesMin ?? false;
@@ -48,7 +54,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static overlappingVariables(action: IActionRdfJoin): string[] {
-    const variables = action.entries.map(entry => entry.variables);
+    const variables = action.entries.map(entry => entry.output.variables);
     let baseArray = variables[0];
     for (const array of variables.slice(1)) {
       baseArray = baseArray.filter(el => array.includes(el));
@@ -58,11 +64,20 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
   /**
    * Returns the variables that will occur in the joined bindings.
-   * @param {IActionRdfJoin} action
+   * @param {IActionRdfJoin} action The join action.
    * @returns {string[]}
    */
   public static joinVariables(action: IActionRdfJoin): string[] {
-    const variables = action.entries.map(entry => entry.variables);
+    return ActorRdfJoin.joinVariablesStreams(action.entries.map(entry => entry.output));
+  }
+
+  /**
+   * Returns the variables that will occur in the joined bindings.
+   * @param {IActorQueryOperationOutputBindings[]} streams The streams to consider
+   * @returns {string[]}
+   */
+  public static joinVariablesStreams(streams: IActorQueryOperationOutputBindings[]): string[] {
+    const variables = streams.map(entry => entry.variables);
     const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
     return [ ...new Set(withDuplicates) ];
   }
@@ -72,7 +87,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @param {Bindings[]} bindings
    * @returns {Bindings}
    */
-  public static join(...bindings: Bindings[]): Bindings | null {
+  public static joinBindings(...bindings: Bindings[]): Bindings | null {
     try {
       return bindings.reduce((acc: Bindings, val: Bindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
         if (!left.equals(right)) {
@@ -91,16 +106,51 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @param {string} key
    * @returns {boolean}
    */
-  public static async iteratorsHaveMetadata(action: IActionRdfJoin, key: string): Promise<boolean> {
+  public static async allEntriesHaveMetadata(action: IActionRdfJoin, key: string): Promise<boolean> {
     return Promise.all(action.entries.map(async entry => {
-      if (!entry.metadata) {
+      if (!entry.output.metadata) {
         throw new Error('Missing metadata');
       }
-      const metadata = await entry.metadata();
+      const metadata = await entry.output.metadata();
       if (!(key in metadata)) {
         throw new Error('Missing metadata value');
       }
     })).then(() => true).catch(() => false);
+  }
+
+  /**
+   * Get the estimated number of items from the given metadata.
+   * @param {Record<string, any>} metadata A metadata object.
+   * @return {number} The estimated number of items, or `Infinity` if totalItems is falsy.
+   */
+  public static getCardinality(metadata: Record<string, any>): number {
+    return metadata.totalItems || metadata.totalItems === 0 ? metadata.totalItems : Number.POSITIVE_INFINITY;
+  }
+
+  /**
+   * Find the metadata index with the lowest cardinality.
+   * @param {(Record<string, any> | undefined)[]} metadatas An array of optional metadata objects for the entries.
+   * @return {number} The index of the entry with the lowest cardinality.
+   */
+  public static getLowestCardinalityIndex(metadatas: Record<string, any>[]): number {
+    let smallestId = -1;
+    let smallestCount = Number.POSITIVE_INFINITY;
+    for (const [ i, meta ] of metadatas.entries()) {
+      const count: number = ActorRdfJoin.getCardinality(meta);
+      if (count < smallestCount || smallestId === -1) {
+        smallestCount = count;
+        smallestId = i;
+      }
+    }
+    return smallestId;
+  }
+
+  /**
+   * Obtain the metadata from all given join entries.
+   * @param entries Join entries.
+   */
+  public static async getMetadatas(entries: IJoinEntry[]): Promise<Record<string, any>[]> {
+    return await Promise.all(entries.map(entry => getMetadata(entry.output)));
   }
 
   /**
@@ -125,21 +175,22 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
     // Check if all streams are bindings streams
     for (const entry of action.entries) {
-      if (entry.type !== 'bindings') {
-        throw new Error(`Invalid type of a join entry: Expected 'bindings' but got '${entry.type}'`);
+      if (entry.output.type !== 'bindings') {
+        throw new Error(`Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
       }
     }
 
     // Check if this actor can handle undefs
     if (!this.canHandleUndefs) {
       for (const entry of action.entries) {
-        if (entry.canContainUndefs) {
+        if (entry.output.canContainUndefs) {
           throw new Error(`Actor ${this.name} can not join streams containing undefs`);
         }
       }
     }
 
-    if (!await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
+    // If at least one entry has no metadata, return infinity
+    if (!await ActorRdfJoin.allEntriesHaveMetadata(action, 'totalItems')) {
       return { iterations: Number.POSITIVE_INFINITY };
     }
 
@@ -162,18 +213,19 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
       };
     }
     if (action.entries.length === 1) {
-      return action.entries[0];
+      return action.entries[0].output;
     }
 
     const result = this.getOutput(action);
 
-    function totalItems(): Promise<number> {
+    // Lazily calculate upper cardinality limit
+    function calculateCardinality(): Promise<number> {
       return Promise.all(action.entries
-        .map(entry => (<() => Promise<Record<string, any>>> entry.metadata)()))
+        .map(entry => (<() => Promise<Record<string, any>>> entry.output.metadata)()))
         .then(metadatas => metadatas.reduce((acc, val) => acc * val.totalItems, 1));
     }
 
-    if (await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
+    if (await ActorRdfJoin.allEntriesHaveMetadata(action, 'totalItems')) {
       // Update the result promise to also add the estimated total items
       const unwrapped = await result;
       if (unwrapped.metadata) {
@@ -181,12 +233,12 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
         unwrapped.metadata = () => oldMetadata().then(async(metadata: any) => {
           // Don't overwrite metadata if it was generated by implementation
           if (!('totalItems' in metadata)) {
-            metadata.totalItems = await totalItems();
+            metadata.totalItems = await calculateCardinality();
           }
           return metadata;
         });
       } else {
-        unwrapped.metadata = () => totalItems().then(totalItemsValue => ({ totalItems: totalItemsValue }));
+        unwrapped.metadata = () => calculateCardinality().then(totalItemsValue => ({ totalItems: totalItemsValue }));
       }
       return unwrapped;
     }
@@ -212,9 +264,22 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 }
 
 export interface IActionRdfJoin extends IAction {
-
   /**
-   * The list of streams and their corresponding metadata that need to be joined.
+   * The array of streams to join.
    */
-  entries: IActorQueryOperationOutputBindings[];
+  entries: IJoinEntry[];
+}
+
+/**
+ * A joinable entry.
+ */
+export interface IJoinEntry {
+  /**
+   * A (lazy) resolved bindings stream, from which metadata may be obtained.
+   */
+  output: IActorQueryOperationOutputBindings;
+  /**
+   * The original query operation from which the bindings stream was produced.
+   */
+  operation: Algebra.Operation;
 }

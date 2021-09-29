@@ -78,7 +78,7 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
     );
 
     // Determine variables and metadata
-    const variables = ActorRdfJoin.joinVariables({ entries: [ left, right ]});
+    const variables = ActorRdfJoin.joinVariablesStreams([ left, right ]);
     const metadata = (): Promise<Record<string, any>> => Promise.all([ left, right ].map(x => getMetadata(x)))
       .then(metadatas => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
       .catch(() => Number.POSITIVE_INFINITY)

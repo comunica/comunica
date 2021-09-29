@@ -34,7 +34,8 @@
   "dependencies": {
     "@comunica/bus-query-operation": "^1.22.0",
     "@comunica/mediatortype-iterations": "^1.22.0",
-    "@comunica/types": "^1.22.0"
+    "@comunica/types": "^1.22.0",
+    "sparqlalgebrajs": "^3.0.3"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-join": "^1.9.2",
