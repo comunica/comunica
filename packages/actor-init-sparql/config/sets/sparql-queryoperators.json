@@ -6,6 +6,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-ask/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-empty/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-join/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-left-deep-smallest/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-single/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-construct/^1.0.0/components/context.jsonld",
@@ -59,6 +60,12 @@
     {
       "@id": "config-sets:sparql-queryoperators.json#mySliceQueryOperator",
       "@type": "ActorQueryOperationSlice",
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+    },
+
+    {
+      "@id": "config-sets:sparql-queryoperators.json#myJoinBgpQueryOperator",
+      "@type": "ActorQueryOperationBgpJoin",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
@@ -133,7 +140,9 @@
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
       "caqoj:mediatorJoin": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin",
-        "@type": "MediatorRace",
+        "@type": "MediatorNumberMin",
+        "field": "iterations",
+        "ignoreErrors": true,
         "cc:Mediator/bus": { "@id": "cbrj:Bus/RdfJoin" }
       }
     },

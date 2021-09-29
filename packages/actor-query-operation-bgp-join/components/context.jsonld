@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqobj": "npmd:@comunica/actor-query-operation-bgp-join/",
+      "files-caqobj": "caqobj:^1.0.0/",
+
+      "ActorQueryOperationBgpJoin": "caqobj:Actor/QueryOperation/BgpJoin"
+    }
+  ]
+}
