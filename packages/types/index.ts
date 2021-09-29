@@ -89,11 +89,6 @@ export interface IActorQueryOperationOutputUpdate extends IActorQueryOperationOu
   updateResult: Promise<void>;
 }
 
-/**
- * Binds a quad pattern term's position to a variable.
- */
-export type PatternBindings = Record<string, RDF.Variable>;
-
 export interface IActionQueryOperation extends IAction {
   /**
    * The query operation to handle.

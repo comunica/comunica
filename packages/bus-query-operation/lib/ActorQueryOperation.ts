@@ -11,7 +11,6 @@ import type {
   IActorQueryOperationOutputUpdate,
   IActorQueryOperationOutputStream,
   Bindings,
-  PatternBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -52,43 +51,6 @@ export type { IActorQueryOperationOutputUpdate };
  */
 export type { IActorQueryOperationOutputStream };
 
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { PatternBindings as IPatternBindings };
-
-/**
- * @type {string} Context entry for current metadata.
- *                I.e., the metadata that was used to determine the next BGP operation.
- * @value {any} A metadata hash.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BGP_CURRENTMETADATA = KeysQueryOperation.bgpCurrentMetadata;
-/**
- * @type {string} Context entry for an array of parent metadata.
- *                I.e., an array of the metadata that was present before materializing the current BGP operations.
- *                This can be passed in 'bgp' actions.
- *                The array entries should correspond to the pattern entries in the BGP.
- * @value {any} An array of metadata hashes.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BGP_PARENTMETADATA = KeysQueryOperation.bgpParentMetadata;
-/**
- * @type {string} Context entry for indicating which patterns were bound from variables.
- *                I.e., an array of the same length as the value of KeysQueryOperation.patternParentMetadata,
- *                where each array value corresponds to the pattern bindings for the corresponding pattern.
- * @value {any} An array of {@link PatternBindings}.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BGP_PATTERNBINDINGS = KeysQueryOperation.bgpPatternBindings;
-/**
- * @type {string} Context entry for parent metadata.
- *                I.e., the metadata that was present before materializing the current operation.
- *                This can be passed in 'pattern' actions.
- * @value {any} A metadata hash.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_PATTERN_PARENTMETADATA = KeysQueryOperation.patternParentMetadata;
 /**
  * @type {string} Context entry for query's base IRI.
  * @value {any} A string.

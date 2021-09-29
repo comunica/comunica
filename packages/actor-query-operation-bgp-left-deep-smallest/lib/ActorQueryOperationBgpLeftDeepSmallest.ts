@@ -3,13 +3,11 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type {
   Bindings,
   BindingsStream,
   IActorQueryOperationOutputBindings,
-  PatternBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
@@ -237,18 +235,15 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     ActorQueryOperation.validateQueryOutput(smallestPattern, 'bindings');
 
     // Materialize the remaining patterns for each binding in the stream.
-    const subContext = context && context
-      .set(KeysQueryOperation.bgpCurrentMetadata, metadatas[smallestId])
-      .set(KeysQueryOperation.bgpParentMetadata, remainingMetadatas);
+    const subContext = context;
     const bindingsStream: BindingsStream = ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
       smallestPattern.bindingsStream,
       remainingPatterns,
       async(patterns: { pattern: Algebra.Pattern; bindings: PatternBindings }[]) => {
         // Send the materialized patterns to the mediator for recursive BGP evaluation.
         const operation: Algebra.Bgp = { type: 'bgp', patterns: patterns.map(pat => pat.pattern) };
-        const bindings = patterns.map(pat => pat.bindings);
         return ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
-          { operation, context: subContext.set(KeysQueryOperation.bgpPatternBindings, bindings) },
+          { operation, context: subContext },
         )).bindingsStream;
       },
     );
@@ -263,3 +258,5 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     return { type: 'bindings', bindingsStream, variables, metadata, canContainUndefs: false };
   }
 }
+
+export type PatternBindings = Record<string, RDF.Variable>;

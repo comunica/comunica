@@ -62,32 +62,5 @@ describe('ActorQueryOperationBgpSingle', () => {
         }});
       });
     });
-
-    it('should run with a context with parent metadata and delegate the pattern to the mediator', () => {
-      const context = ActionContext({
-        [KeysQueryOperation.bgpParentMetadata]: [{
-          a: 'b',
-        }],
-      });
-      const op: any = { operation: { type: 'bgp', patterns: [ 'abc' ]}, context };
-      return actor.run(op).then(async output => {
-        expect(output).toMatchObject({
-          operated: {
-            context: ActionContext({
-              [KeysQueryOperation.patternParentMetadata]: { a: 'b' },
-              [KeysQueryOperation.operation]: op.operation,
-            }),
-            operation: 'abc',
-          },
-        });
-      });
-    });
-
-    it('should run without a context and delegate the pattern to the mediator', () => {
-      const op: any = { operation: { type: 'bgp', patterns: [ 'abc' ]}};
-      return actor.run(op).then(async output => {
-        expect(output).toMatchObject({ operated: { operation: 'abc' }});
-      });
-    });
   });
 });

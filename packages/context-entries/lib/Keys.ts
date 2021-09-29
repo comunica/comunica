@@ -92,31 +92,17 @@ export enum KeysQueryOperation {
    */
   operation = '@comunica/bus-query-operation:operation',
   /**
-   * @type {any} The current metadata.
-   *             I.e., the metadata that was used to determine the next BGP operation.
+   * @type {any} The metadata from the left streams within a join operation.
    */
-  bgpCurrentMetadata = '@comunica/bus-query-operation:bgpCurrentMetadata',
+  joinLeftMetadata = '@comunica/bus-query-operation:joinLeftMetadata',
   /**
-   * @range {any[]} An array of parent metadata.
-   *                I.e., an array of the metadata that was present before materializing the current BGP operations.
-   *                This can be passed in 'bgp' actions.
-   *                The array entries should correspond to the pattern entries in the BGP.
+   * @range {any[]} An array of metadata from the right streams within a join operation.
    */
-  bgpParentMetadata = '@comunica/bus-query-operation:bgpParentMetadata',
+  joinRightMetadatas = '@comunica/bus-query-operation:joinRightMetadatas',
   /**
-   * @range {IPatternBindings[]} Indicating which patterns were bound from variables.
-   *                             I.e., an array of the same length as the value of
-   *                             KeysQueryOperation.patternParentMetadata,
-   *                             where each array value corresponds to the pattern bindings
-   *                             for the corresponding pattern.
+   * @range {Bindings} Indicates the bindings that were used to bind the operation.
    */
-  bgpPatternBindings = '@comunica/bus-query-operation:bgpPatternBindings',
-  /**
-   * @range {any} Parent metadata hash.
-   *              I.e., the metadata that was present before materializing the current operation.
-   *              This can be passed in 'pattern' actions.
-   */
-  patternParentMetadata = '@comunica/bus-query-operation:patternParentMetadata',
+  joinBindings = '@comunica/bus-query-operation:joinBindings',
   /**
    * @range {boolean} Flag for indicating that only read operations are allowed, defaults to false.
    */
