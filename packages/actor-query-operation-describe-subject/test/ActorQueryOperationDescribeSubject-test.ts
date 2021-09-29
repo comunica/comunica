@@ -19,7 +19,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         if (arg.operation.input.type === 'join') {
           const patterns = [ ...arg.operation.input.left.patterns, ...arg.operation.input.right.patterns ];
           return {
-            metadata: () => Promise.resolve({ totalItems: arg.operation.input.left.patterns.length +
+            metadata: () => Promise.resolve({ cardinality: arg.operation.input.left.patterns.length +
             arg.operation.input.right.patterns.length }),
             quadStream: new ArrayIterator(patterns.map(
               (pattern: RDF.Quad) => DF.quad(DF.namedNode(pattern.subject.value),
@@ -30,7 +30,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
           };
         }
         return {
-          metadata: () => Promise.resolve({ totalItems: arg.operation.input.patterns.length }),
+          metadata: () => Promise.resolve({ cardinality: arg.operation.input.patterns.length }),
           quadStream: new ArrayIterator(arg.operation.input.patterns.map(
             (pattern: RDF.Quad) => DF.quad(DF.namedNode(pattern.subject.value),
               DF.namedNode(pattern.predicate.value),
@@ -86,7 +86,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 2 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('a'), DF.namedNode('__predicate'), DF.namedNode('__object')),
@@ -105,7 +105,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('dummy')),
@@ -125,7 +125,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 4 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 4 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('c'), DF.namedNode('__predicate'), DF.namedNode('__object')),

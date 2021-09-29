@@ -22,7 +22,7 @@ describe('ActorQueryOperationAsk', () => {
           Bindings({ a: DF.literal('2') }),
           Bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
@@ -31,7 +31,7 @@ describe('ActorQueryOperationAsk', () => {
     mediatorQueryOperationEmpty = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
@@ -43,7 +43,7 @@ describe('ActorQueryOperationAsk', () => {
         setImmediate(() => bindingsStream.emit('error', new Error('Error!')));
         resolve({
           bindingsStream,
-          metadata: () => Promise.resolve({ totalItems: 0 }),
+          metadata: () => Promise.resolve({ cardinality: 0 }),
           operated: arg,
           type: 'bindings',
           variables: [ 'a' ],
@@ -53,7 +53,7 @@ describe('ActorQueryOperationAsk', () => {
     mediatorQueryOperationInf = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: range(0, Number.POSITIVE_INFINITY),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],

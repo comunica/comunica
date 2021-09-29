@@ -24,7 +24,7 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
   protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     return {
       bindingsStream: new ArrayIterator([], { autoStart: false }),
-      metadata: () => Promise.resolve({ totalItems: 0 }),
+      metadata: () => Promise.resolve({ cardinality: 0 }),
       type: 'bindings',
       variables: ActorRdfJoin.joinVariables(action),
       canContainUndefs: false,

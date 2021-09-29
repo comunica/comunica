@@ -172,10 +172,10 @@ export class FederatedQuadSource implements IQuadSource {
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     // Counters for our metadata
-    const metadata: Record<string, any> = { totalItems: 0 };
+    const metadata: Record<string, any> = { cardinality: 0 };
     let remainingSources = this.sources.length;
 
-    // Anonymous function to handle totalItems from metadata
+    // Anonymous function to handle cardinality from metadata
     const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
       pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>): void => {
       if (this.skipEmptyPatterns && !currentTotalItems && pattern && !this.isSourceEmpty(source, pattern)) {
@@ -216,22 +216,22 @@ export class FederatedQuadSource implements IQuadSource {
         this.isSourceEmpty(source, pattern = this.algebraFactory
           .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
-        output.data.setProperty('metadata', { totalItems: 0 });
+        output.data.setProperty('metadata', { cardinality: 0 });
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
 
       // Handle the metadata from this source
       output.data.getProperty('metadata', (subMetadata: Record<string, any>) => {
-        if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !Number.isFinite(subMetadata.totalItems)) {
+        if ((!subMetadata.cardinality && subMetadata.cardinality !== 0) || !Number.isFinite(subMetadata.cardinality)) {
           // We're already at infinite, so ignore any later metadata
-          metadata.totalItems = Number.POSITIVE_INFINITY;
+          metadata.cardinality = Number.POSITIVE_INFINITY;
           remainingSources = 0;
           checkEmitMetadata(Number.POSITIVE_INFINITY, source, pattern, subMetadata);
         } else {
-          metadata.totalItems += subMetadata.totalItems;
+          metadata.cardinality += subMetadata.cardinality;
           remainingSources--;
-          checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
+          checkEmitMetadata(subMetadata.cardinality, source, pattern, subMetadata);
         }
       });
 

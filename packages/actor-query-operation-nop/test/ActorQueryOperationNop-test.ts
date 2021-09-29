@@ -21,7 +21,7 @@ describe('ActorQueryOperationNop', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
@@ -53,7 +53,7 @@ describe('ActorQueryOperationNop', () => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(output.variables).toEqual([]);
         expect(output.canContainUndefs).toEqual(false);
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: 1 });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 1 });
       });
     });
   });

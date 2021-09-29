@@ -40,7 +40,7 @@ describe('ActorRdfJoinMultiBind', () => {
               Bindings({ '?bound': DF.namedNode('ex:bound2') }),
               Bindings({ '?bound': DF.namedNode('ex:bound3') }),
             ], { autoStart: false }),
-            metadata: () => Promise.resolve({ totalItems: 3 }),
+            metadata: () => Promise.resolve({ cardinality: 3 }),
             type: 'bindings',
             variables: [ 'bound' ],
             canContainUndefs: false,
@@ -57,19 +57,19 @@ describe('ActorRdfJoinMultiBind', () => {
           entries: [
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
               },
               operation: <any> {},
             },
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 2 }),
+                metadata: () => Promise.resolve({ cardinality: 2 }),
               },
               operation: <any> {},
             },
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 5 }),
+                metadata: () => Promise.resolve({ cardinality: 5 }),
               },
               operation: <any> {},
             },
@@ -82,13 +82,13 @@ describe('ActorRdfJoinMultiBind', () => {
           entries: [
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
               },
               operation: <any> { type: Algebra.types.EXTEND },
             },
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 2 }),
+                metadata: () => Promise.resolve({ cardinality: 2 }),
               },
               operation: <any> {},
             },
@@ -101,13 +101,13 @@ describe('ActorRdfJoinMultiBind', () => {
           entries: [
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
               },
               operation: <any> { type: Algebra.types.GROUP },
             },
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 2 }),
+                metadata: () => Promise.resolve({ cardinality: 2 }),
               },
               operation: <any> {},
             },
@@ -120,13 +120,13 @@ describe('ActorRdfJoinMultiBind', () => {
           entries: [
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
               },
               operation: <any> {},
             },
             {
               output: <any> {
-                metadata: () => Promise.resolve({ totalItems: 2 }),
+                metadata: () => Promise.resolve({ cardinality: 2 }),
               },
               operation: <any> { type: Algebra.types.GROUP },
             },
@@ -147,13 +147,13 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 3 }),
+              metadata: () => Promise.resolve({ cardinality: 3 }),
             },
             operation: <any> {},
           },
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2 }),
             },
             operation: <any> {},
           },
@@ -164,19 +164,19 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 3 }),
+              metadata: () => Promise.resolve({ cardinality: 3 }),
             },
             operation: <any> {},
           },
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2 }),
             },
             operation: <any> {},
           },
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 5 }),
+              metadata: () => Promise.resolve({ cardinality: 5 }),
             },
             operation: <any> {},
           },
@@ -187,19 +187,19 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 3 }),
+              metadata: () => Promise.resolve({ cardinality: 3 }),
             },
             operation: <any> {},
           },
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 3 }),
+              metadata: () => Promise.resolve({ cardinality: 3 }),
             },
             operation: <any> {},
           },
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 3 }),
+              metadata: () => Promise.resolve({ cardinality: 3 }),
             },
             operation: <any> {},
           },
@@ -210,19 +210,19 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 3 }),
+              metadata: () => Promise.resolve({ cardinality: 3 }),
             },
             operation: <any> {},
           },
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2 }),
             },
             operation: <any> {},
           },
           {
             output: <any> {
-              metadata: () => Promise.resolve({ totalItems: 5 }),
+              metadata: () => Promise.resolve({ cardinality: 5 }),
               canContainUndefs: true,
             },
             operation: <any> {},
@@ -243,7 +243,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?b': DF.namedNode('ex:b2') }),
                   Bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
                 type: 'bindings',
                 variables: [ 'a', 'b' ],
                 canContainUndefs: false,
@@ -256,7 +256,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?a': DF.namedNode('ex:a1') }),
                   Bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 1 }),
+                metadata: () => Promise.resolve({ cardinality: 1 }),
                 type: 'bindings',
                 variables: [ 'a' ],
                 canContainUndefs: false,
@@ -284,7 +284,7 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[1].operation,
-          metadata: { totalItems: 1 },
+          metadata: { cardinality: 1 },
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
@@ -293,8 +293,8 @@ describe('ActorRdfJoinMultiBind', () => {
           ]),
           context: ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
-            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }],
+            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3 }],
             [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a1') }),
           }),
         });
@@ -304,8 +304,8 @@ describe('ActorRdfJoinMultiBind', () => {
           ]),
           context: ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
-            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }],
+            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3 }],
             [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a2') }),
           }),
         });
@@ -324,7 +324,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?b': DF.namedNode('ex:b2') }),
                   Bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
                 type: 'bindings',
                 variables: [ 'a', 'b' ],
                 canContainUndefs: false,
@@ -337,7 +337,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?a': DF.namedNode('ex:a1') }),
                   Bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 1 }),
+                metadata: () => Promise.resolve({ cardinality: 1 }),
                 type: 'bindings',
                 variables: [ 'a' ],
                 canContainUndefs: false,
@@ -372,7 +372,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?b': DF.namedNode('ex:b2') }),
                   Bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
                 type: 'bindings',
                 variables: [ 'a', 'b' ],
                 canContainUndefs: false,
@@ -385,7 +385,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?a': DF.namedNode('ex:a1') }),
                   Bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 1 }),
+                metadata: () => Promise.resolve({ cardinality: 1 }),
                 type: 'bindings',
                 variables: [ 'a' ],
                 canContainUndefs: false,
@@ -421,7 +421,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?b': DF.namedNode('ex:b2') }),
                   Bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3 }),
                 type: 'bindings',
                 variables: [ 'a', 'b' ],
                 canContainUndefs: false,
@@ -435,7 +435,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?c': DF.namedNode('ex:c2') }),
                   Bindings({ '?c': DF.namedNode('ex:c3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 4 }),
+                metadata: () => Promise.resolve({ cardinality: 4 }),
                 type: 'bindings',
                 variables: [ 'a', 'c' ],
                 canContainUndefs: false,
@@ -448,7 +448,7 @@ describe('ActorRdfJoinMultiBind', () => {
                   Bindings({ '?a': DF.namedNode('ex:a1') }),
                   Bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ totalItems: 1 }),
+                metadata: () => Promise.resolve({ cardinality: 1 }),
                 type: 'bindings',
                 variables: [ 'a' ],
                 canContainUndefs: false,
@@ -476,7 +476,7 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[2].operation,
-          metadata: { totalItems: 1 },
+          metadata: { cardinality: 1 },
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
@@ -486,8 +486,8 @@ describe('ActorRdfJoinMultiBind', () => {
           ]),
           context: ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
-            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }, { totalItems: 4 }],
+            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3 }, { cardinality: 4 }],
             [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a1') }),
           }),
         });
@@ -498,8 +498,8 @@ describe('ActorRdfJoinMultiBind', () => {
           ]),
           context: ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { totalItems: 1 },
-            [KeysQueryOperation.joinRightMetadatas]: [{ totalItems: 3 }, { totalItems: 4 }],
+            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1 },
+            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3 }, { cardinality: 4 }],
             [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a2') }),
           }),
         });

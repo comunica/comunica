@@ -202,7 +202,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?p' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
       expect(output.canContainUndefs).toEqual(true);
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -223,7 +223,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?myP' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
       expect(output.canContainUndefs).toEqual(true);
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -249,7 +249,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?p' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
       expect(output.canContainUndefs).toEqual(true);
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -278,7 +278,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?myP' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
       expect(output.canContainUndefs).toEqual(true);
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -312,7 +312,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputQuads = <any> await actor.run(op);
 
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 2 });
 
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),

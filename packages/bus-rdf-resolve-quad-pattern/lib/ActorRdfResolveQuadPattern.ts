@@ -136,7 +136,7 @@ export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
    * The implementor is reponsible for handling cases where 'metadata'
    * is being called without the stream being in flow-mode.
    * This metadata object MUST be a hash, and MAY be empty.
-   * It is recommended to contain at least totalItems as an estimate of the number of quads that will be in the stream.
+   * It is recommended to contain at least cardinality as an estimate of the number of quads that will be in the stream.
    */
   data: AsyncIterator<RDF.Quad>;
 }

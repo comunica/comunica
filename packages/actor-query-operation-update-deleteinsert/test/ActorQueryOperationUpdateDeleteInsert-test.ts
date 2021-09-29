@@ -30,7 +30,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
@@ -244,7 +244,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     it('should run with insert and where without matches', async() => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
@@ -269,7 +269,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     it('should run with delete and where without matches', async() => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
@@ -294,7 +294,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     it('should run with insert, delete and where without matches', async() => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],

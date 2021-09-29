@@ -61,7 +61,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
           metadata: () => arg.operation.rejectMetadata ?
             Promise.reject(new Error('fail')) :
-            Promise.resolve({ totalItems: 3 }),
+            Promise.resolve({ cardinality: 3 }),
           operated: arg,
           type: 'bindings',
           variables: left ? [ '?a' ] : [ '?a', '?b' ],
@@ -114,7 +114,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
           Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
         expect(output.canContainUndefs).toEqual(true);
@@ -126,21 +126,21 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: { rejectMetadata: true }},
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
     it('should correctly handle rejecting promise in left', () => {
       const op: any = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: {}}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
     it('should correctly handle rejecting promise in right', () => {
       const op: any = { operation: { type: 'leftjoin', left: {}, right: { rejectMetadata: true }}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -154,7 +154,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
           Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
         expect(output.canContainUndefs).toEqual(true);
@@ -170,7 +170,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ]);
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
         expect(output.canContainUndefs).toEqual(true);
@@ -186,7 +186,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ]);
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
         expect(output.canContainUndefs).toEqual(true);

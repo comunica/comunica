@@ -127,7 +127,7 @@ describe('ActorQueryOperation', () => {
         mediatorQueryOperation = {
           mediate: (arg: any) => Promise.resolve({
             bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ totalItems: 0 }),
+            metadata: () => Promise.resolve({ cardinality: 0 }),
             operated: arg,
             type: 'bindings',
             variables: [ 'a' ],

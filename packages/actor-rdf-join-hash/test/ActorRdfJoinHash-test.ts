@@ -47,7 +47,7 @@ describe('ActorRdfJoinHash', () => {
         {
           output: {
             bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ totalItems: 4 }),
+            metadata: () => Promise.resolve({ cardinality: 4 }),
             type: 'bindings',
             variables: [],
             canContainUndefs: false,
@@ -57,7 +57,7 @@ describe('ActorRdfJoinHash', () => {
         {
           output: {
             bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ totalItems: 5 }),
+            metadata: () => Promise.resolve({ cardinality: 5 }),
             type: 'bindings',
             variables: [],
             canContainUndefs: false,
@@ -93,15 +93,15 @@ describe('ActorRdfJoinHash', () => {
 
     it('should generate correct test metadata', async() => {
       await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0].output).metadata()).totalItems +
-        (await (<any> action.entries[1].output).metadata()).totalItems);
+        (await (<any> action.entries[0].output).metadata()).cardinality +
+        (await (<any> action.entries[1].output).metadata()).cardinality);
     });
 
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IActorQueryOperationOutputBindings) => {
-        return expect((<any> result).metadata()).resolves.toHaveProperty('totalItems',
-          (await (<any> action.entries[0].output).metadata()).totalItems *
-          (await (<any> action.entries[1].output).metadata()).totalItems);
+        return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
+          (await (<any> action.entries[0].output).metadata()).cardinality *
+          (await (<any> action.entries[1].output).metadata()).cardinality);
       });
     });
 

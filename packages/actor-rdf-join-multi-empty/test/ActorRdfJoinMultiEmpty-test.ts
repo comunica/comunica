@@ -23,14 +23,14 @@ describe('ActorRdfJoinMultiEmpty', () => {
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ totalItems: 10 }),
+                metadata: () => Promise.resolve({ cardinality: 10 }),
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ totalItems: 15 }),
+                metadata: () => Promise.resolve({ cardinality: 15 }),
               },
               operation: <any> {},
             },
@@ -44,14 +44,14 @@ describe('ActorRdfJoinMultiEmpty', () => {
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ totalItems: 10 }),
+                metadata: () => Promise.resolve({ cardinality: 10 }),
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ totalItems: 0 }),
+                metadata: () => Promise.resolve({ cardinality: 0 }),
               },
               operation: <any> {},
             },
@@ -68,7 +68,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
               output: <any> {
                 type: 'bindings',
                 variables: [],
-                metadata: () => Promise.resolve({ totalItems: 10 }),
+                metadata: () => Promise.resolve({ cardinality: 10 }),
               },
               operation: <any> {},
             },
@@ -76,7 +76,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
               output: <any> {
                 type: 'bindings',
                 variables: [],
-                metadata: () => Promise.resolve({ totalItems: 15 }),
+                metadata: () => Promise.resolve({ cardinality: 15 }),
               },
               operation: <any> {},
             },
@@ -84,7 +84,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
         });
         expect(output.variables).toEqual([]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
-        expect(await output.metadata!()).toEqual({ totalItems: 0 });
+        expect(await output.metadata!()).toEqual({ cardinality: 0 });
       });
     });
   });

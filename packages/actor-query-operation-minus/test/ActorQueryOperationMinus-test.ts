@@ -26,7 +26,7 @@ describe('ActorQueryOperationMinus', () => {
       }),
     };
     left = {
-      metadata: () => Promise.resolve({ totalItems: 3 }),
+      metadata: () => Promise.resolve({ cardinality: 3 }),
       stream: new ArrayIterator([
         Bindings({ a: DF.literal('1') }),
         Bindings({ a: DF.literal('2') }),
@@ -37,7 +37,7 @@ describe('ActorQueryOperationMinus', () => {
       canContainUndefs: false,
     };
     rightNoCommons = {
-      metadata: () => Promise.resolve({ totalItems: 2 }),
+      metadata: () => Promise.resolve({ cardinality: 2 }),
       stream: new ArrayIterator([
         Bindings({ b: DF.literal('1') }),
         Bindings({ b: DF.literal('2') }),
@@ -47,7 +47,7 @@ describe('ActorQueryOperationMinus', () => {
       canContainUndefs: false,
     };
     right = {
-      metadata: () => Promise.resolve({ totalItems: 2 }),
+      metadata: () => Promise.resolve({ cardinality: 2 }),
       stream: new ArrayIterator([
         Bindings({ a: DF.literal('1') }),
         Bindings({ a: DF.literal('2') }),
@@ -97,7 +97,7 @@ describe('ActorQueryOperationMinus', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
@@ -110,7 +110,7 @@ describe('ActorQueryOperationMinus', () => {
     it('should run with a left stream without common variables', () => {
       const op: any = { operation: { type: 'union', input: [ left, rightNoCommons ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
@@ -137,7 +137,7 @@ describe('ActorQueryOperationMinus', () => {
         }),
       };
       left = {
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         stream: new ArrayIterator([
           Bindings({
             a: DF.literal('1'),
@@ -157,7 +157,7 @@ describe('ActorQueryOperationMinus', () => {
         canContainUndefs: false,
       };
       right = {
-        metadata: () => Promise.resolve({ totalItems: 2 }),
+        metadata: () => Promise.resolve({ cardinality: 2 }),
         stream: new ArrayIterator([
           Bindings({
             a: DF.literal('1'),
@@ -178,7 +178,7 @@ describe('ActorQueryOperationMinus', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(true);
@@ -207,7 +207,7 @@ describe('ActorQueryOperationMinus', () => {
         }),
       };
       left = {
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         stream: new ArrayIterator([
           Bindings({
             a: DF.literal('1'),
@@ -225,7 +225,7 @@ describe('ActorQueryOperationMinus', () => {
         canContainUndefs: true,
       };
       right = {
-        metadata: () => Promise.resolve({ totalItems: 2 }),
+        metadata: () => Promise.resolve({ cardinality: 2 }),
         stream: new ArrayIterator([
           Bindings({
             a: DF.literal('1'),
@@ -248,7 +248,7 @@ describe('ActorQueryOperationMinus', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(true);
@@ -277,7 +277,7 @@ describe('ActorQueryOperationMinus', () => {
         }),
       };
       left = {
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         stream: new ArrayIterator([
           Bindings({
             a: DF.literal('1'),
@@ -295,7 +295,7 @@ describe('ActorQueryOperationMinus', () => {
         canContainUndefs: true,
       };
       right = {
-        metadata: () => Promise.resolve({ totalItems: 2 }),
+        metadata: () => Promise.resolve({ cardinality: 2 }),
         stream: new ArrayIterator([
           Bindings({
             a: DF.literal('1'),
@@ -316,7 +316,7 @@ describe('ActorQueryOperationMinus', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'minus', input: [ left, right ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(true);

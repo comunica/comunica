@@ -54,8 +54,8 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     let metadata: (() => Promise<Record<string, any>>) | undefined;
     if (output.metadata) {
       metadata = () => (<() => Promise<Record<string, any>>> output.metadata)().then(meta => {
-        if (meta.totalItems) {
-          return { ...meta, totalItems: meta.totalItems * pattern.template.length };
+        if (meta.cardinality) {
+          return { ...meta, cardinality: meta.cardinality * pattern.template.length };
         }
         return meta;
       });

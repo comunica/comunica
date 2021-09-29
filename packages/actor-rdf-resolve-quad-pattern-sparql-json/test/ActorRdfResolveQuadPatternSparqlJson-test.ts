@@ -186,7 +186,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     it('should run', () => {
       return actor.run({ pattern, context }).then(async output => {
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: 3 });
+          .toEqual({ cardinality: 3 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s', 'p1', 'o'),
           quad('s', 'p2', 'o'),
@@ -211,7 +211,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Invalid SPARQL endpoint (http://ex) response: Error!')));
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
+          .toEqual({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -224,7 +224,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Error queryBindings')));
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
+          .toEqual({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -268,7 +268,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
+          .toEqual({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -312,7 +312,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
+          .toEqual({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -361,7 +361,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('The endpoint http://ex failed to provide a binding for p')));
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: 3 });
+          .toEqual({ cardinality: 3 });
       });
     });
 
@@ -405,7 +405,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: 3 });
+          .toEqual({ cardinality: 3 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s', 'p1', 'o'),
           quad('s', 'p2', 'o'),
@@ -430,7 +430,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Some stream error')));
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
+          .toEqual({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 

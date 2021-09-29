@@ -24,7 +24,7 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
   Promise<IActorQueryOperationOutputBindings> {
     return {
       bindingsStream: new SingletonIterator(Bindings({})),
-      metadata: () => Promise.resolve({ totalItems: 1 }),
+      metadata: () => Promise.resolve({ cardinality: 1 }),
       type: 'bindings',
       variables: [],
       canContainUndefs: false,

@@ -52,7 +52,7 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': DF.namedNode('v1') }];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 1 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 1 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
@@ -67,7 +67,7 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': DF.namedNode('v1') }, { '?v': DF.namedNode('v2') }];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 2 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
@@ -86,7 +86,7 @@ describe('ActorQueryOperationValues', () => {
       ];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 2 });
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
@@ -105,7 +105,7 @@ describe('ActorQueryOperationValues', () => {
       ];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 2 });
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(true);

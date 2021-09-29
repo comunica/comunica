@@ -72,7 +72,7 @@ describe('ActorQueryOperationExtend', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator(input),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
@@ -134,7 +134,7 @@ describe('ActorQueryOperationExtend', () => {
       ]);
 
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
       expect(output.variables).toMatchObject([ '?a', '?l' ]);
       expect(output.canContainUndefs).toEqual(false);
     });
@@ -149,7 +149,7 @@ describe('ActorQueryOperationExtend', () => {
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
       expect(output.variables).toMatchObject([ '?a', '?l' ]);
       expect(output.canContainUndefs).toEqual(false);
     });

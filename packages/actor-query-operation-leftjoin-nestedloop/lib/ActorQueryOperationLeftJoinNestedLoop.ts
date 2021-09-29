@@ -84,9 +84,9 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
 
     const variables = ActorRdfJoin.joinVariablesStreams([ left, right ]);
     const metadata = (): Promise<Record<string, any>> => Promise.all([ left, right ].map(x => getMetadata(x)))
-      .then(metadatas => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
+      .then(metadatas => metadatas.reduce((acc, val) => acc * val.cardinality, 1))
       .catch(() => Number.POSITIVE_INFINITY)
-      .then(totalItems => ({ totalItems }));
+      .then(cardinality => ({ cardinality }));
 
     return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: true };
   }

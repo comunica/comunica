@@ -21,7 +21,7 @@ describe('ActorQueryOperationPathInv', () => {
           Bindings({ '?x': DF.namedNode('2') }),
           Bindings({ '?x': DF.namedNode('3') }),
         ]),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],

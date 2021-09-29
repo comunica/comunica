@@ -43,7 +43,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
     // TODO: improve and use join-card bus
     return (await Promise.all(action.entries.map(entry => getMetadata(entry.output))))
-      .reduce((acc, value) => acc * value.totalItems, 1);
+      .reduce((acc, value) => acc * value.cardinality, 1);
   }
 }
 

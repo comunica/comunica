@@ -29,21 +29,21 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
   /**
    * Takes the union of the given metadata array.
-   * It will ensure that the totalItems metadata value is properly calculated.
+   * It will ensure that the cardinality metadata value is properly calculated.
    * @param {{[p: string]: any}[]} metadatas Array of metadata.
    * @return {{[p: string]: any}} Union of the metadata.
    */
   public static unionMetadata(metadatas: Record<string, any>[]): Record<string, any> {
-    let totalItems = 0;
+    let cardinality = 0;
     for (const metadata of metadatas) {
-      if (metadata.totalItems && Number.isFinite(metadata.totalItems)) {
-        totalItems += metadata.totalItems;
+      if (metadata.cardinality && Number.isFinite(metadata.cardinality)) {
+        cardinality += metadata.cardinality;
       } else {
-        totalItems = Number.POSITIVE_INFINITY;
+        cardinality = Number.POSITIVE_INFINITY;
         break;
       }
     }
-    return { totalItems };
+    return { cardinality };
   }
 
   public async testOperation(pattern: Algebra.Union, context: ActionContext): Promise<IActorTest> {

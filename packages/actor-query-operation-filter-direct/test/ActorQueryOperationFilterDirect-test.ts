@@ -37,7 +37,7 @@ describe('ActorQueryOperationFilterDirect', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
@@ -94,7 +94,7 @@ describe('ActorQueryOperationFilterDirect', () => {
         Bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
       expect(output.variables).toMatchObject([ 'a' ]);
       expect(output.canContainUndefs).toEqual(false);
     });
@@ -103,7 +103,7 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
       expect(output.canContainUndefs).toEqual(false);

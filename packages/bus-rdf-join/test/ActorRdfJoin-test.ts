@@ -48,7 +48,7 @@ describe('ActorRdfJoin', () => {
           variables: [],
           type: 'bindings',
           canContainUndefs: false,
-          metadata: async() => ({ totalItems: 10 }),
+          metadata: async() => ({ cardinality: 10 }),
         },
         operation: <any>{},
       },
@@ -58,7 +58,7 @@ describe('ActorRdfJoin', () => {
           variables: [],
           type: 'bindings',
           canContainUndefs: false,
-          metadata: async() => ({ totalItems: 5 }),
+          metadata: async() => ({ cardinality: 5 }),
         },
         operation: <any>{},
       },
@@ -178,11 +178,11 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should handle 0 metadata', () => {
-      return expect(ActorRdfJoin.getCardinality({ totalItems: 0 })).toEqual(0);
+      return expect(ActorRdfJoin.getCardinality({ cardinality: 0 })).toEqual(0);
     });
 
     it('should handle 5 metadata', () => {
-      return expect(ActorRdfJoin.getCardinality({ totalItems: 5 })).toEqual(5);
+      return expect(ActorRdfJoin.getCardinality({ cardinality: 5 })).toEqual(5);
     });
   });
 
@@ -207,31 +207,31 @@ describe('ActorRdfJoin', () => {
 
     it('should return 0 for 1 metadata', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { totalItems: 10 },
+        { cardinality: 10 },
       ])).toEqual(0);
     });
 
     it('should return 1 for 3 metadatas', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { totalItems: 20 },
-        { totalItems: 10 },
-        { totalItems: 30 },
+        { cardinality: 20 },
+        { cardinality: 10 },
+        { cardinality: 30 },
       ])).toEqual(1);
     });
 
     it('should return 0 for 3 infinite metadatas', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { totalItems: Number.POSITIVE_INFINITY },
-        { totalItems: Number.POSITIVE_INFINITY },
-        { totalItems: Number.POSITIVE_INFINITY },
+        { cardinality: Number.POSITIVE_INFINITY },
+        { cardinality: Number.POSITIVE_INFINITY },
+        { cardinality: Number.POSITIVE_INFINITY },
       ])).toEqual(0);
     });
 
     it('should return 1 for 2 infinite metadatas', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { totalItems: Number.POSITIVE_INFINITY },
-        { totalItems: 1_000 },
-        { totalItems: Number.POSITIVE_INFINITY },
+        { cardinality: Number.POSITIVE_INFINITY },
+        { cardinality: 1_000 },
+        { cardinality: Number.POSITIVE_INFINITY },
       ])).toEqual(1);
     });
   });
@@ -243,8 +243,8 @@ describe('ActorRdfJoin', () => {
 
     it('should handle entries', async() => {
       expect(await ActorRdfJoin.getMetadatas(action.entries)).toEqual([
-        { totalItems: 10 },
-        { totalItems: 5 },
+        { cardinality: 10 },
+        { cardinality: 5 },
       ]);
     });
   });
@@ -293,19 +293,19 @@ describe('ActorRdfJoin', () => {
 
     it('should return infinity if the left metadata object is missing', async() => {
       delete action.entries[0].output.metadata;
-      action.entries[1].output.metadata = () => Promise.resolve({ totalItems: 5 });
+      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 5 });
       await expect(instance.test(action)).resolves.toHaveProperty('iterations', Number.POSITIVE_INFINITY);
     });
 
     it('should return infinity if the right metadata object is missing', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ totalItems: 5 });
+      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5 });
       delete action.entries[1].output.metadata;
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', Number.POSITIVE_INFINITY);
     });
 
     it('should return a value if both metadata objects are present', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ totalItems: 5 });
-      action.entries[1].output.metadata = () => Promise.resolve({ totalItems: 5 });
+      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5 });
+      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 5 });
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', 5);
     });
 
@@ -362,7 +362,7 @@ describe('ActorRdfJoin', () => {
         expect(await arrayifyStream(result.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(result.variables).toEqual([]);
         expect(result.canContainUndefs).toEqual(false);
-        return expect(await result.metadata()).toEqual({ totalItems: 1 });
+        return expect(await result.metadata()).toEqual({ cardinality: 1 });
       });
     });
 
@@ -377,32 +377,32 @@ describe('ActorRdfJoin', () => {
       await expect(instance.run(action)).resolves.toEqual(await instance.getOutput(action));
     });
 
-    it('calculates totalItems if metadata is supplied', async() => {
-      action.entries[0].output.metadata = () => Promise.resolve({ totalItems: 5 });
-      action.entries[1].output.metadata = () => Promise.resolve({ totalItems: 10 });
+    it('calculates cardinality if metadata is supplied', async() => {
+      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5 });
+      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 10 });
       await instance.run(action).then(async(result: any) => {
         expect(result.canContainUndefs).toEqual(true);
-        return expect(await result.metadata()).toEqual({ totalItems: 50 });
+        return expect(await result.metadata()).toEqual({ cardinality: 50 });
       });
     });
 
     it('keeps generated metadata', async() => {
       const metaInstance = new Dummy({ keep: true });
-      action.entries[0].output.metadata = () => Promise.resolve({ totalItems: 5 });
-      action.entries[1].output.metadata = () => Promise.resolve({ totalItems: 10 });
+      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5 });
+      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 10 });
       await metaInstance.run(action).then(async(result: any) => {
         expect(result.canContainUndefs).toEqual(true);
-        return expect(await result.metadata()).toEqual({ keep: true, totalItems: 50 });
+        return expect(await result.metadata()).toEqual({ keep: true, cardinality: 50 });
       });
     });
 
-    it('does not overwrite calculated totalItems', async() => {
-      const metaInstance = new Dummy({ totalItems: 10 });
-      action.entries[0].output.metadata = () => Promise.resolve({ totalItems: 5 });
-      action.entries[1].output.metadata = () => Promise.resolve({ totalItems: 10 });
+    it('does not overwrite calculated cardinality', async() => {
+      const metaInstance = new Dummy({ cardinality: 10 });
+      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5 });
+      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 10 });
       await metaInstance.run(action).then(async(result: any) => {
         expect(result.canContainUndefs).toEqual(true);
-        return expect(await result.metadata()).toEqual({ totalItems: 10 });
+        return expect(await result.metadata()).toEqual({ cardinality: 10 });
       });
     });
   });

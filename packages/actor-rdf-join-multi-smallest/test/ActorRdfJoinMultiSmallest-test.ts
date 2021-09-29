@@ -63,7 +63,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 4 }),
+              metadata: () => Promise.resolve({ cardinality: 4 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -76,7 +76,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
                 Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 5 }),
+              metadata: () => Promise.resolve({ cardinality: 5 }),
               type: 'bindings',
               variables: [ 'a', 'c' ],
               canContainUndefs: false,
@@ -89,7 +89,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -106,7 +106,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 4 }),
+              metadata: () => Promise.resolve({ cardinality: 4 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -119,7 +119,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
                 Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 5 }),
+              metadata: () => Promise.resolve({ cardinality: 5 }),
               type: 'bindings',
               variables: [ 'a', 'c' ],
               canContainUndefs: false,
@@ -132,7 +132,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -145,7 +145,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
                 Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2 }),
               type: 'bindings',
               variables: [ 'a', 'd' ],
               canContainUndefs: false,
@@ -162,7 +162,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 4 }),
+              metadata: () => Promise.resolve({ cardinality: 4 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -188,7 +188,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ totalItems: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -224,7 +224,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual([ 'a', 'c', 'b' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 40 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 40 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1') }),
         Bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2') }),
@@ -240,7 +240,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual([ 'a', 'c', 'b', 'd' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 80 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 80 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1'), d: DF.literal('d1') }),
         Bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2'), d: DF.literal('d2') }),
@@ -253,7 +253,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       expect((<any> action4.entries[3]).called).toBe(0);
     });
 
-    it('should run on 3 streams with one not having any totalItems metadata value', async() => {
+    it('should run on 3 streams with one not having any cardinality metadata value', async() => {
       const output = await actor.run(action3PartialMeta);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual([ 'a', 'c', 'b' ]);

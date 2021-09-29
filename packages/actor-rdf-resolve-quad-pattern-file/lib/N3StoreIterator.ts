@@ -17,13 +17,13 @@ export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
     this.object = N3StoreIterator.nullifyVariables(object);
     this.graph = N3StoreIterator.nullifyVariables(graph);
 
-    const totalItems: number = store.countQuads(
+    const cardinality: number = store.countQuads(
       N3StoreIterator.nullifyVariables(subject),
       N3StoreIterator.nullifyVariables(predicate),
       N3StoreIterator.nullifyVariables(object),
       N3StoreIterator.nullifyVariables(graph),
     );
-    this.setProperty('metadata', { totalItems });
+    this.setProperty('metadata', { cardinality });
   }
 
   public static nullifyVariables(term?: RDF.Term): RDF.Term | null {

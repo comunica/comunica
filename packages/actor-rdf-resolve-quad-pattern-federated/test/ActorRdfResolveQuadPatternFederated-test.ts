@@ -19,7 +19,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
         ], { autoStart: false });
-        data.setProperty('metadata', { totalItems: 2 });
+        data.setProperty('metadata', { cardinality: 2 });
         return Promise.resolve({ data });
       },
     };
@@ -93,7 +93,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
       return actor.run({ pattern, context })
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-            .toEqual({ totalItems: 4 });
+            .toEqual({ cardinality: 4 });
           expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o1'),
@@ -115,7 +115,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
       return actor.run({ pattern, context })
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-            .toEqual({ totalItems: 4 });
+            .toEqual({ cardinality: 4 });
           expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([]);
         });
     });
@@ -131,7 +131,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
       });
       return expect(actor.run({ pattern, context })
         .then(output => new Promise(resolve => output.data.getProperty('metadata', resolve))))
-        .resolves.toEqual({ totalItems: 4 });
+        .resolves.toEqual({ cardinality: 4 });
     });
 
     it('should run when only data is called', () => {

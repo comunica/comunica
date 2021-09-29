@@ -136,14 +136,14 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const inputStream: Promise<EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
-    let totalItems = 0;
+    let cardinality = 0;
     const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map(rawData => {
-        totalItems++;
+        cardinality++;
         return quads ? rawData : Bindings(rawData);
       });
     inputStream.then(
-      subStream => subStream.on('end', () => stream.emit('metadata', { totalItems })),
+      subStream => subStream.on('end', () => stream.emit('metadata', { cardinality })),
       () => {
         // Do nothing
       },

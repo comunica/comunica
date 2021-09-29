@@ -179,7 +179,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
         ) })
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-            .toEqual({ totalItems: 8 });
+            .toEqual({ cardinality: 8 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
             quad('s1', 'p1', 'o2'),
@@ -201,7 +201,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
         ) })
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-            .toEqual({ totalItems: 4 });
+            .toEqual({ cardinality: 4 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
             quad('s1', 'p1', 'o2'),
@@ -219,7 +219,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
         ) })
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-            .toEqual({ totalItems: 0 });
+            .toEqual({ cardinality: 0 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([]);
         });
     });

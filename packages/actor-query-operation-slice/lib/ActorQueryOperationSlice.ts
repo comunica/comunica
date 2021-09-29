@@ -69,14 +69,14 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
       undefined :
       () => (<() => Promise<Record<string, any>>>output.metadata)()
         .then(subMetadata => {
-          let { totalItems } = subMetadata;
-          if (Number.isFinite(totalItems)) {
-            totalItems = Math.max(0, totalItems - pattern.start);
+          let { cardinality } = subMetadata;
+          if (Number.isFinite(cardinality)) {
+            cardinality = Math.max(0, cardinality - pattern.start);
             if (hasLength) {
-              totalItems = Math.min(totalItems, pattern.length!);
+              cardinality = Math.min(cardinality, pattern.length!);
             }
           }
-          return { ...subMetadata, totalItems };
+          return { ...subMetadata, cardinality };
         });
   }
 }

@@ -154,16 +154,16 @@ export class RdfSourceSparql implements IQuadSource {
       bindingsStream.on('data', (bindings: Bindings) => {
         const count: RDF.Term = bindings.get('?count');
         if (count) {
-          const totalItems: number = Number.parseInt(count.value, 10);
-          if (Number.isNaN(totalItems)) {
-            return resolve({ totalItems: Number.POSITIVE_INFINITY });
+          const cardinality: number = Number.parseInt(count.value, 10);
+          if (Number.isNaN(cardinality)) {
+            return resolve({ cardinality: Number.POSITIVE_INFINITY });
           }
-          return resolve({ totalItems });
+          return resolve({ cardinality });
         }
-        return resolve({ totalItems: Number.POSITIVE_INFINITY });
+        return resolve({ cardinality: Number.POSITIVE_INFINITY });
       });
-      bindingsStream.on('error', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
-      bindingsStream.on('end', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
+      bindingsStream.on('error', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
+      bindingsStream.on('end', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
     })
       .then(metadata => quads.setProperty('metadata', metadata));
 

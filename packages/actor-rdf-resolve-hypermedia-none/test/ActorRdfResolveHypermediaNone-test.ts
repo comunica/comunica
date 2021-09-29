@@ -57,7 +57,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
       await expect(new Promise((resolve, reject) => {
         const stream = source.match(v, v, v, v);
         stream.getProperty('metadata', resolve);
-      })).resolves.toEqual({ totalItems: 2 });
+      })).resolves.toEqual({ cardinality: 2 });
       expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),

@@ -47,7 +47,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings),
-          metadata: () => Promise.resolve({ totalItems: distinct ? 1 : 3 }),
+          metadata: () => Promise.resolve({ cardinality: distinct ? 1 : 3 }),
           operated: arg,
           type: 'bindings',
           variables: vars,

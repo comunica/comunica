@@ -56,7 +56,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
           bindingsStream,
           metadata: () => arg.operation.rejectMetadata ?
             Promise.reject(new Error('fail')) :
-            Promise.resolve({ totalItems: (arg.context || ActionContext({})).get('totalItems') }),
+            Promise.resolve({ cardinality: (arg.context || ActionContext({})).get('cardinality') }),
           type: 'bindings',
           variables: (arg.context || ActionContext({})).get('variables') || [],
           canContainUndefs: false,
@@ -104,11 +104,11 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -124,11 +124,11 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('+a'), DF.variable('b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -148,11 +148,11 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('a'), DF.variable('+b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -172,11 +172,11 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('+a'), DF.variable('+b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -204,11 +204,11 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -223,11 +223,11 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
         factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -246,9 +246,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       operation.input[0].rejectMetadata = true;
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -258,9 +258,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       operation.input[1].rejectMetadata = true;
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -271,9 +271,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       );
       operation.input[0].rejectMetadata = true;
       operation.input[1].rejectMetadata = true;
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
+        expect(await (<any> output).metadata()).toMatchObject({ cardinality: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -283,11 +283,11 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('2'), DF.namedNode('b')),
         factory.createTermExpression(DF.namedNode('EXPRESSION')),
       );
-      const op: any = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      const op: any = { operation, context: ActionContext({ cardinality: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({

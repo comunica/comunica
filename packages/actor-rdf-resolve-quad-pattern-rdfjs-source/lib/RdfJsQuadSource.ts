@@ -42,10 +42,10 @@ export class RdfJsQuadSource implements IQuadSource {
     object: RDF.Term,
     graph: RDF.Term,
   ): Promise<void> {
-    let totalItems: number;
+    let cardinality: number;
     if (this.source.countQuads) {
       // If the source provides a dedicated method for determining cardinality, use that.
-      totalItems = await this.source.countQuads(
+      cardinality = await this.source.countQuads(
         RdfJsQuadSource.nullifyVariables(subject),
         RdfJsQuadSource.nullifyVariables(predicate),
         RdfJsQuadSource.nullifyVariables(object),
@@ -56,7 +56,7 @@ export class RdfJsQuadSource implements IQuadSource {
       // WARNING: we can NOT reuse the original data stream here,
       // because we may loose data elements due to things happening async.
       let i = 0;
-      totalItems = await new Promise((resolve, reject) => {
+      cardinality = await new Promise((resolve, reject) => {
         const matches = this.source.match(
           RdfJsQuadSource.nullifyVariables(subject),
           RdfJsQuadSource.nullifyVariables(predicate),
@@ -68,6 +68,6 @@ export class RdfJsQuadSource implements IQuadSource {
         matches.on('data', () => i++);
       });
     }
-    it.setProperty('metadata', { totalItems });
+    it.setProperty('metadata', { cardinality });
   }
 }

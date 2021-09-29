@@ -21,7 +21,7 @@ describe('ActorQueryOperationPathAlt', () => {
           Bindings({ '?x': DF.literal('2') }),
           Bindings({ '?x': DF.literal('3') }),
         ]),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],

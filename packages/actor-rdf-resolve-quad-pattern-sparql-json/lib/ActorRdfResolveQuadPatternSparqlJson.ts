@@ -137,21 +137,21 @@ export class ActorRdfResolveQuadPatternSparqlJson
         bindingsStream.on('data', (bindings: Bindings) => {
           const count: RDF.Term = bindings.get('?count');
           if (count) {
-            const totalItems: number = Number.parseInt(count.value, 10);
-            if (Number.isNaN(totalItems)) {
-              return resolve({ totalItems: Number.POSITIVE_INFINITY });
+            const cardinality: number = Number.parseInt(count.value, 10);
+            if (Number.isNaN(cardinality)) {
+              return resolve({ cardinality: Number.POSITIVE_INFINITY });
             }
-            return resolve({ totalItems });
+            return resolve({ cardinality });
           }
-          return resolve({ totalItems: Number.POSITIVE_INFINITY });
+          return resolve({ cardinality: Number.POSITIVE_INFINITY });
         });
-        bindingsStream.on('error', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
-        bindingsStream.on('end', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
+        bindingsStream.on('error', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
+        bindingsStream.on('end', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
       }))
       .then(metadata => data.setProperty('metadata', metadata))
       .catch(error => {
         data.destroy(error);
-        data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
+        data.setProperty('metadata', { cardinality: Number.POSITIVE_INFINITY });
       });
 
     // Materialize the queried pattern using each found binding.

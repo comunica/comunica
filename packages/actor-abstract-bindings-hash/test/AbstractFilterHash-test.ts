@@ -24,7 +24,7 @@ describe('AbstractFilterHash', () => {
           Bindings({ a: DF.literal('3') }),
           Bindings({ a: DF.literal('2') }),
         ]),
-        metadata: () => Promise.resolve({ totalItems: 5 }),
+        metadata: () => Promise.resolve({ cardinality: 5 }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],

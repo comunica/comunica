@@ -34,7 +34,7 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    return (await getMetadata(action.entries[0].output)).totalItems *
-      (await getMetadata(action.entries[1].output)).totalItems;
+    return (await getMetadata(action.entries[0].output)).cardinality *
+      (await getMetadata(action.entries[1].output)).cardinality;
   }
 }

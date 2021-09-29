@@ -30,7 +30,7 @@ export class ActorRdfMetadataExtractHydraCountQuery extends ActorRdfMetadataExtr
     }
     return {
       metadata: {
-        totalItems: 'totalItems' in queryData ? queryData.totalItems : Number.POSITIVE_INFINITY,
+        cardinality: 'totalItems' in queryData ? queryData.totalItems : Number.POSITIVE_INFINITY,
       },
     };
   }

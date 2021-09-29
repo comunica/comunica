@@ -19,7 +19,7 @@ describe('ActorQueryOperationLoad', () => {
         quadStream: new ArrayIterator([
           DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 1 }),
+        metadata: () => Promise.resolve({ cardinality: 1 }),
         type: 'quads',
       })),
     };
@@ -142,7 +142,7 @@ describe('ActorQueryOperationLoad', () => {
       };
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         quadStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         type: 'quads',
       });
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);

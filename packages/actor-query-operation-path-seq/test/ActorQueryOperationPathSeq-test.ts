@@ -43,7 +43,7 @@ describe('ActorQueryOperationPathSeq', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({ totalItems: 3 }),
+          metadata: () => Promise.resolve({ cardinality: 3 }),
           operated: arg,
           type: 'bindings',
           variables: vars,
@@ -67,7 +67,7 @@ describe('ActorQueryOperationPathSeq', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({ totalItems: 3 }),
+          metadata: () => Promise.resolve({ cardinality: 3 }),
           operated: arg,
           type: 'bindings',
           variables: arg.entries[0].output.variables.concat(arg.entries[1].output.variables),

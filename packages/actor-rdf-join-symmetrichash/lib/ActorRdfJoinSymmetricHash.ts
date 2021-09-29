@@ -47,7 +47,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    return (await getMetadata(action.entries[0].output)).totalItems +
-      (await getMetadata(action.entries[1].output)).totalItems;
+    return (await getMetadata(action.entries[0].output)).cardinality +
+      (await getMetadata(action.entries[1].output)).cardinality;
   }
 }
