@@ -44,5 +44,11 @@ describe('ActorRdfMetadataExtractPatchSparqlUpdate', () => {
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers }))
         .resolves.toEqual({ metadata: { patchSparqlUpdate: true }});
     });
+
+    it('should run with valid ms-author-via header', () => {
+      const headers = { 'ms-author-via': 'SPARQL' };
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers }))
+        .resolves.toEqual({ metadata: { patchSparqlUpdate: true }});
+    });
   });
 });
