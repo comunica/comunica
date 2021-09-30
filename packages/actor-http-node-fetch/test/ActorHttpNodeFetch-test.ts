@@ -1,11 +1,14 @@
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
+import { Readable } from 'stream';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
+import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 import { mocked } from 'ts-jest/utils';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
+const streamifyString = require('streamify-string');
 
 // Mock fetch
 (<any> global).fetch = jest.fn((input: any, init: any) => {
@@ -279,7 +282,48 @@ describe('ActorHttpNodeFetch', () => {
       expect((<any> response.body).destroy).toHaveBeenCalledWith(closeError);
     });
 
+    it('should run with a Node.js body', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      const body = <any> new Readable();
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }});
+
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        {
+          body,
+          agent: expect.anything(),
+          headers: expect.anything(),
+        },
+      );
+    });
+
+    it('should run with a Web stream body', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      const body = ActorHttp.toWebReadableStream(streamifyString('a'));
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }});
+
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        {
+          body: expect.any(ReadableWebToNodeStream),
+          agent: expect.anything(),
+          headers: expect.anything(),
+        },
+      );
+    });
+
     it('should run with a custom fetch function', async() => {
+      const customFetch = jest.fn(async() => ({}));
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({ [KeysHttp.fetch]: customFetch }),
+      });
+
+      expect(fetch).not.toHaveBeenCalled();
+      expect(customFetch).toHaveBeenCalled();
+    });
+
+    it('should run with headers and a custom fetch function to trigger temporary workaround', async() => {
       const customFetch = jest.fn(async() => ({}));
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
