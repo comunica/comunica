@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.22.2"></a>
+## [v1.22.2](https://github.com/comunica/comunica/compare/v1.22.1...v1.22.2) - 2021-09-30
+
+### Changed
+* [Include HTTP response in update error messages](https://github.com/comunica/comunica/commit/138558e68f37110bf63fb7d26780a709672cc441)
+* [Allow patchSparqlUpdate destinations to not exist when forced](https://github.com/comunica/comunica/commit/6dd89e495ef26a0e96b2eb42cf489673c4d549f2)
+* [Extract ms-author-via header for SPARQL updates, to support older Solid servers](https://github.com/comunica/comunica/commit/1c40a60b8fcd0919b0ebb63dd4e9c6b1c3b5cae2)
+* [Pass optional headers in dereference errors](https://github.com/comunica/comunica/commit/f0633f01154d70229a95762170297c4abb09a791)
+
+### Fixed
+* [Fix fetch actor ignoring request bodies in Node.js](https://github.com/comunica/comunica/commit/65d4041695adb7d35dda080647dfe0d9cbdd249d)
+* [Add temporary workaround for loss of Headers on Solid auth requests](https://github.com/comunica/comunica/commit/e92e5171b1a2c9d6eb427117041ebb9ea622790c)
+
 <a name="v1.22.1"></a>
 ## [v1.22.1](https://github.com/comunica/comunica/compare/v1.22.0...v1.22.1) - 2021-09-22
 

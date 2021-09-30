@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-dereference",
-  "version": "1.22.0",
+  "version": "1.22.2",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": true,
   "main": "index.js",

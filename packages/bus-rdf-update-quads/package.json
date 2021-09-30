@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-update-quads",
-  "version": "1.22.0",
+  "version": "1.22.2",
   "description": "A comunica bus for rdf-update-quads events.",
   "lsd:module": true,
   "main": "index.js",
