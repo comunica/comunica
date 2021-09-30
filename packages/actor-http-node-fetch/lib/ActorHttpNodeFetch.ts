@@ -55,6 +55,11 @@ export class ActorHttpNodeFetch extends ActorHttp {
       method: action.init!.method || 'GET',
     }));
 
+    // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
+    if (action.init && action.init.headers && 'append' in action.init.headers && action.context?.has(KeysHttp.fetch)) {
+      action.init.headers = ActorHttp.headersToHash(action.init.headers);
+    }
+
     // Perform request
     const customFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response> = action
       .context?.get(KeysHttp.fetch);
