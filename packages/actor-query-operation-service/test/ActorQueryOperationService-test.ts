@@ -124,7 +124,7 @@ describe('ActorQueryOperationService', () => {
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
 
-    it('should run and use auto source type when forceSparqlEndpoint is disabled', () => {
+    it('should run and use undefined source type when forceSparqlEndpoint is disabled', () => {
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
       const actorThis = new ActorQueryOperationService(
         { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' },
@@ -132,7 +132,7 @@ describe('ActorQueryOperationService', () => {
 
       return actorThis.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources')[0].type)
-          .toEqual('auto');
+          .toEqual(undefined);
         expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.canContainUndefs).toEqual(true);
