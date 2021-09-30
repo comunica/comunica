@@ -105,7 +105,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       }
       if (!action.acceptErrors) {
         const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
-        return this.handleDereferenceError(action, error);
+        return this.handleDereferenceError(action, error, outputHeaders);
       }
     }
 
@@ -142,7 +142,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     } catch (error: unknown) {
       // Close the body, to avoid process to hang
       await httpResponse.body!.cancel();
-      return this.handleDereferenceError(action, error);
+      return this.handleDereferenceError(action, error, outputHeaders);
     }
 
     const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
