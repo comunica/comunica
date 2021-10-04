@@ -31,6 +31,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/context-entries": "^1.22.0",
     "@comunica/types": "^1.22.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.2.0",

@@ -1,11 +1,15 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
+
+import type { IQueryExplained } from '@comunica/types';
+
 jest.unmock('follow-redirects');
 
 import type * as RDF from '@rdfjs/types';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
+import { Factory } from 'sparqlalgebrajs';
 import type { ActorInitSparql, IQueryResultUpdate } from '../../index-browser';
 import { newEngine } from '../../index-browser';
 import type { IQueryResultBindings } from '../../lib/ActorInitSparql-browser';
@@ -14,6 +18,7 @@ import 'jest-rdf';
 const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
+const factory = new Factory();
 
 describe('System test: ActorInitSparql', () => {
   const pollyContext = mockHttp();
@@ -543,6 +548,105 @@ describe('System test: ActorInitSparql', () => {
         expect(store
           .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
           .toEqual(1);
+      });
+    });
+  });
+
+  describe('queryOrExplain', () => {
+    describe('a simple SPO on a raw RDF document', () => {
+      it('explaining parsing', async() => {
+        const result = <IQueryExplained> await engine.queryOrExplain(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, {
+          sources: [ 'https://www.rubensworks.net/' ],
+          explain: 'parsed',
+        });
+        expect(result).toEqual({
+          explain: true,
+          type: 'parsed',
+          data: {
+            input: {
+              patterns: [
+                factory.createPattern(
+                  DF.variable('s'),
+                  DF.variable('p'),
+                  DF.variable('o'),
+                ),
+              ],
+              type: 'bgp',
+            },
+            type: 'project',
+            variables: [
+              DF.variable('s'),
+              DF.variable('p'),
+              DF.variable('o'),
+            ],
+          },
+        });
+      });
+
+      it('explaining logical plan', async() => {
+        const result = <IQueryExplained> await engine.queryOrExplain(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, {
+          sources: [ 'https://www.rubensworks.net/' ],
+          explain: 'logical',
+        });
+        expect(result).toEqual({
+          explain: true,
+          type: 'logical',
+          data: {
+            input: {
+              patterns: [
+                factory.createPattern(
+                  DF.variable('s'),
+                  DF.variable('p'),
+                  DF.variable('o'),
+                ),
+              ],
+              type: 'bgp',
+            },
+            type: 'project',
+            variables: [
+              DF.variable('s'),
+              DF.variable('p'),
+              DF.variable('o'),
+            ],
+          },
+        });
+      });
+
+      it('explaining physical plan', async() => {
+        const result = <IQueryExplained> await engine.queryOrExplain(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, {
+          sources: [ 'https://www.rubensworks.net/' ],
+          explain: 'physical',
+        });
+        expect(result).toEqual({
+          explain: true,
+          type: 'physical',
+          data: {
+            logical: 'project',
+            variables: [ 's', 'p', 'o' ],
+            children: [
+              {
+                logical: 'bgp',
+                children: [
+                  {
+                    logical: 'join',
+                    children: [
+                      {
+                        logical: 'pattern',
+                        pattern: '?s ?p ?o',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        });
       });
     });
   });

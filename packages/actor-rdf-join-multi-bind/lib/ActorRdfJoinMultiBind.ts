@@ -1,5 +1,5 @@
 import { ActorQueryOperation, getMetadata, materializeOperation } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
@@ -23,7 +23,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiBindArgs) {
-    super(args, undefined, undefined, true);
+    super(args, 'bind', undefined, undefined, true);
   }
 
   /**
@@ -77,7 +77,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     return canContainUndefs ? 0 : ActorRdfJoin.getLowestCardinalityIndex(metadatas);
   }
 
-  public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
+  public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Find the stream with lowest cardinality
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
     const smallestIndex: number = await ActorRdfJoinMultiBind.getLeftEntryIndex(action.entries);
@@ -119,10 +119,17 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     );
 
     return {
-      type: 'bindings',
-      bindingsStream,
-      variables: ActorRdfJoin.joinVariables(action),
-      canContainUndefs: action.entries.some(entry => entry.output.canContainUndefs),
+      result: {
+        type: 'bindings',
+        bindingsStream,
+        variables: ActorRdfJoin.joinVariables(action),
+        canContainUndefs: action.entries.some(entry => entry.output.canContainUndefs),
+      },
+      physicalPlanMetadata: {
+        cardinalities: metadatas.map(ActorRdfJoin.getCardinality),
+        bindIndex: smallestIndex,
+        bindOrder: this.bindOrder,
+      },
     };
   }
 

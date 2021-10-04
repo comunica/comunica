@@ -33,10 +33,11 @@ import type {
   IActorQueryOperationOutputBoolean,
   IActorQueryOperationOutputUpdate,
   Bindings,
-  IQueryEngine,
+  IQueryEngine, IQueryExplained, IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
+import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 
 /**
  * A browser-safe comunica SPARQL Init Actor.
@@ -128,9 +129,26 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
    * Evaluate the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
    * @param context An optional query context.
-   * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
+   * @return {Promise<IQueryResult>} A promise that resolves to the query output.
    */
   public async query(query: string | Algebra.Operation, context?: any): Promise<IQueryResult> {
+    const output = await this.queryOrExplain(query, context);
+    if ('explain' in output) {
+      throw new Error(`Tried to explain a query when in query-only mode`);
+    }
+    return output;
+  }
+
+  /**
+   * Evaluate or explain the given query
+   * @param {string | Algebra.Operation} query A query string or algebra.
+   * @param context An optional query context.
+   * @return {Promise<IQueryResult | IQueryExplained>} A promise that resolves to the query output or explanation.
+   */
+  public async queryOrExplain(
+    query: string | Algebra.Operation,
+    context?: any,
+  ): Promise<IQueryResult | IQueryExplained> {
     context = context || {};
 
     // Expand shortcuts
@@ -179,6 +197,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
     // Pre-processing the context
     context = (await this.mediatorContextPreprocess.mediate({ context })).context;
 
+    // Determine explain mode
+    const explainMode = context.get(KeysInitSparql.explain);
+
     // Parse query
     let operation: Algebra.Operation;
     if (typeof query === 'string') {
@@ -192,6 +213,15 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
       operation = query;
     }
 
+    // Print parsed query
+    if (explainMode === 'parsed') {
+      return {
+        explain: true,
+        type: explainMode,
+        data: operation,
+      };
+    }
+
     // Apply initial bindings in context
     if (context.has(KeysInitSparql.initialBindings)) {
       const bindings = context.get(KeysInitSparql.initialBindings);
@@ -203,14 +233,56 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
     operation = mediatorResult.operation;
     context = mediatorResult.context || context;
 
+    // Print logical query plan
+    if (explainMode === 'logical') {
+      return {
+        explain: true,
+        type: explainMode,
+        data: operation,
+      };
+    }
+
     // Save original query in context
     context = context.set(KeysInitSparql.query, operation);
+
+    // If we need a physical query plan, store a physical query plan logger in the context, and collect it after exec
+    let physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined;
+    if (explainMode === 'physical') {
+      physicalQueryPlanLogger = new MemoryPhysicalQueryPlanLogger();
+      context = context.set(KeysInitSparql.physicalQueryPlanLogger, physicalQueryPlanLogger);
+    }
 
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
     let output = <IQueryResult> await this.mediatorQueryOperation.mediate(resolve);
     output = ActorInitSparql.enhanceQueryResults(output);
     output.context = context;
+
+    // Output physical query plan after query exec if needed
+    if (physicalQueryPlanLogger) {
+      // Make sure the whole result is produced
+      switch (output.type) {
+        case 'bindings':
+          await output.bindings();
+          break;
+        case 'quads':
+          await output.quads();
+          break;
+        case 'boolean':
+          await output.booleanResult;
+          break;
+        case 'update':
+          await output.updateResult;
+          break;
+      }
+
+      return {
+        explain: true,
+        type: explainMode,
+        data: physicalQueryPlanLogger.toJson(),
+      };
+    }
+
     return output;
   }
 

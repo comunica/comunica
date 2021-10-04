@@ -13,6 +13,7 @@ export * from './lib/cli/CliArgsHandlerBase';
 export * from './lib/cli/CliArgsHandlerHttp';
 export * from './lib/cli/CliArgsHandlerQuery';
 export * from './lib/cli/ICliArgsHandler';
+export * from './lib/MemoryPhysicalQueryPlanLogger';
 
 // eslint-disable-next-line no-duplicate-imports
 import type { ActorInitSparql } from './lib/ActorInitSparql';

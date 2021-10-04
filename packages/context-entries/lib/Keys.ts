@@ -84,6 +84,19 @@ export enum KeysInitSparql {
    * @range {ICliArgsHandler[]} Enables manipulation of the CLI arguments and their processing.
    */
   cliArgsHandlers = '@comunica/actor-init-sparql:cliArgsHandlers',
+  /**
+   * @range {string} Explain mode of the query. Can be 'parsed', 'logical', or 'physical'.
+   */
+  explain = '@comunica/actor-init-sparql:explain',
+  /**
+   * @range {IPhysicalQueryPlanLogger} Logs the used physical operators
+   */
+  physicalQueryPlanLogger = '@comunica/actor-init-sparql:physicalQueryPlanLogger',
+  /**
+   * @range {any} The current physical operator within the query plan.
+   *              This is used to pass parent-child relationships for invoking the query plan logger.
+   */
+  physicalQueryPlanNode = '@comunica/actor-init-sparql:physicalQueryPlanNode',
 }
 
 export enum KeysQueryOperation {

@@ -1,13 +1,12 @@
 import {
   getMetadata,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 import type { Bindings,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/types';
+  IActorQueryOperationOutput } from '@comunica/types';
 import { HashJoin } from 'asyncjoin';
 
 /**
@@ -15,7 +14,7 @@ import { HashJoin } from 'asyncjoin';
  */
 export class ActorRdfJoinHash extends ActorRdfJoin {
   public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
-    super(args, 2);
+    super(args, 'hash', 2);
   }
 
   /**
@@ -29,7 +28,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     return variables.filter(variable => bindings.has(variable)).map(variable => bindings.get(variable).value).join('');
   }
 
-  public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
+  public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const variables = ActorRdfJoin.overlappingVariables(action);
     const join = new HashJoin<Bindings, string, Bindings>(
       action.entries[0].output.bindingsStream,
@@ -38,10 +37,12 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       <any> ActorRdfJoin.joinBindings,
     );
     return {
-      type: 'bindings',
-      bindingsStream: join,
-      variables: ActorRdfJoin.joinVariables(action),
-      canContainUndefs: false,
+      result: {
+        type: 'bindings',
+        bindingsStream: join,
+        variables: ActorRdfJoin.joinVariables(action),
+        canContainUndefs: false,
+      },
     };
   }
 

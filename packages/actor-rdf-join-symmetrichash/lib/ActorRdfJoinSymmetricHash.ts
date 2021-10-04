@@ -1,13 +1,11 @@
 import {
   getMetadata,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { Bindings,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, IActorQueryOperationOutput } from '@comunica/types';
 import { SymmetricHashJoin } from 'asyncjoin';
 
 /**
@@ -15,7 +13,7 @@ import { SymmetricHashJoin } from 'asyncjoin';
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
   public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
-    super(args, 2);
+    super(args, 'symmetric-hash', 2);
   }
 
   /**
@@ -29,7 +27,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     return variables.filter(variable => bindings.has(variable)).map(variable => bindings.get(variable).value).join('');
   }
 
-  public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
+  public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const variables = ActorRdfJoin.overlappingVariables(action);
     const join = new SymmetricHashJoin<Bindings, string, Bindings>(
       action.entries[0].output.bindingsStream,
@@ -38,10 +36,12 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
       <any> ActorRdfJoin.joinBindings,
     );
     return {
-      type: 'bindings',
-      bindingsStream: join,
-      variables: ActorRdfJoin.joinVariables(action),
-      canContainUndefs: false,
+      result: {
+        type: 'bindings',
+        bindingsStream: join,
+        variables: ActorRdfJoin.joinVariables(action),
+        canContainUndefs: false,
+      },
     };
   }
 

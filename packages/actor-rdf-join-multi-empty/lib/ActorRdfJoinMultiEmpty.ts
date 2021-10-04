@@ -1,8 +1,8 @@
-import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IActorQueryOperationOutputBindings, IActorQueryOperationOutput } from '@comunica/types';
+import type { IActorQueryOperationOutput } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 
 /**
@@ -10,7 +10,7 @@ import { ArrayIterator } from 'asynciterator';
  */
 export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
   public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
-    super(args);
+    super(args, 'multi-empty');
   }
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeIterations> {
@@ -21,13 +21,18 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
     return super.test(action);
   }
 
-  protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
+  protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     return {
-      bindingsStream: new ArrayIterator([], { autoStart: false }),
-      metadata: () => Promise.resolve({ cardinality: 0 }),
-      type: 'bindings',
-      variables: ActorRdfJoin.joinVariables(action),
-      canContainUndefs: false,
+      result: {
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
+        type: 'bindings',
+        variables: ActorRdfJoin.joinVariables(action),
+        canContainUndefs: false,
+      },
+      physicalPlanMetadata: {
+        cardinalities: (await ActorRdfJoin.getMetadatas(action.entries)).map(ActorRdfJoin.getCardinality),
+      },
     };
   }
 

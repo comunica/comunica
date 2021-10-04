@@ -1,7 +1,7 @@
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import type { IActionQueryOperation, IActorQueryOperationOutput,
-  IActorQueryOperationOutputStream } from '@comunica/types';
+  IActorQueryOperationOutputStream, IPhysicalQueryPlanLogger } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from './ActorQueryOperation';
 
@@ -38,6 +38,21 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
   }
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
+    // Log to physical plan
+    if (action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+      const physicalQueryPlanLogger: IPhysicalQueryPlanLogger = action.context
+        .get(KeysInitSparql.physicalQueryPlanLogger);
+      physicalQueryPlanLogger.logOperation(
+        action.operation.type,
+        undefined,
+        action.operation,
+        action.context.get(KeysInitSparql.physicalQueryPlanNode),
+        this.name,
+        {},
+      );
+      action.context = action.context.set(KeysInitSparql.physicalQueryPlanNode, action.operation);
+    }
+
     const operation: O = <O> action.operation;
     const subContext = action.context && action.context.set(KeysQueryOperation.operation, operation);
     const output: IActorQueryOperationOutput = await this.runOperation(operation, subContext);

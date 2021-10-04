@@ -12,6 +12,7 @@ import {
 } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
+import type { IPhysicalQueryPlanLogger } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
@@ -117,6 +118,7 @@ describe('ActorInitSparql', () => {
     const sourceOther = 'other@http://example.org/';
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
     const context: any = JSON.stringify({ hypermedia: sourceHypermedia });
+    let input: Readable;
     let actor: ActorInitSparql;
     let actorFixedQuery: ActorInitSparql;
     let actorFixedContext: ActorInitSparql;
@@ -127,18 +129,29 @@ describe('ActorInitSparql', () => {
 
     beforeEach(() => {
       jest.resetAllMocks();
-      const input = new Readable({ objectMode: true });
+      input = new Readable({ objectMode: true });
       input._read = () => {
         const triple = { a: 'triple' };
         input.push(triple);
         input.push(null);
       };
       const factory = new Factory();
-      mediatorQueryOperation.mediate = (action: any) => {
+      mediatorQueryOperation.mediate = jest.fn((action: any) => {
+        if (action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+          (<IPhysicalQueryPlanLogger> action.context.get(KeysInitSparql.physicalQueryPlanLogger))
+            .logOperation(
+              'logicalOp',
+              'physicalOp',
+              {},
+              undefined,
+              'actor',
+              {},
+            );
+        }
         return action.operation !== 'INVALID' ?
-          Promise.resolve({ bindingsStream: input }) :
+          Promise.resolve({ type: 'bindings', bindingsStream: input }) :
           Promise.reject(new Error('Invalid query'));
-      };
+      });
       mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
         Promise.resolve({ operation: action.query }) :
         Promise.resolve({
@@ -308,12 +321,12 @@ describe('ActorInitSparql', () => {
       it('bindings() should return empty list if no solutions', async() => {
         const ctx = { sources: []};
         // Set input empty
-        const input = new Readable({ objectMode: true });
-        input._read = () => {
-          input.push(null);
+        const inputThis = new Readable({ objectMode: true });
+        inputThis._read = () => {
+          inputThis.push(null);
         };
         mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-          Promise.resolve({ bindingsStream: input }) :
+          Promise.resolve({ bindingsStream: inputThis }) :
           Promise.reject(new Error('a'));
         const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
         const array = await (<IQueryResultBindings> result).bindings();
@@ -325,6 +338,12 @@ describe('ActorInitSparql', () => {
         // Make it reject instead of reading input
         mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
         return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
+      });
+
+      it('should return a rejected promise on an explain', () => {
+        const ctx = { sources: [], [KeysInitSparql.explain]: 'parsed' };
+        return expect(actor.query('BLA', ctx)).rejects
+          .toThrowError('Tried to explain a query when in query-only mode');
       });
     });
 
@@ -442,7 +461,7 @@ describe('ActorInitSparql', () => {
       });
 
       it('handles the old inline context form', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ `{ "bla": true }`, 'Q' ],
           env: {},
@@ -458,7 +477,7 @@ describe('ActorInitSparql', () => {
       });
 
       it('handles a hypermedia source and query', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, queryString ],
           env: {},
@@ -492,7 +511,7 @@ describe('ActorInitSparql', () => {
       });
 
       it('handles a hypermedia source and query option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString ],
           env: {},
@@ -518,7 +537,7 @@ describe('ActorInitSparql', () => {
       });
 
       it('handles a hypermedia source and query file option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-f', `${__dirname}/assets/all-100.sparql` ],
           env: {},
@@ -554,7 +573,7 @@ LIMIT 100
       });
 
       it('handles a tagged hypermedia source and query option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermediaTagged, '-q', queryString ],
           env: {},
@@ -570,7 +589,7 @@ LIMIT 100
       });
 
       it('handles credentials in url and query option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermediaAuth, '-q', queryString ],
           env: {},
@@ -591,7 +610,7 @@ LIMIT 100
       });
 
       it('handles a tagged hypermedia and credentials in url and query option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermediaTaggedAuth, '-q', queryString ],
           env: {},
@@ -612,7 +631,7 @@ LIMIT 100
       });
 
       it('handles an other source type and query option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceOther, '-q', queryString ],
           env: {},
@@ -628,7 +647,7 @@ LIMIT 100
       });
 
       it('handles multiple hypermedia sources and a query option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, sourceHypermedia, '-q', queryString ],
           env: {},
@@ -644,7 +663,7 @@ LIMIT 100
       });
 
       it('handles multiple tagged hypermedia sources and a query option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermediaTagged, sourceHypermediaTagged, '-q', queryString ],
           env: {},
@@ -660,7 +679,7 @@ LIMIT 100
       });
 
       it('handles query and a config file option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ queryString, '-c', `${__dirname}/assets/config.json` ],
           env: {},
@@ -677,7 +696,7 @@ LIMIT 100
 
       it('handles the datetime -d option', async() => {
         const dt: Date = new Date();
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-d', dt.toISOString() ],
           env: {},
@@ -694,7 +713,7 @@ LIMIT 100
       });
 
       it('handles the logger -l option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
           env: {},
@@ -710,7 +729,7 @@ LIMIT 100
       });
 
       it('does not handle the logger -l option if the context already has a logger', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
           env: {},
@@ -730,7 +749,7 @@ LIMIT 100
 
       it('handles the baseIRI -b option', async() => {
         const baseIRI = 'http://example.org';
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-b', baseIRI ],
           env: {},
@@ -748,7 +767,7 @@ LIMIT 100
 
       it('handles the proxy -p option', async() => {
         const proxy = 'http://proxy.org/';
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-p', proxy ],
           env: {},
@@ -765,7 +784,7 @@ LIMIT 100
       });
 
       it('handles the --lenient flag', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--lenient' ],
           env: {},
@@ -782,7 +801,7 @@ LIMIT 100
       });
 
       it('handles the destination --to option', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],
           env: {},
@@ -799,7 +818,7 @@ LIMIT 100
       });
 
       it('handles a cliArgsHandler', async() => {
-        const spy = jest.spyOn(actor, 'query');
+        const spy = jest.spyOn(actor, 'queryOrExplain');
         const cliArgsHandler: ICliArgsHandler = {
           populateYargs(args) {
             return args.options({
@@ -913,7 +932,7 @@ LIMIT 100
 
       describe('for a fixed query', () => {
         it('handles a single source', async() => {
-          const spy = jest.spyOn(actorFixedQuery, 'query');
+          const spy = jest.spyOn(actorFixedQuery, 'queryOrExplain');
           const stdout = await stringifyStream(<any> (await actorFixedQuery.run({
             argv: [ 'SOURCE' ],
             env: {},
@@ -929,7 +948,7 @@ LIMIT 100
         });
 
         it('handles the query format option -i', async() => {
-          const spy = jest.spyOn(actorFixedQuery, 'query');
+          const spy = jest.spyOn(actorFixedQuery, 'queryOrExplain');
           const stdout = await stringifyStream(<any> (await actorFixedQuery.run({
             argv: [ 'SOURCE', '-i', 'graphql' ],
             env: {},
@@ -983,7 +1002,7 @@ LIMIT 100
 
       describe('for a fixed query and context', () => {
         it('handles no args', async() => {
-          const spy = jest.spyOn(actorFixedQueryAndContext, 'query');
+          const spy = jest.spyOn(actorFixedQueryAndContext, 'queryOrExplain');
           const stdout = await stringifyStream(<any> (await actorFixedQueryAndContext.run({
             argv: [],
             env: {},
@@ -1008,6 +1027,230 @@ LIMIT 100
           })).stderr);
           expect(stderr).toContain('evaluates SPARQL queries');
           expect(stderr).toContain('At least one source and query must be provided');
+        });
+      });
+
+      describe('explain', () => {
+        it('in parsed mode', async() => {
+          const spy = jest.spyOn(actor, 'queryOrExplain');
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'parsed' ],
+            env: {},
+            stdin: new PassThrough(),
+          })).stdout);
+          expect(stdout).toContain(`{
+  "type": "project",
+  "input": {
+    "type": "bgp",
+    "patterns": [
+      {
+        "termType": "Quad",
+        "value": "",
+        "subject": {
+          "termType": "Variable",
+          "value": "s"
+        },
+        "predicate": {
+          "termType": "Variable",
+          "value": "p"
+        },
+        "object": {
+          "termType": "Variable",
+          "value": "o"
+        },
+        "graph": {
+          "termType": "DefaultGraph",
+          "value": ""
+        },
+        "type": "pattern"
+      }
+    ]
+  },
+  "variables": [
+    {
+      "termType": "Variable",
+      "value": "s"
+    },
+    {
+      "termType": "Variable",
+      "value": "p"
+    },
+    {
+      "termType": "Variable",
+      "value": "o"
+    }
+  ]
+}`);
+          expect(spy).toHaveBeenCalledWith(queryString, {
+            [KeysInitSparql.explain]: 'parsed',
+            [KeysInitSparql.queryFormat]: 'sparql',
+            [KeysInitSparql.queryTimestamp]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
+            [KeysCore.log]: expect.any(LoggerPretty),
+          });
+        });
+
+        it('in logical mode', async() => {
+          const spy = jest.spyOn(actor, 'queryOrExplain');
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'logical' ],
+            env: {},
+            stdin: new PassThrough(),
+          })).stdout);
+          expect(stdout).toContain(`{
+  "type": "project",
+  "input": {
+    "type": "bgp",
+    "patterns": [
+      {
+        "termType": "Quad",
+        "value": "",
+        "subject": {
+          "termType": "Variable",
+          "value": "s"
+        },
+        "predicate": {
+          "termType": "Variable",
+          "value": "p"
+        },
+        "object": {
+          "termType": "Variable",
+          "value": "o"
+        },
+        "graph": {
+          "termType": "DefaultGraph",
+          "value": ""
+        },
+        "type": "pattern"
+      }
+    ]
+  },
+  "variables": [
+    {
+      "termType": "Variable",
+      "value": "s"
+    },
+    {
+      "termType": "Variable",
+      "value": "p"
+    },
+    {
+      "termType": "Variable",
+      "value": "o"
+    }
+  ]
+}`);
+          expect(spy).toHaveBeenCalledWith(queryString, {
+            [KeysInitSparql.explain]: 'logical',
+            [KeysInitSparql.queryFormat]: 'sparql',
+            [KeysInitSparql.queryTimestamp]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
+            [KeysCore.log]: expect.any(LoggerPretty),
+          });
+        });
+
+        describe('in physical mode', () => {
+          it('for a bindings response', async() => {
+            const stdout = await stringifyStream(<any> (await actor.run({
+              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+              env: {},
+              stdin: new PassThrough(),
+            })).stdout);
+            expect(stdout).toContain(`{
+  "logical": "logicalOp",
+  "physical": "physicalOp"
+}`);
+          });
+
+          it('for a quads response', async() => {
+            mediatorQueryOperation.mediate = jest.fn((action: any) => {
+              if (action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitSparql.physicalQueryPlanLogger))
+                  .logOperation(
+                    'logicalOp',
+                    'physicalOp',
+                    {},
+                    undefined,
+                    'actor',
+                    {},
+                  );
+              }
+              return Promise.resolve({
+                type: 'quads',
+                quadStream: input,
+              });
+            });
+
+            const stdout = await stringifyStream(<any> (await actor.run({
+              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+              env: {},
+              stdin: new PassThrough(),
+            })).stdout);
+            expect(stdout).toContain(`{
+  "logical": "logicalOp",
+  "physical": "physicalOp"
+}`);
+          });
+
+          it('for a boolean', async() => {
+            mediatorQueryOperation.mediate = jest.fn((action: any) => {
+              if (action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitSparql.physicalQueryPlanLogger))
+                  .logOperation(
+                    'logicalOp',
+                    'physicalOp',
+                    {},
+                    undefined,
+                    'actor',
+                    {},
+                  );
+              }
+              return Promise.resolve({
+                type: 'boolean',
+                booleanResult: Promise.resolve(true),
+              });
+            });
+
+            const stdout = await stringifyStream(<any> (await actor.run({
+              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+              env: {},
+              stdin: new PassThrough(),
+            })).stdout);
+            expect(stdout).toContain(`{
+  "logical": "logicalOp",
+  "physical": "physicalOp"
+}`);
+          });
+
+          it('for an update', async() => {
+            mediatorQueryOperation.mediate = jest.fn((action: any) => {
+              if (action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitSparql.physicalQueryPlanLogger))
+                  .logOperation(
+                    'logicalOp',
+                    'physicalOp',
+                    {},
+                    undefined,
+                    'actor',
+                    {},
+                  );
+              }
+              return Promise.resolve({
+                type: 'update',
+                updateResult: Promise.resolve(true),
+              });
+            });
+
+            const stdout = await stringifyStream(<any> (await actor.run({
+              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+              env: {},
+              stdin: new PassThrough(),
+            })).stdout);
+            expect(stdout).toContain(`{
+  "logical": "logicalOp",
+  "physical": "physicalOp"
+}`);
+          });
         });
       });
     });

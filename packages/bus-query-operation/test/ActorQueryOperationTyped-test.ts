@@ -1,4 +1,6 @@
-import { Bus } from '@comunica/core';
+import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IPhysicalQueryPlanLogger } from '@comunica/types';
 import { ActorQueryOperationTyped } from '..';
 
 describe('ActorQueryOperationTyped', () => {
@@ -42,6 +44,37 @@ describe('ActorQueryOperationTyped', () => {
 
     it('should run', () => {
       return expect(actor.run({ operation: { type: 'op' }})).resolves.toBeTruthy();
+    });
+
+    it('should run and invoke the physicalQueryPlanLogger', async() => {
+      const parentNode = '';
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: jest.fn(),
+        toJson: jest.fn(),
+      };
+      const context = ActionContext({
+        [KeysInitSparql.physicalQueryPlanLogger]: logger,
+        [KeysInitSparql.physicalQueryPlanNode]: parentNode,
+      });
+      jest.spyOn(actor, 'runOperation');
+
+      const operation = { type: 'op' };
+      const action = { operation, context };
+      await actor.run(action);
+
+      expect(logger.logOperation).toHaveBeenCalledWith(
+        'op',
+        undefined,
+        operation,
+        parentNode,
+        'actor',
+        {},
+      );
+      expect(actor.runOperation).toHaveBeenCalledWith(operation, ActionContext({
+        [KeysInitSparql.physicalQueryPlanLogger]: logger,
+        [KeysInitSparql.physicalQueryPlanNode]: operation,
+        [KeysQueryOperation.operation]: operation,
+      }));
     });
   });
 });

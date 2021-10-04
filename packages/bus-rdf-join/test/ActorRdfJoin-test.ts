@@ -1,5 +1,7 @@
 import { Bindings } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { KeysInitSparql } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IPhysicalQueryPlanLogger } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
@@ -18,7 +20,7 @@ class Dummy extends ActorRdfJoin {
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
   ) {
-    super({ name: 'name', bus: new Bus({ name: 'bus' }) }, limitEntries, limitEntriesMin, canHandleUndefs);
+    super({ name: 'name', bus: new Bus({ name: 'bus' }) }, 'PHYSICAL', limitEntries, limitEntriesMin, canHandleUndefs);
     this.metadata = metadata;
   }
 
@@ -29,7 +31,7 @@ class Dummy extends ActorRdfJoin {
       result.metadata = () => Promise.resolve(this.metadata);
     }
 
-    return result;
+    return { result, physicalPlanMetadata: { meta: true }};
   }
 
   protected getIterations(action: IActionRdfJoin): Promise<number> {
@@ -374,7 +376,7 @@ describe('ActorRdfJoin', () => {
     it('calls getOutput if there are 2+ entries', async() => {
       delete action.entries[0].output.metadata;
       delete action.entries[1].output.metadata;
-      await expect(instance.run(action)).resolves.toEqual(await instance.getOutput(action));
+      expect(await instance.run(action)).toEqual((await instance.getOutput(action)).result);
     });
 
     it('calculates cardinality if metadata is supplied', async() => {
@@ -403,6 +405,37 @@ describe('ActorRdfJoin', () => {
       await metaInstance.run(action).then(async(result: any) => {
         expect(result.canContainUndefs).toEqual(true);
         return expect(await result.metadata()).toEqual({ cardinality: 10 });
+      });
+    });
+
+    it('invokes the physicalQueryPlanLogger', async() => {
+      const parentNode = '';
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: jest.fn(),
+        toJson: jest.fn(),
+      };
+      action.context = ActionContext({
+        [KeysInitSparql.physicalQueryPlanLogger]: logger,
+        [KeysInitSparql.physicalQueryPlanNode]: parentNode,
+      });
+      jest.spyOn(instance, 'getOutput');
+
+      await instance.run(action);
+
+      expect(logger.logOperation).toHaveBeenCalledWith(
+        'join',
+        'PHYSICAL',
+        action,
+        parentNode,
+        'name',
+        { meta: true },
+      );
+      expect(instance.getOutput).toHaveBeenCalledWith({
+        ...action,
+        context: ActionContext({
+          [KeysInitSparql.physicalQueryPlanLogger]: logger,
+          [KeysInitSparql.physicalQueryPlanNode]: action,
+        }),
       });
     });
   });

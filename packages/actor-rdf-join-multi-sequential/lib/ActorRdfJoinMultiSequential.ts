@@ -2,12 +2,11 @@ import {
   ActorQueryOperation,
   getMetadata,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -21,10 +20,10 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiSequentialArgs) {
-    super(args, 3, true);
+    super(args, 'multi-sequential', 3, true);
   }
 
-  protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
+  protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Join the two first streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
       output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
@@ -34,10 +33,12 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
     };
     const remainingEntries: IJoinEntry[] = action.entries.slice(1);
     remainingEntries[0] = firstEntry;
-    return <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({
-      entries: remainingEntries,
-      context: action.context,
-    });
+    return {
+      result: <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({
+        entries: remainingEntries,
+        context: action.context,
+      }),
+    };
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {

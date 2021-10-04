@@ -265,11 +265,11 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
         };
-        const output = await actor.getOutput(action);
+        const { result, physicalPlanMetadata } = await actor.getOutput(action);
 
         // Validate output
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        expect(result.type).toEqual('bindings');
+        expect(await arrayifyStream(result.bindingsStream)).toEqual([
           Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
           Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
@@ -277,8 +277,15 @@ describe('ActorRdfJoinMultiBind', () => {
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
           Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
-        expect(output.variables).toEqual([ 'a', 'b' ]);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(result.variables).toEqual([ 'a', 'b' ]);
+        expect(result.canContainUndefs).toEqual(false);
+
+        // Validate physicalPlanMetadata
+        expect(physicalPlanMetadata).toEqual({
+          cardinalities: [ 3, 1 ],
+          bindIndex: 1,
+          bindOrder: 'depth-first',
+        });
 
         // Validate mock calls
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
@@ -346,11 +353,11 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
         };
-        const output = await actor.getOutput(action);
+        const { result } = await actor.getOutput(action);
 
         // Validate output
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        expect(result.type).toEqual('bindings');
+        expect(await arrayifyStream(result.bindingsStream)).toEqual([
           Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
           Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
@@ -358,8 +365,8 @@ describe('ActorRdfJoinMultiBind', () => {
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
           Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
-        expect(output.variables).toEqual([ 'a', 'b' ]);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(result.variables).toEqual([ 'a', 'b' ]);
+        expect(result.canContainUndefs).toEqual(false);
       });
 
       it('should handle two entries without context', async() => {
@@ -394,11 +401,11 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
         };
-        const output = await actor.getOutput(action);
+        const { result } = await actor.getOutput(action);
 
         // Validate output
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        expect(result.type).toEqual('bindings');
+        expect(await arrayifyStream(result.bindingsStream)).toEqual([
           Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
           Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
@@ -406,8 +413,8 @@ describe('ActorRdfJoinMultiBind', () => {
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
           Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
-        expect(output.variables).toEqual([ 'a', 'b' ]);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(result.variables).toEqual([ 'a', 'b' ]);
+        expect(result.canContainUndefs).toEqual(false);
       });
 
       it('should handle three entries (depth-first)', async() => {
@@ -457,11 +464,11 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
         };
-        const output = await actor.getOutput(action);
+        const { result } = await actor.getOutput(action);
 
         // Validate output
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        expect(result.type).toEqual('bindings');
+        expect(await arrayifyStream(result.bindingsStream)).toEqual([
           Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
           Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
@@ -469,8 +476,8 @@ describe('ActorRdfJoinMultiBind', () => {
           Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
           Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
-        expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(result.variables).toEqual([ 'a', 'b', 'c' ]);
+        expect(result.canContainUndefs).toEqual(false);
 
         // Validate mock calls
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));

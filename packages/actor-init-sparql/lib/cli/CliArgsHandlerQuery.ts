@@ -60,16 +60,25 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
         proxy: {
           alias: 'p',
           type: 'string',
-          describe: 'delegates all HTTP traffic through the given proxy (e.g. http://myproxy.org/?uri=)',
+          describe: 'Delegates all HTTP traffic through the given proxy (e.g. http://myproxy.org/?uri=)',
         },
         listformats: {
           type: 'boolean',
-          describe: 'prints the supported MIME types',
+          describe: 'Prints the supported MIME types',
         },
         context: {
           type: 'string',
           describe: 'Use the given JSON context string or file (e.g., config.json)',
           default: this.context,
+        },
+        explain: {
+          type: 'string',
+          describe: 'Print the query plan',
+          choices: [
+            'parsed',
+            'logical',
+            'physical',
+          ],
         },
       })
       .check(args => {
@@ -97,6 +106,11 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
     // Set the proxy
     if (args.proxy) {
       context[KeysHttpProxy.httpProxyHandler] = new ProxyHandlerStatic(args.proxy);
+    }
+
+    // Mark explain output
+    if (args.explain) {
+      context[KeysInitSparql.explain] = args.explain;
     }
   }
 }

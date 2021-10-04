@@ -1,8 +1,13 @@
 import { Bindings, getMetadata } from '@comunica/bus-query-operation';
+import { KeysInitSparql } from '@comunica/context-entries';
 import type { IAction, IActorArgs } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type {
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+  IPhysicalQueryPlanLogger,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -19,6 +24,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput> {
+  private readonly physicalName: string;
   /**
    * Can be used by subclasses to indicate the max or min number of streams that can be joined.
    * 0 for infinity.
@@ -37,11 +43,13 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
+    physicalName: string,
     limitEntries?: number,
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
   ) {
     super(args);
+    this.physicalName = physicalName;
     this.limitEntries = limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = limitEntriesMin ?? false;
     this.canHandleUndefs = canHandleUndefs ?? false;
@@ -215,7 +223,29 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
       return action.entries[0].output;
     }
 
-    const result = this.getOutput(action);
+    // Prepare logging to physical plan
+    // This must be called before getOutput, because we need to override the plan node in the context
+    let parentPhysicalQueryPlanNode;
+    if (action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+      parentPhysicalQueryPlanNode = action.context.get(KeysInitSparql.physicalQueryPlanNode);
+      action.context = action.context && action.context.set(KeysInitSparql.physicalQueryPlanNode, action);
+    }
+
+    const { result, physicalPlanMetadata } = await this.getOutput(action);
+
+    // Log to physical plan
+    if (action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+      const physicalQueryPlanLogger: IPhysicalQueryPlanLogger = action.context
+        .get(KeysInitSparql.physicalQueryPlanLogger);
+      physicalQueryPlanLogger.logOperation(
+        'join',
+        this.physicalName,
+        action,
+        parentPhysicalQueryPlanNode,
+        this.name,
+        physicalPlanMetadata,
+      );
+    }
 
     // Lazily calculate upper cardinality limit
     function calculateCardinality(): Promise<number> {
@@ -226,7 +256,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
     if (await ActorRdfJoin.allEntriesHaveMetadata(action, 'cardinality')) {
       // Update the result promise to also add the estimated total items
-      const unwrapped = await result;
+      const unwrapped = result;
       if (unwrapped.metadata) {
         const oldMetadata = unwrapped.metadata;
         unwrapped.metadata = () => oldMetadata().then(async(metadata: any) => {
@@ -249,9 +279,9 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * Returns the resulting output for joining the given entries.
    * This is called after removing the trivial cases in run.
    * @param {IActionRdfJoin} action
-   * @returns {Promise<IActorQueryOperationOutput>}
+   * @returns {Promise<IActorRdfJoinOutputInner>}
    */
-  protected abstract getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings>;
+  protected abstract getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner>;
 
   /**
    * Used when calculating the number of iterations in the test function.
@@ -281,4 +311,15 @@ export interface IJoinEntry {
    * The original query operation from which the bindings stream was produced.
    */
   operation: Algebra.Operation;
+}
+
+export interface IActorRdfJoinOutputInner {
+  /**
+   * The join result.
+   */
+  result: IActorQueryOperationOutputBindings;
+  /**
+   * Optional metadata that will be included as metadata within the physical query plan output.
+   */
+  physicalPlanMetadata?: any;
 }

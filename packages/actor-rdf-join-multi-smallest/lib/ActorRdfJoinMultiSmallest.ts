@@ -2,7 +2,7 @@ import {
   ActorQueryOperation,
   getMetadata,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
@@ -21,10 +21,10 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiSmallestArgs) {
-    super(args, 3, true);
+    super(args, 'multi-smallest', 3, true);
   }
 
-  protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
+  protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const entries: IJoinEntry[] = action.entries.slice();
 
     // Determine the two smallest streams by estimated count
@@ -44,10 +44,16 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
         .createJoin([ smallestItem1.operation, smallestItem2.operation ]),
     };
     entries.push(firstEntry);
-    return <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({
-      entries,
-      context: action.context,
-    });
+    return {
+      result: <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({
+        entries,
+        context: action.context,
+      }),
+      physicalPlanMetadata: {
+        cardinalities: metadatas.map(ActorRdfJoin.getCardinality),
+        smallest: [ smallestIndex1, smallestIndex2 ],
+      },
+    };
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {

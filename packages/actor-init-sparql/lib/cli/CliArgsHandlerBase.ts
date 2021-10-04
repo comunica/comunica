@@ -93,22 +93,22 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         dateTime: {
           alias: 'd',
           type: 'string',
-          describe: 'sets a datetime for querying Memento-enabled archives',
+          describe: 'Sets a datetime for querying Memento-enabled archives',
         },
         logLevel: {
           alias: 'l',
           type: 'string',
-          describe: 'sets the log level (e.g., debug, info, warn, ...)',
+          describe: 'Sets the log level (e.g., debug, info, warn, ...)',
           default: 'warn',
         },
         lenient: {
           type: 'boolean',
-          describe: 'if failing requests and parsing errors should be logged instead of causing a hard crash',
+          describe: 'If failing requests and parsing errors should be logged instead of causing a hard crash',
         },
         version: {
           alias: 'v',
           type: 'boolean',
-          describe: 'prints version information',
+          describe: 'Prints version information',
         },
       })
       .exitProcess(false)

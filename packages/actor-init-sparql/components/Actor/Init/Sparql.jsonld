@@ -121,7 +121,8 @@
             { "contextShortcutKey": "fetch",                    "contextShortcutValue": "@comunica/bus-http:fetch"                             },
             { "contextShortcutKey": "readOnly",                 "contextShortcutValue": "@comunica/bus-query-operation:readOnly"               },
             { "contextShortcutKey": "extensionFunctions",       "contextShortcutValue": "@comunica/actor-init-sparql:extensionFunctions"       },
-            { "contextShortcutKey": "extensionFunctionCreator", "contextShortcutValue": "@comunica/actor-init-sparql:extensionFunctionCreator" }
+            { "contextShortcutKey": "extensionFunctionCreator", "contextShortcutValue": "@comunica/actor-init-sparql:extensionFunctionCreator" },
+            { "contextShortcutKey": "explain",                  "contextShortcutValue": "@comunica/actor-init-sparql:explain"                  }
           ]
         }
       ],

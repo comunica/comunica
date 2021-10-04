@@ -134,6 +134,59 @@ export interface IActorQueryOperationOutputStream extends IActorQueryOperationOu
 }
 
 /**
+ * Different manners in which a query can be explained.
+ */
+export type QueryExplainMode = 'parsed' | 'logical' | 'physical';
+
+/**
+ * An interface marking an explained query.
+ */
+export interface IQueryExplained {
+  explain: true;
+  /**
+   * The mode of explanation
+   */
+  type: QueryExplainMode;
+  /**
+   * The raw explanation data
+   */
+  data: any;
+}
+
+/**
+ * A physical query plan logger collects operations, which can then be serialized as a query plan to JSON.
+ */
+export interface IPhysicalQueryPlanLogger {
+  /**
+   * Log an operation.
+   *
+   * Important here is that the `node` and `parentNode` can be of any type,
+   * as long as they properly reference each other in subsequent calls.
+   * These node references can be used to build up a hierarchy.
+   *
+   * @param logicalOperator The current logical query operator.
+   * @param physicalOperator The current physical query operator.
+   *                         This may be omitted if no physical operator applies.
+   * @param node The current operation node.
+   * @param parentNode The parent operation node.
+   * @param actor The current actor name.
+   * @param metadata Metadata to include together in the physical query plan output for this node.
+   */
+  logOperation: (
+    logicalOperator: string,
+    physicalOperator: string | undefined,
+    node: any,
+    parentNode: any,
+    actor: string,
+    metadata: any,
+  ) => void;
+  /**
+   * Serialize the collected query plan to JSON.
+   */
+  toJson: () => any;
+}
+
+/**
  * Data interface for the type of action.
  */
 export interface IAction {
@@ -172,6 +225,17 @@ export interface IQueryEngine {
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
   query: (query: string | Algebra.Operation, context?: any) => Promise<IActorQueryOperationOutput>;
+  /**
+   * Evaluate the given query
+   * @param {string | Algebra.Operation} query A query string or algebra.
+   * @param context An optional query context.
+   * @return {Promise<IActorQueryOperationOutput | IQueryExplained>}
+   *  A promise that resolves to the query output.
+   */
+  queryOrExplain: (
+    query: string | Algebra.Operation,
+    context?: any,
+  ) => Promise<IActorQueryOperationOutput | IQueryExplained>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.

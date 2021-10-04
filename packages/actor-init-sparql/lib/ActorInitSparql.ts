@@ -4,13 +4,14 @@ import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import {
   KeysInitSparql,
 } from '@comunica/context-entries';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IActorQueryOperationOutput, IQueryExplained } from '@comunica/types';
 import yargs from 'yargs';
 import type { IActorInitSparqlArgs } from './ActorInitSparql-browser';
 import { ActorInitSparql as ActorInitSparqlBrowser } from './ActorInitSparql-browser';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import type { ICliArgsHandler } from './cli/ICliArgsHandler';
+const streamifyString = require('streamify-string');
 
 // eslint-disable-next-line no-duplicate-imports
 export {
@@ -83,7 +84,14 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     }
 
     // Evaluate query
-    const queryResult: IActorQueryOperationOutput = await this.query(query!, context);
+    const queryResult: IActorQueryOperationOutput | IQueryExplained = await this.queryOrExplain(query!, context);
+
+    // Output query explanations in a different way
+    if ('explain' in queryResult) {
+      return {
+        stdout: streamifyString(JSON.stringify(queryResult.data, null, '  ')),
+      };
+    }
 
     // Serialize output according to media type
     const stdout: Readable = <Readable> (await this.resultToString(
