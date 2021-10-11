@@ -36,7 +36,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
   public static unionMetadata(metadatas: Record<string, any>[]): Record<string, any> {
     let cardinality = 0;
     for (const metadata of metadatas) {
-      if (metadata.cardinality && Number.isFinite(metadata.cardinality)) {
+      if ((metadata.cardinality && Number.isFinite(metadata.cardinality)) || metadata.cardinality === 0) {
         cardinality += metadata.cardinality;
       } else {
         cardinality = Number.POSITIVE_INFINITY;

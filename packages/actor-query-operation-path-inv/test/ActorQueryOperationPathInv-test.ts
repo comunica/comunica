@@ -72,6 +72,7 @@ describe('ActorQueryOperationPathInv', () => {
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.canContainUndefs).toEqual(false);
+      expect(await output.metadata!()).toEqual({ cardinality: 3 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': DF.namedNode('1') }),
         Bindings({ '?x': DF.namedNode('2') }),

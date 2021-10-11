@@ -69,6 +69,7 @@ describe('ActorQueryOperationPathLink', () => {
         .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.canContainUndefs).toEqual(false);
+      expect(await output.metadata!()).toEqual({ cardinality: 3 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': DF.literal('1') }),
         Bindings({ '?x': DF.literal('2') }),

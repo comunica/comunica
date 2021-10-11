@@ -120,18 +120,18 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const variables = gVar ?
         [ subjectString, objectString, termToString(path.graph) ] :
         [ subjectString, objectString ];
-      return { type: 'bindings', bindingsStream, variables, canContainUndefs: false };
+      return { type: 'bindings', bindingsStream, variables, metadata: results.metadata, canContainUndefs: false };
     }
     if (!sVar && !oVar) {
       const variable = this.generateVariable();
-      const bindingsStream = (await this.getObjectsPredicateStarEval(
+      const starEval = await this.getObjectsPredicateStarEval(
         path.subject,
         variable,
         predicate.path,
         path.graph,
         context,
-      ))
-        .transform<Bindings>({
+      );
+      const bindingsStream = starEval.bindingsStream.transform<Bindings>({
         filter: item => item.get(termToString(variable)).equals(path.object),
         transform(item, next, push) {
           // Return graph binding if graph was a variable, otherwise empty binding
@@ -146,6 +146,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         type: 'bindings',
         bindingsStream,
         variables: gVar ? [ termToString(path.graph) ] : [],
+        metadata: starEval.metadata,
         canContainUndefs: false,
       };
     }
@@ -153,20 +154,20 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     const subject = sVar ? path.object : path.subject;
     const value: Variable = <Variable> (sVar ? path.subject : path.object);
     const pred = sVar ? ActorAbstractPath.FACTORY.createInv(predicate.path) : predicate.path;
-    const bindingsStream = (await this.getObjectsPredicateStarEval(
+    const starEval = await this.getObjectsPredicateStarEval(
       subject,
       value,
       pred,
       path.graph,
       context,
-    ))
-      .transform<Bindings>({
+    );
+    const bindingsStream = starEval.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
         push(item);
         next();
       },
     });
     const variables = gVar ? [ termToString(value), termToString(path.graph) ] : [ termToString(value) ];
-    return { type: 'bindings', bindingsStream, variables, canContainUndefs: false };
+    return { type: 'bindings', bindingsStream, variables, metadata: starEval.metadata, canContainUndefs: false };
   }
 }

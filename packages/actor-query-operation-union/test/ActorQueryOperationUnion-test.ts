@@ -132,6 +132,10 @@ describe('ActorQueryOperationUnion', () => {
       return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 1 }])).toEqual({ cardinality: 1 });
     });
 
+    it('should return 0 items for a single input with 0', () => {
+      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 0 }])).toEqual({ cardinality: 0 });
+    });
+
     it('should return infinite items for a single input with Infinity', () => {
       return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: Number.POSITIVE_INFINITY }]))
         .toEqual({ cardinality: Number.POSITIVE_INFINITY });

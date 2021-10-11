@@ -77,7 +77,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 
   private async predicateStarGraphVariable(subject: Term, object: Variable, predicate: Algebra.PropertyPathSymbol,
-    graph: Term, context: ActionContext): Promise<AsyncIterator<Bindings>> {
+    graph: Term, context: ActionContext): Promise<IPathResultStream> {
     // Construct path to obtain all graphs where subject exists
     const predVar = this.generateVariable(ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph));
     const findGraphs = ActorAbstractPath.FACTORY.createUnion([
@@ -91,7 +91,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     const objectString = termToString(object);
     const passedGraphs: Set<string> = new Set();
 
-    return new MultiTransformIterator(
+    const bindingsStream = new MultiTransformIterator<Bindings, Bindings>(
       results.bindingsStream,
       {
         multiTransform: (bindings: Bindings) => {
@@ -117,6 +117,11 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
         autoStart: false,
       },
     );
+
+    return {
+      bindingsStream,
+      metadata: results.metadata,
+    };
   }
 
   /**
@@ -131,20 +136,25 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
      * @return {Promise<AsyncIterator<Bindings>} Iterator to where all bindings of query should have been pushed.
      */
   public async getObjectsPredicateStarEval(subject: Term, object: Variable, predicate: Algebra.PropertyPathSymbol,
-    graph: Term, context: ActionContext): Promise<AsyncIterator<Bindings>> {
+    graph: Term, context: ActionContext): Promise<IPathResultStream> {
     if (graph.termType === 'Variable') {
       return this.predicateStarGraphVariable(subject, object, predicate, graph, context);
     }
 
     const it = new BufferedIterator<Term>();
-    await this.getObjectsPredicateStar(subject, predicate, graph, context, {}, it, { count: 0 });
+    const metadata = await this.getObjectsPredicateStar(subject, predicate, graph, context, {}, it, { count: 0 });
 
-    return it.transform<Bindings>({
+    const bindingsStream = it.transform<Bindings>({
       transform(item, next, push) {
         push(Bindings({ [termToString(object)]: item }));
         next();
       },
     });
+
+    return {
+      bindingsStream,
+      metadata,
+    };
   }
 
   /**
@@ -153,13 +163,20 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
      * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
      * @param {Term} graph The graph in which we search for the pattern.
      * @param {ActionContext} context
-     * @param {{[id: string]: Term}} termHashes Remembers the objects we've already searched for.
+     * @param {Record<string, Term>} termHashes Remembers the objects we've already searched for.
      * @param {BufferedIterator<Term>} it Iterator to push terms to.
      * @param {any} counter Counts how many searches are in progress to close it when needed (when counter == 0).
-     * @return {Promise<void>} All solutions of query should have been pushed to it by then.
+     * @return {Promise<IPathResultStream['metadata']>} The results metadata.
      */
-  public async getObjectsPredicateStar(object: Term, predicate: Algebra.PropertyPathSymbol, graph: Term,
-    context: ActionContext, termHashes: Record<string, Term>, it: BufferedIterator<Term>, counter: any): Promise<void> {
+  public async getObjectsPredicateStar(
+    object: Term,
+    predicate: Algebra.PropertyPathSymbol,
+    graph: Term,
+    context: ActionContext,
+    termHashes: Record<string, Term>,
+    it: BufferedIterator<Term>,
+    counter: any,
+  ): Promise<IPathResultStream['metadata']> {
     const termString = termToString(object);
     if (termHashes[termString]) {
       return;
@@ -184,6 +201,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
         it.close();
       }
     });
+
+    return results.metadata;
   }
 
   /**
@@ -287,4 +306,9 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     // Set it in the termHashesGlobal when this object occurs again they can wait for this promise
     termHashesGlobal[termString] = promise;
   }
+}
+
+export interface IPathResultStream {
+  bindingsStream: AsyncIterator<Bindings>;
+  metadata?: () => Promise<Record<string, any>>;
 }
