@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-bgp-to-join/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-optimize-query-operation-bgp-to-join",
+  "@type": "Module",
+  "requireName": "@comunica/actor-optimize-query-operation-bgp-to-join",
+  "import": [
+    "files-caoqobtj:components/Actor/OptimizeQueryOperation/BgpToJoin.jsonld"
+  ]
+}

@@ -597,14 +597,14 @@ describe('System test: ActorInitSparql', () => {
           type: 'logical',
           data: {
             input: {
-              patterns: [
+              input: [
                 factory.createPattern(
                   DF.variable('s'),
                   DF.variable('p'),
                   DF.variable('o'),
                 ),
               ],
-              type: 'bgp',
+              type: 'join',
             },
             type: 'project',
             variables: [
@@ -631,16 +631,11 @@ describe('System test: ActorInitSparql', () => {
             variables: [ 's', 'p', 'o' ],
             children: [
               {
-                logical: 'bgp',
+                logical: 'join',
                 children: [
                   {
-                    logical: 'join',
-                    children: [
-                      {
-                        logical: 'pattern',
-                        pattern: '?s ?p ?o',
-                      },
-                    ],
+                    logical: 'pattern',
+                    pattern: '?s ?p ?o',
                   },
                 ],
               },

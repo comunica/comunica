@@ -1,9 +1,9 @@
-# Comunica Join BGP Optimize Query Operation Actor
+# Comunica BGP to Join Optimize Query Operation Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-join-bgp.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-join-bgp)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-bgp-to-join.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-bgp-to-join)
 
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
-that merges joins of BGPs into a single BGP.
+that converts BGPs into joins.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -13,7 +13,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-optimize-query-operation-join-bgp
+$ yarn add @comunica/actor-optimize-query-operation-bgp-to-join
 ```
 
 ## Configure
@@ -28,8 +28,8 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:sparql-optimize.json#myJoinBgpOptimizer",
-      "@type": "ActorOptimizeQueryOperationJoinBgp"
+      "@id": "config-sets:sparql-optimize.json#myBgpToJoinOptimizer",
+      "@type": "ActorOptimizeQueryOperationBgpToJoin"
     }
   ]
 }
