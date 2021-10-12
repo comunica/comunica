@@ -236,6 +236,14 @@ describe('ActorRdfJoin', () => {
         { cardinality: Number.POSITIVE_INFINITY },
       ])).toEqual(1);
     });
+
+    it('should allow indexes to be ignored', () => {
+      return expect(ActorRdfJoin.getLowestCardinalityIndex([
+        { cardinality: 20 },
+        { cardinality: 10 },
+        { cardinality: 30 },
+      ], [ 1, 0 ])).toEqual(2);
+    });
   });
 
   describe('getMetadatas', () => {

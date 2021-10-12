@@ -68,13 +68,58 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
   /**
    * Determine the entry with the lowest cardinality.
-   * If there is a stream that can contain undefs, we don't modify the join order and just pick the first one.
    * @param entries Join entries
    */
   public static async getLeftEntryIndex(entries: IJoinEntry[]): Promise<number> {
+    // If there is a stream that can contain undefs, we don't modify the join order and just pick the first one.
     const canContainUndefs = entries.some(entry => entry.output.canContainUndefs);
+    if (canContainUndefs) {
+      return 0;
+    }
+
+    // Calculate number of occurrences of each variable
+    const variableOccurrences: Record<string, number> = {};
+    for (const entry of entries) {
+      for (const variable of entry.output.variables) {
+        let counter = variableOccurrences[variable];
+        if (!counter) {
+          counter = 0;
+        }
+        variableOccurrences[variable] = ++counter;
+      }
+    }
+
+    // Determine variables that occur in at least two join entries
+    const multiOccurrenceVariables: string[] = [];
+    for (const [ variable, count ] of Object.entries(variableOccurrences)) {
+      if (count >= 2) {
+        multiOccurrenceVariables.push(variable);
+      }
+    }
+
+    // Reject if no entries have common variables
+    if (multiOccurrenceVariables.length === 0) {
+      throw new Error(`Bind join can only join entries with at least one common variable`);
+    }
+
+    // Determine indexes of entries without common variables
+    // These will be blacklisted from lowest cardinality determination
+    const indexesWithoutCommonVariables: number[] = [];
+    for (const [ i, entry ] of entries.entries()) {
+      let hasCommon = false;
+      for (const variable of entry.output.variables) {
+        if (multiOccurrenceVariables.includes(variable)) {
+          hasCommon = true;
+          break;
+        }
+      }
+      if (!hasCommon) {
+        indexesWithoutCommonVariables.push(i);
+      }
+    }
+
     const metadatas = await ActorRdfJoin.getMetadatas(entries);
-    return canContainUndefs ? 0 : ActorRdfJoin.getLowestCardinalityIndex(metadatas);
+    return ActorRdfJoin.getLowestCardinalityIndex(metadatas, indexesWithoutCommonVariables);
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

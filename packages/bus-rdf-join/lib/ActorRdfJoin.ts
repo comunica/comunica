@@ -137,16 +137,19 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   /**
    * Find the metadata index with the lowest cardinality.
    * @param {(Record<string, any> | undefined)[]} metadatas An array of optional metadata objects for the entries.
+   * @param indexBlacklist An optional array of blacklisted indexes that will not be considered.
    * @return {number} The index of the entry with the lowest cardinality.
    */
-  public static getLowestCardinalityIndex(metadatas: Record<string, any>[]): number {
+  public static getLowestCardinalityIndex(metadatas: Record<string, any>[], indexBlacklist: number[] = []): number {
     let smallestId = -1;
     let smallestCount = Number.POSITIVE_INFINITY;
     for (const [ i, meta ] of metadatas.entries()) {
-      const count: number = ActorRdfJoin.getCardinality(meta);
-      if (count < smallestCount || smallestId === -1) {
-        smallestCount = count;
-        smallestId = i;
+      if (!indexBlacklist.includes(i)) {
+        const count: number = ActorRdfJoin.getCardinality(meta);
+        if (count < smallestCount || smallestId === -1) {
+          smallestCount = count;
+          smallestId = i;
+        }
       }
     }
     return smallestId;

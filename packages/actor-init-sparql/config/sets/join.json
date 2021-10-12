@@ -19,6 +19,14 @@
       "@id": "config-sets:join.json#myRdfJoinActorBind",
       "@type": "ActorRdfJoinMultiBind",
       "carjmb:Actor/RdfJoin/MultiBind#mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+    },
+    {
+      "@id": "config-sets:join.json#myRdfJoinActorSymmetricHash",
+      "@type": "ActorRdfJoinSymmetricHash"
+    },
+    {
+      "@id": "config-sets:join.json#myRdfJoinActorNestedLoop",
+      "@type": "ActorRdfJoinNestedLoop"
     }
   ]
 }

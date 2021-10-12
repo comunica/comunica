@@ -58,18 +58,21 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 3 }),
+                variables: [ 'a' ],
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 2 }),
+                variables: [ 'a' ],
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 5 }),
+                variables: [ 'a' ],
               },
               operation: <any> {},
             },
@@ -83,12 +86,14 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 3 }),
+                variables: [ 'a' ],
               },
               operation: <any> { type: Algebra.types.EXTEND },
             },
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 2 }),
+                variables: [ 'a' ],
               },
               operation: <any> {},
             },
@@ -102,12 +107,14 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 3 }),
+                variables: [ 'a' ],
               },
               operation: <any> { type: Algebra.types.GROUP },
             },
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 2 }),
+                variables: [ 'a' ],
               },
               operation: <any> {},
             },
@@ -121,12 +128,14 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 3 }),
+                variables: [ 'a' ],
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 metadata: () => Promise.resolve({ cardinality: 2 }),
+                variables: [ 'a' ],
               },
               operation: <any> { type: Algebra.types.GROUP },
             },
@@ -148,12 +157,14 @@ describe('ActorRdfJoinMultiBind', () => {
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 2 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
@@ -165,18 +176,21 @@ describe('ActorRdfJoinMultiBind', () => {
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 2 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 5 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
@@ -188,18 +202,21 @@ describe('ActorRdfJoinMultiBind', () => {
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
@@ -211,23 +228,71 @@ describe('ActorRdfJoinMultiBind', () => {
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 2 }),
+              variables: [ 'a' ],
             },
             operation: <any> {},
           },
           {
             output: <any> {
               metadata: () => Promise.resolve({ cardinality: 5 }),
+              variables: [ 'a' ],
               canContainUndefs: true,
             },
             operation: <any> {},
           },
         ])).toEqual(0);
+      });
+
+      it('throws if there are no overlapping variables', async() => {
+        await expect(ActorRdfJoinMultiBind.getLeftEntryIndex([
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a1', 'b1' ],
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ cardinality: 2 }),
+              variables: [ 'a2', 'b2' ],
+            },
+            operation: <any> {},
+          },
+        ])).rejects.toThrow('Bind join can only join entries with at least one common variable');
+      });
+
+      it('excludes entries without common variables', async() => {
+        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex([
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ cardinality: 1 }),
+              variables: [ 'b' ],
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ cardinality: 3 }),
+              variables: [ 'a' ],
+            },
+            operation: <any> {},
+          },
+          {
+            output: <any> {
+              metadata: () => Promise.resolve({ cardinality: 2 }),
+              variables: [ 'a' ],
+            },
+            operation: <any> {},
+          },
+        ])).toEqual(2);
       });
     });
 
