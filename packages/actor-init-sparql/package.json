@@ -59,6 +59,7 @@
     "@comunica/actor-http-proxy": "^1.22.0",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^1.0.0",
     "@comunica/actor-optimize-query-operation-join-bgp": "^1.22.0",
+    "@comunica/actor-optimize-query-operation-join-connected": "^1.0.0",
     "@comunica/actor-query-operation-ask": "^1.22.0",
     "@comunica/actor-query-operation-bgp-join": "^1.0.0",
     "@comunica/actor-query-operation-construct": "^1.22.0",

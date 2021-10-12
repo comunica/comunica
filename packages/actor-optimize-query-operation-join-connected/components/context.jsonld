@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caoqojc": "npmd:@comunica/actor-optimize-query-operation-join-connected/",
+      "files-caoqojc": "caoqojc:^1.0.0/",
+
+      "ActorOptimizeQueryOperationJoinConnected": "caoqojc:Actor/OptimizeQueryOperation/JoinConnected"
+    }
+  ]
+}
