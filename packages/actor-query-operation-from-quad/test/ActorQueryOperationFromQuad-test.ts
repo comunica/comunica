@@ -107,7 +107,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
         Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ],
       );
-      expect(result.type).toEqual('join');
+      expect(result.type).toEqual('union');
       expect(result.input[0].type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0])).toBeTruthy();
       expect(result.input[1].type).toEqual('path');
@@ -119,6 +119,41 @@ describe('ActorQueryOperationFromQuad', () => {
         Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ],
       );
       expect(result.type).toEqual('path');
+      expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
+    });
+
+    it('should transform a Pattern with a default graph pattern', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
+        Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }), [ DF.namedNode('g') ],
+      );
+      expect(result.type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
+    });
+
+    it('should not transform a Pattern with a non-default graph pattern', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }), [ DF.namedNode('g') ],
+      );
+      expect(result.type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
+    });
+
+    it('should transform a Pattern with default graph patterns', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
+        Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }), [ DF.namedNode('g'), DF.namedNode('h') ],
+      );
+      expect(result.type).toEqual('union');
+      expect(result.input[0].type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'g').equals(result.input[0])).toBeTruthy();
+      expect(result.input[1].type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'h').equals(result.input[1])).toBeTruthy();
+    });
+
+    it('should not transform a Pattern with non-default graph patterns', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }), [ DF.namedNode('g'), DF.namedNode('h') ],
+      );
+      expect(result.type).toEqual('pattern');
       expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
     });
 
@@ -326,6 +361,86 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
+    it('should transform a Pattern with a default graph pattern to a no-op', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }), [ DF.namedNode('g') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
+    });
+
+    it('should transform a Pattern with a variable graph pattern', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }), [ DF.namedNode('g') ], [],
+      );
+      expect(result.type).toEqual('join');
+      expect(result.input[0].type).toEqual('values');
+      expect(result.input[0].variables.length).toEqual(1);
+      expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
+      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[1].type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
+    });
+
+    it('should transform a Pattern with a non-available non-default graph pattern to a no-op', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }), [ DF.namedNode('g') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
+    });
+
+    it('should transform a Pattern with an available non-default graph pattern', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }), [ DF.namedNode('g') ], [],
+      );
+      expect(result.type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
+    });
+
+    it('should transform a Pattern with default graph patterns to a no-op', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
+    });
+
+    it('should transform a Pattern with variable graph patterns', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
+      );
+      expect(result.type).toEqual('union');
+
+      expect(result.input[0].type).toEqual('join');
+      expect(result.input[0].input[0].type).toEqual('values');
+      expect(result.input[0].input[0].variables.length).toEqual(1);
+      expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
+      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[1].type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1])).toBeTruthy();
+
+      expect(result.input[1].type).toEqual('join');
+      expect(result.input[1].input[0].type).toEqual('values');
+      expect(result.input[1].input[0].variables.length).toEqual(1);
+      expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
+      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[1].type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1])).toBeTruthy();
+    });
+
+    it('should not transform a Pattern with available non-default graph patterns', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
+      );
+      expect(result.type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
+    });
+
+    it('should not transform a Pattern with non-available non-default graph patterns to a no-op', () => {
+      const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
+    });
+
     it('should transform other types of operations', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         <any> {
@@ -445,7 +560,7 @@ describe('ActorQueryOperationFromQuad', () => {
         type: 'from',
       };
       const result = ActorQueryOperationFromQuad.createOperation(pattern);
-      expect(result.type).toEqual('join');
+      expect(result.type).toEqual('union');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0])).toBeTruthy();
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1])).toBeTruthy();
     });
@@ -684,6 +799,26 @@ describe('ActorQueryOperationFromQuad', () => {
 
       expect(result.input[1].type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].patterns[0])).toBeTruthy();
+    });
+
+    it('should not transform the template part of a construct operation', () => {
+      const pattern: any = {
+        default: [ DF.namedNode('g') ],
+        input: {
+          type: 'construct',
+          input: Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }),
+          template: [
+            Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }),
+          ],
+        },
+        named: [],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+      expect(result.type).toEqual('construct');
+      expect(quad('s', 'p', 'o').equals(result.template[0])).toBeTruthy();
+      expect(result.input.type).toEqual('pattern');
+      expect(quad('s', 'p', 'o', 'g').equals(result.input)).toBeTruthy();
     });
   });
 

@@ -26,7 +26,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     recursiveCb: (subOperation: Algebra.Operation) => Algebra.Operation): Algebra.Operation {
     const copiedOperation: Algebra.Operation = <any> {};
     for (const key of Object.keys(operation)) {
-      if (Array.isArray(operation[key])) {
+      if (Array.isArray(operation[key]) && key !== 'template') {
+        // We exclude the 'template' entry, as we don't want to modify the template value of construct operations
         if (key === 'variables') {
           copiedOperation[key] = operation[key];
         } else {
@@ -50,7 +51,9 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    */
   public static applyOperationDefaultGraph(operation: Algebra.Operation, defaultGraphs: RDF.Term[]): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((operation.type === 'bgp' && operation.patterns.length > 0) || operation.type === 'path') {
+    if ((operation.type === 'bgp' && operation.patterns.length > 0) ||
+      operation.type === 'path' ||
+      operation.type === 'pattern') {
       if (operation.type === 'bgp') {
         return ActorQueryOperationFromQuad.joinOperations(operation.patterns.map((pattern: Algebra.Pattern) => {
           if (pattern.graph.termType !== 'DefaultGraph') {
@@ -66,10 +69,16 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         return operation;
       }
       const paths = defaultGraphs.map(
-        (graph: RDF.Term) => ActorQueryOperationFromQuad.FACTORY
-          .createPath(operation.subject, operation.predicate, operation.object, graph),
+        (graph: RDF.Term) => {
+          if (operation.type === 'path') {
+            return ActorQueryOperationFromQuad.FACTORY
+              .createPath(operation.subject, operation.predicate, operation.object, graph);
+          }
+          return ActorQueryOperationFromQuad.FACTORY
+            .createPattern(operation.subject, operation.predicate, operation.object, graph);
+        },
       );
-      return ActorQueryOperationFromQuad.joinOperations(paths);
+      return ActorQueryOperationFromQuad.unionOperations(paths);
     }
 
     return ActorQueryOperationFromQuad.copyOperation(operation,
@@ -87,7 +96,9 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   public static applyOperationNamedGraph(operation: Algebra.Operation, namedGraphs: RDF.Term[],
     defaultGraphs: RDF.Term[]): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((operation.type === 'bgp' && operation.patterns.length > 0) || operation.type === 'path') {
+    if ((operation.type === 'bgp' && operation.patterns.length > 0) ||
+      operation.type === 'path' ||
+      operation.type === 'pattern') {
       const patternGraph: RDF.Term = operation.type === 'bgp' ? operation.patterns[0].graph : operation.graph;
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
@@ -102,12 +113,20 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
           bindings[`?${patternGraph.value}`] = graph;
           const values: Algebra.Values = ActorQueryOperationFromQuad.FACTORY
             .createValues([ patternGraph ], [ bindings ]);
-          const pattern: Algebra.Operation = operation.type === 'bgp' ?
-            ActorQueryOperationFromQuad.FACTORY
+
+          let pattern: Algebra.Operation;
+          if (operation.type === 'bgp') {
+            pattern = ActorQueryOperationFromQuad.FACTORY
               .createBgp(operation.patterns.map((pat: Algebra.Pattern) => ActorQueryOperationFromQuad.FACTORY
-                .createPattern(pat.subject, pat.predicate, pat.object, graph))) :
-            ActorQueryOperationFromQuad.FACTORY
+                .createPattern(pat.subject, pat.predicate, pat.object, graph)));
+          } else if (operation.type === 'path') {
+            pattern = ActorQueryOperationFromQuad.FACTORY
               .createPath(operation.subject, operation.predicate, operation.object, graph);
+          } else {
+            pattern = ActorQueryOperationFromQuad.FACTORY
+              .createPattern(operation.subject, operation.predicate, operation.object, graph);
+          }
+
           return ActorQueryOperationFromQuad.FACTORY.createJoin([ values, pattern ]);
         }
         // If the pattern graph is a variable, take the union of the pattern applied to each available named graph
