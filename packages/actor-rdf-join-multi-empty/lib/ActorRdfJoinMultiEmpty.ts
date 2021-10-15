@@ -22,6 +22,11 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    // Close all entries
+    for (const entry of action.entries) {
+      entry.output.bindingsStream.close();
+    }
+
     return {
       result: {
         bindingsStream: new ArrayIterator([], { autoStart: false }),

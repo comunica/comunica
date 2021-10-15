@@ -1,4 +1,5 @@
 import { Bus } from '@comunica/core';
+import { ArrayIterator } from 'asynciterator';
 import { ActorRdfJoinMultiEmpty } from '../lib/ActorRdfJoinMultiEmpty';
 const arrayifyStream = require('arrayify-stream');
 
@@ -72,6 +73,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
             {
               output: <any> {
                 type: 'bindings',
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
                 variables: [],
                 metadata: () => Promise.resolve({ cardinality: 10 }),
               },
@@ -80,6 +82,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
             {
               output: <any> {
                 type: 'bindings',
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
                 variables: [],
                 metadata: () => Promise.resolve({ cardinality: 15 }),
               },
