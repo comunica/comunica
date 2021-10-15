@@ -1,8 +1,9 @@
-import { ActorQueryOperation, getMetadata, materializeOperation } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
+import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
+import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner, IMetadataChecked } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   Bindings,
   BindingsStream, IActionQueryOperation,
@@ -171,20 +172,31 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         canContainUndefs: action.entries.some(entry => entry.output.canContainUndefs),
       },
       physicalPlanMetadata: {
-        cardinalities: metadatas.map(ActorRdfJoin.getCardinality),
         bindIndex: smallestIndex,
         bindOrder: this.bindOrder,
       },
     };
   }
 
-  public async getIterations(action: IActionRdfJoin): Promise<number> {
+  public async getJoinCoefficients(
+    action: IActionRdfJoin,
+    metadatas: IMetadataChecked[],
+  ): Promise<IMediatorTypeJoinCoefficients> {
+    const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
+    const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
+
     // Find the stream with lowest cardinality
     const smallestIndex: number = await ActorRdfJoinMultiBind.getLeftEntryIndex(action.entries);
 
     // Take the stream with the lowest cardinality
     const remainingEntries: IJoinEntry[] = [ ...action.entries ];
+    const remainingMetadatas: IMetadataChecked[] = [ ...metadatas ];
+    const remainingRequestInitialTimes = [ ...requestInitialTimes ];
+    const remainingRequestItemTimes = [ ...requestItemTimes ];
     remainingEntries.splice(smallestIndex, 1);
+    remainingMetadatas.splice(smallestIndex, 1);
+    remainingRequestInitialTimes.splice(smallestIndex, 1);
+    remainingRequestItemTimes.splice(smallestIndex, 1);
 
     // Reject binding on some operation types
     if (remainingEntries
@@ -192,15 +204,50 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       throw new Error(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
-    // Estimate join cardinality
-    return ActorRdfJoin.getCardinality(await getMetadata(action.entries[smallestIndex].output)) *
-      (await Promise.all(remainingEntries
-        .map(async entry => ActorRdfJoin.getCardinality(await getMetadata(entry.output)))))
-        .reduce((sum, element) => sum + element, 0);
+    // Calculate overlap factor of variables of the smallest entry with the other entries
+    // This is a heuristic for determining the join cardinality
+    const variablesBoundRemaining = remainingEntries
+      .map(entry => this.getBoundVariablesAfterBinding(
+        action.entries[smallestIndex].output.variables,
+        entry.output.variables,
+      ))
+      .reduce((sum, value) => sum + value, 0) * 10;
+
+    // Determine coefficients for remaining entries
+    const cardinalityRemaining = remainingMetadatas
+      .map((metadata, i) => metadata.cardinality)
+      .reduce((sum, element) => sum + element, 0);
+    const receiveInitialCostRemaining = remainingRequestInitialTimes
+      .reduce((sum, element, i) => sum + element, 0);
+    const receiveItemCostRemaining = remainingRequestItemTimes
+      .reduce((sum, element, i) => sum + element, 0);
+
+    return {
+      iterations: metadatas[smallestIndex].cardinality * cardinalityRemaining / variablesBoundRemaining,
+      persistedItems: 0,
+      blockingItems: 0,
+      requestTime: requestInitialTimes[smallestIndex] +
+        metadatas[smallestIndex].cardinality / variablesBoundRemaining * (
+          requestItemTimes[smallestIndex] +
+          receiveInitialCostRemaining +
+          cardinalityRemaining * receiveItemCostRemaining
+        ),
+    };
+  }
+
+  public getBoundVariablesAfterBinding(variablesPrimary: string[], variablesSecondary: string[]): number {
+    let boundVariables = 0;
+    for (const variable of variablesSecondary) {
+      if (variablesPrimary.includes(variable)) {
+        boundVariables++;
+      }
+    }
+    return boundVariables;
   }
 }
 
-export interface IActorRdfJoinMultiBindArgs extends IActorArgs<IActionRdfJoin, IActorTest, IActorQueryOperationOutput> {
+export interface IActorRdfJoinMultiBindArgs
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput> {
   mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   bindOrder: BindOrder;

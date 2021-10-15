@@ -1,7 +1,7 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IMetadataChecked } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
-import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IActorQueryOperationOutput } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 
@@ -9,11 +9,11 @@ import { ArrayIterator } from 'asynciterator';
  * A comunica Multi Empty RDF Join Actor.
  */
 export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>) {
     super(args, 'multi-empty');
   }
 
-  public async test(action: IActionRdfJoin): Promise<IMediatorTypeIterations> {
+  public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
     if ((await ActorRdfJoin.getMetadatas(action.entries))
       .every(metadata => ActorRdfJoin.getCardinality(metadata) > 0)) {
       throw new Error(`Actor ${this.name} can only join entries where at least one is empty`);
@@ -30,13 +30,18 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
         variables: ActorRdfJoin.joinVariables(action),
         canContainUndefs: false,
       },
-      physicalPlanMetadata: {
-        cardinalities: (await ActorRdfJoin.getMetadatas(action.entries)).map(ActorRdfJoin.getCardinality),
-      },
     };
   }
 
-  protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    return 0;
+  protected async getJoinCoefficients(
+    action: IActionRdfJoin,
+    metadatas: IMetadataChecked[],
+  ): Promise<IMediatorTypeJoinCoefficients> {
+    return {
+      iterations: 0,
+      persistedItems: 0,
+      blockingItems: 0,
+      requestTime: 0,
+    };
   }
 }

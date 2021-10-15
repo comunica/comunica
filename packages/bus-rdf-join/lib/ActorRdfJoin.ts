@@ -1,15 +1,15 @@
-import { Bindings, getMetadata } from '@comunica/bus-query-operation';
+import type { Bindings } from '@comunica/bus-query-operation';
+import { getMetadata } from '@comunica/bus-query-operation';
 import { KeysInitSparql } from '@comunica/context-entries';
 import type { IAction, IActorArgs } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -23,8 +23,13 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActionRdfJoin
  * @see IActorQueryOperationOutput
  */
-export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput> {
-  private readonly physicalName: string;
+export abstract class ActorRdfJoin
+  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput> {
+  public static readonly METADATA_KEYS: (keyof IMetadataChecked)[] = [
+    'cardinality',
+  ];
+
+  public readonly physicalName: string;
   /**
    * Can be used by subclasses to indicate the max or min number of streams that can be joined.
    * 0 for infinity.
@@ -42,7 +47,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   protected canHandleUndefs: boolean;
 
   public constructor(
-    args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
+    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>,
     physicalName: string,
     limitEntries?: number,
     limitEntriesMin?: boolean,
@@ -109,20 +114,21 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
   /**
    * Checks if all metadata objects are present in the action, and if they have the specified key.
-   * @param {IActionRdfJoin} action
-   * @param {string} key
+   * @param {Record<string, any>[]} metadatas The metadata entries.
    * @returns {boolean}
    */
-  public static async allEntriesHaveMetadata(action: IActionRdfJoin, key: string): Promise<boolean> {
-    return Promise.all(action.entries.map(async entry => {
-      if (!entry.output.metadata) {
-        throw new Error('Missing metadata');
+  public static validateMetadata(metadatas: Record<string, any>[]): boolean {
+    for (const metadata of metadatas) {
+      if (!metadata) {
+        return false;
       }
-      const metadata = await entry.output.metadata();
-      if (!(key in metadata)) {
-        throw new Error('Missing metadata value');
+      for (const key of ActorRdfJoin.METADATA_KEYS) {
+        if (!(key in metadata)) {
+          return false;
+        }
       }
-    })).then(() => true).catch(() => false);
+    }
+    return true;
   }
 
   /**
@@ -164,22 +170,39 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   }
 
   /**
+   * Calculate the time to initiate a request for the given metadata entries.
+   * @param metadatas An array of checked metadata.
+   */
+  public static getRequestInitialTimes(metadatas: IMetadataChecked[]): number[] {
+    return metadatas.map(metadata => metadata.pageSize ? 0 : metadata.requestTime || 0);
+  }
+
+  /**
+   * Calculate the time to receive a single item for the given metadata entries.
+   * @param metadatas An array of checked metadata.
+   */
+  public static getRequestItemTimes(metadatas: IMetadataChecked[]): number[] {
+    return metadatas
+      .map(metadata => !metadata.pageSize ? 0 : metadata.cardinality / metadata.pageSize * (metadata.requestTime || 0));
+  }
+
+  /**
    * Default test function for join actors.
    * Checks whether all iterators have metadata.
    * If yes: call the abstract getIterations method, if not: return Infinity.
    * @param {IActionRdfJoin} action The input action containing the relevant iterators
-   * @returns {Promise<IMediatorTypeIterations>} The calculated estime.
+   * @returns {Promise<IMediatorTypeJoinCoefficients>} The join coefficients.
    */
-  public async test(action: IActionRdfJoin): Promise<IMediatorTypeIterations> {
-    // Allow joining of one or zero streams
+  public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+    // Don't allow joining of one or zero streams
     if (action.entries.length <= 1) {
-      return { iterations: 0 };
+      throw new Error(`${this.name} requires at least two join entries.`);
     }
 
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
       throw new Error(`${this.name} requires ${this.limitEntries
-      } sources at ${this.limitEntriesMin ? 'least' : 'most'
+      } join entries at ${this.limitEntriesMin ? 'least' : 'most'
       }. The input contained ${action.entries.length}.`);
     }
 
@@ -199,12 +222,19 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
       }
     }
 
-    // If at least one entry has no metadata, return infinity
-    if (!await ActorRdfJoin.allEntriesHaveMetadata(action, 'cardinality')) {
-      return { iterations: Number.POSITIVE_INFINITY };
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+
+    // Ensure that all metadata objects have all requires entries
+    if (!ActorRdfJoin.validateMetadata(metadatas)) {
+      return {
+        iterations: Number.POSITIVE_INFINITY,
+        persistedItems: Number.POSITIVE_INFINITY,
+        blockingItems: Number.POSITIVE_INFINITY,
+        requestTime: Number.POSITIVE_INFINITY,
+      };
     }
 
-    return { iterations: await this.getIterations(action) };
+    return await this.getJoinCoefficients(action, <IMetadataChecked[]> metadatas);
   }
 
   /**
@@ -213,19 +243,6 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {Promise<IActorQueryOperationOutput>}
    */
   public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
-    if (action.entries.length === 0) {
-      return {
-        bindingsStream: new ArrayIterator([ Bindings({}) ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 1 }),
-        type: 'bindings',
-        variables: [],
-        canContainUndefs: false,
-      };
-    }
-    if (action.entries.length === 1) {
-      return action.entries[0].output;
-    }
-
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
@@ -235,6 +252,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
     }
 
     const { result, physicalPlanMetadata } = await this.getOutput(action);
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
     // Log to physical plan
     if (action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
@@ -246,18 +264,20 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
         action,
         parentPhysicalQueryPlanNode,
         this.name,
-        physicalPlanMetadata,
+        {
+          ...physicalPlanMetadata,
+          cardinalities: metadatas.map(ActorRdfJoin.getCardinality),
+          joinCoefficients: await this.getJoinCoefficients(action, <IMetadataChecked[]> metadatas),
+        },
       );
     }
 
     // Lazily calculate upper cardinality limit
-    function calculateCardinality(): Promise<number> {
-      return Promise.all(action.entries
-        .map(entry => (<() => Promise<Record<string, any>>> entry.output.metadata)()))
-        .then(metadatas => metadatas.reduce((acc, val) => acc * val.cardinality, 1));
+    function calculateCardinality(): number {
+      return metadatas.reduce((acc, metadata) => acc * ActorRdfJoin.getCardinality(metadata), 1);
     }
 
-    if (await ActorRdfJoin.allEntriesHaveMetadata(action, 'cardinality')) {
+    if (ActorRdfJoin.validateMetadata(metadatas)) {
       // Update the result promise to also add the estimated total items
       const unwrapped = result;
       if (unwrapped.metadata) {
@@ -265,12 +285,12 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
         unwrapped.metadata = () => oldMetadata().then(async(metadata: any) => {
           // Don't overwrite metadata if it was generated by implementation
           if (!('cardinality' in metadata)) {
-            metadata.cardinality = await calculateCardinality();
+            metadata.cardinality = calculateCardinality();
           }
           return metadata;
         });
       } else {
-        unwrapped.metadata = () => calculateCardinality().then(cardinalityValue => ({ cardinality: cardinalityValue }));
+        unwrapped.metadata = () => Promise.resolve({ cardinality: calculateCardinality() });
       }
       return unwrapped;
     }
@@ -287,12 +307,15 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   protected abstract getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner>;
 
   /**
-   * Used when calculating the number of iterations in the test function.
-   * All metadata objects are guaranteed to have a value for the `cardinality` key.
-   * @param {IActionRdfJoin} action
-   * @returns {number} The estimated number of iterations when joining the given iterators.
+   * Calculate the join coefficients.
+   * @param {IActionRdfJoin} action Join action
+   * @param metadatas Array of resolved metadata objects.
+   * @returns {IMediatorTypeJoinCoefficients} The join coefficient estimates.
    */
-  protected abstract getIterations(action: IActionRdfJoin): Promise<number>;
+  protected abstract getJoinCoefficients(
+    action: IActionRdfJoin,
+    metadatas: IMetadataChecked[],
+  ): Promise<IMediatorTypeJoinCoefficients>;
 }
 
 export interface IActionRdfJoin extends IAction {
@@ -325,4 +348,10 @@ export interface IActorRdfJoinOutputInner {
    * Optional metadata that will be included as metadata within the physical query plan output.
    */
   physicalPlanMetadata?: any;
+}
+
+export interface IMetadataChecked {
+  cardinality: number;
+  pageSize?: number;
+  requestTime?: number;
 }

@@ -1092,6 +1092,11 @@
   resolved "https://registry.yarnpkg.com/@comunica/mediator-race/-/mediator-race-1.21.1.tgz#bf2ff6d93f439708f6ed1b97b0dda0554112ef6b"
   integrity sha512-SgdtF1JmqDyhZJsAOiVMPuV1qgdXqv/hbsFCxcmDQ+8q1ObmQ+0DZvdUe5Ymf2IyFaevsOHHG7hF5hJbLZmdmQ==
 
+"@comunica/mediatortype-iterations@^1.22.0":
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@comunica/mediatortype-iterations/-/mediatortype-iterations-1.22.0.tgz#912b9b7254d53477c1a4bae0ea5c1eec7e6241fc"
+  integrity sha512-pN8aCGSh19FFu2IHjXJdCib2ewhOuW+DzQVkGTG0oD472amqQAlBVNxR38QParVP/ra70Isnbp+mfFlFLHrkYg==
+
 "@dabh/diagnostics@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@dabh/diagnostics/-/diagnostics-2.0.2.tgz#290d08f7b381b8f94607dc8f471a12c675f9db31"

@@ -73,7 +73,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: '', metadata: stream([]) })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: stream([]), requestTime: 0 })).resolves.toBeTruthy();
     });
 
     it('should run on valid controls', async() => {
@@ -92,6 +92,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
           quad('mypage', 'somethingelse', 'somevalue'),
         ]),
         url: 'mypage',
+        requestTime: 0,
       });
       expect(output.metadata.searchForms.values[0].getUri({ propa: 'A', propb: 'B' }))
         .toEqual('http://example.org/?a=A&b=B');

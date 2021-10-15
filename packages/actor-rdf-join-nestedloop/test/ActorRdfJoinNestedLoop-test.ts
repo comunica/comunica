@@ -47,7 +47,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         {
           output: {
             bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 4 }),
+            metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
             type: 'bindings',
             variables: [],
             canContainUndefs: false,
@@ -57,7 +57,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         {
           output: {
             bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 5 }),
+            metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
             type: 'bindings',
             variables: [],
             canContainUndefs: false,
@@ -75,20 +75,35 @@ describe('ActorRdfJoinNestedLoop', () => {
     it('should handle undefs in left stream', () => {
       action.entries[0].output.canContainUndefs = true;
       return expect(actor.test(action)).resolves
-        .toEqual({ iterations: 20 });
+        .toEqual({
+          iterations: 20,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 6.6,
+        });
     });
 
     it('should handle undefs in right stream', () => {
       action.entries[1].output.canContainUndefs = true;
       return expect(actor.test(action)).resolves
-        .toEqual({ iterations: 20 });
+        .toEqual({
+          iterations: 20,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 6.6,
+        });
     });
 
     it('should handle undefs in left and right stream', () => {
       action.entries[0].output.canContainUndefs = true;
       action.entries[1].output.canContainUndefs = true;
       return expect(actor.test(action)).resolves
-        .toEqual({ iterations: 20 });
+        .toEqual({
+          iterations: 20,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 6.6,
+        });
     });
 
     it('should generate correct test metadata', async() => {

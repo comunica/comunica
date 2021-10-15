@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-none/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-join-none",
+  "components": [
+    {
+      "@id": "carjn:Actor/RdfJoin/None",
+      "@type": "Class",
+      "extends": "cbrj:Actor/RdfJoin",
+      "requireElement": "ActorRdfJoinNone",
+      "comment": "A comunica None RDF Join Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

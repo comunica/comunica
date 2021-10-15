@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-single/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-join-single",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-join-single",
+  "import": [
+    "files-carjs:components/Actor/RdfJoin/Single.jsonld"
+  ]
+}

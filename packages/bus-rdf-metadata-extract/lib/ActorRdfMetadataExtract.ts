@@ -30,6 +30,11 @@ export interface IActionRdfMetadataExtract extends IAction {
    */
   metadata: RDF.Stream;
   /**
+   * The time it took to request the page in milliseconds.
+   * This is the time until the first byte arrives.
+   */
+  requestTime: number;
+  /**
    * The headers of the page.
    */
   headers?: Record<string, string>;

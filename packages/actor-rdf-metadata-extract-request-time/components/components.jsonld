@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-request-time/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-request-time",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-extract-request-time",
+  "import": [
+    "files-carmert:components/Actor/RdfMetadataExtract/RequestTime.jsonld"
+  ]
+}

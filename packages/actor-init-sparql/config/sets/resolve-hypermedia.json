@@ -6,6 +6,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-controls/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-pagesize/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-request-time/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-all/^1.0.0/components/context.jsonld",
@@ -108,6 +110,14 @@
     {
       "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraCount",
       "@type": "ActorRdfMetadataExtractHydraCount"
+    },
+    {
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraPagesize",
+      "@type": "ActorRdfMetadataExtractHydraPagesize"
+    },
+    {
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractRequestTime",
+      "@type": "ActorRdfMetadataExtractRequestTime"
     }
   ]
 }

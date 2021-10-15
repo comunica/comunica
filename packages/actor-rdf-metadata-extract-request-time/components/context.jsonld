@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmert": "npmd:@comunica/actor-rdf-metadata-extract-request-time/",
+      "files-carmert": "carmert:^1.0.0/",
+
+      "ActorRdfMetadataExtractRequestTime": "carmert:Actor/RdfMetadataExtract/RequestTime"
+    }
+  ]
+}

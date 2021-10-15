@@ -73,7 +73,12 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
 
       // Don't await, we want to process metadata in the background.
       this.mediatorMetadataExtract
-        .mediate({ context: this.context, url: pageQuads.url, metadata: pageMetaSplit.metadata })
+        .mediate({
+          context: this.context,
+          url: pageQuads.url,
+          metadata: pageMetaSplit.metadata,
+          requestTime: pageQuads.requestTime,
+        })
         .then(result => onNextPage(result.metadata.next)).catch(error => this.emit('error', error));
     }
 

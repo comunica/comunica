@@ -120,6 +120,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
         url,
         metadata: rdfMetadataOuput.metadata,
         headers: rdfDereferenceOutput.headers,
+        requestTime: rdfDereferenceOutput.requestTime,
       })).metadata;
       quads = rdfMetadataOuput.data;
 

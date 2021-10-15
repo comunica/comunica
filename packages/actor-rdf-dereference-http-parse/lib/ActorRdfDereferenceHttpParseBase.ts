@@ -81,13 +81,15 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       input: action.url,
     };
     let httpResponse: IActorHttpOutput;
+    const requestTimeStart = Date.now();
     try {
       httpResponse = await this.mediatorHttp.mediate(httpAction);
     } catch (error: unknown) {
-      return this.handleDereferenceError(action, error);
+      return this.handleDereferenceError(action, error, 0);
     }
     // The response URL can be relative to the given URL
     const url = resolveRelative(httpResponse.url, action.url);
+    const requestTime = Date.now() - requestTimeStart;
 
     // Convert output headers to a hash
     const outputHeaders: Record<string, string> = {};
@@ -105,7 +107,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       }
       if (!action.acceptErrors) {
         const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
-        return this.handleDereferenceError(action, error);
+        return this.handleDereferenceError(action, error, requestTime);
       }
     }
 
@@ -142,13 +144,13 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     } catch (error: unknown) {
       // Close the body, to avoid process to hang
       await httpResponse.body!.cancel();
-      return this.handleDereferenceError(action, error);
+      return this.handleDereferenceError(action, error, requestTime);
     }
 
     const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url, quads, exists, triples: parseOutput.triples, headers: outputHeaders };
+    return { url, quads, exists, requestTime, triples: parseOutput.triples, headers: outputHeaders };
   }
 
   public mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {

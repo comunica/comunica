@@ -19,29 +19,29 @@ describe('ActorRdfMetadataExtractPatchSparqlUpdate', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: 'http://example.org/', metadata: input })).resolves.toBeTruthy();
+      return expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0 })).resolves.toBeTruthy();
     });
 
     it('should run without empty headers', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: input }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0 }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with empty headers', () => {
       const headers = {};
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0 }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with invalid accept-patch header', () => {
       const headers = { 'accept-patch': 'abc' };
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0 }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with valid accept-patch header', () => {
       const headers = { 'accept-patch': 'application/sparql-update' };
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0 }))
         .resolves.toEqual({ metadata: { patchSparqlUpdate: true }});
     });
   });

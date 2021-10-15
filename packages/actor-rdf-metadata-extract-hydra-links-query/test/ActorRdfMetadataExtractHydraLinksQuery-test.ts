@@ -38,7 +38,7 @@ describe('ActorRdfMetadataExtractHydraLinksQuery', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: '', metadata: input })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: input, requestTime: 0 })).resolves.toBeTruthy();
     });
 
     it('should run on a stream with all properties', () => {
@@ -49,7 +49,7 @@ describe('ActorRdfMetadataExtractHydraLinksQuery', () => {
         next: 'NEXT',
         previous: 'PREVIOUS',
       });
-      return expect(actor.run({ url: 'url', metadata: input })).resolves
+      return expect(actor.run({ url: 'url', metadata: input, requestTime: 0 })).resolves
         .toEqual({
           metadata: {
             first: 'FIRST',

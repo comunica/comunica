@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-join-coefficients-fixed/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/mediator-join-coefficients-fixed",
+  "@type": "Module",
+  "requireName": "@comunica/mediator-join-coefficients-fixed",
+  "import": [
+    "files-cmjcf:components/Mediator/JoinCoefficientsFixed.jsonld"
+  ]
+}

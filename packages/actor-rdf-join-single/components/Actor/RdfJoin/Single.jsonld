@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-single/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-join-single",
+  "components": [
+    {
+      "@id": "carjs:Actor/RdfJoin/Single",
+      "@type": "Class",
+      "extends": "cbrj:Actor/RdfJoin",
+      "requireElement": "ActorRdfJoinSingle",
+      "comment": "A comunica Single RDF Join Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

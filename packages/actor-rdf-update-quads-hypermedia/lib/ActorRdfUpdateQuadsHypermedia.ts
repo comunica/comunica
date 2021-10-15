@@ -81,6 +81,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
           url,
           metadata: rdfMetadataOuput.metadata,
           headers: rdfDereferenceOutput.headers,
+          requestTime: rdfDereferenceOutput.requestTime,
         })).metadata;
       } catch {
         metadata = {};

@@ -87,7 +87,12 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     // eslint-disable-next-line no-return-assign
     const firstPageMetadata: () => Promise<Record<string, any>> = () => materializedFirstPageMetadata ??
       (materializedFirstPageMetadata = this.mediatorMetadataExtract.mediate(
-        { context: action.context, url: firstPageUrl, metadata: firstPageMetaSplit.metadata },
+        {
+          context: action.context,
+          url: firstPageUrl,
+          metadata: firstPageMetaSplit.metadata,
+          requestTime: firstPage.requestTime,
+        },
       ).then(output => output.metadata));
 
     const data: MediatedPagedAsyncRdfIterator = new MediatedPagedAsyncRdfIterator(

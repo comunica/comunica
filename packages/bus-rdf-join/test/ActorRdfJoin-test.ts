@@ -1,9 +1,10 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
-import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
+import type { IActionRdfJoin, IMetadataChecked } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
@@ -34,8 +35,16 @@ class Dummy extends ActorRdfJoin {
     return { result, physicalPlanMetadata: { meta: true }};
   }
 
-  protected getIterations(action: IActionRdfJoin): Promise<number> {
-    return Promise.resolve(5);
+  protected getJoinCoefficients(
+    action: IActionRdfJoin,
+    metadatas: IMetadataChecked[],
+  ): Promise<IMediatorTypeJoinCoefficients> {
+    return Promise.resolve({
+      iterations: 5,
+      persistedItems: 2,
+      blockingItems: 3,
+      requestTime: 10,
+    });
   }
 }
 
@@ -144,33 +153,40 @@ describe('ActorRdfJoin', () => {
     });
   });
 
-  describe('allEntriesHaveMetadata', () => {
+  describe('validateMetadata', () => {
     it('should return false if there is no left metadata', () => {
-      action.entries[1].output.metadata = () => Promise.resolve({});
-      return expect(ActorRdfJoin.allEntriesHaveMetadata(action, 'key')).resolves.toBeFalsy();
+      return expect(ActorRdfJoin.validateMetadata([
+        <any> undefined,
+        { cardinality: 10 },
+      ])).toBeFalsy();
     });
 
     it('should return false if there is no right metadata', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({});
-      return expect(ActorRdfJoin.allEntriesHaveMetadata(action, 'key')).resolves.toBeFalsy();
+      return expect(ActorRdfJoin.validateMetadata([
+        { cardinality: 10 },
+        <any> undefined,
+      ])).toBeFalsy();
     });
 
     it('should return false if no relevant left metadata', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({});
-      action.entries[1].output.metadata = () => Promise.resolve({ key: 5 });
-      return expect(ActorRdfJoin.allEntriesHaveMetadata(action, 'key')).resolves.toBeFalsy();
+      return expect(ActorRdfJoin.validateMetadata([
+        {},
+        { cardinality: 10 },
+      ])).toBeFalsy();
     });
 
     it('should return false if no relevant right metadata', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ key: 5 });
-      action.entries[1].output.metadata = () => Promise.resolve({});
-      return expect(ActorRdfJoin.allEntriesHaveMetadata(action, 'key')).resolves.toBeFalsy();
+      return expect(ActorRdfJoin.validateMetadata([
+        { cardinality: 5 },
+        {},
+      ])).toBeFalsy();
     });
 
     it('should return true if both have the relevant metadata', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ key: 5 });
-      action.entries[1].output.metadata = () => Promise.resolve({ key: 10 });
-      return expect(ActorRdfJoin.allEntriesHaveMetadata(action, 'key')).resolves.toBeTruthy();
+      return expect(ActorRdfJoin.validateMetadata([
+        { cardinality: 5 },
+        { cardinality: 10 },
+      ])).toBeTruthy();
     });
   });
 
@@ -259,6 +275,38 @@ describe('ActorRdfJoin', () => {
     });
   });
 
+  describe('getRequestInitialTimes', () => {
+    it('should calculate initial request times', async() => {
+      expect(ActorRdfJoin.getRequestInitialTimes([
+        { cardinality: 10, pageSize: 10, requestTime: 10 },
+        { cardinality: 10, pageSize: 10 },
+        { cardinality: 10 },
+        { cardinality: 10, requestTime: 10 },
+      ])).toEqual([
+        0,
+        0,
+        0,
+        10,
+      ]);
+    });
+  });
+
+  describe('getRequestItemTimes', () => {
+    it('should calculate item request times', async() => {
+      expect(ActorRdfJoin.getRequestItemTimes([
+        { cardinality: 10, pageSize: 10, requestTime: 10 },
+        { cardinality: 10, pageSize: 10 },
+        { cardinality: 10 },
+        { cardinality: 10, requestTime: 10 },
+      ])).toEqual([
+        10,
+        0,
+        0,
+        0,
+      ]);
+    });
+  });
+
   describe('test', () => {
     let instance: Dummy;
 
@@ -266,25 +314,25 @@ describe('ActorRdfJoin', () => {
       instance = new Dummy();
     });
 
-    it('should return 0 iterations if there are 0 entries', () => {
+    it('should reject if there are 0 entries', () => {
       action.entries = [];
-      return expect(instance.test(action)).resolves.toHaveProperty('iterations', 0);
+      return expect(instance.test(action)).rejects.toThrow('name requires at least two join entries.');
     });
 
-    it('should return 0 iterations if there is 1 entry', () => {
+    it('should reject if there is 1 entry', () => {
       action.entries = [ action.entries[0] ];
-      return expect(instance.test(action)).resolves.toHaveProperty('iterations', 0);
+      return expect(instance.test(action)).rejects.toThrow('name requires at least two join entries.');
     });
 
     it('should reject if there are too many entries', () => {
       action.entries.push(<any> { bindings: { type: 'bindings' }});
       instance = new Dummy(undefined, 2);
-      return expect(instance.test(action)).rejects.toThrowError(`name requires 2 sources at most. The input contained 3.`);
+      return expect(instance.test(action)).rejects.toThrowError(`name requires 2 join entries at most. The input contained 3.`);
     });
 
     it('should reject if there are too few entries', () => {
       instance = new Dummy(undefined, 3, true);
-      return expect(instance.test(action)).rejects.toThrowError(`name requires 3 sources at least. The input contained 2.`);
+      return expect(instance.test(action)).rejects.toThrowError(`name requires 3 join entries at least. The input contained 2.`);
     });
 
     it('should throw an error if an entry has an incorrect type', () => {
@@ -345,41 +393,40 @@ describe('ActorRdfJoin', () => {
     it('should handle undefs in left stream', () => {
       action.entries[0].output.canContainUndefs = true;
       return expect(instance.test(action)).resolves
-        .toEqual({ iterations: 5 });
+        .toEqual({
+          iterations: 5,
+          persistedItems: 2,
+          blockingItems: 3,
+          requestTime: 10,
+        });
     });
 
     it('should handle undefs in right stream', () => {
       action.entries[1].output.canContainUndefs = true;
       return expect(instance.test(action)).resolves
-        .toEqual({ iterations: 5 });
+        .toEqual({
+          iterations: 5,
+          persistedItems: 2,
+          blockingItems: 3,
+          requestTime: 10,
+        });
     });
 
     it('should handle undefs in left and right stream', () => {
       action.entries[0].output.canContainUndefs = true;
       action.entries[1].output.canContainUndefs = true;
       return expect(instance.test(action)).resolves
-        .toEqual({ iterations: 5 });
+        .toEqual({
+          iterations: 5,
+          persistedItems: 2,
+          blockingItems: 3,
+          requestTime: 10,
+        });
     });
   });
 
   describe('run', () => {
     const instance = new Dummy();
-
-    it('returns a singleton stream for empty input', () => {
-      action.entries = [];
-
-      return instance.run(action).then(async(result: any) => {
-        expect(await arrayifyStream(result.bindingsStream)).toEqual([ Bindings({}) ]);
-        expect(result.variables).toEqual([]);
-        expect(result.canContainUndefs).toEqual(false);
-        return expect(await result.metadata()).toEqual({ cardinality: 1 });
-      });
-    });
-
-    it('returns the input if there is only one', () => {
-      action.entries = [ action.entries[0] ];
-      return expect(instance.run(action)).resolves.toEqual(action.entries[0].output);
-    });
 
     it('calls getOutput if there are 2+ entries', async() => {
       delete action.entries[0].output.metadata;
@@ -436,7 +483,19 @@ describe('ActorRdfJoin', () => {
         action,
         parentNode,
         'name',
-        { meta: true },
+        {
+          meta: true,
+          cardinalities: [
+            10,
+            5,
+          ],
+          joinCoefficients: {
+            iterations: 5,
+            persistedItems: 2,
+            blockingItems: 3,
+            requestTime: 10,
+          },
+        },
       );
       expect(instance.getOutput).toHaveBeenCalledWith({
         ...action,

@@ -1,11 +1,10 @@
 import {
   ActorQueryOperation,
-  getMetadata,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner, IMetadataChecked } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IActorArgs, Mediator } from '@comunica/core';
+import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
@@ -16,7 +15,7 @@ import { Factory } from 'sparqlalgebrajs';
  */
 export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
 
   public static readonly FACTORY = new Factory();
 
@@ -41,7 +40,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
       output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
         .mediate({ entries: [ smallestItem1, smallestItem2 ], context: action.context })),
       operation: ActorRdfJoinMultiSmallest.FACTORY
-        .createJoin([ smallestItem1.operation, smallestItem2.operation ]),
+        .createJoin([ smallestItem1.operation, smallestItem2.operation ], false),
     };
     entries.push(firstEntry);
     return {
@@ -50,20 +49,44 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
         context: action.context,
       }),
       physicalPlanMetadata: {
-        cardinalities: metadatas.map(ActorRdfJoin.getCardinality),
         smallest: [ smallestIndex1, smallestIndex2 ],
       },
     };
   }
 
-  protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    return (await Promise.all(action.entries.map(entry => getMetadata(entry.output))))
-      .reduce((acc, value) => acc * value.cardinality, 1);
+  protected async getJoinCoefficients(
+    action: IActionRdfJoin,
+    metadatas: IMetadataChecked[],
+  ): Promise<IMediatorTypeJoinCoefficients> {
+    metadatas = [ ...metadatas ];
+    const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
+    const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
+
+    // Determine the two smallest streams by estimated count
+    const smallestIndex1: number = ActorRdfJoin.getLowestCardinalityIndex(metadatas);
+    const metadataSmallest1 = metadatas.splice(smallestIndex1, 1)[0];
+    const requestInitialTimeSmallest1 = requestInitialTimes.splice(smallestIndex1, 1)[0];
+    const requestItemTimesSmallest1 = requestItemTimes.splice(smallestIndex1, 1)[0];
+    const smallestIndex2: number = ActorRdfJoin.getLowestCardinalityIndex(metadatas);
+    const metadataSmallest2 = metadatas.splice(smallestIndex2, 1)[0];
+    const requestInitialTimeSmallest2 = requestInitialTimes.splice(smallestIndex2, 1)[0];
+    const requestItemTimesSmallest2 = requestItemTimes.splice(smallestIndex2, 1)[0];
+
+    return {
+      iterations: metadataSmallest1.cardinality * metadataSmallest2.cardinality *
+        metadatas.reduce((acc, metadata) => acc * metadata.cardinality, 1),
+      persistedItems: 0,
+      blockingItems: 0,
+      requestTime: requestInitialTimeSmallest1 + metadataSmallest1.cardinality * requestItemTimesSmallest1 +
+        requestInitialTimeSmallest2 + metadataSmallest2.cardinality * requestItemTimesSmallest2 +
+        metadatas
+          .reduce((sum, metadata, i) => sum + requestInitialTimes[i] + metadata.cardinality * requestItemTimes[i], 0),
+    };
   }
 }
 
 export interface IActorRdfJoinMultiSmallestArgs
-  extends IActorArgs<IActionRdfJoin, IActorTest, IActorQueryOperationOutput> {
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput> {
   mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
 }

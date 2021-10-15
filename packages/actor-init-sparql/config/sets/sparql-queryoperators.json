@@ -31,7 +31,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-join-coefficients-fixed/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
@@ -120,9 +121,11 @@
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
       "caqoj:mediatorJoin": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin",
-        "@type": "MediatorNumberMin",
-        "field": "iterations",
-        "ignoreErrors": true,
+        "@type": "MediatorJoinCoefficientsFixed",
+        "cmjcf:Mediator/JoinCoefficientsFixed#cpuWeight": 1,
+        "cmjcf:Mediator/JoinCoefficientsFixed#memoryWeight": 1,
+        "cmjcf:Mediator/JoinCoefficientsFixed#timeWeight": 1,
+        "cmjcf:Mediator/JoinCoefficientsFixed#ioWeight": 0.01,
         "cc:Mediator/bus": { "@id": "cbrj:Bus/RdfJoin" }
       }
     },

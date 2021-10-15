@@ -47,7 +47,7 @@ describe('ActorRdfJoinHash', () => {
         {
           output: {
             bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 4 }),
+            metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
             type: 'bindings',
             variables: [],
             canContainUndefs: false,
@@ -57,7 +57,7 @@ describe('ActorRdfJoinHash', () => {
         {
           output: {
             bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 5 }),
+            metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
             type: 'bindings',
             variables: [],
             canContainUndefs: false,
@@ -92,9 +92,13 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should generate correct test metadata', async() => {
-      await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0].output).metadata()).cardinality +
-        (await (<any> action.entries[1].output).metadata()).cardinality);
+      await expect(actor.test(action)).resolves
+        .toEqual({
+          iterations: 9,
+          persistedItems: 4,
+          blockingItems: 4,
+          requestTime: 6.6,
+        });
     });
 
     it('should generate correct metadata', async() => {

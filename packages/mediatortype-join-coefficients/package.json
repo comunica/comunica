@@ -1,13 +1,13 @@
 {
-  "name": "@comunica/mediatortype-iterations",
+  "name": "@comunica/mediatortype-join-coefficients",
   "version": "1.22.0",
-  "description": "A comunica mediator type for the 'iterations' parameter.",
+  "description": "A comunica mediator type for the 'join-coefficients' parameter.",
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/mediatortype-iterations"
+    "directory": "packages/mediatortype-join-coefficients"
   },
   "publishConfig": {
     "access": "public"

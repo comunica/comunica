@@ -380,7 +380,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: '', metadata: stream([]) })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: stream([]), requestTime: 0 })).resolves.toBeTruthy();
     });
 
     it('should run on valid controls', () => {
@@ -399,7 +399,8 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         quad('mapping2', `${HYDRA}property`, 'propb'),
         quad('mypage', 'somethingelse', 'somevalue'),
       ]),
-      url: 'mypage' })).resolves.toMatchObject({ metadata: {
+      url: 'mypage',
+      requestTime: 0 })).resolves.toMatchObject({ metadata: {
         first: 'first',
         last: 'last',
         next: 'next',

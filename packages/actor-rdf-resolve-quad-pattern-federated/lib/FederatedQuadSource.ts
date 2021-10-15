@@ -227,12 +227,21 @@ export class FederatedQuadSource implements IQuadSource {
           // We're already at infinite, so ignore any later metadata
           metadata.cardinality = Number.POSITIVE_INFINITY;
           remainingSources = 0;
-          checkEmitMetadata(Number.POSITIVE_INFINITY, source, pattern, subMetadata);
         } else {
           metadata.cardinality += subMetadata.cardinality;
           remainingSources--;
-          checkEmitMetadata(subMetadata.cardinality, source, pattern, subMetadata);
         }
+        if (metadata.requestTime || subMetadata.requestTime) {
+          metadata.requestTime = metadata.requestTime || 0;
+          subMetadata.requestTime = subMetadata.requestTime || 0;
+          metadata.requestTime += subMetadata.requestTime;
+        }
+        if (metadata.pageSize || subMetadata.pageSize) {
+          metadata.pageSize = metadata.pageSize || 0;
+          subMetadata.pageSize = subMetadata.pageSize || 0;
+          metadata.pageSize += subMetadata.pageSize;
+        }
+        checkEmitMetadata(metadata.cardinality, source, pattern, subMetadata);
       });
 
       // Determine the data stream from this source

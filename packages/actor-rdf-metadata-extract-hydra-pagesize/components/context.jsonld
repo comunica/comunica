@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmehp": "npmd:@comunica/actor-rdf-metadata-extract-hydra-pagesize/",
+      "files-carmehp": "carmehp:^1.0.0/",
+
+      "ActorRdfMetadataExtractHydraPagesize": "carmehp:Actor/RdfMetadataExtract/HydraPagesize"
+    }
+  ]
+}

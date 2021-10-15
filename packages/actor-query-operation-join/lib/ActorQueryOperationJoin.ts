@@ -5,7 +5,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { ActorRdfJoin, IActionRdfJoin, IJoinEntry } from '@comunica/bus-rdf-join';
 import type { IActorTest, Mediator } from '@comunica/core';
-import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IActorQueryOperationOutput, ActionContext } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -14,7 +14,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Algebra.Join> {
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
 
   public constructor(args: IActorQueryOperationJoinArgs) {
     super(args, 'join');
@@ -40,5 +40,5 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
 }
 
 export interface IActorQueryOperationJoinArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
 }

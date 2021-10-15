@@ -58,9 +58,10 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * depending on whether or not hard errors are enabled.
    * @param {IActionRdfDereference} action An RDF dereference action.
    * @param {Error} error An error that has occured.
+   * @param {number} requestTime The time it took to request the page in milliseconds.
    * @return {Promise<IActorRdfDereferenceOutput>} A promise that rejects or resolves to an empty output.
    */
-  protected async handleDereferenceError(action: IActionRdfDereference, error: unknown):
+  protected async handleDereferenceError(action: IActionRdfDereference, error: unknown, requestTime: number):
   Promise<IActorRdfDereferenceOutput> {
     if (this.isHardError(action)) {
       throw error;
@@ -68,7 +69,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
       this.logError(action.context, (<Error> error).message);
       const quads = new Readable();
       quads.push(null);
-      return { url: action.url, quads, exists: false };
+      return { url: action.url, quads, exists: false, requestTime: 0 };
     }
   }
 }
@@ -117,6 +118,11 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
    * This will always be true, unless `acceptErrors` was set to true in the action and the dereferencing failed.
    */
   exists: boolean;
+  /**
+   * The time it took to request the page in milliseconds.
+   * This is the time until the first byte arrives.
+   */
+  requestTime: number;
   /**
    * An optional field indicating if the given quad stream originates from a triple-based serialization,
    * in which everything is serialized in the default graph.

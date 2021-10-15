@@ -15,6 +15,6 @@ export class ActorRdfDereferenceFallback extends ActorRdfDereference {
   }
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
-    return this.handleDereferenceError(action, new Error(`Could not dereference '${action.url}'`));
+    return this.handleDereferenceError(action, new Error(`Could not dereference '${action.url}'`), 0);
   }
 }

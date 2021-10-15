@@ -48,6 +48,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
       mediaType = this.getMediaTypeFromExtension(action.url);
     }
 
+    const requestTimeStart = Date.now();
     const parseAction: IActionHandleRdfParse = {
       context: action.context,
       handle: {
@@ -55,6 +56,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
         input: fs.createReadStream(action.url.startsWith('file://') ? new URL(action.url) : action.url),
       },
     };
+    const requestTime = Date.now() - requestTimeStart;
     if (mediaType) {
       parseAction.handleMediaType = mediaType;
     }
@@ -63,13 +65,14 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     try {
       parseOutput = (await this.mediatorRdfParse.mediate(parseAction)).handle;
     } catch (error: unknown) {
-      return this.handleDereferenceError(action, error);
+      return this.handleDereferenceError(action, error, requestTime);
     }
 
     return {
       headers: {},
       quads: this.handleDereferenceStreamErrors(action, parseOutput.quads),
       exists: true,
+      requestTime,
       triples: parseOutput.triples,
       url: action.url,
     };

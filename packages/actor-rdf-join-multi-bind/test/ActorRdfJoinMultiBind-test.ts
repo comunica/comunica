@@ -51,96 +51,165 @@ describe('ActorRdfJoinMultiBind', () => {
       logSpy = (<any> actor).logDebug = jest.fn();
     });
 
-    describe('getIterations', () => {
+    describe('getJoinCoefficients', () => {
       it('should handle three entries', async() => {
-        expect(await actor.getIterations({
-          entries: [
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 3 }),
-                variables: [ 'a' ],
+        expect(await actor.getJoinCoefficients(
+          {
+            entries: [
+              {
+                output: <any>{
+                  variables: [ 'a' ],
+                },
+                operation: <any>{},
               },
-              operation: <any> {},
-            },
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 2 }),
-                variables: [ 'a' ],
+              {
+                output: <any>{
+                  variables: [ 'a' ],
+                },
+                operation: <any>{},
               },
-              operation: <any> {},
-            },
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 5 }),
-                variables: [ 'a' ],
+              {
+                output: <any>{
+                  variables: [ 'a' ],
+                },
+                operation: <any>{},
               },
-              operation: <any> {},
-            },
+            ],
+          },
+          [
+            { cardinality: 3, pageSize: 100, requestTime: 10 },
+            { cardinality: 2, pageSize: 100, requestTime: 20 },
+            { cardinality: 5, pageSize: 100, requestTime: 30 },
           ],
-        })).toEqual(16);
+        )).toEqual({
+          iterations: 1.05,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 2.04,
+        });
+      });
+
+      it('should handle three entries with a lower variable overlap', async() => {
+        expect(await actor.getJoinCoefficients(
+          {
+            entries: [
+              {
+                output: <any>{
+                  variables: [ 'a', 'b' ],
+                },
+                operation: <any>{},
+              },
+              {
+                output: <any>{
+                  variables: [ 'a', 'b' ],
+                },
+                operation: <any>{},
+              },
+              {
+                output: <any>{
+                  variables: [ 'a', 'c' ],
+                },
+                operation: <any>{},
+              },
+            ],
+          },
+          [
+            { cardinality: 3, pageSize: 100, requestTime: 10 },
+            { cardinality: 2, pageSize: 100, requestTime: 20 },
+            { cardinality: 5, pageSize: 100, requestTime: 30 },
+          ],
+        )).toEqual({
+          iterations: 0.7,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 1.36,
+        });
       });
 
       it('should reject on a right stream of type extend', async() => {
-        await expect(actor.getIterations({
-          entries: [
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 3 }),
-                variables: [ 'a' ],
+        await expect(actor.getJoinCoefficients(
+          {
+            entries: [
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: 3 }),
+                  variables: [ 'a' ],
+                },
+                operation: <any>{ type: Algebra.types.EXTEND },
               },
-              operation: <any> { type: Algebra.types.EXTEND },
-            },
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 2 }),
-                variables: [ 'a' ],
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: 2 }),
+                  variables: [ 'a' ],
+                },
+                operation: <any>{},
               },
-              operation: <any> {},
-            },
+            ],
+          },
+          [
+            { cardinality: 3, pageSize: 100, requestTime: 10 },
+            { cardinality: 2, pageSize: 100, requestTime: 20 },
           ],
-        })).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should reject on a right stream of type group', async() => {
-        await expect(actor.getIterations({
-          entries: [
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 3 }),
-                variables: [ 'a' ],
+        await expect(actor.getJoinCoefficients(
+          {
+            entries: [
+              {
+                output: <any> {
+                  metadata: () => Promise.resolve({ cardinality: 3 }),
+                  variables: [ 'a' ],
+                },
+                operation: <any> { type: Algebra.types.GROUP },
               },
-              operation: <any> { type: Algebra.types.GROUP },
-            },
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 2 }),
-                variables: [ 'a' ],
+              {
+                output: <any> {
+                  metadata: () => Promise.resolve({ cardinality: 2 }),
+                  variables: [ 'a' ],
+                },
+                operation: <any> {},
               },
-              operation: <any> {},
-            },
+            ],
+          },
+          [
+            { cardinality: 3, pageSize: 100, requestTime: 10 },
+            { cardinality: 2, pageSize: 100, requestTime: 20 },
           ],
-        })).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
-        expect(await actor.getIterations({
-          entries: [
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 3 }),
-                variables: [ 'a' ],
+        expect(await actor.getJoinCoefficients(
+          {
+            entries: [
+              {
+                output: <any> {
+                  metadata: () => Promise.resolve({ cardinality: 3 }),
+                  variables: [ 'a' ],
+                },
+                operation: <any> {},
               },
-              operation: <any> {},
-            },
-            {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 2 }),
-                variables: [ 'a' ],
+              {
+                output: <any> {
+                  metadata: () => Promise.resolve({ cardinality: 2 }),
+                  variables: [ 'a' ],
+                },
+                operation: <any> { type: Algebra.types.GROUP },
               },
-              operation: <any> { type: Algebra.types.GROUP },
-            },
+            ],
+          },
+          [
+            { cardinality: 3, pageSize: 100, requestTime: 10 },
+            { cardinality: 2, pageSize: 100, requestTime: 20 },
           ],
-        })).toEqual(6);
+        )).toEqual({
+          iterations: 0.6,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 0.259_999_999_999_999_95,
+        });
       });
     });
 
@@ -347,7 +416,6 @@ describe('ActorRdfJoinMultiBind', () => {
 
         // Validate physicalPlanMetadata
         expect(physicalPlanMetadata).toEqual({
-          cardinalities: [ 3, 1 ],
           bindIndex: 1,
           bindOrder: 'depth-first',
         });

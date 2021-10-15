@@ -56,7 +56,12 @@ describe('ActorRdfJoinMultiEmpty', () => {
               operation: <any> {},
             },
           ],
-        })).toEqual({ iterations: 0 });
+        })).toEqual({
+          iterations: 0,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 0,
+        });
       });
     });
 

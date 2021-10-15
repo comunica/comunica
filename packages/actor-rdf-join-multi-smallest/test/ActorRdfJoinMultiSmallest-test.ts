@@ -63,7 +63,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 4 }),
+              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -76,7 +76,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
                 Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 5 }),
+              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
               type: 'bindings',
               variables: [ 'a', 'c' ],
               canContainUndefs: false,
@@ -89,7 +89,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2, pageSize: 100, requestTime: 30 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -106,7 +106,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 4 }),
+              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -119,7 +119,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
                 Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 5 }),
+              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
               type: 'bindings',
               variables: [ 'a', 'c' ],
               canContainUndefs: false,
@@ -132,7 +132,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2, pageSize: 100, requestTime: 30 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -145,7 +145,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
                 Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2, pageSize: 100, requestTime: 40 }),
               type: 'bindings',
               variables: [ 'a', 'd' ],
               canContainUndefs: false,
@@ -162,7 +162,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 4 }),
+              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -188,7 +188,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2 }),
+              metadata: () => Promise.resolve({ cardinality: 2, pageSize: 100, requestTime: 30 }),
               type: 'bindings',
               variables: [ 'a', 'b' ],
               canContainUndefs: false,
@@ -199,25 +199,37 @@ describe('ActorRdfJoinMultiSmallest', () => {
       };
     });
 
-    it('should test on 0 streams', () => {
-      return expect(actor.test({ entries: []})).resolves.toEqual({ iterations: 0 });
+    it('should not test on 0 streams', () => {
+      return expect(actor.test({ entries: []})).rejects
+        .toThrow(new Error('actor requires at least two join entries.'));
     });
 
-    it('should test on 1 stream', () => {
-      return expect(actor.test({ entries: [ <any> null ]})).resolves.toEqual({ iterations: 0 });
+    it('should not test on 1 stream', () => {
+      return expect(actor.test({ entries: [ <any> null ]})).rejects
+        .toThrow(new Error('actor requires at least two join entries.'));
     });
 
     it('should not test on 2 streams', () => {
       return expect(actor.test({ entries: [ <any> null, <any> null ]})).rejects
-        .toThrow(new Error('actor requires 3 sources at least. The input contained 2.'));
+        .toThrow(new Error('actor requires 3 join entries at least. The input contained 2.'));
     });
 
     it('should test on 3 streams', () => {
-      return expect(actor.test(action3)).resolves.toEqual({ iterations: 40 });
+      return expect(actor.test(action3)).resolves.toEqual({
+        iterations: 40,
+        persistedItems: 0,
+        blockingItems: 0,
+        requestTime: 7.8,
+      });
     });
 
     it('should test on 4 streams', () => {
-      return expect(actor.test(action4)).resolves.toEqual({ iterations: 80 });
+      return expect(actor.test(action4)).resolves.toEqual({
+        iterations: 80,
+        persistedItems: 0,
+        blockingItems: 0,
+        requestTime: 9.399_999_999_999_999,
+      });
     });
 
     it('should run on 3 streams', async() => {

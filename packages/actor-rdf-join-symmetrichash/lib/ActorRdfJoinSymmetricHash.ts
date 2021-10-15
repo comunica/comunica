@@ -1,10 +1,7 @@
-import {
-  getMetadata,
-} from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IMetadataChecked } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
-import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, IActorQueryOperationOutput } from '@comunica/types';
 import { SymmetricHashJoin } from 'asyncjoin';
 
@@ -12,7 +9,7 @@ import { SymmetricHashJoin } from 'asyncjoin';
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>) {
     super(args, 'symmetric-hash', 2);
   }
 
@@ -45,9 +42,18 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     };
   }
 
-  protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    return (await getMetadata(action.entries[0].output)).cardinality +
-      (await getMetadata(action.entries[1].output)).cardinality;
+  protected async getJoinCoefficients(
+    action: IActionRdfJoin,
+    metadatas: IMetadataChecked[],
+  ): Promise<IMediatorTypeJoinCoefficients> {
+    const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
+    const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
+    return {
+      iterations: metadatas[0].cardinality + metadatas[1].cardinality,
+      persistedItems: metadatas[0].cardinality + metadatas[1].cardinality,
+      blockingItems: 0,
+      requestTime: requestInitialTimes[0] + metadatas[0].cardinality * requestItemTimes[0] +
+        requestInitialTimes[1] + metadatas[1].cardinality * requestItemTimes[1],
+    };
   }
 }

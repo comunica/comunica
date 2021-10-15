@@ -153,7 +153,12 @@ export class RdfSourceQpf implements IQuadSource {
         { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
       );
       const metadataExtractPromise = this.mediatorMetadataExtract
-        .mediate({ context: this.context, url, metadata: rdfMetadataOuput.metadata })
+        .mediate({
+          context: this.context,
+          url,
+          metadata: rdfMetadataOuput.metadata,
+          requestTime: rdfDereferenceOutput.requestTime,
+        })
         .then(({ metadata }) => quads.setProperty('metadata', metadata));
 
       // The server is free to send any data in its response (such as metadata),
