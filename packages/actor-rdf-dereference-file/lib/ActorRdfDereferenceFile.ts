@@ -65,7 +65,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     try {
       parseOutput = (await this.mediatorRdfParse.mediate(parseAction)).handle;
     } catch (error: unknown) {
-      return this.handleDereferenceError(action, error, requestTime);
+      return this.handleDereferenceError(action, error, undefined, requestTime);
     }
 
     return {

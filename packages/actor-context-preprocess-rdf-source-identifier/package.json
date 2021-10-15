@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-context-preprocess-rdf-source-identifier",
-  "version": "1.22.0",
+  "version": "1.22.1",
   "description": "A rdf-source-identifier context-preprocess actor",
   "lsd:module": true,
   "main": "index.js",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@comunica/bus-context-preprocess": "^1.22.0",
-    "@comunica/bus-rdf-source-identifier": "^1.22.0",
+    "@comunica/bus-rdf-source-identifier": "^1.22.1",
     "@comunica/core": "^1.22.0"
   },
   "jest": {

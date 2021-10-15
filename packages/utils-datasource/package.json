@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-datasource",
-  "version": "1.22.0",
+  "version": "1.22.2",
   "description": "An abstract actor for handling mediatype detection.",
   "lsd:module": true,
   "main": "index.js",
@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.22.0",
-    "@comunica/bus-rdf-update-quads": "^1.22.0",
+    "@comunica/bus-rdf-update-quads": "^1.22.2",
     "@comunica/context-entries": "^1.22.0",
     "asynciterator": "^3.2.0"
   },

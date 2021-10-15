@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the article."
+authors:
+- family-names: "Taelman"
+  given-names: "Ruben"
+- family-names: "Van Herwegen"
+  given-names: "Joachim"
+- family-names: "Schellaert"
+  given-names: "Wout"
+title: "Comunica"
+version: 1.22.0
+doi: 10.5281/zenodo.2636410
+date-released: 2018-03-19
+url: "https://comunica.dev/"
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Taelman"
+    given-names: "Ruben"
+  - family-names: "Van Herwegen"
+    given-names: "Joachim"
+  - family-names: "Vander Sande"
+    given-names: "Miel"
+  - family-names: "Verborgh"
+    given-names: "Ruben"
+  doi: "10.1007/978-3-030-00668-6_15"
+  collection-title: "Proceedings of the 17th International Semantic Web Conference"
+  collection-type: proceedings
+  publisher:
+    name: "Springer International Publishing"
+  month: 10
+  start: 239 # First page number
+  end: 255 # Last page number
+  title: "Comunica: A Modular SPARQL Query Engine for the Web"
+  year: 2018

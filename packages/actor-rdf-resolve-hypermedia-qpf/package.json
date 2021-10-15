@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-qpf",
-  "version": "1.22.0",
+  "version": "1.22.2",
   "description": "A hypermedia-qpf rdf-resolve-quad-pattern actor",
   "lsd:module": true,
   "main": "index.js",
@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-dereference": "^1.22.0",
+    "@comunica/bus-rdf-dereference": "^1.22.2",
     "@rdfjs/types": "*",
     "asynciterator": "^3.2.0",
     "rdf-data-factory": "^1.0.3",

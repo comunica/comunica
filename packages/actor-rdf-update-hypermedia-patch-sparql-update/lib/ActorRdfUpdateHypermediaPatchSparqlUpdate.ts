@@ -19,7 +19,7 @@ export class ActorRdfUpdateHypermediaPatchSparqlUpdate extends ActorRdfUpdateHyp
     if (!action.forceDestinationType && !action.metadata.patchSparqlUpdate) {
       throw new Error(`Actor ${this.name} could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
     }
-    if (!action.exists) {
+    if (!action.forceDestinationType && !action.exists) {
       throw new Error(`Actor ${this.name} can only patch a destination that already exists.`);
     }
     return true;

@@ -11,6 +11,7 @@ import type {
   IActorOutputRootRdfSerialize,
 } from '@comunica/bus-rdf-serialize';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
+import { validateHttpResponse } from '@comunica/bus-rdf-update-quads';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { ActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -99,14 +100,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
       input: this.url,
     });
 
-    // Check if update was successful
-    if (httpResponse.status >= 400) {
-      throw new Error(`Could not retrieve ${this.url} (${httpResponse.status}: ${
-        httpResponse.statusText || 'unknown error'})`);
-    }
-
-    // Close response body, as we don't need it
-    await httpResponse.body?.cancel();
+    await validateHttpResponse(this.url, httpResponse);
   }
 
   public async deleteGraphs(

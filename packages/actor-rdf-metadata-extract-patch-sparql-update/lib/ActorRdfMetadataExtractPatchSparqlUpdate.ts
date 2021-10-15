@@ -16,8 +16,10 @@ export class ActorRdfMetadataExtractPatchSparqlUpdate extends ActorRdfMetadataEx
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     const metadata: any = {};
-    if (action.headers && action.headers['accept-patch'] &&
-      action.headers['accept-patch'].includes('application/sparql-update')) {
+    // The ms-author-via header is added for backwards-compatibility with old Solid servers
+    if (action.headers &&
+      ((action.headers['accept-patch'] && action.headers['accept-patch'].includes('application/sparql-update')) ||
+      (action.headers['ms-author-via'] && action.headers['ms-author-via'].includes('SPARQL')))) {
       metadata.patchSparqlUpdate = true;
     }
     return { metadata };

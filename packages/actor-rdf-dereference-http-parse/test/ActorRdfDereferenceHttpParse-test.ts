@@ -49,7 +49,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
     let actor: ActorRdfDereferenceHttpParse;
 
     beforeEach(() => {
-      mediatorRdfParse.mediate = (action: any) => {
+      mediatorRdfParse.mediate = jest.fn((action: any) => {
         if (action.mediaTypes) {
           return { mediaTypes: { a: 1 }};
         }
@@ -68,7 +68,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
         };
         action.handle.input.on('error', (error: Error) => quads.emit('error', error));
         return { handle: { quads, triples: true }};
-      };
+      });
       mediatorHttp.mediate = (action: any) => {
         if (action.context && action.context.has('httpReject')) {
           return Promise.reject(new Error('Http reject error'));
@@ -235,6 +235,25 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
       expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
+        handle: expect.anything(),
+        handleMediaType: '',
+      });
+    });
+
+    it('should run with an empty content type and default to given content type', async() => {
+      const headers = {
+        'content-type': '',
+      };
+      const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', mediaType: 'CUSTOM' });
+      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.triples).toEqual(true);
+      expect(output.headers).toEqual(headers);
+      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
+        handle: expect.anything(),
+        handleMediaType: 'CUSTOM',
+      });
     });
 
     it('should run with a missing content type', async() => {

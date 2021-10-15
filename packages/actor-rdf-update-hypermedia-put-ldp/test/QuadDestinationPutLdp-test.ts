@@ -119,7 +119,7 @@ describe('QuadDestinationPutLdp', () => {
     it('should throw on a server error', async() => {
       mediatorHttp.mediate = () => ({ status: 400 });
       await expect(destination.insert(<any> 'QUADS')).rejects
-        .toThrow('Could not retrieve abc (400: unknown error)');
+        .toThrow('Could not update abc (HTTP status 400):\nempty response');
     });
 
     it('should close body if available', async() => {

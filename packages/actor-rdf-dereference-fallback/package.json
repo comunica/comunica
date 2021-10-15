@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-dereference-fallback",
-  "version": "1.22.0",
+  "version": "1.22.2",
   "description": "A fallback rdf-dereference actor",
   "lsd:module": true,
   "main": "index.js",
@@ -36,7 +36,7 @@
     "@comunica/core": "^1.19.2"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-dereference": "^1.22.0",
+    "@comunica/bus-rdf-dereference": "^1.22.2",
     "@comunica/core": "^1.22.0"
   },
   "jest": {

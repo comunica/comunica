@@ -85,7 +85,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     try {
       httpResponse = await this.mediatorHttp.mediate(httpAction);
     } catch (error: unknown) {
-      return this.handleDereferenceError(action, error, 0);
+      return this.handleDereferenceError(action, error, undefined, 0);
     }
     // The response URL can be relative to the given URL
     const url = resolveRelative(httpResponse.url, action.url);
@@ -107,7 +107,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       }
       if (!action.acceptErrors) {
         const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
-        return this.handleDereferenceError(action, error, requestTime);
+        return this.handleDereferenceError(action, error, outputHeaders, requestTime);
       }
     }
 
@@ -128,7 +128,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     let mediaType: string | undefined = match[0];
     // If no media type could be found, try to determine it via the file extension
     if (!mediaType || mediaType === 'text/plain') {
-      mediaType = this.getMediaTypeFromExtension(httpResponse.url);
+      mediaType = action.mediaType || this.getMediaTypeFromExtension(httpResponse.url);
     }
 
     const parseAction: IActionRdfParse = {
@@ -144,7 +144,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     } catch (error: unknown) {
       // Close the body, to avoid process to hang
       await httpResponse.body!.cancel();
-      return this.handleDereferenceError(action, error, requestTime);
+      return this.handleDereferenceError(action, error, outputHeaders, requestTime);
     }
 
     const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);

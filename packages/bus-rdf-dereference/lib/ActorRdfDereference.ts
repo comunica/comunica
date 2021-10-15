@@ -58,18 +58,23 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * depending on whether or not hard errors are enabled.
    * @param {IActionRdfDereference} action An RDF dereference action.
    * @param {Error} error An error that has occured.
+   * @param headers Optional HTTP headers to pass.
    * @param {number} requestTime The time it took to request the page in milliseconds.
    * @return {Promise<IActorRdfDereferenceOutput>} A promise that rejects or resolves to an empty output.
    */
-  protected async handleDereferenceError(action: IActionRdfDereference, error: unknown, requestTime: number):
-  Promise<IActorRdfDereferenceOutput> {
+  protected async handleDereferenceError(
+    action: IActionRdfDereference,
+    error: unknown,
+    headers: Record<string, string> | undefined,
+    requestTime: number,
+  ): Promise<IActorRdfDereferenceOutput> {
     if (this.isHardError(action)) {
       throw error;
     } else {
       this.logError(action.context, (<Error> error).message);
       const quads = new Readable();
       quads.push(null);
-      return { url: action.url, quads, exists: false, requestTime: 0 };
+      return { url: action.url, quads, exists: false, headers, requestTime };
     }
   }
 }

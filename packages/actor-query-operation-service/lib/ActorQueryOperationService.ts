@@ -35,7 +35,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     let subContext: ActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
       .delete(KeysRdfResolveQuadPattern.sources);
-    const sourceType = this.forceSparqlEndpoint ? 'sparql' : 'auto';
+    const sourceType = this.forceSparqlEndpoint ? 'sparql' : undefined;
     subContext = subContext.set(KeysRdfResolveQuadPattern.sources, [{ type: sourceType, value: endpoint }]);
 
     // Query the source
