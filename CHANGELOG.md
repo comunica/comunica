@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.22.3"></a>
+## [v1.22.3](https://github.com/comunica/comunica/compare/v1.22.2...v1.22.3) - 2021-10-19
+
+### Fixed
+* [Fix CORS issues when querying in Firefox](https://github.com/comunica/comunica/commit/248f54b94fab944222ff1e8224b2f389e1b4651e)
+* [Fix media type overriding not working for HTTP requests](https://github.com/comunica/comunica/commit/3cf9182b17e11f2667d55e29b5806f0658717658)
+* [Fix source type detection not always working in SERVICE](https://github.com/comunica/comunica/commit/150f1d12bb805a882580834a53c2d4eb906b4298)
+
 <a name="v1.22.2"></a>
 ## [v1.22.2](https://github.com/comunica/comunica/compare/v1.22.1...v1.22.2) - 2021-09-30
 

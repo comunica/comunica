@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-service",
-  "version": "1.22.0",
+  "version": "1.22.3",
   "description": "A service query-operation actor",
   "lsd:module": true,
   "main": "index.js",
