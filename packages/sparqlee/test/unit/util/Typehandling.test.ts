@@ -3,9 +3,9 @@ import { TypeAlias, TypeURL } from '../../../lib/util/Consts';
 import type { OverrideType } from '../../../lib/util/TypeHandling';
 import {
   isInternalSubType,
-  isKnownLiteralType,
-  isOverrideType, isSubTypeOf,
-  isTypeAlias,
+  asKnownLiteralType,
+  asOverrideType, isSubTypeOf,
+  asTypeAlias,
 } from '../../../lib/util/TypeHandling';
 import { getDefaultSharedContext } from '../../util/utils';
 
@@ -14,7 +14,7 @@ describe('TypeHandling', () => {
     it('can say yes', () => {
       expect(
         [ TypeAlias.SPARQL_NON_LEXICAL, TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_STRINGLY ]
-          .every(type => isTypeAlias(type)),
+          .every(type => asTypeAlias(type)),
       ).toBeTruthy();
     });
     it('can say no', () => {
@@ -22,7 +22,7 @@ describe('TypeHandling', () => {
         [
           '', 'apple', 'not a literal type', 'pear', 'term', TypeURL.XSD_INTEGER, TypeURL.XSD_DECIMAL,
           TypeURL.XSD_BOOLEAN, TypeURL.XSD_DATE_TIME, TypeURL.XSD_DOUBLE, TypeURL.XSD_STRING,
-        ].every(type => !isTypeAlias(type)),
+        ].every(type => !asTypeAlias(type)),
       ).toBeTruthy();
     });
   });
@@ -30,20 +30,20 @@ describe('TypeHandling', () => {
     it('can say yes', () => {
       expect([ TypeURL.XSD_DECIMAL, TypeURL.XSD_DOUBLE, TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.RDF_LANG_STRING,
         TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NON_LEXICAL, TypeAlias.SPARQL_NON_LEXICAL ]
-        .every(type => isKnownLiteralType(type))).toBeTruthy();
+        .every(type => asKnownLiteralType(type))).toBeTruthy();
     });
     it('can say no', () => {
-      [ '', 'apple', 'not a literal type', 'pear', 'term' ].every(type => !isKnownLiteralType(type));
+      [ '', 'apple', 'not a literal type', 'pear', 'term' ].every(type => !asKnownLiteralType(type));
     });
   });
   describe('has isOverrideType function', () => {
     it('can say yes', () => {
       expect([ TypeURL.XSD_DECIMAL, TypeURL.XSD_DOUBLE, TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.RDF_LANG_STRING,
         TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NON_LEXICAL, TypeAlias.SPARQL_NON_LEXICAL, 'term' ]
-        .every(type => isOverrideType(type))).toBeTruthy();
+        .every(type => asOverrideType(type))).toBeTruthy();
     });
     it('can say no', () => {
-      expect([ '', 'apple', 'not a literal type', 'pear' ].every(type => !isOverrideType(type))).toBeTruthy();
+      expect([ '', 'apple', 'not a literal type', 'pear' ].every(type => !asOverrideType(type))).toBeTruthy();
     });
   });
 

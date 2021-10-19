@@ -75,6 +75,12 @@ export type SpecialOperatorExpression = IExpressionProps & {
 };
 
 // TODO: Create alias Term = TermExpression
+export function asTermType(type: string): TermType | undefined {
+  if (type === 'namedNode' || type === 'literal' || type === 'blankNode') {
+    return type;
+  }
+  return undefined;
+}
 export type TermType = 'namedNode' | 'literal' | 'blankNode';
 export type TermExpression = IExpressionProps & {
   expressionType: ExpressionType.Term;
