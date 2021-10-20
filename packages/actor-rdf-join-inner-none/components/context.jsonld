@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carjn": "npmd:@comunica/actor-rdf-join-inner-none/",
+      "files-carjn": "carjn:^1.0.0/",
+
+      "ActorRdfJoinNone": "carjn:Actor/RdfJoin/None"
+    }
+  ]
+}

@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-nestedloop/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-join-nestedloop",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-join-nestedloop",
-  "import": [
-    "files-carjn:components/Actor/RdfJoin/NestedLoop.jsonld"
-  ]
-}

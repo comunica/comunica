@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-rdf-join-optional-bind",
+  "name": "@comunica/actor-rdf-join-inner-multi-empty",
   "version": "1.0.0",
-  "description": "A optional-bind rdf-join actor",
+  "description": "A multi-empty rdf-join actor",
   "lsd:module": true,
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-rdf-join-optional-bind"
+    "directory": "packages/actor-rdf-join-inner-multi-empty"
   },
   "publishConfig": {
     "access": "public"
@@ -17,7 +17,7 @@
     "comunica",
     "actor",
     "rdf-join",
-    "optional-bind"
+    "multi-empty"
   ],
   "license": "MIT",
   "bugs": {
@@ -32,11 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-join-inner-multi-bind": "^1.0.0",
-    "@comunica/bus-query-operation": "^1.22.0",
-    "@comunica/context-entries": "^1.22.0",
-    "asynciterator": "^3.2.0",
-    "sparqlalgebrajs": "^3.0.3"
+    "asynciterator": "^3.2.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.22.0",
@@ -44,7 +40,8 @@
   },
   "devDependencies": {
     "@comunica/core": "^1.22.0",
-    "@comunica/bus-rdf-join": "^1.22.0"
+    "@comunica/bus-rdf-join": "^1.22.0",
+    "@comunica/mediatortype-join-coefficients": "^1.22.0"
   },
   "jest": {
     "globals": {

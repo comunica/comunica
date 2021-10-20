@@ -1,5 +1,5 @@
-import type { BindOrder } from '@comunica/actor-rdf-join-multi-bind';
-import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-multi-bind';
+import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
+import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, getMetadata } from '@comunica/bus-query-operation';
 import type {

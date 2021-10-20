@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-symmetrichash/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-join-inner-symmetrichash",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-join-inner-symmetrichash",
+  "import": [
+    "files-carjs:components/Actor/RdfJoin/SymmetricHash.jsonld"
+  ]
+}

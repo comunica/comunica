@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-empty/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-join-inner-multi-empty",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-join-inner-multi-empty",
+  "import": [
+    "files-carjme:components/Actor/RdfJoin/MultiEmpty.jsonld"
+  ]
+}

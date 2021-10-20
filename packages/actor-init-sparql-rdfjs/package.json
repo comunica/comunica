@@ -73,7 +73,7 @@
     "@comunica/actor-query-operation-slice": "^1.22.0",
     "@comunica/actor-query-operation-union": "^1.22.0",
     "@comunica/actor-query-operation-values": "^1.22.0",
-    "@comunica/actor-rdf-join-nestedloop": "^1.22.0",
+    "@comunica/actor-rdf-join-inner-nestedloop": "^1.22.0",
     "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source": "^1.22.0",
     "@comunica/actor-rdf-serialize-jsonld": "^1.22.0",
     "@comunica/actor-rdf-serialize-n3": "^1.22.0",
