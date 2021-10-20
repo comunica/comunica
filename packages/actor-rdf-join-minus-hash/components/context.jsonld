@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carjmh": "npmd:@comunica/actor-rdf-join-minus-hash/",
+      "files-carjmh": "carjmh:^1.0.0/",
+
+      "ActorRdfJoinMinusHash": "carjmh:Actor/RdfJoin/MinusHash"
+    }
+  ]
+}
