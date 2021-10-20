@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carjonl": "npmd:@comunica/actor-rdf-join-optional-nestedloop/",
+      "files-carjonl": "carjonl:^1.0.0/",
+
+      "ActorRdfJoinOptionalNestedLoop": "carjonl:Actor/RdfJoin/OptionalNestedLoop"
+    }
+  ]
+}
