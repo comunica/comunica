@@ -24,7 +24,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiBindArgs) {
-    super(args, 'inner', 'bind', undefined, undefined, true);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'bind',
+      canHandleUndefs: true,
+    });
   }
 
   /**

@@ -26,7 +26,12 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
 
   public constructor(args: IActorRdfJoinOptionalBindArgs) {
-    super(args, 'optional', 'bind', 2, undefined, true);
+    super(args, {
+      logicalType: 'optional',
+      physicalName: 'bind',
+      limitEntries: 2,
+      canHandleUndefs: true,
+    });
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

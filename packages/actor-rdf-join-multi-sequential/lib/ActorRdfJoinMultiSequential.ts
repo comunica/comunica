@@ -19,7 +19,12 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiSequentialArgs) {
-    super(args, 'inner', 'multi-sequential', 3, true);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'multi-sequential',
+      limitEntries: 3,
+      limitEntriesMin: true,
+    });
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

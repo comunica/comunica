@@ -19,7 +19,12 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiSmallestArgs) {
-    super(args, 'inner', 'multi-smallest', 3, true);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'multi-smallest',
+      limitEntries: 3,
+      limitEntriesMin: true,
+    });
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

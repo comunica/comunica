@@ -16,9 +16,9 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A comunica actor for joining 2 binding streams.
  *
  * Actor types:
- * * Input:  IActionRdfJoin:      The streams that need to be joined.
- * * Test:   <none>
- * * Output: IActorRdfJoinOutput: The resulting joined stream.
+ * * Input:  IActionRdfJoin:                The streams that need to be joined.
+ * * Test:   IMediatorTypeJoinCoefficients: Join coefficients.
+ * * Output: IActorRdfJoinOutput:           The resulting joined stream.
  *
  * @see IActionRdfJoin
  * @see IActorQueryOperationOutput
@@ -53,18 +53,14 @@ export abstract class ActorRdfJoin
 
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
-    logicalType: LogicalJoinType,
-    physicalName: string,
-    limitEntries?: number,
-    limitEntriesMin?: boolean,
-    canHandleUndefs?: boolean,
+    options: IActorRdfJoinInternalOptions,
   ) {
     super(args);
-    this.logicalType = logicalType;
-    this.physicalName = physicalName;
-    this.limitEntries = limitEntries ?? Number.POSITIVE_INFINITY;
-    this.limitEntriesMin = limitEntriesMin ?? false;
-    this.canHandleUndefs = canHandleUndefs ?? false;
+    this.logicalType = options.logicalType;
+    this.physicalName = options.physicalName;
+    this.limitEntries = options.limitEntries ?? Number.POSITIVE_INFINITY;
+    this.limitEntriesMin = options.limitEntriesMin ?? false;
+    this.canHandleUndefs = options.canHandleUndefs ?? false;
   }
 
   /**
@@ -343,6 +339,38 @@ export abstract class ActorRdfJoin
   ): Promise<IMediatorTypeJoinCoefficients>;
 }
 
+export interface IActorRdfJoinInternalOptions {
+  /**
+   * The logical join type this actor can handle.
+   */
+  logicalType: LogicalJoinType;
+  /**
+   * The physical name of join operation this actor implements.
+   * This is used for debug and query plan logs.
+   */
+  physicalName: string;
+  /**
+   * Can be used by subclasses to indicate the max or min number of streams that can be joined.
+   * 0 for infinity.
+   * By default, this indicates the max number, but can be inverted by setting limitEntriesMin to true.
+   */
+  limitEntries?: number;
+  /**
+   * If true, the limitEntries field is a lower limit,
+   * otherwise, it is an upper limit.
+   * Defaults to false.
+   */
+  limitEntriesMin?: boolean;
+  /**
+   * If this actor can handle undefs in the bindings.
+   * Defaults to false.
+   */
+  canHandleUndefs?: boolean;
+}
+
+/**
+ * Represents a logical join type.
+ */
 export type LogicalJoinType = 'inner' | 'optional' | 'minus';
 
 export interface IActionRdfJoin extends IAction {

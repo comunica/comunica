@@ -12,7 +12,11 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
   ) {
-    super(args, 'inner', 'symmetric-hash', 2);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'symmetric-hash',
+      limitEntries: 2,
+    });
   }
 
   /**

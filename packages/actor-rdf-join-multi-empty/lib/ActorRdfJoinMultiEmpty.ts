@@ -12,7 +12,10 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
   ) {
-    super(args, 'inner', 'multi-empty');
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'multi-empty',
+    });
   }
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {

@@ -11,7 +11,11 @@ export class ActorRdfJoinSingle extends ActorRdfJoin {
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
   ) {
-    super(args, 'inner', 'single', 1);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'single',
+      limitEntries: 1,
+    });
     this.includeInLogs = false;
   }
 

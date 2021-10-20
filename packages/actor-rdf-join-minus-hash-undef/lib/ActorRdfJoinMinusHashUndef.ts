@@ -19,7 +19,12 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
   ) {
-    super(args, 'minus', 'hash-undef', 2, undefined, true);
+    super(args, {
+      logicalType: 'minus',
+      physicalName: 'hash-undef',
+      limitEntries: 2,
+      canHandleUndefs: true,
+    });
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

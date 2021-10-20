@@ -14,7 +14,11 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
   ) {
-    super(args, 'inner', 'hash', 2);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'hash',
+      limitEntries: 2,
+    });
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

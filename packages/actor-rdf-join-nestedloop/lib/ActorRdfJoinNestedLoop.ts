@@ -15,7 +15,12 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
   ) {
-    super(args, 'inner', 'nested-loop', 2, undefined, true);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'nested-loop',
+      limitEntries: 2,
+      canHandleUndefs: true,
+    });
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

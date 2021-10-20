@@ -13,7 +13,11 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   public constructor(
     args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
   ) {
-    super(args, 'inner', 'none', 0);
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'none',
+      limitEntries: 0,
+    });
   }
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {

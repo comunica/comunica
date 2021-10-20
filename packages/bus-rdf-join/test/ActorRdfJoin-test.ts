@@ -23,11 +23,13 @@ class Dummy extends ActorRdfJoin {
   ) {
     super(
       { name: 'name', bus: new Bus({ name: 'bus' }) },
-      'inner',
-      'PHYSICAL',
-      limitEntries,
-      limitEntriesMin,
-      canHandleUndefs,
+      {
+        logicalType: 'inner',
+        physicalName: 'PHYSICAL',
+        limitEntries,
+        limitEntriesMin,
+        canHandleUndefs,
+      },
     );
     this.metadata = metadata;
   }
