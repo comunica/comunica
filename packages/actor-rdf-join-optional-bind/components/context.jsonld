@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carjob": "npmd:@comunica/actor-rdf-join-optional-bind/",
+      "files-carjob": "carjob:^1.0.0/",
+
+      "ActorRdfJoinOptionalBind": "carjob:Actor/RdfJoin/OptionalBind"
+    }
+  ]
+}

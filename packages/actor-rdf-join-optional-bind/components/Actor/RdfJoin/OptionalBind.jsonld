@@ -1,0 +1,46 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-bind/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-join-optional-bind",
+  "components": [
+    {
+      "@id": "carjob:Actor/RdfJoin/OptionalBind",
+      "@type": "Class",
+      "extends": "cbrj:Actor/RdfJoin",
+      "requireElement": "ActorRdfJoinOptionalBind",
+      "comment": "A comunica Optional Bind RDF Join Actor.",
+      "parameters": [
+        {
+          "@id": "carjob:Actor/RdfJoin/OptionalBind#mediatorQueryOperation",
+          "comment": "The query operation mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carjob:Actor/RdfJoin/OptionalBind#bindOrder",
+          "comment": "The order in which elements should be bound",
+          "required": true,
+          "unique": true,
+          "default": "depth-first"
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": "carjob:Actor/RdfJoin/OptionalBind#mediatorQueryOperation"
+            },
+            {
+              "keyRaw": "bindOrder",
+              "value": "carjob:Actor/RdfJoin/OptionalBind#bindOrder"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
