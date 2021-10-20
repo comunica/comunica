@@ -20,6 +20,7 @@ describe('ActorRdfJoinNone', () => {
     describe('test', () => {
       it('should not test on entries with length > 0', async() => {
         await expect(actor.test({
+          type: 'inner',
           entries: [
             {
               output: <any> {
@@ -34,6 +35,7 @@ describe('ActorRdfJoinNone', () => {
 
       it('should test on zero entries', async() => {
         expect(await actor.test({
+          type: 'inner',
           entries: [],
         })).toEqual({
           iterations: 0,

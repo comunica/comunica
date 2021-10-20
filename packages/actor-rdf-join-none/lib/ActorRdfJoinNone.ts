@@ -1,4 +1,4 @@
-import type { IActorQueryOperationOutput } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
@@ -10,8 +10,10 @@ import { ArrayIterator } from 'asynciterator';
  * A comunica None RDF Join Actor.
  */
 export class ActorRdfJoinNone extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>) {
-    super(args, 'none', 0);
+  public constructor(
+    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
+  ) {
+    super(args, 'inner', 'none', 0);
   }
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {

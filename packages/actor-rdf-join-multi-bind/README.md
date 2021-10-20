@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-multi-bind.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-multi-bind)
 
-An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that joins 2 or more streams
+An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins 2 or more streams
 by picking the one with the lowest cardinality,
 binding each item with the remaining operations,
 and recursively resolving those operations by delegating to the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).

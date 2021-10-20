@@ -35,7 +35,7 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
         operation,
       }));
 
-    return this.mediatorJoin.mediate({ entries, context });
+    return this.mediatorJoin.mediate({ type: 'inner', entries, context });
   }
 }
 

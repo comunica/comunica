@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-none.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-none)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor
-that handles a join between zero entries, and returns a single binding.
+that handles an inner-join between zero entries, and returns a single binding.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

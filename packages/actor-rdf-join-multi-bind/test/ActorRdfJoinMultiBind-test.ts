@@ -1,10 +1,10 @@
 import { Bindings } from '@comunica/bus-query-operation';
+import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
   IActionQueryOperation,
-  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
 } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -25,8 +25,8 @@ describe('ActorRdfJoinMultiBind', () => {
 
   describe('An ActorRdfJoinMultiBind instance', () => {
     let context: ActionContext;
-    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-    IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
+    IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
     let actor: ActorRdfJoinMultiBind;
     let logSpy: Mock;
 
@@ -55,6 +55,7 @@ describe('ActorRdfJoinMultiBind', () => {
       it('should handle three entries', async() => {
         expect(await actor.getJoinCoefficients(
           {
+            type: 'inner',
             entries: [
               {
                 output: <any>{
@@ -92,6 +93,7 @@ describe('ActorRdfJoinMultiBind', () => {
       it('should handle three entries with a lower variable overlap', async() => {
         expect(await actor.getJoinCoefficients(
           {
+            type: 'inner',
             entries: [
               {
                 output: <any>{
@@ -129,6 +131,7 @@ describe('ActorRdfJoinMultiBind', () => {
       it('should reject on a right stream of type extend', async() => {
         await expect(actor.getJoinCoefficients(
           {
+            type: 'inner',
             entries: [
               {
                 output: <any>{
@@ -156,6 +159,7 @@ describe('ActorRdfJoinMultiBind', () => {
       it('should reject on a right stream of type group', async() => {
         await expect(actor.getJoinCoefficients(
           {
+            type: 'inner',
             entries: [
               {
                 output: <any> {
@@ -183,6 +187,7 @@ describe('ActorRdfJoinMultiBind', () => {
       it('should not reject on a left stream of type group', async() => {
         expect(await actor.getJoinCoefficients(
           {
+            type: 'inner',
             entries: [
               {
                 output: <any> {
@@ -367,8 +372,9 @@ describe('ActorRdfJoinMultiBind', () => {
 
     describe('getOutput', () => {
       it('should handle two entries (depth-first)', async() => {
-        const action = {
+        const action: IActionRdfJoin = {
           context,
+          type: 'inner',
           entries: [
             {
               output: <any> {
@@ -428,9 +434,7 @@ describe('ActorRdfJoinMultiBind', () => {
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
-          operation: FACTORY.createJoin([
-            FACTORY.createPattern(DF.namedNode('ex:a1'), DF.namedNode('ex:p1'), DF.variable('b')),
-          ]),
+          operation: FACTORY.createPattern(DF.namedNode('ex:a1'), DF.namedNode('ex:p1'), DF.variable('b')),
           context: ActionContext({
             a: 'b',
             [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1 },
@@ -439,9 +443,7 @@ describe('ActorRdfJoinMultiBind', () => {
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
-          operation: FACTORY.createJoin([
-            FACTORY.createPattern(DF.namedNode('ex:a2'), DF.namedNode('ex:p1'), DF.variable('b')),
-          ]),
+          operation: FACTORY.createPattern(DF.namedNode('ex:a2'), DF.namedNode('ex:p1'), DF.variable('b')),
           context: ActionContext({
             a: 'b',
             [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1 },
@@ -454,8 +456,9 @@ describe('ActorRdfJoinMultiBind', () => {
       it('should handle two entries (breadth-first)', async() => {
         actor = new ActorRdfJoinMultiBind({ name: 'actor', bus, bindOrder: 'breadth-first', mediatorQueryOperation });
 
-        const action = {
+        const action: IActionRdfJoin = {
           context,
+          type: 'inner',
           entries: [
             {
               output: <any> {
@@ -503,7 +506,8 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('should handle two entries without context', async() => {
-        const action = {
+        const action: IActionRdfJoin = {
+          type: 'inner',
           entries: [
             {
               output: <any> {
@@ -551,8 +555,9 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('should handle three entries (depth-first)', async() => {
-        const action = {
+        const action: IActionRdfJoin = {
           context,
+          type: 'inner',
           entries: [
             {
               output: <any> {

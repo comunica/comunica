@@ -43,28 +43,31 @@ describe('ActorRdfJoinHash', () => {
 
     beforeEach(() => {
       actor = new ActorRdfJoinHash({ name: 'actor', bus });
-      action = { entries: [
-        {
-          output: {
-            bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
-            type: 'bindings',
-            variables: [],
-            canContainUndefs: false,
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+              type: 'bindings',
+              variables: [],
+              canContainUndefs: false,
+            },
+            operation: <any>{},
           },
-          operation: <any> {},
-        },
-        {
-          output: {
-            bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
-            type: 'bindings',
-            variables: [],
-            canContainUndefs: false,
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
+              type: 'bindings',
+              variables: [],
+              canContainUndefs: false,
+            },
+            operation: <any>{},
           },
-          operation: <any> {},
-        },
-      ]};
+        ],
+      };
     });
 
     it('should only handle 2 streams', () => {
@@ -192,20 +195,6 @@ describe('ActorRdfJoinHash', () => {
           // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
           .toEqual(expected.map(bindingsToString).sort());
       });
-    });
-
-    it('should hash to concatenation of values of variables', () => {
-      expect(ActorRdfJoinHash.hash(
-        Bindings({ '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.namedNode('http://www.example.org/instance#b') }), [ '?x', '?y' ],
-      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
-    });
-
-    it('should not let hash being influenced by a variable that is not present in bindings', () => {
-      expect(ActorRdfJoinHash.hash(
-        Bindings({ '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.namedNode('http://www.example.org/instance#b') }), [ '?x', '?y', '?z' ],
-      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
     });
   });
 });

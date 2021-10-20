@@ -7,7 +7,6 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type {
   Bindings,
   BindingsStream, IActionQueryOperation,
-  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
 } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
@@ -18,13 +17,14 @@ import { Factory, Algebra } from 'sparqlalgebrajs';
  */
 export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
-  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+  public readonly mediatorQueryOperation: Mediator<
+  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
 
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiBindArgs) {
-    super(args, 'bind', undefined, undefined, true);
+    super(args, 'inner', 'bind', undefined, undefined, true);
   }
 
   /**
@@ -35,7 +35,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
    * @param baseStream The base stream.
    * @param operations The operations to bind with each binding of the base stream.
    * @param operationBinder A callback to retrieve the bindings stream of bound operations.
-   *
+   * @param optional If the original bindings should be emitted when the resulting bindings stream is empty.
    * @return {BindingsStream}
    */
   public static createBindStream(
@@ -44,6 +44,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     operations: Algebra.Operation[],
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
+    optional: boolean,
   ): BindingsStream {
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
@@ -59,9 +60,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Create an iterator that binds elements from the base stream in different orders
     switch (bindOrder) {
       case 'depth-first':
-        return new MultiTransformIterator(baseStream, { autoStart: false, multiTransform: binder });
+        return new MultiTransformIterator(baseStream, { autoStart: false, multiTransform: binder, optional });
       case 'breadth-first':
-        return new UnionIterator(baseStream.map(binder), { autoStart: false });
+        return new UnionIterator(baseStream.transform({
+          map: binder,
+          optional,
+        }), { autoStart: false });
       default:
         throw new Error(`Received request for unknown bind order: ${bindOrder}`);
     }
@@ -156,12 +160,15 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       remainingEntries.map(entry => entry.operation),
       async(operations: Algebra.Operation[], operationBindings: Bindings) => {
         // Send the materialized patterns to the mediator for recursive join evaluation.
-        const operation = ActorRdfJoinMultiBind.FACTORY.createJoin(operations);
+        const operation = operations.length === 1 ?
+          operations[0] :
+          ActorRdfJoinMultiBind.FACTORY.createJoin(operations);
         const output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));
         return output.bindingsStream;
       },
+      false,
     );
 
     return {
@@ -247,9 +254,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiBindArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput> {
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
+  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
   bindOrder: BindOrder;
 }
 

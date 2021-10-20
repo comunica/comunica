@@ -2,27 +2,19 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner, IMetadataChecked } from 
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings,
-  IActorQueryOperationOutput } from '@comunica/types';
+import type {
+  Bindings, IActorQueryOperationOutputBindings,
+} from '@comunica/types';
 import { HashJoin } from 'asyncjoin';
 
 /**
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinHash extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>) {
-    super(args, 'hash', 2);
-  }
-
-  /**
-   * Creates a hash of the given bindings by concatenating the results of the given variables.
-   * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {Bindings} bindings
-   * @param {string[]} variables
-   * @returns {string}
-   */
-  public static hash(bindings: Bindings, variables: string[]): string {
-    return variables.filter(variable => bindings.has(variable)).map(variable => bindings.get(variable).value).join('');
+  public constructor(
+    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
+  ) {
+    super(args, 'inner', 'hash', 2);
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -30,7 +22,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     const join = new HashJoin<Bindings, string, Bindings>(
       action.entries[0].output.bindingsStream,
       action.entries[1].output.bindingsStream,
-      entry => ActorRdfJoinHash.hash(entry, variables),
+      entry => ActorRdfJoin.hash(entry, variables),
       <any> ActorRdfJoin.joinBindings,
     );
     return {

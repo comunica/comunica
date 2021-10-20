@@ -20,6 +20,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
     describe('test', () => {
       it('should not test on no 0 cardinality', async() => {
         await expect(actor.test({
+          type: 'inner',
           entries: [
             {
               output: <any> {
@@ -41,6 +42,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
 
       it('should test on a 0 cardinality', async() => {
         expect(await actor.test({
+          type: 'inner',
           entries: [
             {
               output: <any> {

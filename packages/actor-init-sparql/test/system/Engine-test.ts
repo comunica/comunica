@@ -637,19 +637,6 @@ describe('System test: ActorInitSparql', () => {
                     logical: 'pattern',
                     pattern: '?s ?p ?o',
                   },
-                  {
-                    logical: 'join',
-                    physical: 'single',
-                    cardinalities: [
-                      317,
-                    ],
-                    joinCoefficients: {
-                      iterations: 0,
-                      persistedItems: 0,
-                      blockingItems: 0,
-                      requestTime: 0,
-                    },
-                  },
                 ],
               },
             ],

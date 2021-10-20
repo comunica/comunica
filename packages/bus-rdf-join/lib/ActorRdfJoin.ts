@@ -5,11 +5,11 @@ import type { IAction, IActorArgs } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
-  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -24,40 +24,61 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorRdfJoin
-  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput> {
+  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
   public static readonly METADATA_KEYS: (keyof IMetadataChecked)[] = [
     'cardinality',
   ];
 
+  /**
+   * If this actor will be logged in the debugger and physical query plan logger
+   */
+  public includeInLogs = true;
+  public readonly logicalType: LogicalJoinType;
   public readonly physicalName: string;
   /**
    * Can be used by subclasses to indicate the max or min number of streams that can be joined.
    * 0 for infinity.
    * By default, this indicates the max number, but can be inverted by setting limitEntriesMin to true.
    */
-  protected limitEntries: number;
+  protected readonly limitEntries: number;
   /**
    * If true, the limitEntries field is a lower limit,
    * otherwise, it is an upper limit.
    */
-  protected limitEntriesMin: boolean;
+  protected readonly limitEntriesMin: boolean;
   /**
    * If this actor can handle undefs in the bindings.
    */
-  protected canHandleUndefs: boolean;
+  protected readonly canHandleUndefs: boolean;
 
   public constructor(
-    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>,
+    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
+    logicalType: LogicalJoinType,
     physicalName: string,
     limitEntries?: number,
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
   ) {
     super(args);
+    this.logicalType = logicalType;
     this.physicalName = physicalName;
     this.limitEntries = limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = limitEntriesMin ?? false;
     this.canHandleUndefs = canHandleUndefs ?? false;
+  }
+
+  /**
+   * Creates a hash of the given bindings by concatenating the results of the given variables.
+   * This function will not sort the variables and expects them to be in the same order for every call.
+   * @param {Bindings} bindings
+   * @param {string[]} variables
+   * @returns {string}
+   */
+  public static hash(bindings: Bindings, variables: string[]): string {
+    return variables
+      .filter(variable => bindings.has(variable))
+      .map(variable => termToString(bindings.get(variable)))
+      .join('');
   }
 
   /**
@@ -100,16 +121,15 @@ export abstract class ActorRdfJoin
    * @returns {Bindings}
    */
   public static joinBindings(...bindings: Bindings[]): Bindings | null {
-    try {
-      return bindings.reduce((acc: Bindings, val: Bindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
+    let valid = true;
+    const joined = bindings
+      .reduce((acc: Bindings, val: Bindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
         if (!left.equals(right)) {
-          throw new Error('Join failure');
+          valid = false;
         }
         return left;
       }, val));
-    } catch {
-      return null;
-    }
+    return valid ? joined : null;
   }
 
   /**
@@ -194,6 +214,11 @@ export abstract class ActorRdfJoin
    * @returns {Promise<IMediatorTypeJoinCoefficients>} The join coefficients.
    */
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+    // Validate logical join type
+    if (action.type !== this.logicalType) {
+      throw new Error(`${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
+    }
+
     // Don't allow joining of one or zero streams
     if (action.entries.length <= 1) {
       throw new Error(`${this.name} requires at least two join entries.`);
@@ -255,11 +280,11 @@ export abstract class ActorRdfJoin
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
     // Log to physical plan
-    if (action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
+    if (this.includeInLogs && action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
       const physicalQueryPlanLogger: IPhysicalQueryPlanLogger = action.context
         .get(KeysInitSparql.physicalQueryPlanLogger);
       physicalQueryPlanLogger.logOperation(
-        'join',
+        `join-${this.logicalType}`,
         this.physicalName,
         action,
         parentPhysicalQueryPlanNode,
@@ -318,7 +343,13 @@ export abstract class ActorRdfJoin
   ): Promise<IMediatorTypeJoinCoefficients>;
 }
 
+export type LogicalJoinType = 'inner' | 'optional' | 'minus';
+
 export interface IActionRdfJoin extends IAction {
+  /**
+   * The logical join type.
+   */
+  type: LogicalJoinType;
   /**
    * The array of streams to join.
    */

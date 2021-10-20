@@ -19,14 +19,14 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiSequentialArgs) {
-    super(args, 'multi-sequential', 3, true);
+    super(args, 'inner', 'multi-sequential', 3, true);
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Join the two first streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
       output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
-        .mediate({ entries: [ action.entries[0], action.entries[1] ], context: action.context })),
+        .mediate({ type: action.type, entries: [ action.entries[0], action.entries[1] ], context: action.context })),
       operation: ActorRdfJoinMultiSequential.FACTORY
         .createJoin([ action.entries[0].operation, action.entries[1].operation ], false),
     };
@@ -34,6 +34,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
     remainingEntries[0] = firstEntry;
     return {
       result: <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({
+        type: action.type,
         entries: remainingEntries,
         context: action.context,
       }),
@@ -60,7 +61,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiSequentialArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput> {
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
   mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>;
 }

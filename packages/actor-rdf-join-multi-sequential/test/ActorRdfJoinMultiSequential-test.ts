@@ -55,6 +55,7 @@ describe('ActorRdfJoinMultiSequential', () => {
       };
       actor = new ActorRdfJoinMultiSequential({ name: 'actor', bus, mediatorJoin });
       action3 = {
+        type: 'inner',
         entries: [
           {
             output: {
@@ -98,6 +99,7 @@ describe('ActorRdfJoinMultiSequential', () => {
         ],
       };
       action4 = {
+        type: 'inner',
         entries: [
           {
             output: {
@@ -156,17 +158,17 @@ describe('ActorRdfJoinMultiSequential', () => {
     });
 
     it('should not test on 0 streams', () => {
-      return expect(actor.test({ entries: []})).rejects
+      return expect(actor.test({ type: 'inner', entries: []})).rejects
         .toThrow(new Error('actor requires at least two join entries.'));
     });
 
     it('should not test on 1 stream', () => {
-      return expect(actor.test({ entries: [ <any> null ]})).rejects
+      return expect(actor.test({ type: 'inner', entries: [ <any> null ]})).rejects
         .toThrow(new Error('actor requires at least two join entries.'));
     });
 
     it('should not test on 2 streams', () => {
-      return expect(actor.test({ entries: [ <any> null, <any> null ]})).rejects
+      return expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ]})).rejects
         .toThrow(new Error('actor requires 3 join entries at least. The input contained 2.'));
     });
 

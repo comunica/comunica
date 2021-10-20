@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-symmetrichash.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-symmetrichash)
 
-An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that joins using symmetric hashing.
+An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins using symmetric hashing.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

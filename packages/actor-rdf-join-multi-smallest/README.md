@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-multi-smallest.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-multi-smallest)
 
-An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that joins 3 or more streams
+An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins 3 or more streams
 by joining the smallest two, and joining the result with the remaining streams by delegating back to the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),

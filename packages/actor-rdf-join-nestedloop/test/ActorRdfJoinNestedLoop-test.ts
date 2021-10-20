@@ -43,28 +43,31 @@ describe('ActorRdfJoinNestedLoop', () => {
 
     beforeEach(() => {
       actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus });
-      action = { entries: [
-        {
-          output: {
-            bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
-            type: 'bindings',
-            variables: [],
-            canContainUndefs: false,
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+              type: 'bindings',
+              variables: [],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
-          operation: <any> {},
-        },
-        {
-          output: {
-            bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
-            type: 'bindings',
-            variables: [],
-            canContainUndefs: false,
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
+              type: 'bindings',
+              variables: [],
+              canContainUndefs: false,
+            },
+            operation: <any> {},
           },
-          operation: <any> {},
-        },
-      ]};
+        ],
+      };
     });
 
     it('should only handle 2 streams', () => {

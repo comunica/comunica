@@ -5,8 +5,7 @@ import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner, IMetadataChe
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -15,12 +14,12 @@ import { Factory } from 'sparqlalgebrajs';
  */
 export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>;
 
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiSmallestArgs) {
-    super(args, 'multi-smallest', 3, true);
+    super(args, 'inner', 'multi-smallest', 3, true);
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -38,13 +37,14 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
     // Join the two selected streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
       output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
-        .mediate({ entries: [ smallestItem1, smallestItem2 ], context: action.context })),
+        .mediate({ type: action.type, entries: [ smallestItem1, smallestItem2 ], context: action.context })),
       operation: ActorRdfJoinMultiSmallest.FACTORY
         .createJoin([ smallestItem1.operation, smallestItem2.operation ], false),
     };
     entries.push(firstEntry);
     return {
-      result: <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({
+      result: await this.mediatorJoin.mediate({
+        type: action.type,
         entries,
         context: action.context,
       }),
@@ -86,7 +86,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiSmallestArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput> {
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
   mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>;
 }

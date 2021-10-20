@@ -2,14 +2,17 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 
 /**
  * A comunica Single RDF Join Actor.
  */
 export class ActorRdfJoinSingle extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>) {
-    super(args, 'single', 1);
+  public constructor(
+    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
+  ) {
+    super(args, 'inner', 'single', 1);
+    this.includeInLogs = false;
   }
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {

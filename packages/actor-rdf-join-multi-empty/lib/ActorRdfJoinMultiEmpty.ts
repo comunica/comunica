@@ -2,15 +2,17 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner, IMetadataChecked } from 
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 
 /**
  * A comunica Multi Empty RDF Join Actor.
  */
 export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>) {
-    super(args, 'multi-empty');
+  public constructor(
+    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
+  ) {
+    super(args, 'inner', 'multi-empty');
   }
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {

@@ -21,7 +21,14 @@ class Dummy extends ActorRdfJoin {
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
   ) {
-    super({ name: 'name', bus: new Bus({ name: 'bus' }) }, 'PHYSICAL', limitEntries, limitEntriesMin, canHandleUndefs);
+    super(
+      { name: 'name', bus: new Bus({ name: 'bus' }) },
+      'inner',
+      'PHYSICAL',
+      limitEntries,
+      limitEntriesMin,
+      canHandleUndefs,
+    );
     this.metadata = metadata;
   }
 
@@ -52,28 +59,51 @@ describe('ActorRdfJoin', () => {
   let action: IActionRdfJoin;
 
   beforeEach(() => {
-    action = { entries: [
-      {
-        output: {
-          bindingsStream: <any>null,
-          variables: [],
-          type: 'bindings',
-          canContainUndefs: false,
-          metadata: async() => ({ cardinality: 10 }),
+    action = {
+      type: 'inner',
+      entries: [
+        {
+          output: {
+            bindingsStream: <any>null,
+            variables: [],
+            type: 'bindings',
+            canContainUndefs: false,
+            metadata: async() => ({ cardinality: 10 }),
+          },
+          operation: <any>{},
         },
-        operation: <any>{},
-      },
-      {
-        output: {
-          bindingsStream: <any>null,
-          variables: [],
-          type: 'bindings',
-          canContainUndefs: false,
-          metadata: async() => ({ cardinality: 5 }),
+        {
+          output: {
+            bindingsStream: <any>null,
+            variables: [],
+            type: 'bindings',
+            canContainUndefs: false,
+            metadata: async() => ({ cardinality: 5 }),
+          },
+          operation: <any>{},
         },
-        operation: <any>{},
-      },
-    ]};
+      ],
+    };
+  });
+
+  describe('hash', () => {
+    it('should hash to concatenation of values of variables', () => {
+      expect(ActorRdfJoin.hash(
+        Bindings({
+          '?x': DF.namedNode('http://www.example.org/instance#a'),
+          '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
+        }), [ '?x', '?y' ],
+      )).toEqual('http://www.example.org/instance#a"XYZ"^^ex:abc');
+    });
+
+    it('should not let hash being influenced by a variable that is not present in bindings', () => {
+      expect(ActorRdfJoin.hash(
+        Bindings({
+          '?x': DF.namedNode('http://www.example.org/instance#a'),
+          '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
+        }), [ '?x', '?y', '?z' ],
+      )).toEqual('http://www.example.org/instance#a"XYZ"^^ex:abc');
+    });
   });
 
   describe('overlappingVariables', () => {
@@ -314,6 +344,11 @@ describe('ActorRdfJoin', () => {
       instance = new Dummy();
     });
 
+    it('should reject if the logical type does not match', () => {
+      action.type = 'optional';
+      return expect(instance.test(action)).rejects.toThrow(`name can only handle logical joins of type 'inner', while 'optional' was given.`);
+    });
+
     it('should reject if there are 0 entries', () => {
       action.entries = [];
       return expect(instance.test(action)).rejects.toThrow('name requires at least two join entries.');
@@ -478,7 +513,7 @@ describe('ActorRdfJoin', () => {
       await instance.run(action);
 
       expect(logger.logOperation).toHaveBeenCalledWith(
-        'join',
+        'join-inner',
         'PHYSICAL',
         action,
         parentNode,

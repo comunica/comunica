@@ -64,18 +64,20 @@ export class MediatorJoinCoefficientsFixed
     const bestActor = testResults[minIndex].actor;
 
     // Emit calculations in logger
-    Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.physicalName}'`, {
-      entries: action.entries.length,
-      variables: action.entries.map(entry => entry.output.variables),
-      costs: costs.reduce<any>((acc, coeff, i) => {
-        acc[testResults[i].actor.physicalName] = coeff;
-        return acc;
-      }, {}),
-      coefficients: coefficients.reduce<any>((acc, coeff, i) => {
-        acc[testResults[i].actor.physicalName] = coeff;
-        return acc;
-      }, {}),
-    });
+    if (bestActor.includeInLogs) {
+      Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
+        entries: action.entries.length,
+        variables: action.entries.map(entry => entry.output.variables),
+        costs: costs.reduce<any>((acc, coeff, i) => {
+          acc[`${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`] = coeff;
+          return acc;
+        }, {}),
+        coefficients: coefficients.reduce<any>((acc, coeff, i) => {
+          acc[`${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`] = coeff;
+          return acc;
+        }, {}),
+      });
+    }
 
     return bestActor;
   }

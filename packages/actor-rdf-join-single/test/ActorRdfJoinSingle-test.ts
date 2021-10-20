@@ -18,12 +18,14 @@ describe('ActorRdfJoinSingle', () => {
     describe('test', () => {
       it('should not test on entries with length zero', async() => {
         await expect(actor.test({
+          type: 'inner',
           entries: [],
         })).rejects.toThrowError('Actor actor can only join a single entry');
       });
 
       it('should not test on entries with length two', async() => {
         await expect(actor.test({
+          type: 'inner',
           entries: [
             {
               output: <any> {
@@ -45,6 +47,7 @@ describe('ActorRdfJoinSingle', () => {
 
       it('should test on one entry', async() => {
         expect(await actor.test({
+          type: 'inner',
           entries: [
             {
               output: <any> {

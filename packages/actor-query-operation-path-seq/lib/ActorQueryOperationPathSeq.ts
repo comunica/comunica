@@ -48,7 +48,8 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
         operation,
       })));
 
-    const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries, context }));
+    const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin
+      .mediate({ type: 'inner', entries, context }));
     // Remove the generated variable from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {

@@ -70,12 +70,12 @@ Actor 3 rejects`);
       expect(await mediator.mediate(action)).toEqual({ id: 1 });
 
       expect(debugLog).toHaveBeenCalledWith(
-        `Determined physical join operator 'PHYSICAL1'`,
+        `Determined physical join operator 'LOGICAL-PHYSICAL1'`,
         {
           entries: 1,
           variables: [[ 'V' ]],
           coefficients: {
-            PHYSICAL1: {
+            'LOGICAL-PHYSICAL1': {
               iterations: 10,
               persistedItems: 20,
               blockingItems: 30,
@@ -83,10 +83,24 @@ Actor 3 rejects`);
             },
           },
           costs: {
-            PHYSICAL1: 110,
+            'LOGICAL-PHYSICAL1': 110,
           },
         },
       );
+    });
+
+    it('should handle a single actor with includeInLogs set to false', async() => {
+      const actor = new DummyActor(1, {
+        iterations: 10,
+        persistedItems: 20,
+        blockingItems: 30,
+        requestTime: 50,
+      }, bus);
+      actor.includeInLogs = false;
+
+      expect(await mediator.mediate(action)).toEqual({ id: 1 });
+
+      expect(debugLog).not.toHaveBeenCalled();
     });
 
     it('should handle a single actor without context', async() => {
@@ -125,24 +139,24 @@ Actor 3 rejects`);
       expect(await mediator.mediate(action)).toEqual({ id: 2 });
 
       expect(debugLog).toHaveBeenCalledWith(
-        `Determined physical join operator 'PHYSICAL2'`,
+        `Determined physical join operator 'LOGICAL-PHYSICAL2'`,
         {
           entries: 1,
           variables: [[ 'V' ]],
           coefficients: {
-            PHYSICAL1: {
+            'LOGICAL-PHYSICAL1': {
               iterations: 10,
               persistedItems: 20,
               blockingItems: 30,
               requestTime: 50,
             },
-            PHYSICAL2: {
+            'LOGICAL-PHYSICAL2': {
               iterations: 10,
               persistedItems: 20,
               blockingItems: 30,
               requestTime: 20,
             },
-            PHYSICAL3: {
+            'LOGICAL-PHYSICAL3': {
               iterations: 1_000,
               persistedItems: 20,
               blockingItems: 30,
@@ -150,9 +164,9 @@ Actor 3 rejects`);
             },
           },
           costs: {
-            PHYSICAL1: 110,
-            PHYSICAL2: 80,
-            PHYSICAL3: 1_060,
+            'LOGICAL-PHYSICAL1': 110,
+            'LOGICAL-PHYSICAL2': 80,
+            'LOGICAL-PHYSICAL3': 1_060,
           },
         },
       );
@@ -181,18 +195,18 @@ Actor 3 rejects`);
       expect(await mediator.mediate(action)).toEqual({ id: 1 });
 
       expect(debugLog).toHaveBeenCalledWith(
-        `Determined physical join operator 'PHYSICAL1'`,
+        `Determined physical join operator 'LOGICAL-PHYSICAL1'`,
         {
           entries: 1,
           variables: [[ 'V' ]],
           coefficients: {
-            PHYSICAL1: {
+            'LOGICAL-PHYSICAL1': {
               iterations: 10,
               persistedItems: 20,
               blockingItems: 30,
               requestTime: 50,
             },
-            PHYSICAL3: {
+            'LOGICAL-PHYSICAL3': {
               iterations: 1_000,
               persistedItems: 20,
               blockingItems: 30,
@@ -200,8 +214,8 @@ Actor 3 rejects`);
             },
           },
           costs: {
-            PHYSICAL1: 110,
-            PHYSICAL3: 1_060,
+            'LOGICAL-PHYSICAL1': 110,
+            'LOGICAL-PHYSICAL3': 1_060,
           },
         },
       );
@@ -239,24 +253,24 @@ Actor 3 rejects`);
       expect(await mediator.mediate(action)).toEqual({ id: 3 });
 
       expect(debugLog).toHaveBeenCalledWith(
-        `Determined physical join operator 'PHYSICAL3'`,
+        `Determined physical join operator 'LOGICAL-PHYSICAL3'`,
         {
           entries: 1,
           variables: [[ 'V' ]],
           coefficients: {
-            PHYSICAL1: {
+            'LOGICAL-PHYSICAL1': {
               iterations: 10,
               persistedItems: 20,
               blockingItems: 30,
               requestTime: 50,
             },
-            PHYSICAL2: {
+            'LOGICAL-PHYSICAL2': {
               iterations: 10,
               persistedItems: 20,
               blockingItems: 30,
               requestTime: 20,
             },
-            PHYSICAL3: {
+            'LOGICAL-PHYSICAL3': {
               iterations: 1_000,
               persistedItems: 20,
               blockingItems: 30,
@@ -264,9 +278,9 @@ Actor 3 rejects`);
             },
           },
           costs: {
-            PHYSICAL1: 500_060,
-            PHYSICAL2: 200_060,
-            PHYSICAL3: 101_050,
+            'LOGICAL-PHYSICAL1': 500_060,
+            'LOGICAL-PHYSICAL2': 200_060,
+            'LOGICAL-PHYSICAL3': 101_050,
           },
         },
       );
@@ -275,6 +289,8 @@ Actor 3 rejects`);
 });
 
 class DummyActor extends Actor<IAction, IMediatorTypeJoinCoefficients, IDummyOutput> {
+  public includeInLogs = true;
+  public logicalType = 'LOGICAL';
   public readonly physicalName: string;
   public readonly id: number;
   public readonly coeffs: IMediatorTypeJoinCoefficients;
