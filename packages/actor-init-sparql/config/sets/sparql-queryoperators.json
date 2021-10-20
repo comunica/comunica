@@ -15,7 +15,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from-quad/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-join/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin-left-deep/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-orderby-sparqlee/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-project/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-quadpattern/^1.0.0/components/context.jsonld",
@@ -132,8 +132,9 @@
 
     {
       "@id": "config-sets:sparql-queryoperators.json#myLeftJoinQueryOperator",
-      "@type": "ActorQueryOperationLeftJoinLeftDeep",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "@type": "ActorQueryOperationLeftJoin",
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "caqolj:Actor/QueryOperation/LeftJoin#mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
     },
 
     {
@@ -157,7 +158,8 @@
     {
       "@id": "config-sets:sparql-queryoperators.json#myMinusQueryOperator",
       "@type": "ActorQueryOperationMinus",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "caqom:Actor/QueryOperation/Minus#mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
     },
 
     {

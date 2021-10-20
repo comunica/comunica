@@ -974,6 +974,16 @@
     "@comunica/types" "^1.22.0"
     sparqlalgebrajs "^3.0.0"
 
+"@comunica/actor-query-operation-leftjoin-nestedloop@^1.22.0":
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@comunica/actor-query-operation-leftjoin-nestedloop/-/actor-query-operation-leftjoin-nestedloop-1.22.0.tgz#7a5f995ffd1d64fc1bcfe71989bae629d4f06b9d"
+  integrity sha512-NttPFDGr9vWJh5iYNz/xhLPTo7TEFc45D2UqAVa0bF2XyHSM0T+oVXKEZre+FqSxTxSxHUQ22vUXY9vctnO4Xg==
+  dependencies:
+    "@comunica/types" "^1.22.0"
+    asynciterator "^3.2.0"
+    sparqlalgebrajs "^3.0.0"
+    sparqlee "^1.10.0"
+
 "@comunica/actor-rdf-parse-html-microdata@~1.21.1":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@comunica/actor-rdf-parse-html-microdata/-/actor-rdf-parse-html-microdata-1.21.1.tgz#ed021a65e2fa4145f4f008bfa7727f15ef59d5de"
