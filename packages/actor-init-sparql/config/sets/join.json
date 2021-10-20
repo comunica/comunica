@@ -8,6 +8,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-multi-bind/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-multi-empty/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-multi-smallest/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-symmetrichash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-nestedloop/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-none/^1.0.0/components/context.jsonld",
@@ -33,6 +34,10 @@
       "@id": "config-sets:join.json#myRdfJoinActorBind",
       "@type": "ActorRdfJoinMultiBind",
       "carjmb:Actor/RdfJoin/MultiBind#mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+    },
+    {
+      "@id": "config-sets:join.json#myRdfJoinActorHash",
+      "@type": "ActorRdfJoinHash"
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorSymmetricHash",

@@ -101,6 +101,7 @@
     "@comunica/actor-query-operation-values": "^1.22.0",
     "@comunica/actor-rdf-dereference-fallback": "^1.22.2",
     "@comunica/actor-rdf-dereference-http-parse": "^1.22.2",
+    "@comunica/actor-rdf-join-hash": "^1.22.0",
     "@comunica/actor-rdf-join-minus-hash": "^1.0.0",
     "@comunica/actor-rdf-join-minus-hash-undef": "^1.0.0",
     "@comunica/actor-rdf-join-multi-bind": "^1.0.0",
