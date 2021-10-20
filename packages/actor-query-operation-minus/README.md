@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-operation-minus.svg)](https://www.npmjs.com/package/@comunica/actor-query-operation-minus)
 
-A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles [SPARQL `MINUS`](https://www.w3.org/TR/sparql11-query/#neg-notexists-minus) operations.
+A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles [SPARQL `MINUS`](https://www.w3.org/TR/sparql11-query/#neg-notexists-minus) operations
+by delegating to the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) bus.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -29,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:sparql-queryoperators.json#myMinusQueryOperator",
       "@type": "ActorQueryOperationMinus",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "caqom:Actor/QueryOperation/Minus#mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
     }
   ]
 }
@@ -38,3 +40,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `caqom:Actor/QueryOperation/Minus#mediatorJoin`: A mediator over the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join).
