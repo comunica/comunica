@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-selectivity/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-join-selectivity",
+  "components": [
+    {
+      "@id": "cbrjs:Actor/RdfJoinSelectivity",
+      "@type": "AbstractClass",
+      "extends": "cc:Actor",
+      "requireElement": "ActorRdfJoinSelectivity",
+      "comment": "A comunica actor for rdf-join-selectivity events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrjs:Actor/RdfJoinSelectivity",
+            "defaultScopedValue": { "@id": "cbrjs:Bus/RdfJoinSelectivity" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrjs:Actor/RdfJoinSelectivity/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

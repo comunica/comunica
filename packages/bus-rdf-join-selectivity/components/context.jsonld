@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "cbrjs": "npmd:@comunica/bus-rdf-join-selectivity/",
+      "files-cbrjs": "cbrjs:^1.0.0/",
+
+      "BusRdfJoinSelectivity": "cbrjs:Bus/RdfJoinSelectivity",
+      "ActorRdfJoinSelectivity": "cbrjs:Actor/RdfJoinSelectivity"
+    }
+  ]
+}

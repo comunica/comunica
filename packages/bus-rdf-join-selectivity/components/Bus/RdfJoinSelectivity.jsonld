@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-selectivity/^1.0.0/components/context.jsonld",
+  "@id": "cbrjs:Bus/RdfJoinSelectivity",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for rdf-join-selectivity events."
+}
