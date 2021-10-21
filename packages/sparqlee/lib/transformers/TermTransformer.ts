@@ -5,8 +5,9 @@ import * as E from '../expressions';
 import { TypeURL as DT, TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
-import { isSubTypeOf } from '../util/TypeHandling';
-import type { ISuperTypeProvider } from '../util/TypeHandling';
+import { getSuperTypeDict } from '../util/TypeHandling';
+import type { ISuperTypeProvider,
+  GeneralSuperTypeDict } from '../util/TypeHandling';
 
 export interface ITermTransformer {
   transformRDFTermUnsafe: (term: RDF.Term) => E.Term;
@@ -162,19 +163,20 @@ export class TermTransformer implements ITermTransformer {
     }
 
     const dataType = lit.datatype.value;
+    const superTypeDict: GeneralSuperTypeDict = getSuperTypeDict(dataType, this.superTypeProvider);
 
-    if (isSubTypeOf(dataType, TypeURL.XSD_STRING, this.superTypeProvider)) {
+    if (TypeURL.XSD_STRING in superTypeDict) {
       return new E.StringLiteral(lit.value, dataType);
     }
-    if (isSubTypeOf(dataType, DT.RDF_LANG_STRING, this.superTypeProvider)) {
+    if (DT.RDF_LANG_STRING in superTypeDict) {
       return new E.LangStringLiteral(lit.value, lit.language);
     }
-    if (isSubTypeOf(dataType, DT.XSD_DATE_TIME, this.superTypeProvider)) {
+    if (DT.XSD_DATE_TIME in superTypeDict) {
       // It should be noted how we don't care if its a XSD_DATE_TIME_STAMP or not.
       // This is because sparql functions don't care about the timezone.
       // It's also doesn't break the specs because we keep the string representation stored,
       // that way we can always give it back. There are also no sparql functions that alter a date.
-      // (So the representation initial representation always stays valid)
+      // (So the initial representation always stays valid)
       // https://github.com/comunica/sparqlee/pull/103#discussion_r688462368
       const dateVal: Date = new Date(lit.value);
       if (Number.isNaN(dateVal.getTime())) {
@@ -182,25 +184,25 @@ export class TermTransformer implements ITermTransformer {
       }
       return new E.DateTimeLiteral(new Date(lit.value), lit.value, dataType);
     }
-    if (isSubTypeOf(dataType, DT.XSD_BOOLEAN, this.superTypeProvider)) {
+    if (DT.XSD_BOOLEAN in superTypeDict) {
       if (lit.value !== 'true' && lit.value !== 'false' && lit.value !== '1' && lit.value !== '0') {
         return new E.NonLexicalLiteral(undefined, dataType, this.superTypeProvider, lit.value);
       }
       return new E.BooleanLiteral(lit.value === 'true' || lit.value === '1', lit.value);
     }
-    if (isSubTypeOf(dataType, DT.XSD_DECIMAL, this.superTypeProvider)) {
+    if (DT.XSD_DECIMAL in superTypeDict) {
       const intVal: number | undefined = P.parseXSDDecimal(lit.value);
       if (intVal === undefined) {
         return new E.NonLexicalLiteral(undefined, dataType, this.superTypeProvider, lit.value);
       }
-      if (isSubTypeOf(dataType, DT.XSD_INTEGER, this.superTypeProvider)) {
+      if (DT.XSD_INTEGER in superTypeDict) {
         return new E.IntegerLiteral(intVal, dataType, lit.value);
       }
       // If type is not an integer it's just a decimal.
       return new E.DecimalLiteral(intVal, dataType, lit.value);
     }
-    const isFloat = isSubTypeOf(dataType, DT.XSD_FLOAT, this.superTypeProvider);
-    const isDouble = isSubTypeOf(dataType, DT.XSD_DOUBLE, this.superTypeProvider);
+    const isFloat = DT.XSD_FLOAT in superTypeDict;
+    const isDouble = DT.XSD_DOUBLE in superTypeDict;
     if (isFloat || isDouble) {
       const doubleVal: number | undefined = P.parseXSDFloat(lit.value);
       if (doubleVal === undefined) {
