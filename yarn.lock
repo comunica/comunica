@@ -3298,17 +3298,17 @@ async@~0.2.10:
   resolved "https://registry.yarnpkg.com/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
   integrity sha1-trvgsGdLnXGXCMo43owjfLUmw9E=
 
-asynciterator@^3.0.0, asynciterator@^3.2.0:
+asynciterator@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-3.2.0.tgz#a3ec3a0f76ef474c39dab571381ba47dc9bd5150"
   integrity sha512-gVrDh9bNDA0TJPTKNFqb0A1je+VBBeS6D18oR92volMcLYN0qizAfOZXH3lmun5XNUim4oIlXWkGoR8mDZlwdg==
 
-asyncjoin@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.0.3.tgz#070538ae7e8de7e7a253b0da50cad142b156eb19"
-  integrity sha512-wBlf3sOdmUwbFW+zq1HBeOLdQAThSaFfTcdTFZGdB6OVR5VsIKZTycIC8ykDnzJhaZH2OaP23tru1DlLJvrRjA==
+asyncjoin@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.0.4.tgz#3ac0902abc3117cfa3ffd1ca22c812d1283c8acb"
+  integrity sha512-w+NHgvQn4I28/b6cNG6m51nE4fyYzsNZMM1EFWdPZhYs2tpnKtcKlGh+B//9z5otPLtp0JFaUXcQFlsgIjEwoA==
   dependencies:
-    asynciterator "^3.0.0"
+    asynciterator "^3.2.0"
 
 asynckit@^0.4.0:
   version "0.4.0"

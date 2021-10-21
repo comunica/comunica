@@ -1,4 +1,6 @@
 import { Bindings } from '@comunica/bus-query-operation';
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Bus } from '@comunica/core';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
 const arrayifyStream = require('arrayify-stream');
@@ -11,10 +13,16 @@ describe('ActorRdfJoinNone', () => {
   });
 
   describe('An ActorRdfJoinNone instance', () => {
+    let mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinNone;
 
     beforeEach(() => {
-      actor = new ActorRdfJoinNone({ name: 'actor', bus });
+      mediatorJoinSelectivity = <any> {
+        mediate: async() => ({ selectivity: 1 }),
+      };
+      actor = new ActorRdfJoinNone({ name: 'actor', bus, mediatorJoinSelectivity });
     });
 
     describe('test', () => {

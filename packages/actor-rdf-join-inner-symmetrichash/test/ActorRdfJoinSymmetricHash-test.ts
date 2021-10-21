@@ -1,6 +1,8 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -38,11 +40,17 @@ describe('ActorRdfJoinSymmetricHash', () => {
   });
 
   describe('An ActorRdfJoinSymmetricHash instance', () => {
+    let mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinSymmetricHash;
     let action: IActionRdfJoin;
 
     beforeEach(() => {
-      actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus });
+      mediatorJoinSelectivity = <any> {
+        mediate: async() => ({ selectivity: 1 }),
+      };
+      actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus, mediatorJoinSelectivity });
       action = {
         type: 'inner',
         entries: [

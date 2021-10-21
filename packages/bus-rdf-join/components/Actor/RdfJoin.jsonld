@@ -18,13 +18,25 @@
             "defaultScope": "cbrj:Actor/RdfJoin",
             "defaultScopedValue": { "@id": "cbrj:Bus/RdfJoin" }
           }
+        },
+        {
+          "@id": "cbrj:Actor/RdfJoin#mediatorJoinSelectivity",
+          "comment": "The join selectivity mediator",
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
         {
           "@id": "cbrj:Actor/RdfJoin/constructorArgumentsObject",
           "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:Actor/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorJoinSelectivity",
+              "value": "cbrj:Actor/RdfJoin#mediatorJoinSelectivity"
+            }
+          ]
         }
       ]
     }

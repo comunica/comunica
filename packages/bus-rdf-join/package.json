@@ -31,6 +31,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/bus-rdf-join-selectivity": "^1.0.0",
     "@comunica/context-entries": "^1.22.0",
     "@comunica/types": "^1.22.0",
     "@rdfjs/types": "*",

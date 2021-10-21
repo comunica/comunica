@@ -1,16 +1,12 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 
 /**
  * A comunica Single RDF Join Actor.
  */
 export class ActorRdfJoinSingle extends ActorRdfJoin {
-  public constructor(
-    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
-  ) {
+  public constructor(args: IActorRdfJoinArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'single',

@@ -1,5 +1,6 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
@@ -20,11 +21,17 @@ describe('ActorRdfJoinOptionalBind', () => {
   });
 
   describe('An ActorRdfJoinOptionalBind instance', () => {
+    let mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
     IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
     let actor: ActorRdfJoinOptionalBind;
 
     beforeEach(() => {
+      mediatorJoinSelectivity = <any> {
+        mediate: async() => ({ selectivity: 0.8 }),
+      };
       mediatorQueryOperation = <any> {
         mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> => {
           let data: Bindings[] = [];
@@ -51,7 +58,13 @@ describe('ActorRdfJoinOptionalBind', () => {
           };
         }),
       };
-      actor = new ActorRdfJoinOptionalBind({ name: 'actor', bus, bindOrder: 'depth-first', mediatorQueryOperation });
+      actor = new ActorRdfJoinOptionalBind({
+        name: 'actor',
+        bus,
+        bindOrder: 'depth-first',
+        mediatorQueryOperation,
+        mediatorJoinSelectivity,
+      });
     });
 
     describe('getJoinCoefficients', () => {
@@ -79,10 +92,10 @@ describe('ActorRdfJoinOptionalBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20 },
           ],
         )).toEqual({
-          iterations: 0.6,
+          iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.33,
+          requestTime: 2.640_000_000_000_000_6,
         });
       });
 
@@ -110,10 +123,10 @@ describe('ActorRdfJoinOptionalBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20 },
           ],
         )).toEqual({
-          iterations: 0.6,
+          iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.33,
+          requestTime: 2.640_000_000_000_000_6,
         });
       });
 
@@ -199,10 +212,10 @@ describe('ActorRdfJoinOptionalBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20 },
           ],
         )).toEqual({
-          iterations: 0.6,
+          iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.33,
+          requestTime: 2.640_000_000_000_000_6,
         });
       });
     });

@@ -1,5 +1,6 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
@@ -24,6 +25,9 @@ describe('ActorRdfJoinMultiBind', () => {
   });
 
   describe('An ActorRdfJoinMultiBind instance', () => {
+    let mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let context: ActionContext;
     let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
     IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
@@ -31,6 +35,9 @@ describe('ActorRdfJoinMultiBind', () => {
     let logSpy: Mock;
 
     beforeEach(() => {
+      mediatorJoinSelectivity = <any> {
+        mediate: async() => ({ selectivity: 0.8 }),
+      };
       context = ActionContext({ a: 'b' });
       mediatorQueryOperation = <any> {
         mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> => {
@@ -47,7 +54,13 @@ describe('ActorRdfJoinMultiBind', () => {
           };
         }),
       };
-      actor = new ActorRdfJoinMultiBind({ name: 'actor', bus, bindOrder: 'depth-first', mediatorQueryOperation });
+      actor = new ActorRdfJoinMultiBind({
+        name: 'actor',
+        bus,
+        bindOrder: 'depth-first',
+        mediatorQueryOperation,
+        mediatorJoinSelectivity,
+      });
       logSpy = (<any> actor).logDebug = jest.fn();
     });
 
@@ -83,10 +96,10 @@ describe('ActorRdfJoinMultiBind', () => {
             { cardinality: 5, pageSize: 100, requestTime: 30 },
           ],
         )).toEqual({
-          iterations: 1.05,
+          iterations: 16.799_999_999_999_997,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 2.04,
+          requestTime: 26.436_000_000_000_003,
         });
       });
 
@@ -121,10 +134,10 @@ describe('ActorRdfJoinMultiBind', () => {
             { cardinality: 5, pageSize: 100, requestTime: 30 },
           ],
         )).toEqual({
-          iterations: 0.7,
+          iterations: 16.799_999_999_999_997,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 1.36,
+          requestTime: 26.436_000_000_000_003,
         });
       });
 
@@ -210,10 +223,10 @@ describe('ActorRdfJoinMultiBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20 },
           ],
         )).toEqual({
-          iterations: 0.6,
+          iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.259_999_999_999_999_95,
+          requestTime: 1.952_000_000_000_000_2,
         });
       });
     });
@@ -454,7 +467,13 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('should handle two entries (breadth-first)', async() => {
-        actor = new ActorRdfJoinMultiBind({ name: 'actor', bus, bindOrder: 'breadth-first', mediatorQueryOperation });
+        actor = new ActorRdfJoinMultiBind({
+          name: 'actor',
+          bus,
+          bindOrder: 'breadth-first',
+          mediatorQueryOperation,
+          mediatorJoinSelectivity,
+        });
 
         const action: IActionRdfJoin = {
           context,

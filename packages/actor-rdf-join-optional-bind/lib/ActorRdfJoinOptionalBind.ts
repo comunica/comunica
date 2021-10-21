@@ -2,16 +2,15 @@ import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, getMetadata } from '@comunica/bus-query-operation';
-import type {
-  IActionRdfJoin,
+import type { IActionRdfJoin,
   IActorRdfJoinOutputInner,
   IMetadataChecked,
-} from '@comunica/bus-rdf-join';
+  IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, IActionQueryOperation } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
@@ -81,39 +80,24 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       throw new Error(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
-    // Calculate overlap factor of variables of the smallest entry with the other entries
-    // This is a heuristic for determining the join cardinality
-    const variablesBoundRemaining = this.getBoundVariablesAfterBinding(
-      action.entries[0].output.variables,
-      action.entries[1].output.variables,
-    ) * 10;
+    // Determine selectivity of join
+    const { selectivity } = await this.mediatorJoinSelectivity.mediate({ entries: action.entries });
 
     return {
-      iterations: metadatas[0].cardinality * metadatas[1].cardinality / variablesBoundRemaining,
+      iterations: metadatas[0].cardinality * metadatas[1].cardinality * selectivity,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
-        metadatas[0].cardinality / variablesBoundRemaining * (
+        metadatas[0].cardinality * selectivity * (
           requestItemTimes[0] +
           requestInitialTimes[1] +
           metadatas[1].cardinality * requestItemTimes[1]
         ),
     };
   }
-
-  public getBoundVariablesAfterBinding(variablesPrimary: string[], variablesSecondary: string[]): number {
-    let boundVariables = 0;
-    for (const variable of variablesSecondary) {
-      if (variablesPrimary.includes(variable)) {
-        boundVariables++;
-      }
-    }
-    return boundVariables;
-  }
 }
 
-export interface IActorRdfJoinOptionalBindArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
+export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   bindOrder: BindOrder;
   mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;

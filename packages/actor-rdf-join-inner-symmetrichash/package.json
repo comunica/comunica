@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.22.0",
-    "asyncjoin": "^1.0.3"
+    "asyncjoin": "^1.0.4"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-join": "^1.0.0",

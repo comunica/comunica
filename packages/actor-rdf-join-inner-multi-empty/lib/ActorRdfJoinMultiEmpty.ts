@@ -1,17 +1,14 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IMetadataChecked } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner,
+  IMetadataChecked, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 
 /**
  * A comunica Multi Empty RDF Join Actor.
  */
 export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
-  public constructor(
-    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
-  ) {
+  public constructor(args: IActorRdfJoinArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'multi-empty',

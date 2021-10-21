@@ -1,5 +1,7 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -15,10 +17,16 @@ describe('ActorRdfJoinMinusHash', () => {
   });
 
   describe('An ActorRdfJoinMinusHash instance', () => {
+    let mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinMinusHash;
 
     beforeEach(() => {
-      actor = new ActorRdfJoinMinusHash({ name: 'actor', bus });
+      mediatorJoinSelectivity = <any> {
+        mediate: async() => ({ selectivity: 1 }),
+      };
+      actor = new ActorRdfJoinMinusHash({ name: 'actor', bus, mediatorJoinSelectivity });
     });
 
     describe('test', () => {

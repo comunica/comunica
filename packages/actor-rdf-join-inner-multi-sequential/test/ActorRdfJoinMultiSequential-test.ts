@@ -2,6 +2,8 @@ import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloo
 import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -34,6 +36,9 @@ describe('ActorRdfJoinMultiSequential', () => {
   });
 
   describe('An ActorRdfJoinMultiSequential instance', () => {
+    let mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let mediatorJoin: any;
     let actor: ActorRdfJoinMultiSequential;
     let action3: IActionRdfJoin;
@@ -41,6 +46,9 @@ describe('ActorRdfJoinMultiSequential', () => {
     let invocationCounter: any;
 
     beforeEach(() => {
+      mediatorJoinSelectivity = <any> {
+        mediate: async() => ({ selectivity: 1 }),
+      };
       invocationCounter = 0;
       mediatorJoin = {
         mediate(a: any) {
@@ -48,12 +56,12 @@ describe('ActorRdfJoinMultiSequential', () => {
             a.entries[0].called = invocationCounter;
             a.entries[1].called = invocationCounter;
             invocationCounter++;
-            return new ActorRdfJoinNestedLoop({ name: 'actor', bus }).run(a);
+            return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity }).run(a);
           }
           return actor.run(a);
         },
       };
-      actor = new ActorRdfJoinMultiSequential({ name: 'actor', bus, mediatorJoin });
+      actor = new ActorRdfJoinMultiSequential({ name: 'actor', bus, mediatorJoin, mediatorJoinSelectivity });
       action3 = {
         type: 'inner',
         entries: [

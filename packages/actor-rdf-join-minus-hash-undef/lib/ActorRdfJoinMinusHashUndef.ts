@@ -1,14 +1,11 @@
-import type {
-  IActionRdfJoin,
+import type { IActionRdfJoin,
   IActorRdfJoinOutputInner,
   IMetadataChecked,
-} from '@comunica/bus-rdf-join';
+  IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
-import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { TransformIterator } from 'asynciterator';
 import { BindingsIndex } from './BindingsIndex';
 
@@ -16,9 +13,7 @@ import { BindingsIndex } from './BindingsIndex';
  * A comunica Minus Hash RDF Join Actor.
  */
 export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
-  public constructor(
-    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
-  ) {
+  public constructor(args: IActorRdfJoinArgs) {
     super(args, {
       logicalType: 'minus',
       physicalName: 'hash-undef',

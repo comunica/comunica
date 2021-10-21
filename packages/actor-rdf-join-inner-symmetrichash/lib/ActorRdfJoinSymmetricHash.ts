@@ -1,17 +1,15 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IMetadataChecked } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner,
+  IMetadataChecked, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings } from '@comunica/types';
 import { SymmetricHashJoin } from 'asyncjoin';
 
 /**
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
-  public constructor(
-    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
-  ) {
+  public constructor(args: IActorRdfJoinArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'symmetric-hash',

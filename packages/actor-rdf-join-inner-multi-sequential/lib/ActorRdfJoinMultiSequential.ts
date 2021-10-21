@@ -1,9 +1,10 @@
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner, IMetadataChecked } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner,
+  IMetadataChecked, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { IActorArgs, Mediator } from '@comunica/core';
+import type { Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
@@ -65,8 +66,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   }
 }
 
-export interface IActorRdfJoinMultiSequentialArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
+export interface IActorRdfJoinMultiSequentialArgs extends IActorRdfJoinArgs {
   mediatorJoin: Mediator<ActorRdfJoin,
   IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>;
 }

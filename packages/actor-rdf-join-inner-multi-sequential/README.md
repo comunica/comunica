@@ -30,6 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:join.json#myRdfJoinMultiActor",
       "@type": "ActorRdfJoinMultiSequential",
+      "cbrj:Actor/RdfJoin#mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
       "carjms:mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
     }
   ]
@@ -38,5 +39,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
+* `cbrj:Actor/RdfJoin#mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
 * `carjms:mediatorJoin`: A mediator over the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join).
 

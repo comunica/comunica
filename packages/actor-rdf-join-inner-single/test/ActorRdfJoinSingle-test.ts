@@ -1,3 +1,5 @@
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Bus } from '@comunica/core';
 import { ActorRdfJoinSingle } from '../lib/ActorRdfJoinSingle';
 
@@ -9,10 +11,16 @@ describe('ActorRdfJoinSingle', () => {
   });
 
   describe('An ActorRdfJoinSingle instance', () => {
+    let mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinSingle;
 
     beforeEach(() => {
-      actor = new ActorRdfJoinSingle({ name: 'actor', bus });
+      mediatorJoinSelectivity = <any> {
+        mediate: async() => ({ selectivity: 1 }),
+      };
+      actor = new ActorRdfJoinSingle({ name: 'actor', bus, mediatorJoinSelectivity });
     });
 
     describe('test', () => {

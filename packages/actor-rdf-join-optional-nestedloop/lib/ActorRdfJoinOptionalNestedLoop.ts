@@ -1,23 +1,19 @@
-import type {
-  IActionRdfJoin,
+import type { IActionRdfJoin,
   IActorRdfJoinOutputInner,
   IMetadataChecked,
-} from '@comunica/bus-rdf-join';
+  IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
-import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings } from '@comunica/types';
 import { NestedLoopJoin } from 'asyncjoin';
 
 /**
  * A comunica Optional Nested Loop RDF Join Actor.
  */
 export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
-  public constructor(
-    args: IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>,
-  ) {
+  public constructor(args: IActorRdfJoinArgs) {
     super(args, {
       logicalType: 'optional',
       physicalName: 'nested-loop',

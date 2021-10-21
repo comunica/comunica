@@ -1,5 +1,7 @@
 import { Bindings } from '@comunica/bus-query-operation';
+import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitSparql } from '@comunica/context-entries';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
@@ -16,13 +18,16 @@ class Dummy extends ActorRdfJoin {
 
   // Just here to have a valid dummy class
   public constructor(
+    mediatorJoinSelectivity: Mediator<
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     metadata?: any,
     limitEntries?: number,
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
   ) {
     super(
-      { name: 'name', bus: new Bus({ name: 'bus' }) },
+      { name: 'name', bus: new Bus({ name: 'bus' }), mediatorJoinSelectivity },
       {
         logicalType: 'inner',
         physicalName: 'PHYSICAL',
@@ -59,8 +64,14 @@ class Dummy extends ActorRdfJoin {
 
 describe('ActorRdfJoin', () => {
   let action: IActionRdfJoin;
+  let mediatorJoinSelectivity: Mediator<
+  Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+  IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
 
   beforeEach(() => {
+    mediatorJoinSelectivity = <any> {
+      mediate: async() => ({ selectivity: 0.8 }),
+    };
     action = {
       type: 'inner',
       entries: [
@@ -343,7 +354,7 @@ describe('ActorRdfJoin', () => {
     let instance: Dummy;
 
     beforeEach(() => {
-      instance = new Dummy();
+      instance = new Dummy(mediatorJoinSelectivity);
     });
 
     it('should reject if the logical type does not match', () => {
@@ -363,19 +374,19 @@ describe('ActorRdfJoin', () => {
 
     it('should reject if there are too many entries', () => {
       action.entries.push(<any> { bindings: { type: 'bindings' }});
-      instance = new Dummy(undefined, 2);
+      instance = new Dummy(mediatorJoinSelectivity, undefined, 2);
       return expect(instance.test(action)).rejects.toThrowError(`name requires 2 join entries at most. The input contained 3.`);
     });
 
     it('should reject if there are too few entries', () => {
-      instance = new Dummy(undefined, 3, true);
+      instance = new Dummy(mediatorJoinSelectivity, undefined, 3, true);
       return expect(instance.test(action)).rejects.toThrowError(`name requires 3 join entries at least. The input contained 2.`);
     });
 
     it('should throw an error if an entry has an incorrect type', () => {
       action.entries.push(<any> { output: { type: 'invalid' }});
       action.entries.push(<any> { output: { type: 'invalid' }});
-      instance = new Dummy(undefined, 99);
+      instance = new Dummy(mediatorJoinSelectivity, undefined, 99);
       return expect(instance.test(action)).rejects
         .toThrowError(`Invalid type of a join entry: Expected 'bindings' but got 'invalid'`);
     });
@@ -425,7 +436,7 @@ describe('ActorRdfJoin', () => {
   });
 
   describe('test with undefs', () => {
-    const instance = new Dummy(undefined, undefined, undefined, true);
+    const instance = new Dummy(mediatorJoinSelectivity, undefined, undefined, undefined, true);
 
     it('should handle undefs in left stream', () => {
       action.entries[0].output.canContainUndefs = true;
@@ -463,7 +474,11 @@ describe('ActorRdfJoin', () => {
   });
 
   describe('run', () => {
-    const instance = new Dummy();
+    let instance: Dummy;
+
+    beforeEach(() => {
+      instance = new Dummy(mediatorJoinSelectivity);
+    });
 
     it('calls getOutput if there are 2+ entries', async() => {
       delete action.entries[0].output.metadata;
@@ -476,22 +491,22 @@ describe('ActorRdfJoin', () => {
       action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 10 });
       await instance.run(action).then(async(result: any) => {
         expect(result.canContainUndefs).toEqual(true);
-        return expect(await result.metadata()).toEqual({ cardinality: 50 });
+        return expect(await result.metadata()).toEqual({ cardinality: 40 });
       });
     });
 
     it('keeps generated metadata', async() => {
-      const metaInstance = new Dummy({ keep: true });
+      const metaInstance = new Dummy(mediatorJoinSelectivity, { keep: true });
       action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5 });
       action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 10 });
       await metaInstance.run(action).then(async(result: any) => {
         expect(result.canContainUndefs).toEqual(true);
-        return expect(await result.metadata()).toEqual({ keep: true, cardinality: 50 });
+        return expect(await result.metadata()).toEqual({ keep: true, cardinality: 40 });
       });
     });
 
     it('does not overwrite calculated cardinality', async() => {
-      const metaInstance = new Dummy({ cardinality: 10 });
+      const metaInstance = new Dummy(mediatorJoinSelectivity, { cardinality: 10 });
       action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5 });
       action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 10 });
       await metaInstance.run(action).then(async(result: any) => {
