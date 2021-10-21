@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carjsvc": "npmd:@comunica/actor-rdf-join-selectivity-variable-counting/",
+      "files-carjsvc": "carjsvc:^1.0.0/",
+
+      "ActorRdfJoinSelectivityVariableCounting": "carjsvc:Actor/RdfJoinSelectivity/VariableCounting"
+    }
+  ]
+}
