@@ -11,7 +11,7 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
 /**
@@ -40,7 +40,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
   Promise<IActorQueryOperationOutputQuads> {
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
-    const operation: Algebra.Operation = { type: 'project', input: pattern.input, variables };
+    const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: pattern.input, variables };
 
     // Evaluate the input query
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(

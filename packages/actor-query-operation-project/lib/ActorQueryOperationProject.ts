@@ -29,7 +29,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     );
 
     // Find all variables that should be deleted from the input stream.
-    const variables: string[] = pattern.variables.map(x => x.termType === 'Wildcard' ? '*' : termToString(x));
+    const variables: string[] = pattern.variables.map(termToString);
     const deleteVariables = output.variables.filter(variable => !variables.includes(variable));
 
     // Error if there are variables that are not bound in the input stream.

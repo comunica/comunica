@@ -1,19 +1,24 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import * as SparqlExpressionEvaluator from '../lib/SparqlExpressionEvaluator';
 const DF = new DataFactory();
 
 function termExpression(term: any): Algebra.TermExpression {
-  return { type: 'expression', expressionType: 'term', term };
+  return { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term };
 }
 
 function operatorExpression(operator: string, args: Algebra.Expression[]): Algebra.OperatorExpression {
-  return { type: 'expression', expressionType: 'operator', operator, args };
+  return { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.OPERATOR, operator, args };
 }
 
 function namedExpression(name: string, args: Algebra.Expression[]): Algebra.NamedExpression {
-  return { type: 'expression', expressionType: 'named', name: DF.namedNode(name), args };
+  return {
+    type: Algebra.types.EXPRESSION,
+    expressionType: Algebra.expressionTypes.NAMED,
+    name: DF.namedNode(name),
+    args,
+  };
 }
 
 describe('SparqlExpressionEvaluator', () => {
@@ -30,7 +35,7 @@ describe('SparqlExpressionEvaluator', () => {
 
   it('can not handle all expression', () => {
     expect(() => SparqlExpressionEvaluator.createEvaluator(
-      { type: 'expression', expressionType: 'existence' },
+      <any> { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.EXISTENCE },
     )).toThrow();
   });
 

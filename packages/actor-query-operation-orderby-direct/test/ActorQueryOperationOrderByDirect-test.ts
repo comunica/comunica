@@ -2,7 +2,7 @@ import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderByDirect } from '../lib/ActorQueryOperationOrderByDirect';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
@@ -55,13 +55,23 @@ describe('ActorQueryOperationOrderByDirect', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderByDirect({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      orderB = { type: 'expression', expressionType: 'term', term: DF.variable('b') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
-      orderA1 = { args: [ orderA, { type: 'expression', expressionType: 'term', term: DF.literal('1') }],
-        expressionType: 'operator',
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
+      orderA1 = {
+        args: [
+          orderA,
+          { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.literal('1') },
+        ],
+        expressionType: Algebra.expressionTypes.OPERATOR,
         operator: '+',
-        type: 'expression' };
+        type: Algebra.types.EXPRESSION,
+      };
     });
 
     it('should test on orderby', () => {

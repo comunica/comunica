@@ -58,21 +58,6 @@ describe('ActorQueryOperationProject', () => {
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run on a stream with a wildcard variable', () => {
-      const op: any = {
-        operation: { type: 'project', input: 'in', variables: [{ termType: 'Wildcard' }]},
-      };
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).metadata()).toEqual('M');
-        expect(output.variables).toEqual([ '*' ]);
-        expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({}),
-        ]);
-      });
-    });
-
     it('should run on a stream with variables that should not be deleted or are missing', () => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.blankNode('delet') ]},

@@ -479,20 +479,6 @@ describe('materializeOperation', () => {
       ));
   });
 
-  it('should modify all variables in the project operation with a wildcard range', () => {
-    return expect(materializeOperation(
-      factory.createProject(
-        factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
-        [ factory.createWildcardExpression().wildcard ],
-      ),
-      bindingsAB,
-    ))
-      .toEqual(factory.createProject(
-        factory.createPattern(valueA, termNamedNode, valueB, termNamedNode),
-        [ factory.createWildcardExpression().wildcard ],
-      ));
-  });
-
   it('should not modify a values operation without matching variables', () => {
     return expect(materializeOperation(
       factory.createValues(

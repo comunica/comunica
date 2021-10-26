@@ -8,7 +8,7 @@ import type { IActorQueryOperationOutputQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 const DF = new DataFactory<RDF.BaseQuad>();
 
 /**
@@ -35,7 +35,10 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
         ];
         // eslint-disable-next-line no-return-assign
         patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
-        const templateOperation: Algebra.Operation = { type: 'bgp', patterns: <Algebra.Pattern[]> patterns };
+        const templateOperation: Algebra.Operation = {
+          type: Algebra.types.BGP,
+          patterns: <Algebra.Pattern[]> patterns,
+        };
 
         // Create a construct query
         return <Algebra.Construct> {
@@ -64,9 +67,15 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       // Add a single construct for the variables
       // This requires a join between the input pattern and our variable patterns that form a simple BGP
       operations.push({
-        input: { type: 'join', left: pattern.input, right: { type: 'bgp', patterns: variablePatterns }},
+        input: {
+          type: Algebra.types.JOIN,
+          input: [
+            pattern.input,
+            { type: Algebra.types.BGP, patterns: variablePatterns },
+          ],
+        },
         template: variablePatterns,
-        type: 'construct',
+        type: Algebra.types.CONSTRUCT,
       });
     }
 

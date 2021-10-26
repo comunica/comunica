@@ -165,7 +165,7 @@ export function materializeOperation(
       // Otherwise, we just filter out the bound variables.
       if (options.strictTargetVariables) {
         for (const variable of op.variables) {
-          if (variable.termType !== 'Wildcard' && bindings.has(termToString(variable))) {
+          if (bindings.has(termToString(variable))) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
           }
         }
@@ -175,23 +175,17 @@ export function materializeOperation(
         };
       }
 
-      const hasWildcard = op.variables.some(variable => variable.termType === 'Wildcard');
-      const variables = hasWildcard ?
-        op.variables :
-        op.variables.filter(variable => variable.termType !== 'Wildcard' &&
-        !bindings.has(termToString(variable)));
+      const variables = op.variables.filter(variable => !bindings.has(termToString(variable)));
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = hasWildcard ?
-        bindings :
-        Bindings((<RDF.Variable[]>op.variables).reduce<any>((acc, variable) => {
-          const binding = bindings.get(termToString(variable));
-          if (binding) {
-            acc[termToString(variable)] = binding;
-          }
-          return acc;
-        }, {}));
+      const subBindings = Bindings(op.variables.reduce<any>((acc, variable) => {
+        const binding = bindings.get(termToString(variable));
+        if (binding) {
+          acc[termToString(variable)] = binding;
+        }
+        return acc;
+      }, {}));
 
       return {
         recurse: false,
@@ -217,7 +211,7 @@ export function materializeOperation(
         }
       } else {
         const variables = op.variables.filter(variable => !bindings.has(termToString(variable)));
-        const valueBindings: Record<string, RDF.Term>[] = <any> op.bindings.map(binding => {
+        const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map(binding => {
           const newBinding = { ...binding };
           let valid = true;
           bindings.forEach((value: RDF.NamedNode, key: string) => {

@@ -3,7 +3,7 @@ import { Bus } from '@comunica/core';
 import type { IActionQueryOperation } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib/ActorQueryOperationGroup';
 import { GroupsState } from '../lib/GroupsState';
 const arrayifyStream = require('arrayify-stream');
@@ -31,12 +31,12 @@ const simpleXYZinput = {
 };
 
 const countY: Algebra.BoundAggregate = {
-  type: 'expression',
-  expressionType: 'aggregate',
+  type: Algebra.types.EXPRESSION,
+  expressionType: Algebra.expressionTypes.AGGREGATE,
   aggregator: 'count',
   expression: {
-    type: 'expression',
-    expressionType: 'term',
+    type: Algebra.types.EXPRESSION,
+    expressionType: Algebra.expressionTypes.TERM,
     term: DF.variable('y'),
   },
   distinct: false,
@@ -44,12 +44,12 @@ const countY: Algebra.BoundAggregate = {
 };
 
 const sumZ: Algebra.BoundAggregate = {
-  type: 'expression',
-  expressionType: 'aggregate',
+  type: Algebra.types.EXPRESSION,
+  expressionType: Algebra.expressionTypes.AGGREGATE,
   aggregator: 'sum',
   expression: {
-    type: 'expression',
-    expressionType: 'term',
+    type: Algebra.types.EXPRESSION,
+    expressionType: Algebra.expressionTypes.TERM,
     term: DF.variable('z'),
   },
   distinct: false,
@@ -101,7 +101,7 @@ function constructCase(
     };
 
   const operation: Algebra.Group = {
-    type: 'group',
+    type: Algebra.types.GROUP,
     input: inputOp,
     variables: groupVariables.map(name => DF.variable(name)) || [],
     aggregates: aggregates || [],
@@ -336,12 +336,12 @@ describe('ActorQueryOperationGroup', () => {
     // https://www.w3.org/TR/sparql11-query/#aggregateExample2
     it('should handle aggregate errors', async() => {
       const sumY: Algebra.BoundAggregate = {
-        type: 'expression',
-        expressionType: 'aggregate',
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.AGGREGATE,
         aggregator: 'sum',
         expression: {
-          type: 'expression',
-          expressionType: 'term',
+          type: Algebra.types.EXPRESSION,
+          expressionType: Algebra.expressionTypes.TERM,
           term: DF.variable('y'),
         },
         distinct: false,
@@ -460,12 +460,12 @@ describe('ActorQueryOperationGroup', () => {
 
     const aggregateOn = (aggregator: string, inVar: string, outVar: string): Algebra.BoundAggregate => {
       return {
-        type: 'expression',
-        expressionType: 'aggregate',
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.AGGREGATE,
         aggregator: <any> aggregator,
         expression: {
-          type: 'expression',
-          expressionType: 'term',
+          type: Algebra.types.EXPRESSION,
+          expressionType: Algebra.expressionTypes.TERM,
           term: DF.variable(inVar),
         },
         distinct: false,

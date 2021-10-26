@@ -149,7 +149,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should test on quad pattern operations', () => {
-      return expect(actor.test({ operation: { type: 'pattern' }})).resolves.toBeTruthy();
+      return expect(actor.test({ operation: <any>{ type: 'pattern' }})).resolves.toBeTruthy();
     });
 
     it('should not test on dummy operations', () => {

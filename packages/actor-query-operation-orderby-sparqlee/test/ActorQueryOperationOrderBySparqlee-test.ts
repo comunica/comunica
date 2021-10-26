@@ -3,7 +3,7 @@ import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
 const arrayifyStream = require('arrayify-stream');
@@ -57,10 +57,20 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      orderB = { type: 'expression', expressionType: 'term', term: DF.variable('b') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
-      orderA1 = { args: [ orderA ], expressionType: 'operator', operator: 'strlen', type: 'expression' };
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
+      orderA1 = {
+        args: [ orderA ],
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'strlen',
+        type: Algebra.types.EXPRESSION,
+      };
     });
 
     it('should test on orderby', () => {
@@ -188,12 +198,32 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      orderB = { type: 'expression', expressionType: 'term', term: DF.variable('b') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
-      descOrderB = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderB ]};
-      orderA1 = { args: [ orderA ], expressionType: 'operator', operator: 'strlen', type: 'expression' };
-      orderB1 = { args: [ orderB ], expressionType: 'operator', operator: 'strlen', type: 'expression' };
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
+      descOrderB = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderB ],
+      };
+      orderA1 = {
+        args: [ orderA ],
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'strlen',
+        type: Algebra.types.EXPRESSION,
+      };
+      orderB1 = {
+        args: [ orderB ],
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'strlen',
+        type: Algebra.types.EXPRESSION,
+      };
     });
 
     it('should order A', async() => {
@@ -293,8 +323,13 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
     });
 
     it('should sort as an ascending integer', async() => {
@@ -349,8 +384,13 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
     });
 
     it('should sort as an ascending double', async() => {
@@ -405,8 +445,13 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
     });
 
     it('should sort as an ascending decimal', async() => {
@@ -461,8 +506,13 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
     });
 
     it('should sort as an ascending float', async() => {
@@ -517,8 +567,13 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
     });
 
     it('should sort as an ascending integer', async() => {
@@ -573,8 +628,13 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
     });
 
     it('should not sort since its not a literal ascending', async() => {
