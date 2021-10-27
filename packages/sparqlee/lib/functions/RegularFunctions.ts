@@ -1,4 +1,4 @@
-import { Decimal } from 'decimal.js';
+import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
 import { DataFactory } from 'rdf-data-factory';
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
@@ -54,21 +54,21 @@ const unaryMinus = {
 const multiplication = {
   arity: 2,
   overloads: declare(C.RegularOperator.MULTIPLICATION)
-    .arithmetic(() => (left, right) => Decimal.mul(left, right).toNumber())
+    .arithmetic(() => (left, right) => new BigNumber(left).times(right).toNumber())
     .collect(),
 };
 
 const division = {
   arity: 2,
   overloads: declare(C.RegularOperator.DIVISION)
-    .arithmetic(() => (left, right) => Decimal.div(left, right).toNumber())
+    .arithmetic(() => (left, right) => new BigNumber(left).div(right).toNumber())
     .onBinaryTyped(
       [ TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
       () => (left: number, right: number) => {
         if (right === 0) {
           throw new Err.ExpressionError('Integer division by 0');
         }
-        return decimal(Decimal.div(left, right).toNumber());
+        return decimal(new BigNumber(left).div(right).toNumber());
       },
     )
     .collect(),
@@ -77,14 +77,14 @@ const division = {
 const addition = {
   arity: 2,
   overloads: declare(C.RegularOperator.ADDITION)
-    .arithmetic(() => (left, right) => Decimal.add(left, right).toNumber())
+    .arithmetic(() => (left, right) => new BigNumber(left).plus(right).toNumber())
     .collect(),
 };
 
 const subtraction = {
   arity: 2,
   overloads: declare(C.RegularOperator.SUBTRACTION)
-    .arithmetic(() => (left, right) => Decimal.sub(left, right).toNumber())
+    .arithmetic(() => (left, right) => new BigNumber(left).minus(right).toNumber())
     .collect(),
 };
 
