@@ -1,7 +1,7 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 
 import { AggregateEvaluator } from '../../../lib/evaluators/AggregateEvaluator';
 import { AsyncAggregateEvaluator } from '../../../lib/evaluators/AsyncAggregateEvaluator';
@@ -52,14 +52,14 @@ async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs)
 function makeAggregate(aggregator: string, distinct = false, separator?: string):
 Algebra.AggregateExpression {
   return {
-    type: 'expression',
-    expressionType: 'aggregate',
+    type: Algebra.types.EXPRESSION,
+    expressionType: Algebra.expressionTypes.AGGREGATE,
     aggregator: <any> aggregator,
     distinct,
     separator,
     expression: {
-      type: 'expression',
-      expressionType: 'term',
+      type: Algebra.types.EXPRESSION,
+      expressionType: Algebra.expressionTypes.TERM,
       term: DF.variable('x'),
     },
   };

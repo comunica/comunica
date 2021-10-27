@@ -35,17 +35,17 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
 
     switch (expr.expressionType) {
       case types.TERM:
-        return this.transformTerm(<Alg.TermExpression>expr);
+        return this.transformTerm(expr);
       case types.OPERATOR:
-        return this.transformOperator(<Alg.OperatorExpression>expr);
+        return this.transformOperator(expr);
       case types.NAMED:
-        return this.transformNamed(<Alg.NamedExpression>expr);
+        return this.transformNamed(expr);
       case types.EXISTENCE:
-        return AlgebraTransformer.transformExistence(<Alg.ExistenceExpression>expr);
+        return AlgebraTransformer.transformExistence(expr);
       case types.AGGREGATE:
-        return AlgebraTransformer.transformAggregate(<Alg.AggregateExpression>expr);
+        return AlgebraTransformer.transformAggregate(expr);
       case types.WILDCARD:
-        return AlgebraTransformer.transformWildcard(<Alg.WildcardExpression>expr);
+        return AlgebraTransformer.transformWildcard(expr);
       default:
         throw new Err.InvalidExpressionType(expr);
     }
