@@ -36,7 +36,7 @@
     "@comunica/bus-query-operation": "^1.22.0",
     "@comunica/context-entries": "^1.22.0",
     "asynciterator": "^3.2.0",
-    "sparqlalgebrajs": "^3.0.3"
+    "sparqlalgebrajs": "^4.0.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.22.0",
