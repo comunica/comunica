@@ -57,6 +57,7 @@ describe('ActorRdfJoinMultiBind', () => {
         name: 'actor',
         bus,
         bindOrder: 'depth-first',
+        selectivityModifier: 0.1,
         mediatorQueryOperation,
         mediatorJoinSelectivity,
       });
@@ -95,10 +96,10 @@ describe('ActorRdfJoinMultiBind', () => {
             { cardinality: 5, pageSize: 100, requestTime: 30, canContainUndefs: false },
           ],
         )).toEqual({
-          iterations: 12.8,
+          iterations: 1.280_000_000_000_000_2,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 4.496,
+          requestTime: 0.440_96,
         });
       });
 
@@ -133,10 +134,10 @@ describe('ActorRdfJoinMultiBind', () => {
             { cardinality: 5, pageSize: 100, requestTime: 30, canContainUndefs: false },
           ],
         )).toEqual({
-          iterations: 12.8,
+          iterations: 1.280_000_000_000_000_2,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 4.496,
+          requestTime: 0.440_96,
         });
       });
 
@@ -222,10 +223,10 @@ describe('ActorRdfJoinMultiBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
-          iterations: 4.800_000_000_000_001,
+          iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.784_000_000_000_000_1,
+          requestTime: 0.403_840_000_000_000_03,
         });
       });
     });
@@ -493,6 +494,7 @@ describe('ActorRdfJoinMultiBind', () => {
           name: 'actor',
           bus,
           bindOrder: 'breadth-first',
+          selectivityModifier: 0.1,
           mediatorQueryOperation,
           mediatorJoinSelectivity,
         });

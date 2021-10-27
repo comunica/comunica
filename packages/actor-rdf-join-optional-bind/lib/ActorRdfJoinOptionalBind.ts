@@ -19,6 +19,7 @@ import { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
+  public readonly selectivityModifier: number;
   public readonly mediatorQueryOperation: Mediator<
   Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
@@ -84,7 +85,8 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     }
 
     // Determine selectivity of join
-    const { selectivity } = await this.mediatorJoinSelectivity.mediate({ entries: action.entries });
+    const selectivity = (await this.mediatorJoinSelectivity.mediate({ entries: action.entries })).selectivity *
+      this.selectivityModifier;
 
     return {
       iterations: metadatas[0].cardinality * metadatas[1].cardinality * selectivity,
@@ -102,6 +104,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
 
 export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   bindOrder: BindOrder;
+  selectivityModifier: number;
   mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
 }

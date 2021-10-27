@@ -24,6 +24,14 @@
           "required": true,
           "unique": true,
           "default": "depth-first"
+        },
+        {
+          "@id": "carjmb:Actor/RdfJoin/MultiBind#selectivityModifier",
+          "comment": "Multiplier for selectivity values",
+          "required": true,
+          "unique": true,
+          "default": 0.1,
+          "range": "xsd:double"
         }
       ],
       "constructorArguments": [
@@ -38,6 +46,10 @@
             {
               "keyRaw": "bindOrder",
               "value": "carjmb:Actor/RdfJoin/MultiBind#bindOrder"
+            },
+            {
+              "keyRaw": "selectivityModifier",
+              "value": "carjmb:Actor/RdfJoin/MultiBind#selectivityModifier"
             }
           ]
         }

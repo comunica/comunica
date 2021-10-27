@@ -61,6 +61,7 @@ describe('ActorRdfJoinOptionalBind', () => {
         name: 'actor',
         bus,
         bindOrder: 'depth-first',
+        selectivityModifier: 0.1,
         mediatorQueryOperation,
         mediatorJoinSelectivity,
       });
@@ -91,10 +92,10 @@ describe('ActorRdfJoinOptionalBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
-          iterations: 4.800_000_000_000_001,
+          iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 1.200_000_000_000_000_2,
+          requestTime: 0.120_000_000_000_000_02,
         });
       });
 
@@ -122,10 +123,10 @@ describe('ActorRdfJoinOptionalBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
-          iterations: 4.800_000_000_000_001,
+          iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 1.200_000_000_000_000_2,
+          requestTime: 0.120_000_000_000_000_02,
         });
       });
 
@@ -211,10 +212,10 @@ describe('ActorRdfJoinOptionalBind', () => {
             { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
-          iterations: 4.800_000_000_000_001,
+          iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 1.200_000_000_000_000_2,
+          requestTime: 0.120_000_000_000_000_02,
         });
       });
     });

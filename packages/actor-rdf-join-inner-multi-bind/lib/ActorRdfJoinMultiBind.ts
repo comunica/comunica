@@ -21,6 +21,7 @@ import { Factory, Algebra } from 'sparqlalgebrajs';
  */
 export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
+  public readonly selectivityModifier: number;
   public readonly mediatorQueryOperation: Mediator<
   Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
@@ -226,7 +227,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           action.entries[smallestIndex],
           entry,
         ],
-      })).selectivity));
+      })).selectivity * this.selectivityModifier));
 
     // Determine coefficients for remaining entries
     const cardinalityRemaining = remainingMetadatas
@@ -252,9 +253,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
+  bindOrder: BindOrder;
+  selectivityModifier: number;
   mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
-  bindOrder: BindOrder;
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';

@@ -125,7 +125,7 @@
         "cmjcf:Mediator/JoinCoefficientsFixed#cpuWeight": 1,
         "cmjcf:Mediator/JoinCoefficientsFixed#memoryWeight": 1,
         "cmjcf:Mediator/JoinCoefficientsFixed#timeWeight": 10,
-        "cmjcf:Mediator/JoinCoefficientsFixed#ioWeight": 0.01,
+        "cmjcf:Mediator/JoinCoefficientsFixed#ioWeight": 100,
         "cc:Mediator/bus": { "@id": "cbrj:Bus/RdfJoin" }
       }
     },
