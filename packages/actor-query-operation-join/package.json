@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.22.0",
-    "sparqlalgebrajs": "^3.0.0"
+    "sparqlalgebrajs": "^4.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
