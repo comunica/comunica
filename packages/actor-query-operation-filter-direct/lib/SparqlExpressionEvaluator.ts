@@ -26,15 +26,15 @@ export function createEvaluator(expr: Algebra.Expression): (bindings: Bindings) 
 
 function handleExpression(expr: Algebra.Expression): (bindings: Bindings) => (string | undefined) {
   if (expr.expressionType === Algebra.expressionTypes.TERM) {
-    return handleTermExpression(<Algebra.TermExpression>expr);
+    return handleTermExpression(expr);
   }
 
   if (expr.expressionType === Algebra.expressionTypes.NAMED) {
-    return handleNamedExpression(<Algebra.NamedExpression>expr);
+    return handleNamedExpression(expr);
   }
 
   if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
-    return handleOperatorExpression(<Algebra.OperatorExpression>expr);
+    return handleOperatorExpression(expr);
   }
 
   throw new Error(`Unsupported Expression type: ${expr.expressionType}`);
@@ -225,7 +225,7 @@ const operators: any = {
     if (a.expressionType !== 'term') {
       throw new Error(`BOUND expects a TermExpression but got: ${JSON.stringify(a)}`);
     }
-    const { term } = <Algebra.TermExpression> a;
+    const { term } = a;
     if (term.termType !== 'Variable') {
       throw new Error(`BOUND expects a Variable but got: ${JSON.stringify(term)}`);
     }

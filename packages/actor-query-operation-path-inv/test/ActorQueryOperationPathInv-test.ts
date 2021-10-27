@@ -21,11 +21,10 @@ describe('ActorQueryOperationPathInv', () => {
           Bindings({ '?x': DF.namedNode('2') }),
           Bindings({ '?x': DF.namedNode('3') }),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -71,8 +70,7 @@ describe('ActorQueryOperationPathInv', () => {
         DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.canContainUndefs).toEqual(false);
-      expect(await output.metadata!()).toEqual({ cardinality: 3 });
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': DF.namedNode('1') }),
         Bindings({ '?x': DF.namedNode('2') }),

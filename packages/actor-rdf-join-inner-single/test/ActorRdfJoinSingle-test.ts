@@ -90,7 +90,7 @@ describe('ActorRdfJoinSingle', () => {
           ],
         });
         expect(output).toBe(entryOutput);
-        expect(await output.metadata!()).toEqual({ cardinality: 10 });
+        expect(await output.metadata()).toEqual({ cardinality: 10 });
       });
     });
   });

@@ -27,11 +27,10 @@ describe('ActorQueryOperationBgpJoin', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
-        canContainUndefs: false,
       })),
     };
   });
@@ -59,10 +58,9 @@ describe('ActorQueryOperationBgpJoin', () => {
       const op = <any> { operation: { type: 'bgp', patterns }, context };
 
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(await output.metadata!()).toEqual({ cardinality: 3 });
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(output.variables).toEqual([ '?a' ]);
       expect(output.type).toEqual('bindings');
-      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?a': DF.literal('1') }),
         Bindings({ '?a': DF.literal('2') }),

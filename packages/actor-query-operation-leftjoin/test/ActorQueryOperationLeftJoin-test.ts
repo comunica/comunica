@@ -24,7 +24,7 @@ describe('ActorQueryOperationLeftJoin', () => {
           Bindings({ a: DF.literal('2') }),
           Bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
@@ -33,11 +33,10 @@ describe('ActorQueryOperationLeftJoin', () => {
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
-        metadata: () => Promise.resolve({ cardinality: 100 }),
+        metadata: () => Promise.resolve({ cardinality: 100, canContainUndefs: true }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a', 'b' ],
-        canContainUndefs: true,
       }),
     };
   });
@@ -81,8 +80,7 @@ describe('ActorQueryOperationLeftJoin', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(true);
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
+        expect(await output.metadata()).toEqual({ cardinality: 100, canContainUndefs: true });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('1') }),
           Bindings({ a: DF.literal('1') }),
@@ -110,10 +108,9 @@ describe('ActorQueryOperationLeftJoin', () => {
           Bindings({ a: DF.literal('3') }),
           Bindings({ a: DF.literal('3') }),
         ]);
-        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 100 });
+        expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ 'a', 'b' ]);
-        expect(output.canContainUndefs).toEqual(true);
       });
     });
 
@@ -126,10 +123,9 @@ describe('ActorQueryOperationLeftJoin', () => {
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
       await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
-        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 100 });
+        expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ 'a', 'b' ]);
-        expect(output.canContainUndefs).toEqual(true);
       });
     });
 
@@ -155,10 +151,9 @@ describe('ActorQueryOperationLeftJoin', () => {
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
       await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
-        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 100 });
+        expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ 'a', 'b' ]);
-        expect(output.canContainUndefs).toEqual(true);
 
         expect(logWarnSpy).toHaveBeenCalledTimes(6);
         logWarnSpy.mock.calls.forEach((call, index) => {

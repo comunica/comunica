@@ -22,7 +22,7 @@ describe('ActorQueryOperationJoin', () => {
           Bindings({ a: DF.literal('2') }),
           Bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
@@ -31,11 +31,10 @@ describe('ActorQueryOperationJoin', () => {
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
-        metadata: () => Promise.resolve({ cardinality: 100 }),
+        metadata: () => Promise.resolve({ cardinality: 100, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a', 'b' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -79,8 +78,7 @@ describe('ActorQueryOperationJoin', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 100 });
+        expect(await output.metadata()).toEqual({ cardinality: 100, canContainUndefs: false });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('1') }),
           Bindings({ a: DF.literal('1') }),

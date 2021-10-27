@@ -21,11 +21,10 @@ describe('ActorQueryOperationPathLink', () => {
           Bindings({ '?x': DF.literal('2') }),
           Bindings({ '?x': DF.literal('3') }),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -68,8 +67,7 @@ describe('ActorQueryOperationPathLink', () => {
       const op: any = { operation: factory
         .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.canContainUndefs).toEqual(false);
-      expect(await output.metadata!()).toEqual({ cardinality: 3 });
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': DF.literal('1') }),
         Bindings({ '?x': DF.literal('2') }),
