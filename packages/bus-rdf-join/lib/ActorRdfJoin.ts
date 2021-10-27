@@ -178,7 +178,7 @@ export abstract class ActorRdfJoin
    */
   public static getRequestItemTimes(metadatas: IMetadata[]): number[] {
     return metadatas
-      .map(metadata => !metadata.pageSize ? 0 : metadata.cardinality / metadata.pageSize * (metadata.requestTime || 0));
+      .map(metadata => !metadata.pageSize ? 0 : (metadata.requestTime || 0) / metadata.pageSize);
   }
 
   /**

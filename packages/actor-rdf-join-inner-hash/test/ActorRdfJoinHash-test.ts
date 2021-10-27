@@ -187,7 +187,7 @@ describe('ActorRdfJoinHash', () => {
           iterations: 9,
           persistedItems: 4,
           blockingItems: 4,
-          requestTime: 6.6,
+          requestTime: 1.4,
         });
     });
 

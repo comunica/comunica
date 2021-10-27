@@ -79,7 +79,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
           iterations: 16,
           blockingItems: 0,
           persistedItems: 0,
-          requestTime: 3.2,
+          requestTime: 0.8,
         });
       });
     });

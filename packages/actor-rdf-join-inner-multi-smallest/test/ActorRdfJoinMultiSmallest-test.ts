@@ -238,7 +238,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
         iterations: 40,
         persistedItems: 0,
         blockingItems: 0,
-        requestTime: 7.8,
+        requestTime: 2,
       });
     });
 
@@ -247,7 +247,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
         iterations: 80,
         persistedItems: 0,
         blockingItems: 0,
-        requestTime: 9.399_999_999_999_999,
+        requestTime: 2.8,
       });
     });
 

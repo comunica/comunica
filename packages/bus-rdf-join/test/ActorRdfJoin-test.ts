@@ -297,7 +297,7 @@ describe('ActorRdfJoin', () => {
         { cardinality: 10, canContainUndefs: false },
         { cardinality: 10, requestTime: 10, canContainUndefs: false },
       ])).toEqual([
-        10,
+        1,
         0,
         0,
         0,

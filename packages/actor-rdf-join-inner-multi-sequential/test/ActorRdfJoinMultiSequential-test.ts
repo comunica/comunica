@@ -192,7 +192,7 @@ describe('ActorRdfJoinMultiSequential', () => {
         iterations: 40,
         persistedItems: 0,
         blockingItems: 0,
-        requestTime: 7.399_999_999_999_999_5,
+        requestTime: 1.599_999_999_999_999_9,
       });
     });
 
@@ -201,7 +201,7 @@ describe('ActorRdfJoinMultiSequential', () => {
         iterations: 80,
         persistedItems: 0,
         blockingItems: 0,
-        requestTime: 9.399_999_999_999_999,
+        requestTime: 2,
       });
     });
 

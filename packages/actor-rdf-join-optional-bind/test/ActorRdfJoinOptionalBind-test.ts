@@ -94,7 +94,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 2.640_000_000_000_000_6,
+          requestTime: 1.200_000_000_000_000_2,
         });
       });
 
@@ -125,7 +125,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 2.640_000_000_000_000_6,
+          requestTime: 1.200_000_000_000_000_2,
         });
       });
 
@@ -214,7 +214,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 2.640_000_000_000_000_6,
+          requestTime: 1.200_000_000_000_000_2,
         });
       });
     });

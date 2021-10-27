@@ -89,7 +89,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           iterations: 20,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 6.6,
+          requestTime: 1.4,
         });
     });
 
@@ -101,7 +101,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           iterations: 20,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 6.6,
+          requestTime: 1.4,
         });
     });
 
@@ -115,7 +115,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           iterations: 20,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 6.6,
+          requestTime: 1.4,
         });
     });
 

@@ -98,7 +98,7 @@ describe('ActorRdfJoinMultiBind', () => {
           iterations: 12.8,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 19.232_000_000_000_003,
+          requestTime: 4.496,
         });
       });
 
@@ -136,7 +136,7 @@ describe('ActorRdfJoinMultiBind', () => {
           iterations: 12.8,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 19.232_000_000_000_003,
+          requestTime: 4.496,
         });
       });
 
@@ -225,7 +225,7 @@ describe('ActorRdfJoinMultiBind', () => {
           iterations: 4.800_000_000_000_001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 1.952_000_000_000_000_2,
+          requestTime: 0.784_000_000_000_000_1,
         });
       });
     });
