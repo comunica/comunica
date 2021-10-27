@@ -57,20 +57,18 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4 }),
+              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5 }),
+              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -84,20 +82,85 @@ describe('ActorRdfJoinSymmetricHash', () => {
     });
 
     it('should fail on undefs in left stream', () => {
-      action.entries[0].output.canContainUndefs = true;
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: true }),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any> {},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: false }),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any> {},
+          },
+        ],
+      };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
     });
 
     it('should fail on undefs in right stream', () => {
-      action.entries[1].output.canContainUndefs = true;
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: false }),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any> {},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: true }),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any> {},
+          },
+        ],
+      };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
     });
 
     it('should fail on undefs in left and right stream', () => {
-      action.entries[0].output.canContainUndefs = true;
-      action.entries[1].output.canContainUndefs = true;
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: true }),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any> {},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: true }),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any> {},
+          },
+        ],
+      };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
     });
@@ -114,11 +177,6 @@ describe('ActorRdfJoinSymmetricHash', () => {
           (await (<any> action.entries[0].output).metadata()).cardinality *
           (await (<any> action.entries[1].output).metadata()).cardinality);
       });
-    });
-
-    it('should not return metadata if there is no valid input', () => {
-      delete action.entries[0].output.metadata;
-      return expect(actor.run(action)).resolves.not.toHaveProperty('metadata');
     });
 
     it('should return an empty stream for empty input', () => {

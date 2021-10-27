@@ -11,7 +11,6 @@ describe('ActorQueryOperationUnion', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let op3: any;
-  let op3NoMeta: any;
   let op2: any;
   let op2Undef: any;
 
@@ -27,7 +26,7 @@ describe('ActorQueryOperationUnion', () => {
       }),
     };
     op3 = {
-      metadata: () => Promise.resolve({ cardinality: 3 }),
+      metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
       stream: new ArrayIterator([
         Bindings({ a: DF.literal('1') }),
         Bindings({ a: DF.literal('2') }),
@@ -35,38 +34,24 @@ describe('ActorQueryOperationUnion', () => {
       ], { autoStart: false }),
       type: 'bindings',
       variables: [ 'a' ],
-      canContainUndefs: false,
-    };
-    op3NoMeta = {
-      metadata: null,
-      stream: new ArrayIterator([
-        Bindings({ a: DF.literal('1') }),
-        Bindings({ a: DF.literal('2') }),
-        Bindings({ a: DF.literal('3') }),
-      ], { autoStart: false }),
-      type: 'bindings',
-      variables: [ 'a' ],
-      canContainUndefs: false,
     };
     op2 = {
-      metadata: () => Promise.resolve({ cardinality: 2 }),
+      metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
       stream: new ArrayIterator([
         Bindings({ b: DF.literal('1') }),
         Bindings({ b: DF.literal('2') }),
       ], { autoStart: false }),
       type: 'bindings',
       variables: [ 'b' ],
-      canContainUndefs: false,
     };
     op2Undef = {
-      metadata: () => Promise.resolve({ cardinality: 2 }),
+      metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: true }),
       stream: new ArrayIterator([
         Bindings({ b: DF.literal('1') }),
         Bindings({ b: DF.literal('2') }),
       ]),
       type: 'bindings',
       variables: [ 'b' ],
-      canContainUndefs: true,
     };
   });
 
@@ -125,68 +110,57 @@ describe('ActorQueryOperationUnion', () => {
 
   describe('ActorQueryOperationUnion#unionMetadata', () => {
     it('should return 0 items for an empty input', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([])).toEqual({ cardinality: 0 });
+      return expect(ActorQueryOperationUnion.unionMetadata([]))
+        .toEqual({ cardinality: 0, canContainUndefs: false });
     });
 
     it('should return 1 items for a single input with 1', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 1 }])).toEqual({ cardinality: 1 });
+      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 1, canContainUndefs: false }]))
+        .toEqual({ cardinality: 1, canContainUndefs: false });
     });
 
     it('should return 0 items for a single input with 0', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 0 }])).toEqual({ cardinality: 0 });
+      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 0, canContainUndefs: false }]))
+        .toEqual({ cardinality: 0, canContainUndefs: false });
     });
 
     it('should return infinite items for a single input with Infinity', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: Number.POSITIVE_INFINITY }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for a single empty input', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{}]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for a single input without items', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ something: 'abc' }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+      return expect(ActorQueryOperationUnion.unionMetadata([
+        { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+      ])).toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
 
     it('should return 3 items for inputs with 1 and 2', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 1 }, { cardinality: 2 }]))
-        .toEqual({ cardinality: 3 });
+      return expect(ActorQueryOperationUnion.unionMetadata([
+        { cardinality: 1, canContainUndefs: false },
+        { cardinality: 2, canContainUndefs: false },
+      ]))
+        .toEqual({ cardinality: 3, canContainUndefs: false });
     });
 
     it('should return infinite items for inputs with Infinity and 2', () => {
       return expect(ActorQueryOperationUnion
-        .unionMetadata([{ cardinality: Number.POSITIVE_INFINITY }, { cardinality: 2 }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+        .unionMetadata([
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+          { cardinality: 2, canContainUndefs: false },
+        ])).toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
 
     it('should return infinite items for inputs with 1 and Infinity', () => {
       return expect(ActorQueryOperationUnion
-        .unionMetadata([{ cardinality: 1 }, { cardinality: Number.POSITIVE_INFINITY }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+        .unionMetadata([
+          { cardinality: 1, canContainUndefs: false },
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+        ])).toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
 
     it('should return infinite items for inputs with Infinity and Infinity', () => {
       return expect(ActorQueryOperationUnion
-        .unionMetadata([{ cardinality: Number.POSITIVE_INFINITY }, { cardinality: Number.POSITIVE_INFINITY }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for inputs with empty and 2', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{}, { cardinality: 2 }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for inputs with 1 and empty', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ cardinality: 1 }, {}]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for inputs with empty and empty', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{}, {}]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+        .unionMetadata([
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+        ]))
+        .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
   });
 
@@ -210,10 +184,9 @@ describe('ActorQueryOperationUnion', () => {
     it('should run on two streams', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2 ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 5 });
+        expect(await output.metadata()).toEqual({ cardinality: 5, canContainUndefs: false });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('1') }),
           Bindings({ b: DF.literal('1') }),
@@ -227,33 +200,15 @@ describe('ActorQueryOperationUnion', () => {
     it('should run on three streams', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2, op2Undef ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 7 });
+        expect(await output.metadata()).toEqual({ cardinality: 7, canContainUndefs: true });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('1') }),
           Bindings({ b: DF.literal('1') }),
           Bindings({ b: DF.literal('1') }),
           Bindings({ a: DF.literal('2') }),
           Bindings({ b: DF.literal('2') }),
-          Bindings({ b: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
-        ]);
-      });
-    });
-
-    it('should run with a left stream without metadata', () => {
-      const op: any = { operation: { type: 'union', input: [ op3NoMeta, op2 ]}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata).toBeFalsy();
-        expect(output.variables).toEqual([ 'a', 'b' ]);
-        expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ b: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
           Bindings({ b: DF.literal('2') }),
           Bindings({ a: DF.literal('3') }),
         ]);
@@ -263,10 +218,9 @@ describe('ActorQueryOperationUnion', () => {
     it('should run with a right stream with undefs', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2Undef ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 5 });
+        expect(await output.metadata()).toEqual({ cardinality: 5, canContainUndefs: true });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('1') }),
           Bindings({ b: DF.literal('1') }),

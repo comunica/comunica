@@ -96,10 +96,9 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
                   Bindings({ '?a': DF.literal('2') }),
                   Bindings({ '?a': DF.literal('3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a' ],
-                canContainUndefs: false,
               },
               operation: <any> {},
             },
@@ -110,10 +109,9 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
                   Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
                   Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a', 'b' ],
-                canContainUndefs: false,
               },
               operation: <any> {},
             },
@@ -123,7 +121,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata!()).toEqual({ cardinality: 9 });
+        expect(await result.metadata()).toEqual({ cardinality: 9, canContainUndefs: true });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
           Bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
           Bindings({ '?a': DF.literal('2') }),
@@ -131,7 +129,6 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
           Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b' ]);
-        expect(result.canContainUndefs).toEqual(true);
       });
     });
   });

@@ -72,11 +72,10 @@ describe('ActorQueryOperationExtend', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator(input),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -134,9 +133,8 @@ describe('ActorQueryOperationExtend', () => {
       ]);
 
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.variables).toMatchObject([ '?a', '?l' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should not extend bindings on erroring expressions', async() => {
@@ -149,9 +147,8 @@ describe('ActorQueryOperationExtend', () => {
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.variables).toMatchObject([ '?a', '?l' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should emit error when evaluation code returns a hard error', async() => {

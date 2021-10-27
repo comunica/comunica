@@ -8,11 +8,14 @@ import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve
 import { getDataDestinationType, getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
-import type { IActionQueryOperation,
+import type {
+  IActionQueryOperation,
   IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputQuads } from '@comunica/types';
+  IActorQueryOperationOutputQuads,
+  IMetadata,
+} from '@comunica/types';
 import { DataSourceUtils } from '@comunica/utils-datasource';
 import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
@@ -143,13 +146,16 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
         return quads ? rawData : Bindings(rawData);
       });
     inputStream.then(
-      subStream => subStream.on('end', () => stream.emit('metadata', { cardinality })),
+      subStream => subStream.on('end', () => stream.emit('metadata', {
+        cardinality,
+        canContainUndefs: true,
+      })),
       () => {
         // Do nothing
       },
     );
 
-    const metadata: () => Promise<Record<string, any>> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
+    const metadata: () => Promise<IMetadata> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
       () => new Promise((resolve, reject) => {
         (<any> stream)._fillBuffer();
         stream.on('error', reject);
@@ -170,7 +176,6 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       bindingsStream: stream,
       metadata,
       variables: variables!.map(x => termToString(x)),
-      canContainUndefs: true,
     };
   }
 }

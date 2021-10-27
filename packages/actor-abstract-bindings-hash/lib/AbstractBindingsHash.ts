@@ -41,7 +41,6 @@ export abstract class AbstractBindingsHash<T extends Algebra.Operation> extends 
       bindingsStream,
       metadata: output.metadata,
       variables: output.variables,
-      canContainUndefs: output.canContainUndefs,
     };
   }
 }

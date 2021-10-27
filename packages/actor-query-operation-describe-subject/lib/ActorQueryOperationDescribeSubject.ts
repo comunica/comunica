@@ -1,10 +1,10 @@
 import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, getMetadata,
+  ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { IActorQueryOperationOutputQuads, IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -89,8 +89,8 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     const quadStream = new UnionIterator(outputs.map(output => output.quadStream), { autoStart: false });
 
     // Take union of metadata
-    const metadata: () => Promise<Record<string, any>> = () => Promise.all(outputs
-      .map(x => getMetadata(x)))
+    const metadata: () => Promise<IMetadata> = () => Promise.all(outputs
+      .map(x => x.metadata()))
       .then(ActorQueryOperationUnion.unionMetadata);
 
     return { type: 'quads', quadStream, metadata };

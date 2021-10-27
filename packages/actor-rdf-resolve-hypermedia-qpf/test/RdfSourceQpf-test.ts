@@ -269,7 +269,7 @@ describe('RdfSourceQpf', () => {
       const output = source.match(DF.namedNode('s1'), v, DF.namedNode('o1'), v);
       const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
       await arrayifyStream(output);
-      expect(await metadataPromise).toEqual({ next: 'NEXT' });
+      expect(await metadataPromise).toEqual({ next: 'NEXT', canContainUndefs: false });
     });
 
     // The following test is not applicable anymore.

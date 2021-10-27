@@ -44,7 +44,6 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
       bindingsStream,
       metadata: output.metadata,
       variables: output.variables,
-      canContainUndefs: output.canContainUndefs,
     };
   }
 }

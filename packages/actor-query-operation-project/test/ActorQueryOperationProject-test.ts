@@ -21,7 +21,6 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
         variables: [ '?a', '_:delet' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -63,10 +62,9 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.blankNode('delet') ]},
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).metadata()).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': DF.literal('A'), '_:delet': DF.literal('deleteMe') }),
         ]);
@@ -76,10 +74,9 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted', () => {
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).metadata()).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': DF.literal('A') }),
         ]);
@@ -105,14 +102,12 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
-        canContainUndefs: true,
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).metadata()).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
           Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
@@ -132,14 +127,12 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
-        canContainUndefs: true,
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).metadata()).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('A')), '?b': DF.literal('b') }),
           Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('B')), '?b': DF.literal('b') }),
@@ -163,10 +156,9 @@ describe('ActorQueryOperationProject', () => {
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).metadata()).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': DF.blankNode('a1'), '?b': DF.literal('b') }),
           Bindings({ '?a': DF.blankNode('a2'), '?b': DF.literal('b') }),
@@ -187,14 +179,12 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
-        canContainUndefs: true,
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).metadata()).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': DF.blankNode('a1'),

@@ -82,7 +82,6 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       bindingsStream,
       metadata: output.metadata,
       variables: output.variables,
-      canContainUndefs: output.canContainUndefs,
     };
   }
 

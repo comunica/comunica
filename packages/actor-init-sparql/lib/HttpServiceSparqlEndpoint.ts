@@ -426,6 +426,7 @@ export class HttpServiceSparqlEndpoint {
 
       // Flush results
       const { data } = await engine.resultToString(<IActorQueryOperationOutputQuads> {
+        metadata: <any> undefined,
         type: 'quads',
         quadStream: new ArrayIterator(quads),
       }, mediaType);

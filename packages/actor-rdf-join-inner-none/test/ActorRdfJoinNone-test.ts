@@ -61,7 +61,7 @@ describe('ActorRdfJoinNone', () => {
         });
         expect(output.variables).toEqual([]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
-        expect(await output.metadata!()).toEqual({ cardinality: 1 });
+        expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
       });
     });
   });

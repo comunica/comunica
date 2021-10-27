@@ -1,10 +1,10 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, getMetadata,
+  ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -19,20 +19,23 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
   /**
    * Takes the union of the given metadata array.
    * It will ensure that the cardinality metadata value is properly calculated.
-   * @param {{[p: string]: any}[]} metadatas Array of metadata.
-   * @return {{[p: string]: any}} Union of the metadata.
+   * @param {IMetadata[]} metadatas Array of metadata.
+   * @return {IMetadata} Union of the metadata.
    */
-  public static unionMetadata(metadatas: Record<string, any>[]): Record<string, any> {
+  public static unionMetadata(metadatas: IMetadata[]): IMetadata {
     let cardinality = 0;
     for (const metadata of metadatas) {
-      if ((metadata.cardinality && Number.isFinite(metadata.cardinality)) || metadata.cardinality === 0) {
+      if (Number.isFinite(metadata.cardinality) || metadata.cardinality === 0) {
         cardinality += metadata.cardinality;
       } else {
         cardinality = Number.POSITIVE_INFINITY;
         break;
       }
     }
-    return { cardinality };
+    return {
+      cardinality,
+      canContainUndefs: metadatas.some(metadata => metadata.canContainUndefs),
+    };
   }
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
@@ -46,11 +49,9 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
       .map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
-    const metadata: (() => Promise<Record<string, any>>) | undefined = subOperations.every(output => output.metadata) ?
-      () =>
-        Promise.all(subOperations.map(output => getMetadata(output)))
-          .then(ActorQueryOperationPathAlt.unionMetadata) :
-      undefined;
+    const metadata: (() => Promise<IMetadata>) = () =>
+      Promise.all(subOperations.map(output => output.metadata()))
+        .then(ActorQueryOperationPathAlt.unionMetadata);
     const variables = (<string[]> []).concat
       .apply([], subOperations.map(op => op.variables));
 
@@ -59,7 +60,6 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
       bindingsStream,
       variables: [ ...new Set(variables) ],
       metadata,
-      canContainUndefs: false,
     };
   }
 }

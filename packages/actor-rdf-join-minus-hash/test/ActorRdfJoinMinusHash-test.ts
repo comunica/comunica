@@ -65,15 +65,17 @@ describe('ActorRdfJoinMinusHash', () => {
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
-                canContainUndefs: true,
+                metadata: () => Promise.resolve(
+                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+                ),
               },
             },
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
-                canContainUndefs: true,
+                metadata: () => Promise.resolve(
+                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+                ),
               },
             },
           ],
@@ -87,13 +89,17 @@ describe('ActorRdfJoinMinusHash', () => {
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+                metadata: () => Promise.resolve(
+                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                ),
               },
             },
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+                metadata: () => Promise.resolve(
+                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                ),
               },
             },
           ],
@@ -118,10 +124,9 @@ describe('ActorRdfJoinMinusHash', () => {
                   Bindings({ a: DF.literal('2') }),
                   Bindings({ a: DF.literal('3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a' ],
-                canContainUndefs: false,
               },
               operation: <any> {},
             },
@@ -131,10 +136,9 @@ describe('ActorRdfJoinMinusHash', () => {
                   Bindings({ a: DF.literal('1') }),
                   Bindings({ a: DF.literal('2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 2 }),
+                metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a' ],
-                canContainUndefs: false,
               },
               operation: <any> {},
             },
@@ -144,12 +148,11 @@ describe('ActorRdfJoinMinusHash', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata!()).toEqual({ cardinality: 3 });
+        expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('3') }),
         ]);
         expect(result.variables).toEqual([ 'a' ]);
-        expect(result.canContainUndefs).toEqual(false);
       });
 
       it('should handle entries without common variables', async() => {
@@ -163,10 +166,9 @@ describe('ActorRdfJoinMinusHash', () => {
                   Bindings({ a: DF.literal('2') }),
                   Bindings({ a: DF.literal('3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a' ],
-                canContainUndefs: false,
               },
               operation: <any> {},
             },
@@ -176,10 +178,9 @@ describe('ActorRdfJoinMinusHash', () => {
                   Bindings({ b: DF.literal('1') }),
                   Bindings({ b: DF.literal('2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 2 }),
+                metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'b' ],
-                canContainUndefs: false,
               },
               operation: <any> {},
             },
@@ -189,14 +190,13 @@ describe('ActorRdfJoinMinusHash', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata!()).toEqual({ cardinality: 3 });
+        expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('1') }),
           Bindings({ a: DF.literal('2') }),
           Bindings({ a: DF.literal('3') }),
         ]);
         expect(result.variables).toEqual([ 'a' ]);
-        expect(result.canContainUndefs).toEqual(false);
       });
     });
   });

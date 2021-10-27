@@ -135,8 +135,8 @@ export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
    * The returned stream MUST expose the property 'metadata'.
    * The implementor is reponsible for handling cases where 'metadata'
    * is being called without the stream being in flow-mode.
-   * This metadata object MUST be a hash, and MAY be empty.
-   * It is recommended to contain at least cardinality as an estimate of the number of quads that will be in the stream.
+   * This metadata object MUST implement IMetadata.
+   * @see IMetadata
    */
   data: AsyncIterator<RDF.Quad>;
 }

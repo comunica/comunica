@@ -140,7 +140,7 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
         DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')),
       ]);
       expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: 2 });
+        .toEqual({ cardinality: 2, canContainUndefs: false });
     });
 
     it('should use countQuads for metadata if available', async() => {
@@ -153,7 +153,8 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
         graph: DF.variable('g'),
       };
       const { data } = await actor.run({ pattern, context });
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve))).toEqual({ cardinality: 123 });
+      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: 123, canContainUndefs: false });
     });
 
     it('should use match for metadata if countQuads is not available', async() => {
@@ -166,7 +167,8 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
         graph: DF.variable('g'),
       };
       const { data } = await actor.run({ pattern, context });
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve))).toEqual({ cardinality: 3 });
+      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: 3, canContainUndefs: false });
     });
 
     it('should delegate its error event', async() => {

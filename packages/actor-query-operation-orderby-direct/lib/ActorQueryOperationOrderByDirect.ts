@@ -22,11 +22,8 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     // Will throw error for unsupported operators
     for (let expr of pattern.expressions) {
       // Remove descending operator
-      if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
-        const op = <Algebra.OperatorExpression> expr;
-        if (op.operator === 'desc') {
-          expr = op.args[0];
-        }
+      if (expr.expressionType === Algebra.expressionTypes.OPERATOR && expr.operator === 'desc') {
+        expr = expr.args[0];
       }
       SparqlExpressionEvaluator.createEvaluator(expr);
     }
@@ -44,12 +41,9 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     let { bindingsStream } = output;
     for (let expr of pattern.expressions) {
       let ascending = true;
-      if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
-        const op = <Algebra.OperatorExpression> expr;
-        if (op.operator === 'desc') {
-          ascending = false;
-          expr = op.args[0];
-        }
+      if (expr.expressionType === Algebra.expressionTypes.OPERATOR && expr.operator === 'desc') {
+        ascending = false;
+        expr = expr.args[0];
       }
       const order = SparqlExpressionEvaluator.createEvaluator(expr);
       bindingsStream = new SortIterator(bindingsStream, (left, right) => {
@@ -67,7 +61,6 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
       bindingsStream,
       metadata: output.metadata,
       variables: output.variables,
-      canContainUndefs: output.canContainUndefs,
     };
   }
 }

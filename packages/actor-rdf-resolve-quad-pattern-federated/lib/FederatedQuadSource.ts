@@ -4,6 +4,7 @@ import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@co
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import type { IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
@@ -172,12 +173,12 @@ export class FederatedQuadSource implements IQuadSource {
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     // Counters for our metadata
-    const metadata: Record<string, any> = { cardinality: 0 };
+    const metadata: IMetadata = { cardinality: 0, canContainUndefs: false };
     let remainingSources = this.sources.length;
 
     // Anonymous function to handle cardinality from metadata
     const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
-      pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>): void => {
+      pattern: RDF.BaseQuad | undefined, lastMetadata?: IMetadata): void => {
       if (this.skipEmptyPatterns && !currentTotalItems && pattern && !this.isSourceEmpty(source, pattern)) {
         this.emptyPatterns.get(source)!.push(pattern);
       }
@@ -216,13 +217,13 @@ export class FederatedQuadSource implements IQuadSource {
         this.isSourceEmpty(source, pattern = this.algebraFactory
           .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
-        output.data.setProperty('metadata', { cardinality: 0 });
+        output.data.setProperty('metadata', { cardinality: 0, canContainUndefs: false });
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
 
       // Handle the metadata from this source
-      output.data.getProperty('metadata', (subMetadata: Record<string, any>) => {
+      output.data.getProperty('metadata', (subMetadata: IMetadata) => {
         if ((!subMetadata.cardinality && subMetadata.cardinality !== 0) || !Number.isFinite(subMetadata.cardinality)) {
           // We're already at infinite, so ignore any later metadata
           metadata.cardinality = Number.POSITIVE_INFINITY;
@@ -240,6 +241,9 @@ export class FederatedQuadSource implements IQuadSource {
           metadata.pageSize = metadata.pageSize || 0;
           subMetadata.pageSize = subMetadata.pageSize || 0;
           metadata.pageSize += subMetadata.pageSize;
+        }
+        if (subMetadata.canContainUndefs) {
+          metadata.canContainUndefs = true;
         }
         checkEmitMetadata(metadata.cardinality, source, pattern, subMetadata);
       });

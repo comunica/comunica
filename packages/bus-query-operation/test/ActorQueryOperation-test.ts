@@ -3,7 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { ActorQueryOperation, Bindings, getMetadata } from '..';
+import { ActorQueryOperation, Bindings } from '..';
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
@@ -25,31 +25,31 @@ describe('ActorQueryOperation', () => {
 
   describe('#getSafeBindings', () => {
     it('should return for bindings', () => {
-      expect(() => ActorQueryOperation.getSafeBindings({ type: 'bindings' })).not.toThrow();
+      expect(() => ActorQueryOperation.getSafeBindings(<any>{ type: 'bindings' })).not.toThrow();
     });
 
     it('should error for non-bindings', () => {
-      expect(() => ActorQueryOperation.getSafeBindings({ type: 'no-bindings' })).toThrow();
+      expect(() => ActorQueryOperation.getSafeBindings(<any>{ type: 'no-bindings' })).toThrow();
     });
   });
 
   describe('#getSafeQuads', () => {
     it('should return for quads', () => {
-      expect(() => ActorQueryOperation.getSafeQuads({ type: 'quads' })).not.toThrow();
+      expect(() => ActorQueryOperation.getSafeQuads(<any>{ type: 'quads' })).not.toThrow();
     });
 
     it('should error for non-quads', () => {
-      expect(() => ActorQueryOperation.getSafeQuads({ type: 'no-quads' })).toThrow();
+      expect(() => ActorQueryOperation.getSafeQuads(<any>{ type: 'no-quads' })).toThrow();
     });
   });
 
   describe('#getSafeBoolean', () => {
     it('should return for boolean', () => {
-      expect(() => ActorQueryOperation.getSafeBoolean({ type: 'boolean' })).not.toThrow();
+      expect(() => ActorQueryOperation.getSafeBoolean(<any>{ type: 'boolean' })).not.toThrow();
     });
 
     it('should error for non-boolean', () => {
-      expect(() => ActorQueryOperation.getSafeBoolean({ type: 'no-boolean' })).toThrow();
+      expect(() => ActorQueryOperation.getSafeBoolean(<any>{ type: 'no-boolean' })).toThrow();
     });
   });
 
@@ -65,11 +65,11 @@ describe('ActorQueryOperation', () => {
 
   describe('#validateQueryOutput', () => {
     it('should return for boolean', () => {
-      expect(() => ActorQueryOperation.validateQueryOutput({ type: 'boolean' }, 'boolean')).not.toThrow();
+      expect(() => ActorQueryOperation.validateQueryOutput(<any>{ type: 'boolean' }, 'boolean')).not.toThrow();
     });
 
     it('should error for non-boolean', () => {
-      expect(() => ActorQueryOperation.validateQueryOutput({ type: 'no-boolean' }, 'boolean')).toThrow();
+      expect(() => ActorQueryOperation.validateQueryOutput(<any>{ type: 'no-boolean' }, 'boolean')).toThrow();
     });
   });
 
@@ -152,17 +152,6 @@ describe('ActorQueryOperation', () => {
         const result = resolver(expr, Bindings({}));
         expect(await result).toBe(true);
       });
-    });
-  });
-
-  describe('#getMetadata', () => {
-    it('should handle an empty promise for missing metadata', async() => {
-      expect(await getMetadata({ type: 'none' })).toEqual({});
-    });
-
-    it('should handle a promise for metadata', async() => {
-      expect(await getMetadata({ type: 'none', metadata: async() => ({ bla: true }) }))
-        .toEqual({ bla: true });
     });
   });
 });

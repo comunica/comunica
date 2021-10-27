@@ -51,10 +51,9 @@ describe('ActorRdfJoinOptionalBind', () => {
 
           return {
             bindingsStream: new ArrayIterator(data, { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: data.length }),
+            metadata: () => Promise.resolve({ cardinality: data.length, canContainUndefs: false }),
             type: 'bindings',
             variables: [ 'bound' ],
-            canContainUndefs: false,
           };
         }),
       };
@@ -88,8 +87,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             ],
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10 },
-            { cardinality: 2, pageSize: 100, requestTime: 20 },
+            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
           iterations: 4.800_000_000_000_001,
@@ -119,8 +118,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             ],
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10 },
-            { cardinality: 2, pageSize: 100, requestTime: 20 },
+            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
           iterations: 4.800_000_000_000_001,
@@ -152,8 +151,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             ],
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10 },
-            { cardinality: 2, pageSize: 100, requestTime: 20 },
+            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -180,8 +179,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             ],
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10 },
-            { cardinality: 2, pageSize: 100, requestTime: 20 },
+            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -208,8 +207,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             ],
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10 },
-            { cardinality: 2, pageSize: 100, requestTime: 20 },
+            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
           iterations: 4.800_000_000_000_001,
@@ -232,10 +231,9 @@ describe('ActorRdfJoinOptionalBind', () => {
                   Bindings({ '?a': DF.literal('2') }),
                   Bindings({ '?a': DF.literal('3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a' ],
-                canContainUndefs: false,
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
             },
@@ -247,10 +245,9 @@ describe('ActorRdfJoinOptionalBind', () => {
                   Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
                   Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a', 'b' ],
-                canContainUndefs: false,
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
@@ -267,7 +264,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b' ]);
-        expect(result.canContainUndefs).toEqual(true);
+        expect(await result.metadata()).toEqual({ cardinality: 7.2, canContainUndefs: true });
 
         // Validate mock calls
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(3);
@@ -295,10 +292,9 @@ describe('ActorRdfJoinOptionalBind', () => {
                   Bindings({ '?a': DF.literal('2') }),
                   Bindings({ '?a': DF.literal('3') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a' ],
-                canContainUndefs: false,
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
             },
@@ -310,10 +306,9 @@ describe('ActorRdfJoinOptionalBind', () => {
                   Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
                   Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3 }),
+                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
                 variables: [ 'a', 'b' ],
-                canContainUndefs: false,
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
@@ -330,7 +325,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b' ]);
-        expect(result.canContainUndefs).toEqual(true);
+        expect(await result.metadata()).toEqual({ cardinality: 7.2, canContainUndefs: true });
 
         // Validate mock calls
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(3);
@@ -338,8 +333,8 @@ describe('ActorRdfJoinOptionalBind', () => {
           operation: FACTORY.createPattern(DF.literal('1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3 },
-            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3 }],
+            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3, canContainUndefs: false },
+            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
             [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.literal('1') }),
           }),
         });
@@ -347,8 +342,8 @@ describe('ActorRdfJoinOptionalBind', () => {
           operation: FACTORY.createPattern(DF.literal('2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3 },
-            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3 }],
+            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3, canContainUndefs: false },
+            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
             [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.literal('2') }),
           }),
         });
@@ -356,8 +351,8 @@ describe('ActorRdfJoinOptionalBind', () => {
           operation: FACTORY.createPattern(DF.literal('3'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3 },
-            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3 }],
+            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3, canContainUndefs: false },
+            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
             [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.literal('3') }),
           }),
         });

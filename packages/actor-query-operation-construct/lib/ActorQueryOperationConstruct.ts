@@ -6,7 +6,7 @@ import {
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type {
   IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputQuads, IMetadata,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -51,15 +51,11 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
 
     // Let the final metadata contain the estimated number of triples
-    let metadata: (() => Promise<Record<string, any>>) | undefined;
-    if (output.metadata) {
-      metadata = () => (<() => Promise<Record<string, any>>> output.metadata)().then(meta => {
-        if (meta.cardinality) {
-          return { ...meta, cardinality: meta.cardinality * pattern.template.length };
-        }
-        return meta;
-      });
-    }
+    const metadata: (() => Promise<IMetadata>) = () => output.metadata().then(meta => ({
+      ...meta,
+      cardinality: meta.cardinality * pattern.template.length,
+      canContainUndefs: false,
+    }));
 
     return {
       metadata,

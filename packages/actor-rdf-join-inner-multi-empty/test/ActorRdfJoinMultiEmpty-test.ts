@@ -102,7 +102,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
         });
         expect(output.variables).toEqual([]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
-        expect(await output.metadata!()).toEqual({ cardinality: 0 });
+        expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
       });
     });
   });

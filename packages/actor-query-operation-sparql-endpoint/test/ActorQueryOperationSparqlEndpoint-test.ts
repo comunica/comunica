@@ -202,8 +202,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?p' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
@@ -223,8 +222,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?myP' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
@@ -249,8 +247,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?p' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
@@ -278,8 +275,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?myP' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
@@ -312,7 +308,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputQuads = <any> await actor.run(op);
 
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 2 });
+      expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: true });
 
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),

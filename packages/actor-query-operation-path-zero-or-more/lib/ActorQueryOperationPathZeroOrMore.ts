@@ -120,7 +120,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const variables = gVar ?
         [ subjectString, objectString, termToString(path.graph) ] :
         [ subjectString, objectString ];
-      return { type: 'bindings', bindingsStream, variables, metadata: results.metadata, canContainUndefs: false };
+      return { type: 'bindings', bindingsStream, variables, metadata: results.metadata };
     }
     if (!sVar && !oVar) {
       const variable = this.generateVariable();
@@ -147,7 +147,6 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         bindingsStream,
         variables: gVar ? [ termToString(path.graph) ] : [],
         metadata: starEval.metadata,
-        canContainUndefs: false,
       };
     }
     // If (sVar || oVar)
@@ -168,6 +167,6 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       },
     });
     const variables = gVar ? [ termToString(value), termToString(path.graph) ] : [ termToString(value) ];
-    return { type: 'bindings', bindingsStream, variables, metadata: starEval.metadata, canContainUndefs: false };
+    return { type: 'bindings', bindingsStream, variables, metadata: starEval.metadata };
   }
 }

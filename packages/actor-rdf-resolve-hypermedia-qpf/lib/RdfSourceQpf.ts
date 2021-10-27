@@ -159,7 +159,8 @@ export class RdfSourceQpf implements IQuadSource {
           metadata: rdfMetadataOuput.metadata,
           requestTime: rdfDereferenceOutput.requestTime,
         })
-        .then(({ metadata }) => quads.setProperty('metadata', metadata));
+        .then(({ metadata }) => quads
+          .setProperty('metadata', { ...metadata, canContainUndefs: false }));
 
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.

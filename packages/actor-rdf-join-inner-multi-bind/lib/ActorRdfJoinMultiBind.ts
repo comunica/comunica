@@ -3,18 +3,16 @@ import type {
   IActionRdfJoin,
   IJoinEntry,
   IActorRdfJoinOutputInner,
-  IMetadataChecked,
   IActorRdfJoinArgs,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type {
-  Bindings,
+import type { Bindings,
   BindingsStream, IActionQueryOperation,
   IActorQueryOperationOutputBindings,
-} from '@comunica/types';
+  IMetadata } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra } from 'sparqlalgebrajs';
 
@@ -84,10 +82,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   /**
    * Determine the entry with the lowest cardinality.
    * @param entries Join entries
+   * @param metadatas Resolved metadata objects.
    */
-  public static async getLeftEntryIndex(entries: IJoinEntry[]): Promise<number> {
+  public static async getLeftEntryIndex(entries: IJoinEntry[], metadatas: IMetadata[]): Promise<number> {
     // If there is a stream that can contain undefs, we don't modify the join order and just pick the first one.
-    const canContainUndefs = entries.some(entry => entry.output.canContainUndefs);
+    const canContainUndefs = metadatas.some(metadata => metadata.canContainUndefs);
     if (canContainUndefs) {
       return 0;
     }
@@ -133,14 +132,13 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       }
     }
 
-    const metadatas = await ActorRdfJoin.getMetadatas(entries);
     return ActorRdfJoin.getLowestCardinalityIndex(metadatas, indexesWithoutCommonVariables);
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Find the stream with lowest cardinality
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-    const smallestIndex: number = await ActorRdfJoinMultiBind.getLeftEntryIndex(action.entries);
+    const smallestIndex: number = await ActorRdfJoinMultiBind.getLeftEntryIndex(action.entries, metadatas);
 
     this.logDebug(action.context,
       'First entry for Bind Join: ',
@@ -186,7 +184,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         type: 'bindings',
         bindingsStream,
         variables: ActorRdfJoin.joinVariables(action),
-        canContainUndefs: action.entries.some(entry => entry.output.canContainUndefs),
+        metadata: () => this.constructResultMetadata(action.entries, metadatas),
       },
       physicalPlanMetadata: {
         bindIndex: smallestIndex,
@@ -197,17 +195,17 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadataChecked[],
+    metadatas: IMetadata[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
     // Find the stream with lowest cardinality
-    const smallestIndex: number = await ActorRdfJoinMultiBind.getLeftEntryIndex(action.entries);
+    const smallestIndex: number = await ActorRdfJoinMultiBind.getLeftEntryIndex(action.entries, metadatas);
 
     // Take the stream with the lowest cardinality
     const remainingEntries: IJoinEntry[] = [ ...action.entries ];
-    const remainingMetadatas: IMetadataChecked[] = [ ...metadatas ];
+    const remainingMetadatas: IMetadata[] = [ ...metadatas ];
     const remainingRequestInitialTimes = [ ...requestInitialTimes ];
     const remainingRequestItemTimes = [ ...requestItemTimes ];
     remainingEntries.splice(smallestIndex, 1);

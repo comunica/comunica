@@ -20,11 +20,10 @@ describe('ActorQueryOperationOrderByDirect', () => {
           Bindings({ '?a': DF.literal('1') }),
           Bindings({ '?a': DF.literal('3') }),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -109,7 +108,8 @@ describe('ActorQueryOperationOrderByDirect', () => {
       actor = new ActorQueryOperationOrderByDirect({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('2') }),
@@ -121,7 +121,8 @@ describe('ActorQueryOperationOrderByDirect', () => {
     it('should run operator expressions', async() => {
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('1') }),
@@ -133,7 +134,8 @@ describe('ActorQueryOperationOrderByDirect', () => {
     it('should run descend', async() => {
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('3') }),
@@ -145,7 +147,8 @@ describe('ActorQueryOperationOrderByDirect', () => {
     it('should ignore undefined results', async() => {
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('2') }),

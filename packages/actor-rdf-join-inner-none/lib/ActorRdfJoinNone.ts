@@ -28,10 +28,9 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     return {
       result: {
         bindingsStream: new ArrayIterator([ Bindings({}) ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 1 }),
+        metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
         type: 'bindings',
         variables: [],
-        canContainUndefs: false,
       },
     };
   }

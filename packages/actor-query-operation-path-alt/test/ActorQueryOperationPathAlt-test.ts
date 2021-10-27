@@ -32,68 +32,71 @@ describe('ActorQueryOperationPathAlt', () => {
 
   describe('ActorQueryOperationPathAlt#unionMetadata', () => {
     it('should return 0 items for an empty input', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([])).toEqual({ cardinality: 0 });
+      return expect(ActorQueryOperationPathAlt.unionMetadata([]))
+        .toEqual({ cardinality: 0, canContainUndefs: false });
     });
 
     it('should return 1 items for a single input with 1', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{ cardinality: 1 }])).toEqual({ cardinality: 1 });
+      return expect(ActorQueryOperationPathAlt.unionMetadata([
+        { cardinality: 1, canContainUndefs: false },
+      ])).toEqual({ cardinality: 1, canContainUndefs: false });
     });
 
     it('should return 0 items for a single input with 0', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{ cardinality: 0 }])).toEqual({ cardinality: 0 });
+      return expect(ActorQueryOperationPathAlt.unionMetadata([
+        { cardinality: 0, canContainUndefs: false },
+      ])).toEqual({ cardinality: 0, canContainUndefs: false });
     });
 
     it('should return infinite items for a single input with Infinity', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{ cardinality: Number.POSITIVE_INFINITY }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for a single empty input', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{}]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for a single input without items', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{ something: 'abc' }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+      return expect(ActorQueryOperationPathAlt.unionMetadata([
+        { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+      ]))
+        .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
 
     it('should return 3 items for inputs with 1 and 2', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{ cardinality: 1 }, { cardinality: 2 }]))
-        .toEqual({ cardinality: 3 });
+      return expect(ActorQueryOperationPathAlt.unionMetadata([
+        { cardinality: 1, canContainUndefs: false },
+        { cardinality: 2, canContainUndefs: false },
+      ]))
+        .toEqual({ cardinality: 3, canContainUndefs: false });
     });
 
     it('should return infinite items for inputs with Infinity and 2', () => {
       return expect(ActorQueryOperationPathAlt
-        .unionMetadata([{ cardinality: Number.POSITIVE_INFINITY }, { cardinality: 2 }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+        .unionMetadata([
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+          { cardinality: 2, canContainUndefs: false },
+        ]))
+        .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
 
     it('should return infinite items for inputs with 1 and Infinity', () => {
       return expect(ActorQueryOperationPathAlt
-        .unionMetadata([{ cardinality: 1 }, { cardinality: Number.POSITIVE_INFINITY }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+        .unionMetadata([
+          { cardinality: 1, canContainUndefs: false },
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+        ]))
+        .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
 
     it('should return infinite items for inputs with Infinity and Infinity', () => {
       return expect(ActorQueryOperationPathAlt
-        .unionMetadata([{ cardinality: Number.POSITIVE_INFINITY }, { cardinality: Number.POSITIVE_INFINITY }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+        .unionMetadata([
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+          { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false },
+        ]))
+        .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
     });
 
-    it('should return infinite items for inputs with empty and 2', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{}, { cardinality: 2 }]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for inputs with 1 and empty', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{ cardinality: 1 }, {}]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
-    });
-
-    it('should return infinite items for inputs with empty and empty', () => {
-      return expect(ActorQueryOperationPathAlt.unionMetadata([{}, {}]))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY });
+    it('should return canContainUndefs true if one is true', () => {
+      return expect(ActorQueryOperationPathAlt
+        .unionMetadata([
+          { cardinality: 10, canContainUndefs: false },
+          { cardinality: 20, canContainUndefs: true },
+        ]))
+        .toEqual({ cardinality: 30, canContainUndefs: true });
     });
   });
 
@@ -146,44 +149,7 @@ describe('ActorQueryOperationPathAlt', () => {
         DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.canContainUndefs).toEqual(false);
-      expect(await output.metadata!()).toEqual({ cardinality: 6 });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.literal('1') }),
-        Bindings({ '?x': DF.literal('1') }),
-        Bindings({ '?x': DF.literal('2') }),
-        Bindings({ '?x': DF.literal('2') }),
-        Bindings({ '?x': DF.literal('3') }),
-        Bindings({ '?x': DF.literal('3') }),
-      ]);
-    });
-
-    it('should support Alt paths when the children have no metadata', async() => {
-      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          Bindings({ '?x': DF.literal('1') }),
-          Bindings({ '?x': DF.literal('2') }),
-          Bindings({ '?x': DF.literal('3') }),
-        ]),
-        operated: arg,
-        type: 'bindings',
-        variables: [ 'a' ],
-        canContainUndefs: false,
-      });
-
-      const op: any = {
-        operation: factory.createPath(
-          DF.namedNode('s'),
-          factory.createAlt([
-            factory.createLink(DF.namedNode('p1')),
-            factory.createLink(DF.namedNode('p2')),
-          ]),
-          DF.variable('x'),
-        ),
-      };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.canContainUndefs).toEqual(false);
-      expect(output.metadata).toBeUndefined();
+      expect(await output.metadata()).toEqual({ cardinality: 6, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': DF.literal('1') }),
         Bindings({ '?x': DF.literal('1') }),

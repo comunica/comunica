@@ -1,11 +1,11 @@
 import type { IActionRdfJoin,
   IActorRdfJoinOutputInner,
-  IMetadataChecked,
   IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
+import type { IMetadata } from '@comunica/types';
 import { TransformIterator } from 'asynciterator';
 import { BindingsIndex } from './BindingsIndex';
 
@@ -40,14 +40,19 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
         });
         return output.bindingsStream.filter(data => !index.contains(data));
       }, { autoStart: false });
-      const canContainUndefs = buffer.canContainUndefs || output.canContainUndefs;
       return {
         result: {
           type: 'bindings',
           bindingsStream,
           variables: output.variables,
-          metadata: output.metadata,
-          canContainUndefs,
+          async metadata() {
+            const bufferMetadata = await output.metadata();
+            const outputMetadata = await output.metadata();
+            return {
+              ...outputMetadata,
+              canContainUndefs: bufferMetadata.canContainUndefs || outputMetadata.canContainUndefs,
+            };
+          },
         },
       };
     }
@@ -58,7 +63,7 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadataChecked[],
+    metadatas: IMetadata[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);

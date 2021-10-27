@@ -71,10 +71,11 @@ describe('ActorRdfJoinMultiSequential', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [ 'a', 'b' ],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -84,10 +85,11 @@ describe('ActorRdfJoinMultiSequential', () => {
                 Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
                 Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [ 'a', 'c' ],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -97,10 +99,11 @@ describe('ActorRdfJoinMultiSequential', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2, pageSize: 100, requestTime: 30 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [ 'a', 'b' ],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -115,10 +118,11 @@ describe('ActorRdfJoinMultiSequential', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [ 'a', 'b' ],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -128,10 +132,11 @@ describe('ActorRdfJoinMultiSequential', () => {
                 Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
                 Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [ 'a', 'c' ],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -141,10 +146,11 @@ describe('ActorRdfJoinMultiSequential', () => {
                 Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
                 Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2, pageSize: 100, requestTime: 30 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [ 'a', 'b' ],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -154,10 +160,11 @@ describe('ActorRdfJoinMultiSequential', () => {
                 Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
                 Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2, pageSize: 100, requestTime: 40 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 2, pageSize: 100, requestTime: 40, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [ 'a', 'd' ],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -202,7 +209,7 @@ describe('ActorRdfJoinMultiSequential', () => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 40 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 40, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1') }),
         Bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2') }),
@@ -218,7 +225,7 @@ describe('ActorRdfJoinMultiSequential', () => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual([ 'a', 'b', 'c', 'd' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 80 });
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 80, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1'), d: DF.literal('d1') }),
         Bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2'), d: DF.literal('d2') }),

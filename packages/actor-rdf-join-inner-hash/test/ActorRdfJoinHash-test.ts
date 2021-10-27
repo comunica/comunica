@@ -57,20 +57,22 @@ describe('ActorRdfJoinHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [],
-              canContainUndefs: false,
             },
             operation: <any>{},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
+              metadata: () => Promise.resolve(
+                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+              ),
               type: 'bindings',
               variables: [],
-              canContainUndefs: false,
             },
             operation: <any>{},
           },
@@ -84,20 +86,97 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should fail on undefs in left stream', () => {
-      action.entries[0].output.canContainUndefs = true;
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+              ),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+              ),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any>{},
+          },
+        ],
+      };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
     });
 
     it('should fail on undefs in right stream', () => {
-      action.entries[1].output.canContainUndefs = true;
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+              ),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true },
+              ),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any>{},
+          },
+        ],
+      };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
     });
 
     it('should fail on undefs in left and right stream', () => {
-      action.entries[0].output.canContainUndefs = true;
-      action.entries[1].output.canContainUndefs = true;
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+              ),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true },
+              ),
+              type: 'bindings',
+              variables: [],
+            },
+            operation: <any>{},
+          },
+        ],
+      };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
     });
@@ -120,15 +199,10 @@ describe('ActorRdfJoinHash', () => {
       });
     });
 
-    it('should not return metadata if there is no valid input', () => {
-      delete action.entries[0].output.metadata;
-      return expect(actor.run(action)).resolves.not.toHaveProperty('metadata');
-    });
-
     it('should return an empty stream for empty input', () => {
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -144,7 +218,7 @@ describe('ActorRdfJoinHash', () => {
       action.entries[1].output.variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('a'), b: DF.literal('b'), c: DF.literal('c') }),
         ]);
@@ -162,7 +236,7 @@ describe('ActorRdfJoinHash', () => {
       action.entries[1].output.variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });

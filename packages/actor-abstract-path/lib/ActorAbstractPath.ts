@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
 import type { Term, Variable } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
@@ -142,7 +142,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     }
 
     const it = new BufferedIterator<Term>();
-    const metadata = await this.getObjectsPredicateStar(subject, predicate, graph, context, {}, it, { count: 0 });
+    // We can safely ignore undefs because termHashes is empty
+    // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
+    const metadata = <IPathResultStream['metadata']> await this
+      .getObjectsPredicateStar(subject, predicate, graph, context, {}, it, { count: 0 });
 
     const bindingsStream = it.transform<Bindings>({
       transform(item, next, push) {
@@ -176,7 +179,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     termHashes: Record<string, Term>,
     it: BufferedIterator<Term>,
     counter: any,
-  ): Promise<IPathResultStream['metadata']> {
+  ): Promise<IPathResultStream['metadata'] | undefined> {
     const termString = termToString(object);
     if (termHashes[termString]) {
       return;
@@ -310,5 +313,5 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
 export interface IPathResultStream {
   bindingsStream: AsyncIterator<Bindings>;
-  metadata?: () => Promise<Record<string, any>>;
+  metadata: () => Promise<IMetadata>;
 }

@@ -11,6 +11,7 @@ import type {
   IActorQueryOperationOutputUpdate,
   IActorQueryOperationOutputStream,
   Bindings,
+  IMetadata,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -142,14 +143,13 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
 
   /**
    * Convert a metadata callback to a lazy callback where the response value is cached.
-   * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
+   * @param {() => Promise<IMetadata>} metadata A metadata callback
    * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
    */
-  public static cachifyMetadata<T extends (() => Promise<Record<string, any>>)
-  | (undefined | (() => Promise<Record<string, any>>))>(metadata: T): T {
-    let lastReturn: Promise<Record<string, any>>;
+  public static cachifyMetadata(metadata: () => Promise<IMetadata>): () => Promise<IMetadata> {
+    let lastReturn: Promise<IMetadata>;
     // eslint-disable-next-line no-return-assign,@typescript-eslint/no-misused-promises
-    return <T> (metadata && (() => (lastReturn || (lastReturn = metadata()))));
+    return () => (lastReturn || (lastReturn = metadata()));
   }
 
   /**
@@ -262,18 +262,6 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
       throw new Error(`Attempted a write operation in read-only mode`);
     }
   }
-}
-
-/**
- * Helper function to get the metadata of an action output.
- * @param actionOutput An action output, with an optional metadata function.
- * @return The metadata.
- */
-export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Promise<Record<string, any>> {
-  if (!actionOutput.metadata) {
-    return Promise.resolve({});
-  }
-  return actionOutput.metadata();
 }
 
 interface IBaseExpressionContext {

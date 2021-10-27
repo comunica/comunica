@@ -57,20 +57,18 @@ describe('ActorRdfJoinNestedLoop', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+              metadata: async() => ({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, pageSize: 100, requestTime: 20 }),
+              metadata: async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
-              canContainUndefs: false,
             },
             operation: <any> {},
           },
@@ -84,7 +82,8 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should handle undefs in left stream', () => {
-      action.entries[0].output.canContainUndefs = true;
+      action.entries[0].output
+        .metadata = async() => ({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true });
       return expect(actor.test(action)).resolves
         .toEqual({
           iterations: 20,
@@ -95,7 +94,8 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should handle undefs in right stream', () => {
-      action.entries[1].output.canContainUndefs = true;
+      action.entries[1].output
+        .metadata = async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true });
       return expect(actor.test(action)).resolves
         .toEqual({
           iterations: 20,
@@ -106,8 +106,10 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should handle undefs in left and right stream', () => {
-      action.entries[0].output.canContainUndefs = true;
-      action.entries[1].output.canContainUndefs = true;
+      action.entries[0].output
+        .metadata = async() => ({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true });
+      action.entries[1].output
+        .metadata = async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true });
       return expect(actor.test(action)).resolves
         .toEqual({
           iterations: 20,
@@ -129,11 +131,6 @@ describe('ActorRdfJoinNestedLoop', () => {
           (await (<any> action.entries[0].output).metadata()).cardinality *
           (await (<any> action.entries[1].output).metadata()).cardinality);
       });
-    });
-
-    it('should not return metadata if there is no valid input', () => {
-      delete action.entries[0].output.metadata;
-      return expect(actor.run(action)).resolves.not.toHaveProperty('metadata');
     });
 
     it('should return an empty stream for empty input', () => {
@@ -223,7 +220,8 @@ describe('ActorRdfJoinNestedLoop', () => {
         Bindings({ a: DF.literal('1'), c: DF.literal('4') }),
         Bindings({ c: DF.literal('5') }),
       ]);
-      action.entries[1].output.canContainUndefs = true;
+      action.entries[1].output
+        .metadata = async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true });
       action.entries[1].output.variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         const expected = [

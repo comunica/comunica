@@ -1,10 +1,8 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner,
-  IMetadataChecked, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type {
-  Bindings,
-} from '@comunica/types';
+import type { Bindings,
+  IMetadata } from '@comunica/types';
 import { NestedLoopJoin } from 'asyncjoin';
 
 /**
@@ -32,14 +30,17 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
         type: 'bindings',
         bindingsStream: join,
         variables: ActorRdfJoin.joinVariables(action),
-        canContainUndefs: action.entries.reduce((acc, val) => acc || val.output.canContainUndefs, false),
+        metadata: async() => await this.constructResultMetadata(
+          action.entries,
+          await ActorRdfJoin.getMetadatas(action.entries),
+        ),
       },
     };
   }
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadataChecked[],
+    metadatas: IMetadata[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);

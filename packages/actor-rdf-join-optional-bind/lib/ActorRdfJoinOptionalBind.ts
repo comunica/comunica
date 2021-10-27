@@ -1,10 +1,9 @@
 import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, getMetadata } from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin,
   IActorRdfJoinOutputInner,
-  IMetadataChecked,
   IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
@@ -12,7 +11,7 @@ import {
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IActionQueryOperation } from '@comunica/types';
+import type { Bindings, BindingsStream, IActionQueryOperation, IMetadata } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -39,8 +38,8 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
 
     // Bind the right pattern for each binding in the stream
     const subContext = action.context && action.context
-      .set(KeysQueryOperation.joinLeftMetadata, await getMetadata(action.entries[0].output))
-      .set(KeysQueryOperation.joinRightMetadatas, [ await getMetadata(action.entries[1].output) ]);
+      .set(KeysQueryOperation.joinLeftMetadata, await action.entries[0].output.metadata())
+      .set(KeysQueryOperation.joinRightMetadatas, [ await action.entries[1].output.metadata() ]);
     const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(
       this.bindOrder,
       action.entries[0].output.bindingsStream,
@@ -62,14 +61,18 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         type: 'bindings',
         bindingsStream,
         variables: ActorRdfJoin.joinVariables(action),
-        canContainUndefs: true,
+        metadata: async() => await this.constructResultMetadata(
+          action.entries,
+          await ActorRdfJoin.getMetadatas(action.entries),
+          { canContainUndefs: true },
+        ),
       },
     };
   }
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadataChecked[],
+    metadatas: IMetadata[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);

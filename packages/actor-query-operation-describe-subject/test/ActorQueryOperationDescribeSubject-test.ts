@@ -86,7 +86,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 2 });
+        expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('a'), DF.namedNode('__predicate'), DF.namedNode('__object')),
@@ -105,7 +105,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 3 });
+        expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('dummy')),
@@ -125,7 +125,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 4 });
+        expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('c'), DF.namedNode('__predicate'), DF.namedNode('__object')),

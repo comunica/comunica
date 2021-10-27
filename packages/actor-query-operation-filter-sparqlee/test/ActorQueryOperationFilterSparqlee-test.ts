@@ -56,11 +56,10 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -115,29 +114,26 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         Bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.variables).toMatchObject([ 'a' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should return an empty stream for a falsy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should return an empty stream when the expressions error', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('Should log warning for an expressionError', async() => {
@@ -179,9 +175,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         Bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.variables).toMatchObject([ 'a' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     describe('should be able to handle EXIST filters', () => {
@@ -199,7 +194,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0 }),
+          metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: [ 'a' ],
@@ -216,7 +211,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0 }),
+          metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: [ 'a' ],
@@ -241,7 +236,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         });
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream,
-          metadata: () => Promise.resolve({ cardinality: 3 }),
+          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: [ 'a' ],

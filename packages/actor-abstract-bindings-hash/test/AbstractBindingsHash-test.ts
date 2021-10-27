@@ -28,7 +28,7 @@ describe('AbstractBindingsHash', () => {
           Bindings({ a: DF.literal('3') }),
           Bindings({ a: DF.literal('2') }),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 5 }),
+        metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
@@ -72,10 +72,9 @@ describe('AbstractBindingsHash', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'distinct' }};
       return m.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 5 });
+        expect(await output.metadata()).toEqual({ cardinality: 5, canContainUndefs: false });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: DF.literal('1') }),
           Bindings({ a: DF.literal('2') }),

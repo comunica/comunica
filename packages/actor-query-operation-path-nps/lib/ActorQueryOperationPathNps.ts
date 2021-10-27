@@ -42,7 +42,6 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
       bindingsStream,
       variables: output.variables,
       metadata: output.metadata,
-      canContainUndefs: false,
     };
   }
 }

@@ -22,11 +22,10 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
           Bindings({ '?a': DF.literal('1') }),
           Bindings({ '?a': DF.literal('333') }),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -96,7 +95,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run', async() => {
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('1') }),
@@ -109,7 +109,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('22') }),
@@ -121,7 +122,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run operator expressions', async() => {
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('1') }),
@@ -133,7 +135,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run descend', async() => {
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('333') }),
@@ -145,7 +148,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should ignore undefined results', async() => {
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
-      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
+      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': DF.literal('22') }),

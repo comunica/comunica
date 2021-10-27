@@ -4,7 +4,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { BindingsStream, IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -33,7 +33,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @param {{[p: string]: any}[]} metadatas Array of metadata.
    * @return {{[p: string]: any}} Union of the metadata.
    */
-  public static unionMetadata(metadatas: Record<string, any>[]): Record<string, any> {
+  public static unionMetadata(metadatas: IMetadata[]): IMetadata {
     let cardinality = 0;
     for (const metadata of metadatas) {
       if ((metadata.cardinality && Number.isFinite(metadata.cardinality)) || metadata.cardinality === 0) {
@@ -43,7 +43,10 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
         break;
       }
     }
-    return { cardinality };
+    return {
+      cardinality,
+      canContainUndefs: metadatas.some(metadata => metadata.canContainUndefs),
+    };
   }
 
   public async testOperation(pattern: Algebra.Union, context: ActionContext): Promise<IActorTest> {
@@ -60,15 +63,11 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       (output: IActorQueryOperationOutputBindings) => output.bindingsStream,
     ), { autoStart: false });
 
-    const metadata: (() => Promise<Record<string, any>>) | undefined = outputs.every(output => output.metadata) ?
-      () =>
-        Promise.all(outputs.map(output => (<() => Promise<Record<string, any>>>output.metadata)()))
-          .then(ActorQueryOperationUnion.unionMetadata) :
-      undefined;
+    const metadata: () => Promise<IMetadata> = () => Promise.all(outputs.map(output => output.metadata()))
+      .then(ActorQueryOperationUnion.unionMetadata);
     const variables: string[] = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IActorQueryOperationOutputBindings) => output.variables),
     );
-    const canContainUndefs = outputs.reduce((acc, val) => acc || val.canContainUndefs, false);
-    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs };
+    return { type: 'bindings', bindingsStream, metadata, variables };
   }
 }

@@ -1,12 +1,12 @@
 import type { Bindings } from '@comunica/bus-query-operation';
-import { getMetadata } from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitSparql } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
-  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBindings, IMetadata,
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -26,10 +26,6 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export abstract class ActorRdfJoin
   extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
-  public static readonly METADATA_KEYS: (keyof IMetadataChecked)[] = [
-    'cardinality',
-  ];
-
   public readonly mediatorJoinSelectivity: Mediator<
   Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
   IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
@@ -131,25 +127,6 @@ export abstract class ActorRdfJoin
   }
 
   /**
-   * Checks if all metadata objects are present in the action, and if they have the specified key.
-   * @param {Record<string, any>[]} metadatas The metadata entries.
-   * @returns {boolean}
-   */
-  public static validateMetadata(metadatas: Record<string, any>[]): boolean {
-    for (const metadata of metadatas) {
-      if (!metadata) {
-        return false;
-      }
-      for (const key of ActorRdfJoin.METADATA_KEYS) {
-        if (!(key in metadata)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  /**
    * Get the estimated number of items from the given metadata.
    * @param {Record<string, any>} metadata A metadata object.
    * @return {number} The estimated number of items, or `Infinity` if cardinality is falsy.
@@ -183,15 +160,15 @@ export abstract class ActorRdfJoin
    * Obtain the metadata from all given join entries.
    * @param entries Join entries.
    */
-  public static async getMetadatas(entries: IJoinEntry[]): Promise<Record<string, any>[]> {
-    return await Promise.all(entries.map(entry => getMetadata(entry.output)));
+  public static async getMetadatas(entries: IJoinEntry[]): Promise<IMetadata[]> {
+    return await Promise.all(entries.map(entry => entry.output.metadata()));
   }
 
   /**
    * Calculate the time to initiate a request for the given metadata entries.
    * @param metadatas An array of checked metadata.
    */
-  public static getRequestInitialTimes(metadatas: IMetadataChecked[]): number[] {
+  public static getRequestInitialTimes(metadatas: IMetadata[]): number[] {
     return metadatas.map(metadata => metadata.pageSize ? 0 : metadata.requestTime || 0);
   }
 
@@ -199,9 +176,30 @@ export abstract class ActorRdfJoin
    * Calculate the time to receive a single item for the given metadata entries.
    * @param metadatas An array of checked metadata.
    */
-  public static getRequestItemTimes(metadatas: IMetadataChecked[]): number[] {
+  public static getRequestItemTimes(metadatas: IMetadata[]): number[] {
     return metadatas
       .map(metadata => !metadata.pageSize ? 0 : metadata.cardinality / metadata.pageSize * (metadata.requestTime || 0));
+  }
+
+  /**
+   * Helper function to create a new metadata object for the join result.
+   * For required metadata entries that are not provided, sane defaults are calculated.
+   * @param entries Join entries.
+   * @param metadatas Metadata of the join entries.
+   * @param partialMetadata Partial metadata entries.
+   */
+  public async constructResultMetadata(
+    entries: IJoinEntry[],
+    metadatas: IMetadata[],
+    partialMetadata: Partial<IMetadata> = {},
+  ): Promise<IMetadata> {
+    return {
+      ...partialMetadata,
+      cardinality: partialMetadata.cardinality ?? metadatas
+        .reduce((acc, metadata) => acc * ActorRdfJoin.getCardinality(metadata), 1) *
+        (await this.mediatorJoinSelectivity.mediate({ entries })).selectivity,
+      canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
+    };
   }
 
   /**
@@ -236,28 +234,18 @@ export abstract class ActorRdfJoin
       }
     }
 
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+
     // Check if this actor can handle undefs
     if (!this.canHandleUndefs) {
-      for (const entry of action.entries) {
-        if (entry.output.canContainUndefs) {
+      for (const metadata of metadatas) {
+        if (metadata.canContainUndefs) {
           throw new Error(`Actor ${this.name} can not join streams containing undefs`);
         }
       }
     }
 
-    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-
-    // Ensure that all metadata objects have all requires entries
-    if (!ActorRdfJoin.validateMetadata(metadatas)) {
-      return {
-        iterations: Number.POSITIVE_INFINITY,
-        persistedItems: Number.POSITIVE_INFINITY,
-        blockingItems: Number.POSITIVE_INFINITY,
-        requestTime: Number.POSITIVE_INFINITY,
-      };
-    }
-
-    return await this.getJoinCoefficients(action, <IMetadataChecked[]> metadatas);
+    return await this.getJoinCoefficients(action, metadatas);
   }
 
   /**
@@ -290,37 +278,13 @@ export abstract class ActorRdfJoin
         {
           ...physicalPlanMetadata,
           cardinalities: metadatas.map(ActorRdfJoin.getCardinality),
-          joinCoefficients: await this.getJoinCoefficients(action, <IMetadataChecked[]> metadatas),
+          joinCoefficients: await this.getJoinCoefficients(action, metadatas),
         },
       );
     }
 
-    // Lazily calculate upper cardinality limit
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
-    const self = this;
-    async function calculateCardinality(): Promise<number> {
-      return metadatas
-        .reduce((acc, metadata) => acc * ActorRdfJoin.getCardinality(metadata), 1) *
-        (await self.mediatorJoinSelectivity.mediate({ entries: action.entries })).selectivity;
-    }
-
-    if (ActorRdfJoin.validateMetadata(metadatas)) {
-      // Update the result promise to also add the estimated total items
-      const unwrapped = result;
-      if (unwrapped.metadata) {
-        const oldMetadata = unwrapped.metadata;
-        unwrapped.metadata = () => oldMetadata().then(async(metadata: any) => {
-          // Don't overwrite metadata if it was generated by implementation
-          if (!('cardinality' in metadata)) {
-            metadata.cardinality = await calculateCardinality();
-          }
-          return metadata;
-        });
-      } else {
-        unwrapped.metadata = () => calculateCardinality().then(cardinality => ({ cardinality }));
-      }
-      return unwrapped;
-    }
+    // Cache metadata
+    result.metadata = ActorQueryOperation.cachifyMetadata(result.metadata);
 
     return result;
   }
@@ -341,7 +305,7 @@ export abstract class ActorRdfJoin
    */
   protected abstract getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadataChecked[],
+    metadatas: IMetadata[],
   ): Promise<IMediatorTypeJoinCoefficients>;
 }
 
@@ -420,10 +384,4 @@ export interface IActorRdfJoinOutputInner {
    * Optional metadata that will be included as metadata within the physical query plan output.
    */
   physicalPlanMetadata?: any;
-}
-
-export interface IMetadataChecked {
-  cardinality: number;
-  pageSize?: number;
-  requestTime?: number;
 }

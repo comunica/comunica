@@ -1,7 +1,7 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner,
-  IMetadataChecked, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
+import type { IMetadata } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 
 /**
@@ -32,17 +32,16 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
     return {
       result: {
         bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
         type: 'bindings',
         variables: ActorRdfJoin.joinVariables(action),
-        canContainUndefs: false,
       },
     };
   }
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadataChecked[],
+    metadatas: IMetadata[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     return {
       iterations: 0,

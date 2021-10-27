@@ -37,11 +37,10 @@ describe('ActorQueryOperationFilterDirect', () => {
           Bindings({ '?a': DF.literal('2') }),
           Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -94,19 +93,17 @@ describe('ActorQueryOperationFilterDirect', () => {
         Bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.variables).toMatchObject([ 'a' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should return an empty stream for a falsy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await (<any> output).metadata()).toMatchObject({ cardinality: 3 });
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
-      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should emit an error for an erroring filter', async() => {
@@ -114,7 +111,7 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       await expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
-      expect(output.canContainUndefs).toEqual(false);
+      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
     });
   });
 });

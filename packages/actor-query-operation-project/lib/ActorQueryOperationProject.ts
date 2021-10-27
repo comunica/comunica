@@ -80,7 +80,6 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       bindingsStream,
       metadata: output.metadata,
       variables,
-      canContainUndefs: output.canContainUndefs,
     };
   }
 }

@@ -125,13 +125,42 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
   });
 
+  describe('validateMetadata', () => {
+    it('should throw for empty metadata', () => {
+      return expect(() => ActorQueryOperationQuadpattern.validateMetadata({}))
+        .toThrowError(`Invalid metadata: missing cardinality in {}`);
+    });
+
+    it('should throw for metadata without cardinality', () => {
+      return expect(() => ActorQueryOperationQuadpattern.validateMetadata({
+        canContainUndefs: false,
+        other: true,
+      })).toThrowError(`Invalid metadata: missing cardinality in {"canContainUndefs":false,"other":true}`);
+    });
+
+    it('should throw for metadata without canContainUndefs', () => {
+      return expect(() => ActorQueryOperationQuadpattern.validateMetadata({
+        cardinality: 5,
+        other: true,
+      })).toThrowError(`Invalid metadata: missing canContainUndefs in {"cardinality":5,"other":true}`);
+    });
+
+    it('should return true if both have the relevant metadata', () => {
+      return expect(ActorQueryOperationQuadpattern.validateMetadata({
+        cardinality: 5,
+        canContainUndefs: false,
+        other: true,
+      })).toBeTruthy();
+    });
+  });
+
   describe('An ActorQueryOperationQuadpattern instance', () => {
     let actor: ActorQueryOperationQuadpattern;
     let mediatorResolveQuadPattern: any;
     let metadataContent: any;
 
     beforeEach(() => {
-      metadataContent = { totalitems: 3 };
+      metadataContent = { cardinality: 3 };
       mediatorResolveQuadPattern = {
         mediate: jest.fn(
           ({ context }) => {
@@ -206,8 +235,34 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect(await (<any> output).metadata()).toBe(metadataContent);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(await output.metadata()).toEqual({
+          cardinality: 3,
+          canContainUndefs: false,
+        });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ '?p': DF.namedNode('p1') }),
+            Bindings({ '?p': DF.namedNode('p2') }),
+            Bindings({ '?p': DF.namedNode('p3') }),
+          ],
+        );
+      });
+    });
+
+    it('should run s ?p o g with custom canContainUndefs metadata', () => {
+      metadataContent.canContainUndefs = true;
+      const operation: any = {
+        graph: DF.namedNode('g'),
+        object: DF.namedNode('o'),
+        predicate: DF.variable('p'),
+        subject: DF.namedNode('s'),
+        type: 'pattern',
+      };
+      return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p' ]);
+        expect(await output.metadata()).toEqual({
+          cardinality: 3,
+          canContainUndefs: true,
+        });
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': DF.namedNode('p1') }),
             Bindings({ '?p': DF.namedNode('p2') }),
@@ -228,8 +283,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       const context = ActionContext({});
       return actor.run({ operation, context }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect(await (<any> output).metadata()).toBe(metadataContent);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(await output.metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': DF.namedNode('p1') }),
             Bindings({ '?p': DF.namedNode('p2') }),
@@ -265,8 +319,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
       return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?v' ]);
-        expect(await (<any> output).metadata()).toBe(metadataContent);
-        expect(output.canContainUndefs).toEqual(false);
+        expect(await output.metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?v': DF.namedNode('w') }),
         ]);

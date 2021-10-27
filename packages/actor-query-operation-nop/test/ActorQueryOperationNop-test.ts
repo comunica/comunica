@@ -52,8 +52,7 @@ describe('ActorQueryOperationNop', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(output.variables).toEqual([]);
-        expect(output.canContainUndefs).toEqual(false);
-        expect(await (<any> output).metadata()).toMatchObject({ cardinality: 1 });
+        expect(await output.metadata()).toMatchObject({ cardinality: 1, canContainUndefs: false });
       });
     });
   });

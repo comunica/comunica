@@ -149,7 +149,7 @@ export class RdfSourceSparql implements IQuadSource {
 
     // Emit metadata containing the estimated count (reject is never called)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    new Promise(resolve => {
+    new Promise<Record<string, any>>(resolve => {
       const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
       bindingsStream.on('data', (bindings: Bindings) => {
         const count: RDF.Term = bindings.get('?count');
@@ -165,7 +165,7 @@ export class RdfSourceSparql implements IQuadSource {
       bindingsStream.on('error', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
       bindingsStream.on('end', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
     })
-      .then(metadata => quads.setProperty('metadata', metadata));
+      .then(metadata => quads.setProperty('metadata', { ...metadata, canContainUndefs: true }));
 
     // Materialize the queried pattern using each found binding.
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery)

@@ -1,12 +1,11 @@
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner,
-  IMetadataChecked, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -49,7 +48,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadataChecked[],
+    metadatas: IMetadata[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);

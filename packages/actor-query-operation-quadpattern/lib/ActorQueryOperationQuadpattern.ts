@@ -4,7 +4,7 @@ import type { IActionRdfResolveQuadPattern,
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { BindingsStream,
   IActionQueryOperation, IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/types';
+  IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
@@ -95,15 +95,33 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   }
 
   /**
+   * Ensure that the given raw metadata object contains all required metadata entries.
+   * @param metadataRaw A raw metadata object.
+   */
+  public static validateMetadata(metadataRaw: Record<string, any>): IMetadata {
+    for (const key of [ 'cardinality', 'canContainUndefs' ]) {
+      if (!(key in metadataRaw)) {
+        throw new Error(`Invalid metadata: missing ${key} in ${JSON.stringify(metadataRaw)}`);
+      }
+    }
+    return <IMetadata> metadataRaw;
+  }
+
+  /**
    * Get the metadata of the given action on a quad stream.
    *
    * @param {AsyncIterator<Quad>} data The data stream that is guaranteed to emit the metadata property.
    * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
    */
-  protected static getMetadata(data: AsyncIterator<RDF.Quad>): () => Promise<Record<string, any>> {
-    return () => new Promise((resolve, reject) => {
+  protected static getMetadata(data: AsyncIterator<RDF.Quad>): () => Promise<IMetadata> {
+    return () => new Promise<Record<string, any>>((resolve, reject) => {
       data.getProperty('metadata', (metadata: Record<string, any>) => resolve(metadata));
       data.on('error', reject);
+    }).then(metadataRaw => {
+      if (!('canContainUndefs' in metadataRaw)) {
+        metadataRaw.canContainUndefs = false;
+      }
+      return ActorQueryOperationQuadpattern.validateMetadata(metadataRaw);
     });
   }
 
@@ -174,7 +192,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         { autoStart: true, maxBufferSize: 128 });
     }, { autoStart: false });
 
-    return { type: 'bindings', bindingsStream, variables, metadata, canContainUndefs: false };
+    return { type: 'bindings', bindingsStream, variables, metadata };
   }
 }
 
