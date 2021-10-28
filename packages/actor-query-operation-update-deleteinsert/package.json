@@ -3,8 +3,8 @@
   "version": "1.22.2",
   "description": "A update-deleteinsert query-operation actor",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-update-deleteinsert",
   "publishConfig": {
     "access": "public"
@@ -23,9 +23,7 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
     "@comunica/actor-query-operation-construct": "^1.22.0",

@@ -2,8 +2,8 @@
   "name": "@comunica/packager",
   "version": "1.22.2",
   "description": "A tool for packaging Comunica modules in a single NPM package",
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",

@@ -3,8 +3,8 @@
   "version": "1.22.2",
   "description": "A comunica bus for rdf-update-hypermedia events.",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -26,9 +26,7 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
     "@comunica/bus-rdf-update-quads": "^1.22.2"

@@ -5,8 +5,8 @@
   "lsd:importPaths": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-file/^1.0.0/config/": "config/"
   },
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -43,10 +43,8 @@
     "config",
     "bin/**/*.d.ts",
     "bin/**/*.js",
-    "index.js",
-    "index.d.ts",
-    "index-browser.d.ts",
-    "index-browser.js",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
     "engine-default.js",
     "engine-browser.js"
   ],
@@ -64,6 +62,6 @@
     "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql-file/file-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "browser": {
-    "./index.js": "./index-browser.js"
+    "./lib/index.js": "./lib/index-browser.js"
   }
 }

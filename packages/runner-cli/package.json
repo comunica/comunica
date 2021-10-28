@@ -2,8 +2,8 @@
   "name": "@comunica/runner-cli",
   "version": "1.22.0",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -29,9 +29,7 @@
     "bin/**/*.d.ts",
     "bin/**/*.js",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
     "@comunica/runner": "^1.22.0"

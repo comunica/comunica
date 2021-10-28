@@ -3,11 +3,11 @@
   "version": "1.22.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
-  "main": "index.js",
+  "main": "lib/index.js",
   "engines": {
     "node": ">=8.0"
   },
-  "typings": "index",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -31,9 +31,7 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
     "@comunica/context-entries": "^1.22.0",

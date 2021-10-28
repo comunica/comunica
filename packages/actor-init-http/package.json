@@ -3,8 +3,8 @@
   "version": "1.22.2",
   "description": "A Comunica engine for triggering HTTP requests",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -31,9 +31,7 @@
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "bin/**/*.d.ts",
-    "bin/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "bin/**/*.js"
   ],
   "dependencies": {
     "@comunica/actor-http-node-fetch": "^1.22.2",

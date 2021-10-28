@@ -3,8 +3,8 @@
   "version": "1.22.0",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -30,9 +30,7 @@
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "bin/**/*.d.ts",
-    "bin/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "bin/**/*.js"
   ],
   "peerDependencies": {
     "@comunica/bus-init": "^1.0.0",

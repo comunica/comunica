@@ -3,8 +3,8 @@
   "version": "1.22.2",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -43,10 +43,6 @@
     "lib/**/*.js",
     "bin/**/*.d.ts",
     "bin/**/*.js",
-    "index.d.ts",
-    "index.js",
-    "index-browser.d.ts",
-    "index-browser.js",
     "engine-default.js"
   ],
   "dependencies": {
@@ -246,6 +242,6 @@
     "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "browser": {
-    "./index.js": "./index-browser.js"
+    "./lib/index.js": "./lib/index-browser.js"
   }
 }
