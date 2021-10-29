@@ -1,4 +1,3 @@
-import type { Bindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitSparql } from '@comunica/context-entries';
@@ -7,7 +6,7 @@ import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IActorQueryOperationOutputBindings, IMetadata,
-  IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanLogger, Bindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';

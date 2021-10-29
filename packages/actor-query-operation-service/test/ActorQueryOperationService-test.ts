@@ -1,11 +1,14 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationService', () => {
   let bus: any;
@@ -18,9 +21,9 @@ describe('ActorQueryOperationService', () => {
         Promise.reject(new Error('Endpoint error')) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            Bindings({ a: DF.literal('1') }),
-            Bindings({ a: DF.literal('2') }),
-            Bindings({ a: DF.literal('3') }),
+            BF.bindings({ a: DF.literal('1') }),
+            BF.bindings({ a: DF.literal('2') }),
+            BF.bindings({ a: DF.literal('3') }),
           ]),
           metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
           operated: arg,
@@ -82,9 +85,9 @@ describe('ActorQueryOperationService', () => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -96,9 +99,9 @@ describe('ActorQueryOperationService', () => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -110,7 +113,7 @@ describe('ActorQueryOperationService', () => {
         expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({}),
+          BF.bindings({}),
         ]);
       });
     });
@@ -133,9 +136,9 @@ describe('ActorQueryOperationService', () => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -152,9 +155,9 @@ describe('ActorQueryOperationService', () => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });

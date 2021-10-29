@@ -1,5 +1,5 @@
 import { PassThrough } from 'stream';
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -8,6 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorSparqlSerializeSparqlJson } from '..';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -81,13 +82,13 @@ describe('ActorSparqlSerializeSparqlJson', () => {
         },
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        Bindings({ '?k1': DF.namedNode('v1') }),
-        Bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings({ '?k1': DF.namedNode('v1') }),
+        BF.bindings({ '?k2': DF.namedNode('v2') }),
       ]);
       bindingsStreamPartial = new ArrayIterator([
-        Bindings({ '?k1': DF.namedNode('v1') }),
-        Bindings({ '?k2': DF.namedNode('v2') }),
-        Bindings({}),
+        BF.bindings({ '?k1': DF.namedNode('v1') }),
+        BF.bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings({}),
       ]);
       bindingsStreamEmpty = <any> new PassThrough();
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });

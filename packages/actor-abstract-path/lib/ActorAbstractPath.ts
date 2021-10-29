@@ -1,12 +1,12 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  Bindings,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, IMetadata, Bindings } from '@comunica/types';
 import type { Term, Variable } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
@@ -15,7 +15,9 @@ import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 /**
  * An abstract actor that handles Path operations.
@@ -107,7 +109,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
               await this.getObjectsPredicateStar(subject, predicate, graphValue, context, {}, it, { count: 0 });
               return it.transform<Bindings>({
                 transform(item, next, push) {
-                  push(Bindings({ [objectString]: item, [termToString(graph)]: graphValue }));
+                  push(BF.bindings({ [objectString]: item, [termToString(graph)]: graphValue }));
                   next();
                 },
               });
@@ -149,7 +151,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     const bindingsStream = it.transform<Bindings>({
       transform(item, next, push) {
-        push(Bindings({ [termToString(object)]: item }));
+        push(BF.bindings({ [termToString(object)]: item }));
         next();
       },
     });
@@ -240,7 +242,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     counter.count++;
     termHashesCurrentSubject[termString] = true;
-    (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: objectVal }));
+    (<any> it)._push(BF.bindings({ [subjectString]: subjectVal, [objectString]: objectVal }));
 
     // If every reachable node from object has already been calculated, use these for current subject too
     if (termString in termHashesGlobal) {

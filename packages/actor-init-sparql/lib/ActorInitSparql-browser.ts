@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/filename-case */
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
 import type { IActionHttpInvalidate, IActorHttpInvalidateOutput } from '@comunica/bus-http-invalidate';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
@@ -7,7 +8,7 @@ import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
-import { ensureBindings, materializeOperation } from '@comunica/bus-query-operation';
+import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { isDataSourceRawType } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
@@ -38,6 +39,8 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
+
+const BF = new BindingsFactory();
 
 /**
  * A browser-safe comunica SPARQL Init Actor.
@@ -225,7 +228,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
     // Apply initial bindings in context
     if (context.has(KeysInitSparql.initialBindings)) {
       const bindings = context.get(KeysInitSparql.initialBindings);
-      operation = materializeOperation(operation, ensureBindings(bindings));
+      operation = materializeOperation(operation, BF.ensureBindings(bindings));
     }
 
     // Optimize the query operation

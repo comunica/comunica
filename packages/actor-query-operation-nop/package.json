@@ -30,6 +30,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/bindings-factory": "^1.22.0",
     "asynciterator": "^3.2.0",
     "sparqlalgebrajs": "^4.0.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-dereference",
-  "version": "1.22.2",
+  "version": "1.22.3",
   "description": "A Comunica engine for dereferencing RDF resources",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -35,8 +35,8 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.22.0",
-    "@comunica/actor-http-node-fetch": "^1.22.2",
-    "@comunica/actor-rdf-dereference-http-parse": "^1.22.2",
+    "@comunica/actor-http-node-fetch": "^1.22.3",
+    "@comunica/actor-rdf-dereference-http-parse": "^1.22.3",
     "@comunica/actor-rdf-parse-jsonld": "^1.22.1",
     "@comunica/actor-rdf-parse-n3": "^1.22.0",
     "@comunica/bus-http": "^1.22.1",

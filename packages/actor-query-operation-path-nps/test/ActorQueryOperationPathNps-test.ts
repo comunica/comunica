@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -7,7 +8,9 @@ import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathNps } from '../lib/ActorQueryOperationPathNps';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationPathNps', () => {
   let bus: any;
@@ -32,10 +35,10 @@ describe('ActorQueryOperationPathNps', () => {
             for (const [ j, element ] of vars.entries()) {
               bind[element] = DF.namedNode(`${1 + i + j}`);
             }
-            bindings.push(Bindings(bind));
+            bindings.push(BF.bindings(bind));
           }
         } else {
-          bindings.push(Bindings({}));
+          bindings.push(BF.bindings({}));
         }
 
         return Promise.resolve({
@@ -92,8 +95,8 @@ describe('ActorQueryOperationPathNps', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.namedNode('2') }),
-        Bindings({ '?x': DF.namedNode('4') }),
+        BF.bindings({ '?x': DF.namedNode('2') }),
+        BF.bindings({ '?x': DF.namedNode('4') }),
       ]);
     });
   });

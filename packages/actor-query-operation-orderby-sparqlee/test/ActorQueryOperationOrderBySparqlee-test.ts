@@ -1,5 +1,6 @@
 /* eslint-disable mocha/max-top-level-suites */
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -7,7 +8,9 @@ import { Algebra } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationOrderBySparqlee', () => {
   let bus: any;
@@ -18,9 +21,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('22') }),
-          Bindings({ '?a': DF.literal('1') }),
-          Bindings({ '?a': DF.literal('333') }),
+          BF.bindings({ '?a': DF.literal('22') }),
+          BF.bindings({ '?a': DF.literal('1') }),
+          BF.bindings({ '?a': DF.literal('333') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
@@ -99,9 +102,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('22') }),
-        Bindings({ '?a': DF.literal('333') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('22') }),
+        BF.bindings({ '?a': DF.literal('333') }),
       ]);
     });
 
@@ -113,9 +116,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('22') }),
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('333') }),
+        BF.bindings({ '?a': DF.literal('22') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('333') }),
       ]);
     });
 
@@ -126,9 +129,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('22') }),
-        Bindings({ '?a': DF.literal('333') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('22') }),
+        BF.bindings({ '?a': DF.literal('333') }),
       ]);
     });
 
@@ -139,9 +142,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('333') }),
-        Bindings({ '?a': DF.literal('22') }),
-        Bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('333') }),
+        BF.bindings({ '?a': DF.literal('22') }),
+        BF.bindings({ '?a': DF.literal('1') }),
       ]);
     });
 
@@ -152,9 +155,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('22') }),
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('333') }),
+        BF.bindings({ '?a': DF.literal('22') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('333') }),
       ]);
     });
 
@@ -179,9 +182,9 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
-          Bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
-          Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
+          BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
+          BF.bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
+          BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
@@ -235,9 +238,9 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
+        BF.bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
       ]);
     });
 
@@ -246,9 +249,9 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
       ]);
     });
 
@@ -257,9 +260,9 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
-        Bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
+        BF.bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
       ]);
     });
 
@@ -268,9 +271,9 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
-        Bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
+        BF.bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
       ]);
     });
 
@@ -279,9 +282,9 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
       ]);
     });
 
@@ -291,9 +294,9 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
-        Bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
+        BF.bindings({ '?a': DF.literal('Bosmans'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Jos') }),
+        BF.bindings({ '?a': DF.literal('Vermeulen'), '?b': DF.literal('Ben') }),
       ]);
     });
   });
@@ -308,9 +311,9 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-          Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-          Bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+          BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+          BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+          BF.bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
@@ -341,9 +344,9 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-        Bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-        Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
       ]);
     });
 
@@ -352,9 +355,9 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-        Bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-        Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
       ]);
     });
   });
@@ -369,9 +372,9 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
-          Bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
-          Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+          BF.bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+          BF.bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+          BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
@@ -402,9 +405,9 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
-        Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
-        Bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
       ]);
     });
 
@@ -413,9 +416,9 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
-        Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
-        Bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
       ]);
     });
   });
@@ -430,9 +433,9 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
-          Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
-          Bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+          BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+          BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+          BF.bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
@@ -463,9 +466,9 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
-        Bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
-        Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        BF.bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
       ]);
     });
 
@@ -474,9 +477,9 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
-        Bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
-        Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        BF.bindings({ '?a': DF.literal('2', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
       ]);
     });
   });
@@ -491,9 +494,9 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
-          Bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
-          Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+          BF.bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+          BF.bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+          BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
@@ -524,9 +527,9 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
-        Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
-        Bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        BF.bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        BF.bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
       ]);
     });
 
@@ -535,9 +538,9 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
-        Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
-        Bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        BF.bindings({ '?a': DF.literal('11.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        BF.bindings({ '?a': DF.literal('1.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
       ]);
     });
   });
@@ -552,9 +555,9 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-          Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
-          Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+          BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+          BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
+          BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
@@ -585,9 +588,9 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-        Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
-        Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
+        BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
       ]);
     });
 
@@ -596,9 +599,9 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
-        Bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
-        Bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        BF.bindings({ '?a': DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        BF.bindings({ '?a': DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
+        BF.bindings({ '?a': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
       ]);
     });
   });
@@ -613,9 +616,9 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.variable('a') }),
-          Bindings({ '?a': DF.variable('b') }),
-          Bindings({ '?a': DF.variable('c') }),
+          BF.bindings({ '?a': DF.variable('a') }),
+          BF.bindings({ '?a': DF.variable('b') }),
+          BF.bindings({ '?a': DF.variable('c') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,

@@ -1,4 +1,4 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
@@ -7,7 +7,9 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMinusHashUndef } from '../lib/ActorRdfJoinMinusHashUndef';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorRdfJoinMinusHashUndef', () => {
   let bus: any;
@@ -20,9 +22,9 @@ describe('ActorRdfJoinMinusHashUndef', () => {
     left = {
       metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
       stream: new ArrayIterator([
-        Bindings({ a: DF.literal('1') }),
-        Bindings({ a: DF.literal('2') }),
-        Bindings({ a: DF.literal('3') }),
+        BF.bindings({ a: DF.literal('1') }),
+        BF.bindings({ a: DF.literal('2') }),
+        BF.bindings({ a: DF.literal('3') }),
       ]),
       type: 'bindings',
       variables: [ 'a' ],
@@ -30,8 +32,8 @@ describe('ActorRdfJoinMinusHashUndef', () => {
     rightNoCommons = {
       metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
       stream: new ArrayIterator([
-        Bindings({ b: DF.literal('1') }),
-        Bindings({ b: DF.literal('2') }),
+        BF.bindings({ b: DF.literal('1') }),
+        BF.bindings({ b: DF.literal('2') }),
       ]),
       type: 'bindings',
       variables: [ 'b' ],
@@ -39,8 +41,8 @@ describe('ActorRdfJoinMinusHashUndef', () => {
     right = {
       metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
       stream: new ArrayIterator([
-        Bindings({ a: DF.literal('1') }),
-        Bindings({ a: DF.literal('2') }),
+        BF.bindings({ a: DF.literal('1') }),
+        BF.bindings({ a: DF.literal('2') }),
       ]),
       type: 'bindings',
       variables: [ 'a' ],
@@ -127,9 +129,9 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ a: DF.literal('1') }),
-                  Bindings({ a: DF.literal('2') }),
-                  Bindings({ a: DF.literal('3') }),
+                  BF.bindings({ a: DF.literal('1') }),
+                  BF.bindings({ a: DF.literal('2') }),
+                  BF.bindings({ a: DF.literal('3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -140,8 +142,8 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ a: DF.literal('1') }),
-                  Bindings({ a: DF.literal('2') }),
+                  BF.bindings({ a: DF.literal('1') }),
+                  BF.bindings({ a: DF.literal('2') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
                 type: 'bindings',
@@ -157,7 +159,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
         expect(result.variables).toEqual([ 'a' ]);
       });
@@ -169,9 +171,9 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ a: DF.literal('1') }),
-                  Bindings({ a: DF.literal('2') }),
-                  Bindings({ a: DF.literal('3') }),
+                  BF.bindings({ a: DF.literal('1') }),
+                  BF.bindings({ a: DF.literal('2') }),
+                  BF.bindings({ a: DF.literal('3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -182,8 +184,8 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ b: DF.literal('1') }),
-                  Bindings({ b: DF.literal('2') }),
+                  BF.bindings({ b: DF.literal('1') }),
+                  BF.bindings({ b: DF.literal('2') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
                 type: 'bindings',
@@ -199,9 +201,9 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
         expect(result.variables).toEqual([ 'a' ]);
       });
@@ -213,15 +215,15 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('1'),
                     b: DF.literal('1'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('2'),
                     b: DF.literal('2'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('3'),
                     b: DF.literal('3'),
                   }),
@@ -235,10 +237,10 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('1'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     b: DF.literal('3'),
                   }),
                 ], { autoStart: false }),
@@ -256,7 +258,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({
+          BF.bindings({
             a: DF.literal('2'),
             b: DF.literal('2'),
           }),
@@ -271,14 +273,14 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('1'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('2'),
                     b: DF.literal('2'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     b: DF.literal('3'),
                   }),
                 ], { autoStart: false }),
@@ -291,11 +293,11 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('1'),
                     b: DF.literal('1'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('3'),
                     b: DF.literal('3'),
                   }),
@@ -314,7 +316,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({
+          BF.bindings({
             a: DF.literal('2'),
             b: DF.literal('2'),
           }),
@@ -329,14 +331,14 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('1'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('2'),
                     b: DF.literal('2'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     b: DF.literal('3'),
                   }),
                 ], { autoStart: false }),
@@ -349,10 +351,10 @@ describe('ActorRdfJoinMinusHashUndef', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('1'),
                   }),
-                  Bindings({
+                  BF.bindings({
                     a: DF.literal('3'),
                   }),
                 ], { autoStart: false }),
@@ -370,7 +372,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({
+          BF.bindings({
             a: DF.literal('2'),
             b: DF.literal('2'),
           }),

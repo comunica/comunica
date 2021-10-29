@@ -1,9 +1,7 @@
 import type { EventEmitter } from 'events';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import {
-  ActorQueryOperation,
-  Bindings,
-} from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataDestinationType, getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
@@ -23,6 +21,8 @@ import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
 import { termToString } from 'rdf-string';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
+
+const BF = new BindingsFactory();
 
 /**
  * A comunica SPARQL Endpoint Query Operation Actor.
@@ -143,7 +143,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map(rawData => {
         cardinality++;
-        return quads ? rawData : Bindings(rawData);
+        return quads ? rawData : BF.bindings(rawData);
       });
     inputStream.then(
       subStream => subStream.on('end', () => stream.emit('metadata', {

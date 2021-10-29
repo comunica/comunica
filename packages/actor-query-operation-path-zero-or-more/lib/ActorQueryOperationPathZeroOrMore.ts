@@ -1,15 +1,15 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  Bindings,
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
 import type { Variable } from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
+
+const BF = new BindingsFactory();
 
 /**
  * A comunica Path ZeroOrMore Query Operation Actor.
@@ -136,8 +136,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         transform(item, next, push) {
           // Return graph binding if graph was a variable, otherwise empty binding
           const binding = gVar ?
-            Bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
-            Bindings({});
+            BF.bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
+            BF.bindings({});
           push(binding);
           next();
         },

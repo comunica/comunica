@@ -1,4 +1,5 @@
-import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
@@ -12,6 +13,8 @@ import { termToString } from 'rdf-string';
 import type { QuadTermName } from 'rdf-terms';
 import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
+
+const BF = new BindingsFactory();
 
 /**
  * A comunica actor for handling 'quadpattern' query operations.
@@ -188,7 +191,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         });
       }
 
-      return filteredOutput.map(quad => Bindings(reduceTerms(quad, quadBindingsReducer, {})),
+      return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, {})),
         { autoStart: true, maxBufferSize: 128 });
     }, { autoStart: false });
 

@@ -1,5 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus, ActionContext } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -8,7 +9,9 @@ import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrOne } from '../lib/ActorQueryOperationPathZeroOrOne';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationPathZeroOrOne', () => {
   let bus: any;
@@ -39,10 +42,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
             for (const [ j, element ] of vars.entries()) {
               bind[element] = DF.namedNode(`${1 + i + j}`);
             }
-            bindings.push(Bindings(bind));
+            bindings.push(BF.bindings(bind));
           }
         } else {
-          bindings.push(Bindings({}));
+          bindings.push(BF.bindings({}));
         }
 
         return Promise.resolve({
@@ -100,7 +103,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       expect(output.variables).toEqual([ '?x' ]);
       expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.namedNode('1') }),
+        BF.bindings({ '?x': DF.namedNode('1') }),
       ]);
     });
 
@@ -115,7 +118,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       expect(output.variables).toEqual([ '?x' ]);
       expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.namedNode('1') }),
+        BF.bindings({ '?x': DF.namedNode('1') }),
       ]);
     });
 
@@ -130,10 +133,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       expect(output.variables).toEqual([ '?x' ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.namedNode('s') }),
-        Bindings({ '?x': DF.namedNode('1') }),
-        Bindings({ '?x': DF.namedNode('2') }),
-        Bindings({ '?x': DF.namedNode('3') }),
+        BF.bindings({ '?x': DF.namedNode('s') }),
+        BF.bindings({ '?x': DF.namedNode('1') }),
+        BF.bindings({ '?x': DF.namedNode('2') }),
+        BF.bindings({ '?x': DF.namedNode('3') }),
       ]);
     });
 
@@ -148,10 +151,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       expect(output.variables).toEqual([ '?x' ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.namedNode('o') }),
-        Bindings({ '?x': DF.namedNode('1') }),
-        Bindings({ '?x': DF.namedNode('2') }),
-        Bindings({ '?x': DF.namedNode('3') }),
+        BF.bindings({ '?x': DF.namedNode('o') }),
+        BF.bindings({ '?x': DF.namedNode('1') }),
+        BF.bindings({ '?x': DF.namedNode('2') }),
+        BF.bindings({ '?x': DF.namedNode('3') }),
       ]);
     });
 
@@ -166,7 +169,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       expect(output.variables).toEqual([]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ }),
+        BF.bindings({ }),
       ]);
     });
 
@@ -181,7 +184,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       expect(output.variables).toEqual([]);
       expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({}),
+        BF.bindings({ }),
       ]);
     });
 

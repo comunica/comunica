@@ -30,6 +30,7 @@
     "lib/**/*.js"
   ],
   "peerDependencies": {
+    "@comunica/bindings-factory": "^1.22.0",
     "@comunica/bus-query-operation": "^1.2.0",
     "@comunica/core": "^1.2.0"
   },

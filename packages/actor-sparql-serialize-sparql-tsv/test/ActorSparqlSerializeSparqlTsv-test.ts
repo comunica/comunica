@@ -1,5 +1,5 @@
 import { PassThrough } from 'stream';
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -7,6 +7,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorSparqlSerializeSparqlTsv } from '..';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeSparqlTsv', () => {
@@ -109,18 +110,18 @@ describe('ActorSparqlSerializeSparqlTsv', () => {
         },
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        Bindings({ '?k1': DF.namedNode('v1') }),
-        Bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings({ '?k1': DF.namedNode('v1') }),
+        BF.bindings({ '?k2': DF.namedNode('v2') }),
       ]);
       bindingsStreamPartial = new ArrayIterator([
-        Bindings({ '?k1': DF.namedNode('v1') }),
-        Bindings({ '?k2': DF.namedNode('v2') }),
-        Bindings({}),
+        BF.bindings({ '?k1': DF.namedNode('v1') }),
+        BF.bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings({}),
       ]);
       bindingsStreamMixed = new ArrayIterator([
-        Bindings({ '?k1': DF.literal('v"'), '?k2': DF.defaultGraph() }),
-        Bindings({ '?k2': DF.namedNode('v\n\r,') }),
-        Bindings({}),
+        BF.bindings({ '?k1': DF.literal('v"'), '?k2': DF.defaultGraph() }),
+        BF.bindings({ '?k2': DF.namedNode('v\n\r,') }),
+        BF.bindings({}),
       ]);
       bindingsStreamEmpty = <any> new PassThrough();
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });

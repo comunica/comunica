@@ -1,4 +1,4 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
@@ -7,7 +7,9 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNestedLoop';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorRdfJoinOptionalNestedLoop', () => {
   let bus: any;
@@ -92,9 +94,9 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
             {
               output: {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?a': DF.literal('1') }),
-                  Bindings({ '?a': DF.literal('2') }),
-                  Bindings({ '?a': DF.literal('3') }),
+                  BF.bindings({ '?a': DF.literal('1') }),
+                  BF.bindings({ '?a': DF.literal('2') }),
+                  BF.bindings({ '?a': DF.literal('3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -105,9 +107,9 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
             {
               output: {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
-                  Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
-                  Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
+                  BF.bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
+                  BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
+                  BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -123,10 +125,10 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 9, canContainUndefs: true });
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
-          Bindings({ '?a': DF.literal('2') }),
-          Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
-          Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
+          BF.bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
+          BF.bindings({ '?a': DF.literal('2') }),
+          BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
+          BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b' ]);
       });

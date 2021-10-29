@@ -1,10 +1,6 @@
-import type {
-  IActorQueryOperationOutputUpdate,
-} from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-  Bindings, KEY_CONTEXT_READONLY,
-} from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,6 +10,7 @@ import 'jest-rdf';
 
 const factory = new Factory();
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationUpdateDeleteInsert', () => {
@@ -26,9 +23,9 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1') }),
-          Bindings({ '?a': DF.literal('2') }),
-          Bindings({ '?a': DF.literal('3') }),
+          BF.bindings({ '?a': DF.literal('1') }),
+          BF.bindings({ '?a': DF.literal('2') }),
+          BF.bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,

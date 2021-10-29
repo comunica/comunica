@@ -30,6 +30,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/bindings-factory": "^1.22.0",
     "@comunica/bus-query-operation": "^1.22.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.22.0",
     "@comunica/types": "^1.22.0",

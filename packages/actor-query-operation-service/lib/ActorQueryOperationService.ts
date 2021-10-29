@@ -1,12 +1,14 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated,
-  Bindings } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
+
+const BF = new BindingsFactory();
 
 /**
  * A comunica Service Query Operation Actor.
@@ -48,7 +50,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       if (pattern.silent) {
         // Emit a single empty binding
         output = {
-          bindingsStream: new SingletonIterator(Bindings({})),
+          bindingsStream: new SingletonIterator(BF.bindings({})),
           type: 'bindings',
           variables: [],
           metadata: async() => ({ cardinality: 1, canContainUndefs: false }),

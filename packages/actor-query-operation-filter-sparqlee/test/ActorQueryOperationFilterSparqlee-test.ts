@@ -1,7 +1,8 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
@@ -11,7 +12,9 @@ import * as sparqlee from 'sparqlee';
 import { isExpressionError } from 'sparqlee';
 import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 function template(expr: string) {
   return `
@@ -52,9 +55,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1') }),
-          Bindings({ '?a': DF.literal('2') }),
-          Bindings({ '?a': DF.literal('3') }),
+          BF.bindings({ '?a': DF.literal('1') }),
+          BF.bindings({ '?a': DF.literal('2') }),
+          BF.bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
@@ -109,9 +112,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('2') }),
-        Bindings({ '?a': DF.literal('3') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('2') }),
+        BF.bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
@@ -170,9 +173,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression }, context };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('2') }),
-        Bindings({ '?a': DF.literal('3') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('2') }),
+        BF.bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
@@ -186,7 +189,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           false,
           factory.createBgp([]),
         );
-        const result = resolver(expr, Bindings({}));
+        const result = resolver(expr, BF.bindings({}));
         expect(await result).toBe(true);
       });
 
@@ -203,7 +206,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           false,
           factory.createBgp([]),
         );
-        const result = resolver(expr, Bindings({}));
+        const result = resolver(expr, BF.bindings({}));
         expect(await result).toBe(false);
       });
 
@@ -220,7 +223,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           true,
           factory.createBgp([]),
         );
-        const result = resolver(expr, Bindings({}));
+        const result = resolver(expr, BF.bindings({}));
         expect(await result).toBe(true);
       });
 
@@ -245,7 +248,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           false,
           factory.createBgp([]),
         );
-        await expect(resolver(expr, Bindings({}))).rejects.toBeTruthy();
+        await expect(resolver(expr, BF.bindings({}))).rejects.toBeTruthy();
       });
     });
   });

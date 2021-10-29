@@ -1,8 +1,10 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { ArrayIterator } from 'asynciterator';
+
+const BF = new BindingsFactory();
 
 /**
  * A comunica None RDF Join Actor.
@@ -27,7 +29,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     return {
       result: {
-        bindingsStream: new ArrayIterator([ Bindings({}) ], { autoStart: false }),
+        bindingsStream: new ArrayIterator([ BF.bindings({}) ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
         type: 'bindings',
         variables: [],

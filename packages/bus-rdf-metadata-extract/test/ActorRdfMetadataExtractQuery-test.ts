@@ -1,9 +1,10 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfMetadataExtractQuery } from '..';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
@@ -18,8 +19,8 @@ describe('ActorRdfMetadataExtractQuery', () => {
   const queryEngine: any = {
     query: jest.fn((operation, options) => ({
       bindings: Promise.resolve(streamifyArray([
-        Bindings({ person: DF.namedNode(`p1${options.source.type}`), name: DF.literal(`P1${options.source.value.size}`) }),
-        Bindings({ person: DF.namedNode(`p2${options.source.type}`), name: DF.literal(`P2${options.source.value.size}`) }),
+        BF.bindings({ person: DF.namedNode(`p1${options.source.type}`), name: DF.literal(`P1${options.source.value.size}`) }),
+        BF.bindings({ person: DF.namedNode(`p2${options.source.type}`), name: DF.literal(`P2${options.source.value.size}`) }),
       ])),
     })),
     resultToString: jest.fn(async p => ({

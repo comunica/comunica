@@ -29,6 +29,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/bindings-factory": "^1.22.0",
     "@comunica/context-entries": "^1.22.0",
     "@comunica/data-factory": "^1.22.0",
     "@comunica/types": "^1.22.0",

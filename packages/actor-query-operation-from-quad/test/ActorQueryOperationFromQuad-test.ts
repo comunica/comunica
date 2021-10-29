@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -7,7 +8,9 @@ import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationFromQuad } from '../lib/ActorQueryOperationFromQuad';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationFromQuad', () => {
   let bus: any;
@@ -18,9 +21,9 @@ describe('ActorQueryOperationFromQuad', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
@@ -844,9 +847,9 @@ describe('ActorQueryOperationFromQuad', () => {
       const op: any = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ a: DF.literal('1') }),
-        Bindings({ a: DF.literal('2') }),
-        Bindings({ a: DF.literal('3') }),
+        BF.bindings({ a: DF.literal('1') }),
+        BF.bindings({ a: DF.literal('2') }),
+        BF.bindings({ a: DF.literal('3') }),
       ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(output.type).toEqual('bindings');

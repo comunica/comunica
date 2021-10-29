@@ -1,10 +1,13 @@
 import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { Bindings } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncAggregateEvaluator } from 'sparqlee';
 import type { AsyncEvaluatorConfig } from 'sparqlee';
+
+const BF = new BindingsFactory();
 
 /**
  * A simple type alias for strings that should be hashes of Bindings
@@ -154,7 +157,7 @@ export class GroupsState {
           single[key] = value;
         }
       }
-      rows = [ Bindings(single) ];
+      rows = [ BF.bindings(single) ];
     }
     this.waitResolver(rows);
   }

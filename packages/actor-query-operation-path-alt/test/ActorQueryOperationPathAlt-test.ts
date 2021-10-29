@@ -1,11 +1,14 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathAlt } from '../lib/ActorQueryOperationPathAlt';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationPathAlt', () => {
   let bus: any;
@@ -17,9 +20,9 @@ describe('ActorQueryOperationPathAlt', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?x': DF.literal('1') }),
-          Bindings({ '?x': DF.literal('2') }),
-          Bindings({ '?x': DF.literal('3') }),
+          BF.bindings({ '?x': DF.literal('1') }),
+          BF.bindings({ '?x': DF.literal('2') }),
+          BF.bindings({ '?x': DF.literal('3') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
@@ -151,12 +154,12 @@ describe('ActorQueryOperationPathAlt', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 6, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.literal('1') }),
-        Bindings({ '?x': DF.literal('1') }),
-        Bindings({ '?x': DF.literal('2') }),
-        Bindings({ '?x': DF.literal('2') }),
-        Bindings({ '?x': DF.literal('3') }),
-        Bindings({ '?x': DF.literal('3') }),
+        BF.bindings({ '?x': DF.literal('1') }),
+        BF.bindings({ '?x': DF.literal('1') }),
+        BF.bindings({ '?x': DF.literal('2') }),
+        BF.bindings({ '?x': DF.literal('2') }),
+        BF.bindings({ '?x': DF.literal('3') }),
+        BF.bindings({ '?x': DF.literal('3') }),
       ]);
     });
   });

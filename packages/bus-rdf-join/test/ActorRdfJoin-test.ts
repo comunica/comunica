@@ -1,4 +1,4 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitSparql } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
@@ -10,6 +10,7 @@ import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const arrayifyStream = require('arrayify-stream');
 
 // Dummy class to test instance of abstract class
@@ -94,7 +95,7 @@ describe('ActorRdfJoin', () => {
   describe('hash', () => {
     it('should hash to concatenation of values of variables', () => {
       expect(ActorRdfJoin.hash(
-        Bindings({
+        BF.bindings({
           '?x': DF.namedNode('http://www.example.org/instance#a'),
           '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
         }), [ '?x', '?y' ],
@@ -103,7 +104,7 @@ describe('ActorRdfJoin', () => {
 
     it('should not let hash being influenced by a variable that is not present in bindings', () => {
       expect(ActorRdfJoin.hash(
-        Bindings({
+        BF.bindings({
           '?x': DF.namedNode('http://www.example.org/instance#a'),
           '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
         }), [ '?x', '?y', '?z' ],
@@ -156,34 +157,34 @@ describe('ActorRdfJoin', () => {
 
   describe('joinBindings', () => {
     it('should return the right binding if the left is empty', () => {
-      const left = Bindings({});
-      const right = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const left = BF.bindings({});
+      const right = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(right);
     });
 
     it('should return the left binding if the right is empty', () => {
-      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = Bindings({});
+      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const right = BF.bindings({});
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(left);
     });
 
     it('should join 2 bindings with no overlapping variables', () => {
-      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = Bindings({ v: DF.literal('d'), w: DF.literal('e') });
-      const result = Bindings({ x: DF.literal('a'), y: DF.literal('b'), v: DF.literal('d'), w: DF.literal('e') });
+      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const right = BF.bindings({ v: DF.literal('d'), w: DF.literal('e') });
+      const result = BF.bindings({ x: DF.literal('a'), y: DF.literal('b'), v: DF.literal('d'), w: DF.literal('e') });
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
     });
 
     it('should join 2 bindings with overlapping variables', () => {
-      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = Bindings({ x: DF.literal('a'), w: DF.literal('e') });
-      const result = Bindings({ x: DF.literal('a'), y: DF.literal('b'), w: DF.literal('e') });
+      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const right = BF.bindings({ x: DF.literal('a'), w: DF.literal('e') });
+      const result = BF.bindings({ x: DF.literal('a'), y: DF.literal('b'), w: DF.literal('e') });
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
     });
 
     it('should not join bindings with conflicting mappings', () => {
-      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = Bindings({ x: DF.literal('b'), w: DF.literal('e') });
+      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const right = BF.bindings({ x: DF.literal('b'), w: DF.literal('e') });
       return expect(ActorRdfJoin.joinBindings(left, right)).toBeFalsy();
     });
   });

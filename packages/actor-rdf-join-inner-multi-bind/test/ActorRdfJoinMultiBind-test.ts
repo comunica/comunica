@@ -1,4 +1,4 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -14,7 +14,9 @@ import { Factory, Algebra } from 'sparqlalgebrajs';
 import { ActorRdfJoinMultiBind } from '../lib/ActorRdfJoinMultiBind';
 import Mock = jest.Mock;
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const FACTORY = new Factory();
 
 describe('ActorRdfJoinMultiBind', () => {
@@ -43,9 +45,9 @@ describe('ActorRdfJoinMultiBind', () => {
         mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> => {
           return {
             bindingsStream: new ArrayIterator([
-              Bindings({ '?bound': DF.namedNode('ex:bound1') }),
-              Bindings({ '?bound': DF.namedNode('ex:bound2') }),
-              Bindings({ '?bound': DF.namedNode('ex:bound3') }),
+              BF.bindings({ '?bound': DF.namedNode('ex:bound1') }),
+              BF.bindings({ '?bound': DF.namedNode('ex:bound2') }),
+              BF.bindings({ '?bound': DF.namedNode('ex:bound3') }),
             ], { autoStart: false }),
             metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
             type: 'bindings',
@@ -417,9 +419,9 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?b': DF.namedNode('ex:b1') }),
-                  Bindings({ '?b': DF.namedNode('ex:b2') }),
-                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b1') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b2') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -430,8 +432,8 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?a': DF.namedNode('ex:a1') }),
-                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a1') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
                 type: 'bindings',
@@ -446,12 +448,12 @@ describe('ActorRdfJoinMultiBind', () => {
         // Validate output
         expect(result.type).toEqual('bindings');
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b' ]);
         expect(await result.metadata()).toEqual({ cardinality: 2.400_000_000_000_000_4, canContainUndefs: false });
@@ -475,7 +477,7 @@ describe('ActorRdfJoinMultiBind', () => {
             a: 'b',
             [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1, canContainUndefs: false },
             [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
-            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a1') }),
+            [KeysQueryOperation.joinBindings]: BF.bindings({ '?a': DF.namedNode('ex:a1') }),
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
@@ -484,7 +486,7 @@ describe('ActorRdfJoinMultiBind', () => {
             a: 'b',
             [KeysQueryOperation.joinLeftMetadata]: { cardinality: 1, canContainUndefs: false },
             [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
-            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a2') }),
+            [KeysQueryOperation.joinBindings]: BF.bindings({ '?a': DF.namedNode('ex:a2') }),
           }),
         });
       });
@@ -506,9 +508,9 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?b': DF.namedNode('ex:b1') }),
-                  Bindings({ '?b': DF.namedNode('ex:b2') }),
-                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b1') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b2') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -519,8 +521,8 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?a': DF.namedNode('ex:a1') }),
-                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a1') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
                 type: 'bindings',
@@ -535,12 +537,12 @@ describe('ActorRdfJoinMultiBind', () => {
         // Validate output
         expect(result.type).toEqual('bindings');
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b' ]);
         expect(await result.metadata()).toEqual({ cardinality: 2.400_000_000_000_000_4, canContainUndefs: false });
@@ -553,9 +555,9 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?b': DF.namedNode('ex:b1') }),
-                  Bindings({ '?b': DF.namedNode('ex:b2') }),
-                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b1') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b2') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -566,8 +568,8 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?a': DF.namedNode('ex:a1') }),
-                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a1') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
                 type: 'bindings',
@@ -582,12 +584,12 @@ describe('ActorRdfJoinMultiBind', () => {
         // Validate output
         expect(result.type).toEqual('bindings');
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b' ]);
         expect(await result.metadata()).toEqual({ cardinality: 2.400_000_000_000_000_4, canContainUndefs: false });
@@ -601,9 +603,9 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?b': DF.namedNode('ex:b1') }),
-                  Bindings({ '?b': DF.namedNode('ex:b2') }),
-                  Bindings({ '?b': DF.namedNode('ex:b3') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b1') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b2') }),
+                  BF.bindings({ '?b': DF.namedNode('ex:b3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
@@ -614,9 +616,9 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?c': DF.namedNode('ex:c1') }),
-                  Bindings({ '?c': DF.namedNode('ex:c2') }),
-                  Bindings({ '?c': DF.namedNode('ex:c3') }),
+                  BF.bindings({ '?c': DF.namedNode('ex:c1') }),
+                  BF.bindings({ '?c': DF.namedNode('ex:c2') }),
+                  BF.bindings({ '?c': DF.namedNode('ex:c3') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: false }),
                 type: 'bindings',
@@ -627,8 +629,8 @@ describe('ActorRdfJoinMultiBind', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  Bindings({ '?a': DF.namedNode('ex:a1') }),
-                  Bindings({ '?a': DF.namedNode('ex:a2') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a1') }),
+                  BF.bindings({ '?a': DF.namedNode('ex:a2') }),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
                 type: 'bindings',
@@ -643,12 +645,12 @@ describe('ActorRdfJoinMultiBind', () => {
         // Validate output
         expect(result.type).toEqual('bindings');
         expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
-          Bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a1') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound1'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound2'), '?a': DF.namedNode('ex:a2') }),
+          BF.bindings({ '?bound': DF.namedNode('ex:bound3'), '?a': DF.namedNode('ex:a2') }),
         ]);
         expect(result.variables).toEqual([ 'a', 'b', 'c' ]);
         expect(await result.metadata()).toEqual({ cardinality: 9.600_000_000_000_001, canContainUndefs: false });
@@ -672,7 +674,7 @@ describe('ActorRdfJoinMultiBind', () => {
               { cardinality: 3, canContainUndefs: false },
               { cardinality: 4, canContainUndefs: false },
             ],
-            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a1') }),
+            [KeysQueryOperation.joinBindings]: BF.bindings({ '?a': DF.namedNode('ex:a1') }),
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
@@ -687,7 +689,7 @@ describe('ActorRdfJoinMultiBind', () => {
               { cardinality: 3, canContainUndefs: false },
               { cardinality: 4, canContainUndefs: false },
             ],
-            [KeysQueryOperation.joinBindings]: Bindings({ '?a': DF.namedNode('ex:a2') }),
+            [KeysQueryOperation.joinBindings]: BF.bindings({ '?a': DF.namedNode('ex:a2') }),
           }),
         });
       });

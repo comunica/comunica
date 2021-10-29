@@ -1,16 +1,16 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-  Bindings,
-} from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
+
+const BF = new BindingsFactory();
 
 /**
  * A comunica Path OneOrMore Query Operation Actor.
@@ -66,7 +66,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   { count: 0 });
                 return it.transform<Bindings>({
                   transform(item, next, push) {
-                    let binding = Bindings({ [objectString]: item });
+                    let binding = BF.bindings({ [objectString]: item });
                     if (gVar) {
                       binding = binding.set(termToString(path.graph), graph);
                     }
@@ -163,8 +163,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       filter: item => item.get(vString).equals(path.object),
       transform(item, next, push) {
         const binding = gVar ?
-          Bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
-          Bindings({});
+          BF.bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
+          BF.bindings({});
         push(binding);
         next();
       },

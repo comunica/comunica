@@ -1,15 +1,15 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path/lib/ActorAbstractPath';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-  Bindings,
-} from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
+
+const BF = new BindingsFactory();
 
 /**
  * A comunica Path ZeroOrOne Query Operation Actor.
@@ -31,7 +31,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     if (!sVar && !oVar && path.subject.equals(path.object)) {
       return {
         type: 'bindings',
-        bindingsStream: new SingletonIterator(Bindings({})),
+        bindingsStream: new SingletonIterator(BF.bindings({})),
         variables: [],
         metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
       };
@@ -49,11 +49,11 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     context = distinct.context;
 
     if (sVar) {
-      extra.push(Bindings({ [termToString(path.subject)]: path.object }));
+      extra.push(BF.bindings({ [termToString(path.subject)]: path.object }));
     }
 
     if (oVar) {
-      extra.push(Bindings({ [termToString(path.object)]: path.subject }));
+      extra.push(BF.bindings({ [termToString(path.object)]: path.subject }));
     }
 
     const single = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({

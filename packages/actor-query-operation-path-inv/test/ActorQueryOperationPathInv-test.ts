@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -6,6 +7,7 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathInv } from '../lib/ActorQueryOperationPathInv';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationPathInv', () => {
   let bus: any;
@@ -17,9 +19,9 @@ describe('ActorQueryOperationPathInv', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?x': DF.namedNode('1') }),
-          Bindings({ '?x': DF.namedNode('2') }),
-          Bindings({ '?x': DF.namedNode('3') }),
+          BF.bindings({ '?x': DF.namedNode('1') }),
+          BF.bindings({ '?x': DF.namedNode('2') }),
+          BF.bindings({ '?x': DF.namedNode('3') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
@@ -72,9 +74,9 @@ describe('ActorQueryOperationPathInv', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.namedNode('1') }),
-        Bindings({ '?x': DF.namedNode('2') }),
-        Bindings({ '?x': DF.namedNode('3') }),
+        BF.bindings({ '?x': DF.namedNode('1') }),
+        BF.bindings({ '?x': DF.namedNode('2') }),
+        BF.bindings({ '?x': DF.namedNode('3') }),
       ]);
       expect((<any> output).operated.operation).toEqual(
         factory.createPath(DF.variable('x'), factory.createLink(DF.namedNode('p')), DF.namedNode('s')),

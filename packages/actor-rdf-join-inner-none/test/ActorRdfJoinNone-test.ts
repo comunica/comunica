@@ -1,9 +1,11 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Bus } from '@comunica/core';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
 const arrayifyStream = require('arrayify-stream');
+
+const BF = new BindingsFactory();
 
 describe('ActorRdfJoinNone', () => {
   let bus: any;
@@ -60,7 +62,7 @@ describe('ActorRdfJoinNone', () => {
           entries: [],
         });
         expect(output.variables).toEqual([]);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([ BF.bindings({}) ]);
         expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
       });
     });
