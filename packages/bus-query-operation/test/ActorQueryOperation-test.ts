@@ -1,9 +1,12 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { ActorQueryOperation, Bindings } from '..';
+import { ActorQueryOperation } from '..';
+
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
@@ -149,7 +152,7 @@ describe('ActorQueryOperation', () => {
           true,
           factory.createBgp([]),
         );
-        const result = resolver(expr, Bindings({}));
+        const result = resolver(expr, BF.bindings({}));
         expect(await result).toBe(true);
       });
     });

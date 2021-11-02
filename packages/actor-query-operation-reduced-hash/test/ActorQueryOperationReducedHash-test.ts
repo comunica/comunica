@@ -1,11 +1,13 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationReducedHash } from '..';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationReducedHash', () => {
   let bus: any;
@@ -17,11 +19,11 @@ describe('ActorQueryOperationReducedHash', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('3') }),
-          Bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('2') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 5 }),
         operated: arg,
@@ -47,34 +49,34 @@ describe('ActorQueryOperationReducedHash', () => {
 
     it('should create a filter that is a predicate', () => {
       const filter = actor.newHashFilter();
-      return expect(filter(Bindings({ a: DF.literal('a') }))).toBe(true);
+      return expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', () => {
       const filter = actor.newHashFilter();
-      expect(filter(Bindings({ a: DF.literal('a') }))).toBe(true);
-      expect(filter(Bindings({ a: DF.literal('a') }))).toBe(false);
-      expect(filter(Bindings({ a: DF.literal('a') }))).toBe(false);
-      expect(filter(Bindings({ a: DF.literal('a') }))).toBe(false);
+      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(true);
+      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
+      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
+      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
 
-      expect(filter(Bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter(Bindings({ a: DF.literal('b') }))).toBe(false);
-      expect(filter(Bindings({ a: DF.literal('b') }))).toBe(false);
-      expect(filter(Bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(true);
+      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(false);
     });
 
     it('should create a filters that are independent', () => {
       const filter1 = actor.newHashFilter();
       const filter2 = actor.newHashFilter();
       const filter3 = actor.newHashFilter();
-      expect(filter1(Bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter1(Bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter1(BF.bindings({ a: DF.literal('b') }))).toBe(true);
+      expect(filter1(BF.bindings({ a: DF.literal('b') }))).toBe(false);
 
-      expect(filter2(Bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter2(Bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter2(BF.bindings({ a: DF.literal('b') }))).toBe(true);
+      expect(filter2(BF.bindings({ a: DF.literal('b') }))).toBe(false);
 
-      expect(filter3(Bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter3(Bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter3(BF.bindings({ a: DF.literal('b') }))).toBe(true);
+      expect(filter3(BF.bindings({ a: DF.literal('b') }))).toBe(false);
     });
   });
 
@@ -104,9 +106,9 @@ describe('ActorQueryOperationReducedHash', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -126,13 +128,13 @@ describe('Smaller cache than number of queries', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('3') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('1') }),
         ]),
         metadata: () => Promise.resolve({ cardinality: 7 }),
         operated: arg,
@@ -151,10 +153,10 @@ describe('Smaller cache than number of queries', () => {
       expect(output.variables).toEqual([ 'a' ]);
       expect(output.type).toEqual('bindings');
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ a: DF.literal('1') }),
-        Bindings({ a: DF.literal('3') }),
-        Bindings({ a: DF.literal('2') }),
-        Bindings({ a: DF.literal('1') }),
+        BF.bindings({ a: DF.literal('1') }),
+        BF.bindings({ a: DF.literal('3') }),
+        BF.bindings({ a: DF.literal('2') }),
+        BF.bindings({ a: DF.literal('1') }),
       ]);
     });
   });

@@ -1,11 +1,14 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationUnion } from '../lib/ActorQueryOperationUnion';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationUnion', () => {
   let bus: any;
@@ -28,9 +31,9 @@ describe('ActorQueryOperationUnion', () => {
     op3 = {
       metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
       stream: new ArrayIterator([
-        Bindings({ a: DF.literal('1') }),
-        Bindings({ a: DF.literal('2') }),
-        Bindings({ a: DF.literal('3') }),
+        BF.bindings({ a: DF.literal('1') }),
+        BF.bindings({ a: DF.literal('2') }),
+        BF.bindings({ a: DF.literal('3') }),
       ], { autoStart: false }),
       type: 'bindings',
       variables: [ 'a' ],
@@ -38,8 +41,8 @@ describe('ActorQueryOperationUnion', () => {
     op2 = {
       metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
       stream: new ArrayIterator([
-        Bindings({ b: DF.literal('1') }),
-        Bindings({ b: DF.literal('2') }),
+        BF.bindings({ b: DF.literal('1') }),
+        BF.bindings({ b: DF.literal('2') }),
       ], { autoStart: false }),
       type: 'bindings',
       variables: [ 'b' ],
@@ -47,8 +50,8 @@ describe('ActorQueryOperationUnion', () => {
     op2Undef = {
       metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: true }),
       stream: new ArrayIterator([
-        Bindings({ b: DF.literal('1') }),
-        Bindings({ b: DF.literal('2') }),
+        BF.bindings({ b: DF.literal('1') }),
+        BF.bindings({ b: DF.literal('2') }),
       ]),
       type: 'bindings',
       variables: [ 'b' ],
@@ -188,11 +191,11 @@ describe('ActorQueryOperationUnion', () => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ b: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ b: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ b: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ b: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -204,13 +207,13 @@ describe('ActorQueryOperationUnion', () => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ b: DF.literal('1') }),
-          Bindings({ b: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ b: DF.literal('2') }),
-          Bindings({ b: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ b: DF.literal('1') }),
+          BF.bindings({ b: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ b: DF.literal('2') }),
+          BF.bindings({ b: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -222,11 +225,11 @@ describe('ActorQueryOperationUnion', () => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ b: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ b: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ b: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ b: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });

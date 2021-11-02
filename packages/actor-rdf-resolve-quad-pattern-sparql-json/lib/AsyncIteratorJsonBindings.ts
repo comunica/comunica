@@ -1,9 +1,12 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
-import { Bindings } from '@comunica/bus-query-operation';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { Bindings } from '@comunica/types';
 import { BufferedIterator } from 'asynciterator';
 import { SparqlJsonParser } from 'sparqljson-parse';
+
+const BF = new BindingsFactory();
 
 /**
  * An AsyncIterator that executes a SPARQL query against an endpoint, parses each binding, and emits it in this stream.
@@ -36,7 +39,7 @@ export class AsyncIteratorJsonBindings extends BufferedIterator<Bindings> {
           responseStream.on('error', error => rawBindingsStream.emit('error', error));
 
           rawBindingsStream.on('error', error => this.emit('error', error));
-          rawBindingsStream.on('data', rawBindings => this._push(Bindings(rawBindings)));
+          rawBindingsStream.on('data', rawBindings => this._push(BF.bindings(rawBindings)));
           rawBindingsStream.on('end', () => {
             this.close();
           });

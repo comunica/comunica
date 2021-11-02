@@ -1,16 +1,19 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
-import type { BindingsStream, IActorQueryOperationOutput,
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+  ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
+import type { BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
+const BF = new BindingsFactory();
 /**
  * A comunica Update DeleteInsert Query Operation Actor.
  */
@@ -35,7 +38,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     const whereBindings: BindingsStream = pattern.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
         .mediate({ operation: pattern.where, context })).bindingsStream :
-      new ArrayIterator([ Bindings({}) ], { autoStart: false });
+      new ArrayIterator([ BF.bindings({}) ], { autoStart: false });
 
     // Construct triples using the result based on the pattern.
     let quadStreamInsert: AsyncIterator<RDF.Quad> | undefined;

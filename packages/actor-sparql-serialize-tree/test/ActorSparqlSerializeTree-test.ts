@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -8,6 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorSparqlSerializeTree } from '..';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -43,8 +44,8 @@ describe('ActorSparqlSerializeTree', () => {
     beforeEach(() => {
       actor = new ActorSparqlSerializeTree({ bus, name: 'actor', mediaTypes: { tree: 1 }});
       bindingsStream = new ArrayIterator([
-        Bindings({ '?k1': DF.namedNode('v1') }),
-        Bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings({ '?k1': DF.namedNode('v1') }),
+        BF.bindings({ '?k2': DF.namedNode('v2') }),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),

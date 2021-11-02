@@ -1,43 +1,11 @@
-import type { Bindings as _Bindings, BindingsStream } from '@comunica/types';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Map } from 'immutable';
 import { termToString } from 'rdf-string';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
-export type Bindings = _Bindings;
-
-export type { BindingsStream };
-
-/**
- * A convenience constructor for bindings based on a given hash.
- * @param {{[p: string]: RDF.Term}} hash A hash that maps variable names to terms.
- * @return {Bindings} The immutable bindings from the hash.
- * @constructor
- */
-// eslint-disable-next-line no-redeclare
-export function Bindings(hash: Record<string, RDF.Term>): Bindings {
-  return Map(hash);
-}
-
-/**
- * Check if the given object is a bindings object.
- * @param maybeBindings Any object.
- * @return {boolean} If the object is a bindings object.
- */
-export function isBindings(maybeBindings: any): boolean {
-  return Map.isMap(maybeBindings);
-}
-
-/**
- * Convert the given object to a bindings object if it is not a bindings object yet.
- * If it already is a bindings object, return the object as-is.
- * @param maybeBindings Any object.
- * @return {Bindings} A bindings object.
- */
-export function ensureBindings(maybeBindings: any): Bindings {
-  return isBindings(maybeBindings) ? maybeBindings : Bindings(maybeBindings);
-}
+const BF = new BindingsFactory();
 
 /**
  * Materialize a term with the given binding.
@@ -179,7 +147,7 @@ export function materializeOperation(
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = Bindings(op.variables.reduce<any>((acc, variable) => {
+      const subBindings = BF.bindings(op.variables.reduce<any>((acc, variable) => {
         const binding = bindings.get(termToString(variable));
         if (binding) {
           acc[termToString(variable)] = binding;

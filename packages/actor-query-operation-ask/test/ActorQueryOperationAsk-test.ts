@@ -1,10 +1,13 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBoolean } from '@comunica/types';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationAsk', () => {
   let bus: any;
@@ -18,9 +21,9 @@ describe('ActorQueryOperationAsk', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,

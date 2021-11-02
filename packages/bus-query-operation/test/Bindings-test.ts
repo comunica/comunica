@@ -1,38 +1,11 @@
 /* eslint-disable mocha/max-top-level-suites */
-import { Map } from 'immutable';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import { Bindings, ensureBindings, isBindings, materializeOperation, materializeTerm } from '..';
+import { materializeOperation, materializeTerm } from '..';
 
 const DF = new DataFactory();
-
-describe('Bindings', () => {
-  it('should create a map', () => {
-    expect(Bindings({ a: DF.namedNode('b') })).toBeInstanceOf(Map);
-  });
-});
-
-describe('isBindings', () => {
-  it('should be true for bindings', () => {
-    expect(isBindings(Bindings({}))).toBeTruthy();
-  });
-
-  it('should be false for other objects', () => {
-    expect(isBindings({})).toBeFalsy();
-  });
-});
-
-describe('ensureBindings', () => {
-  it('should not change things that are already bindings', () => {
-    const b = Bindings({});
-    expect(ensureBindings(b)).toBe(b);
-  });
-
-  it('should create bindings from hashes', () => {
-    expect(ensureBindings({})).toBeInstanceOf(Map);
-    expect(ensureBindings({ a: DF.namedNode('b') }).get('a')).toEqual(DF.namedNode('b'));
-  });
-});
+const BF = new BindingsFactory();
 
 const factory = new Factory();
 
@@ -48,11 +21,11 @@ const valueA = DF.literal('A');
 const valueB = DF.literal('B');
 const valueC = DF.literal('C');
 
-const bindingsEmpty = Bindings({});
-const bindingsA = Bindings({ '?a': DF.literal('A') });
-const bindingsC = Bindings({ '_:c': DF.literal('C') });
-const bindingsAC = Bindings({ '?a': valueA, '_:c': valueC });
-const bindingsAB = Bindings({ '?a': valueA, '?b': valueB });
+const bindingsEmpty = BF.bindings({});
+const bindingsA = BF.bindings({ '?a': DF.literal('A') });
+const bindingsC = BF.bindings({ '_:c': DF.literal('C') });
+const bindingsAC = BF.bindings({ '?a': valueA, '_:c': valueC });
+const bindingsAB = BF.bindings({ '?a': valueA, '?b': valueB });
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {

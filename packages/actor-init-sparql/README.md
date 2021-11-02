@@ -11,7 +11,7 @@ It's main distinguishing features are the following:
 * Federated querying over [heterogeneous interfaces](https://comunica.dev/docs/query/advanced/source_types/), such as RDF files, SPARQL endpoints, [Triple Pattern Fragments](https://linkeddatafragments.org/), or [Solid data pods](https://inrupt.com/solid).
 * High modularity enabling [easy extensions and customization](https://comunica.dev/docs/modify/).
 * Runs in JavaScript using [Node.JS](http://nodejs.org/), in the browser, and via the command-line.
-* Update sources using [SPARQL 1.1 Update queries](https://www.w3.org/TR/sparql11-update/) _(currently only over [RDF/JS stores](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme))_.
+* Update sources using [SPARQL 1.1 Update queries](https://www.w3.org/TR/sparql11-update/).
 
 **[Learn more about Comunica on our website](https://comunica.dev/).**
 

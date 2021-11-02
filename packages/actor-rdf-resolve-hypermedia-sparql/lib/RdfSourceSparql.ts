@@ -1,8 +1,8 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { Bindings } from '@comunica/bus-query-operation';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import type { Bindings, BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
@@ -12,6 +12,7 @@ import { getTerms, getVariables, mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 export class RdfSourceSparql implements IQuadSource {
   protected static readonly FACTORY: Factory = new Factory();
@@ -134,7 +135,7 @@ export class RdfSourceSparql implements IQuadSource {
   public queryBindings(endpoint: string, query: string): BindingsStream {
     const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map(rawData => Bindings(rawData));
+      .map(rawData => BF.bindings(rawData));
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {

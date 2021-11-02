@@ -1,10 +1,13 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationValues } from '../lib/ActorQueryOperationValues';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationValues', () => {
   let bus: any;
@@ -56,7 +59,7 @@ describe('ActorQueryOperationValues', () => {
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?v': DF.namedNode('v1') }),
+          BF.bindings({ '?v': DF.namedNode('v1') }),
         ]);
       });
     });
@@ -70,8 +73,8 @@ describe('ActorQueryOperationValues', () => {
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?v': DF.namedNode('v1') }),
-          Bindings({ '?v': DF.namedNode('v2') }),
+          BF.bindings({ '?v': DF.namedNode('v1') }),
+          BF.bindings({ '?v': DF.namedNode('v2') }),
         ]);
       });
     });
@@ -88,8 +91,8 @@ describe('ActorQueryOperationValues', () => {
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?v': DF.namedNode('v1'), '?w': DF.namedNode('w1') }),
-          Bindings({ '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') }),
+          BF.bindings({ '?v': DF.namedNode('v1'), '?w': DF.namedNode('w1') }),
+          BF.bindings({ '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') }),
         ]);
       });
     });
@@ -106,8 +109,8 @@ describe('ActorQueryOperationValues', () => {
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?v': DF.namedNode('v1') }),
-          Bindings({ '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') }),
+          BF.bindings({ '?v': DF.namedNode('v1') }),
+          BF.bindings({ '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') }),
         ]);
       });
     });

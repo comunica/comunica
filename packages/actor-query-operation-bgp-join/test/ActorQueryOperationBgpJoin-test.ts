@@ -1,9 +1,5 @@
-import type {
-  IActorQueryOperationOutputBindings,
-} from '@comunica/bus-query-operation';
-import {
-  Bindings,
-} from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
@@ -11,7 +7,9 @@ import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 const FACTORY = new Factory();
 
 describe('ActorQueryOperationBgpJoin', () => {
@@ -23,9 +21,9 @@ describe('ActorQueryOperationBgpJoin', () => {
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1') }),
-          Bindings({ '?a': DF.literal('2') }),
-          Bindings({ '?a': DF.literal('3') }),
+          BF.bindings({ '?a': DF.literal('1') }),
+          BF.bindings({ '?a': DF.literal('2') }),
+          BF.bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
@@ -62,9 +60,9 @@ describe('ActorQueryOperationBgpJoin', () => {
       expect(output.variables).toEqual([ '?a' ]);
       expect(output.type).toEqual('bindings');
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('2') }),
-        Bindings({ '?a': DF.literal('3') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('2') }),
+        BF.bindings({ '?a': DF.literal('3') }),
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({

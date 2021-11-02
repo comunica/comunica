@@ -1,12 +1,14 @@
-import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import type {
   IActionQueryOperation,
-  IActorQueryOperationOutput, IActorQueryOperationOutputBindings, BindingsStream, IMetadata,
+  IActorQueryOperationOutput, IActorQueryOperationOutputBindings, BindingsStream, IMetadata, Bindings,
 } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
+const BF = new BindingsFactory();
 
 /**
  * A comunica Values Query Operation Actor.
@@ -22,7 +24,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(pattern: Algebra.Values, context: ActionContext):
   Promise<IActorQueryOperationOutputBindings> {
-    const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(pattern.bindings.map(x => Bindings(x)));
+    const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(pattern.bindings.map(x => BF.bindings(x)));
     const metadata = (): Promise<IMetadata> => Promise.resolve({
       cardinality: pattern.bindings.length,
       canContainUndefs: pattern.bindings.some(bindings => variables.some(variable => !(variable in bindings))),

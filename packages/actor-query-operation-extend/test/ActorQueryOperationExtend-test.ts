@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -8,6 +9,7 @@ import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
@@ -62,9 +64,9 @@ describe('ActorQueryOperationExtend', () => {
   };
 
   const input = [
-    Bindings({ '?a': DF.literal('1') }),
-    Bindings({ '?a': DF.literal('2') }),
-    Bindings({ '?a': DF.literal('3') }),
+    BF.bindings({ '?a': DF.literal('1') }),
+    BF.bindings({ '?a': DF.literal('2') }),
+    BF.bindings({ '?a': DF.literal('3') }),
   ];
 
   beforeEach(() => {
@@ -118,15 +120,15 @@ describe('ActorQueryOperationExtend', () => {
       const op: any = { operation: example(defaultExpression) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({
+        BF.bindings({
           '?a': DF.literal('1'),
           '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
-        Bindings({
+        BF.bindings({
           '?a': DF.literal('2'),
           '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
-        Bindings({
+        BF.bindings({
           '?a': DF.literal('3'),
           '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),

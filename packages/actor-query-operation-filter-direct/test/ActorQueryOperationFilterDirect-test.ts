@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -6,7 +7,9 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationFilterDirect } from '../lib/ActorQueryOperationFilterDirect';
 import * as SparqlExpressionEvaluator from '../lib/SparqlExpressionEvaluator';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationFilterDirect', () => {
   let bus: any;
@@ -33,9 +36,9 @@ describe('ActorQueryOperationFilterDirect', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.literal('1') }),
-          Bindings({ '?a': DF.literal('2') }),
-          Bindings({ '?a': DF.literal('3') }),
+          BF.bindings({ '?a': DF.literal('1') }),
+          BF.bindings({ '?a': DF.literal('2') }),
+          BF.bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
@@ -88,9 +91,9 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': DF.literal('1') }),
-        Bindings({ '?a': DF.literal('2') }),
-        Bindings({ '?a': DF.literal('3') }),
+        BF.bindings({ '?a': DF.literal('1') }),
+        BF.bindings({ '?a': DF.literal('2') }),
+        BF.bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });

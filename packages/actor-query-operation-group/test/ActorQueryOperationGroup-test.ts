@@ -1,13 +1,16 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IActionQueryOperation } from '@comunica/types';
+import type { IActionQueryOperation, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib/ActorQueryOperationGroup';
 import { GroupsState } from '../lib/GroupsState';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 const simpleXYZinput = {
   type: 'bgp',
@@ -59,9 +62,9 @@ const sumZ: Algebra.BoundAggregate = {
 const getDefaultMediatorQueryOperation = () => ({
   mediate: (arg: any) => Promise.resolve({
     bindingsStream: new ArrayIterator([
-      Bindings({ a: DF.literal('1') }),
-      Bindings({ a: DF.literal('2') }),
-      Bindings({ a: DF.literal('3') }),
+      BF.bindings({ a: DF.literal('1') }),
+      BF.bindings({ a: DF.literal('2') }),
+      BF.bindings({ a: DF.literal('3') }),
     ], { autoStart: false }),
     metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
     operated: arg,
@@ -161,7 +164,7 @@ describe('ActorQueryOperationGroup', () => {
       const { actor, op } = constructCase({});
       const temp = new GroupsState(<Algebra.Group> op.operation, {});
       expect(await temp.collectResults()).toBeTruthy();
-      await expect(temp.consumeBindings(Bindings({ '?x': DF.literal('aaa') }))).rejects.toThrow('collectResult');
+      await expect(temp.consumeBindings(BF.bindings({ '?x': DF.literal('aaa') }))).rejects.toThrow('collectResult');
     });
   });
 
@@ -191,11 +194,11 @@ describe('ActorQueryOperationGroup', () => {
     it('should group on a single var', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('bbb') }),
-          Bindings({ '?x': DF.literal('ccc') }),
-          Bindings({ '?x': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('bbb') }),
+          BF.bindings({ '?x': DF.literal('ccc') }),
+          BF.bindings({ '?x': DF.literal('aaa') }),
         ],
         groupVariables: [ 'x' ],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -205,9 +208,9 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': DF.literal('aaa') }),
-        Bindings({ '?x': DF.literal('bbb') }),
-        Bindings({ '?x': DF.literal('ccc') }),
+        BF.bindings({ '?x': DF.literal('aaa') }),
+        BF.bindings({ '?x': DF.literal('bbb') }),
+        BF.bindings({ '?x': DF.literal('ccc') }),
       ]);
       expect(output.variables).toMatchObject([ '?x' ]);
     });
@@ -215,11 +218,11 @@ describe('ActorQueryOperationGroup', () => {
     it('should group on multiple vars', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
-          Bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
+          BF.bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
         ],
         groupVariables: [ 'x', 'y' ],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -229,10 +232,10 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
-        Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
-        Bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
-        Bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
+        BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
+        BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
+        BF.bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
+        BF.bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
       ]);
       expect(output.variables).toMatchObject([ '?x', '?y' ]);
     });
@@ -240,11 +243,11 @@ describe('ActorQueryOperationGroup', () => {
     it('should aggregate single vars', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
-          Bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
+          BF.bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
         ],
         groupVariables: [ 'x' ],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -254,9 +257,9 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': DF.literal('aaa'), '?count': int('3') }),
-        Bindings({ '?x': DF.literal('bbb'), '?count': int('1') }),
-        Bindings({ '?x': DF.literal('ccc'), '?count': int('1') }),
+        BF.bindings({ '?x': DF.literal('aaa'), '?count': int('3') }),
+        BF.bindings({ '?x': DF.literal('bbb'), '?count': int('1') }),
+        BF.bindings({ '?x': DF.literal('ccc'), '?count': int('1') }),
       ]);
       expect(output.variables).toMatchObject([ '?x', '?count' ]);
     });
@@ -264,11 +267,11 @@ describe('ActorQueryOperationGroup', () => {
     it('should aggregate multiple vars', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb'), '?z': int('2') }),
-          Bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa'), '?z': int('3') }),
-          Bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa'), '?z': int('4') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('5') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb'), '?z': int('2') }),
+          BF.bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa'), '?z': int('3') }),
+          BF.bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa'), '?z': int('4') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('5') }),
         ],
         groupVariables: [ 'x' ],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -278,9 +281,9 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': DF.literal('aaa'), '?count': int('3'), '?sum': int('8') }),
-        Bindings({ '?x': DF.literal('bbb'), '?count': int('1'), '?sum': int('3') }),
-        Bindings({ '?x': DF.literal('ccc'), '?count': int('1'), '?sum': int('4') }),
+        BF.bindings({ '?x': DF.literal('aaa'), '?count': int('3'), '?sum': int('8') }),
+        BF.bindings({ '?x': DF.literal('bbb'), '?count': int('1'), '?sum': int('3') }),
+        BF.bindings({ '?x': DF.literal('ccc'), '?count': int('1'), '?sum': int('4') }),
       ]);
       expect(output.variables).toMatchObject([ '?x', '?count', '?sum' ]);
     });
@@ -288,13 +291,13 @@ describe('ActorQueryOperationGroup', () => {
     it('should aggregate multi variable distinct', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb'), '?z': int('2') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb'), '?z': int('2') }),
-          Bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa'), '?z': int('3') }),
-          Bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa'), '?z': int('4') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa'), '?z': int('1') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb'), '?z': int('2') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb'), '?z': int('2') }),
+          BF.bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa'), '?z': int('3') }),
+          BF.bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa'), '?z': int('4') }),
         ],
         groupVariables: [ 'x' ],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -304,20 +307,20 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': DF.literal('aaa'), '?count': int('2'), '?sum': int('7') }),
-        Bindings({ '?x': DF.literal('bbb'), '?count': int('1'), '?sum': int('3') }),
-        Bindings({ '?x': DF.literal('ccc'), '?count': int('1'), '?sum': int('4') }),
+        BF.bindings({ '?x': DF.literal('aaa'), '?count': int('2'), '?sum': int('7') }),
+        BF.bindings({ '?x': DF.literal('bbb'), '?count': int('1'), '?sum': int('3') }),
+        BF.bindings({ '?x': DF.literal('ccc'), '?count': int('1'), '?sum': int('4') }),
       ]);
     });
 
     it('should aggregate implicit', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
-          Bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('bbb') }),
+          BF.bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('ccc'), '?y': DF.literal('aaa') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('aaa') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -327,7 +330,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?count': int('5') }),
+        BF.bindings({ '?count': int('5') }),
       ]);
       expect(output.variables).toMatchObject([ '?count' ]);
     });
@@ -349,11 +352,11 @@ describe('ActorQueryOperationGroup', () => {
 
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('aaa'), '?y': int('1') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': int('1') }),
-          Bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('not an int') }),
-          Bindings({ '?x': DF.literal('ccc'), '?y': int('1') }),
-          Bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('not an int') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': int('1') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': int('1') }),
+          BF.bindings({ '?x': DF.literal('bbb'), '?y': DF.literal('not an int') }),
+          BF.bindings({ '?x': DF.literal('ccc'), '?y': int('1') }),
+          BF.bindings({ '?x': DF.literal('aaa'), '?y': DF.literal('not an int') }),
         ],
         groupVariables: [ 'x' ],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -363,18 +366,18 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': DF.literal('aaa') }),
-        Bindings({ '?x': DF.literal('bbb') }),
-        Bindings({ '?x': DF.literal('ccc'), '?sum': int('1') }),
+        BF.bindings({ '?x': DF.literal('aaa') }),
+        BF.bindings({ '?x': DF.literal('bbb') }),
+        BF.bindings({ '?x': DF.literal('ccc'), '?sum': int('1') }),
       ]);
       expect(output.variables).toMatchObject([ '?x', '?sum' ]);
     });
 
     it('should pass errors in the input stream', async() => {
       const inputBindings = [
-        Bindings({ '?x': DF.literal('a'), '?y': int('1') }),
-        Bindings({ '?x': DF.literal('b'), '?y': int('2') }),
-        Bindings({ '?x': DF.literal('c'), '?y': int('3') }),
+        BF.bindings({ '?x': DF.literal('a'), '?y': int('1') }),
+        BF.bindings({ '?x': DF.literal('b'), '?y': int('2') }),
+        BF.bindings({ '?x': DF.literal('c'), '?y': int('3') }),
       ];
       const bindingsStream = new ArrayIterator(inputBindings).transform({
         autoStart: false,
@@ -442,7 +445,7 @@ describe('ActorQueryOperationGroup', () => {
           throw new Error('test error');
         });
       const { op, actor } = constructCase({
-        inputBindings: [ Bindings({ '?x': DF.literal('doesn\'t matter') }) ],
+        inputBindings: [ BF.bindings({ '?x': DF.literal('doesn\'t matter') }) ],
         groupVariables: [ 'x' ],
         inputVariables: [ 'x', 'y', 'z' ],
         inputOp: simpleXYZinput,
@@ -475,10 +478,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to count', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings({ '?x': int('1') }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': int('4') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -488,7 +491,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?c': int('4') }),
+        BF.bindings({ '?c': int('4') }),
       ]);
       expect(output.variables).toMatchObject([ '?c' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -520,7 +523,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?c': int('0') }),
+        BF.bindings({ '?c': int('0') }),
       ]);
       expect(output.variables).toMatchObject([ '?c' ]);
       expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
@@ -529,10 +532,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to sum', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings({ '?x': int('1') }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': int('4') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -542,7 +545,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?s': int('10') }),
+        BF.bindings({ '?s': int('10') }),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -559,7 +562,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?s': int('0') }),
+        BF.bindings({ '?s': int('0') }),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
       expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
@@ -568,10 +571,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should sum with regard to type promotion', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': float('3') }),
-          Bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
+          BF.bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': float('3') }),
+          BF.bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -581,7 +584,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?s': float('10') }),
+        BF.bindings({ '?s': float('10') }),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -590,10 +593,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to min', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int('4') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('1') }),
+          BF.bindings({ '?x': int('4') }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': int('1') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -603,7 +606,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?m': int('1') }),
+        BF.bindings({ '?m': int('1') }),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -620,7 +623,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({}),
+        BF.bindings({}),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
       expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
@@ -629,10 +632,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to max', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('1') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': int('4') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -642,7 +645,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?m': int('4') }),
+        BF.bindings({ '?m': int('4') }),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -659,7 +662,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({}),
+        BF.bindings({}),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
       expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
@@ -668,10 +671,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to avg', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': float('1') }),
-          Bindings({ '?x': float('2') }),
-          Bindings({ '?x': float('3') }),
-          Bindings({ '?x': float('4') }),
+          BF.bindings({ '?x': float('1') }),
+          BF.bindings({ '?x': float('2') }),
+          BF.bindings({ '?x': float('3') }),
+          BF.bindings({ '?x': float('4') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -681,7 +684,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': float('2.5') }),
+        BF.bindings({ '?a': float('2.5') }),
       ]);
       expect(output.variables).toMatchObject([ '?a' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -690,10 +693,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to avg with respect to type preservation', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
+          BF.bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -703,7 +706,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': decimal('2.5') }),
+        BF.bindings({ '?a': decimal('2.5') }),
       ]);
       expect(output.variables).toMatchObject([ '?a' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -720,7 +723,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': int('0') }),
+        BF.bindings({ '?a': int('0') }),
       ]);
       expect(output.variables).toMatchObject([ '?a' ]);
       expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
@@ -729,10 +732,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to sample', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings({ '?x': int('1') }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': int('4') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -757,7 +760,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({}),
+        BF.bindings({}),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
       expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
@@ -766,10 +769,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to group_concat', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings({ '?x': int('1') }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': int('4') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -779,7 +782,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?g': DF.literal('1 2 3 4') }),
+        BF.bindings({ '?g': DF.literal('1 2 3 4') }),
       ]);
       expect(output.variables).toMatchObject([ '?g' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
@@ -796,7 +799,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?g': DF.literal('') }),
+        BF.bindings({ '?g': DF.literal('') }),
       ]);
       expect(output.variables).toMatchObject([ '?g' ]);
       expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
@@ -805,10 +808,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to group_concat with respect to a custom separator', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings({ '?x': int('1') }),
+          BF.bindings({ '?x': int('2') }),
+          BF.bindings({ '?x': int('3') }),
+          BF.bindings({ '?x': int('4') }),
         ],
         groupVariables: [],
         inputVariables: [ 'x', 'y', 'z' ],
@@ -819,7 +822,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?g': DF.literal('1;2;3;4') }),
+        BF.bindings({ '?g': DF.literal('1;2;3;4') }),
       ]);
       expect(output.variables).toMatchObject([ '?g' ]);
       expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });

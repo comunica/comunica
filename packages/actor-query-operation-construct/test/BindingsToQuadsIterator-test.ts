@@ -1,4 +1,4 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -6,13 +6,14 @@ import { DataFactory } from 'rdf-data-factory';
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 const arrayifyStream = require('arrayify-stream');
 
 describe('BindingsToQuadsIterator', () => {
   describe('#bindTerm', () => {
     describe('with empty bindings', () => {
-      const bindings = Bindings({});
+      const bindings = BF.bindings({});
 
       it('should not bind a literal', () => {
         return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.literal('abc')).termType).toEqual('Literal');
@@ -36,7 +37,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     describe('with non-empty bindings', () => {
-      const bindings = Bindings({ '?a': DF.namedNode('a'), '?b': DF.namedNode('b') });
+      const bindings = BF.bindings({ '?a': DF.namedNode('a'), '?b': DF.namedNode('b') });
 
       it('should not bind a literal', () => {
         return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.literal('abc')).termType).toEqual('Literal');
@@ -70,7 +71,7 @@ describe('BindingsToQuadsIterator', () => {
 
   describe('#bindQuad', () => {
     describe('with empty bindings', () => {
-      const bindings = Bindings({});
+      const bindings = BF.bindings({});
 
       it('should not bind a quad without variables', () => {
         return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
@@ -124,7 +125,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     describe('with non-empty bindings', () => {
-      const bindings = Bindings({ '?a': DF.namedNode('a'), '?b': DF.namedNode('b') });
+      const bindings = BF.bindings({ '?a': DF.namedNode('a'), '?b': DF.namedNode('b') });
 
       it('should not bind a quad without variables', () => {
         return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
@@ -439,9 +440,9 @@ describe('BindingsToQuadsIterator', () => {
           DF.blankNode('otherbnode'),
         ),
       ], new ArrayIterator([
-        Bindings({ '?a': DF.namedNode('a1'), '?b': DF.namedNode('b1') }),
-        Bindings({ '?a': DF.namedNode('a2'), '?b': DF.namedNode('b2') }),
-        Bindings({ '?a': DF.namedNode('a3') }),
+        BF.bindings({ '?a': DF.namedNode('a1'), '?b': DF.namedNode('b1') }),
+        BF.bindings({ '?a': DF.namedNode('a2'), '?b': DF.namedNode('b2') }),
+        BF.bindings({ '?a': DF.namedNode('a3') }),
       ]));
     });
 
@@ -473,12 +474,12 @@ describe('BindingsToQuadsIterator', () => {
 
     describe('#bindTemplate', () => {
       it('should bind an empty template without variables, blank nodes and bindings', () => {
-        return expect(iterator.bindTemplate(Bindings({}), [], 0))
+        return expect(iterator.bindTemplate(BF.bindings({}), [], 0))
           .toEqual([]);
       });
 
       it('should bind a template without variables, blank nodes and bindings', () => {
-        return expect(iterator.bindTemplate(Bindings({}), [
+        return expect(iterator.bindTemplate(BF.bindings({}), [
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
           DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
           DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
@@ -491,7 +492,7 @@ describe('BindingsToQuadsIterator', () => {
       });
 
       it('should bind a template with variables and bindings and without blank nodes', () => {
-        return expect(iterator.bindTemplate(Bindings({
+        return expect(iterator.bindTemplate(BF.bindings({
           '?a': DF.namedNode('a'),
           '?b': DF.namedNode('b'),
         }), [
@@ -507,7 +508,7 @@ describe('BindingsToQuadsIterator', () => {
       });
 
       it('should bind a template with variables and incomplete bindings and without blank nodes', () => {
-        return expect(iterator.bindTemplate(Bindings({ '?a': DF.namedNode('a') }), [
+        return expect(iterator.bindTemplate(BF.bindings({ '?a': DF.namedNode('a') }), [
           DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
           DF.quad(DF.namedNode('s2'), DF.variable('b'), DF.namedNode('o2')),
           DF.quad(DF.namedNode('s3'), DF.variable('a'), DF.variable('b')),
@@ -518,7 +519,7 @@ describe('BindingsToQuadsIterator', () => {
       });
 
       it('should bind a template with variables, bindings and blank nodes', () => {
-        return expect(iterator.bindTemplate(Bindings({
+        return expect(iterator.bindTemplate(BF.bindings({
           '?a': DF.namedNode('a'),
           '?b': DF.namedNode('b'),
         }), [
@@ -549,9 +550,9 @@ describe('BindingsToQuadsIterator', () => {
           DF.blankNode('otherbnode'),
         ),
       ], new ArrayIterator([
-        Bindings({ '?a': DF.namedNode('a1'), '?b': DF.namedNode('b1') }),
-        Bindings({ '?a': DF.namedNode('a2'), '?b': DF.namedNode('b2') }),
-        Bindings({ '?a': DF.namedNode('a3') }),
+        BF.bindings({ '?a': DF.namedNode('a1'), '?b': DF.namedNode('b1') }),
+        BF.bindings({ '?a': DF.namedNode('a2'), '?b': DF.namedNode('b2') }),
+        BF.bindings({ '?a': DF.namedNode('a3') }),
       ]), false);
     });
 

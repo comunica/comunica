@@ -33,6 +33,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
+    "@comunica/bindings-factory": "^1.22.0",
     "@comunica/types": "^1.22.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.2.0",

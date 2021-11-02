@@ -1,5 +1,5 @@
 import { ActorSparqlSerializeSparqlJson } from '@comunica/actor-sparql-serialize-sparql-json';
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
@@ -9,14 +9,16 @@ import { ActorRdfMetadataExtractHydraControlsQuery } from '../lib/ActorRdfMetada
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 const sparqlSerialer = new ActorSparqlSerializeSparqlJson(<any> { bus: new Bus({ name: 'b' }) });
 const queryEngine: any = {
   async query() {
     return {
       bindingsStream: new ArrayIterator([
-        Bindings({
+        BF.bindings({
           '?id': DF.namedNode('subset'),
           '?graph': DF.namedNode('g'),
           '?pageUrl': DF.namedNode('http://example.org/?a=A&b=B'),
@@ -24,7 +26,7 @@ const queryEngine: any = {
           '?search_mapping_variable': DF.namedNode('a'),
           '?search_mapping_property': DF.namedNode('propa'),
         }),
-        Bindings({
+        BF.bindings({
           '?id': DF.namedNode('subset'),
           '?graph': DF.namedNode('g'),
           '?pageUrl': DF.namedNode('http://example.org/?a=A&b=B'),

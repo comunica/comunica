@@ -1,8 +1,8 @@
 /* eslint-disable mocha/max-top-level-suites */
 import { PassThrough, Readable, Transform } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorInit } from '@comunica/bus-init';
-import { Bindings } from '@comunica/bus-query-operation';
 import {
   KeysCore,
   KeysHttp,
@@ -30,7 +30,9 @@ import {
 } from '../lib/ActorInitSparql-browser';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { ICliArgsHandler } from '../lib/cli/ICliArgsHandler';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('exported constants', () => {
   it('should be correct', () => {
@@ -244,13 +246,13 @@ describe('ActorInitSparql', () => {
 
     describe('query', () => {
       it('should apply bindings when initialBindings are passed via the context', () => {
-        const ctx = { '@comunica/actor-init-sparql:initialBindings': Bindings({ '?s': DF.literal('sl') }) };
+        const ctx = { '@comunica/actor-init-sparql:initialBindings': BF.bindings({ '?s': DF.literal('sl') }) };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
       it('should apply bindings when initialBindings in the old format are passed via the context', () => {
-        const ctx = { initialBindings: Bindings({ '?s': DF.literal('sl') }) };
+        const ctx = { initialBindings: BF.bindings({ '?s': DF.literal('sl') }) };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });

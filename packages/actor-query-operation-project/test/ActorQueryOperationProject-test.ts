@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
@@ -6,7 +7,9 @@ import { ArrayIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationProject', () => {
   let bus: any;
@@ -16,7 +19,10 @@ describe('ActorQueryOperationProject', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new SingletonIterator(Bindings({ '?a': DF.literal('A'), '_:delet': DF.literal('deleteMe') })),
+        bindingsStream: new SingletonIterator(BF.bindings({
+          '?a': DF.literal('A'),
+          '_:delet': DF.literal('deleteMe'),
+        })),
         metadata: () => 'M',
         operated: arg,
         type: 'bindings',
@@ -66,7 +72,7 @@ describe('ActorQueryOperationProject', () => {
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': DF.literal('A'), '_:delet': DF.literal('deleteMe') }),
+          BF.bindings({ '?a': DF.literal('A'), '_:delet': DF.literal('deleteMe') }),
         ]);
       });
     });
@@ -78,7 +84,7 @@ describe('ActorQueryOperationProject', () => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': DF.literal('A') }),
+          BF.bindings({ '?a': DF.literal('A') }),
         ]);
       });
     });
@@ -94,9 +100,9 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with equal blank nodes across bindings', () => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
-          Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
-          Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
         ]),
         metadata: () => 'M',
         operated: arg,
@@ -109,9 +115,9 @@ describe('ActorQueryOperationProject', () => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
-          Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
-          Bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a'), '?b': DF.literal('b') }),
         ]);
       });
     });
@@ -119,9 +125,9 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with equal scoped blank nodes across bindings', () => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('A')), '?b': DF.literal('b') }),
-          Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('B')), '?b': DF.literal('b') }),
-          Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('C')), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('A')), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('B')), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('C')), '?b': DF.literal('b') }),
         ]),
         metadata: () => 'M',
         operated: arg,
@@ -134,9 +140,9 @@ describe('ActorQueryOperationProject', () => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('A')), '?b': DF.literal('b') }),
-          Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('B')), '?b': DF.literal('b') }),
-          Bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('C')), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('A')), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('B')), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeScoped('a', DF.namedNode('C')), '?b': DF.literal('b') }),
         ]);
       });
     });
@@ -144,9 +150,9 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with binding-scoped blank nodes across bindings', () => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': new BlankNodeBindingsScoped('a'), '?b': DF.literal('b') }),
-          Bindings({ '?a': new BlankNodeBindingsScoped('a'), '?b': DF.literal('b') }),
-          Bindings({ '?a': new BlankNodeBindingsScoped('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeBindingsScoped('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeBindingsScoped('a'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': new BlankNodeBindingsScoped('a'), '?b': DF.literal('b') }),
         ]),
         metadata: () => 'M',
         operated: arg,
@@ -160,9 +166,9 @@ describe('ActorQueryOperationProject', () => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': DF.blankNode('a1'), '?b': DF.literal('b') }),
-          Bindings({ '?a': DF.blankNode('a2'), '?b': DF.literal('b') }),
-          Bindings({ '?a': DF.blankNode('a3'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a1'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a2'), '?b': DF.literal('b') }),
+          BF.bindings({ '?a': DF.blankNode('a3'), '?b': DF.literal('b') }),
         ]);
       });
     });
@@ -170,7 +176,7 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with binding-scoped blank nodes within a single bindings object', () => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({
+          BF.bindings({
             '?a': new BlankNodeBindingsScoped('a'),
             '?b': new BlankNodeBindingsScoped('a'),
           }),
@@ -186,7 +192,7 @@ describe('ActorQueryOperationProject', () => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({
+          BF.bindings({
             '?a': DF.blankNode('a1'),
             '?b': DF.blankNode('a1'),
           }),

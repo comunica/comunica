@@ -1,8 +1,11 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { Bindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import * as SparqlExpressionEvaluator from '../lib/SparqlExpressionEvaluator';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 function termExpression(term: any): Algebra.TermExpression {
   return { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term };
@@ -25,7 +28,7 @@ describe('SparqlExpressionEvaluator', () => {
   let bindings: Bindings;
 
   beforeEach(() => {
-    bindings = Bindings({
+    bindings = BF.bindings({
       '?a': DF.literal('1'),
       '?b': DF.literal('2'),
       '?c': DF.literal('apple'),

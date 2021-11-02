@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -6,7 +7,9 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory<RDF.BaseQuad>();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationConstruct', () => {
   let bus: any;
@@ -18,9 +21,9 @@ describe('ActorQueryOperationConstruct', () => {
       mediate: (arg: any) => arg.operation.input ?
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            Bindings({ '?a': DF.literal('1') }),
-            Bindings({ '?a': DF.literal('2') }),
-            Bindings({ '?a': DF.literal('3') }),
+            BF.bindings({ '?a': DF.literal('1') }),
+            BF.bindings({ '?a': DF.literal('2') }),
+            BF.bindings({ '?a': DF.literal('3') }),
           ], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
           operated: arg,
@@ -29,7 +32,7 @@ describe('ActorQueryOperationConstruct', () => {
         }) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            Bindings({}),
+            BF.bindings({}),
           ], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
           operated: arg,

@@ -1,7 +1,5 @@
-import {
-  ActorQueryOperation,
-  Bindings,
-} from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads } from '@comunica/types';
@@ -9,7 +7,9 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSlice } from '../lib/ActorQueryOperationSlice';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationSlice', () => {
   let bus: any;
@@ -24,9 +24,9 @@ describe('ActorQueryOperationSlice', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
@@ -37,9 +37,9 @@ describe('ActorQueryOperationSlice', () => {
     mediatorQueryOperationMetaInf = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false }),
         operated: arg,
@@ -50,9 +50,9 @@ describe('ActorQueryOperationSlice', () => {
     mediatorQueryOperationUndefs = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
         operated: arg,
@@ -119,9 +119,9 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -133,8 +133,8 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -156,9 +156,9 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -170,8 +170,8 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
         ]);
       });
     });
@@ -193,8 +193,8 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -206,7 +206,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('2') }),
         ]);
       });
     });
@@ -218,7 +218,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -282,9 +282,9 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -299,9 +299,9 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -313,9 +313,9 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings({ a: DF.literal('3') }),
         ]);
       });
     });
