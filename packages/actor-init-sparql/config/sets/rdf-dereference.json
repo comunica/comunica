@@ -18,20 +18,20 @@
     {
       "@id": "config-sets:rdf-dereference.json#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
-      "beforeActor": "config-sets:rdf-dereference.json#myRdfDereferencerFallback",
+      "cc:lib/Actor#Actor_args_beforeActors": { "@id": "config-sets:rdf-dereference.json#myRdfDereferencerFallback" },
       "mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       },
       "mediatorRdfParseMediatypes": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
       "mediatorRdfParseHandle": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
       }
     },
 

@@ -8,7 +8,7 @@
     {
       "@id": "cmn:Mediator/Number",
       "@type": "Class",
-      "extends": "cc:Mediator",
+      "extends": "cc:lib/Mediator#Mediator",
       "requireElement": "MediatorNumber",
       "comment": "A mediator that can mediate over a single number field.",
       "parameters": [
@@ -38,7 +38,7 @@
       "constructorArguments": [
         {
           "@id": "cmn:Mediator/Number/constructorArgumentsObject",
-          "extends": "cc:Mediator/constructorArgumentsObject",
+          "extends": "cc:lib/Mediator#Mediator_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "field",

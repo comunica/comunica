@@ -8,14 +8,14 @@
     {
       "@id": "cmcp:Mediator/CombinePipeline",
       "@type": "Class",
-      "extends": "cc:Mediator",
+      "extends": "cc:lib/Mediator#Mediator",
       "requireElement": "MediatorCombinePipeline",
       "comment": "A comunica mediator that goes over all actors in sequence and forwards I/O",
       "constructorArguments": [
         {
           "@id": "cmcp:Mediator/CombinePipeline/constructorArgumentsObject",
           "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
-          "extends": "cc:Mediator/constructorArgumentsObject"
+          "extends": "cc:lib/Mediator#Mediator_args__constructorArgument"
         }
       ]
     }

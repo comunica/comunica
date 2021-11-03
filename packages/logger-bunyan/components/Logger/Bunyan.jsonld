@@ -8,7 +8,7 @@
     {
       "@id": "clb:Logger/Bunyan",
       "@type": "Class",
-      "extends": "cc:Logger",
+      "extends": "cc:lib/Logger#Logger",
       "requireElement": "LoggerBunyan",
       "comment": "A bunyan-based logger implementation.",
       "parameters": [
@@ -40,7 +40,6 @@
       "constructorArguments": [
         {
           "@id": "clb:Logger/Bunyan/constructorArgumentsObject",
-          "extends": "cc:Logger/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "name",

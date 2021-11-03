@@ -8,12 +8,12 @@
     {
       "@id": "cbrrh:Actor/RdfResolveHypermedia",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorRdfResolveHypermedia",
       "comment": "A comunica actor for rdf-resolve-hypermedia bus.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbrrh:Actor/RdfResolveHypermedia",
             "defaultScopedValue": { "@id": "cbrrh:Bus/RdfResolveHypermedia" }
@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "cbrrh:Actor/RdfResolveHypermedia/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

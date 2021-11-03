@@ -1,23 +1,59 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/core",
   "components": [
     {
-      "@id": "cc:Bus",
+      "@id": "cc:lib/Bus#Bus",
       "@type": "Class",
       "requireElement": "Bus",
-      "comment": "A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.",
+      "extends": [
+        "cc:lib/Bus#IBusArgs"
+      ],
+      "comment": "A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.  This bus does not run the action itself, for that a {@link Mediator} can be used.",
+      "parameters": [
+        {
+          "@id": "cc:lib/Bus#Bus_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this bus.",
+          "unique": true,
+          "required": true
+        }
+      ],
       "constructorArguments": [
         {
-          "@id": "cc:Bus#constructorArgumentsObject",
+          "@id": "cc:lib/Bus#Bus_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
-              "value": "rdf:subject"
+              "value": {
+                "@id": "cc:lib/Bus#Bus_args_name"
+              }
             }
           ]
         }
       ]
+    },
+    {
+      "@id": "cc:lib/Bus#IBusArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IBusArgs",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cc:lib/Bus#IActorReply",
+      "@type": "AbstractClass",
+      "requireElement": "IActorReply",
+      "extends": [],
+      "comment": "Data interface for holding an actor and a promise to a reply from that actor.",
+      "parameters": [],
+      "constructorArguments": []
     }
   ]
 }

@@ -102,6 +102,13 @@ export abstract class Mediator<A extends Actor<I, T, O>,
 
 export interface IMediatorArgs<A extends Actor<I, T, O>,
   I extends IAction, T extends IActorTest, O extends IActorOutput> {
+  /**
+   * The name for this mediator.
+   * @default {<rdf:subject>}
+   */
   name: string;
+  /**
+   * The bus this mediator will mediate over.
+   */
   bus: Bus<A, I, T, O>;
 }

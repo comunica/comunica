@@ -34,7 +34,7 @@ After installing, this mediator can be instantiated as follows:
         "@type": "MediatorNumberMin",
         "cmn:Mediator/Number/field": "httpRequests",
         "ignoreErrors": true,
-        "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbqo:Bus/QueryOperation" }
       }
     }
   ]

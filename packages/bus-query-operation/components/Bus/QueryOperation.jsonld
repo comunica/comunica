@@ -1,8 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
   "@id": "cbqo:Bus/QueryOperation",
-  "@type": "cc:BusIndexed",
+  "@type": "BusIndexed",
   "comment": "An indexed comunica bus for query-operation events.",
-  "actorIdentifierFields": [ "operationName" ],
-  "actionIdentifierFields": [ "operation", "type" ]
+  "args_actorIdentifierFields": [ "operationName" ],
+  "args_actionIdentifierFields": [ "operation", "type" ]
 }

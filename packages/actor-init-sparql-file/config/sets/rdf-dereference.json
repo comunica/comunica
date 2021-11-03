@@ -27,7 +27,7 @@
       "cardf:mediatorRdfParse": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParse",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
       }
     },
 
@@ -40,13 +40,13 @@
       "mediatorRdfParseMediatypes": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
       "mediatorRdfParseHandle": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
       }
     }
   ]

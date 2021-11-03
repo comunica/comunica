@@ -42,17 +42,17 @@ After installing, this package can be added to your engine's configuration as fo
         "@type": "MediatorNumberMax",
         "field": "filterFactor",
         "ignoreErrors": true,
-        "cc:Mediator/bus": { "@id": "cbrrh:Bus/RdfResolveHypermedia" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrh:Bus/RdfResolveHypermedia" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrrhlq:Bus/RdfResolveHypermediaLinksQueue" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhlq:Bus/RdfResolveHypermediaLinksQueue" }
       }
     }
   ]

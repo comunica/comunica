@@ -163,8 +163,18 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 }
 
 export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput> {
+  /**
+   * The name for this actor.
+   * @default {<rdf:subject>}
+   */
   name: string;
+  /**
+   * The bus this actor subscribes to.
+   */
   bus: Bus<Actor<I, T, O>, I, T, O>;
+  /**
+   * Actor that must be registered in the bus before this actor.
+   */
   beforeActors?: Actor<I, T, O>[];
 }
 

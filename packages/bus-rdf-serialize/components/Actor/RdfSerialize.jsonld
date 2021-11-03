@@ -9,12 +9,12 @@
     {
       "@id": "cbrs:Actor/RdfSerialize",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorRdfSerialize",
       "comment": "A comunica actor for rdf-serialize events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbrs:Actor/RdfSerialize",
             "defaultScopedValue": { "@id": "cbrs:Bus/RdfSerialize" }

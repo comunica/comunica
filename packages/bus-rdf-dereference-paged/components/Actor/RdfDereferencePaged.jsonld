@@ -8,12 +8,12 @@
     {
       "@id": "cbrdp:Actor/RdfDereferencePaged",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorRdfDereferencePaged",
       "comment": "A comunica actor for rdf-dereference-paged events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbrdp:Actor/RdfDereferencePaged",
             "defaultScopedValue": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "cbrdp:Actor/RdfDereferencePaged/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

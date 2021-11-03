@@ -43,6 +43,7 @@ export interface IActionObserverArgs<I extends IAction, O extends IActorOutput> 
 
   /**
    * The name for this observer.
+   * @default {<rdf:subject>}
    */
   name: string;
 

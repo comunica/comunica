@@ -39,7 +39,7 @@ After installing, this package can be added to your engine's configuration as fo
       "caqoudi:mediatorUpdateQuads": {
         "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbruq:Bus/RdfUpdateQuads" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbruq:Bus/RdfUpdateQuads" }
       }
     }
   ]

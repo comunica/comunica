@@ -34,17 +34,17 @@
       "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorRdfDereference": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:Bus/RdfDereference" }
       },
       "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadata": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:Bus/RdfMetadata" }
       },
       "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadataExtract": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
         "cmcu:Mediator/CombineUnion/field": "metadata"
       }
     },
@@ -70,17 +70,17 @@
         "@type": "MediatorNumberMax",
         "field": "filterFactor",
         "ignoreErrors": true,
-        "cc:Mediator/bus": { "@id": "cbrrh:Bus/RdfResolveHypermedia" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrh:Bus/RdfResolveHypermedia" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrrhlq:Bus/RdfResolveHypermediaLinksQueue" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhlq:Bus/RdfResolveHypermediaLinksQueue" }
       }
     },
 

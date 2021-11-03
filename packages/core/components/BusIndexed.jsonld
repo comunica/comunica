@@ -1,37 +1,74 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/core",
   "components": [
     {
-      "@id": "cc:BusIndexed",
+      "@id": "cc:lib/BusIndexed#BusIndexed",
       "@type": "Class",
-      "extends": "cc:Bus",
       "requireElement": "BusIndexed",
-      "comment": "A bus that indexes identified actors.",
+      "extends": [
+        "cc:lib/Bus#Bus"
+      ],
+      "comment": "A bus that indexes identified actors, so that actions with a corresponding identifier can be published more efficiently.  Multiple actors with the same identifier can be subscribed.  If actors or actions do not have a valid identifier, then this will fallback to the normal bus behaviour.",
       "parameters": [
         {
-          "@id": "cc:BusIndexed#actorIdentifierFields"
+          "@id": "cc:lib/BusIndexed#BusIndexed_args_actorIdentifierFields",
+          "range": "xsd:string",
+          "required": true
         },
         {
-          "@id": "cc:BusIndexed#actionIdentifierFields"
+          "@id": "cc:lib/BusIndexed#BusIndexed_args_actionIdentifierFields",
+          "range": "xsd:string",
+          "required": true
+        },
+        {
+          "@id": "cc:lib/BusIndexed#BusIndexed_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this bus.",
+          "unique": true,
+          "required": true
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cc:BusIndex#constructorArgumentsObject",
-          "extends": "cc:Bus#constructorArgumentsObject",
+          "@id": "cc:lib/BusIndexed#BusIndexed_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "actorIdentifierFields",
-              "value": "cc:BusIndexed#actorIdentifierFields"
+              "value": {
+                "@id": "cc:lib/BusIndexed#BusIndexed_args_actorIdentifierFields"
+              }
             },
             {
               "keyRaw": "actionIdentifierFields",
-              "value": "cc:BusIndexed#actionIdentifierFields"
+              "value": {
+                "@id": "cc:lib/BusIndexed#BusIndexed_args_actionIdentifierFields"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cc:lib/BusIndexed#BusIndexed_args_name"
+              }
             }
           ]
         }
       ]
+    },
+    {
+      "@id": "cc:lib/BusIndexed#IBusIndexedArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IBusIndexedArgs",
+      "extends": [
+        "cc:lib/Bus#IBusArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
     }
   ]
 }

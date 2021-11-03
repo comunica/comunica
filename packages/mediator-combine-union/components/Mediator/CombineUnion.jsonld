@@ -8,7 +8,7 @@
     {
       "@id": "cmcu:Mediator/CombineUnion",
       "@type": "Class",
-      "extends": "cc:Mediator",
+      "extends": "cc:lib/Mediator#Mediator",
       "requireElement": "MediatorCombineUnion",
       "comment": "A comunica mediator that takes the union of all actor results.",
       "parameters": [
@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "cmcu:Mediator/CombineUnion/constructorArgumentsObject",
-          "extends": "cc:Mediator/constructorArgumentsObject",
+          "extends": "cc:lib/Mediator#Mediator_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "field",

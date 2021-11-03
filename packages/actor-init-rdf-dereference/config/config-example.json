@@ -26,7 +26,7 @@
           "mediatorRdfDereference": {
             "@id": "config-example:mediatorRdfDereference",
             "@type": "MediatorRace",
-            "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:Bus/RdfDereference" }
           },
           "cird:url": "https://fragments.linkedsoftwaredependencies.org/npm"
         },
@@ -37,18 +37,18 @@
             "@id": "config-example:mediatorHttp",
             "@type": "MediatorNumberMin",
             "cmn:Mediator/Number/field": "time",
-            "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:Bus/Http" }
           },
           "mediatorRdfParseMediatypes": {
             "@id": "config-example:mediatorRdfParseMediatypes",
             "@type": "MediatorCombineUnion",
-            "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
             "cmcu:Mediator/CombineUnion/field": "mediaTypes"
           },
           "mediatorRdfParseHandle": {
             "@id": "config-example:mediatorRdfParseHandle",
             "@type": "MediatorRace",
-            "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
           }
         },
         {

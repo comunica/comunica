@@ -8,7 +8,7 @@
     {
       "@id": "cmjcf:Mediator/JoinCoefficientsFixed",
       "@type": "Class",
-      "extends": "cc:Mediator",
+      "extends": "cc:lib/Mediator#Mediator",
       "requireElement": "MediatorJoinCoefficientsFixed",
       "comment": "A comunica join-coefficients-fixed mediator.",
       "parameters": [
@@ -40,7 +40,7 @@
       "constructorArguments": [
         {
           "@id": "cmjcf:Mediator/JoinCoefficientsFixed/constructorArgumentsObject",
-          "extends": "cc:Mediator/constructorArgumentsObject",
+          "extends": "cc:lib/Mediator#Mediator_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "cpuWeight",

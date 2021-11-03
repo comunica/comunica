@@ -8,12 +8,12 @@
     {
       "@id": "cbrrqp:Actor/RdfResolveQuadPattern",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorRdfResolveQuadPattern",
       "comment": "A comunica actor for rdf-resolve-quad-pattern events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbrrqp:Actor/RdfResolveQuadPattern",
             "defaultScopedValue": { "@id": "cbrrqp:Bus/RdfResolveQuadPattern" }
@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

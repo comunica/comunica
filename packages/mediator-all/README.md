@@ -32,7 +32,7 @@ After installing, this mediator can be instantiated as follows:
       "someMediator": {
         "@id": "config-sets:sparql-init.json#mediatorHttpInvalidate",
         "@type": "MediatorAll",
-        "cc:Mediator/bus": { "@id": "cbhi:Bus/HttpInvalidate" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbhi:Bus/HttpInvalidate" }
       }
     }
   ]

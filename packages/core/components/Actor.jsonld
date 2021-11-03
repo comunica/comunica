@@ -1,45 +1,102 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/core",
   "components": [
     {
-      "@id": "cc:Actor",
+      "@id": "cc:lib/Actor#Actor",
       "@type": "AbstractClass",
       "requireElement": "Actor",
-      "comment": "An actor can act on messages of certain types and provide output of a certain type.",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "comment": "An actor can act on messages of certain types and provide output of a certain type.  The flow of an actor is as follows: 1. Send a message to {@link Actor#test} to test if an actor can run that action. 2. If the actor can reply to the message, let the actor run the action using {@link Actor#run}.  An actor is typically subscribed to a bus, using which the applicability to an action can be tested.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
-          "comment": "The bus this actor subscribes to.",
-          "range": "cc:Bus",
+          "@id": "cc:lib/Actor#Actor_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
           "unique": true,
           "required": true
         },
         {
-          "@id": "cc:Actor/beforeActor",
-          "comment": "An actor that must be registered in the bus before this actor.",
-          "range": "cc:Actor"
+          "@id": "cc:lib/Actor#Actor_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cc:lib/Actor#Actor_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cc:Actor/constructorArgumentsObject",
+          "@id": "cc:lib/Actor#Actor_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
-              "value": "rdf:subject"
+              "value": {
+                "@id": "cc:lib/Actor#Actor_args_name"
+              }
             },
             {
               "keyRaw": "bus",
-              "value": "cc:Actor/bus"
+              "value": {
+                "@id": "cc:lib/Actor#Actor_args_bus"
+              }
             },
             {
               "keyRaw": "beforeActors",
-              "value": "cc:Actor/beforeActor"
+              "value": {
+                "@id": "cc:lib/Actor#Actor_args_beforeActors"
+              }
             }
           ]
         }
       ]
+    },
+    {
+      "@id": "cc:lib/Actor#IActorArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorArgs",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cc:lib/Actor#IActorTest",
+      "@type": "AbstractClass",
+      "requireElement": "IActorTest",
+      "extends": [],
+      "comment": "Data interface for the type of an actor test result.",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cc:lib/Actor#IActorOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorOutput",
+      "extends": [],
+      "comment": "Data interface for the type of an actor run result.",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "ct:lib/index#IAction",
+      "@type": "AbstractClass",
+      "requireElement": "IAction",
+      "extends": [],
+      "comment": "Data interface for the type of action.",
+      "parameters": [],
+      "constructorArguments": []
     }
   ]
 }

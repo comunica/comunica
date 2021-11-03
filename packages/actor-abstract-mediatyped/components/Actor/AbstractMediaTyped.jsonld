@@ -8,13 +8,13 @@
     {
       "@id": "caam:Actor/AbstractMediaTyped",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorAbstractMediaTyped",
       "comment": "An abstract comunica actor for handling media-typed actions.",
       "constructorArguments": [
         {
           "@id": "caam:Actor/AbstractMediaTyped/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

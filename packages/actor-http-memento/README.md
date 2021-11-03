@@ -33,7 +33,7 @@ After installing, this package can be added to your engine's configuration as fo
       "cahm:Actor/Http/Memento/mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       },
-      "beforeActor": "config-sets:http.json#myHttpFetcher"
+      "args_beforeActors": "config-sets:http.json#myHttpFetcher"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld",
   "@id": "cbruh:Bus/RdfUpdateHypermedia",
-  "@type": "cc:Bus",
+  "@type": "cc:lib/Bus#Bus",
   "comment": "A comunica bus for rdf-update-hypermedia events."
 }

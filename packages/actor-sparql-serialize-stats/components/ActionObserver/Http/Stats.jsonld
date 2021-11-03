@@ -8,12 +8,12 @@
     {
       "@id": "cassst:ActionObserver/Http/Stats",
       "@type": "Class",
-      "extends": "cc:ActionObserver",
+      "extends": "cc:lib/ActionObserver#ActionObserver",
       "requireElement": "ActionObserverHttp",
       "comment": "Observes HTTP actions, and maintains a counter of the number of requests.",
       "parameters": [
         {
-          "@id": "cc:ActionObserver/bus",
+          "@id": "cc:lib/ActionObserver#ActionObserver_args_bus",
           "defaultScoped": {
             "defaultScope": "cassst:ActionObserver/Http/Stats",
             "defaultScopedValue": { "@id": "cbh:Bus/Http" }
@@ -22,7 +22,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cc:ActionObserver/constructorArgumentsObject"
+          "extends": "cc:lib/ActionObserver#ActionObserver_args__constructorArgument"
         }
       ]
     }

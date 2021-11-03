@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/types",
+  "@type": "Module",
+  "requireName": "@comunica/types",
+  "import": [
+    "files-ct:components/index.jsonld"
+  ]
+}

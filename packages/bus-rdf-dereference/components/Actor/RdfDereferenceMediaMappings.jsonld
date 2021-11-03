@@ -43,7 +43,7 @@
       "constructorArguments": [
         {
           "@id": "cbrd:Actor/RdfDereferenceMediaMappings/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject",
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfParse",

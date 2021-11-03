@@ -8,7 +8,7 @@
     {
       "@id": "clp:Logger/Pretty",
       "@type": "Class",
-      "extends": "cc:Logger",
+      "extends": "cc:lib/Logger#Logger",
       "requireElement": "LoggerPretty",
       "comment": "A logger that pretty-prints.",
       "parameters": [
@@ -24,7 +24,6 @@
       "constructorArguments": [
         {
           "@id": "clp:Logger/Pretty/constructorArgumentsObject",
-          "extends": "cc:Logger/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "level",

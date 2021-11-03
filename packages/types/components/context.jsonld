@@ -1,0 +1,70 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "ct": "npmd:@comunica/types/",
+      "files-ct": "ct:^1.0.0/",
+      "IActorQueryOperationOutputBindings": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputBindings",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputQuads": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputQuads",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputBoolean": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputBoolean",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputUpdate": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputUpdate",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActionQueryOperation": {
+        "@id": "ct:lib/index#IActionQueryOperation",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputBase": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputBase",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IMetadata": {
+        "@id": "ct:lib/index#IMetadata",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputStream": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputStream",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IQueryExplained": {
+        "@id": "ct:lib/index#IQueryExplained",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IPhysicalQueryPlanLogger": {
+        "@id": "ct:lib/index#IPhysicalQueryPlanLogger",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IAction": {
+        "@id": "ct:lib/index#IAction",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IQueryEngine": {
+        "@id": "ct:lib/index#IQueryEngine",
+        "@prefix": true,
+        "@context": {}
+      }
+    }
+  ]
+}

@@ -8,12 +8,12 @@
     {
       "@id": "cbqo:Actor/QueryOperation",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorQueryOperation",
       "comment": "A comunica actor for query-operation events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbqo:Actor/QueryOperation",
             "defaultScopedValue": { "@id": "cbqo:Bus/QueryOperation" }
@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

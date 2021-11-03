@@ -8,12 +8,12 @@
     {
       "@id": "cbrsi:Actor/RdfSourceIdentifier",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorRdfSourceIdentifier",
       "comment": "A comunica actor for rdf-source-identifier events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbrsi:Actor/RdfSourceIdentifier",
             "defaultScopedValue": { "@id": "cbrsi:Bus/RdfSourceIdentifier" }
@@ -31,7 +31,7 @@
         {
           "@id": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
           "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
-          "extends": "cc:Actor/constructorArgumentsObject",
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "priority",

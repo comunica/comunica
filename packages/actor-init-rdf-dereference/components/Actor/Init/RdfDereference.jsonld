@@ -28,7 +28,7 @@
       "constructorArguments": [
         {
           "@id": "cird:Actor/Init/RdfParse/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject",
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfDereference",

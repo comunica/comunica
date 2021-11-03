@@ -31,7 +31,7 @@ After installing, this mediator can be instantiated as follows:
       "someMediator": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       }
     }

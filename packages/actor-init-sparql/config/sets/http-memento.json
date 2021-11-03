@@ -14,7 +14,7 @@
       "cahm:Actor/Http/Memento/mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       },
-      "beforeActor": "config-sets:http.json#myHttpFetcher"
+      "cc:lib/Actor#Actor_args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
     }
   ]
 }

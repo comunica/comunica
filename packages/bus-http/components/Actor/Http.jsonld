@@ -8,12 +8,12 @@
     {
       "@id": "cbh:Actor/Http",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorHttp",
       "comment": "A base actor for handling HTTP events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbh:Actor/Http",
             "defaultScopedValue": { "@id": "cbh:Bus/Http" }
@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "cbh:Actor/Http/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

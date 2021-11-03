@@ -1,6 +1,6 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld",
   "@id": "cbrrqp:Bus/RdfResolveQuadPattern",
-  "@type": "cc:Bus",
+  "@type": "cc:lib/Bus#Bus",
   "comment": "A comunica bus for resolving quad patterns to quad streams."
 }

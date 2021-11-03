@@ -8,12 +8,12 @@
     {
       "@id": "cbrme:Actor/RdfMetadataExtract",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorRdfMetadataExtract",
       "comment": "A comunica actor for rdf-metadata-extract events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbrme:Actor/RdfMetadataExtract",
             "defaultScopedValue": { "@id": "cbrme:Bus/RdfMetadataExtract" }
@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

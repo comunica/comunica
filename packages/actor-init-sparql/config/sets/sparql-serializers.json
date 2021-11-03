@@ -31,17 +31,17 @@
       "mediatorRdfSerialize": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:Bus/RdfSerialize" }
       },
       "mediatorRdfSerializeMediaTypeCombiner": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:Bus/RdfSerialize" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
       "mediatorRdfSerializeMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:Bus/RdfSerialize" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypeFormats"
       }
     },

@@ -8,12 +8,12 @@
     {
       "@id": "cbcp:Actor/ContextPreprocess",
       "@type": "AbstractClass",
-      "extends": "cc:Actor",
+      "extends": "cc:lib/Actor#Actor",
       "requireElement": "ActorContextPreprocess",
       "comment": "A comunica actor for context-preprocess events.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
+          "@id": "cc:lib/Actor#Actor_args_bus",
           "defaultScoped": {
             "defaultScope": "cbcp:Actor/ContextPreprocess",
             "defaultScopedValue": { "@id": "cbcp:Bus/ContextPreprocess" }
@@ -24,7 +24,7 @@
         {
           "@id": "cbcp:Actor/ContextPreprocess/constructorArgumentsObject",
           "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument"
         }
       ]
     }

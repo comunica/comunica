@@ -14,14 +14,14 @@
         {
           "@id": "cr:busInit",
           "comment": "The init bus",
-          "range": "cc:Bus",
+          "range": "cc:lib/Bus#Bus",
           "default": { "@id": "cbi:Bus/Init" },
           "unique": true
         },
         {
           "@id": "cr:actor",
           "comment": "An actor that can be used by the runner.",
-          "range": "cc:Actor"
+          "range": "cc:lib/Actor#Actor"
         }
       ],
       "constructorArguments": [

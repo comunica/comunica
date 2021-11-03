@@ -20,7 +20,7 @@
           "cahp:Actor/Http/Proxy/mediatorHttp": {
             "@id": "config-sets:http.json#mediatorHttp"
           },
-          "beforeActor": "config-sets:http.json#myHttpFetcher"
+          "cc:lib/Actor#Actor_args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
         },
         {
           "@id": "config-sets:http.json#myHttpFetcher",
@@ -33,7 +33,7 @@
       "@type": "MediatorNumberMin",
       "field": "time",
       "ignoreErrors": true,
-      "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+      "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:Bus/Http" }
     }
   ]
 }

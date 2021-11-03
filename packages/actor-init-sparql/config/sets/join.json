@@ -32,7 +32,7 @@
         "@type": "MediatorNumberMax",
         "field": "accuracy",
         "ignoreErrors": true,
-        "cc:Mediator/bus": { "@id": "cbrjs:Bus/RdfJoinSelectivity" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrjs:Bus/RdfJoinSelectivity" }
       }
     },
     {

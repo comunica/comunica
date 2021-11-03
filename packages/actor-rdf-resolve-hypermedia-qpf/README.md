@@ -35,17 +35,17 @@ After installing, this package can be added to your engine's configuration as fo
       "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorRdfDereference": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:Bus/RdfDereference" }
       },
       "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadata": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:Bus/RdfMetadata" }
       },
       "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadataExtract": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
         "cmcu:Mediator/CombineUnion/field": "metadata"
       }
     }

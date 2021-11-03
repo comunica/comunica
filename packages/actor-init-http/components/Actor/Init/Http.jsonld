@@ -37,7 +37,7 @@
       "constructorArguments": [
         {
           "@id": "cih:Actor/Init/Http/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject",
+          "extends": "cc:lib/Actor#Actor_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",
