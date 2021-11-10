@@ -1,0 +1,92 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue",
+  "components": [
+    {
+      "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue",
+      "@type": "AbstractClass",
+      "requireElement": "ActorRdfResolveHypermediaLinksQueue",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A comunica actor for rdf-resolve-hypermedia-links-queue events.  Actor types: * Input:  IActionRdfResolveHypermediaLinksQueue:      Creates a new {@link ILinkQueue} for the given seed URL. * Test:   <none> * Output: IActorRdfResolveHypermediaLinksQueueOutput: The created {@link ILinkQueue}.",
+      "parameters": [
+        {
+          "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#IActionRdfResolveHypermediaLinksQueue",
+      "@type": "AbstractClass",
+      "requireElement": "IActionRdfResolveHypermediaLinksQueue",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#IActorRdfResolveHypermediaLinksQueueOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfResolveHypermediaLinksQueueOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

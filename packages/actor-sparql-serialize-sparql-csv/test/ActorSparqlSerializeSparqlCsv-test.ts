@@ -100,9 +100,10 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
     beforeEach(() => {
       actor = new ActorSparqlSerializeSparqlCsv({ bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           'text/csv': 1,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
         BF.bindings({ '?k1': DF.namedNode('v1') }),

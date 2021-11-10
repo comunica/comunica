@@ -9,17 +9,32 @@
     {
       "@id": "carsjl:Actor/RdfSerialize/JsonLd",
       "@type": "Class",
-      "extends": "cbrs:Actor/RdfSerializeFixedMediaTypes",
+      "extends": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes",
       "requireElement": "ActorRdfSerializeJsonLd",
       "comment": "A comunica JsonLd RDF Serialize Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "carsjl:Actor/RdfSerialize/JsonLd",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "application/ld+json", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/JSON-LD" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": 1.0
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "carsjl:Actor/RdfSerialize/JsonLd",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": "http://www.w3.org/ns/formats/JSON-LD"
+              }
+            }
           }
         },
         {
@@ -34,7 +49,7 @@
       "constructorArguments": [
         {
           "@id": "carsjl:Actor/RdfSerialize/JsonLd/constructorArgumentsObject",
-          "extends": "cbrs:Actor/RdfSerializeFixedMediaTypes/constructorArgumentsObject",
+          "extends": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "jsonStringifyIndentSpaces",

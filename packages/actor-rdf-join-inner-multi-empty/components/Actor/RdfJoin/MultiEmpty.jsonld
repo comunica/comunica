@@ -8,12 +8,12 @@
     {
       "@id": "carjme:Actor/RdfJoin/MultiEmpty",
       "@type": "Class",
-      "extends": "cbrj:Actor/RdfJoin",
+      "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
       "requireElement": "ActorRdfJoinMultiEmpty",
       "comment": "A comunica Multi Empty RDF Join Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+          "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument"
         }
       ]
     }

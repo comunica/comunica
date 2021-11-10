@@ -1,12 +1,41 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrrhl": "npmd:@comunica/bus-rdf-resolve-hypermedia-links/",
       "files-cbrrhl": "cbrrhl:^1.0.0/",
-
-      "BusRdfResolveHypermediaLinks": "cbrrhl:Bus/RdfResolveHypermediaLinks",
-      "ActorRdfResolveHypermediaLinks": "cbrrhl:Actor/RdfResolveHypermediaLinks"
+      "ActorRdfResolveHypermediaLinks": {
+        "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfResolveHypermediaLinks": {
+        "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#IActionRdfResolveHypermediaLinks",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfResolveHypermediaLinksOutput": {
+        "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#IActorRdfResolveHypermediaLinksOutput",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ILink": {
+        "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ILink",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

@@ -15,8 +15,12 @@ import type * as RDF from '@rdfjs/types';
  */
 export abstract class ActorRdfResolveHypermediaLinks
   extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput> {
-  public constructor(args:
-  IActorArgs<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
+  public constructor(
+    args: IActorArgs<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>,
+  ) {
     super(args);
   }
 }

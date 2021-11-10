@@ -51,6 +51,9 @@ export abstract class ActorRdfJoin
    */
   protected readonly canHandleUndefs: boolean;
 
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorRdfJoinArgs, options: IActorRdfJoinInternalOptions) {
     super(args);
     this.logicalType = options.logicalType;

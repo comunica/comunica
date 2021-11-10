@@ -9,7 +9,7 @@
     {
       "@id": "carsifct:Actor/RdfSourceIdentifier/FileContentType",
       "@type": "Class",
-      "extends": "cbrsi:Actor/RdfSourceIdentifier",
+      "extends": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier",
       "requireElement": "ActorRdfSourceIdentifierFileContentType",
       "comment": "A comunica File Content Type RDF Source Identifier Actor.",
       "parameters": [
@@ -37,7 +37,7 @@
           ]
         },
         {
-          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier/priority",
           "defaultScoped": {
             "defaultScope": "carsifct:Actor/RdfSourceIdentifier/FileContentType",
             "defaultScopedValue": 0.1
@@ -47,7 +47,7 @@
       "constructorArguments": [
         {
           "@id": "carsifct:Actor/RdfSourceIdentifier/FileContentType/constructorArgumentsObject",
-          "extends": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
+          "extends": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

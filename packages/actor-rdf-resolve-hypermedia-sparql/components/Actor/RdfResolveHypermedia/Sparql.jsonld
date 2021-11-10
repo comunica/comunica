@@ -8,7 +8,7 @@
     {
       "@id": "carrhs:Actor/RdfResolveHypermedia/Sparql",
       "@type": "Class",
-      "extends": "cbrrh:Actor/RdfResolveHypermedia",
+      "extends": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia",
       "requireElement": "ActorRdfResolveHypermediaSparql",
       "comment": "A comunica SPARQL RDF Resolve Hypermedia Actor.",
       "parameters": [
@@ -37,7 +37,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrrh:Actor/RdfResolveHypermedia/constructorArgumentsObject",
+          "extends": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

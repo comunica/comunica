@@ -17,6 +17,9 @@ import type { IMediatorTypeAccuracy } from '../../mediatortype-accuracy/lib/Medi
  */
 export abstract class ActorRdfJoinSelectivity
   extends Actor<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(
     args: IActorArgs<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>,
   ) {

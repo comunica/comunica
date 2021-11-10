@@ -8,12 +8,12 @@
     {
       "@id": "carjmhu:Actor/RdfJoin/MinusHashUndef",
       "@type": "Class",
-      "extends": "cbrj:Actor/RdfJoin",
+      "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
       "requireElement": "ActorRdfJoinMinusHashUndef",
       "comment": "A comunica Minus Hash Undef RDF Join Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+          "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument"
         }
       ]
     }

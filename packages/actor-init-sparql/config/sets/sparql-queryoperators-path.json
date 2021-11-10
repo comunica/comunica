@@ -24,50 +24,50 @@
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myAltPathOperator",
       "@type": "ActorQueryOperationPathAlt",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myInvPathOperator",
       "@type": "ActorQueryOperationPathInv",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myLinkPathOperator",
       "@type": "ActorQueryOperationPathLink",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myNpsPathOperator",
       "@type": "ActorQueryOperationPathNps",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myOneOrMorePathOperator",
       "@type": "ActorQueryOperationPathOneOrMore",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
       "@id": "config-sets:sparql-queryoperator-path.json#mySeqPathOperator",
       "@type": "ActorQueryOperationPathSeq",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
       "caqops:mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
     },
 
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myZeroOrMorePathOperator",
       "@type": "ActorQueryOperationPathZeroOrMore",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myZeroOrOnePathOperator",
       "@type": "ActorQueryOperationPathZeroOrOne",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     }
   ]
 }

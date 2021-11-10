@@ -8,7 +8,7 @@
     {
       "@id": "caqoudr:Actor/QueryOperation/Drop",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "ActorQueryOperationDrop",
       "comment": "A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles SPARQL drop operations.",
       "parameters": [
@@ -21,7 +21,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorUpdateQuads",

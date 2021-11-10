@@ -30,17 +30,17 @@
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:Bus/RdfDereference" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:Bus/RdfMetadata" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus" },
         "cmcu:Mediator/CombineUnion/field": "metadata"
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia": {
@@ -48,12 +48,12 @@
         "@type": "MediatorNumberMax",
         "field": "filterFactor",
         "ignoreErrors": true,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrh:Bus/RdfResolveHypermedia" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus" }
       }
     },
 

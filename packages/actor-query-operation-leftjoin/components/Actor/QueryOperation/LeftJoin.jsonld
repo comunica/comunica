@@ -8,7 +8,7 @@
     {
       "@id": "caqolj:Actor/QueryOperation/LeftJoin",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "ActorQueryOperationLeftJoin",
       "comment": "A query operation actor that handles SPARQL leftjoin operations.",
       "parameters": [
@@ -21,7 +21,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorJoin",

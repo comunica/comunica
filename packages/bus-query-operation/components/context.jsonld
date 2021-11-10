@@ -1,13 +1,117 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbqo": "npmd:@comunica/bus-query-operation/",
       "files-cbqo": "cbqo:^1.0.0/",
-
-      "BusQueryOperation": "cbqo:Bus/QueryOperation",
-      "ActorQueryOperation": "cbqo:Actor/QueryOperation",
-      "ActorQueryOperationTypedMediated": "cbqo:Actor/QueryOperationTypedMediated"
+      "ActorQueryOperation": {
+        "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_name"
+          },
+          "args_bus": {
+            "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IBaseExpressionContext": {
+        "@id": "cbqo:lib/ActorQueryOperation#IBaseExpressionContext",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IExpressionContext": {
+        "@id": "cbqo:lib/ActorQueryOperation#IExpressionContext",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IAsyncExpressionContext": {
+        "@id": "cbqo:lib/ActorQueryOperation#IAsyncExpressionContext",
+        "@prefix": true,
+        "@context": {}
+      },
+      "QueryOperation": {
+        "@id": "IAction:QueryOperation",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputBindings": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputBindings",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputBoolean": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputBoolean",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputQuads": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputQuads",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputUpdate": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputUpdate",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorQueryOperationOutputStream": {
+        "@id": "ct:lib/index#IActorQueryOperationOutputStream",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorQueryOperationTyped": {
+        "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped",
+        "@prefix": true,
+        "@context": {
+          "operationName": {
+            "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_operationName"
+          },
+          "args_name": {
+            "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_name"
+          },
+          "args_bus": {
+            "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "ActorQueryOperationTypedMediated": {
+        "@id": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
+        "@prefix": true,
+        "@context": {
+          "operationName": {
+            "@id": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_operationName"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_name"
+          },
+          "args_bus": {
+            "@id": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationTypedMediatedArgs": {
+        "@id": "cbqo:lib/ActorQueryOperationTypedMediated#IActorQueryOperationTypedMediatedArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

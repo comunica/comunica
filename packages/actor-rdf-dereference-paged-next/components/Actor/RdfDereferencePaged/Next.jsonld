@@ -9,7 +9,7 @@
     {
       "@id": "cardph:Actor/RdfDereferencePaged/Next",
       "@type": "Class",
-      "extends": "cbrdp:Actor/RdfDereferencePaged",
+      "extends": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged",
       "requireElement": "ActorRdfDereferencePagedNext",
       "comment": "A comunica Next RDF Dereference Paged Actor.",
       "parameters": [
@@ -42,10 +42,10 @@
         {
           "@id": "cardph:httpInvalidator",
           "comment": "An actor that listens to HTTP invalidation events",
-          "range": "cbhi:Actor/HttpInvalidateListenable",
+          "range": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable",
           "default": {
             "@id": "cardph:Actor/RdfResolveQuadPattern/httpInvalidator#default",
-            "@type": "cbhi:Actor/HttpInvalidateListenable"
+            "@type": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable"
           },
           "required": true,
           "unique": true
@@ -54,7 +54,7 @@
       "constructorArguments": [
         {
           "@id": "cardph:Actor/RdfDereferencePaged/Hydra/constructorArgumentsObject",
-          "extends": "cbrdp:Actor/RdfDereferencePaged/constructorArgumentsObject",
+          "extends": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfDereference",

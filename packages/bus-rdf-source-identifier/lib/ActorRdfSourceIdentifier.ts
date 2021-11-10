@@ -17,6 +17,9 @@ export abstract class ActorRdfSourceIdentifier
   extends Actor<IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput> {
   public readonly priority: number;
 
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorRdfSourceIdentifierArgs) {
     super(args);
   }

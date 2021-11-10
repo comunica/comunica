@@ -8,14 +8,14 @@
     {
       "@id": "caabh:Actor/AbstractFilterHash",
       "@type": "AbstractClass",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "AbstractFilterHash",
       "comment": "An abstract comunica actor for operators that require hashing functionality.",
       "parameters": [],
       "constructorArguments": [
         {
           "@id": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject",
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": []
         }
       ]

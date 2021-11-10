@@ -17,6 +17,9 @@ export abstract class ActorRdfUpdateHypermedia
   extends Actor<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
   protected readonly destinationType: string;
 
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(
     args: IActorArgs<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>,
     destinationType: string,

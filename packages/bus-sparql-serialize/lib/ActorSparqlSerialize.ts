@@ -30,6 +30,9 @@ import type { IActorQueryOperationOutputBase } from '@comunica/types';
  */
 export abstract class ActorSparqlSerialize
   extends ActorAbstractMediaTyped<IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgsMediaTyped<IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>) {
     super(args);
   }

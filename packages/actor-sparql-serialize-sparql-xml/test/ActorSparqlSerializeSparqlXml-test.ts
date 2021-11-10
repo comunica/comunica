@@ -78,9 +78,10 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
     beforeEach(() => {
       actor = new ActorSparqlSerializeSparqlXml({ bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           'sparql-results+xml': 1,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
         BF.bindings({ '?k1': DF.namedNode('v1') }),

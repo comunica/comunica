@@ -28,7 +28,7 @@
   "dependencies": {
     "@comunica/actor-query-operation-construct": "^1.22.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.2.0"
+    "asynciterator": "^3.2.1"
   },
   "peerDependencies": {
     "@comunica/bindings-factory": "^1.22.0",

@@ -10,7 +10,7 @@
     {
       "@id": "caruqh:Actor/RdfUpdateQuads/Hypermedia",
       "@type": "Class",
-      "extends": "cbruq:Actor/RdfUpdateQuads",
+      "extends": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads",
       "requireElement": "ActorRdfUpdateQuadsHypermedia",
       "comment": "A comunica Hypermedia RDF Update Quads Actor.",
       "parameters": [
@@ -49,10 +49,10 @@
         {
           "@id": "caruqh:Actor/RdfUpdateQuads/Hypermedia/httpInvalidator",
           "comment": "An actor that listens to HTTP invalidation events",
-          "range": "cbhi:Actor/HttpInvalidateListenable",
+          "range": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable",
           "default": {
-            "@id": "cbruq:Actor/RdfUpdateQuads/Hypermedia/httpInvalidator#default",
-            "@type": "cbhi:Actor/HttpInvalidateListenable"
+            "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads/Hypermedia/httpInvalidator_default",
+            "@type": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable"
           },
           "required": true,
           "unique": true
@@ -60,7 +60,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbruq:Actor/RdfUpdateQuads/constructorArgumentsObject",
+          "extends": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfDereference",

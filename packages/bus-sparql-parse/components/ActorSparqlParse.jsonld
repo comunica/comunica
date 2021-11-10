@@ -1,0 +1,92 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-sparql-parse",
+  "components": [
+    {
+      "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse",
+      "@type": "AbstractClass",
+      "requireElement": "ActorSparqlParse",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A comunica actor for sparql-parse events.  Actor types: * Input:  IActionSparqlParse:      A SPARQL query string. * Test:   <none> * Output: IActorSparqlParseOutput: A parsed query in SPARQL query algebra.",
+      "parameters": [
+        {
+          "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbsp:lib/ActorSparqlParse#IActionSparqlParse",
+      "@type": "AbstractClass",
+      "requireElement": "IActionSparqlParse",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbsp:lib/ActorSparqlParse#IActorSparqlParseOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorSparqlParseOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

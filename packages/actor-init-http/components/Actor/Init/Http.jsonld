@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-http/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
@@ -9,7 +10,7 @@
     {
       "@id": "cih:Actor/Init/Http",
       "@type": "Class",
-      "extends": "cbi:Actor/Init",
+      "extends": "cbi:lib/ActorInit#ActorInit",
       "requireElement": "ActorInitHttp",
       "comment": "An actor that listens on the 'init' bus that triggers an HTTP event.",
       "parameters": [

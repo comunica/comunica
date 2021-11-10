@@ -1,12 +1,36 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbh": "npmd:@comunica/bus-http/",
       "files-cbh": "cbh:^1.0.0/",
-
-      "BusHttp": "cbh:Bus/Http",
-      "ActorHttp": "cbh:Actor/Http"
+      "ActorHttp": {
+        "@id": "cbh:lib/ActorHttp#ActorHttp",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbh:lib/ActorHttp#ActorHttp_args_name"
+          },
+          "args_bus": {
+            "@id": "cbh:lib/ActorHttp#ActorHttp_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbh:lib/ActorHttp#ActorHttp_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionHttp": {
+        "@id": "cbh:lib/ActorHttp#IActionHttp",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorHttpOutput": {
+        "@id": "cbh:lib/ActorHttp#IActorHttpOutput",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

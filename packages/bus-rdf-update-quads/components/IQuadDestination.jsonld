@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-update-quads",
+  "components": [
+    {
+      "@id": "cbruq:lib/IQuadDestination#IQuadDestination",
+      "@type": "AbstractClass",
+      "requireElement": "IQuadDestination",
+      "extends": [],
+      "comment": "A quad destination.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

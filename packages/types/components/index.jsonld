@@ -111,14 +111,6 @@
       "comment": "Data interface for the type of action.",
       "parameters": [],
       "constructorArguments": []
-    },
-    {
-      "@id": "ct:lib/index#IQueryEngine",
-      "@type": "AbstractClass",
-      "requireElement": "IQueryEngine",
-      "extends": [],
-      "parameters": [],
-      "constructorArguments": []
     }
   ]
 }

@@ -33,7 +33,7 @@
     "@comunica/actor-query-operation-union": "^1.22.0",
     "@comunica/types": "^1.22.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.2.1",
     "rdf-data-factory": "^1.0.3",
     "sparqlalgebrajs": "^4.0.0"
   },

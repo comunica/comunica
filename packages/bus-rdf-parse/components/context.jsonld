@@ -1,13 +1,68 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrp": "npmd:@comunica/bus-rdf-parse/",
       "files-cbrp": "cbrp:^1.0.0/",
-
-      "BusRdfParse": "cbrp:Bus/RdfParse",
-      "ActorRdfParse": "cbrp:Actor/RdfParse",
-      "ActorRdfParseFixedMediaTypes": "cbrp:Actor/RdfParseFixedMediaTypes"
+      "ActorRdfParse": {
+        "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfParse": {
+        "@id": "cbrp:lib/ActorRdfParse#IActionRdfParse",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfParseOutput": {
+        "@id": "cbrp:lib/ActorRdfParse#IActorRdfParseOutput",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorRdfParseFixedMediaTypes": {
+        "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes",
+        "@prefix": true,
+        "@context": {
+          "args_mediaTypePriorities": {
+            "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfParseFixedMediaTypesArgs": {
+        "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#IActorRdfParseFixedMediaTypesArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

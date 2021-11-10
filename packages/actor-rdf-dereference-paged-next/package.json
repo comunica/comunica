@@ -32,7 +32,7 @@
   "dependencies": {
     "@rdfjs/types": "*",
     "@types/lru-cache": "^5.1.0",
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.2.1",
     "lru-cache": "^6.0.0"
   },
   "peerDependencies": {

@@ -8,7 +8,7 @@
     {
       "@id": "carjms:Actor/RdfJoin/MultiSequential",
       "@type": "Class",
-      "extends": "cbrj:Actor/RdfJoin",
+      "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
       "requireElement": "ActorRdfJoinMultiSequential",
       "comment": "A comunica Multi Sequential RDF Join Actor.",
       "parameters": [
@@ -21,7 +21,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject",
+          "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorJoin",

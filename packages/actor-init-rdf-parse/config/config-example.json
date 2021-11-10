@@ -22,7 +22,7 @@
           "mediatorRdfParse": {
             "@id": "config-example:mediatorRdfParse",
             "@type": "MediatorRace",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
           },
           "mediaType": "application/trig"
         },

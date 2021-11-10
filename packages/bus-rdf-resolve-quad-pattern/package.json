@@ -31,7 +31,7 @@
   "dependencies": {
     "@comunica/context-entries": "^1.22.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.2.1",
     "sparqlalgebrajs": "^4.0.0"
   },
   "peerDependencies": {
@@ -58,6 +58,7 @@
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "build:components-bus": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
   }
 }

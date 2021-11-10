@@ -8,12 +8,12 @@
     {
       "@id": "carmepsu:Actor/RdfMetadataExtract/PatchSparqlUpdate",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
       "requireElement": "ActorRdfMetadataExtractPatchSparqlUpdate",
       "comment": "A comunica Patch SPARQL Update RDF Metadata Extract Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject"
+          "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args__constructorArgument"
         }
       ]
     }

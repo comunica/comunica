@@ -17,7 +17,13 @@ describe('ActorRdfParseHtml', () => {
     bus = new Bus({ name: 'bus' });
     const mediatorHttp: any = null;
     jsonldParser = new ActorRdfParseJsonLd(
-      { bus, mediaTypes: { 'application/ld+json': 1 }, name: 'jsonldParser', mediatorHttp },
+      {
+        bus,
+        mediaTypePriorities: { 'application/ld+json': 1 },
+        mediaTypeFormats: {},
+        name: 'jsonldParser',
+        mediatorHttp,
+      },
     );
 
     mediator = {

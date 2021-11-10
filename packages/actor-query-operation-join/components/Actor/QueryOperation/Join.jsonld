@@ -8,7 +8,7 @@
     {
       "@id": "caqoj:Actor/QueryOperation/Join",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "ActorQueryOperationJoin",
       "comment": "A comunica Join Query Operation Actor.",
       "parameters": [
@@ -21,7 +21,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorJoin",

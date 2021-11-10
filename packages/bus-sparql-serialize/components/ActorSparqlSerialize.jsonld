@@ -1,0 +1,94 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-sparql-serialize",
+  "components": [
+    {
+      "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize",
+      "@type": "AbstractClass",
+      "requireElement": "ActorSparqlSerialize",
+      "extends": [
+        "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped"
+      ],
+      "comment": "A comunica actor for sparql-serialize events.  Actor types: * Input:  IActionSparqlSerialize:      SPARQL bindings or a quad stream. * Test:   <none> * Output: IActorSparqlSerializeOutput: A text stream.",
+      "parameters": [
+        {
+          "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbss:lib/ActorSparqlSerialize#IActionSparqlSerialize",
+      "@type": "AbstractClass",
+      "requireElement": "IActionSparqlSerialize",
+      "extends": [
+        "ct:lib/index#IAction",
+        "ct:lib/index#IActorQueryOperationOutputBase"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbss:lib/ActorSparqlSerialize#IActorSparqlSerializeOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorSparqlSerializeOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

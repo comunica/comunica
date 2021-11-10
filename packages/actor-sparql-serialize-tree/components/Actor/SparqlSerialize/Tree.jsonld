@@ -9,23 +9,38 @@
     {
       "@id": "casstr:Actor/SparqlSerialize/Tree",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes",
       "requireElement": "ActorSparqlSerializeTree",
       "comment": "A comunica Tree SPARQL Serialize Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "casstr:Actor/SparqlSerialize/Tree",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "tree", "priorityValue": "0.5", "mediaTypeFormat": "https://comunica.linkeddatafragments.org/#results_tree" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "tree": 0.5
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "casstr:Actor/SparqlSerialize/Tree",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "tree": "https://comunica.linkeddatafragments.org/#results_tree"
+              }
+            }
           }
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args__constructorArgument"
         }
       ]
     }

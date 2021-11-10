@@ -8,7 +8,7 @@
     {
       "@id": "caqood:Actor/QueryOperation/OrderBySparqlee",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "ActorQueryOperationOrderBySparqlee",
       "comment": "A comunica OrderBy Sparqlee Query Operation Actor.",
       "parameters": [
@@ -22,7 +22,7 @@
       "constructorArguments": [
         {
           "@id": "caqood:Actor/QueryOperation/OrderBySparqlee/constructorArgumentsObject",
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "window",

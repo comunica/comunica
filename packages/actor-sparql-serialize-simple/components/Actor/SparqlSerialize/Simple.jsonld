@@ -9,23 +9,38 @@
     {
       "@id": "casss:Actor/SparqlSerialize/Simple",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes",
       "requireElement": "ActorSparqlSerializeSimple",
       "comment": "A comunica Simple Sparql Serialize Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "casss:Actor/SparqlSerialize/Simple",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "simple", "priorityValue": "0.9", "mediaTypeFormat": "https://comunica.linkeddatafragments.org/#results_simple" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "simple": 0.9
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "casss:Actor/SparqlSerialize/Simple",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "simple": "https://comunica.linkeddatafragments.org/#results_simple"
+              }
+            }
           }
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args__constructorArgument"
         }
       ]
     }

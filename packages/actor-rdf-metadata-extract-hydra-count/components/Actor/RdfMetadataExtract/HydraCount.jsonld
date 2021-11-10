@@ -8,7 +8,7 @@
     {
       "@id": "carmehco:Actor/RdfMetadataExtract/HydraCount",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
       "requireElement": "ActorRdfMetadataExtractHydraCount",
       "comment": "A comunica Hydra Count RDF Metadata Extract Actor.",
       "parameters": [
@@ -24,7 +24,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject",
+          "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "predicates",

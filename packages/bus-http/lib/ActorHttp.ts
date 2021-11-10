@@ -19,6 +19,9 @@ const toWebReadableStream = require('web-streams-node').toWebReadableStream;
  * @see IActorHttpOutput
  */
 export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHttpOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>) {
     super(args);
   }

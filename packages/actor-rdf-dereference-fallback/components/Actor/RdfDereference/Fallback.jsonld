@@ -8,12 +8,12 @@
     {
       "@id": "cardfa:Actor/RdfDereference/Fallback",
       "@type": "Class",
-      "extends": "cbrd:Actor/RdfDereference",
+      "extends": "cbrd:lib/ActorRdfDereference#ActorRdfDereference",
       "requireElement": "ActorRdfDereferenceFallback",
       "comment": "A comunica Fallback RDF Dereference Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrd:Actor/RdfDereference/constructorArgumentsObject"
+          "extends": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_args__constructorArgument"
         }
       ]
     }

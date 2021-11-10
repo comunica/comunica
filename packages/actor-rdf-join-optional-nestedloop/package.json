@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.22.0",
-    "asyncjoin": "^1.0.4"
+    "asyncjoin": "^1.0.5"
   },
   "peerDependencies": {
     "@comunica/core": "^1.22.0",

@@ -1,0 +1,195 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-join",
+  "components": [
+    {
+      "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
+      "@type": "AbstractClass",
+      "requireElement": "ActorRdfJoin",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A comunica actor for joining 2 binding streams.  Actor types: * Input:  IActionRdfJoin:                The streams that need to be joined. * Test:   IMediatorTypeJoinCoefficients: Join coefficients. * Output: IActorRdfJoinOutput:           The resulting joined stream.",
+      "parameters": [
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_logicalType",
+          "comment": "The logical join type this actor can handle.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_physicalName",
+          "range": "xsd:string",
+          "comment": "The physical name of join operation this actor implements. This is used for debug and query plan logs.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntries",
+          "range": "xsd:number",
+          "comment": "Can be used by subclasses to indicate the max or min number of streams that can be joined. 0 for infinity. By default, this indicates the max number, but can be inverted by setting limitEntriesMin to true.",
+          "unique": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntriesMin",
+          "range": "xsd:boolean",
+          "comment": "If true, the limitEntries field is a lower limit, otherwise, it is an upper limit. Defaults to false.",
+          "unique": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_canHandleUndefs",
+          "range": "xsd:boolean",
+          "comment": "If this actor can handle undefs in the bindings. Defaults to false.",
+          "unique": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorJoinSelectivity",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_beforeActors"
+              }
+            }
+          ]
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "logicalType",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_logicalType"
+              }
+            },
+            {
+              "keyRaw": "physicalName",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_physicalName"
+              }
+            },
+            {
+              "keyRaw": "limitEntries",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntries"
+              }
+            },
+            {
+              "keyRaw": "limitEntriesMin",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntriesMin"
+              }
+            },
+            {
+              "keyRaw": "canHandleUndefs",
+              "value": {
+                "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_canHandleUndefs"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbrj:lib/ActorRdfJoin#IActorRdfJoinArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfJoinArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrj:lib/ActorRdfJoin#IActorRdfJoinInternalOptions",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfJoinInternalOptions",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrj:lib/ActorRdfJoin#IActionRdfJoin",
+      "@type": "AbstractClass",
+      "requireElement": "IActionRdfJoin",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrj:lib/ActorRdfJoin#IJoinEntry",
+      "@type": "AbstractClass",
+      "requireElement": "IJoinEntry",
+      "extends": [],
+      "comment": "A joinable entry.",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrj:lib/ActorRdfJoin#IActorRdfJoinOutputInner",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfJoinOutputInner",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

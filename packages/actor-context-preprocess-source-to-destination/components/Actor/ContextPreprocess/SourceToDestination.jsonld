@@ -8,12 +8,12 @@
     {
       "@id": "cacpstd:Actor/ContextPreprocess/SourceToDestination",
       "@type": "Class",
-      "extends": "cbcp:Actor/ContextPreprocess",
+      "extends": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess",
       "requireElement": "ActorContextPreprocessSourceToDestination",
       "comment": "A comunica Source To Destination Context Preprocess Actor.",
       "constructorArguments": [
         {
-          "extends": "cbcp:Actor/ContextPreprocess/constructorArgumentsObject"
+          "extends": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess_args__constructorArgument"
         }
       ]
     }

@@ -9,23 +9,38 @@
     {
       "@id": "carpr:Actor/RdfParse/RdfXml",
       "@type": "Class",
-      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes",
       "requireElement": "ActorRdfParseRdfXml",
       "comment": "A comunica RDF/XML RDF Parse Actor.",
       "parameters": [
-          {
-            "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
-            "defaultScoped": {
-              "defaultScope": "carpr:Actor/RdfParse/RdfXml",
-              "defaultScopedValue": [
-                { "mediaTypeKey": "application/rdf+xml",      "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDF_XML" }
-              ]
+        {
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypePriorities",
+          "defaultScoped": {
+            "defaultScope": "carpr:Actor/RdfParse/RdfXml",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/rdf+xml": 1.0
+              }
             }
           }
-        ],
+        },
+        {
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "carpr:Actor/RdfParse/RdfXml",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/rdf+xml": "http://www.w3.org/ns/formats/RDF_XML"
+              }
+            }
+          }
+        },
+      ],
       "constructorArguments": [
         {
-          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args__constructorArgument"
         }
       ]
     }

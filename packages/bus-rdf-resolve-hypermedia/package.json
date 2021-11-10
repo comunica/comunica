@@ -31,7 +31,7 @@
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.22.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.2.0"
+    "asynciterator": "^3.2.1"
   },
   "peerDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",
@@ -59,6 +59,7 @@
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "build:components-bus": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
   }
 }

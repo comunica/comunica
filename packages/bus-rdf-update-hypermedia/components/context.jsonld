@@ -1,12 +1,39 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbruh": "npmd:@comunica/bus-rdf-update-hypermedia/",
       "files-cbruh": "cbruh:^1.0.0/",
-
-      "BusRdfUpdateHypermedia": "cbruh:Bus/RdfUpdateHypermedia",
-      "ActorRdfUpdateHypermedia": "cbruh:Actor/RdfUpdateHypermedia"
+      "ActorRdfUpdateHypermedia": {
+        "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia",
+        "@prefix": true,
+        "@context": {
+          "destinationType": {
+            "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_destinationType"
+          },
+          "args_name": {
+            "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_args_name"
+          },
+          "args_bus": {
+            "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfUpdateHypermedia": {
+        "@id": "cbruh:lib/ActorRdfUpdateHypermedia#IActionRdfUpdateHypermedia",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfUpdateHypermediaOutput": {
+        "@id": "cbruh:lib/ActorRdfUpdateHypermedia#IActorRdfUpdateHypermediaOutput",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

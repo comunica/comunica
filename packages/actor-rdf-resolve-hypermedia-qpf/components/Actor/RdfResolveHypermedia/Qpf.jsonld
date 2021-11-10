@@ -8,7 +8,7 @@
     {
       "@id": "carrhq:Actor/RdfResolveHypermedia/Qpf",
       "@type": "Class",
-      "extends": "cbrrh:Actor/RdfResolveHypermedia",
+      "extends": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia",
       "requireElement": "ActorRdfResolveHypermediaQpf",
       "comment": "A comunica QPF RDF Resolve Quad Pattern Actor.",
       "parameters": [
@@ -60,7 +60,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrrh:Actor/RdfResolveHypermedia/constructorArgumentsObject",
+          "extends": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorMetadata",

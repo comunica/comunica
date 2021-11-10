@@ -8,12 +8,12 @@
     {
       "@id": "carma:Actor/RdfMetadata/All",
       "@type": "Class",
-      "extends": "cbrm:Actor/RdfMetadata",
+      "extends": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata",
       "requireElement": "ActorRdfMetadataAll",
       "comment": "A comunica All RDF Metadata Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject"
+          "extends": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_args__constructorArgument"
         }
       ]
     }

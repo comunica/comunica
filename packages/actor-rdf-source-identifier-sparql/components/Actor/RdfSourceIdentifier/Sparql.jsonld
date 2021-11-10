@@ -9,7 +9,7 @@
     {
       "@id": "carsis:Actor/RdfSourceIdentifier/Sparql",
       "@type": "Class",
-      "extends": "cbrsi:Actor/RdfSourceIdentifier",
+      "extends": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier",
       "requireElement": "ActorRdfSourceIdentifierSparql",
       "comment": "A comunica SPARQL RDF Source Identifier Actor.",
       "parameters": [
@@ -20,7 +20,7 @@
           "unique": true
         },
         {
-          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier/priority",
           "defaultScoped": {
             "defaultScope": "carsis:Actor/RdfSourceIdentifier/Sparql",
             "defaultScopedValue": 0.5
@@ -30,7 +30,7 @@
       "constructorArguments": [
         {
           "@id": "carsis:Actor/RdfSourceIdentifier/Sparql/constructorArgumentsObject",
-          "extends": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
+          "extends": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

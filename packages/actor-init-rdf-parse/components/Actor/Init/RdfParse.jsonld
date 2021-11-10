@@ -2,14 +2,15 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-parse/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-init-rdf-parse",
   "components": [
     {
       "@id": "cirp:Actor/Init/RdfParse",
       "@type": "Class",
-      "extends": "cbi:Actor/Init",
+      "extends": "cbi:lib/ActorInit#ActorInit",
       "requireElement": "ActorInitRdfParse",
       "comment": "An actor that listens on the 'init' bus that triggers an RDF Parse event.",
       "parameters": [

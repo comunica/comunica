@@ -8,7 +8,7 @@
     {
       "@id": "carphs:Actor/RdfParse/HtmlScript",
       "@type": "Class",
-      "extends": "cbrph:Actor/RdfParseHtml",
+      "extends": "cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml",
       "requireElement": "ActorRdfParseHtmlScript",
       "comment": "An HTML actor that listens on the 'rdf-parse' bus.",
       "parameters": [
@@ -27,7 +27,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrph:Actor/RdfParseHtml/constructorArgumentsObject",
+          "extends": "cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfParseMediatypes",

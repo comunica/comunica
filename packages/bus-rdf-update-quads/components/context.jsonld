@@ -1,12 +1,57 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbruq": "npmd:@comunica/bus-rdf-update-quads/",
       "files-cbruq": "cbruq:^1.0.0/",
-
-      "BusRdfUpdateQuads": "cbruq:Bus/RdfUpdateQuads",
-      "ActorRdfUpdateQuads": "cbruq:Actor/RdfUpdateQuads"
+      "ActorRdfUpdateQuads": {
+        "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_args_name"
+          },
+          "args_bus": {
+            "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfUpdateQuads": {
+        "@id": "cbruq:lib/ActorRdfUpdateQuads#IActionRdfUpdateQuads",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfUpdateQuadsOutput": {
+        "@id": "cbruq:lib/ActorRdfUpdateQuads#IActorRdfUpdateQuadsOutput",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorRdfUpdateQuadsDestination": {
+        "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination_args_name"
+          },
+          "args_bus": {
+            "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IQuadDestination": {
+        "@id": "cbruq:lib/IQuadDestination#IQuadDestination",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

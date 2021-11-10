@@ -47,9 +47,10 @@ describe('ActorSparqlSerializeStats', () => {
       });
       actor = new ActorSparqlSerializeStats({
         bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           debug: 1,
         },
+        mediaTypeFormats: {},
         name: 'actor',
         httpObserver,
       });

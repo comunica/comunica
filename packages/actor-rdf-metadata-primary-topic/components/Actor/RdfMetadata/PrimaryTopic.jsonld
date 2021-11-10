@@ -8,7 +8,7 @@
     {
       "@id": "carmpt:Actor/RdfMetadata/PrimaryTopic",
       "@type": "Class",
-      "extends": "cbrm:Actor/RdfMetadata",
+      "extends": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata",
       "requireElement": "ActorRdfMetadataPrimaryTopic",
       "comment": "A comunica Primary Topic RDF Metadata Actor.",
       "parameters": [
@@ -31,7 +31,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject",
+          "extends": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "metadataToData",

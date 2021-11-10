@@ -8,7 +8,7 @@
     {
       "@id": "carmehp:Actor/RdfMetadataExtract/HydraPagesize",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
       "requireElement": "ActorRdfMetadataExtractHydraPagesize",
       "comment": "A comunica Hydra Pagesize RDF Metadata Extract Actor.",
       "parameters": [
@@ -23,7 +23,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject",
+          "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "predicates",

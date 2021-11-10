@@ -9,7 +9,7 @@
     {
       "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia",
       "@type": "Class",
-      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "extends": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern",
       "requireElement": "ActorRdfResolveQuadPatternHypermedia",
       "comment": "A comunica Hypermedia RDF Resolve Quad Pattern Actor.",
       "parameters": [
@@ -59,10 +59,10 @@
         {
           "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/httpInvalidator",
           "comment": "An actor that listens to HTTP invalidation events",
-          "range": "cbhi:Actor/HttpInvalidateListenable",
+          "range": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable",
           "default": {
             "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/httpInvalidator#default",
-            "@type": "cbhi:Actor/HttpInvalidateListenable"
+            "@type": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable"
           },
           "required": true,
           "unique": true
@@ -70,7 +70,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "extends": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfDereference",

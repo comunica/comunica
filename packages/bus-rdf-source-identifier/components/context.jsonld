@@ -1,12 +1,44 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrsi": "npmd:@comunica/bus-rdf-source-identifier/",
       "files-cbrsi": "cbrsi:^1.0.0/",
-
-      "BusRdfSourceIdentifier": "cbrsi:Bus/RdfSourceIdentifier",
-      "ActorRdfSourceIdentifier": "cbrsi:Actor/RdfSourceIdentifier"
+      "ActorRdfSourceIdentifier": {
+        "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier",
+        "@prefix": true,
+        "@context": {
+          "args_priority": {
+            "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_args_priority"
+          },
+          "args_name": {
+            "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfSourceIdentifier": {
+        "@id": "cbrsi:lib/ActorRdfSourceIdentifier#IActionRdfSourceIdentifier",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfSourceIdentifierOutput": {
+        "@id": "cbrsi:lib/ActorRdfSourceIdentifier#IActorRdfSourceIdentifierOutput",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfSourceIdentifierArgs": {
+        "@id": "cbrsi:lib/ActorRdfSourceIdentifier#IActorRdfSourceIdentifierArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

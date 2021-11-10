@@ -18,7 +18,7 @@ $ yarn add @comunica/bus-rdf-parse-html
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbrph:Bus/RdfParseHtml`
+* **Bus name**: `cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus`
 
 ## Creating actors on this bus
 

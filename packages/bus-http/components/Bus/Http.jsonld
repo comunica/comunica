@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
-  "@id": "cbh:Bus/Http",
-  "@type": "cc:lib/Bus#Bus",
-  "comment": "A bus for HTTP request events"
-}

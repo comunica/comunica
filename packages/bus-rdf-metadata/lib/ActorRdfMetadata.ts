@@ -14,6 +14,9 @@ import type * as RDF from '@rdfjs/types';
  * @see IActorRdfDereferenceOutput
  */
 export abstract class ActorRdfMetadata extends Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
     super(args);
   }

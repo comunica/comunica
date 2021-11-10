@@ -1,0 +1,80 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-query-operation",
+  "components": [
+    {
+      "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped",
+      "@type": "AbstractClass",
+      "requireElement": "ActorQueryOperationTyped",
+      "extends": [
+        "cbqo:lib/ActorQueryOperation#ActorQueryOperation"
+      ],
+      "comment": "A base implementation for query operation actors for a specific operation type.",
+      "parameters": [
+        {
+          "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_operationName",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_args_beforeActors"
+              }
+            }
+          ]
+        },
+        {
+          "@id": "cbqo:lib/ActorQueryOperationTyped#ActorQueryOperationTyped_operationName"
+        }
+      ]
+    }
+  ]
+}

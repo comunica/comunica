@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:sparql-queryoperators.json#myServiceQueryOperator",
       "@type": "ActorQueryOperationService",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
       "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint": false
     }
   ]
@@ -39,5 +39,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
 * `caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint`: Optional flag indicating if the SERVICE target should be assumed to be a SPARQL endpoint, defaults to `false`.

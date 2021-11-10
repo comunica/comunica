@@ -8,12 +8,12 @@
     {
       "@id": "caqoum:Actor/QueryOperation/MoveRewrite",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "ActorQueryOperationMoveRewrite",
       "comment": "A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles SPARQL move operations.",
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument"
         }
       ]
     }

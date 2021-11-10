@@ -8,7 +8,7 @@
     {
       "@id": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier",
       "@type": "Class",
-      "extends": "cbcp:Actor/ContextPreprocess",
+      "extends": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess",
       "requireElement": "ActorContextPreprocessRdfSourceIdentifier",
       "comment": "A comunica RDF Source Identifier Context Preprocess Actor.",
       "parameters": [
@@ -22,7 +22,7 @@
       "constructorArguments": [
         {
           "@id": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier/constructorArgumentsObject",
-          "extends": "cbcp:Actor/ContextPreprocess/constructorArgumentsObject",
+          "extends": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfSourceIdentifier",

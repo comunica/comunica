@@ -1,0 +1,101 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links",
+  "components": [
+    {
+      "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks",
+      "@type": "AbstractClass",
+      "requireElement": "ActorRdfResolveHypermediaLinks",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A comunica actor for rdf-resolve-hypermedia-links events.  Actor types: * Input:  IActionRdfResolveHypermediaLinks:      The metadata from which the links should be extracted. * Test:   <none> * Output: IActorRdfResolveHypermediaLinksOutput: The URLs that were detected.",
+      "parameters": [
+        {
+          "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#IActionRdfResolveHypermediaLinks",
+      "@type": "AbstractClass",
+      "requireElement": "IActionRdfResolveHypermediaLinks",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#IActorRdfResolveHypermediaLinksOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfResolveHypermediaLinksOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ILink",
+      "@type": "AbstractClass",
+      "requireElement": "ILink",
+      "extends": [],
+      "comment": "A link holder that can expose additional properties.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

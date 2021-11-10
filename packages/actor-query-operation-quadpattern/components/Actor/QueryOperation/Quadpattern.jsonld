@@ -8,7 +8,7 @@
     {
       "@id": "caqoq:Actor/QueryOperation/Quadpattern",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperation",
+      "extends": "cbqo:lib/ActorQueryOperation#ActorQueryOperation",
       "requireElement": "ActorQueryOperationQuadpattern",
       "comment": "A comunica actor for handling 'quadpattern' query operations.",
       "parameters": [
@@ -21,7 +21,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorResolveQuadPattern",

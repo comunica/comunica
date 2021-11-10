@@ -1,0 +1,111 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia",
+  "components": [
+    {
+      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia",
+      "@type": "AbstractClass",
+      "requireElement": "ActorRdfResolveHypermedia",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A comunica actor for rdf-resolve-hypermedia bus.  Actor types: * Input:  IActionRdfResolveHypermedia:      The metadata in the document and a query operation. * Test:   <none> * Output: IActorRdfResolveHypermediaOutput: An RDF source.",
+      "parameters": [
+        {
+          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_sourceType",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_beforeActors"
+              }
+            }
+          ]
+        },
+        {
+          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_sourceType"
+        }
+      ]
+    },
+    {
+      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#IActionRdfResolveHypermedia",
+      "@type": "AbstractClass",
+      "requireElement": "IActionRdfResolveHypermedia",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#IActorRdfResolveHypermediaTest",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfResolveHypermediaTest",
+      "extends": [
+        "cc:lib/Actor#IActorTest"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#IActorRdfResolveHypermediaOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfResolveHypermediaOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

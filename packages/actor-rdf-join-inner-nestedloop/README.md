@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:join.json#myRdfJoinActorNestedLoop",
       "@type": "ActorRdfJoinNestedLoop",
-      "cbrj:Actor/RdfJoin#mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "cbrj:lib/ActorRdfJoin#ActorRdfJoin#mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     }
   ]
 }
@@ -37,4 +37,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbrj:Actor/RdfJoin#mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `cbrj:lib/ActorRdfJoin#ActorRdfJoin#mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).

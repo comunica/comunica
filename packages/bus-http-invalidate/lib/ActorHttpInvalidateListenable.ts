@@ -8,7 +8,7 @@ import { ActorHttpInvalidate } from './ActorHttpInvalidate';
  * @see ActorHttpInvalidate
  */
 export class ActorHttpInvalidateListenable extends ActorHttpInvalidate {
-  private readonly invalidateListeners: IInvalidateListener[];
+  private readonly invalidateListeners: IInvalidateListener[] = [];
 
   public constructor(args: IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>) {
     super(args);

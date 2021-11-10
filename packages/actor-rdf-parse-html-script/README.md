@@ -33,13 +33,13 @@ After installing, this package can be added to your engine's configuration as fo
       "carphs:mediatorRdfParseMediatypes": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
       "carphs:mediatorRdfParseHandle": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
       }
     }
   ]

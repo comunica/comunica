@@ -13,6 +13,9 @@ import { Actor } from '@comunica/core';
  * @see IActorHttpInvalidateOutput
  */
 export abstract class ActorHttpInvalidate extends Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>) {
     super(args);
   }

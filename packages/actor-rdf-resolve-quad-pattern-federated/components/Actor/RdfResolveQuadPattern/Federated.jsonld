@@ -8,7 +8,7 @@
     {
       "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated",
       "@type": "Class",
-      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "extends": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern",
       "requireElement": "ActorRdfResolveQuadPatternFederated",
       "comment": "A comunica Federated RDF Resolve Quad Pattern Actor.",
       "parameters": [
@@ -29,7 +29,7 @@
       "constructorArguments": [
         {
           "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated/constructorArgumentsObject",
-          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "extends": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorResolveQuadPattern",

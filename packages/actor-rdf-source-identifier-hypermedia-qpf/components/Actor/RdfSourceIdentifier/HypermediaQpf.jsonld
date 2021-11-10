@@ -9,7 +9,7 @@
     {
       "@id": "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf",
       "@type": "Class",
-      "extends": "cbrsi:Actor/RdfSourceIdentifier",
+      "extends": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier",
       "requireElement": "ActorRdfSourceIdentifierHypermediaQpf",
       "comment": "A comunica Hypermedia Qpf RDF Source Identifier Actor.",
       "parameters": [
@@ -40,7 +40,7 @@
           ]
         },
         {
-          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier/priority",
           "defaultScoped": {
             "defaultScope": "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf",
             "defaultScopedValue": 0.9
@@ -50,7 +50,7 @@
       "constructorArguments": [
         {
           "@id": "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf/constructorArgumentsObject",
-          "extends": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
+          "extends": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

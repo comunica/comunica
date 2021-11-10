@@ -34,7 +34,7 @@ After installing, this package can be added to your engine's configuration as fo
       "cardf:mediatorRdfParse": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParse",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
       }
     }
   ]

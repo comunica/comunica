@@ -8,7 +8,7 @@
     {
       "@id": "cahn:Actor/Http/Native",
       "@type": "Class",
-      "extends": "cbh:Actor/Http",
+      "extends": "cbh:lib/ActorHttp#ActorHttp",
       "requireElement": "ActorHttpNative",
       "comment": "A comunica Follow Redirects Http Actor.",
       "parameters": [
@@ -24,7 +24,7 @@
       "constructorArguments": [
         {
           "@id": "cahn:Actor/Http/Native/constructorArgumentsObject",
-          "extends": "cbh:Actor/Http/constructorArgumentsObject",
+          "extends": "cbh:lib/ActorHttp#ActorHttp_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "agentOptions",

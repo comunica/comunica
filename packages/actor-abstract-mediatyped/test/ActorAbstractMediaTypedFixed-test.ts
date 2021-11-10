@@ -12,13 +12,13 @@ describe('ActorAbstractMediaTypedFixed', () => {
 
     it('should be a ActorAbstractMediaTypedFixed constructor', () => {
       expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }),
-        mediaTypes: {},
+        mediaTypePriorities: {},
         name: 'actor' })).toBeInstanceOf(ActorAbstractMediaTypedFixed);
       expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }),
-        mediaTypes: {},
+        mediaTypePriorities: {},
         name: 'actor' })).toBeInstanceOf(ActorAbstractMediaTyped);
       expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }),
-        mediaTypes: {},
+        mediaTypePriorities: {},
         name: 'actor' })).toBeInstanceOf(Actor);
     });
 
@@ -29,7 +29,7 @@ describe('ActorAbstractMediaTypedFixed', () => {
 
   describe('An ActorAbstractMediaTypedFixed instance', () => {
     const actor = new (<any> ActorAbstractMediaTypedFixed)({ bus,
-      mediaTypes: { a: 0.5 },
+      mediaTypePriorities: { a: 0.5 },
       mediaTypeFormats: { a: 'a' },
       name: 'actor',
       priorityScale: 0.5 });
@@ -39,8 +39,8 @@ describe('ActorAbstractMediaTypedFixed', () => {
       return expect(actor.priorityScale).toEqual(0.5);
     });
 
-    it('should have a \'mediaTypes\' field that is scaled', () => {
-      return expect(actor.mediaTypes).toEqual({ a: 0.25 });
+    it('should have a \'mediaTypePriorities\' field that is scaled', () => {
+      return expect(actor.mediaTypePriorities).toEqual({ a: 0.25 });
     });
 
     it('should testParse for a valid media type', () => {

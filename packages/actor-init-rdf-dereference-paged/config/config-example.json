@@ -34,7 +34,7 @@
           "mediatorRdfDereferencePaged": {
             "@id": "config-example:mediatorRdfDereferencePaged",
             "@type": "MediatorRace",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_default_bus" }
           },
           "cairdp:url": "https://fragments.linkedsoftwaredependencies.org/npm"
         },
@@ -45,17 +45,17 @@
           "cardph:mediatorRdfDereference": {
             "@id": "config-example:mediatorRdfDereference",
             "@type": "MediatorRace",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:Bus/RdfDereference" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus" }
           },
           "cardph:mediatorMetadata": {
             "@id": "config-example:mediatorMetadata",
             "@type": "MediatorRace",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:Bus/RdfMetadata" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus" }
           },
           "cardph:mediatorMetadataExtract": {
             "@id": "config-example:mediatorMetadataExtract",
             "@type": "MediatorCombineUnion",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus" },
             "cmcu:Mediator/CombineUnion/field": "metadata"
           }
         },
@@ -67,18 +67,18 @@
             "@id": "config-example:mediatorHttp",
             "@type": "MediatorNumberMin",
             "field": "time",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:Bus/Http" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus" }
           },
           "mediatorRdfParseMediatypes": {
             "@id": "config-example:mediatorRdfParseMediatypes",
             "@type": "MediatorCombineUnion",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
             "cmcu:Mediator/CombineUnion/field": "mediaTypes"
           },
           "mediatorRdfParseHandle": {
             "@id": "config-example:mediatorRdfParseHandle",
             "@type": "MediatorRace",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
           }
         },
 

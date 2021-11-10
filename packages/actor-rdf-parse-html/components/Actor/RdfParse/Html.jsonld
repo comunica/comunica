@@ -10,18 +10,34 @@
     {
       "@id": "carph:Actor/RdfParse/Html",
       "@type": "Class",
-      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes",
       "requireElement": "ActorRdfParseHtml",
       "comment": "A comunica HTML RDF Parse Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "carph:Actor/RdfParse/Html",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "text/html",             "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/HTML" },
-              { "mediaTypeKey": "application/xhtml+xml", "priorityValue": "0.9", "mediaTypeFormat": "http://www.w3.org/ns/formats/HTML" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "text/html": 1.0,
+                "application/xhtml+xml": 0.9
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "carph:Actor/RdfParse/Html",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "text/html": "http://www.w3.org/ns/formats/HTML",
+                "application/xhtml+xml": "http://www.w3.org/ns/formats/HTML"
+              }
+            }
           }
         },
         {
@@ -31,13 +47,13 @@
           "unique": true,
           "defaultScoped": {
             "defaultScope": "carph:Actor/RdfParse/Html",
-            "defaultScopedValue": { "@id": "cbrph:Bus/RdfParseHtml" }
+            "defaultScopedValue": { "@id": "cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus" }
           }
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject",
+          "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "busRdfParseHtml",

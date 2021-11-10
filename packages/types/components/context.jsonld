@@ -59,11 +59,6 @@
         "@id": "ct:lib/index#IAction",
         "@prefix": true,
         "@context": {}
-      },
-      "IQueryEngine": {
-        "@id": "ct:lib/index#IQueryEngine",
-        "@prefix": true,
-        "@context": {}
       }
     }
   ]

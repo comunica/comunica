@@ -1,0 +1,92 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference-paged/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-dereference-paged",
+  "components": [
+    {
+      "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged",
+      "@type": "AbstractClass",
+      "requireElement": "ActorRdfDereferencePaged",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A base actor for dereferencing URLs to quad streams and following pages.  Actor types: * Input:  IActionRdfDereferencePaged:      A URL. * Test:   <none> * Output: IActorRdfDereferencePagedOutput: A quad data and optional metadata stream",
+      "parameters": [
+        {
+          "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbrdp:lib/ActorRdfDereferencePaged#IActionRdfDereferencePaged",
+      "@type": "AbstractClass",
+      "requireElement": "IActionRdfDereferencePaged",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrdp:lib/ActorRdfDereferencePaged#IActorRdfDereferencePagedOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfDereferencePagedOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

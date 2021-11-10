@@ -31,20 +31,14 @@
   "dependencies": {
     "@comunica/bindings-factory": "^1.22.0",
     "@comunica/context-entries": "^1.22.0",
+    "@comunica/core": "^1.22.0",
     "@comunica/data-factory": "^1.22.0",
     "@comunica/types": "^1.22.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.2.1",
     "immutable": "^3.8.2",
     "rdf-string": "^1.5.0",
     "sparqlalgebrajs": "^4.0.0"
-  },
-  "peerDependencies": {
-    "@comunica/core": "^1.0.0"
-  },
-  "devDependencies": {
-    "@comunica/core": "^1.22.0",
-    "@comunica/types": "^1.19.2"
   },
   "jest": {
     "globals": {
@@ -64,6 +58,7 @@
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "build:components-bus": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
   }
 }

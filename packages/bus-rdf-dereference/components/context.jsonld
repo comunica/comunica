@@ -1,12 +1,61 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrd": "npmd:@comunica/bus-rdf-dereference/",
       "files-cbrd": "cbrd:^1.0.0/",
-
-      "BusRdfDereference": "cbrd:Bus/RdfDereference",
-      "ActorRdfDereference": "cbrd:Actor/RdfDereference"
+      "ActorRdfDereference": {
+        "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfDereference": {
+        "@id": "cbrd:lib/ActorRdfDereference#IActionRdfDereference",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfDereferenceOutput": {
+        "@id": "cbrd:lib/ActorRdfDereference#IActorRdfDereferenceOutput",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorRdfDereferenceMediaMappings": {
+        "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings",
+        "@prefix": true,
+        "@context": {
+          "args_mediaMappings": {
+            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_mediaMappings",
+            "@type": "@json"
+          },
+          "args_name": {
+            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfDereferenceMediaMappingsArgs": {
+        "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#IActorRdfDereferenceMediaMappingsArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

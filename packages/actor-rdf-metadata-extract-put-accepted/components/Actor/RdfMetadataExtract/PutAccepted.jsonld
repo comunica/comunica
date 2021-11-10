@@ -8,12 +8,12 @@
     {
       "@id": "carmepa:Actor/RdfMetadataExtract/PutAccepted",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
       "requireElement": "ActorRdfMetadataExtractPutAccepted",
       "comment": "A comunica POST Accepted RDF Metadata Extract Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject"
+          "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args__constructorArgument"
         }
       ]
     }

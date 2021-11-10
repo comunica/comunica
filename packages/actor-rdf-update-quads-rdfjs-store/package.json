@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@rdfjs/types": "*",
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.2.1",
     "rdf-data-factory": "^1.0.4",
     "rdf-string": "^1.5.0"
   },

@@ -20,7 +20,13 @@ describe('ActorRdfParseHtml', () => {
     bus = new Bus({ name: 'bus' });
     const mediatorHttp: any = null;
     jsonldParser = new ActorRdfParseJsonLd(
-      { bus, mediaTypes: { 'application/json': 0.1, 'application/ld+json': 1 }, name: 'jsonldParser', mediatorHttp },
+      {
+        bus,
+        mediaTypePriorities: { 'application/json': 0.1, 'application/ld+json': 1 },
+        mediaTypeFormats: {},
+        name: 'jsonldParser',
+        mediatorHttp,
+      },
     );
   });
 
@@ -41,7 +47,7 @@ describe('ActorRdfParseHtml', () => {
   describe('An ActorRdfParseHtml instance', () => {
     let busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest,
     IActorRdfParseHtmlOutput>, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
-    let mediaTypes;
+    let mediaTypePriorities;
     let actor: ActorRdfParseHtml;
     let input: Readable;
     let inputScript: Readable;
@@ -52,8 +58,10 @@ describe('ActorRdfParseHtml', () => {
 
     beforeEach(() => {
       busRdfParseHtml = new Bus({ name: 'busRdfParseHtml' });
-      mediaTypes = { 'text/html': 1 };
-      actor = new ActorRdfParseHtml({ name: 'actor', bus, busRdfParseHtml, mediaTypes });
+      mediaTypePriorities = { 'text/html': 1 };
+      actor = new ActorRdfParseHtml(
+        { name: 'actor', bus, busRdfParseHtml, mediaTypePriorities, mediaTypeFormats: {}},
+      );
       input = stringToStream(
         ``,
       );

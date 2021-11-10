@@ -33,7 +33,7 @@
     "@rdfjs/types": "*",
     "@types/lru-cache": "^5.1.0",
     "@types/n3": "^1.4.2",
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.2.1",
     "lru-cache": "^6.0.0",
     "n3": "^1.0.0",
     "rdf-string": "^1.5.0"

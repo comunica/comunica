@@ -1,17 +1,108 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caam": "npmd:@comunica/actor-abstract-mediatyped/",
       "files-caam": "caam:^1.0.0/",
-
-      "AbstractMediaTyped": "caam:Actor/AbstractMediaTyped",
-      "AbstractMediaTypedFixed": "caam:Actor/AbstractMediaTypedFixed",
-      "mediaTypeEntry": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
-      "mediaTypeKey": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/mediaType",
-      "priorityValue": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/priority",
-      "priorityScale": "caam:Actor/AbstractMediaTypedFixed/priorityScale",
-      "mediaTypeFormat": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/format"
+      "ActorAbstractMediaTyped": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_name"
+          },
+          "args_bus": {
+            "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorArgsMediaTyped": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActorArgsMediaTyped",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActionAbstractMediaTypedHandle": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActionAbstractMediaTypedHandle",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActionAbstractMediaTypedMediaTypes": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActionAbstractMediaTypedMediaTypes",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActionAbstractMediaTypedMediaTypeFormats": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActionAbstractMediaTypedMediaTypeFormats",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorTestAbstractMediaTypedHandle": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActorTestAbstractMediaTypedHandle",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorTestAbstractMediaTypedMediaTypes": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActorTestAbstractMediaTypedMediaTypes",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorTestAbstractMediaTypedMediaTypeFormats": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActorTestAbstractMediaTypedMediaTypeFormats",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorOutputAbstractMediaTypedHandle": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActorOutputAbstractMediaTypedHandle",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorOutputAbstractMediaTypedMediaTypes": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActorOutputAbstractMediaTypedMediaTypes",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorOutputAbstractMediaTypedMediaTypeFormats": {
+        "@id": "caam:lib/ActorAbstractMediaTyped#IActorOutputAbstractMediaTypedMediaTypeFormats",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorAbstractMediaTypedFixed": {
+        "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed",
+        "@prefix": true,
+        "@context": {
+          "args_mediaTypePriorities": {
+            "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed_args_name"
+          },
+          "args_bus": {
+            "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorArgsMediaTypedFixed": {
+        "@id": "caam:lib/ActorAbstractMediaTypedFixed#IActorArgsMediaTypedFixed",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

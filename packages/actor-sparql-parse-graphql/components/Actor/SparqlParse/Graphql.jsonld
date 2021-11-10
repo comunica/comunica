@@ -8,12 +8,12 @@
     {
       "@id": "caspg:Actor/SparqlParse/Graphql",
       "@type": "Class",
-      "extends": "cbsp:Actor/SparqlParse",
+      "extends": "cbsp:lib/ActorSparqlParse#ActorSparqlParse",
       "requireElement": "ActorSparqlParseGraphql",
       "comment": "A comunica GraphQL SPARQL Parse Actor.",
       "constructorArguments": [
         {
-          "extends": "cbsp:Actor/SparqlParse/constructorArgumentsObject"
+          "extends": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args__constructorArgument"
         }
       ]
     }

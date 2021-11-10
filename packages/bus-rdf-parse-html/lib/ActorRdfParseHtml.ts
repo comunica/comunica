@@ -14,6 +14,9 @@ import type * as RDF from '@rdfjs/types';
  * @see IActorRdfParseHtmlOutput
  */
 export abstract class ActorRdfParseHtml extends Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>) {
     super(args);
   }

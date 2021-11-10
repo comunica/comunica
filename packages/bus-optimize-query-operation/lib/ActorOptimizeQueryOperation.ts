@@ -16,6 +16,9 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export abstract class ActorOptimizeQueryOperation
   extends Actor<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>) {
     super(args);
   }

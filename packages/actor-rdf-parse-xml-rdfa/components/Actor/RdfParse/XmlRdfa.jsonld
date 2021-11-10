@@ -9,25 +9,42 @@
     {
       "@id": "carpxr:Actor/RdfParse/XmlRdfa",
       "@type": "Class",
-      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes",
       "requireElement": "ActorRdfParseXmlRdfa",
       "comment": "A comunica XML RDFa RDF Parse Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "carpxr:Actor/RdfParse/XmlRdfa",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "application/xml", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDFa" },
-              { "mediaTypeKey": "text/xml",        "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDFa" },
-              { "mediaTypeKey": "image/svg+xml",   "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDFa" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/xml": 1.0,
+                "text/xml": 1.0,
+                "image/svg+xml": 1.0
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "carpxr:Actor/RdfParse/XmlRdfa",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/xml": "http://www.w3.org/ns/formats/RDFa",
+                "text/xml": "http://www.w3.org/ns/formats/RDFa",
+                "image/svg+xml": "http://www.w3.org/ns/formats/RDFa"
+              }
+            }
           }
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args__constructorArgument"
         }
       ]
     }

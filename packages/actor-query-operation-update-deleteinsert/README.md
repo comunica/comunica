@@ -35,11 +35,11 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:sparql-queryoperator-update.json#myDeleteInsertOperator",
       "@type": "ActorQueryOperationUpdateDeleteInsert",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
       "caqoudi:mediatorUpdateQuads": {
         "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbruq:Bus/RdfUpdateQuads" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_default_bus" }
       }
     }
   ]
@@ -48,5 +48,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
 * `caqoudi:mediatorUpdateQuads`: A mediator over the [RDF Update Quads bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads).

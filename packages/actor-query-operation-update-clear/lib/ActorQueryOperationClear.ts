@@ -1,5 +1,5 @@
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutput } from '@comunica/types';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';

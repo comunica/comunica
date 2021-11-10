@@ -1,0 +1,94 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-http",
+  "components": [
+    {
+      "@id": "cbh:lib/ActorHttp#ActorHttp",
+      "@type": "AbstractClass",
+      "requireElement": "ActorHttp",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A base actor for listening to HTTP events.  Actor types: * Input:  IActionHttp:      The HTTP request. * Test:   IActorHttpTest:   An estimate for the response time. * Output: IActorHttpOutput: The HTTP response.",
+      "parameters": [
+        {
+          "@id": "cbh:lib/ActorHttp#ActorHttp_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbh:lib/ActorHttp#ActorHttp_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbh:lib/ActorHttp#ActorHttp_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbh:lib/ActorHttp#ActorHttp_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbh:lib/ActorHttp#ActorHttp_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbh:lib/ActorHttp#ActorHttp_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbh:lib/ActorHttp#ActorHttp_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbh:lib/ActorHttp#IActionHttp",
+      "@type": "AbstractClass",
+      "requireElement": "IActionHttp",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "comment": "The HTTP input, which contains the HTTP request.",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbh:lib/ActorHttp#IActorHttpOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorHttpOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "comment": "The HTTP output, which contains the HTTP response.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

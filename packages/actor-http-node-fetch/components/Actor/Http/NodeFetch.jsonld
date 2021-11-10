@@ -8,7 +8,7 @@
     {
       "@id": "chf:Actor/Http/NodeFetch",
       "@type": "Class",
-      "extends": "cbh:Actor/Http",
+      "extends": "cbh:lib/ActorHttp#ActorHttp",
       "requireElement": "ActorHttpNodeFetch",
       "comment": "A node-fetch actor that listens on the 'http' bus.",
       "parameters": [
@@ -24,7 +24,7 @@
       "constructorArguments": [
         {
           "@id": "chf:Actor/Http/NodeFetch/constructorArgumentsObject",
-          "extends": "cbh:Actor/Http/constructorArgumentsObject",
+          "extends": "cbh:lib/ActorHttp#ActorHttp_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "agentOptions",

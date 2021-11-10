@@ -17,6 +17,9 @@ import type * as RDF from '@rdfjs/types';
  */
 export abstract class ActorRdfSerialize extends
   ActorAbstractMediaTyped<IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgsMediaTyped<IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>) {
     super(args);
   }

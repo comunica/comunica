@@ -9,17 +9,32 @@
     {
       "@id": "casst:Actor/SparqlSerialize/Table",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes",
       "requireElement": "ActorSparqlSerializeTable",
       "comment": "A comunica Table SPARQL Serialize Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "casst:Actor/SparqlSerialize/Table",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "table", "priorityValue": "0.6", "mediaTypeFormat": "https://comunica.linkeddatafragments.org/#results_table" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "table": 0.6
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "casst:Actor/SparqlSerialize/Table",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "table": "https://comunica.linkeddatafragments.org/#results_table"
+              }
+            }
           }
         },
         {
@@ -34,7 +49,7 @@
       "constructorArguments": [
         {
           "@id": "casst:Actor/SparqlSerialize/Table/constructorArgumentsObject",
-          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject",
+          "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "columnWidth",

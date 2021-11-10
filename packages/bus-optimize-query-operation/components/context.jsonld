@@ -1,12 +1,36 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cboqo": "npmd:@comunica/bus-optimize-query-operation/",
       "files-cboqo": "cboqo:^1.0.0/",
-
-      "BusOptimizeQueryOperation": "cboqo:Bus/OptimizeQueryOperation",
-      "ActorOptimizeQueryOperation": "cboqo:Actor/OptimizeQueryOperation"
+      "ActorOptimizeQueryOperation": {
+        "@id": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_args_name"
+          },
+          "args_bus": {
+            "@id": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionOptimizeQueryOperation": {
+        "@id": "cboqo:lib/ActorOptimizeQueryOperation#IActionOptimizeQueryOperation",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorOptimizeQueryOperationOutput": {
+        "@id": "cboqo:lib/ActorOptimizeQueryOperation#IActorOptimizeQueryOperationOutput",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

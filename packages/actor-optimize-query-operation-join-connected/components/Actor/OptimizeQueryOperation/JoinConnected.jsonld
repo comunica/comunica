@@ -8,12 +8,12 @@
     {
       "@id": "caoqojc:Actor/OptimizeQueryOperation/JoinConnected",
       "@type": "Class",
-      "extends": "cboqo:Actor/OptimizeQueryOperation",
+      "extends": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation",
       "requireElement": "ActorOptimizeQueryOperationJoinConnected",
       "comment": "A comunica Join Connected Optimize Query Operation Actor.",
       "constructorArguments": [
         {
-          "extends": "cboqo:Actor/OptimizeQueryOperation/constructorArgumentsObject"
+          "extends": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_args__constructorArgument"
         }
       ]
     }

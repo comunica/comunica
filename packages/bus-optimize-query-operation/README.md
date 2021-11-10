@@ -18,7 +18,7 @@ $ yarn add @comunica/bus-optimize-query-operation
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cboqo:Bus/OptimizeQueryOperation`
+* **Bus name**: `cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_default_bus`
 
 ## Creating actors on this bus
 

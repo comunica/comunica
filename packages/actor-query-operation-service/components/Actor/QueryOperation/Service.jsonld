@@ -8,7 +8,7 @@
     {
       "@id": "caqoserv:Actor/QueryOperation/Service",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "ActorQueryOperationService",
       "comment": "A comunica Service Query Operation Actor.",
       "parameters": [
@@ -24,7 +24,7 @@
       "constructorArguments": [
         {
           "@id": "caqoserv:Actor/QueryOperation/Service/constructorArgumentsObject",
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "forceSparqlEndpoint",

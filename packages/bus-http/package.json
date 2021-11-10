@@ -59,6 +59,7 @@
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "build:components-bus": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
   }
 }

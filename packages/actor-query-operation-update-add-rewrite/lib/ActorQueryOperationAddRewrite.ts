@@ -1,5 +1,5 @@
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutput } from '@comunica/types';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';

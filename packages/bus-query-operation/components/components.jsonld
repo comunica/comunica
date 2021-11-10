@@ -1,11 +1,13 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/bus-query-operation",
   "@type": "Module",
   "requireName": "@comunica/bus-query-operation",
   "import": [
-    "files-cbqo:components/Bus/QueryOperation.jsonld",
-    "files-cbqo:components/Actor/QueryOperation.jsonld",
-    "files-cbqo:components/Actor/QueryOperationTypedMediated.jsonld"
+    "files-cbqo:components/ActorQueryOperation.jsonld",
+    "files-cbqo:components/ActorQueryOperationTyped.jsonld",
+    "files-cbqo:components/ActorQueryOperationTypedMediated.jsonld"
   ]
 }

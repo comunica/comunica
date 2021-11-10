@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:sparql-queryoperators.json#myMinusQueryOperator",
       "@type": "ActorQueryOperationMinus",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
       "caqom:Actor/QueryOperation/Minus#mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
     }
   ]
@@ -39,5 +39,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
 * `caqom:Actor/QueryOperation/Minus#mediatorJoin`: A mediator over the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join).

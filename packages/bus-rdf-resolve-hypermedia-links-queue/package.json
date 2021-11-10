@@ -28,10 +28,8 @@
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "peerDependencies": {
-    "@comunica/core": "^1.19.2"
-  },
-  "devDependencies": {
+  "dependencies": {
+    "@comunica/bus-rdf-resolve-hypermedia-links": "^1.22.0",
     "@comunica/core": "^1.22.0"
   },
   "jest": {
@@ -52,6 +50,7 @@
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "build:components-bus": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
   }
 }

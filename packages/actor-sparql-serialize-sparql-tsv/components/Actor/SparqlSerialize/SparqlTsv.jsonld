@@ -9,23 +9,38 @@
     {
       "@id": "cassst:Actor/SparqlSerialize/SparqlTsv",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes",
       "requireElement": "ActorSparqlSerializeSparqlTsv",
       "comment": "A comunica SPARQL TSV SPARQL Serialize Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "cassst:Actor/SparqlSerialize/SparqlTsv",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "text/tab-separated-values", "priorityValue": "0.75", "mediaTypeFormat": "http://www.w3.org/ns/formats/SPARQL_Results_TSV" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "text/tab-separated-values": 0.75
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "cassst:Actor/SparqlSerialize/SparqlTsv",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "text/tab-separated-values": "http://www.w3.org/ns/formats/SPARQL_Results_TSV"
+              }
+            }
           }
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args__constructorArgument"
         }
       ]
     }

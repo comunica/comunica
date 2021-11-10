@@ -8,7 +8,7 @@
     {
       "@id": "carjmb:Actor/RdfJoin/MultiBind",
       "@type": "Class",
-      "extends": "cbrj:Actor/RdfJoin",
+      "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
       "requireElement": "ActorRdfJoinMultiBind",
       "comment": "A comunica Multi-way Bind RDF Join Actor.",
       "parameters": [
@@ -37,7 +37,7 @@
       "constructorArguments": [
         {
           "@id": "carjmb:Actor/RdfJoin/MultiBind#constructorArgumentsObject",
-          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject",
+          "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorQueryOperation",

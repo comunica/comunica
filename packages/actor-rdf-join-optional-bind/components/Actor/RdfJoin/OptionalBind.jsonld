@@ -8,7 +8,7 @@
     {
       "@id": "carjob:Actor/RdfJoin/OptionalBind",
       "@type": "Class",
-      "extends": "cbrj:Actor/RdfJoin",
+      "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
       "requireElement": "ActorRdfJoinOptionalBind",
       "comment": "A comunica Optional Bind RDF Join Actor.",
       "parameters": [
@@ -36,7 +36,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject",
+          "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorQueryOperation",

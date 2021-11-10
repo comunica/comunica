@@ -17,7 +17,7 @@ describe('ActorRdfSerializeJsonLd', () => {
     });
 
     it('should be a ActorRdfSerializeJsonLd constructor', () => {
-      expect(new (<any> ActorRdfSerializeJsonLd)({ name: 'actor', bus, mediaTypes: {}}))
+      expect(new (<any> ActorRdfSerializeJsonLd)({ name: 'actor', bus, mediaTypePriorities: {}}))
         .toBeInstanceOf(ActorRdfSerializeJsonLd);
     });
 
@@ -33,10 +33,11 @@ describe('ActorRdfSerializeJsonLd', () => {
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus,
         jsonStringifyIndentSpaces: 2,
-        mediaTypes: {
+        mediaTypePriorities: {
           'application/json': 1,
           'application/ld+json': 1,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
     });
 
@@ -122,10 +123,11 @@ describe('ActorRdfSerializeJsonLd', () => {
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus,
         jsonStringifyIndentSpaces: 0,
-        mediaTypes: {
+        mediaTypePriorities: {
           'application/json': 1,
           'application/ld+json': 1,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
     });
 
@@ -175,10 +177,11 @@ describe('ActorRdfSerializeJsonLd', () => {
       it('should run with scaled priorities 0.5', () => {
         actor = new ActorRdfSerializeJsonLd({ bus,
           jsonStringifyIndentSpaces: 2,
-          mediaTypes: {
+          mediaTypePriorities: {
             'application/json': 1,
             'application/ld+json': 1,
           },
+          mediaTypeFormats: {},
           name: 'actor',
           priorityScale: 0.5 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
@@ -190,10 +193,11 @@ describe('ActorRdfSerializeJsonLd', () => {
       it('should run with scaled priorities 0', () => {
         actor = new ActorRdfSerializeJsonLd({ bus,
           jsonStringifyIndentSpaces: 2,
-          mediaTypes: {
+          mediaTypePriorities: {
             'application/json': 1,
             'application/ld+json': 1,
           },
+          mediaTypeFormats: {},
           name: 'actor',
           priorityScale: 0 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {

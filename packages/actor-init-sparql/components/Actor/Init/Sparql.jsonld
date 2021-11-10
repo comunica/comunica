@@ -9,7 +9,7 @@
     {
       "@id": "cais:Actor/Init/Sparql",
       "@type": "Class",
-      "extends": "cbi:Actor/Init",
+      "extends": "cbi:lib/ActorInit#ActorInit",
       "requireElement": "ActorInitSparql",
       "comment": "A comunica SPARQL Init Actor.",
       "parameters": [
@@ -128,7 +128,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbi:Actor/Init/constructorArgumentsObject",
+          "extends": "cbi:lib/ActorInit#ActorInit_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorOptimizeQueryOperation",

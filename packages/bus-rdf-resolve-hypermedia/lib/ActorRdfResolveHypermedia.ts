@@ -18,6 +18,9 @@ export abstract class ActorRdfResolveHypermedia extends Actor<IActionRdfResolveH
 IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
   protected readonly sourceType: string;
 
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest,
   IActorRdfResolveHypermediaOutput>,
   sourceType: string) {

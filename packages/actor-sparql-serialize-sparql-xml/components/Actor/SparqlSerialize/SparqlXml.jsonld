@@ -9,23 +9,38 @@
     {
       "@id": "casssx:Actor/SparqlSerialize/SparqlXml",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes",
       "requireElement": "ActorSparqlSerializeSparqlXml",
       "comment": "A comunica sparql-results+xml SPARQL Serialize Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "casssx:Actor/SparqlSerialize/SparqlXml",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "application/sparql-results+xml", "priorityValue": "0.8", "mediaTypeFormat": "http://www.w3.org/ns/formats/SPARQL_Results_XML" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/sparql-results+xml": 0.8
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "casssx:Actor/SparqlSerialize/SparqlXml",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/sparql-results+xml": "http://www.w3.org/ns/formats/SPARQL_Results_XML"
+              }
+            }
           }
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args__constructorArgument"
         }
       ]
     }

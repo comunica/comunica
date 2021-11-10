@@ -42,7 +42,9 @@ describe('ActorSparqlSerializeTree', () => {
     let variables: string[];
 
     beforeEach(() => {
-      actor = new ActorSparqlSerializeTree({ bus, name: 'actor', mediaTypes: { tree: 1 }});
+      actor = new ActorSparqlSerializeTree(
+        { bus, name: 'actor', mediaTypePriorities: { tree: 1 }, mediaTypeFormats: {}},
+      );
       bindingsStream = new ArrayIterator([
         BF.bindings({ '?k1': DF.namedNode('v1') }),
         BF.bindings({ '?k2': DF.namedNode('v2') }),

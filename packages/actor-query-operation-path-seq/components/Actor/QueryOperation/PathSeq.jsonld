@@ -23,7 +23,7 @@
       "constructorArguments": [
         {
           "@id": "caqops:Actor/QueryOperation/PathSeq/constructorArgumentsObject",
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorJoin",

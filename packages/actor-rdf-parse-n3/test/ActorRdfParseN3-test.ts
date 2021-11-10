@@ -18,9 +18,9 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should be a ActorRdfParseN3 constructor', () => {
-      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypes: {}}))
+      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypePriorities: {}}))
         .toBeInstanceOf(ActorRdfParseN3);
-      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypes: {}}))
+      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypePriorities: {}}))
         .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
     });
 
@@ -29,25 +29,35 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with required arguments', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}}); }).toBeTruthy();
+      expect(() => { new ActorRdfParseN3(
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}},
+      ); }).toBeTruthy();
     });
 
-    it('when constructed with optional mediaTypes should set the mediaTypes', () => {
-      expect(new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}}).mediaTypes).toEqual({});
+    it('when constructed with optional mediaTypePriorities should set the mediaTypePriorities', () => {
+      expect(new ActorRdfParseN3(
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}},
+      ).mediaTypePriorities).toEqual({});
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); }).toBeTruthy();
+      expect(() => { new ActorRdfParseN3(
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
+      ); }).toBeTruthy();
     });
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
-      expect(new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }).priorityScale)
+      expect(new ActorRdfParseN3(
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
+      ).priorityScale)
         .toEqual(0.5);
     });
 
     it('when constructed with optional priorityScale should scale the priorities', () => {
-      expect(new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 })
-        .mediaTypes).toEqual({
+      expect(new ActorRdfParseN3(
+        { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0.5 },
+      )
+        .mediaTypePriorities).toEqual({
         A: 1,
         B: 0.5,
         C: 0,
@@ -55,7 +65,9 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with optional arguments', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); }).toBeTruthy();
+      expect(() => { new ActorRdfParseN3(
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
+      ); }).toBeTruthy();
     });
   });
 
@@ -66,13 +78,14 @@ describe('ActorRdfParseN3', () => {
 
     beforeEach(() => {
       actor = new ActorRdfParseN3({ bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           'application/trig': 1,
           'application/n-quads': 0.7,
           'text/turtle': 0.6,
           'application/n-triples': 0.3,
           'text/n3': 0.2,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
     });
 
@@ -145,7 +158,9 @@ describe('ActorRdfParseN3', () => {
       });
 
       it('should run with scaled priorities 0.5', () => {
-        actor = new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 });
+        actor = new ActorRdfParseN3(
+          { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0.5 },
+        );
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           A: 1,
           B: 0.5,
@@ -154,7 +169,9 @@ describe('ActorRdfParseN3', () => {
       });
 
       it('should run with scaled priorities 0', () => {
-        actor = new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0 });
+        actor = new ActorRdfParseN3(
+          { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0 },
+        );
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           A: 0,
           B: 0,

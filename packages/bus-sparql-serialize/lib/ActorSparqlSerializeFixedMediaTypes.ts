@@ -1,9 +1,9 @@
+/* eslint-disable max-len */
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type {
-  IActionSparqlSerialize, IActorSparqlSerializeOutput,
-} from './ActorSparqlSerialize';
+import type { IActionSparqlSerialize, IActorSparqlSerializeOutput,
+  ActorSparqlSerialize } from './ActorSparqlSerialize';
 
 /**
  * A base actor for listening to SPARQL serialize events that has fixed media types.
@@ -16,7 +16,12 @@ import type {
  * @see IActionInit
  */
 export abstract class ActorSparqlSerializeFixedMediaTypes extends ActorAbstractMediaTypedFixed<
-IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput> implements IActorSparqlSerializeFixedMediaTypesArgs {
+IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>
+  implements IActorSparqlSerializeFixedMediaTypesArgs, ActorSparqlSerialize {
+  /**
+   * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
+   * @param args - @defaultNested {<cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

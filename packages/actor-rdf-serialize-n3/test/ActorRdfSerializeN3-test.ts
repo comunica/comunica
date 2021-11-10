@@ -34,10 +34,11 @@ describe('ActorRdfSerializeN3', () => {
 
     beforeEach(() => {
       actor = new ActorRdfSerializeN3({ bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           'application/trig': 1,
           'text/turtle': 1,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
     });
 

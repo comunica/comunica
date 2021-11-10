@@ -32,16 +32,16 @@ After installing, this package can be added to your engine's configuration as fo
       "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:Bus/RdfSerialize" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" }
       },
       "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner": {
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:Bus/RdfSerialize" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
       "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:Bus/RdfSerialize" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypeFormats"
       }
     },

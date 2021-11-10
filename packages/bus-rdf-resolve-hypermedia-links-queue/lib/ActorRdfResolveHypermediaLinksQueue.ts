@@ -15,6 +15,9 @@ import type { ILinkQueue } from './ILinkQueue';
  */
 export abstract class ActorRdfResolveHypermediaLinksQueue extends
   Actor<IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<
   IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>) {
     super(args);

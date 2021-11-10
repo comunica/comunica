@@ -1,14 +1,15 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference-paged/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-init-rdf-dereference-paged",
   "components": [
     {
       "@id": "cairdp:Actor/Init/RdfDereferencePaged",
       "@type": "Class",
-      "extends": "cbi:Actor/Init",
+      "extends": "cbi:lib/ActorInit#ActorInit",
       "requireElement": "ActorInitRdfDereferencePaged",
       "comment": "A comunica RDF Dereference Paged Init Actor.",
       "parameters": [
@@ -27,7 +28,7 @@
       "constructorArguments": [
         {
           "@id": "cairdp:Actor/Init/RdfDereferencePaged/constructorArgumentsObject",
-          "extends": "cbi:Actor/Init/constructorArgumentsObject",
+          "extends": "cbi:lib/ActorInit#ActorInit_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfDereferencePaged",

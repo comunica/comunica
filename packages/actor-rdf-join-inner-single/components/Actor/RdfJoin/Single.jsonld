@@ -8,12 +8,12 @@
     {
       "@id": "carjs:Actor/RdfJoin/Single",
       "@type": "Class",
-      "extends": "cbrj:Actor/RdfJoin",
+      "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
       "requireElement": "ActorRdfJoinSingle",
       "comment": "A comunica Single RDF Join Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+          "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument"
         }
       ]
     }

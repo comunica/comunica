@@ -1,0 +1,30 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue",
+  "components": [
+    {
+      "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper",
+      "@type": "Class",
+      "requireElement": "LinkQueueWrapper",
+      "extends": [
+        "cbrrhlq:lib/ILinkQueue#ILinkQueue"
+      ],
+      "comment": "A link queue that wraps a given link queue.",
+      "parameters": [
+        {
+          "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper_linkQueue",
+          "range": "cbrrhlq:lib/ILinkQueue#ILinkQueue",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper_linkQueue"
+        }
+      ]
+    }
+  ]
+}

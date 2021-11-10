@@ -9,18 +9,34 @@
     {
       "@id": "crpjl:Actor/RdfParse/JsonLd",
       "@type": "Class",
-      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes",
       "requireElement": "ActorRdfParseJsonLd",
       "comment": "A JSON-LD-based actor that listens on the 'rdf-parse' bus.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "crpjl:Actor/RdfParse/JsonLd",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "application/ld+json", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/JSON-LD" },
-              { "mediaTypeKey": "application/json",    "priorityValue": "0.5", "mediaTypeFormat": "http://www.w3.org/ns/formats/JSON-LD" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": 1.0,
+                "application/json": 0.5
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "crpjl:Actor/RdfParse/JsonLd",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": "http://www.w3.org/ns/formats/JSON-LD",
+                "application/json": "http://www.w3.org/ns/formats/JSON-LD"
+              }
+            }
           }
         },
         {
@@ -33,7 +49,7 @@
       "constructorArguments": [
         {
           "@id": "crpjl:Actor/RdfParse/JsonLd/constructorArgumentsObject",
-          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject",
+          "extends": "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

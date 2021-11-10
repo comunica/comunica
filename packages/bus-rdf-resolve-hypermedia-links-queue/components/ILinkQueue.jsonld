@@ -1,0 +1,27 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue",
+  "components": [
+    {
+      "@id": "cbrrhlq:lib/ILinkQueue#ILinkQueue",
+      "@type": "AbstractClass",
+      "requireElement": "ILinkQueue",
+      "extends": [],
+      "comment": "A datastructure that accepts links, and emits them in an implementation-defined order.",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ILink",
+      "@type": "AbstractClass",
+      "requireElement": "ILink",
+      "extends": [],
+      "comment": "A link holder that can expose additional properties.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

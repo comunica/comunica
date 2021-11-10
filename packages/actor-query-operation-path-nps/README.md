@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:sparql-queryoperator-path.json#myNpsPathOperator",
       "@type": "ActorQueryOperationPathNps",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     }
   ]
 }
@@ -37,4 +37,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).

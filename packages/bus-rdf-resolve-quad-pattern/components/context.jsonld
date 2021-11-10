@@ -1,12 +1,57 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrrqp": "npmd:@comunica/bus-rdf-resolve-quad-pattern/",
       "files-cbrrqp": "cbrrqp:^1.0.0/",
-
-      "BusRdfResolveQuadPattern": "cbrrqp:Bus/RdfResolveQuadPattern",
-      "ActorRdfResolveQuadPattern": "cbrrqp:Actor/RdfResolveQuadPattern"
+      "ActorRdfResolveQuadPattern": {
+        "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfResolveQuadPattern": {
+        "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#IActionRdfResolveQuadPattern",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfResolveQuadPatternOutput": {
+        "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#IActorRdfResolveQuadPatternOutput",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorRdfResolveQuadPatternSource": {
+        "@id": "cbrrqp:lib/ActorRdfResolveQuadPatternSource#ActorRdfResolveQuadPatternSource",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrrqp:lib/ActorRdfResolveQuadPatternSource#ActorRdfResolveQuadPatternSource_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrrqp:lib/ActorRdfResolveQuadPatternSource#ActorRdfResolveQuadPatternSource_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrrqp:lib/ActorRdfResolveQuadPatternSource#ActorRdfResolveQuadPatternSource_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IQuadSource": {
+        "@id": "cbrrqp:lib/ActorRdfResolveQuadPatternSource#IQuadSource",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

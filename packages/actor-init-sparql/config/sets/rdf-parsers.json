@@ -22,28 +22,28 @@
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
       "@type": "ActorRdfParseN3",
-      "priorityScale": 1.0
+      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 1.0
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
-      "priorityScale": 0.9,
+      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.9,
       "crpjl:Actor/RdfParse/JsonLd/mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" }
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
-      "priorityScale": 0.5
+      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.5
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserXmlRdfa",
       "@type": "ActorRdfParseXmlRdfa",
-      "priorityScale": 0.3
+      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.3
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserHtml",
       "@type": "ActorRdfParseHtml",
-      "priorityScale": 0.2
+      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.2
     },
 
     {
@@ -60,13 +60,13 @@
       "carphs:mediatorRdfParseMediatypes": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
       "carphs:mediatorRdfParseHandle": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
       }
     }
   ]

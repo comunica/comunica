@@ -1,0 +1,92 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-http-invalidate",
+  "components": [
+    {
+      "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate",
+      "@type": "AbstractClass",
+      "requireElement": "ActorHttpInvalidate",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "A comunica actor for http-invalidate events.  Actor types: * Input:  IActionHttpInvalidate:      An action for invalidating the cached contents of given URL. * Test:   <none> * Output: IActorHttpInvalidateOutput: An empty response.",
+      "parameters": [
+        {
+          "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cbhi:lib/ActorHttpInvalidate#IActionHttpInvalidate",
+      "@type": "AbstractClass",
+      "requireElement": "IActionHttpInvalidate",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cbhi:lib/ActorHttpInvalidate#IActorHttpInvalidateOutput",
+      "@type": "AbstractClass",
+      "requireElement": "IActorHttpInvalidateOutput",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

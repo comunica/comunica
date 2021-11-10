@@ -9,28 +9,47 @@
     {
       "@id": "carsn:Actor/RdfSerialize/N3",
       "@type": "Class",
-      "extends": "cbrs:Actor/RdfSerializeFixedMediaTypes",
+      "extends": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes",
       "requireElement": "ActorRdfSerializeN3",
       "comment": "A comunica N3 RDF Serialize Actor.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "carsn:Actor/RdfSerialize/N3",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "application/trig",      "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/TriG" },
-              { "mediaTypeKey": "application/n-quads",   "priorityValue": "0.7", "mediaTypeFormat": "http://www.w3.org/ns/formats/N-Quads" },
-              { "mediaTypeKey": "text/turtle",           "priorityValue": "0.6", "mediaTypeFormat": "http://www.w3.org/ns/formats/Turtle" },
-              { "mediaTypeKey": "application/n-triples", "priorityValue": "0.3", "mediaTypeFormat": "http://www.w3.org/ns/formats/N-Triples" },
-              { "mediaTypeKey": "text/n3",               "priorityValue": "0.2", "mediaTypeFormat": "http://www.w3.org/ns/formats/N3" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/n-quads": 1.0,
+                "application/trig": 0.95,
+                "application/n-triples": 0.8,
+                "text/turtle": 0.6,
+                "text/n3": 0.35
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "carsn:Actor/RdfSerialize/N3",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "application/n-quads": "http://www.w3.org/ns/formats/N-Quads",
+                "application/trig": "http://www.w3.org/ns/formats/TriG",
+                "application/n-triples": "http://www.w3.org/ns/formats/N-Triples",
+                "text/turtle": "http://www.w3.org/ns/formats/Turtle",
+                "text/n3": "http://www.w3.org/ns/formats/N3"
+              }
+            }
           }
         }
       ],
       "constructorArguments": [
         {
           "@id": "carsn:Actor/RdfSerialize/N3/constructorArgumentsObject",
-          "extends": "cbrs:Actor/RdfSerializeFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes_args__constructorArgument"
         }
       ]
     }

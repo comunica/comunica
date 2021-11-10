@@ -105,9 +105,10 @@ describe('ActorSparqlSerializeSparqlTsv', () => {
 
     beforeEach(() => {
       actor = new ActorSparqlSerializeSparqlTsv({ bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           'text/tab-separated-values': 1,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
         BF.bindings({ '?k1': DF.namedNode('v1') }),

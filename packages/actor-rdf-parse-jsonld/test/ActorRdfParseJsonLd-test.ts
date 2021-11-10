@@ -46,7 +46,7 @@ describe('ActorRdfParseJsonLd', () => {
     });
 
     it('should be a ActorRdfParseJsonLd constructor', () => {
-      expect(new (<any> ActorRdfParseJsonLd)({ name: 'actor', bus, mediaTypes: {}, mediatorHttp }))
+      expect(new (<any> ActorRdfParseJsonLd)({ name: 'actor', bus, mediaTypePriorities: {}, mediatorHttp }))
         .toBeInstanceOf(ActorRdfParseJsonLd);
     });
 
@@ -54,29 +54,38 @@ describe('ActorRdfParseJsonLd', () => {
       expect(() => { (<any> ActorRdfParseJsonLd)(); }).toThrow();
     });
 
-    it('when constructed with optional mediaTypes should set the mediaTypes', () => {
-      expect(new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: {}, mediatorHttp }).mediaTypes).toEqual({});
+    it('when constructed with optional mediaTypePriorities should set the mediaTypePriorities', () => {
+      expect(new ActorRdfParseJsonLd(
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, mediatorHttp },
+      ).mediaTypePriorities).toEqual({});
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
       expect(() => { new ActorRdfParseJsonLd(
-        { name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5, mediatorHttp },
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5, mediatorHttp },
       ); })
         .toBeTruthy();
     });
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
       expect(new ActorRdfParseJsonLd(
-        { name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5, mediatorHttp },
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5, mediatorHttp },
       ).priorityScale)
         .toEqual(0.5);
     });
 
     it('when constructed with optional priorityScale should scale the priorities', () => {
       expect(new ActorRdfParseJsonLd(
-        { name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5, mediatorHttp },
+        {
+          name: 'actor',
+          bus,
+          mediaTypePriorities: { A: 2, B: 1, C: 0 },
+          mediaTypeFormats: {},
+          priorityScale: 0.5,
+          mediatorHttp,
+        },
       )
-        .mediaTypes).toEqual({
+        .mediaTypePriorities).toEqual({
         A: 1,
         B: 0.5,
         C: 0,
@@ -95,10 +104,11 @@ describe('ActorRdfParseJsonLd', () => {
 
     beforeEach(() => {
       actor = new ActorRdfParseJsonLd({ bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           'application/json': 1,
           'application/ld+json': 1,
         },
+        mediaTypeFormats: {},
         mediatorHttp,
         name: 'actor' });
       input = stringToStream(`{
@@ -336,10 +346,11 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run with scaled priorities 0.5', () => {
         actor = new ActorRdfParseJsonLd({ bus,
-          mediaTypes: {
+          mediaTypePriorities: {
             'application/json': 1,
             'application/ld+json': 1,
           },
+          mediaTypeFormats: {},
           mediatorHttp,
           name: 'actor',
           priorityScale: 0.5 });
@@ -351,10 +362,11 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run with scaled priorities 0', () => {
         actor = new ActorRdfParseJsonLd({ bus,
-          mediaTypes: {
+          mediaTypePriorities: {
             'application/json': 1,
             'application/ld+json': 1,
           },
+          mediaTypeFormats: {},
           mediatorHttp,
           name: 'actor',
           priorityScale: 0 });

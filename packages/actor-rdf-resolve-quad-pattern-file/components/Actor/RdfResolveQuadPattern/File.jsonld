@@ -9,7 +9,7 @@
     {
       "@id": "carrqpfi:Actor/RdfResolveQuadPattern/File",
       "@type": "Class",
-      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "extends": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern",
       "requireElement": "ActorRdfResolveQuadPatternFile",
       "comment": "A comunica File RDF Resolve Quad Pattern Actor.",
       "parameters": [
@@ -20,12 +20,12 @@
           "unique": true
         },
         {
-          "@id": "cbrrqp:Actor/RdfResolveQuadPattern/file",
+          "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern/file",
           "comment": "The file to preload",
           "range": "xsd:string"
         },
         {
-          "@id": "cbrrqp:Actor/RdfResolveQuadPattern/cacheSize",
+          "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern/cacheSize",
           "comment": "The maximum number of entries in the LRU cache",
           "range": "xsd:integer",
           "default": 100,
@@ -33,12 +33,12 @@
           "unique": true
         },
         {
-          "@id": "cbrrqp:Actor/RdfResolveQuadPattern/httpInvalidator",
+          "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern/httpInvalidator",
           "comment": "An actor that listens to HTTP invalidation events",
-          "range": "cbhi:Actor/HttpInvalidateListenable",
+          "range": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable",
           "default": {
-            "@id": "cbrrqp:Actor/RdfResolveQuadPattern/httpInvalidator#default",
-            "@type": "cbhi:Actor/HttpInvalidateListenable"
+            "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern/httpInvalidator_default",
+            "@type": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable"
           },
           "required": true,
           "unique": true
@@ -47,7 +47,7 @@
       "constructorArguments": [
         {
           "@id": "carrqpfi:Actor/RdfResolveQuadPattern/File/constructorArgumentsObject",
-          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "extends": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfDereference",
@@ -55,15 +55,15 @@
             },
             {
               "keyRaw": "files",
-              "value": "cbrrqp:Actor/RdfResolveQuadPattern/file"
+              "value": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern/file"
             },
             {
               "keyRaw": "cacheSize",
-              "value": "cbrrqp:Actor/RdfResolveQuadPattern/cacheSize"
+              "value": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern/cacheSize"
             },
             {
               "keyRaw": "httpInvalidator",
-              "value": "cbrrqp:Actor/RdfResolveQuadPattern/httpInvalidator"
+              "value": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern/httpInvalidator"
             }
           ]
         }

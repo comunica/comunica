@@ -8,7 +8,7 @@
     {
       "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql",
       "@type": "Class",
-      "extends": "cbruh:Actor/RdfUpdateHypermedia",
+      "extends": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia",
       "requireElement": "ActorRdfUpdateHypermediaSparql",
       "comment": "A comunica SPARQL RDF Update Hypermedia Actor.",
       "parameters": [
@@ -38,7 +38,7 @@
       "constructorArguments": [
         {
           "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql/constructorArgumentsObject",
-          "extends": "cbruh:Actor/RdfUpdateHypermedia/constructorArgumentsObject",
+          "extends": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

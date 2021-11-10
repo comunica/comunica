@@ -8,7 +8,7 @@
     {
       "@id": "caqood:Actor/QueryOperation/OrderByDirect",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated",
       "requireElement": "ActorQueryOperationOrderByDirect",
       "comment": "A comunica OrderBy Direct Query Operation Actor.",
       "parameters": [
@@ -22,7 +22,7 @@
       "constructorArguments": [
         {
           "@id": "caqood:Actor/QueryOperation/OrderByDirect/constructorArgumentsObject",
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "window",

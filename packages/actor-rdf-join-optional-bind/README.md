@@ -33,7 +33,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:join.json#myRdfJoinActorOptionalBind",
       "@type": "ActorRdfJoinOptionalBind",
-      "cbrj:Actor/RdfJoin#mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
+      "cbrj:lib/ActorRdfJoin#ActorRdfJoin#mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
       "carjob:Actor/RdfJoin/OptionalBind#mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     }
   ]
@@ -42,6 +42,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbrj:Actor/RdfJoin#mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `cbrj:lib/ActorRdfJoin#ActorRdfJoin#mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
 * `carjob:Actor/RdfJoin/OptionalBind#bindOrder`: The order in which elements should be bound. _(defaults to `depth-first`, but can also be `breadth-first`)_
 * `carjob:Actor/RdfJoin/OptionalBind#mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).

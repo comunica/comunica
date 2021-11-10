@@ -9,7 +9,7 @@
     {
       "@id": "cassr:Actor/SparqlSerialize/Rdf",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerialize",
+      "extends": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize",
       "requireElement": "ActorSparqlSerializeRdf",
       "comment": "A comunica RDF SPARQL Serialize Actor.",
       "parameters": [
@@ -35,7 +35,7 @@
       "constructorArguments": [
         {
           "@id": "cassr:Actor/SparqlSerialize/Rdf/constructorArgumentsObject",
-          "extends": "cbss:Actor/SparqlSerialize/constructorArgumentsObject",
+          "extends": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorRdfSerialize",

@@ -30,7 +30,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.2.1",
     "@comunica/bindings-factory": "^1.22.0",
     "@comunica/bus-query-operation": "^1.22.0",
     "@comunica/mediatortype-join-coefficients": "^1.22.0"

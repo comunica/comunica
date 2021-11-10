@@ -52,13 +52,14 @@ describe('ActorInitRdfParse', () => {
     beforeEach(() => {
       actor = new ActorInitRdfParse({ name: 'actor', bus, mediatorRdfParse: mediator, mediaType: 'text/turtle' });
       busInit.subscribe(new ActorRdfParseN3({ bus,
-        mediaTypes: {
+        mediaTypePriorities: {
           'application/trig': 1,
           'application/n-quads': 0.7,
           'text/turtle': 0.6,
           'application/n-triples': 0.3,
           'text/n3': 0.2,
         },
+        mediaTypeFormats: {},
         name: 'actor-rdf-parse' }));
       input = stringToStream(`
       <a> <b> <c>.

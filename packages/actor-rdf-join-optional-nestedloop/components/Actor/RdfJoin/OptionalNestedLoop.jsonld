@@ -8,12 +8,12 @@
     {
       "@id": "carjonl:Actor/RdfJoin/OptionalNestedLoop",
       "@type": "Class",
-      "extends": "cbrj:Actor/RdfJoin",
+      "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
       "requireElement": "ActorRdfJoinOptionalNestedLoop",
       "comment": "A comunica Optional Nested Loop RDF Join Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+          "extends": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args__constructorArgument"
         }
       ]
     }

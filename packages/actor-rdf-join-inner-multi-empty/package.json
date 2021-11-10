@@ -30,7 +30,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "asynciterator": "^3.2.0"
+    "asynciterator": "^3.2.1"
   },
   "peerDependencies": {
     "@comunica/core": "^1.22.0",

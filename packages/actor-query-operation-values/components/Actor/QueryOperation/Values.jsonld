@@ -8,12 +8,12 @@
     {
       "@id": "caqov:Actor/QueryOperation/Values",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperation",
+      "extends": "cbqo:lib/ActorQueryOperation#ActorQueryOperation",
       "requireElement": "ActorQueryOperationValues",
       "comment": "A comunica Values Query Operation Actor.",
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject"
+          "extends": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args__constructorArgument"
         }
       ]
     }

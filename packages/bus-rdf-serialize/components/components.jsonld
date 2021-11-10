@@ -1,11 +1,12 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/bus-rdf-serialize",
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-serialize",
   "import": [
-    "files-cbrs:components/Bus/RdfSerialize.jsonld",
-    "files-cbrs:components/Actor/RdfSerialize.jsonld",
-    "files-cbrs:components/Actor/RdfSerializeFixedMediaTypes.jsonld"
+    "files-cbrs:components/ActorRdfSerialize.jsonld",
+    "files-cbrs:components/ActorRdfSerializeFixedMediaTypes.jsonld"
   ]
 }

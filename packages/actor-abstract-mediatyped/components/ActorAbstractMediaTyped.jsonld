@@ -1,0 +1,168 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-abstract-mediatyped",
+  "components": [
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped",
+      "@type": "AbstractClass",
+      "requireElement": "ActorAbstractMediaTyped",
+      "extends": [
+        "cc:lib/Actor#Actor"
+      ],
+      "comment": "An abstract actor that handles media-typed actions.  It splits up a action between a 'handle' and a 'mediaTypes' action. A 'mediaTypes' action is used to retrieve the available media types from this actor. A 'handle' action is abstract, and can be implemented to do anything, such as parsing, serializing, etc.",
+      "parameters": [
+        {
+          "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caam:lib/ActorAbstractMediaTyped#ActorAbstractMediaTyped_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActorArgsMediaTyped",
+      "@type": "AbstractClass",
+      "requireElement": "IActorArgsMediaTyped",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActionAbstractMediaTypedHandle",
+      "@type": "AbstractClass",
+      "requireElement": "IActionAbstractMediaTypedHandle",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActionAbstractMediaTypedMediaTypes",
+      "@type": "AbstractClass",
+      "requireElement": "IActionAbstractMediaTypedMediaTypes",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActionAbstractMediaTypedMediaTypeFormats",
+      "@type": "AbstractClass",
+      "requireElement": "IActionAbstractMediaTypedMediaTypeFormats",
+      "extends": [
+        "ct:lib/index#IAction"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActorTestAbstractMediaTypedHandle",
+      "@type": "AbstractClass",
+      "requireElement": "IActorTestAbstractMediaTypedHandle",
+      "extends": [
+        "cc:lib/Actor#IActorTest"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActorTestAbstractMediaTypedMediaTypes",
+      "@type": "AbstractClass",
+      "requireElement": "IActorTestAbstractMediaTypedMediaTypes",
+      "extends": [
+        "cc:lib/Actor#IActorTest"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActorTestAbstractMediaTypedMediaTypeFormats",
+      "@type": "AbstractClass",
+      "requireElement": "IActorTestAbstractMediaTypedMediaTypeFormats",
+      "extends": [
+        "cc:lib/Actor#IActorTest"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActorOutputAbstractMediaTypedHandle",
+      "@type": "AbstractClass",
+      "requireElement": "IActorOutputAbstractMediaTypedHandle",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActorOutputAbstractMediaTypedMediaTypes",
+      "@type": "AbstractClass",
+      "requireElement": "IActorOutputAbstractMediaTypedMediaTypes",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "caam:lib/ActorAbstractMediaTyped#IActorOutputAbstractMediaTypedMediaTypeFormats",
+      "@type": "AbstractClass",
+      "requireElement": "IActorOutputAbstractMediaTypedMediaTypeFormats",
+      "extends": [
+        "cc:lib/Actor#IActorOutput"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

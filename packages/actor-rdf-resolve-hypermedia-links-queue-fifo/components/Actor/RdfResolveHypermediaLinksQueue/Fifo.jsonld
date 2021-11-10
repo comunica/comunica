@@ -8,12 +8,12 @@
     {
       "@id": "carrhlqf:Actor/RdfResolveHypermediaLinksQueue/Fifo",
       "@type": "Class",
-      "extends": "cbrrhlq:Actor/RdfResolveHypermediaLinksQueue",
+      "extends": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue",
       "requireElement": "ActorRdfResolveHypermediaLinksQueueFifo",
       "comment": "A comunica FIFO RDF Resolve Hypermedia Links Queue Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrrhlq:Actor/RdfResolveHypermediaLinksQueue/constructorArgumentsObject"
+          "extends": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args__constructorArgument"
         }
       ]
     }

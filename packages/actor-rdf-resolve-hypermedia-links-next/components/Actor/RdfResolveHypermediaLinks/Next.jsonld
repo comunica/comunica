@@ -8,12 +8,12 @@
     {
       "@id": "carrhln:Actor/RdfResolveHypermediaLinks/Next",
       "@type": "Class",
-      "extends": "cbrrhl:Actor/RdfResolveHypermediaLinks",
+      "extends": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks",
       "requireElement": "ActorRdfResolveHypermediaLinksNext",
       "comment": "A comunica Next RDF Resolve Hypermedia Links Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrrhl:Actor/RdfResolveHypermediaLinks/constructorArgumentsObject"
+          "extends": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_args__constructorArgument"
         }
       ]
     }

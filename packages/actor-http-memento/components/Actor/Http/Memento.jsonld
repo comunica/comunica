@@ -8,7 +8,7 @@
     {
       "@id": "cahm:Actor/Http/Memento",
       "@type": "Class",
-      "extends": "cbh:Actor/Http",
+      "extends": "cbh:lib/ActorHttp#ActorHttp",
       "requireElement": "ActorHttpMemento",
       "comment": "A comunica Memento Http Actor.",
       "parameters": [
@@ -22,7 +22,7 @@
       "constructorArguments": [
         {
           "@id": "cahm:Actor/Http/Memento/constructorArgumentsObject",
-          "extends": "cbh:Actor/Http/constructorArgumentsObject",
+          "extends": "cbh:lib/ActorHttp#ActorHttp_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

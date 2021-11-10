@@ -1,13 +1,63 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrme": "npmd:@comunica/bus-rdf-metadata-extract/",
       "files-cbrme": "cbrme:^1.0.0/",
-
-      "BusRdfMetadataExtract": "cbrme:Bus/RdfMetadataExtract",
-      "ActorRdfMetadataExtract": "cbrme:Actor/RdfMetadataExtract",
-      "ActorRdfMetadataExtractQuery": "cbrme:Actor/RdfMetadataExtractQuery"
+      "ActorRdfMetadataExtract": {
+        "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfMetadataExtract": {
+        "@id": "cbrme:lib/ActorRdfMetadataExtract#IActionRdfMetadataExtract",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfMetadataExtractOutput": {
+        "@id": "cbrme:lib/ActorRdfMetadataExtract#IActorRdfMetadataExtractOutput",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorRdfMetadataExtractQuery": {
+        "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery",
+        "@prefix": true,
+        "@context": {
+          "context": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_context"
+          },
+          "query": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_query"
+          },
+          "args_name": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfMetadataExtractQueryArgs": {
+        "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#IActorRdfMetadataExtractQueryArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

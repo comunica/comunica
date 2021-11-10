@@ -8,7 +8,7 @@
     {
       "@id": "caqose:Actor/QueryOperation/SparqlEndpoint",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperation",
+      "extends": "cbqo:lib/ActorQueryOperation#ActorQueryOperation",
       "requireElement": "ActorQueryOperationSparqlEndpoint",
       "comment": "A comunica SPARQL Endpoint Query Operation Actor.",
       "parameters": [
@@ -46,7 +46,7 @@
       "constructorArguments": [
         {
           "@id": "caqose:Actor/QueryOperation/SparqlEndpoint/constructorArgumentsObject",
-          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
+          "extends": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

@@ -8,7 +8,7 @@
     {
       "@id": "cahp:Actor/Http/Proxy",
       "@type": "Class",
-      "extends": "cbh:Actor/Http",
+      "extends": "cbh:lib/ActorHttp#ActorHttp",
       "requireElement": "ActorHttpProxy",
       "comment": "A comunica Proxy Http Actor.",
       "parameters": [
@@ -22,7 +22,7 @@
       "constructorArguments": [
         {
           "@id": "cahp:Actor/Http/Proxy/constructorArgumentsObject",
-          "extends": "cbh:Actor/Http/constructorArgumentsObject",
+          "extends": "cbh:lib/ActorHttp#ActorHttp_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

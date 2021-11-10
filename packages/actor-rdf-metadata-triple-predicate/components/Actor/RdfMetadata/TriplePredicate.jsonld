@@ -8,7 +8,7 @@
     {
       "@id": "carmtp:Actor/RdfMetadata/TriplePredicate",
       "@type": "Class",
-      "extends": "cbrm:Actor/RdfMetadata",
+      "extends": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata",
       "requireElement": "ActorRdfMetadataTriplePredicate",
       "comment": "A comunica Triple Predicate RDF Metadata Actor.",
       "parameters": [
@@ -23,7 +23,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject",
+          "extends": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "predicateRegexes",

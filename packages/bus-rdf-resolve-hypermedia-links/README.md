@@ -18,7 +18,7 @@ $ yarn add @comunica/bus-rdf-resolve-hypermedia-links
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbrrhl:Bus/RdfResolveHypermediaLinks`
+* **Bus name**: `cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus`
 
 ## Creating actors on this bus
 

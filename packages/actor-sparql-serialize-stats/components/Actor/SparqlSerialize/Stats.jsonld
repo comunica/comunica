@@ -9,17 +9,32 @@
     {
       "@id": "cassst:Actor/SparqlSerialize/Stats",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes",
       "requireElement": "ActorSparqlSerializeStats",
       "comment": "Serializes SPARQL results for testing and debugging.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypePriorities",
           "defaultScoped": {
             "defaultScope": "cassst:Actor/SparqlSerialize/Stats",
-            "defaultScopedValue": [
-              { "mediaTypeKey": "stats", "priorityValue": "0.5", "mediaTypeFormat": "https://comunica.linkeddatafragments.org/#results_stats" }
-            ]
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "stats": 0.5
+              }
+            }
+          }
+        },
+        {
+          "@id": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args_mediaTypeFormats",
+          "defaultScoped": {
+            "defaultScope": "cassst:Actor/SparqlSerialize/Stats",
+            "defaultScopedValue": {
+              "@type": "@json",
+              "@value": {
+                "stats": "https://comunica.linkeddatafragments.org/#results_stats"
+              }
+            }
           }
         },
         {
@@ -40,7 +55,7 @@
       "constructorArguments": [
         {
           "@id": "cassst:Actor/SparqlSerialize/Stats/constructorArgumentsObject",
-          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject",
+          "extends": "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "httpObserver",

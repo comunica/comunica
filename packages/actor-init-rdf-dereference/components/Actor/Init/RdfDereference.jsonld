@@ -2,14 +2,15 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-init-rdf-dereference",
   "components": [
     {
       "@id": "cird:Actor/Init/RdfDereference",
       "@type": "Class",
-      "extends": "cbi:Actor/Init",
+      "extends": "cbi:lib/ActorInit#ActorInit",
       "requireElement": "ActorInitRdfDereference",
       "comment": "An actor that listens on the 'init' bus that triggers an RDF Dereference event.",
       "parameters": [

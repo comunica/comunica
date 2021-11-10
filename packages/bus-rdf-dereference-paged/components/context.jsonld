@@ -1,12 +1,36 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrdp": "npmd:@comunica/bus-rdf-dereference-paged/",
       "files-cbrdp": "cbrdp:^1.0.0/",
-
-      "BusRdfDereferencePaged": "cbrdp:Bus/RdfDereferencePaged",
-      "ActorRdfDereferencePaged": "cbrdp:Actor/RdfDereferencePaged"
+      "ActorRdfDereferencePaged": {
+        "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrdp:lib/ActorRdfDereferencePaged#ActorRdfDereferencePaged_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfDereferencePaged": {
+        "@id": "cbrdp:lib/ActorRdfDereferencePaged#IActionRdfDereferencePaged",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfDereferencePagedOutput": {
+        "@id": "cbrdp:lib/ActorRdfDereferencePaged#IActorRdfDereferencePagedOutput",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

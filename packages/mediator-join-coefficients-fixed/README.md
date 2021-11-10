@@ -43,7 +43,7 @@ After installing, this mediator can be instantiated as follows:
         "cmjcf:Mediator/JoinCoefficientsFixed#memoryWeight": 1,
         "cmjcf:Mediator/JoinCoefficientsFixed#timeWeight": 1,
         "cmjcf:Mediator/JoinCoefficientsFixed#ioWeight": 0.01,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrj:Bus/RdfJoin" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_default_bus" }
       }
     }
   ]

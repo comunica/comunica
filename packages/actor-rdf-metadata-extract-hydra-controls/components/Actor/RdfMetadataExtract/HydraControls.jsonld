@@ -8,12 +8,12 @@
     {
       "@id": "carmehc:Actor/RdfMetadataExtract/HydraControls",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
       "requireElement": "ActorRdfMetadataExtractHydraControls",
       "comment": "A comunica Hydra Controls RDF Metadata Extract Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject"
+          "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args__constructorArgument"
         }
       ]
     }

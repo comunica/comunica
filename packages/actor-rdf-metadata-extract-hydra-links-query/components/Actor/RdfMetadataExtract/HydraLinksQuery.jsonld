@@ -8,12 +8,12 @@
     {
       "@id": "carmehlq:Actor/RdfMetadataExtract/HydraLinksQuery",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtractQuery",
+      "extends": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery",
       "requireElement": "ActorRdfMetadataExtractHydraLinksQuery",
       "comment": "A comunica Query-based Hydra Links RDF Metadata Extract Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtractQuery/constructorArgumentsObject"
+          "extends": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args__constructorArgument"
         }
       ]
     }

@@ -39,13 +39,13 @@ After installing, this package can be added to your engine's configuration as fo
       "crdhp:mediatorRdfParseMediatypes": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
       "crdhp:mediatorRdfParseHandle": {
         "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:Bus/RdfParse" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
       },
       "crdhp:maxAcceptHeaderLength": 1024,
       "crdhp:maxAcceptHeaderLengthBrowser": 128,

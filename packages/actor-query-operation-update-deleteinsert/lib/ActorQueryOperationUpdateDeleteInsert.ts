@@ -1,13 +1,12 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import type { IActorQueryOperationOutput, BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';

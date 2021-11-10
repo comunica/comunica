@@ -8,7 +8,7 @@
     {
       "@id": "caspa:Actor/SparqlParse/Algebra",
       "@type": "Class",
-      "extends": "cbsp:Actor/SparqlParse",
+      "extends": "cbsp:lib/ActorSparqlParse#ActorSparqlParse",
       "requireElement": "ActorSparqlParseAlgebra",
       "comment": "A comunica Algebra SPARQL Parse Actor.",
       "parameters": [
@@ -52,7 +52,7 @@
       "constructorArguments": [
         {
           "@id": "caspa:Actor/SparqlParse/Algebra/constructorArgumentsObject",
-          "extends": "cbsp:Actor/SparqlParse/constructorArgumentsObject",
+          "extends": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "prefixes",

@@ -8,12 +8,12 @@
     {
       "@id": "carphm:Actor/RdfParseHtml/Microdata",
       "@type": "Class",
-      "extends": "cbrph:Actor/RdfParseHtml",
+      "extends": "cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml",
       "requireElement": "ActorRdfParseHtmlMicrodata",
       "comment": "A comunica Microdata RDF Parse Html Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrph:Actor/RdfParseHtml/constructorArgumentsObject"
+          "extends": "cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args__constructorArgument"
         }
       ]
     }

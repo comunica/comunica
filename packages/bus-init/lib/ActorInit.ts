@@ -15,6 +15,9 @@ import { Actor } from '@comunica/core';
  * @see IActionInit
  */
 export abstract class ActorInit extends Actor<IActionInit, IActorTest, IActorOutputInit> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionInit, IActorTest, IActorOutputInit>) {
     super(args);
   }

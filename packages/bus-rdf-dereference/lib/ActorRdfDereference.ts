@@ -21,6 +21,9 @@ export const KEY_CONTEXT_LENIENT = KeysInitSparql.lenient;
  * @see IActorRdfDereferenceOutput
  */
 export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>) {
     super(args);
   }

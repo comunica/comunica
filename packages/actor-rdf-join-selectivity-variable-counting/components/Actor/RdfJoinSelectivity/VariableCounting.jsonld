@@ -8,12 +8,12 @@
     {
       "@id": "carjsvc:Actor/RdfJoinSelectivity/VariableCounting",
       "@type": "Class",
-      "extends": "cbrjs:Actor/RdfJoinSelectivity",
+      "extends": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity",
       "requireElement": "ActorRdfJoinSelectivityVariableCounting",
       "comment": "A comunica Variable Counting RDF Join Selectivity Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrjs:Actor/RdfJoinSelectivity/constructorArgumentsObject"
+          "extends": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity_args__constructorArgument"
         }
       ]
     }

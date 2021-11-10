@@ -44,9 +44,10 @@ describe('ActorSparqlSerializeTable', () => {
     beforeEach(() => {
       actor = new ActorSparqlSerializeTable({ bus,
         columnWidth: 10,
-        mediaTypes: {
+        mediaTypePriorities: {
           table: 1,
         },
+        mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
         BF.bindings({ k1: DF.namedNode('v1') }),

@@ -8,12 +8,12 @@
     {
       "@id": "caoqobtj:Actor/OptimizeQueryOperation/BgpToJoin",
       "@type": "Class",
-      "extends": "cboqo:Actor/OptimizeQueryOperation",
+      "extends": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation",
       "requireElement": "ActorOptimizeQueryOperationBgpToJoin",
       "comment": "A comunica BGP to Join Optimize Query Operation Actor.",
       "constructorArguments": [
         {
-          "extends": "cboqo:Actor/OptimizeQueryOperation/constructorArgumentsObject"
+          "extends": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_args__constructorArgument"
         }
       ]
     }

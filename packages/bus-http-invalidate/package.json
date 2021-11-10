@@ -28,10 +28,7 @@
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "peerDependencies": {
-    "@comunica/core": "^1.4.0"
-  },
-  "devDependencies": {
+  "dependencies": {
     "@comunica/core": "^1.22.0"
   },
   "jest": {
@@ -54,6 +51,7 @@
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "build:components-bus": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
   }
 }

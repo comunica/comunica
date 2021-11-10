@@ -25,11 +25,6 @@ export type { IActionQueryOperation };
 /**
  * @deprecated Use the type in @comunica/types
  */
-export type { IActorQueryOperationOutput };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
 export type { IActorQueryOperationOutputBindings };
 
 /**
@@ -93,6 +88,9 @@ let bnodeCounter = 0;
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
     super(args);
   }
@@ -264,7 +262,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 }
 
-interface IBaseExpressionContext {
+export interface IBaseExpressionContext {
   now?: Date;
   baseIRI?: string;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>

@@ -19,7 +19,7 @@
             "@id": "config-example:mediatorHttp",
             "@type": "MediatorNumberMin",
             "field": "time",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:Bus/Http" }
+            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus" }
           },
           "url": "http://fragments.linkedsoftwaredependencies.org",
           "headers": [

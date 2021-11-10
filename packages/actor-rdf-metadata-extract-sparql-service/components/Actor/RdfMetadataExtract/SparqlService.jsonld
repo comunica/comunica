@@ -8,7 +8,7 @@
     {
       "@id": "carmess:Actor/RdfMetadataExtract/SparqlService",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
       "requireElement": "ActorRdfMetadataExtractSparqlService",
       "comment": "A comunica RDF Metadata Extract Actor for SPARQL service descriptions.",
       "parameters": [
@@ -23,7 +23,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject",
+          "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "inferHttpsEndpoint",

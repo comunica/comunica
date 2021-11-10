@@ -42,7 +42,7 @@ After installing, this package can be added to your engine's configuration as fo
       "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfUpdateHypermedia": {
         "@id": "config-sets:rdf-update-rdfjs.json#mediatorRdfUpdateHypermedia",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbruh:Bus/RdfUpdateHypermedia" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus" }
       }
     }
   ]

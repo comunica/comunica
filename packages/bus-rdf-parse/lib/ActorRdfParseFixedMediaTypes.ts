@@ -1,7 +1,8 @@
+/* eslint-disable max-len */
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import type { IActorTest } from '@comunica/core';
-import type { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
+import type { IActionRdfParse, IActorRdfParseOutput, ActorRdfParse } from './ActorRdfParse';
 
 /**
  * A base actor for listening to RDF parse events that has fixed media types.
@@ -14,7 +15,11 @@ import type { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
  * @see IActionInit
  */
 export abstract class ActorRdfParseFixedMediaTypes extends ActorAbstractMediaTypedFixed<
-IActionRdfParse, IActorTest, IActorRdfParseOutput> implements IActorRdfParseFixedMediaTypesArgs {
+IActionRdfParse, IActorTest, IActorRdfParseOutput> implements IActorRdfParseFixedMediaTypesArgs, ActorRdfParse {
+  /**
+   * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
+   * @param args - @defaultNested {<cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
   }

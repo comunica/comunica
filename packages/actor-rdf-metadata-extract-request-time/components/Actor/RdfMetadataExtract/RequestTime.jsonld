@@ -8,12 +8,12 @@
     {
       "@id": "carmert:Actor/RdfMetadataExtract/RequestTime",
       "@type": "Class",
-      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract",
       "requireElement": "ActorRdfMetadataExtractRequestTime",
       "comment": "A comunica Request Time RDF Metadata Extract Actor.",
       "constructorArguments": [
         {
-          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject"
+          "extends": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_args__constructorArgument"
         }
       ]
     }

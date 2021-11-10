@@ -4,6 +4,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
@@ -14,7 +15,7 @@
       "cahm:Actor/Http/Memento/mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       },
-      "cc:lib/Actor#Actor_args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
+      "cbh:lib/ActorHttp#ActorHttp_args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
     }
   ]
 }

@@ -8,7 +8,7 @@
     {
       "@id": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp",
       "@type": "Class",
-      "extends": "cbruh:Actor/RdfUpdateHypermedia",
+      "extends": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia",
       "requireElement": "ActorRdfUpdateHypermediaPutLdp",
       "comment": "A comunica Put LDP RDF Update Hypermedia Actor.",
       "parameters": [
@@ -34,7 +34,7 @@
       "constructorArguments": [
         {
           "@id": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp/constructorArgumentsObject",
-          "extends": "cbruh:Actor/RdfUpdateHypermedia/constructorArgumentsObject",
+          "extends": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

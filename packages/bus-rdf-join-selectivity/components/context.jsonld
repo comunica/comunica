@@ -1,12 +1,36 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cbrjs": "npmd:@comunica/bus-rdf-join-selectivity/",
       "files-cbrjs": "cbrjs:^1.0.0/",
-
-      "BusRdfJoinSelectivity": "cbrjs:Bus/RdfJoinSelectivity",
-      "ActorRdfJoinSelectivity": "cbrjs:Actor/RdfJoinSelectivity"
+      "ActorRdfJoinSelectivity": {
+        "@id": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity_args_name"
+          },
+          "args_bus": {
+            "@id": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActionRdfJoinSelectivity": {
+        "@id": "cbrjs:lib/ActorRdfJoinSelectivity#IActionRdfJoinSelectivity",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IActorRdfJoinSelectivityOutput": {
+        "@id": "cbrjs:lib/ActorRdfJoinSelectivity#IActorRdfJoinSelectivityOutput",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

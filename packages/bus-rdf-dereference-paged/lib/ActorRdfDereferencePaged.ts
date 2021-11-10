@@ -16,6 +16,9 @@ import type { AsyncIterator } from 'asynciterator';
  */
 export abstract class ActorRdfDereferencePaged
   extends Actor<IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   */
   public constructor(args: IActorArgs<IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>) {
     super(args);
   }

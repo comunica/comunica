@@ -42,17 +42,17 @@ After installing, this package can be added to your engine's configuration as fo
         "@type": "MediatorNumberMax",
         "field": "filterFactor",
         "ignoreErrors": true,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrh:Bus/RdfResolveHypermedia" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhlq:Bus/RdfResolveHypermediaLinksQueue" }
+        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_default_bus" }
       }
     }
   ]
