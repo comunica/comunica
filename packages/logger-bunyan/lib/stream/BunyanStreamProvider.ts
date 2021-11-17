@@ -15,6 +15,14 @@ export abstract class BunyanStreamProvider {
 }
 
 export interface IBunyanStreamProviderArgs {
+  /**
+   * The name of this logger
+   * @default {comunica}
+   */
   name?: string;
+  /**
+   * The logging level to emit
+   * @range {string}
+   */
   level?: LogLevelString;
 }

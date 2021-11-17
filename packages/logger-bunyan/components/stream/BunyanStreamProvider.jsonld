@@ -1,0 +1,57 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/logger-bunyan",
+  "components": [
+    {
+      "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider",
+      "@type": "AbstractClass",
+      "requireElement": "BunyanStreamProvider",
+      "extends": [],
+      "comment": "BunyanStreamProvider is able to create bunyan streams.",
+      "parameters": [
+        {
+          "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args_name",
+          "range": "xsd:string",
+          "default": "comunica",
+          "comment": "The name of this logger",
+          "unique": true
+        },
+        {
+          "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args_level",
+          "range": "xsd:string",
+          "comment": "The logging level to emit",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args_name"
+              }
+            },
+            {
+              "keyRaw": "level",
+              "value": {
+                "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args_level"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "clb:lib/stream/BunyanStreamProvider#IBunyanStreamProviderArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IBunyanStreamProviderArgs",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

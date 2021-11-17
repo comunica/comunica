@@ -1,0 +1,83 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-pretty/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/logger-pretty",
+  "components": [
+    {
+      "@id": "clp:lib/LoggerPretty#LoggerPretty",
+      "@type": "Class",
+      "requireElement": "LoggerPretty",
+      "extends": [
+        "cc:lib/Logger#Logger"
+      ],
+      "comment": "A logger that pretty-prints everything.",
+      "parameters": [
+        {
+          "@id": "clp:lib/LoggerPretty#LoggerPretty_args_level",
+          "range": "xsd:string",
+          "comment": "The minimum logging level.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors",
+          "range": {
+            "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_range",
+            "parameters": [
+              {
+                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_key",
+                "required": true,
+                "unique": true
+              },
+              {
+                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_value",
+                "range": "xsd:boolean",
+                "required": true,
+                "unique": true
+              }
+            ]
+          },
+          "comment": "A whitelist of actor IRIs to log for."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "clp:lib/LoggerPretty#LoggerPretty_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "level",
+              "value": {
+                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_level"
+              }
+            },
+            {
+              "keyRaw": "actors",
+              "value": {
+                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors__constructorArgument",
+                "fields": [
+                  {
+                    "collectEntries": "clp:lib/LoggerPretty#LoggerPretty_args_actors",
+                    "key": "clp:lib/LoggerPretty#LoggerPretty_args_actors_key",
+                    "value": {
+                      "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_value"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "clp:lib/LoggerPretty#ILoggerPrettyArgs",
+      "@type": "AbstractClass",
+      "requireElement": "ILoggerPrettyArgs",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

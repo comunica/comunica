@@ -1,0 +1,51 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/logger-bunyan",
+  "components": [
+    {
+      "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout",
+      "@type": "Class",
+      "requireElement": "BunyanStreamProviderStdout",
+      "extends": [
+        "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider"
+      ],
+      "comment": "A stdout bunyan stream provider.",
+      "parameters": [
+        {
+          "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_name",
+          "range": "xsd:string",
+          "default": "comunica",
+          "comment": "The name of this logger",
+          "unique": true
+        },
+        {
+          "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_level",
+          "range": "xsd:string",
+          "comment": "The logging level to emit",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_name"
+              }
+            },
+            {
+              "keyRaw": "level",
+              "value": {
+                "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_level"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

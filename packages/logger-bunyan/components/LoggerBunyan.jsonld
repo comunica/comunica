@@ -1,0 +1,98 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/logger-bunyan",
+  "components": [
+    {
+      "@id": "clb:lib/LoggerBunyan#LoggerBunyan",
+      "@type": "Class",
+      "requireElement": "LoggerBunyan",
+      "extends": [
+        "cc:lib/Logger#Logger"
+      ],
+      "comment": "A bunyan-based logger implementation.",
+      "parameters": [
+        {
+          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_name",
+          "range": "xsd:string",
+          "default": "comunica",
+          "comment": "The name of this logger",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_streamProviders",
+          "range": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider",
+          "comment": "A stream to output to",
+          "required": true
+        },
+        {
+          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_level",
+          "range": "xsd:string",
+          "comment": "The logging level to emit",
+          "unique": true
+        },
+        {
+          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args",
+          "range": {
+            "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_range",
+            "parameters": [
+              {
+                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_key",
+                "required": true,
+                "unique": true
+              },
+              {
+                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_value",
+                "required": true,
+                "unique": true
+              }
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_name"
+              }
+            },
+            {
+              "keyRaw": "streamProviders",
+              "value": {
+                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_streamProviders"
+              }
+            },
+            {
+              "keyRaw": "level",
+              "value": {
+                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_level"
+              }
+            },
+            {
+              "collectEntries": "clb:lib/LoggerBunyan#LoggerBunyan_args",
+              "key": "clb:lib/LoggerBunyan#LoggerBunyan_args_key",
+              "value": {
+                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_value"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "clb:lib/LoggerBunyan#ILoggerBunyanArgs",
+      "@type": "AbstractClass",
+      "requireElement": "ILoggerBunyanArgs",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

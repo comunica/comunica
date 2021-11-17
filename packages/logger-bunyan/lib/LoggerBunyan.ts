@@ -41,8 +41,19 @@ export class LoggerBunyan extends Logger {
 }
 
 export interface ILoggerBunyanArgs {
+  /**
+   * The name of this logger
+   * @default {comunica}
+   */
   name: string;
+  /**
+   * A stream to output to
+   */
   streamProviders: BunyanStreamProvider[];
+  /**
+   * The logging level to emit
+   * @range {string}
+   */
   level?: LogLevelString;
   [custom: string]: any;
 }

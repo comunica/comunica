@@ -19,5 +19,8 @@ export class BunyanStreamProviderFile extends BunyanStreamProvider {
 }
 
 export interface IBunyanStreamProviderFileArgs extends IBunyanStreamProviderArgs {
+  /**
+   * Path to the target log file
+   */
   path: string;
 }

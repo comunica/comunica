@@ -1,13 +1,15 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/logger-bunyan",
   "@type": "Module",
   "requireName": "@comunica/logger-bunyan",
   "import": [
-    "files-clb:components/Logger/Bunyan.jsonld",
-    "files-clb:components/Logger/Bunyan/Stream.jsonld",
-    "files-clb:components/Logger/Bunyan/Stream/File.jsonld",
-    "files-clb:components/Logger/Bunyan/Stream/Stderr.jsonld",
-    "files-clb:components/Logger/Bunyan/Stream/Stdout.jsonld"
+    "files-clb:components/LoggerBunyan.jsonld",
+    "files-clb:components/stream/BunyanStreamProvider.jsonld",
+    "files-clb:components/stream/BunyanStreamProviderFile.jsonld",
+    "files-clb:components/stream/BunyanStreamProviderStderr.jsonld",
+    "files-clb:components/stream/BunyanStreamProviderStdout.jsonld"
   ]
 }
