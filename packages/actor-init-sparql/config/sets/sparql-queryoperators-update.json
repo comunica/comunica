@@ -34,7 +34,7 @@
       "caqoudi:mediatorUpdateQuads": {
         "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_default_bus" }
+        "args_bus": { "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_default_bus" }
       }
     },
 

@@ -5,8 +5,18 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cmcp": "npmd:@comunica/mediator-combine-pipeline/",
       "files-cmcp": "cmcp:^1.0.0/",
-
-      "MediatorCombinePipeline": "cmcp:Mediator/CombinePipeline"
+      "MediatorCombinePipeline": {
+        "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline_args_name"
+          },
+          "args_bus": {
+            "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline_args_bus"
+          }
+        }
+      }
     }
   ]
 }

@@ -10,14 +10,8 @@ import { Mediator } from '@comunica/core';
  */
 export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
   extends Mediator<A, I, T, O> implements IMediatorNumberArgs<A, I, T, O> {
-  public static MIN: string = 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/' +
-    'Mediator/Number/type/TypeMin';
-
-  public static MAX: string = 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/' +
-    'Mediator/Number/type/TypeMax';
-
   public readonly field: string;
-  public readonly type: string;
+  public readonly type: 'min' | 'max';
   public readonly ignoreErrors: boolean;
   public readonly indexPicker: (tests: T[]) => number;
 
@@ -32,19 +26,18 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
    */
   protected createIndexPicker(): (tests: (T | undefined)[]) => number {
     switch (this.type) {
-      case MediatorNumber.MIN:
+      case 'min':
         return (tests: (T | undefined)[]): number => tests.reduce((prev, curr, i) => {
           const val: number = this.getOrDefault((<any> curr)[this.field], Number.POSITIVE_INFINITY);
           return val !== null && (Number.isNaN(prev[0]) || prev[0] > val) ? [ val, i ] : prev;
         }, [ Number.NaN, -1 ])[1];
-      case MediatorNumber.MAX:
+      case 'max':
         return (tests: (T | undefined)[]): number => tests.reduce((prev, curr, i) => {
           const val: number = this.getOrDefault((<any> curr)[this.field], Number.NEGATIVE_INFINITY);
           return val !== null && (Number.isNaN(prev[0]) || prev[0] < val) ? [ val, i ] : prev;
         }, [ Number.NaN, -1 ])[1];
       default:
-        throw new Error(`No valid "type" value was given, must be either ${
-          MediatorNumber.MIN} or ${MediatorNumber.MAX}, but got: ${this.type}`);
+        throw new Error(`No valid "type" value was given, must be either 'min' or 'max', but got: ${this.type}`);
     }
   }
 
@@ -81,10 +74,11 @@ export interface IMediatorNumberArgs<A extends Actor<I, T, O>, I extends IAction
   field: string;
   /**
    * The way how the index should be selected.
-   * For choosing the minimum value: {@link MediatorNumber#MIN}
-   * For choosing the maximum value: {@link MediatorNumber#MAX}
+   * For choosing the minimum value: 'min'.
+   * For choosing the maximum value: 'max'.
+   * @range {string} // TODO: remove when union types are supported
    */
-  type: string;
+  type: 'min' | 'max';
 
   /**
    * If actors that throw test errors should be ignored

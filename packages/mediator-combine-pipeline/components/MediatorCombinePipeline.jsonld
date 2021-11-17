@@ -1,0 +1,56 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/mediator-combine-pipeline",
+  "components": [
+    {
+      "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline",
+      "@type": "Class",
+      "requireElement": "MediatorCombinePipeline",
+      "extends": [
+        "cc:lib/Mediator#Mediator"
+      ],
+      "comment": "A comunica mediator that goes over all actors in sequence and forwards I/O. This required the action input and the actor output to be of the same type.",
+      "parameters": [
+        {
+          "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this mediator.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "comment": "The bus this mediator will mediate over.",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cmcp:lib/MediatorCombinePipeline#MediatorCombinePipeline_args_bus"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

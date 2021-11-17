@@ -29,10 +29,11 @@
       "@type": "ActorRdfJoinNone",
       "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": {
         "@id": "config-sets:join.json#mediatorJoinSelectivity",
-        "@type": "MediatorNumberMax",
-        "field": "accuracy",
-        "ignoreErrors": true,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity_default_bus" }
+        "@type": "MediatorNumber",
+        "args_type": "max",
+        "args_field": "accuracy",
+        "args_ignoreErrors": true,
+        "args_bus": { "@id": "cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity_default_bus" }
       }
     },
     {

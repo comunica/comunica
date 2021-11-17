@@ -14,7 +14,7 @@ describe('ActorInitHttp', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     busInit = new Bus({ name: 'bus-init' });
-    mediator = new MediatorNumber({ name: 'mediator', bus: busInit, field: 'time', type: MediatorNumber.MIN });
+    mediator = new MediatorNumber({ name: 'mediator', bus: busInit, field: 'time', type: 'min' });
   });
 
   describe('The ActorInitHttp module', () => {

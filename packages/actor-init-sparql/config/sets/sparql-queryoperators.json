@@ -41,10 +41,11 @@
       "@type": "ActorQueryOperationAsk",
       "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation",
-        "@type": "MediatorNumberMin",
-        "field": "httpRequests",
-        "ignoreErrors": true,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus" }
+        "@type": "MediatorNumber",
+        "args_type": "min",
+        "args_field": "httpRequests",
+        "args_ignoreErrors": true,
+        "args_bus": { "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus" }
       }
     },
 
@@ -122,11 +123,11 @@
       "caqoj:mediatorJoin": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin",
         "@type": "MediatorJoinCoefficientsFixed",
-        "cmjcf:Mediator/JoinCoefficientsFixed#cpuWeight": 1,
-        "cmjcf:Mediator/JoinCoefficientsFixed#memoryWeight": 1,
-        "cmjcf:Mediator/JoinCoefficientsFixed#timeWeight": 10,
-        "cmjcf:Mediator/JoinCoefficientsFixed#ioWeight": 100,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_default_bus" }
+        "args_cpuWeight": 1,
+        "args_memoryWeight": 1,
+        "args_timeWeight": 10,
+        "args_ioWeight": 100,
+        "args_bus": { "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_default_bus" }
       }
     },
 
@@ -179,7 +180,7 @@
       "caqoq:mediatorResolveQuadPattern": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_default_bus" }
+        "args_bus": { "@id": "cbrrqp:lib/ActorRdfResolveQuadPattern#ActorRdfResolveQuadPattern_default_bus" }
       }
     }
   ]

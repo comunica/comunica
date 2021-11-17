@@ -15,28 +15,30 @@ describe('MediatorNumber', () => {
     });
 
     it('should be a MediatorNumber constructor', () => {
-      expect(new (<any> MediatorNumber)({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }))
+      expect(new (<any> MediatorNumber)({ name: 'mediator', bus, field: 'field', type: 'min' }))
         .toBeInstanceOf(MediatorNumber);
-      expect(new (<any> MediatorNumber)({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }))
+      expect(new (<any> MediatorNumber)({ name: 'mediator', bus, field: 'field', type: 'min' }))
         .toBeInstanceOf(Mediator);
     });
 
     it('should not throw an error when constructed with \'field\' and \'type\' parameters', () => {
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }); })
+      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'min' }); })
         .not.toThrow();
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MAX }); })
+      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'max' }); })
         .not.toThrow();
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'invalidType' }); }).toThrow();
+      expect(() => { new MediatorNumber(
+        { name: 'mediator', bus, field: 'field', type: <any> 'invalidType' },
+      ); }).toThrow();
     });
 
     it('should store the \'field\' and \'type\' parameters', () => {
-      expect(new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }).field)
+      expect(new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'min' }).field)
         .toEqual('field');
-      expect(new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }).type)
-        .toEqual(MediatorNumber.MIN);
+      expect(new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'min' }).type)
+        .toEqual('min');
     });
   });
 
@@ -45,8 +47,8 @@ describe('MediatorNumber', () => {
     let mediatorMax: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest>;
 
     beforeEach(() => {
-      mediatorMin = new MediatorNumber({ name: 'mediatorMin', bus, field: 'field', type: MediatorNumber.MIN });
-      mediatorMax = new MediatorNumber({ name: 'mediatorMax', bus, field: 'field', type: MediatorNumber.MAX });
+      mediatorMin = new MediatorNumber({ name: 'mediatorMin', bus, field: 'field', type: 'min' });
+      mediatorMax = new MediatorNumber({ name: 'mediatorMax', bus, field: 'field', type: 'max' });
     });
 
     describe('with defined actor fields', () => {
@@ -134,12 +136,12 @@ describe('MediatorNumber', () => {
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMin',
-          type: MediatorNumber.MIN });
+          type: 'min' });
         mediatorMax = new MediatorNumber({ bus,
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMax',
-          type: MediatorNumber.MAX });
+          type: 'max' });
         bus.subscribe(new ErrorDummyActor(undefined, bus));
         bus.subscribe(new DummyActor(100, bus));
         bus.subscribe(new DummyActor(1, bus));
@@ -160,12 +162,12 @@ describe('MediatorNumber', () => {
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMin',
-          type: MediatorNumber.MIN });
+          type: 'min' });
         mediatorMax = new MediatorNumber({ bus,
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMax',
-          type: MediatorNumber.MAX });
+          type: 'max' });
         bus.subscribe(new ErrorDummyActor(undefined, bus));
       });
 
@@ -192,12 +194,12 @@ describe('MediatorNumber', () => {
           field: 'field',
           ignoreErrors: false,
           name: 'mediatorMin',
-          type: MediatorNumber.MIN });
+          type: 'min' });
         mediatorMax = new MediatorNumber({ bus,
           field: 'field',
           ignoreErrors: false,
           name: 'mediatorMax',
-          type: MediatorNumber.MAX });
+          type: 'max' });
         bus.subscribe(new ErrorDummyActor(undefined, bus));
       });
 

@@ -31,18 +31,18 @@
       "mediatorRdfSerialize": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" }
+        "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" }
       },
       "mediatorRdfSerializeMediaTypeCombiner": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+        "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
+        "args_field": "mediaTypes"
       },
       "mediatorRdfSerializeMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypeFormats"
+        "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
+        "args_field": "mediaTypeFormats"
       }
     },
     {

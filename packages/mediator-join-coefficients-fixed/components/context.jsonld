@@ -1,12 +1,39 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cmjcf": "npmd:@comunica/mediator-join-coefficients-fixed/",
       "files-cmjcf": "cmjcf:^1.0.0/",
-
-      "MediatorJoinCoefficientsFixed": "cmjcf:Mediator/JoinCoefficientsFixed"
+      "MediatorJoinCoefficientsFixed": {
+        "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed",
+        "@prefix": true,
+        "@context": {
+          "args_cpuWeight": {
+            "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed_args_cpuWeight"
+          },
+          "args_memoryWeight": {
+            "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed_args_memoryWeight"
+          },
+          "args_timeWeight": {
+            "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed_args_timeWeight"
+          },
+          "args_ioWeight": {
+            "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed_args_ioWeight"
+          },
+          "args_name": {
+            "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed_args_name"
+          },
+          "args_bus": {
+            "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed_args_bus"
+          }
+        }
+      },
+      "IMediatorJoinCoefficientsFixedArgs": {
+        "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#IMediatorJoinCoefficientsFixedArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

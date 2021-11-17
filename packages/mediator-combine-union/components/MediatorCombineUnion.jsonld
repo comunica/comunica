@@ -1,0 +1,80 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/mediator-combine-union",
+  "components": [
+    {
+      "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion",
+      "@type": "Class",
+      "requireElement": "MediatorCombineUnion",
+      "extends": [
+        "cc:lib/Mediator#Mediator",
+        "cmcu:lib/MediatorCombineUnion#IMediatorCombineUnionArgs"
+      ],
+      "comment": "A comunica mediator that takes the union of all actor results.  The actors that are registered first will have priority on setting overlapping fields.",
+      "parameters": [
+        {
+          "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_field",
+          "range": "xsd:string",
+          "comment": "The field name of the test result field over which must be mediated.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this mediator.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "comment": "The bus this mediator will mediate over.",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "field",
+              "value": {
+                "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_field"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_bus"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cmcu:lib/MediatorCombineUnion#IMediatorCombineUnionArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IMediatorCombineUnionArgs",
+      "extends": [
+        "cc:lib/Mediator#IMediatorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

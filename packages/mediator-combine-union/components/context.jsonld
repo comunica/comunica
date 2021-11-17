@@ -5,9 +5,26 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cmcu": "npmd:@comunica/mediator-combine-union/",
       "files-cmcu": "cmcu:^1.0.0/",
-
-      "MediatorCombineUnion": "cmcu:Mediator/CombineUnion",
-      "field": "cmcu:Mediator/CombineUnion/field"
+      "MediatorCombineUnion": {
+        "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion",
+        "@prefix": true,
+        "@context": {
+          "args_field": {
+            "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_field"
+          },
+          "args_name": {
+            "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_name"
+          },
+          "args_bus": {
+            "@id": "cmcu:lib/MediatorCombineUnion#MediatorCombineUnion_args_bus"
+          }
+        }
+      },
+      "IMediatorCombineUnionArgs": {
+        "@id": "cmcu:lib/MediatorCombineUnion#IMediatorCombineUnionArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

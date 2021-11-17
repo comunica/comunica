@@ -17,9 +17,10 @@
           "@type": "ActorInitHttp",
           "mediatorHttp": {
             "@id": "config-example:mediatorHttp",
-            "@type": "MediatorNumberMin",
-            "field": "time",
-            "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus" }
+            "@type": "MediatorNumber",
+            "args_type": "min",
+            "args_field": "time",
+            "args_bus": { "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus" }
           },
           "url": "http://fragments.linkedsoftwaredependencies.org",
           "headers": [

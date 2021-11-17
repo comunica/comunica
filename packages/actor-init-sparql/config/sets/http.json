@@ -30,10 +30,11 @@
     },
     {
       "@id": "config-sets:http.json#mediatorHttp",
-      "@type": "MediatorNumberMin",
-      "field": "time",
-      "ignoreErrors": true,
-      "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus" }
+      "@type": "MediatorNumber",
+      "args_type": "min",
+      "args_field": "time",
+      "args_ignoreErrors": true,
+      "args_bus": { "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus" }
     }
   ]
 }

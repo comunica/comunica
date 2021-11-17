@@ -5,16 +5,32 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cmn": "npmd:@comunica/mediator-number/",
       "files-cmn": "cmn:^1.0.0/",
-
-      "MediatorNumber": "cmn:Mediator/Number",
-      "field": "cmn:Mediator/Number/field",
-      "type": "cmn:Mediator/Number/type",
-      "ignoreErrors": "cmn:Mediator/Number/ignoreErrors",
-      "Min": "cmn:Mediator/Number/type/TypeMin",
-      "Max": "cmn:Mediator/Number/type/TypeMax",
-
-      "MediatorNumberMin": "cmn:Mediator/NumberMin",
-      "MediatorNumberMax": "cmn:Mediator/NumberMax"
+      "MediatorNumber": {
+        "@id": "cmn:lib/MediatorNumber#MediatorNumber",
+        "@prefix": true,
+        "@context": {
+          "args_field": {
+            "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_field"
+          },
+          "args_type": {
+            "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_type"
+          },
+          "args_ignoreErrors": {
+            "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_ignoreErrors"
+          },
+          "args_name": {
+            "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_name"
+          },
+          "args_bus": {
+            "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_bus"
+          }
+        }
+      },
+      "IMediatorNumberArgs": {
+        "@id": "cmn:lib/MediatorNumber#IMediatorNumberArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

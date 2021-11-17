@@ -30,30 +30,31 @@
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus" }
+        "args_bus": { "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus" }
+        "args_bus": { "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "metadata"
+        "args_bus": { "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus" },
+        "args_field": "metadata"
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermedia",
-        "@type": "MediatorNumberMax",
-        "field": "filterFactor",
-        "ignoreErrors": true,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus" }
+        "@type": "MediatorNumber",
+        "args_type": "max",
+        "args_field": "filterFactor",
+        "args_ignoreErrors": true,
+        "args_bus": { "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus" }
       },
       "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus" }
+        "args_bus": { "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus" }
       }
     },
 

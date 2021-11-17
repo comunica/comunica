@@ -5,8 +5,18 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cmr": "npmd:@comunica/mediator-race/",
       "files-cmr": "cmr:^1.0.0/",
-
-      "MediatorRace": "cmr:Mediator/Race"
+      "MediatorRace": {
+        "@id": "cmr:lib/MediatorRace#MediatorRace",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cmr:lib/MediatorRace#MediatorRace_args_name"
+          },
+          "args_bus": {
+            "@id": "cmr:lib/MediatorRace#MediatorRace_args_bus"
+          }
+        }
+      }
     }
   ]
 }
