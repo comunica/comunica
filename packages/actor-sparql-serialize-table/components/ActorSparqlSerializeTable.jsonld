@@ -1,0 +1,157 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-table/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-serialize-table",
+  "components": [
+    {
+      "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable",
+      "@type": "Class",
+      "requireElement": "ActorSparqlSerializeTable",
+      "extends": [
+        "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes",
+        "casst:lib/ActorSparqlSerializeTable#IActorSparqlSerializeTableArgs"
+      ],
+      "comment": "A comunica Table Sparql Serialize Actor.",
+      "parameters": [
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_columnWidth",
+          "range": "xsd:integer",
+          "default": [
+            "50"
+          ],
+          "comment": "The table column width in number of characters",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_mediaTypePriorities",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "table": 0.6
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1].",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_mediaTypeFormats",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "table": "https://comunica.linkeddatafragments.org/#results_table"
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its format IRI as value.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_priorityScale",
+          "range": "xsd:double",
+          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value.",
+          "unique": true
+        },
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "columnWidth",
+              "value": {
+                "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_columnWidth"
+              }
+            },
+            {
+              "keyRaw": "mediaTypePriorities",
+              "value": {
+                "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_mediaTypePriorities"
+              }
+            },
+            {
+              "keyRaw": "mediaTypeFormats",
+              "value": {
+                "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_mediaTypeFormats"
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": {
+                "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_priorityScale"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "casst:lib/ActorSparqlSerializeTable#IActorSparqlSerializeTableArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorSparqlSerializeTableArgs",
+      "extends": [
+        "cbss:lib/ActorSparqlSerializeFixedMediaTypes#IActorSparqlSerializeFixedMediaTypesArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

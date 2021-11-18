@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-pagesize/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-pagesize/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-pagesize",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-hydra-pagesize",
   "import": [
-    "files-carmehp:components/Actor/RdfMetadataExtract/HydraPagesize.jsonld"
+    "files-carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld"
   ]
 }

@@ -3,13 +3,44 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cardph": "npmd:@comunica/actor-rdf-dereference-paged-next/",
-      "files-cardph": "cardph:^1.0.0/",
-
-      "ActorRdfDereferencePagedNext": "cardph:Actor/RdfDereferencePaged/Next",
-      "mediatorRdfDereference": "cardph:mediatorRdfDereference",
-      "mediatorMetadata": "cardph:mediatorMetadata",
-      "mediatorMetadataExtract": "cardph:mediatorMetadataExtract"
+      "cardpn": "npmd:@comunica/actor-rdf-dereference-paged-next/",
+      "files-cardpn": "cardpn:^1.0.0/",
+      "ActorRdfDereferencePagedNext": {
+        "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorRdfDereference": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_mediatorRdfDereference"
+          },
+          "args_mediatorMetadata": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_mediatorMetadata"
+          },
+          "args_mediatorMetadataExtract": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_mediatorMetadataExtract"
+          },
+          "args_cacheSize": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_cacheSize"
+          },
+          "args_httpInvalidator": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_httpInvalidator"
+          },
+          "args_name": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_name"
+          },
+          "args_bus": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cardpn:lib/ActorRdfDereferencePagedNext#ActorRdfDereferencePagedNext_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfDereferencePaged": {
+        "@id": "cardpn:lib/ActorRdfDereferencePagedNext#IActorRdfDereferencePaged",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

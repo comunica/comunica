@@ -1,0 +1,57 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-federated",
+  "components": [
+    {
+      "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource",
+      "@type": "Class",
+      "requireElement": "FederatedQuadSource",
+      "extends": [
+        "cbrrqp:lib/ActorRdfResolveQuadPatternSource#IQuadSource"
+      ],
+      "comment": "A FederatedQuadSource can evaluate quad pattern queries over the union of different heterogeneous sources. It will call the given mediator to evaluate each quad pattern query separately.",
+      "parameters": [
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_context",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_emptyPatterns",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_skipEmptyPatterns",
+          "range": "xsd:boolean",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_mediatorResolveQuadPattern",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_mediatorResolveQuadPattern"
+        },
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_context"
+        },
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_emptyPatterns"
+        },
+        {
+          "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_skipEmptyPatterns"
+        }
+      ]
+    }
+  ]
+}

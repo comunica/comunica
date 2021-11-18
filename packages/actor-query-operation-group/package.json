@@ -67,7 +67,7 @@
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls",
-    "example": "node ./examples/translate_to_algebra.js ./examples"
+    "build:components-actor": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore",
+    "validate": "npm ls"
   }
 }

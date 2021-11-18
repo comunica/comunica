@@ -76,6 +76,9 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
 }
 
 export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for joining Bindings streams
+   */
   mediatorJoin: Mediator<ActorRdfJoin,
   IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>;
 }

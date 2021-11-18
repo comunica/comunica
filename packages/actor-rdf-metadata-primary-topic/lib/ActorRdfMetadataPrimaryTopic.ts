@@ -100,6 +100,14 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
 export interface IActorRdfMetadataPrimaryTopicArgs
   extends IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
+  /**
+   * If detected metadata triples should also be emitted as data triples
+   * @default {false}
+   */
   metadataToData: boolean;
+  /**
+   * If all data should also be seen as metadata when no metadata graph was detected
+   * @default {true}
+   */
   dataToMetadataOnInvalidMetadataGraph: boolean;
 }

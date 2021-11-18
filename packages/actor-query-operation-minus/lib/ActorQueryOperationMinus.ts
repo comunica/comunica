@@ -40,6 +40,9 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
 }
 
 export interface IActorQueryOperationMinusArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for joining Bindings streams
+   */
   mediatorJoin: Mediator<ActorRdfJoin,
   IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
 }

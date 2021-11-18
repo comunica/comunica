@@ -3,10 +3,27 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjs": "npmd:@comunica/actor-rdf-join-inner-symmetrichash/",
-      "files-carjs": "carjs:^1.0.0/",
-
-      "ActorRdfJoinSymmetricHash": "carjs:Actor/RdfJoin/SymmetricHash"
+      "carjish": "npmd:@comunica/actor-rdf-join-inner-symmetrichash/",
+      "files-carjish": "carjish:^1.0.0/",
+      "ActorRdfJoinSymmetricHash": {
+        "@id": "carjish:lib/ActorRdfJoinSymmetricHash#ActorRdfJoinSymmetricHash",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorJoinSelectivity": {
+            "@id": "carjish:lib/ActorRdfJoinSymmetricHash#ActorRdfJoinSymmetricHash_args_mediatorJoinSelectivity"
+          },
+          "args_name": {
+            "@id": "carjish:lib/ActorRdfJoinSymmetricHash#ActorRdfJoinSymmetricHash_args_name"
+          },
+          "args_bus": {
+            "@id": "carjish:lib/ActorRdfJoinSymmetricHash#ActorRdfJoinSymmetricHash_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carjish:lib/ActorRdfJoinSymmetricHash#ActorRdfJoinSymmetricHash_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

@@ -1,0 +1,76 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-next/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-next",
+  "components": [
+    {
+      "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext",
+      "@type": "Class",
+      "requireElement": "ActorRdfResolveHypermediaLinksNext",
+      "extends": [
+        "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks"
+      ],
+      "comment": "A comunica Next RDF Resolve Hypermedia Links Actor.",
+      "parameters": [
+        {
+          "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carrhln:lib/ActorRdfResolveHypermediaLinksNext#ActorRdfResolveHypermediaLinksNext_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

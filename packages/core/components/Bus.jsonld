@@ -16,9 +16,11 @@
         {
           "@id": "cc:lib/Bus#Bus_args_name",
           "range": "xsd:string",
-          "default": {
-            "@id": "rdf:subject"
-          },
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
           "comment": "The name for this bus.",
           "unique": true,
           "required": true

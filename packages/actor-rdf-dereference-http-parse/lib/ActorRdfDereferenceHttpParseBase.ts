@@ -194,14 +194,33 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
 
 export interface IActorRdfDereferenceHttpParseArgs extends
   IActorRdfDereferenceMediaMappingsArgs {
+  /**
+   * The HTTP mediator.
+   */
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
+  /**
+   * The RDF Parse mediator for collecting media types.
+   */
   mediatorRdfParseMediatypes: Mediator<
   Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
   IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  /**
+   * The RDF Parse mediator for handling parsing.
+   */
   mediatorRdfParseHandle: Mediator<
   Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
   IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  /**
+   * The maximum allowed accept header value length for non-browser environments.
+   * @range {integer}
+   * @default {1024}
+   */
   maxAcceptHeaderLength: number;
+  /**
+   * The maximum allowed accept header value length for browser environments.
+   * @range {integer}
+   * @default {128}
+   */
   maxAcceptHeaderLengthBrowser: number;
 }

@@ -1,0 +1,76 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-rdfa/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-html-rdfa",
+  "components": [
+    {
+      "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa",
+      "@type": "Class",
+      "requireElement": "ActorRdfParseHtmlRdfa",
+      "extends": [
+        "cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml"
+      ],
+      "comment": "A comunica RDFa RDF Parse Html Actor.",
+      "parameters": [
+        {
+          "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrph:lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

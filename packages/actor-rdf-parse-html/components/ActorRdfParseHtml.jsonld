@@ -1,0 +1,160 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-html",
+  "components": [
+    {
+      "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml",
+      "@type": "Class",
+      "requireElement": "ActorRdfParseHtml",
+      "extends": [
+        "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes"
+      ],
+      "comment": "A comunica HTML RDF Parse Actor. It creates an HTML parser, and delegates its events via the bus-rdf-parse-html bus to other HTML parsing actors.",
+      "parameters": [
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_busRdfParseHtml",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus"
+            }
+          ],
+          "comment": "The RDF Parse HTML bus for fetching HTML listeners",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_mediaTypePriorities",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "text/html": 1,
+                "application/xhtml+xml": 0.9
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1].",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_mediaTypeFormats",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "text/html": "http://www.w3.org/ns/formats/HTML",
+                "application/xhtml+xml": "http://www.w3.org/ns/formats/HTML"
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its format IRI as value.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_priorityScale",
+          "range": "xsd:double",
+          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value.",
+          "unique": true
+        },
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "busRdfParseHtml",
+              "value": {
+                "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_busRdfParseHtml"
+              }
+            },
+            {
+              "keyRaw": "mediaTypePriorities",
+              "value": {
+                "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_mediaTypePriorities"
+              }
+            },
+            {
+              "keyRaw": "mediaTypeFormats",
+              "value": {
+                "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_mediaTypeFormats"
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": {
+                "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_priorityScale"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "carph:lib/ActorRdfParseHtml#IActorRdfParseHtmlArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfParseHtmlArgs",
+      "extends": [
+        "cbrp:lib/ActorRdfParseFixedMediaTypes#IActorRdfParseFixedMediaTypesArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

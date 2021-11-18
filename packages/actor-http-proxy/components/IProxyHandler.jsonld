@@ -1,0 +1,26 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-proxy",
+  "components": [
+    {
+      "@id": "cahp:lib/IProxyHandler#IProxyHandler",
+      "@type": "AbstractClass",
+      "requireElement": "IProxyHandler",
+      "extends": [],
+      "comment": "A proxy handler can override a request.",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cahp:lib/IProxyHandler#IRequest",
+      "@type": "AbstractClass",
+      "requireElement": "IRequest",
+      "extends": [],
+      "comment": "A request that conforms to the fetch interface.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

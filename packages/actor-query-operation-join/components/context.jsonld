@@ -5,8 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqoj": "npmd:@comunica/actor-query-operation-join/",
       "files-caqoj": "caqoj:^1.0.0/",
-
-      "ActorQueryOperationJoin": "caqoj:Actor/QueryOperation/Join"
+      "ActorQueryOperationJoin": {
+        "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorJoin": {
+            "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_mediatorJoin"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_name"
+          },
+          "args_bus": {
+            "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationJoinArgs": {
+        "@id": "caqoj:lib/ActorQueryOperationJoin#IActorQueryOperationJoinArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

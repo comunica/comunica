@@ -1,0 +1,111 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-leftjoin",
+  "components": [
+    {
+      "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin",
+      "@type": "Class",
+      "requireElement": "ActorQueryOperationLeftJoin",
+      "extends": [
+        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+      ],
+      "comment": "A comunica LeftJoin Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_mediatorJoin",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "A mediator for joining Bindings streams",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_mediatorQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorJoin",
+              "value": {
+                "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_mediatorJoin"
+              }
+            },
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": {
+                "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_mediatorQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caqol:lib/ActorQueryOperationLeftJoin#ActorQueryOperationLeftJoin_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caqol:lib/ActorQueryOperationLeftJoin#IActorQueryOperationLeftJoinArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorQueryOperationLeftJoinArgs",
+      "extends": [
+        "cbqo:lib/ActorQueryOperationTypedMediated#IActorQueryOperationTypedMediatedArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

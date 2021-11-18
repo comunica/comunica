@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-query-operation-leftjoin",
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-leftjoin",
   "import": [
-    "files-caqolj:components/Actor/QueryOperation/LeftJoin.jsonld"
+    "files-caqol:components/ActorQueryOperationLeftJoin.jsonld"
   ]
 }

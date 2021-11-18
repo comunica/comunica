@@ -1,0 +1,156 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-jsonld/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-serialize-jsonld",
+  "components": [
+    {
+      "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd",
+      "@type": "Class",
+      "requireElement": "ActorRdfSerializeJsonLd",
+      "extends": [
+        "cbrs:lib/ActorRdfSerializeFixedMediaTypes#ActorRdfSerializeFixedMediaTypes"
+      ],
+      "comment": "A comunica Jsonld RDF Serialize Actor.",
+      "parameters": [
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_jsonStringifyIndentSpaces",
+          "range": "xsd:integer",
+          "default": [
+            "2"
+          ],
+          "comment": "The number of spaces that should be used to indent stringified JSON.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_mediaTypePriorities",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": 1
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1].",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_mediaTypeFormats",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": "http://www.w3.org/ns/formats/JSON-LD"
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its format IRI as value.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_priorityScale",
+          "range": "xsd:double",
+          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value.",
+          "unique": true
+        },
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "jsonStringifyIndentSpaces",
+              "value": {
+                "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_jsonStringifyIndentSpaces"
+              }
+            },
+            {
+              "keyRaw": "mediaTypePriorities",
+              "value": {
+                "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_mediaTypePriorities"
+              }
+            },
+            {
+              "keyRaw": "mediaTypeFormats",
+              "value": {
+                "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_mediaTypeFormats"
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": {
+                "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_priorityScale"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "carsj:lib/ActorRdfSerializeJsonLd#IActorRdfSerializeJsonLdArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfSerializeJsonLdArgs",
+      "extends": [
+        "cbrs:lib/ActorRdfSerializeFixedMediaTypes#IActorRdfSerializeFixedMediaTypesArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

@@ -20,9 +20,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
   public constructor(args: IActorHttpNodeFetchArgs) {
     super(args);
     this.userAgent = ActorHttpNodeFetch.createUserAgent();
-    this.fetchInitPreprocessor = new FetchInitPreprocessor(args.agentOptions ?
-      JSON.parse(args.agentOptions) :
-      undefined);
+    this.fetchInitPreprocessor = new FetchInitPreprocessor(args.agentOptions);
   }
 
   public static createUserAgent(): string {
@@ -78,5 +76,10 @@ export class ActorHttpNodeFetch extends ActorHttp {
 }
 
 export interface IActorHttpNodeFetchArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
+  /**
+   * The agent options for the HTTP agent
+   * @range {json}
+   * @default {{ "keepAlive": true, "maxSockets": 5 }}
+   */
   agentOptions?: string;
 }

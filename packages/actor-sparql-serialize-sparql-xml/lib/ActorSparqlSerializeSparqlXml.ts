@@ -12,6 +12,15 @@ import * as xml from 'xml';
  * A comunica sparql-results+xml Serialize Actor.
  */
 export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMediaTypes {
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "application/sparql-results+xml": 0.8
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "application/sparql-results+xml": "http://www.w3.org/ns/formats/SPARQL_Results_XML"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

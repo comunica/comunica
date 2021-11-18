@@ -51,5 +51,9 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
 
 export interface IActorRdfMetadataExtractSparqlServiceArgs
   extends IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+  /**
+   * If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based
+   * @default {true}
+   */
   inferHttpsEndpoint: boolean;
 }

@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-parse-n3",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-parse-n3",
   "import": [
-    "files-crpn3:components/Actor/RdfParse/N3.jsonld"
+    "files-carpn:components/ActorRdfParseN3.jsonld"
   ]
 }

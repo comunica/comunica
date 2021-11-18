@@ -22,6 +22,17 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
   private readonly busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest,
   IActorRdfParseHtmlOutput>, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
 
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "text/html": 1.0,
+   *       "application/xhtml+xml": 0.9
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "text/html": "http://www.w3.org/ns/formats/HTML",
+   *       "application/xhtml+xml": "http://www.w3.org/ns/formats/HTML"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
   }
@@ -124,6 +135,11 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 }
 
 export interface IActorRdfParseHtmlArgs extends IActorRdfParseFixedMediaTypesArgs {
+  /* eslint-disable max-len */
+  /**
+   * The RDF Parse HTML bus for fetching HTML listeners
+   * @default {<https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus>}
+   */
   busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>,
   IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
 }

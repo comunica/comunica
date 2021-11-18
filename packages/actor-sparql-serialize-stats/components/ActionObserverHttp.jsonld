@@ -1,0 +1,63 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-stats/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-serialize-stats",
+  "components": [
+    {
+      "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp",
+      "@type": "Class",
+      "requireElement": "ActionObserverHttp",
+      "extends": [
+        "cc:lib/ActionObserver#ActionObserver"
+      ],
+      "comment": "Observes HTTP actions, and maintains a counter of the number of requests.",
+      "parameters": [
+        {
+          "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this observer.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/lib/ActorHttp#ActorHttp_default_bus"
+            }
+          ],
+          "comment": "The bus this observer can subscribe to.",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_bus"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

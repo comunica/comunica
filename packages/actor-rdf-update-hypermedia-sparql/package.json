@@ -29,17 +29,10 @@
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "@comunica/bus-http": "^1.0.0",
     "@comunica/bus-rdf-update-hypermedia": "^1.21.1",
-    "@comunica/core": "^1.21.1"
-  },
-  "devDependencies": {
-    "@comunica/bus-http": "^1.22.1",
-    "@comunica/bus-rdf-update-hypermedia": "^1.22.2",
-    "@comunica/core": "^1.22.0"
-  },
-  "dependencies": {
+    "@comunica/core": "^1.21.1",
     "fetch-sparql-endpoint": "^2.3.2",
     "rdf-string-ttl": "^1.1.0",
     "stream-to-string": "^1.2.0"
@@ -64,6 +57,7 @@
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components-actor": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore",
     "validate": "npm ls"
   }
 }

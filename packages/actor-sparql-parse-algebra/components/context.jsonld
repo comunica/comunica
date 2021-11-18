@@ -5,11 +5,31 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caspa": "npmd:@comunica/actor-sparql-parse-algebra/",
       "files-caspa": "caspa:^1.0.0/",
-
-      "ActorSparqlParseAlgebra": "caspa:Actor/SparqlParse/Algebra",
-      "prefixEntry": "caspa:Actor/SparqlParse/Algebra/prefixEntry",
-      "prefix": "caspa:Actor/SparqlParse/Algebra/PrefixEntry/Prefix",
-      "prefixUrl": "caspa:Actor/SparqlParse/Algebra/PrefixEntry/Url"
+      "ActorSparqlParseAlgebra": {
+        "@id": "caspa:lib/ActorSparqlParseAlgebra#ActorSparqlParseAlgebra",
+        "@prefix": true,
+        "@context": {
+          "args_prefixes": {
+            "@id": "caspa:lib/ActorSparqlParseAlgebra#ActorSparqlParseAlgebra_args_prefixes",
+            "@type": "@json"
+          },
+          "args_name": {
+            "@id": "caspa:lib/ActorSparqlParseAlgebra#ActorSparqlParseAlgebra_args_name"
+          },
+          "args_bus": {
+            "@id": "caspa:lib/ActorSparqlParseAlgebra#ActorSparqlParseAlgebra_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caspa:lib/ActorSparqlParseAlgebra#ActorSparqlParseAlgebra_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorSparqlParseAlgebraArgs": {
+        "@id": "caspa:lib/ActorSparqlParseAlgebra#IActorSparqlParseAlgebraArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

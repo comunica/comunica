@@ -5,8 +5,25 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqodh": "npmd:@comunica/actor-query-operation-distinct-hash/",
       "files-caqodh": "caqodh:^1.0.0/",
-
-      "ActorQueryOperationDistinctHash": "caqodh:Actor/QueryOperation/DistinctHash"
+      "ActorQueryOperationDistinctHash": {
+        "@id": "caqodh:lib/ActorQueryOperationDistinctHash#ActorQueryOperationDistinctHash",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorQueryOperation": {
+            "@id": "caqodh:lib/ActorQueryOperationDistinctHash#ActorQueryOperationDistinctHash_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqodh:lib/ActorQueryOperationDistinctHash#ActorQueryOperationDistinctHash_args_name"
+          },
+          "args_bus": {
+            "@id": "caqodh:lib/ActorQueryOperationDistinctHash#ActorQueryOperationDistinctHash_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqodh:lib/ActorQueryOperationDistinctHash#ActorQueryOperationDistinctHash_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

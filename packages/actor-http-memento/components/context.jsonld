@@ -5,8 +5,30 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cahm": "npmd:@comunica/actor-http-memento/",
       "files-cahm": "cahm:^1.0.0/",
-
-      "ActorHttpMemento": "cahm:Actor/Http/Memento"
+      "ActorHttpMemento": {
+        "@id": "cahm:lib/ActorHttpMemento#ActorHttpMemento",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorHttp": {
+            "@id": "cahm:lib/ActorHttpMemento#ActorHttpMemento_args_mediatorHttp"
+          },
+          "args_name": {
+            "@id": "cahm:lib/ActorHttpMemento#ActorHttpMemento_args_name"
+          },
+          "args_bus": {
+            "@id": "cahm:lib/ActorHttpMemento#ActorHttpMemento_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cahm:lib/ActorHttpMemento#ActorHttpMemento_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorHttpMementoArgs": {
+        "@id": "cahm:lib/ActorHttpMemento#IActorHttpMementoArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

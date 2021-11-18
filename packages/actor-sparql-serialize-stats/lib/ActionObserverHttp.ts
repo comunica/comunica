@@ -8,6 +8,10 @@ import { ActionObserver } from '@comunica/core';
 export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOutput> {
   public requests = 0;
 
+  /* eslint-disable max-len */
+  /**
+   * @param args - @defaultNested {<https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/lib/ActorHttp#ActorHttp_default_bus>} bus
+   */
   public constructor(args: IActionObserverArgs<IActionHttp, IActorHttpOutput>) {
     super(args);
     this.bus.subscribeObserver(this);

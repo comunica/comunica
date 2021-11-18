@@ -1,0 +1,76 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-bgp-to-join/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-optimize-query-operation-bgp-to-join",
+  "components": [
+    {
+      "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin",
+      "@type": "Class",
+      "requireElement": "ActorOptimizeQueryOperationBgpToJoin",
+      "extends": [
+        "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation"
+      ],
+      "comment": "A comunica BGP to Join Optimize Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

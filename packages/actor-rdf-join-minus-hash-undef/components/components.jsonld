@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-minus-hash-undef/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-minus-hash-undef/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-join-minus-hash-undef",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-minus-hash-undef",
   "import": [
-    "files-carjmhu:components/Actor/RdfJoin/MinusHashUndef.jsonld"
+    "files-carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld"
   ]
 }

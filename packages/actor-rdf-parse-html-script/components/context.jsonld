@@ -5,8 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carphs": "npmd:@comunica/actor-rdf-parse-html-script/",
       "files-carphs": "carphs:^1.0.0/",
-
-      "ActorRdfParseHtmlScript": "carphs:Actor/RdfParse/HtmlScript"
+      "ActorRdfParseHtmlScript": {
+        "@id": "carphs:lib/ActorRdfParseHtmlScript#ActorRdfParseHtmlScript",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorRdfParseMediatypes": {
+            "@id": "carphs:lib/ActorRdfParseHtmlScript#ActorRdfParseHtmlScript_args_mediatorRdfParseMediatypes"
+          },
+          "args_mediatorRdfParseHandle": {
+            "@id": "carphs:lib/ActorRdfParseHtmlScript#ActorRdfParseHtmlScript_args_mediatorRdfParseHandle"
+          },
+          "args_name": {
+            "@id": "carphs:lib/ActorRdfParseHtmlScript#ActorRdfParseHtmlScript_args_name"
+          },
+          "args_bus": {
+            "@id": "carphs:lib/ActorRdfParseHtmlScript#ActorRdfParseHtmlScript_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carphs:lib/ActorRdfParseHtmlScript#ActorRdfParseHtmlScript_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfParseHtmlScriptArgs": {
+        "@id": "carphs:lib/ActorRdfParseHtmlScript#IActorRdfParseHtmlScriptArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

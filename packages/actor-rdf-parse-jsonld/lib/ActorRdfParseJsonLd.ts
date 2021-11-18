@@ -17,6 +17,17 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "application/ld+json": 1.0,
+   *       "application/json": 0.5
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "application/ld+json": "http://www.w3.org/ns/formats/JSON-LD",
+   *       "application/json": "http://www.w3.org/ns/formats/JSON-LD"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorRdfParseJsonLdArgs) {
     super(args);
   }
@@ -47,6 +58,9 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
 }
 
 export interface IActorRdfParseJsonLdArgs extends IActorRdfParseFixedMediaTypesArgs {
+  /**
+   * The HTTP mediator
+   */
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 }

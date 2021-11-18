@@ -5,8 +5,22 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caspg": "npmd:@comunica/actor-sparql-parse-graphql/",
       "files-caspg": "caspg:^1.0.0/",
-
-      "ActorSparqlParseGraphql": "caspg:Actor/SparqlParse/Graphql"
+      "ActorSparqlParseGraphql": {
+        "@id": "caspg:lib/ActorSparqlParseGraphql#ActorSparqlParseGraphql",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "caspg:lib/ActorSparqlParseGraphql#ActorSparqlParseGraphql_args_name"
+          },
+          "args_bus": {
+            "@id": "caspg:lib/ActorSparqlParseGraphql#ActorSparqlParseGraphql_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caspg:lib/ActorSparqlParseGraphql#ActorSparqlParseGraphql_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

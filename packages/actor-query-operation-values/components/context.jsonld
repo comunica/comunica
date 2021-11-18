@@ -5,8 +5,22 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqov": "npmd:@comunica/actor-query-operation-values/",
       "files-caqov": "caqov:^1.0.0/",
-
-      "ActorQueryOperationValues": "caqov:Actor/QueryOperation/Values"
+      "ActorQueryOperationValues": {
+        "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues_args_name"
+          },
+          "args_bus": {
+            "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-fallback/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-fallback/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-dereference-fallback",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-dereference-fallback",
   "import": [
-    "files-cardfa:components/Actor/RdfDereference/Fallback.jsonld"
+    "files-cardf:components/ActorRdfDereferenceFallback.jsonld"
   ]
 }

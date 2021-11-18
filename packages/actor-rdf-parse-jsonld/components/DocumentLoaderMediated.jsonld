@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-jsonld",
+  "components": [
+    {
+      "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated",
+      "@type": "Class",
+      "requireElement": "DocumentLoaderMediated",
+      "extends": [],
+      "comment": "A JSON-LD document loader that fetches over an HTTP bus using a given mediator.",
+      "parameters": [
+        {
+          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_context",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_mediatorHttp"
+        },
+        {
+          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_context"
+        }
+      ]
+    }
+  ]
+}

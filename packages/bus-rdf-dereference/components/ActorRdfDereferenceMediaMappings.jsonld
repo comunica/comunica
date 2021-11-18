@@ -17,31 +17,33 @@
         {
           "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_mediaMappings",
           "range": "rdf:JSON",
-          "default": {
-            "@type": "@json",
-            "@value": {
-              "ttl": "text/turtle",
-              "turtle": "text/turtle",
-              "nt": "application/n-triples",
-              "ntriples": "application/n-triples",
-              "nq": "application/n-quads",
-              "nquads": "application/n-quads",
-              "rdf": "application/rdf+xml",
-              "rdfxml": "application/rdf+xml",
-              "owl": "application/rdf+xml",
-              "n3": "text/n3",
-              "trig": "application/trig",
-              "jsonld": "application/ld+json",
-              "json": "application/json",
-              "html": "text/html",
-              "htm": "text/html",
-              "xhtml": "application/xhtml+xml",
-              "xht": "application/xhtml+xml",
-              "xml": "application/xml",
-              "svg": "image/svg+xml",
-              "svgz": "image/svg+xml"
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "ttl": "text/turtle",
+                "turtle": "text/turtle",
+                "nt": "application/n-triples",
+                "ntriples": "application/n-triples",
+                "nq": "application/n-quads",
+                "nquads": "application/n-quads",
+                "rdf": "application/rdf+xml",
+                "rdfxml": "application/rdf+xml",
+                "owl": "application/rdf+xml",
+                "n3": "text/n3",
+                "trig": "application/trig",
+                "jsonld": "application/ld+json",
+                "json": "application/json",
+                "html": "text/html",
+                "htm": "text/html",
+                "xhtml": "application/xhtml+xml",
+                "xht": "application/xhtml+xml",
+                "xml": "application/xml",
+                "svg": "image/svg+xml",
+                "svgz": "image/svg+xml"
+              }
             }
-          },
+          ],
           "comment": "A collection of mappings, mapping file extensions to their corresponding media type.",
           "unique": true,
           "required": true
@@ -49,9 +51,11 @@
         {
           "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_name",
           "range": "xsd:string",
-          "default": {
-            "@id": "rdf:subject"
-          },
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
           "comment": "The name for this actor.",
           "unique": true,
           "required": true
@@ -59,10 +63,12 @@
         {
           "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_bus",
           "range": "cc:lib/Bus#Bus",
-          "default": {
-            "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus",
-            "@type": "cc:lib/Bus#Bus"
-          },
+          "default": [
+            {
+              "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
           "comment": "The bus this actor subscribes to.",
           "unique": true,
           "required": true

@@ -1,0 +1,135 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
+  "components": [
+    {
+      "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource",
+      "@type": "Class",
+      "requireElement": "MediatedQuadSource",
+      "extends": [
+        "cbrrqp:lib/ActorRdfResolveQuadPatternSource#IQuadSource"
+      ],
+      "comment": "A lazy quad source that creates {@link MediatedLinkedRdfSourcesAsyncRdfIterator} instances when matching quads.",
+      "parameters": [
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_cacheSize",
+          "range": "xsd:number",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_context",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_firstUrl",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_forceSourceType",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfDereference",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorMetadata",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorMetadataExtract",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermedia",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinks",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinksQueue",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_cacheSize"
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_context"
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_firstUrl"
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_forceSourceType"
+        },
+        {
+          "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfDereference",
+              "value": {
+                "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfDereference"
+              }
+            },
+            {
+              "keyRaw": "mediatorMetadata",
+              "value": {
+                "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorMetadata"
+              }
+            },
+            {
+              "keyRaw": "mediatorMetadataExtract",
+              "value": {
+                "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorMetadataExtract"
+              }
+            },
+            {
+              "keyRaw": "mediatorRdfResolveHypermedia",
+              "value": {
+                "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermedia"
+              }
+            },
+            {
+              "keyRaw": "mediatorRdfResolveHypermediaLinks",
+              "value": {
+                "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinks"
+              }
+            },
+            {
+              "keyRaw": "mediatorRdfResolveHypermediaLinksQueue",
+              "value": {
+                "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinksQueue"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

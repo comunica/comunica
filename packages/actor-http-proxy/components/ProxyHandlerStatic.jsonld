@@ -1,0 +1,30 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-proxy",
+  "components": [
+    {
+      "@id": "cahp:lib/ProxyHandlerStatic#ProxyHandlerStatic",
+      "@type": "Class",
+      "requireElement": "ProxyHandlerStatic",
+      "extends": [
+        "cahp:lib/IProxyHandler#IProxyHandler"
+      ],
+      "comment": "A proxy handler that prefixes all URLs with a given string.",
+      "parameters": [
+        {
+          "@id": "cahp:lib/ProxyHandlerStatic#ProxyHandlerStatic_prefixUrl",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cahp:lib/ProxyHandlerStatic#ProxyHandlerStatic_prefixUrl"
+        }
+      ]
+    }
+  ]
+}

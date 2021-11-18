@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-metadata-primary-topic",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-primary-topic",
   "import": [
-    "files-carmpt:components/Actor/RdfMetadata/PrimaryTopic.jsonld"
+    "files-carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld"
   ]
 }

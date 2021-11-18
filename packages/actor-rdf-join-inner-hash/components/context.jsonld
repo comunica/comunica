@@ -3,10 +3,27 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjh": "npmd:@comunica/actor-rdf-join-inner-hash/",
-      "files-carjh": "carjh:^1.0.0/",
-
-      "ActorRdfJoinHash": "carjh:Actor/RdfJoin/Hash"
+      "carjih": "npmd:@comunica/actor-rdf-join-inner-hash/",
+      "files-carjih": "carjih:^1.0.0/",
+      "ActorRdfJoinHash": {
+        "@id": "carjih:lib/ActorRdfJoinHash#ActorRdfJoinHash",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorJoinSelectivity": {
+            "@id": "carjih:lib/ActorRdfJoinHash#ActorRdfJoinHash_args_mediatorJoinSelectivity"
+          },
+          "args_name": {
+            "@id": "carjih:lib/ActorRdfJoinHash#ActorRdfJoinHash_args_name"
+          },
+          "args_bus": {
+            "@id": "carjih:lib/ActorRdfJoinHash#ActorRdfJoinHash_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carjih:lib/ActorRdfJoinHash#ActorRdfJoinHash_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

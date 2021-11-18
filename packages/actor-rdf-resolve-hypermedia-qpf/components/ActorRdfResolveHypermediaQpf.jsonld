@@ -1,0 +1,189 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-qpf/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-qpf",
+  "components": [
+    {
+      "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf",
+      "@type": "Class",
+      "requireElement": "ActorRdfResolveHypermediaQpf",
+      "extends": [
+        "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia",
+        "carrhq:lib/ActorRdfResolveHypermediaQpf#IActorRdfResolveHypermediaQpfArgs"
+      ],
+      "comment": "A comunica QPF RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorMetadata",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The metadata mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorMetadataExtract",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The metadata extract mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorRdfDereference",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The RDF dereference mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_subjectUri",
+          "range": "xsd:string",
+          "default": [
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"
+          ],
+          "comment": "The URI that should be interpreted as subject URI",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_predicateUri",
+          "range": "xsd:string",
+          "default": [
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"
+          ],
+          "comment": "The URI that should be interpreted as predicate URI",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_objectUri",
+          "range": "xsd:string",
+          "default": [
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#object"
+          ],
+          "comment": "The URI that should be interpreted as object URI",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_graphUri",
+          "range": "xsd:string",
+          "default": [
+            "http://www.w3.org/ns/sparql-service-description#graph"
+          ],
+          "comment": "The URI that should be interpreted as graph URI",
+          "unique": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorMetadata",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorMetadata"
+              }
+            },
+            {
+              "keyRaw": "mediatorMetadataExtract",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorMetadataExtract"
+              }
+            },
+            {
+              "keyRaw": "mediatorRdfDereference",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorRdfDereference"
+              }
+            },
+            {
+              "keyRaw": "subjectUri",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_subjectUri"
+              }
+            },
+            {
+              "keyRaw": "predicateUri",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_predicateUri"
+              }
+            },
+            {
+              "keyRaw": "objectUri",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_objectUri"
+              }
+            },
+            {
+              "keyRaw": "graphUri",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_graphUri"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#IActorRdfResolveHypermediaQpfArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfResolveHypermediaQpfArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

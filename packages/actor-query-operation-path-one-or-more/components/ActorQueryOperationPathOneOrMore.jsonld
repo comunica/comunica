@@ -1,0 +1,89 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-one-or-more/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-path-one-or-more",
+  "components": [
+    {
+      "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore",
+      "@type": "Class",
+      "requireElement": "ActorQueryOperationPathOneOrMore",
+      "extends": [
+        "caap:lib/ActorAbstractPath#ActorAbstractPath"
+      ],
+      "comment": "A comunica Path OneOrMore Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_mediatorQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": {
+                "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_mediatorQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -40,5 +40,8 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
 }
 
 export interface IActorQueryOperationJoinArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for joining Bindings streams
+   */
   mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
 }

@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-nestedloop/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-nestedloop/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-join-inner-nestedloop",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-nestedloop",
   "import": [
-    "files-carjn:components/Actor/RdfJoin/NestedLoop.jsonld"
+    "files-carjin:components/ActorRdfJoinNestedLoop.jsonld"
   ]
 }

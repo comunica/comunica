@@ -17,7 +17,7 @@ export class ActorHttpNative extends ActorHttp {
   public constructor(args: IActorHttpNativeArgs) {
     super(args);
     this.userAgent = ActorHttpNative.createUserAgent();
-    this.requester = new Requester(args.agentOptions ? JSON.parse(args.agentOptions) : undefined);
+    this.requester = new Requester(args.agentOptions);
   }
 
   public static createUserAgent(): string {
@@ -126,8 +126,11 @@ export class ActorHttpNative extends ActorHttp {
   }
 }
 
-// Try to keep connections open, and set a maximum number of connections per server
-// AGENT_SETTINGS = {keepAlive: true, maxSockets: 5};
 export interface IActorHttpNativeArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
-  agentOptions?: string;
+  /**
+   * The agent options for the HTTP agent
+   * @range {json}
+   * @default {{ "keepAlive": true, "maxSockets": 5 }}
+   */
+  agentOptions?: any;
 }

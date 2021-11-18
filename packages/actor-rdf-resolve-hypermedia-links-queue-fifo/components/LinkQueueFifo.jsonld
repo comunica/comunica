@@ -1,0 +1,20 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo",
+  "components": [
+    {
+      "@id": "carrhlqf:lib/LinkQueueFifo#LinkQueueFifo",
+      "@type": "Class",
+      "requireElement": "LinkQueueFifo",
+      "extends": [
+        "cbrrhlq:lib/ILinkQueue#ILinkQueue"
+      ],
+      "comment": "A link queue in FIFO (first-in first-out) order.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

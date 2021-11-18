@@ -1,0 +1,31 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source",
+  "components": [
+    {
+      "@id": "carrqprs:lib/RdfJsQuadSource#RdfJsQuadSource",
+      "@type": "Class",
+      "requireElement": "RdfJsQuadSource",
+      "extends": [
+        "cbrrqp:lib/ActorRdfResolveQuadPatternSource#IQuadSource"
+      ],
+      "comment": "A quad source that wraps over an {@link RDF.Source}.",
+      "parameters": [
+        {
+          "@id": "carrqprs:lib/RdfJsQuadSource#RdfJsQuadSource_source",
+          "range": "carrqprs:lib/IRdfJsSourceExtended#IRdfJsSourceExtended",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqprs:lib/RdfJsQuadSource#RdfJsQuadSource_source"
+        }
+      ]
+    }
+  ]
+}

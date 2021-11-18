@@ -1,12 +1,43 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carjob": "npmd:@comunica/actor-rdf-join-optional-bind/",
       "files-carjob": "carjob:^1.0.0/",
-
-      "ActorRdfJoinOptionalBind": "carjob:Actor/RdfJoin/OptionalBind"
+      "ActorRdfJoinOptionalBind": {
+        "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind",
+        "@prefix": true,
+        "@context": {
+          "args_bindOrder": {
+            "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind_args_bindOrder"
+          },
+          "args_selectivityModifier": {
+            "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind_args_selectivityModifier"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind_args_mediatorQueryOperation"
+          },
+          "args_mediatorJoinSelectivity": {
+            "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind_args_mediatorJoinSelectivity"
+          },
+          "args_name": {
+            "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind_args_name"
+          },
+          "args_bus": {
+            "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carjob:lib/ActorRdfJoinOptionalBind#ActorRdfJoinOptionalBind_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfJoinOptionalBindArgs": {
+        "@id": "carjob:lib/ActorRdfJoinOptionalBind#IActorRdfJoinOptionalBindArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

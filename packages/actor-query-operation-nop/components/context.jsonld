@@ -1,12 +1,29 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqon": "npmd:@comunica/actor-query-operation-nop/",
       "files-caqon": "caqon:^1.0.0/",
-
-      "ActorQueryOperationNop": "caqon:Actor/QueryOperation/Nop"
+      "ActorQueryOperationNop": {
+        "@id": "caqon:lib/ActorQueryOperationNop#ActorQueryOperationNop",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorQueryOperation": {
+            "@id": "caqon:lib/ActorQueryOperationNop#ActorQueryOperationNop_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqon:lib/ActorQueryOperationNop#ActorQueryOperationNop_args_name"
+          },
+          "args_bus": {
+            "@id": "caqon:lib/ActorQueryOperationNop#ActorQueryOperationNop_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqon:lib/ActorQueryOperationNop#ActorQueryOperationNop_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

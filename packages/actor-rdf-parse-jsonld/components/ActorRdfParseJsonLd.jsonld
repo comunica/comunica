@@ -1,0 +1,155 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-jsonld",
+  "components": [
+    {
+      "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd",
+      "@type": "Class",
+      "requireElement": "ActorRdfParseJsonLd",
+      "extends": [
+        "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes"
+      ],
+      "comment": "A JSON-LD RDF Parse actor that listens on the 'rdf-parse' bus.  It is able to parse JSON-LD-based RDF serializations and announce the presence of them by media type.",
+      "parameters": [
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The HTTP mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediaTypePriorities",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": 1,
+                "application/json": 0.5
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1].",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediaTypeFormats",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/ld+json": "http://www.w3.org/ns/formats/JSON-LD",
+                "application/json": "http://www.w3.org/ns/formats/JSON-LD"
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its format IRI as value.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_priorityScale",
+          "range": "xsd:double",
+          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value.",
+          "unique": true
+        },
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": {
+                "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediatorHttp"
+              }
+            },
+            {
+              "keyRaw": "mediaTypePriorities",
+              "value": {
+                "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediaTypePriorities"
+              }
+            },
+            {
+              "keyRaw": "mediaTypeFormats",
+              "value": {
+                "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediaTypeFormats"
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": {
+                "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_priorityScale"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "carpj:lib/ActorRdfParseJsonLd#IActorRdfParseJsonLdArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfParseJsonLdArgs",
+      "extends": [
+        "cbrp:lib/ActorRdfParseFixedMediaTypes#IActorRdfParseFixedMediaTypesArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

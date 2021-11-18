@@ -22,16 +22,16 @@
     {
       "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsHypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfDereference": {
+      "args_mediatorRdfDereference": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference"
       },
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadata": {
+      "args_mediatorMetadata": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata"
       },
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadataExtract": {
+      "args_mediatorMetadataExtract": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract"
       },
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfUpdateHypermedia": {
+      "args_mediatorRdfUpdateHypermedia": {
         "@id": "config-sets:rdf-update-rdfjs.json#mediatorRdfUpdateHypermedia",
         "@type": "MediatorRace",
         "args_bus": { "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus" }
@@ -45,7 +45,7 @@
     {
       "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPatchSparqlUpdate",
       "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
-      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp": {
+      "args_mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       }
     },
@@ -61,13 +61,13 @@
     {
       "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPutLdp",
       "@type": "ActorRdfUpdateHypermediaPutLdp",
-      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorHttp": {
+      "args_mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       },
-      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerializeMediatypes": {
+      "args_mediatorRdfSerializeMediatypes": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes"
       },
-      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerialize": {
+      "args_mediatorRdfSerialize": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
       }
     },
@@ -75,7 +75,7 @@
     {
       "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaSparql",
       "@type": "ActorRdfUpdateHypermediaSparql",
-      "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorHttp": {
+      "args_mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       }
     }

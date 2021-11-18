@@ -91,6 +91,9 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiSmallestArgs extends IActorRdfJoinArgs {
+  /**
+   * A mediator for joining Bindings streams
+   */
   mediatorJoin: Mediator<ActorRdfJoin,
   IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>;
 }

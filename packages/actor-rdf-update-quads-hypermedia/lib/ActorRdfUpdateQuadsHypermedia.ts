@@ -107,14 +107,36 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
 
 export interface IActorRdfUpdateQuadsHypermediaArgs
   extends IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput> {
+  /**
+   * The maximum number of entries in the LRU cache, set to 0 to disable.
+   * @range {integer}
+   * @default {100}
+   */
   cacheSize: number;
+  /* eslint-disable max-len */
+  /**
+   * An actor that listens to HTTP invalidation events
+   * @default {<default_invalidator> a <https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable>}
+   */
   httpInvalidator: ActorHttpInvalidateListenable;
+  /**
+   * The RDF dereference mediator
+   */
   mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
   IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  /**
+   * The metadata mediator
+   */
   mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
   IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+  /**
+   * The metadata extract mediator
+   */
   mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
   IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  /**
+   * The hypermedia resolver
+   */
   mediatorRdfUpdateHypermedia: Mediator<Actor<IActionRdfUpdateHypermedia, IActorTest,
   IActorRdfUpdateHypermediaOutput>, IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>;
 }

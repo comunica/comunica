@@ -39,6 +39,9 @@ export class ActorRdfUpdateHypermediaPatchSparqlUpdate extends ActorRdfUpdateHyp
 
 export interface IActorRdfUpdateHypermediaPatchSparqlUpdateArgs
   extends IActorArgs<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
+  /**
+   * The HTTP mediator
+   */
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 }

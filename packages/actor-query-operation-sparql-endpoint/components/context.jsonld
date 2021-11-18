@@ -5,8 +5,39 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqose": "npmd:@comunica/actor-query-operation-sparql-endpoint/",
       "files-caqose": "caqose:^1.0.0/",
-
-      "ActorQueryOperationSparqlEndpoint": "caqose:Actor/QueryOperation/SparqlEndpoint"
+      "ActorQueryOperationSparqlEndpoint": {
+        "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorHttp": {
+            "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_mediatorHttp"
+          },
+          "args_checkUrlSuffixSparql": {
+            "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_checkUrlSuffixSparql"
+          },
+          "args_checkUrlSuffixUpdate": {
+            "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_checkUrlSuffixUpdate"
+          },
+          "args_forceHttpGet": {
+            "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_forceHttpGet"
+          },
+          "args_name": {
+            "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_name"
+          },
+          "args_bus": {
+            "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationSparqlEndpointArgs": {
+        "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#IActorQueryOperationSparqlEndpointArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

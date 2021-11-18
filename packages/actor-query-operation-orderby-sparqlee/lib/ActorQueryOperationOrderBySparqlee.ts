@@ -109,5 +109,9 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
  * The window parameter determines how many of the elements to consider when sorting.
  */
 export interface IActorQueryOperationOrderBySparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * The size of the window for the sort iterator.
+   * @range {integer}
+   */
   window?: number;
 }

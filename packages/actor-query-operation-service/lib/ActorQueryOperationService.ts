@@ -65,5 +65,9 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
 }
 
 export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * If the SERVICE target should be assumed to be a SPARQL endpoint.
+   * @default {false}
+   */
   forceSparqlEndpoint: boolean;
 }

@@ -1,0 +1,147 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-sparql-endpoint",
+  "components": [
+    {
+      "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint",
+      "@type": "Class",
+      "requireElement": "ActorQueryOperationSparqlEndpoint",
+      "extends": [
+        "cbqo:lib/ActorQueryOperation#ActorQueryOperation"
+      ],
+      "comment": "A comunica SPARQL Endpoint Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The HTTP mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_checkUrlSuffixSparql",
+          "range": "xsd:boolean",
+          "default": [
+            "true"
+          ],
+          "comment": "If URLs ending with '/sparql' should also be considered SPARQL endpoints.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_checkUrlSuffixUpdate",
+          "range": "xsd:boolean",
+          "default": [
+            "true"
+          ],
+          "comment": "If URLs ending with '/update' should also be considered SPARQL endpoints.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_forceHttpGet",
+          "range": "xsd:boolean",
+          "default": [
+            "false"
+          ],
+          "comment": "If queries should be sent via HTTP GET instead of POST.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": {
+                "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_mediatorHttp"
+              }
+            },
+            {
+              "keyRaw": "checkUrlSuffixSparql",
+              "value": {
+                "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_checkUrlSuffixSparql"
+              }
+            },
+            {
+              "keyRaw": "checkUrlSuffixUpdate",
+              "value": {
+                "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_checkUrlSuffixUpdate"
+              }
+            },
+            {
+              "keyRaw": "forceHttpGet",
+              "value": {
+                "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_forceHttpGet"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#ActorQueryOperationSparqlEndpoint_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caqose:lib/ActorQueryOperationSparqlEndpoint#IActorQueryOperationSparqlEndpointArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorQueryOperationSparqlEndpointArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

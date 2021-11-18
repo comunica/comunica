@@ -5,11 +5,36 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cassr": "npmd:@comunica/actor-sparql-serialize-rdf/",
       "files-cassr": "cassr:^1.0.0/",
-
-      "ActorSparqlSerializeRdf": "cassr:Actor/SparqlSerialize/Rdf",
-      "mediatorRdfSerialize": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize",
-      "mediatorRdfSerializeMediaTypeCombiner": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner",
-      "mediatorRdfSerializeMediaTypeFormatCombiner": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner"
+      "ActorSparqlSerializeRdf": {
+        "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorRdfSerialize": {
+            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorRdfSerialize"
+          },
+          "args_mediatorMediaTypeCombiner": {
+            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeCombiner"
+          },
+          "args_mediatorMediaTypeFormatCombiner": {
+            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeFormatCombiner"
+          },
+          "args_name": {
+            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_name"
+          },
+          "args_bus": {
+            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorSparqlSerializeRdfArgs": {
+        "@id": "cassr:lib/ActorSparqlSerializeRdf#IActorSparqlSerializeRdfArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

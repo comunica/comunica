@@ -14,6 +14,11 @@ import { Converter } from 'sparqljson-to-tree';
  */
 export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaTypes
   implements IActorSparqlSerializeFixedMediaTypesArgs {
+  /**
+   * @param args -
+   *   \ @defaultNested {{ "tree": 0.5 }} mediaTypePriorities
+   *   \ @defaultNested {{ "tree": "https://comunica.linkeddatafragments.org/#results_tree" }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

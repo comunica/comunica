@@ -5,8 +5,25 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqopi": "npmd:@comunica/actor-query-operation-path-inv/",
       "files-caqopi": "caqopi:^1.0.0/",
-
-      "ActorQueryOperationPathInv": "caqopi:Actor/QueryOperation/PathInv"
+      "ActorQueryOperationPathInv": {
+        "@id": "caqopi:lib/ActorQueryOperationPathInv#ActorQueryOperationPathInv",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorQueryOperation": {
+            "@id": "caqopi:lib/ActorQueryOperationPathInv#ActorQueryOperationPathInv_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqopi:lib/ActorQueryOperationPathInv#ActorQueryOperationPathInv_args_name"
+          },
+          "args_bus": {
+            "@id": "caqopi:lib/ActorQueryOperationPathInv#ActorQueryOperationPathInv_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqopi:lib/ActorQueryOperationPathInv#ActorQueryOperationPathInv_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

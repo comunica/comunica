@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-selectivity-variable-counting/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-selectivity-variable-counting/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-join-selectivity-variable-counting",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-selectivity-variable-counting",
   "import": [
-    "files-carjsvc:components/Actor/RdfJoinSelectivity/VariableCounting.jsonld"
+    "files-carjsvc:components/ActorRdfJoinSelectivityVariableCounting.jsonld"
   ]
 }

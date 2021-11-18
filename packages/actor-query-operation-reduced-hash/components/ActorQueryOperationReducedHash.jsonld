@@ -1,0 +1,115 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-reduced-hash",
+  "components": [
+    {
+      "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash",
+      "@type": "Class",
+      "requireElement": "ActorQueryOperationReducedHash",
+      "extends": [
+        "caabh:lib/AbstractBindingsHash#AbstractBindingsHash",
+        "caqorh:lib/ActorQueryOperationReducedHash#IActorInitRdfBindingHashArgs"
+      ],
+      "comment": "A comunica Reduced Hash Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_cacheSize",
+          "range": "xsd:integer",
+          "default": [
+            "100"
+          ],
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_mediatorQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "cacheSize",
+              "value": {
+                "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_cacheSize"
+              }
+            },
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": {
+                "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_mediatorQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caqorh:lib/ActorQueryOperationReducedHash#ActorQueryOperationReducedHash_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caqorh:lib/ActorQueryOperationReducedHash#IActorInitRdfBindingHashArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorInitRdfBindingHashArgs",
+      "extends": [
+        "caabh:lib/AbstractFilterHash#IActorInitRdfDereferencePagedArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

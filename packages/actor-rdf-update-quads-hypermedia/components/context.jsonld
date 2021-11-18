@@ -1,12 +1,49 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caruqh": "npmd:@comunica/actor-rdf-update-quads-hypermedia/",
       "files-caruqh": "caruqh:^1.0.0/",
-
-      "ActorRdfUpdateQuadsHypermedia": "caruqh:Actor/RdfUpdateQuads/Hypermedia"
+      "ActorRdfUpdateQuadsHypermedia": {
+        "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia",
+        "@prefix": true,
+        "@context": {
+          "args_cacheSize": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_cacheSize"
+          },
+          "args_httpInvalidator": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_httpInvalidator"
+          },
+          "args_mediatorRdfDereference": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_mediatorRdfDereference"
+          },
+          "args_mediatorMetadata": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_mediatorMetadata"
+          },
+          "args_mediatorMetadataExtract": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_mediatorMetadataExtract"
+          },
+          "args_mediatorRdfUpdateHypermedia": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_mediatorRdfUpdateHypermedia"
+          },
+          "args_name": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_name"
+          },
+          "args_bus": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#ActorRdfUpdateQuadsHypermedia_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfUpdateQuadsHypermediaArgs": {
+        "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#IActorRdfUpdateQuadsHypermediaArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

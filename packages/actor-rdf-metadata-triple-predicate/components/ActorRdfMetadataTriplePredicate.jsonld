@@ -1,0 +1,98 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-triple-predicate/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-triple-predicate",
+  "components": [
+    {
+      "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate",
+      "@type": "Class",
+      "requireElement": "ActorRdfMetadataTriplePredicate",
+      "extends": [
+        "cbrm:lib/ActorRdfMetadataQuadPredicate#ActorRdfMetadataQuadPredicate",
+        "carmtp:lib/ActorRdfMetadataTriplePredicate#IActorRdfParseFixedMediaTypesArgs"
+      ],
+      "comment": "An RDF Metadata Actor that splits off the metadata based on the existence of a preconfigured set of predicates with the page url as subject.",
+      "parameters": [
+        {
+          "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_predicateRegexes",
+          "range": "xsd:string",
+          "required": true
+        },
+        {
+          "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "predicateRegexes",
+              "value": {
+                "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_predicateRegexes"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#IActorRdfParseFixedMediaTypesArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfParseFixedMediaTypesArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

@@ -1,9 +1,12 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo",
   "import": [
-    "files-carrhlqf:components/Actor/RdfResolveHypermediaLinksQueue/Fifo.jsonld"
+    "files-carrhlqf:components/ActorRdfResolveHypermediaLinksQueueFifo.jsonld",
+    "files-carrhlqf:components/LinkQueueFifo.jsonld"
   ]
 }

@@ -27,7 +27,7 @@
     {
       "@id": "config-sets:join.json#myRdfJoinActorNone",
       "@type": "ActorRdfJoinNone",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": {
+      "args_mediatorJoinSelectivity": {
         "@id": "config-sets:join.json#mediatorJoinSelectivity",
         "@type": "MediatorNumber",
         "args_type": "max",
@@ -39,62 +39,62 @@
     {
       "@id": "config-sets:join.json#myRdfJoinActorSingle",
       "@type": "ActorRdfJoinSingle",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorEmpty",
       "@type": "ActorRdfJoinMultiEmpty",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorBind",
       "@type": "ActorRdfJoinMultiBind",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
-      "carjmb:Actor/RdfJoin/MultiBind#mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
+      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorHash",
       "@type": "ActorRdfJoinHash",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorSymmetricHash",
       "@type": "ActorRdfJoinSymmetricHash",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorNestedLoop",
       "@type": "ActorRdfJoinNestedLoop",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorSmallest",
       "@type": "ActorRdfJoinMultiSmallest",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
-      "carjms:mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
+      "args_mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
     },
 
     {
       "@id": "config-sets:join.json#myRdfJoinActorMinusHash",
       "@type": "ActorRdfJoinMinusHash",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorMinusHashUndef",
       "@type": "ActorRdfJoinMinusHashUndef",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
 
     {
       "@id": "config-sets:join.json#myRdfJoinActorOptionalBind",
       "@type": "ActorRdfJoinOptionalBind",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
-      "carjob:Actor/RdfJoin/OptionalBind#mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" },
+      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "config-sets:join.json#myRdfJoinActorOptionalNestedLoop",
       "@type": "ActorRdfJoinOptionalNestedLoop",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
     },
 
     {

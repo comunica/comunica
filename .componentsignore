@@ -1,5 +1,10 @@
 [
   "Error",
   "LogicalJoinType",
-  "IQueryEngine"
+  "IQueryEngine",
+  "ActionContext",
+  "Map",
+  "EventEmitter",
+  "FetchDocumentLoader",
+  "BindingsToQuadsIterator"
 ]

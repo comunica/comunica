@@ -5,8 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqom": "npmd:@comunica/actor-query-operation-minus/",
       "files-caqom": "caqom:^1.0.0/",
-
-      "ActorQueryOperationMinus": "caqom:Actor/QueryOperation/Minus"
+      "ActorQueryOperationMinus": {
+        "@id": "caqom:lib/ActorQueryOperationMinus#ActorQueryOperationMinus",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorJoin": {
+            "@id": "caqom:lib/ActorQueryOperationMinus#ActorQueryOperationMinus_args_mediatorJoin"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "caqom:lib/ActorQueryOperationMinus#ActorQueryOperationMinus_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqom:lib/ActorQueryOperationMinus#ActorQueryOperationMinus_args_name"
+          },
+          "args_bus": {
+            "@id": "caqom:lib/ActorQueryOperationMinus#ActorQueryOperationMinus_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqom:lib/ActorQueryOperationMinus#ActorQueryOperationMinus_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationMinusArgs": {
+        "@id": "caqom:lib/ActorQueryOperationMinus#IActorQueryOperationMinusArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

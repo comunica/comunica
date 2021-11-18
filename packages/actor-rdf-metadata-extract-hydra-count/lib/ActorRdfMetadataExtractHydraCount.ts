@@ -40,5 +40,10 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
 
 export interface IActorRdfParseFixedMediaTypesArgs
   extends IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+  /**
+   * A predicate that provides a count estimate
+   * @default {http://www.w3.org/ns/hydra/core#totalItems}
+   * @default {http://rdfs.org/ns/void#triples}
+   */
   predicates: string[];
 }

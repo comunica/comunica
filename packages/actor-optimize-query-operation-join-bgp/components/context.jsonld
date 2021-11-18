@@ -1,12 +1,26 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caoqojb": "npmd:@comunica/actor-optimize-query-operation-join-bgp/",
       "files-caoqojb": "caoqojb:^1.0.0/",
-
-      "ActorOptimizeQueryOperationJoinBgp": "caoqojb:Actor/OptimizeQueryOperation/JoinBgp"
+      "ActorOptimizeQueryOperationJoinBgp": {
+        "@id": "caoqojb:lib/ActorOptimizeQueryOperationJoinBgp#ActorOptimizeQueryOperationJoinBgp",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "caoqojb:lib/ActorOptimizeQueryOperationJoinBgp#ActorOptimizeQueryOperationJoinBgp_args_name"
+          },
+          "args_bus": {
+            "@id": "caoqojb:lib/ActorOptimizeQueryOperationJoinBgp#ActorOptimizeQueryOperationJoinBgp_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caoqojb:lib/ActorOptimizeQueryOperationJoinBgp#ActorOptimizeQueryOperationJoinBgp_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

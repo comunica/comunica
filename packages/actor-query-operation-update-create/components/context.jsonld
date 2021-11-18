@@ -1,12 +1,37 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoucr": "npmd:@comunica/actor-query-operation-update-create/",
-      "files-caqoucr": "caqoucr:^1.0.0/",
-
-      "ActorQueryOperationCreate": "caqoucr:Actor/QueryOperation/Create"
+      "caqouc": "npmd:@comunica/actor-query-operation-update-create/",
+      "files-caqouc": "caqouc:^1.0.0/",
+      "ActorQueryOperationCreate": {
+        "@id": "caqouc:lib/ActorQueryOperationCreate#ActorQueryOperationCreate",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorUpdateQuads": {
+            "@id": "caqouc:lib/ActorQueryOperationCreate#ActorQueryOperationCreate_args_mediatorUpdateQuads"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "caqouc:lib/ActorQueryOperationCreate#ActorQueryOperationCreate_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqouc:lib/ActorQueryOperationCreate#ActorQueryOperationCreate_args_name"
+          },
+          "args_bus": {
+            "@id": "caqouc:lib/ActorQueryOperationCreate#ActorQueryOperationCreate_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqouc:lib/ActorQueryOperationCreate#ActorQueryOperationCreate_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationCreateArgs": {
+        "@id": "caqouc:lib/ActorQueryOperationCreate#IActorQueryOperationCreateArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

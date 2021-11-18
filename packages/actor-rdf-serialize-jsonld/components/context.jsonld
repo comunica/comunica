@@ -3,11 +3,43 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carsjl": "npmd:@comunica/actor-rdf-serialize-jsonld/",
-      "files-carsjl": "carsjl:^1.0.0/",
-
-      "ActorRdfSerializeJsonLd": "carsjl:Actor/RdfSerialize/JsonLd",
-      "jsonStringifyIndentSpaces": "carsjl:Actor/RdfSerialize/JsonLd/jsonStringifyIndentSpaces"
+      "carsj": "npmd:@comunica/actor-rdf-serialize-jsonld/",
+      "files-carsj": "carsj:^1.0.0/",
+      "ActorRdfSerializeJsonLd": {
+        "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd",
+        "@prefix": true,
+        "@context": {
+          "args_jsonStringifyIndentSpaces": {
+            "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_jsonStringifyIndentSpaces"
+          },
+          "args_mediaTypePriorities": {
+            "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_name"
+          },
+          "args_bus": {
+            "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carsj:lib/ActorRdfSerializeJsonLd#ActorRdfSerializeJsonLd_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfSerializeJsonLdArgs": {
+        "@id": "carsj:lib/ActorRdfSerializeJsonLd#IActorRdfSerializeJsonLdArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

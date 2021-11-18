@@ -1,0 +1,49 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-update-hypermedia-sparql",
+  "components": [
+    {
+      "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql",
+      "@type": "Class",
+      "requireElement": "QuadDestinationSparql",
+      "extends": [
+        "cbruq:lib/IQuadDestination#IQuadDestination"
+      ],
+      "comment": "A quad destination that represents an LDP resource.",
+      "parameters": [
+        {
+          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_url",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_context",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_url"
+        },
+        {
+          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_context"
+        },
+        {
+          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_mediatorHttp"
+        }
+      ]
+    }
+  ]
+}

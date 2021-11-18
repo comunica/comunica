@@ -38,5 +38,9 @@ export class ActorRdfMetadataExtractHydraPagesize extends ActorRdfMetadataExtrac
 
 export interface IActorRdfMetadataExtractHydraPagesizeArgs
   extends IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+  /**
+   * A predicate that provides the page size
+   * @default {http://www.w3.org/ns/hydra/core#itemsPerPage}
+   */
   predicates: string[];
 }

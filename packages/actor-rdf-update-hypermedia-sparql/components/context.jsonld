@@ -1,12 +1,55 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caruhs": "npmd:@comunica/actor-rdf-update-hypermedia-sparql/",
       "files-caruhs": "caruhs:^1.0.0/",
-
-      "ActorRdfUpdateHypermediaSparql": "caruhs:Actor/RdfUpdateHypermedia/Sparql"
+      "ActorRdfUpdateHypermediaSparql": {
+        "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#ActorRdfUpdateHypermediaSparql",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorHttp": {
+            "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#ActorRdfUpdateHypermediaSparql_args_mediatorHttp"
+          },
+          "args_checkUrlSuffixSparql": {
+            "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#ActorRdfUpdateHypermediaSparql_args_checkUrlSuffixSparql"
+          },
+          "args_checkUrlSuffixUpdate": {
+            "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#ActorRdfUpdateHypermediaSparql_args_checkUrlSuffixUpdate"
+          },
+          "args_name": {
+            "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#ActorRdfUpdateHypermediaSparql_args_name"
+          },
+          "args_bus": {
+            "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#ActorRdfUpdateHypermediaSparql_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#ActorRdfUpdateHypermediaSparql_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfUpdateHypermediaSparqlArgs": {
+        "@id": "caruhs:lib/ActorRdfUpdateHypermediaSparql#IActorRdfUpdateHypermediaSparqlArgs",
+        "@prefix": true,
+        "@context": {}
+      },
+      "QuadDestinationSparql": {
+        "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql",
+        "@prefix": true,
+        "@context": {
+          "url": {
+            "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_url"
+          },
+          "context": {
+            "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_context"
+          },
+          "mediatorHttp": {
+            "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_mediatorHttp"
+          }
+        }
+      }
     }
   ]
 }

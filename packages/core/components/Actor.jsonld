@@ -17,9 +17,11 @@
         {
           "@id": "cc:lib/Actor#Actor_args_name",
           "range": "xsd:string",
-          "default": {
-            "@id": "rdf:subject"
-          },
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
           "comment": "The name for this actor.",
           "unique": true,
           "required": true

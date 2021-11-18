@@ -1,12 +1,39 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carmehcq": "npmd:@comunica/actor-rdf-metadata-extract-hydra-controls-query/",
       "files-carmehcq": "carmehcq:^1.0.0/",
-
-      "ActorRdfMetadataExtractHydraControlsQuery": "carmehcq:Actor/RdfMetadataExtract/HydraControlsQuery"
+      "ActorRdfMetadataExtractHydraControlsQuery": {
+        "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraControlsQuery#ActorRdfMetadataExtractHydraControlsQuery",
+        "@prefix": true,
+        "@context": {
+          "args_queryEngine": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraControlsQuery#ActorRdfMetadataExtractHydraControlsQuery_args_queryEngine"
+          },
+          "args_name": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraControlsQuery#ActorRdfMetadataExtractHydraControlsQuery_args_name"
+          },
+          "args_bus": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraControlsQuery#ActorRdfMetadataExtractHydraControlsQuery_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraControlsQuery#ActorRdfMetadataExtractHydraControlsQuery_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "ISearchForm": {
+        "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraControlsQuery#ISearchForm",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ISearchForms": {
+        "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraControlsQuery#ISearchForms",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

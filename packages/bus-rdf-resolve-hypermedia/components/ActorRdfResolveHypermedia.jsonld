@@ -24,9 +24,11 @@
         {
           "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_name",
           "range": "xsd:string",
-          "default": {
-            "@id": "rdf:subject"
-          },
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
           "comment": "The name for this actor.",
           "unique": true,
           "required": true
@@ -34,10 +36,12 @@
         {
           "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_bus",
           "range": "cc:lib/Bus#Bus",
-          "default": {
-            "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus",
-            "@type": "cc:lib/Bus#Bus"
-          },
+          "default": [
+            {
+              "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
           "comment": "The bus this actor subscribes to.",
           "unique": true,
           "required": true

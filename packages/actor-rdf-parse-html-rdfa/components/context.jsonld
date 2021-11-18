@@ -1,12 +1,26 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carphr": "npmd:@comunica/actor-rdf-parse-html-rdfa/",
       "files-carphr": "carphr:^1.0.0/",
-
-      "ActorRdfParseHtmlRdfa": "carphr:Actor/RdfParseHtml/Rdfa"
+      "ActorRdfParseHtmlRdfa": {
+        "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_name"
+          },
+          "args_bus": {
+            "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carphr:lib/ActorRdfParseHtmlRdfa#ActorRdfParseHtmlRdfa_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

@@ -1,12 +1,29 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carmehcq": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count-query/",
       "files-carmehcq": "carmehcq:^1.0.0/",
-
-      "ActorRdfMetadataExtractHydraCountQuery": "carmehcq:Actor/RdfMetadataExtract/HydraCountQuery"
+      "ActorRdfMetadataExtractHydraCountQuery": {
+        "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraCountQuery#ActorRdfMetadataExtractHydraCountQuery",
+        "@prefix": true,
+        "@context": {
+          "args_queryEngine": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraCountQuery#ActorRdfMetadataExtractHydraCountQuery_args_queryEngine"
+          },
+          "args_name": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraCountQuery#ActorRdfMetadataExtractHydraCountQuery_args_name"
+          },
+          "args_bus": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraCountQuery#ActorRdfMetadataExtractHydraCountQuery_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carmehcq:lib/ActorRdfMetadataExtractHydraCountQuery#ActorRdfMetadataExtractHydraCountQuery_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

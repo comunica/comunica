@@ -1,0 +1,124 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-rdf/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-serialize-rdf",
+  "components": [
+    {
+      "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf",
+      "@type": "Class",
+      "requireElement": "ActorSparqlSerializeRdf",
+      "extends": [
+        "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize",
+        "cassr:lib/ActorSparqlSerializeRdf#IActorSparqlSerializeRdfArgs"
+      ],
+      "comment": "A comunica RDF SPARQL Serialize Actor.  It serializes quad streams (for example resulting from a CONSTRUCT query) to an RDF syntax.",
+      "parameters": [
+        {
+          "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorRdfSerialize",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeCombiner",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeFormatCombiner",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfSerialize",
+              "value": {
+                "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorRdfSerialize"
+              }
+            },
+            {
+              "keyRaw": "mediatorMediaTypeCombiner",
+              "value": {
+                "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeCombiner"
+              }
+            },
+            {
+              "keyRaw": "mediatorMediaTypeFormatCombiner",
+              "value": {
+                "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeFormatCombiner"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cassr:lib/ActorSparqlSerializeRdf#IActorSparqlSerializeRdfArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorSparqlSerializeRdfArgs",
+      "extends": [
+        "caam:lib/ActorAbstractMediaTyped#IActorArgsMediaTyped"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

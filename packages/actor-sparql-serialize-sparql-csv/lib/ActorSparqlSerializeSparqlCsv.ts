@@ -12,6 +12,15 @@ import type * as RDF from '@rdfjs/types';
  * A comunica SPARQL CSV SPARQL Serialize Actor.
  */
 export class ActorSparqlSerializeSparqlCsv extends ActorSparqlSerializeFixedMediaTypes {
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "text/csv": 0.75
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "text/csv": "http://www.w3.org/ns/formats/SPARQL_Results_CSV"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

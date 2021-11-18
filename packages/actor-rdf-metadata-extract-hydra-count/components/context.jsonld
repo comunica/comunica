@@ -5,10 +5,31 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carmehco": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count/",
       "files-carmehco": "carmehco:^1.0.0/",
-
-      "ActorRdfMetadataExtractHydraCount": "carmehco:Actor/RdfMetadataExtract/HydraCount",
-      "hydraCountPredicate": "carmehco:Actor/RdfMetadataExtract/HydraCount/predicate",
-      "hydraCountPredicates": "carmehco:Actor/RdfMetadataExtract/HydraCount/predicate"
+      "ActorRdfMetadataExtractHydraCount": {
+        "@id": "carmehco:lib/ActorRdfMetadataExtractHydraCount#ActorRdfMetadataExtractHydraCount",
+        "@prefix": true,
+        "@context": {
+          "args_predicates": {
+            "@id": "carmehco:lib/ActorRdfMetadataExtractHydraCount#ActorRdfMetadataExtractHydraCount_args_predicates",
+            "@container": "@list"
+          },
+          "args_name": {
+            "@id": "carmehco:lib/ActorRdfMetadataExtractHydraCount#ActorRdfMetadataExtractHydraCount_args_name"
+          },
+          "args_bus": {
+            "@id": "carmehco:lib/ActorRdfMetadataExtractHydraCount#ActorRdfMetadataExtractHydraCount_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carmehco:lib/ActorRdfMetadataExtractHydraCount#ActorRdfMetadataExtractHydraCount_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfParseFixedMediaTypesArgs": {
+        "@id": "carmehco:lib/ActorRdfMetadataExtractHydraCount#IActorRdfParseFixedMediaTypesArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

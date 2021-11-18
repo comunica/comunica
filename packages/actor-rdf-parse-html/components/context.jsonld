@@ -1,12 +1,45 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carph": "npmd:@comunica/actor-rdf-parse-html/",
       "files-carph": "carph:^1.0.0/",
-
-      "ActorRdfParseHtml": "carph:Actor/RdfParse/Html"
+      "ActorRdfParseHtml": {
+        "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml",
+        "@prefix": true,
+        "@context": {
+          "args_busRdfParseHtml": {
+            "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_busRdfParseHtml"
+          },
+          "args_mediaTypePriorities": {
+            "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_name"
+          },
+          "args_bus": {
+            "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carph:lib/ActorRdfParseHtml#ActorRdfParseHtml_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfParseHtmlArgs": {
+        "@id": "carph:lib/ActorRdfParseHtml#IActorRdfParseHtmlArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

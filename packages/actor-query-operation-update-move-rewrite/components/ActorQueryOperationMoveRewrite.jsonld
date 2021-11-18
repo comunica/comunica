@@ -1,0 +1,88 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-move-rewrite/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-update-move-rewrite",
+  "components": [
+    {
+      "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite",
+      "@type": "Class",
+      "requireElement": "ActorQueryOperationMoveRewrite",
+      "extends": [
+        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+      ],
+      "comment": "A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles SPARQL move operations.",
+      "parameters": [
+        {
+          "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_mediatorQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": {
+                "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_mediatorQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

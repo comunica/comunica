@@ -14,9 +14,11 @@
         {
           "@id": "cc:lib/ActionObserver#ActionObserver_args_name",
           "range": "xsd:string",
-          "default": {
-            "@id": "rdf:subject"
-          },
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
           "comment": "The name for this observer.",
           "unique": true,
           "required": true

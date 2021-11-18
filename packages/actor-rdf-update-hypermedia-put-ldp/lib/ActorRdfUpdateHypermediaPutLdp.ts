@@ -64,13 +64,22 @@ export class ActorRdfUpdateHypermediaPutLdp extends ActorRdfUpdateHypermedia {
 
 export interface IActorRdfUpdateHypermediaPostLdpArgs
   extends IActorArgs<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
+  /**
+   * The HTTP mediator
+   */
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
+  /**
+   * The RDF Serialize mediator for collecting media types
+   */
   mediatorRdfSerializeMediatypes: Mediator<Actor<
   IActionAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes,
   IActorOutputAbstractMediaTypedMediaTypes>,
   IActionAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes,
   IActorOutputAbstractMediaTypedMediaTypes>;
+  /**
+   * The RDF Serialize mediator for handling serialization
+   */
   mediatorRdfSerialize: Mediator<
   Actor<IActionRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
   IActionRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;

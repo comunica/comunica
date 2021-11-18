@@ -1,4 +1,4 @@
-import { ActorAbstractPath } from '@comunica/actor-abstract-path/lib/ActorAbstractPath';
+import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';

@@ -30,21 +30,13 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-update-quads": "^1.22.2",
-    "cross-fetch": "^3.0.5",
-    "rdf-string-ttl": "^1.1.0"
-  },
-  "peerDependencies": {
-    "@comunica/bus-http": "^1.0.0",
-    "@comunica/bus-rdf-update-hypermedia": "^1.0.0",
-    "@comunica/core": "^1.0.0",
-    "@comunica/types": "^1.0.0"
-  },
-  "devDependencies": {
     "@comunica/bus-http": "^1.22.1",
     "@comunica/bus-rdf-update-hypermedia": "^1.22.2",
+    "@comunica/bus-rdf-update-quads": "^1.22.2",
     "@comunica/core": "^1.22.0",
-    "@comunica/types": "^1.22.0"
+    "@comunica/types": "^1.22.0",
+    "cross-fetch": "^3.0.5",
+    "rdf-string-ttl": "^1.1.0"
   },
   "jest": {
     "globals": {
@@ -66,6 +58,7 @@
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components-actor": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore",
     "validate": "npm ls"
   }
 }

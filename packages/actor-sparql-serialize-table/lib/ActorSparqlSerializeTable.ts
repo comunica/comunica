@@ -19,6 +19,11 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
   public readonly columnWidth: number;
   public readonly padding: string;
 
+  /**
+   * @param args -
+   *   \ @defaultNested {{ "table": 0.6 }} mediaTypePriorities
+   *   \ @defaultNested {{ "table": "https://comunica.linkeddatafragments.org/#results_table" }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeTableArgs) {
     super(args);
     this.padding = ActorSparqlSerializeTable.repeat(' ', this.columnWidth);
@@ -83,5 +88,10 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
 }
 
 export interface IActorSparqlSerializeTableArgs extends IActorSparqlSerializeFixedMediaTypesArgs {
+  /**
+   * The table column width in number of characters
+   * @range {integer}
+   * @default {50}
+   */
   columnWidth: number;
 }

@@ -1,12 +1,53 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cahp": "npmd:@comunica/actor-http-proxy/",
       "files-cahp": "cahp:^1.0.0/",
-
-      "ActorHttpProxy": "cahp:Actor/Http/Proxy"
+      "ActorHttpProxy": {
+        "@id": "cahp:lib/ActorHttpProxy#ActorHttpProxy",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorHttp": {
+            "@id": "cahp:lib/ActorHttpProxy#ActorHttpProxy_args_mediatorHttp"
+          },
+          "args_name": {
+            "@id": "cahp:lib/ActorHttpProxy#ActorHttpProxy_args_name"
+          },
+          "args_bus": {
+            "@id": "cahp:lib/ActorHttpProxy#ActorHttpProxy_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cahp:lib/ActorHttpProxy#ActorHttpProxy_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorHttpProxyArgs": {
+        "@id": "cahp:lib/ActorHttpProxy#IActorHttpProxyArgs",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IProxyHandler": {
+        "@id": "cahp:lib/IProxyHandler#IProxyHandler",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IRequest": {
+        "@id": "cahp:lib/IProxyHandler#IRequest",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ProxyHandlerStatic": {
+        "@id": "cahp:lib/ProxyHandlerStatic#ProxyHandlerStatic",
+        "@prefix": true,
+        "@context": {
+          "prefixUrl": {
+            "@id": "cahp:lib/ProxyHandlerStatic#ProxyHandlerStatic_prefixUrl"
+          }
+        }
+      }
     }
   ]
 }

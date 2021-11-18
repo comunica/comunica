@@ -22,28 +22,28 @@
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
       "@type": "ActorRdfParseN3",
-      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 1.0
+      "args_priorityScale": 1.0
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
-      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.9,
-      "crpjl:Actor/RdfParse/JsonLd/mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" }
+      "args_priorityScale": 0.9,
+      "args_mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" }
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
-      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.5
+      "args_priorityScale": 0.5
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserXmlRdfa",
       "@type": "ActorRdfParseXmlRdfa",
-      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.3
+      "args_priorityScale": 0.3
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserHtml",
       "@type": "ActorRdfParseHtml",
-      "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes_args_priorityScale": 0.2
+      "args_priorityScale": 0.2
     },
 
     {
@@ -57,13 +57,13 @@
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
       "@type": "ActorRdfParseHtmlScript",
-      "carphs:mediatorRdfParseMediatypes": {
+      "args_mediatorRdfParseMediatypes": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
         "args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
         "args_field": "mediaTypes"
       },
-      "carphs:mediatorRdfParseHandle": {
+      "args_mediatorRdfParseHandle": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
         "args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }

@@ -13,6 +13,15 @@ import { termToString } from 'rdf-string-ttl';
  * A comunica SPARQL TSV SPARQL Serialize Actor.
  */
 export class ActorSparqlSerializeSparqlTsv extends ActorSparqlSerializeFixedMediaTypes {
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "text/tab-separated-values": 0.75
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "text/tab-separated-values": "http://www.w3.org/ns/formats/SPARQL_Results_TSV"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

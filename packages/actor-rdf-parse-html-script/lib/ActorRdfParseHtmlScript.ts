@@ -54,9 +54,15 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
 
 export interface IActorRdfParseHtmlScriptArgs
   extends IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
+  /**
+   * The RDF Parse mediator for collecting media types
+   */
   mediatorRdfParseMediatypes: Mediator<
   Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
   IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  /**
+   * The RDF Parse mediator for handling parsing
+   */
   mediatorRdfParseHandle: Mediator<
   Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
   IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;

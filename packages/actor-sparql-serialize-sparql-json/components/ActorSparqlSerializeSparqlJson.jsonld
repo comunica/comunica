@@ -1,0 +1,130 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-sparql-json/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-serialize-sparql-json",
+  "components": [
+    {
+      "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson",
+      "@type": "Class",
+      "requireElement": "ActorSparqlSerializeSparqlJson",
+      "extends": [
+        "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes"
+      ],
+      "comment": "A comunica sparql-results+xml Serialize Actor.",
+      "parameters": [
+        {
+          "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_mediaTypePriorities",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/sparql-results+json": 0.8
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1].",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_mediaTypeFormats",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/sparql-results+json": "http://www.w3.org/ns/formats/SPARQL_Results_JSON"
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its format IRI as value.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_priorityScale",
+          "range": "xsd:double",
+          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value.",
+          "unique": true
+        },
+        {
+          "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediaTypePriorities",
+              "value": {
+                "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_mediaTypePriorities"
+              }
+            },
+            {
+              "keyRaw": "mediaTypeFormats",
+              "value": {
+                "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_mediaTypeFormats"
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": {
+                "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_priorityScale"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "casssj:lib/ActorSparqlSerializeSparqlJson#ActorSparqlSerializeSparqlJson_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

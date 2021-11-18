@@ -1,4 +1,3 @@
-import type { ActorInitSparql } from '@comunica/actor-init-sparql';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { IQueryEngine } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -59,5 +58,5 @@ export abstract class ActorRdfMetadataExtractQuery extends ActorRdfMetadataExtra
 
 export interface IActorRdfMetadataExtractQueryArgs
   extends IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
-  queryEngine: ActorInitSparql;
+  queryEngine: IQueryEngine;
 }

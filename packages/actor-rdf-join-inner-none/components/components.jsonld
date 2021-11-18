@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-none/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-none/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-join-inner-none",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-none",
   "import": [
-    "files-carjn:components/Actor/RdfJoin/None.jsonld"
+    "files-carjino:components/ActorRdfJoinNone.jsonld"
   ]
 }

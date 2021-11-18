@@ -3,10 +3,27 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjn": "npmd:@comunica/actor-rdf-join-inner-nestedloop/",
-      "files-carjn": "carjn:^1.0.0/",
-
-      "ActorRdfJoinNestedLoop": "carjn:Actor/RdfJoin/NestedLoop"
+      "carjin": "npmd:@comunica/actor-rdf-join-inner-nestedloop/",
+      "files-carjin": "carjin:^1.0.0/",
+      "ActorRdfJoinNestedLoop": {
+        "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorJoinSelectivity": {
+            "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_mediatorJoinSelectivity"
+          },
+          "args_name": {
+            "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_name"
+          },
+          "args_bus": {
+            "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

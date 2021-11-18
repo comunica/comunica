@@ -42,8 +42,19 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
 
 export interface IActorRdfResolveHypermediaSparqlArgs
   extends IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
+  /**
+   * The HTTP mediator
+   */
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
+  /**
+   * If URLs ending with '/sparql' should also be considered SPARQL endpoints.
+   * @default {true}
+   */
   checkUrlSuffix: boolean;
+  /**
+   * If queries should be sent via HTTP GET instead of POST
+   * @default {false}
+   */
   forceHttpGet: boolean;
 }

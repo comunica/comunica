@@ -1,12 +1,29 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjs": "npmd:@comunica/actor-rdf-join-inner-single/",
-      "files-carjs": "carjs:^1.0.0/",
-
-      "ActorRdfJoinSingle": "carjs:Actor/RdfJoin/Single"
+      "carjisi": "npmd:@comunica/actor-rdf-join-inner-single/",
+      "files-carjisi": "carjisi:^1.0.0/",
+      "ActorRdfJoinSingle": {
+        "@id": "carjisi:lib/ActorRdfJoinSingle#ActorRdfJoinSingle",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorJoinSelectivity": {
+            "@id": "carjisi:lib/ActorRdfJoinSingle#ActorRdfJoinSingle_args_mediatorJoinSelectivity"
+          },
+          "args_name": {
+            "@id": "carjisi:lib/ActorRdfJoinSingle#ActorRdfJoinSingle_args_name"
+          },
+          "args_bus": {
+            "@id": "carjisi:lib/ActorRdfJoinSingle#ActorRdfJoinSingle_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carjisi:lib/ActorRdfJoinSingle#ActorRdfJoinSingle_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

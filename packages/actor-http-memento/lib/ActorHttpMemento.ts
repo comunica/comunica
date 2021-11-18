@@ -61,6 +61,9 @@ export class ActorHttpMemento extends ActorHttp {
 
 export interface IActorHttpMementoArgs
   extends IActorArgs<IActionHttp, IActorTest, IActorHttpOutput> {
+  /**
+   * The HTTP mediator
+   */
   mediatorHttp: Mediator<ActorHttp,
   IActionHttp, IActorTest, IActorHttpOutput>;
 }

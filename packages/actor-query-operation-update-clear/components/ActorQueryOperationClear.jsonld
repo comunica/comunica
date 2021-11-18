@@ -1,0 +1,111 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-clear/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-update-clear",
+  "components": [
+    {
+      "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear",
+      "@type": "Class",
+      "requireElement": "ActorQueryOperationClear",
+      "extends": [
+        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+      ],
+      "comment": "A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles SPARQL clear operations.",
+      "parameters": [
+        {
+          "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_mediatorUpdateQuads",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The RDF Update Quads mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_mediatorQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorUpdateQuads",
+              "value": {
+                "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_mediatorUpdateQuads"
+              }
+            },
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": {
+                "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_mediatorQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caqoucl:lib/ActorQueryOperationClear#IActorQueryOperationClearArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorQueryOperationClearArgs",
+      "extends": [
+        "cbqo:lib/ActorQueryOperationTypedMediated#IActorQueryOperationTypedMediatedArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

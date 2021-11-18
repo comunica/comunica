@@ -5,9 +5,53 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cassst": "npmd:@comunica/actor-sparql-serialize-stats/",
       "files-cassst": "cassst:^1.0.0/",
-
-      "ActionObserverHttpStats": "cassst:ActionObserver/Http/Stats",
-      "ActorSparqlSerializeStats": "cassst:Actor/SparqlSerialize/Stats"
+      "ActionObserverHttp": {
+        "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_name"
+          },
+          "args_bus": {
+            "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_bus"
+          }
+        }
+      },
+      "ActorSparqlSerializeStats": {
+        "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats",
+        "@prefix": true,
+        "@context": {
+          "args_httpObserver": {
+            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_httpObserver"
+          },
+          "args_mediaTypePriorities": {
+            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_name"
+          },
+          "args_bus": {
+            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorSparqlSerializeStatsArgs": {
+        "@id": "cassst:lib/ActorSparqlSerializeStats#IActorSparqlSerializeStatsArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

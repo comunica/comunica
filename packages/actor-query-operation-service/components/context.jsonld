@@ -3,10 +3,35 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoserv": "npmd:@comunica/actor-query-operation-service/",
-      "files-caqoserv": "caqoserv:^1.0.0/",
-
-      "ActorQueryOperationService": "caqoserv:Actor/QueryOperation/Service"
+      "caqose": "npmd:@comunica/actor-query-operation-service/",
+      "files-caqose": "caqose:^1.0.0/",
+      "ActorQueryOperationService": {
+        "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService",
+        "@prefix": true,
+        "@context": {
+          "args_forceSparqlEndpoint": {
+            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_forceSparqlEndpoint"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_name"
+          },
+          "args_bus": {
+            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationServiceArgs": {
+        "@id": "caqose:lib/ActorQueryOperationService#IActorQueryOperationServiceArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

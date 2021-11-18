@@ -5,8 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqood": "npmd:@comunica/actor-query-operation-orderby-direct/",
       "files-caqood": "caqood:^1.0.0/",
-
-      "ActorQueryOperationOrderByDirect": "caqood:Actor/QueryOperation/OrderByDirect"
+      "ActorQueryOperationOrderByDirect": {
+        "@id": "caqood:lib/ActorQueryOperationOrderByDirect#ActorQueryOperationOrderByDirect",
+        "@prefix": true,
+        "@context": {
+          "args_window": {
+            "@id": "caqood:lib/ActorQueryOperationOrderByDirect#ActorQueryOperationOrderByDirect_args_window"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "caqood:lib/ActorQueryOperationOrderByDirect#ActorQueryOperationOrderByDirect_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqood:lib/ActorQueryOperationOrderByDirect#ActorQueryOperationOrderByDirect_args_name"
+          },
+          "args_bus": {
+            "@id": "caqood:lib/ActorQueryOperationOrderByDirect#ActorQueryOperationOrderByDirect_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqood:lib/ActorQueryOperationOrderByDirect#ActorQueryOperationOrderByDirect_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationOrderByDirectArgs": {
+        "@id": "caqood:lib/ActorQueryOperationOrderByDirect#IActorQueryOperationOrderByDirectArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

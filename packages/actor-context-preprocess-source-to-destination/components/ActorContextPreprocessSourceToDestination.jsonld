@@ -1,0 +1,76 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-context-preprocess-source-to-destination",
+  "components": [
+    {
+      "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination",
+      "@type": "Class",
+      "requireElement": "ActorContextPreprocessSourceToDestination",
+      "extends": [
+        "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess"
+      ],
+      "comment": "A comunica Source To Destination Context Preprocess Actor.",
+      "parameters": [
+        {
+          "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cacpstd:lib/ActorContextPreprocessSourceToDestination#ActorContextPreprocessSourceToDestination_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -5,8 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carsn": "npmd:@comunica/actor-rdf-serialize-n3/",
       "files-carsn": "carsn:^1.0.0/",
-
-      "ActorRdfSerializeN3": "carsn:Actor/RdfSerialize/N3"
+      "ActorRdfSerializeN3": {
+        "@id": "carsn:lib/ActorRdfSerializeN3#ActorRdfSerializeN3",
+        "@prefix": true,
+        "@context": {
+          "args_mediaTypePriorities": {
+            "@id": "carsn:lib/ActorRdfSerializeN3#ActorRdfSerializeN3_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "carsn:lib/ActorRdfSerializeN3#ActorRdfSerializeN3_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "carsn:lib/ActorRdfSerializeN3#ActorRdfSerializeN3_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "carsn:lib/ActorRdfSerializeN3#ActorRdfSerializeN3_args_name"
+          },
+          "args_bus": {
+            "@id": "carsn:lib/ActorRdfSerializeN3#ActorRdfSerializeN3_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carsn:lib/ActorRdfSerializeN3#ActorRdfSerializeN3_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

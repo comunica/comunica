@@ -10,6 +10,11 @@ import type * as RDF from '@rdfjs/types';
  * A comunica Simple Sparql Serialize Actor.
  */
 export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTypes {
+  /**
+   * @param args -
+   *   \ @defaultNested {{ "simple": 0.9 }} mediaTypePriorities
+   *   \ @defaultNested {{ "simple": "https://comunica.linkeddatafragments.org/#results_simple" }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

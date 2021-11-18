@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-connected/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-connected/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-optimize-query-operation-join-connected",
   "@type": "Module",
   "requireName": "@comunica/actor-optimize-query-operation-join-connected",
   "import": [
-    "files-caoqojc:components/Actor/OptimizeQueryOperation/JoinConnected.jsonld"
+    "files-caoqojc:components/ActorOptimizeQueryOperationJoinConnected.jsonld"
   ]
 }

@@ -1,0 +1,101 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-pagesize/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-pagesize",
+  "components": [
+    {
+      "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize",
+      "@type": "Class",
+      "requireElement": "ActorRdfMetadataExtractHydraPagesize",
+      "extends": [
+        "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract"
+      ],
+      "comment": "A comunica Hydra Pagesize RDF Metadata Extract Actor.",
+      "parameters": [
+        {
+          "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_predicates",
+          "range": "xsd:string",
+          "default": [
+            "http://www.w3.org/ns/hydra/core#itemsPerPage"
+          ],
+          "comment": "A predicate that provides the page size",
+          "required": true
+        },
+        {
+          "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "predicates",
+              "value": {
+                "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_predicates"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#IActorRdfMetadataExtractHydraPagesizeArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfMetadataExtractHydraPagesizeArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

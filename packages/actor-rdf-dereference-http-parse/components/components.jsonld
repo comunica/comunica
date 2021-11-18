@@ -1,9 +1,12 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-dereference-http-parse",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-dereference-http-parse",
   "import": [
-    "files-crdhp:components/Actor/RdfDereference/HttpParse.jsonld"
+    "files-cardhp:components/ActorRdfDereferenceHttpParseBase.jsonld",
+    "files-cardhp:components/ActorRdfDereferenceHttpParse.jsonld"
   ]
 }

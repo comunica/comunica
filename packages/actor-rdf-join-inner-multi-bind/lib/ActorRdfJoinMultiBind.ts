@@ -253,8 +253,21 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
+  /**
+   * The order in which elements should be bound
+   * @range {string} // TODO: rm when generator is updated with union types
+   * @default {depth-first}
+   */
   bindOrder: BindOrder;
+  /**
+   * Multiplier for selectivity values
+   * @range {double}
+   * @default {0.1}
+   */
   selectivityModifier: number;
+  /**
+   * The query operation mediator
+   */
   mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
 }

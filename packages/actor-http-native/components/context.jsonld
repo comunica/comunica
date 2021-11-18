@@ -5,8 +5,31 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cahn": "npmd:@comunica/actor-http-native/",
       "files-cahn": "cahn:^1.0.0/",
-
-      "ActorHttpNative": "cahn:Actor/Http/Native"
+      "ActorHttpNative": {
+        "@id": "cahn:lib/ActorHttpNative#ActorHttpNative",
+        "@prefix": true,
+        "@context": {
+          "args_agentOptions": {
+            "@id": "cahn:lib/ActorHttpNative#ActorHttpNative_args_agentOptions",
+            "@type": "@json"
+          },
+          "args_name": {
+            "@id": "cahn:lib/ActorHttpNative#ActorHttpNative_args_name"
+          },
+          "args_bus": {
+            "@id": "cahn:lib/ActorHttpNative#ActorHttpNative_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cahn:lib/ActorHttpNative#ActorHttpNative_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorHttpNativeArgs": {
+        "@id": "cahn:lib/ActorHttpNative#IActorHttpNativeArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

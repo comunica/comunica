@@ -1,0 +1,87 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-links-query/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-links-query",
+  "components": [
+    {
+      "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery",
+      "@type": "Class",
+      "requireElement": "ActorRdfMetadataExtractHydraLinksQuery",
+      "extends": [
+        "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery"
+      ],
+      "comment": "A comunica Query-based Hydra Links RDF Metadata Extract Actor.",
+      "parameters": [
+        {
+          "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_queryEngine",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "queryEngine",
+              "value": {
+                "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_queryEngine"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-put-ldp/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-update-hypermedia-put-ldp",
+  "components": [
+    {
+      "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp",
+      "@type": "Class",
+      "requireElement": "ActorRdfUpdateHypermediaPutLdp",
+      "extends": [
+        "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia"
+      ],
+      "comment": "A comunica Post LDP RDF Update Hypermedia Actor.",
+      "parameters": [
+        {
+          "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The HTTP mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_mediatorRdfSerializeMediatypes",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The RDF Serialize mediator for collecting media types",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_mediatorRdfSerialize",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The RDF Serialize mediator for handling serialization",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": {
+                "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_mediatorHttp"
+              }
+            },
+            {
+              "keyRaw": "mediatorRdfSerializeMediatypes",
+              "value": {
+                "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_mediatorRdfSerializeMediatypes"
+              }
+            },
+            {
+              "keyRaw": "mediatorRdfSerialize",
+              "value": {
+                "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_mediatorRdfSerialize"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#ActorRdfUpdateHypermediaPutLdp_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caruhpl:lib/ActorRdfUpdateHypermediaPutLdp#IActorRdfUpdateHypermediaPostLdpArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfUpdateHypermediaPostLdpArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

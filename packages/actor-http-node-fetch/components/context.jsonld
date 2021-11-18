@@ -3,10 +3,33 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "chf": "npmd:@comunica/actor-http-node-fetch/",
-      "files-chf": "chf:^1.0.0/",
-
-      "ActorHttpNodeFetch": "chf:Actor/Http/NodeFetch"
+      "cahnf": "npmd:@comunica/actor-http-node-fetch/",
+      "files-cahnf": "cahnf:^1.0.0/",
+      "ActorHttpNodeFetch": {
+        "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch",
+        "@prefix": true,
+        "@context": {
+          "args_agentOptions": {
+            "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_agentOptions",
+            "@type": "@json"
+          },
+          "args_name": {
+            "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_name"
+          },
+          "args_bus": {
+            "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorHttpNodeFetchArgs": {
+        "@id": "cahnf:lib/ActorHttpNodeFetch#IActorHttpNodeFetchArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

@@ -11,6 +11,15 @@ import * as RdfString from 'rdf-string';
  * A comunica JSON SPARQL Serialize Actor.
  */
 export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaTypes {
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "application/json": 1.0
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "application/json": "https://comunica.linkeddatafragments.org/#results_JSON"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

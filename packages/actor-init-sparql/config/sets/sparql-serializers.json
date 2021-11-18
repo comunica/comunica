@@ -28,18 +28,18 @@
     {
       "@id": "config-sets:sparql-serializers.json#myRdfSparqlSerializer",
       "@type": "ActorSparqlSerializeRdf",
-      "mediatorRdfSerialize": {
+      "args_mediatorRdfSerialize": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize",
         "@type": "MediatorRace",
         "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" }
       },
-      "mediatorRdfSerializeMediaTypeCombiner": {
+      "args_mediatorMediaTypeCombiner": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
         "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
         "args_field": "mediaTypes"
       },
-      "mediatorRdfSerializeMediaTypeFormatCombiner": {
+      "args_mediatorMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
         "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
         "args_field": "mediaTypeFormats"

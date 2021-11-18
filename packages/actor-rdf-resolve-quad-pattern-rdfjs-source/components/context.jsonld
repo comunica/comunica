@@ -5,8 +5,36 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carrqprs": "npmd:@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source/",
       "files-carrqprs": "carrqprs:^1.0.0/",
-
-      "ActorRdfResolveQuadPatternRdfJsSource": "carrqprs:Actor/RdfResolveQuadPattern/RdfJsSource"
+      "ActorRdfResolveQuadPatternRdfJsSource": {
+        "@id": "carrqprs:lib/ActorRdfResolveQuadPatternRdfJsSource#ActorRdfResolveQuadPatternRdfJsSource",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "carrqprs:lib/ActorRdfResolveQuadPatternRdfJsSource#ActorRdfResolveQuadPatternRdfJsSource_args_name"
+          },
+          "args_bus": {
+            "@id": "carrqprs:lib/ActorRdfResolveQuadPatternRdfJsSource#ActorRdfResolveQuadPatternRdfJsSource_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carrqprs:lib/ActorRdfResolveQuadPatternRdfJsSource#ActorRdfResolveQuadPatternRdfJsSource_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IRdfJsSourceExtended": {
+        "@id": "carrqprs:lib/IRdfJsSourceExtended#IRdfJsSourceExtended",
+        "@prefix": true,
+        "@context": {}
+      },
+      "RdfJsQuadSource": {
+        "@id": "carrqprs:lib/RdfJsQuadSource#RdfJsQuadSource",
+        "@prefix": true,
+        "@context": {
+          "source": {
+            "@id": "carrqprs:lib/RdfJsQuadSource#RdfJsQuadSource_source"
+          }
+        }
+      }
     }
   ]
 }

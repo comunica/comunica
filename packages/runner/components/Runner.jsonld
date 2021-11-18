@@ -21,9 +21,11 @@
         {
           "@id": "cr:lib/Runner#Runner_busInit",
           "range": "cc:lib/Bus#Bus",
-          "default": {
-            "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/lib/ActorInit#ActorInit_default_bus"
-          },
+          "default": [
+            {
+              "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/lib/ActorInit#ActorInit_default_bus"
+            }
+          ],
           "comment": "The 'init' event bus.",
           "unique": true,
           "required": true

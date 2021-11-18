@@ -1,0 +1,130 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-rdfxml",
+  "components": [
+    {
+      "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml",
+      "@type": "Class",
+      "requireElement": "ActorRdfParseRdfXml",
+      "extends": [
+        "cbrp:lib/ActorRdfParseFixedMediaTypes#ActorRdfParseFixedMediaTypes"
+      ],
+      "comment": "A comunica RDF/XML RDF Parse Actor.",
+      "parameters": [
+        {
+          "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_mediaTypePriorities",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/rdf+xml": 1
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1].",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_mediaTypeFormats",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "application/rdf+xml": "http://www.w3.org/ns/formats/RDF_XML"
+              }
+            }
+          ],
+          "comment": "A record of media types, with media type name as key, and its format IRI as value.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_priorityScale",
+          "range": "xsd:double",
+          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value.",
+          "unique": true
+        },
+        {
+          "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediaTypePriorities",
+              "value": {
+                "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_mediaTypePriorities"
+              }
+            },
+            {
+              "keyRaw": "mediaTypeFormats",
+              "value": {
+                "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_mediaTypeFormats"
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": {
+                "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_priorityScale"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

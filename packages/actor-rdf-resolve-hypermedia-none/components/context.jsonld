@@ -1,12 +1,26 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carrhn": "npmd:@comunica/actor-rdf-resolve-hypermedia-none/",
       "files-carrhn": "carrhn:^1.0.0/",
-
-      "ActorRdfResolveHypermediaNone": "carrhn:Actor/RdfResolveHypermedia/None"
+      "ActorRdfResolveHypermediaNone": {
+        "@id": "carrhn:lib/ActorRdfResolveHypermediaNone#ActorRdfResolveHypermediaNone",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "carrhn:lib/ActorRdfResolveHypermediaNone#ActorRdfResolveHypermediaNone_args_name"
+          },
+          "args_bus": {
+            "@id": "carrhn:lib/ActorRdfResolveHypermediaNone#ActorRdfResolveHypermediaNone_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carrhn:lib/ActorRdfResolveHypermediaNone#ActorRdfResolveHypermediaNone_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

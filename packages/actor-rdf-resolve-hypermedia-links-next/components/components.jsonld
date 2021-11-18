@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-next/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-next/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-next",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-hypermedia-links-next",
   "import": [
-    "files-carrhln:components/Actor/RdfResolveHypermediaLinks/Next.jsonld"
+    "files-carrhln:components/ActorRdfResolveHypermediaLinksNext.jsonld"
   ]
 }

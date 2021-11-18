@@ -11,6 +11,15 @@ import type * as RDF from '@rdfjs/types';
  * A comunica sparql-results+xml Serialize Actor.
  */
 export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMediaTypes {
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "application/sparql-results+json": 0.8
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "application/sparql-results+json": "http://www.w3.org/ns/formats/SPARQL_Results_JSON"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }

@@ -29,5 +29,9 @@ export class ActorQueryOperationReducedHash extends AbstractBindingsHash<Algebra
 }
 
 export interface IActorInitRdfBindingHashArgs extends IActorInitRdfDereferencePagedArgs {
+  /**
+   * @range {integer}
+   * @default {100}
+   */
   cacheSize: number;
 }

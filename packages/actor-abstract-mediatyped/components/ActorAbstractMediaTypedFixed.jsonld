@@ -36,9 +36,11 @@
         {
           "@id": "caam:lib/ActorAbstractMediaTypedFixed#ActorAbstractMediaTypedFixed_args_name",
           "range": "xsd:string",
-          "default": {
-            "@id": "rdf:subject"
-          },
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
           "comment": "The name for this actor.",
           "unique": true,
           "required": true

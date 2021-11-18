@@ -68,5 +68,8 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 }
 
 export interface IActorQueryOperationPathSeq extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for joining Bindings streams
+   */
   mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutput>;
 }

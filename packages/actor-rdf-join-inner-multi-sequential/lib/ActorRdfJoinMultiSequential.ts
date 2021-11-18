@@ -66,6 +66,9 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiSequentialArgs extends IActorRdfJoinArgs {
+  /**
+   * A mediator for joining Bindings streams
+   */
   mediatorJoin: Mediator<ActorRdfJoin,
   IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings>;
 }

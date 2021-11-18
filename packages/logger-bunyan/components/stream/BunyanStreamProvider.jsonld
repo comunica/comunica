@@ -14,7 +14,9 @@
         {
           "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args_name",
           "range": "xsd:string",
-          "default": "comunica",
+          "default": [
+            "comunica"
+          ],
           "comment": "The name of this logger",
           "unique": true
         },

@@ -1,0 +1,99 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-patch-sparql-update/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-update-hypermedia-patch-sparql-update",
+  "components": [
+    {
+      "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate",
+      "@type": "Class",
+      "requireElement": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
+      "extends": [
+        "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia"
+      ],
+      "comment": "A comunica Patch SPARQL Update RDF Update Hypermedia Actor.",
+      "parameters": [
+        {
+          "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The HTTP mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": {
+                "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_mediatorHttp"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#IActorRdfUpdateHypermediaPatchSparqlUpdateArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfUpdateHypermediaPatchSparqlUpdateArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

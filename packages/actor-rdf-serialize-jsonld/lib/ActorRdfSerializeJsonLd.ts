@@ -16,6 +16,15 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
    */
   public readonly jsonStringifyIndentSpaces: number;
 
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "application/ld+json": 1.0
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "application/ld+json": "http://www.w3.org/ns/formats/JSON-LD"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorRdfSerializeJsonLdArgs) {
     super(args);
   }
@@ -30,5 +39,10 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
 }
 
 export interface IActorRdfSerializeJsonLdArgs extends IActorRdfSerializeFixedMediaTypesArgs {
+  /**
+   * The number of spaces that should be used to indent stringified JSON.
+   * @range {integer}
+   * @default {2}
+   */
   jsonStringifyIndentSpaces: number;
 }

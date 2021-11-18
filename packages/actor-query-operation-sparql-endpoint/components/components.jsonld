@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-query-operation-sparql-endpoint",
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-sparql-endpoint",
   "import": [
-    "files-caqose:components/Actor/QueryOperation/SparqlEndpoint.jsonld"
+    "files-caqose:components/ActorQueryOperationSparqlEndpoint.jsonld"
   ]
 }

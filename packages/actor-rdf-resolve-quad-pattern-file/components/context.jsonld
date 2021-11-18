@@ -3,10 +3,42 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carrqpfi": "npmd:@comunica/actor-rdf-resolve-quad-pattern-file/",
-      "files-carrqpfi": "carrqpfi:^1.0.0/",
-
-      "ActorRdfResolveQuadPatternFile": "carrqpfi:Actor/RdfResolveQuadPattern/File"
+      "carrqpf": "npmd:@comunica/actor-rdf-resolve-quad-pattern-file/",
+      "files-carrqpf": "carrqpf:^1.0.0/",
+      "ActorRdfResolveQuadPatternFile": {
+        "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorRdfDereference": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile_args_mediatorRdfDereference"
+          },
+          "args_files": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile_args_files",
+            "@container": "@list"
+          },
+          "args_cacheSize": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile_args_cacheSize"
+          },
+          "args_httpInvalidator": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile_args_httpInvalidator"
+          },
+          "args_name": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile_args_name"
+          },
+          "args_bus": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#ActorRdfResolveQuadPatternFile_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfResolveQuadPatternFileArgs": {
+        "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFile#IActorRdfResolveQuadPatternFileArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

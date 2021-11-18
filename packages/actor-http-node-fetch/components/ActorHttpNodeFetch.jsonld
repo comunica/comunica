@@ -1,0 +1,107 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-node-fetch/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-node-fetch",
+  "components": [
+    {
+      "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch",
+      "@type": "Class",
+      "requireElement": "ActorHttpNodeFetch",
+      "extends": [
+        "cbh:lib/ActorHttp#ActorHttp"
+      ],
+      "comment": "A node-fetch actor that listens on the 'init' bus.  It will call `fetch` with either action.input or action.url.",
+      "parameters": [
+        {
+          "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_agentOptions",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "keepAlive": true,
+                "maxSockets": 5
+              }
+            }
+          ],
+          "comment": "The agent options for the HTTP agent",
+          "unique": true
+        },
+        {
+          "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "agentOptions",
+              "value": {
+                "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_agentOptions"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cahnf:lib/ActorHttpNodeFetch#ActorHttpNodeFetch_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cahnf:lib/ActorHttpNodeFetch#IActorHttpNodeFetchArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorHttpNodeFetchArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

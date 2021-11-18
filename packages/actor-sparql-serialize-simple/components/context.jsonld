@@ -5,8 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "casss": "npmd:@comunica/actor-sparql-serialize-simple/",
       "files-casss": "casss:^1.0.0/",
-
-      "ActorSparqlSerializeSimple": "casss:Actor/SparqlSerialize/Simple"
+      "ActorSparqlSerializeSimple": {
+        "@id": "casss:lib/ActorSparqlSerializeSimple#ActorSparqlSerializeSimple",
+        "@prefix": true,
+        "@context": {
+          "args_mediaTypePriorities": {
+            "@id": "casss:lib/ActorSparqlSerializeSimple#ActorSparqlSerializeSimple_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "casss:lib/ActorSparqlSerializeSimple#ActorSparqlSerializeSimple_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "casss:lib/ActorSparqlSerializeSimple#ActorSparqlSerializeSimple_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "casss:lib/ActorSparqlSerializeSimple#ActorSparqlSerializeSimple_args_name"
+          },
+          "args_bus": {
+            "@id": "casss:lib/ActorSparqlSerializeSimple#ActorSparqlSerializeSimple_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "casss:lib/ActorSparqlSerializeSimple#ActorSparqlSerializeSimple_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

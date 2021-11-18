@@ -14,7 +14,7 @@
     {
       "@id": "config-sets:resolve-federated.json#myFederatedQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternFederated",
-      "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
+      "args_mediatorResolveQuadPattern": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern"
       }
     }

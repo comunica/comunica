@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-bind/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-bind/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-rdf-join-optional-bind",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-optional-bind",
   "import": [
-    "files-carjob:components/Actor/RdfJoin/OptionalBind.jsonld"
+    "files-carjob:components/ActorRdfJoinOptionalBind.jsonld"
   ]
 }

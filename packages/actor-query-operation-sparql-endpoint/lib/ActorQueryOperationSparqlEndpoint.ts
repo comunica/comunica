@@ -182,9 +182,24 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
 export interface IActorQueryOperationSparqlEndpointArgs
   extends IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
+  /**
+   * The HTTP mediator
+   */
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
+  /**
+   * If URLs ending with '/sparql' should also be considered SPARQL endpoints.
+   * @default {true}
+   */
   checkUrlSuffixSparql: boolean;
+  /**
+   * If URLs ending with '/update' should also be considered SPARQL endpoints.
+   * @default {true}
+   */
   checkUrlSuffixUpdate: boolean;
+  /**
+   * If queries should be sent via HTTP GET instead of POST.
+   * @default {false}
+   */
   forceHttpGet: boolean;
 }

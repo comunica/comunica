@@ -45,9 +45,11 @@
         {
           "@id": "cmjcf:lib/MediatorJoinCoefficientsFixed#MediatorJoinCoefficientsFixed_args_name",
           "range": "xsd:string",
-          "default": {
-            "@id": "rdf:subject"
-          },
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
           "comment": "The name for this mediator.",
           "unique": true,
           "required": true

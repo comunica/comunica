@@ -43,7 +43,15 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
 
 export interface IActorRdfResolveQuadPatternFederatedArgs
   extends IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput> {
+  /**
+   * The quad pattern resolve mediator.
+   */
   mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
+  /**
+   * If quad patterns that are sub-patterns of empty quad patterns should be skipped.
+   * This assumes that sources remain static during query evaluation.
+   * @default {false}
+   */
   skipEmptyPatterns?: boolean;
 }

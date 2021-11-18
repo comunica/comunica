@@ -30,19 +30,19 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsHypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfDereference": {
+      "args_mediatorRdfDereference": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference"
       },
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadata": {
+      "args_mediatorMetadata": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata"
       },
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadataExtract": {
+      "args_mediatorMetadataExtract": {
         "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract"
       },
-      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfUpdateHypermedia": {
+      "args_mediatorRdfUpdateHypermedia": {
         "@id": "config-sets:rdf-update-rdfjs.json#mediatorRdfUpdateHypermedia",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus" }
+        "args_bus": { "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus" }
       }
     }
   ]
@@ -51,7 +51,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
-* `caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
-* `caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
-* `caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfUpdateHypermedia`: A mediator over the [RDF Update Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-hypermedia).
+* `args_mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
+* `args_mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
+* `args_mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
+* `args_mediatorRdfUpdateHypermedia`: A mediator over the [RDF Update Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-hypermedia).

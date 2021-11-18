@@ -5,9 +5,30 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqoq": "npmd:@comunica/actor-query-operation-quadpattern/",
       "files-caqoq": "caqoq:^1.0.0/",
-
-      "ActorQueryOperationQuadpattern": "caqoq:Actor/QueryOperation/Quadpattern",
-      "mediatorResolveQuadPattern": "caqoq:mediatorResolveQuadPattern"
+      "ActorQueryOperationQuadpattern": {
+        "@id": "caqoq:lib/ActorQueryOperationQuadpattern#ActorQueryOperationQuadpattern",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorResolveQuadPattern": {
+            "@id": "caqoq:lib/ActorQueryOperationQuadpattern#ActorQueryOperationQuadpattern_args_mediatorResolveQuadPattern"
+          },
+          "args_name": {
+            "@id": "caqoq:lib/ActorQueryOperationQuadpattern#ActorQueryOperationQuadpattern_args_name"
+          },
+          "args_bus": {
+            "@id": "caqoq:lib/ActorQueryOperationQuadpattern#ActorQueryOperationQuadpattern_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqoq:lib/ActorQueryOperationQuadpattern#ActorQueryOperationQuadpattern_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationQuadpatternArgs": {
+        "@id": "caqoq:lib/ActorQueryOperationQuadpattern#IActorQueryOperationQuadpatternArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

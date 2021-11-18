@@ -41,8 +41,19 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
 
 export interface IActorRdfUpdateHypermediaSparqlArgs
   extends IActorArgs<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
+  /**
+   * The HTTP mediator
+   */
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
+  /**
+   * If URLs ending with '/sparql' should also be considered SPARQL endpoints.
+   * @default {true}
+   */
   checkUrlSuffixSparql: boolean;
+  /**
+   * If URLs ending with '/update' should also be considered SPARQL endpoints.
+   * @default {true}
+   */
   checkUrlSuffixUpdate: boolean;
 }

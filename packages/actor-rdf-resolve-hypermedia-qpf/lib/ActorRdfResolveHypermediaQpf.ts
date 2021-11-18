@@ -71,14 +71,39 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
 
 export interface IActorRdfResolveHypermediaQpfArgs extends
   IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
+  /**
+   * The metadata mediator
+   */
   mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
   IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+  /**
+   * The metadata extract mediator
+   */
   mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
   IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  /**
+   * The RDF dereference mediator
+   */
   mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
   IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  /**
+   * The URI that should be interpreted as subject URI
+   * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#subject}
+   */
   subjectUri: string;
+  /**
+   * The URI that should be interpreted as predicate URI
+   * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate}
+   */
   predicateUri: string;
+  /**
+   * The URI that should be interpreted as object URI
+   * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#object}
+   */
   objectUri: string;
+  /**
+   * The URI that should be interpreted as graph URI
+   * @default {http://www.w3.org/ns/sparql-service-description#graph}
+   */
   graphUri?: string;
 }

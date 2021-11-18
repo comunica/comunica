@@ -5,8 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carpr": "npmd:@comunica/actor-rdf-parse-rdfxml/",
       "files-carpr": "carpr:^1.0.0/",
-
-      "ActorRdfParseRdfXml": "carpr:Actor/RdfParse/RdfXml"
+      "ActorRdfParseRdfXml": {
+        "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml",
+        "@prefix": true,
+        "@context": {
+          "args_mediaTypePriorities": {
+            "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_mediaTypePriorities",
+            "@type": "@json"
+          },
+          "args_mediaTypeFormats": {
+            "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_mediaTypeFormats",
+            "@type": "@json"
+          },
+          "args_priorityScale": {
+            "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_priorityScale"
+          },
+          "args_name": {
+            "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_name"
+          },
+          "args_bus": {
+            "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carpr:lib/ActorRdfParseRdfXml#ActorRdfParseRdfXml_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      }
     }
   ]
 }

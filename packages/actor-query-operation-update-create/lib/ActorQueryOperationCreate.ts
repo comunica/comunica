@@ -41,6 +41,9 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
 }
 
 export interface IActorQueryOperationCreateArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * The RDF Update Quads mediator
+   */
   mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
   IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
 }

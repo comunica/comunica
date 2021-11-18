@@ -5,8 +5,30 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cacprsi": "npmd:@comunica/actor-context-preprocess-rdf-source-identifier/",
       "files-cacprsi": "cacprsi:^1.0.0/",
-
-      "ActorContextPreprocessRdfSourceIdentifier": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier"
+      "ActorContextPreprocessRdfSourceIdentifier": {
+        "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorRdfSourceIdentifier": {
+            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_mediatorRdfSourceIdentifier"
+          },
+          "args_name": {
+            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_name"
+          },
+          "args_bus": {
+            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorContextPreprocessRdfSourceIdentifierArgs": {
+        "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#IActorContextPreprocessRdfSourceIdentifierArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

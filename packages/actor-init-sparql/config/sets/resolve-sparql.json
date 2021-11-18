@@ -15,7 +15,7 @@
     {
       "@id": "config-sets:resolve-sparql.json#mySparqlQuadPatternResolver",
       "@type": "ActorRdfResolveHypermediaSparql",
-      "carrhs:Actor/RdfResolveHypermedia/Sparql/mediatorHttp": {
+      "args_mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       }
     },
@@ -26,7 +26,7 @@
     {
       "@id": "config-sets:resolve-sparql.json#mySparqlEndpointResolver",
       "@type": "ActorQueryOperationSparqlEndpoint",
-      "caqose:Actor/QueryOperation/SparqlEndpoint/mediatorHttp": {
+      "args_mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       }
     }

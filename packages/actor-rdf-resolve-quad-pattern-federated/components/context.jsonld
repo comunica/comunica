@@ -5,8 +5,51 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carrqpf": "npmd:@comunica/actor-rdf-resolve-quad-pattern-federated/",
       "files-carrqpf": "carrqpf:^1.0.0/",
-
-      "ActorRdfResolveQuadPatternFederated": "carrqpf:Actor/RdfResolveQuadPattern/Federated"
+      "ActorRdfResolveQuadPatternFederated": {
+        "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFederated#ActorRdfResolveQuadPatternFederated",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorResolveQuadPattern": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFederated#ActorRdfResolveQuadPatternFederated_args_mediatorResolveQuadPattern"
+          },
+          "args_skipEmptyPatterns": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFederated#ActorRdfResolveQuadPatternFederated_args_skipEmptyPatterns"
+          },
+          "args_name": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFederated#ActorRdfResolveQuadPatternFederated_args_name"
+          },
+          "args_bus": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFederated#ActorRdfResolveQuadPatternFederated_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFederated#ActorRdfResolveQuadPatternFederated_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfResolveQuadPatternFederatedArgs": {
+        "@id": "carrqpf:lib/ActorRdfResolveQuadPatternFederated#IActorRdfResolveQuadPatternFederatedArgs",
+        "@prefix": true,
+        "@context": {}
+      },
+      "FederatedQuadSource": {
+        "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource",
+        "@prefix": true,
+        "@context": {
+          "context": {
+            "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_context"
+          },
+          "emptyPatterns": {
+            "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_emptyPatterns"
+          },
+          "skipEmptyPatterns": {
+            "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_skipEmptyPatterns"
+          },
+          "mediatorResolveQuadPattern": {
+            "@id": "carrqpf:lib/FederatedQuadSource#FederatedQuadSource_mediatorResolveQuadPattern"
+          }
+        }
+      }
     }
   ]
 }

@@ -5,8 +5,32 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carmehc": "npmd:@comunica/actor-rdf-metadata-extract-hydra-controls/",
       "files-carmehc": "carmehc:^1.0.0/",
-
-      "ActorRdfMetadataExtractHydraControls": "carmehc:Actor/RdfMetadataExtract/HydraControls"
+      "ActorRdfMetadataExtractHydraControls": {
+        "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls",
+        "@prefix": true,
+        "@context": {
+          "args_name": {
+            "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls_args_name"
+          },
+          "args_bus": {
+            "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "ISearchForm": {
+        "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ISearchForm",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ISearchForms": {
+        "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ISearchForms",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

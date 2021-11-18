@@ -201,6 +201,9 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
 export interface IActorQueryOperationQuadpatternArgs extends
   IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
+  /**
+   * The quad pattern resolve mediator
+   */
   mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 }

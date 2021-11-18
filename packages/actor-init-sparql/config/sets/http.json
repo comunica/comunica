@@ -17,10 +17,8 @@
         {
           "@id": "config-sets:http.json#myHttpProxy",
           "@type": "ActorHttpProxy",
-          "cahp:Actor/Http/Proxy/mediatorHttp": {
-            "@id": "config-sets:http.json#mediatorHttp"
-          },
-          "cbh:lib/ActorHttp#ActorHttp_args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
+          "args_mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" },
+          "args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
         },
         {
           "@id": "config-sets:http.json#myHttpFetcher",

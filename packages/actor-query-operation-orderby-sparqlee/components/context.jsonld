@@ -3,10 +3,35 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqood": "npmd:@comunica/actor-query-operation-orderby-sparqlee/",
-      "files-caqood": "caqood:^1.0.0/",
-
-      "ActorQueryOperationOrderBySparqlee": "caqood:Actor/QueryOperation/OrderBySparqlee"
+      "caqoos": "npmd:@comunica/actor-query-operation-orderby-sparqlee/",
+      "files-caqoos": "caqoos:^1.0.0/",
+      "ActorQueryOperationOrderBySparqlee": {
+        "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee",
+        "@prefix": true,
+        "@context": {
+          "args_window": {
+            "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_window"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_mediatorQueryOperation"
+          },
+          "args_name": {
+            "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_name"
+          },
+          "args_bus": {
+            "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorQueryOperationOrderBySparqleeArgs": {
+        "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#IActorQueryOperationOrderBySparqleeArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

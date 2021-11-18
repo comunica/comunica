@@ -1,0 +1,110 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-source-identifier/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-source-identifier-sparql",
+  "components": [
+    {
+      "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql",
+      "@type": "Class",
+      "requireElement": "ActorRdfSourceIdentifierSparql",
+      "extends": [
+        "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier"
+      ],
+      "comment": "A comunica SPARQL RDF Source Identifier Actor.",
+      "parameters": [
+        {
+          "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_priority",
+          "range": "xsd:number",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": {
+                "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_mediatorHttp"
+              }
+            },
+            {
+              "keyRaw": "priority",
+              "value": {
+                "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_priority"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#IActorRdfSourceIdentifierSparqlArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorRdfSourceIdentifierSparqlArgs",
+      "extends": [
+        "cbrsi:lib/ActorRdfSourceIdentifier#IActorRdfSourceIdentifierArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}
