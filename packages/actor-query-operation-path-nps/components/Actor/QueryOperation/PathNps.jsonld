@@ -9,7 +9,7 @@
     {
       "@id": "caqopn:Actor/QueryOperation/PathNps",
       "@type": "Class",
-      "extends": "caap:Actor/AbstractPath",
+      "extends": "caap:lib/ActorAbstractPath#ActorAbstractPath",
       "requireElement": "ActorQueryOperationPathNps",
       "comment": "A comunica Path Nps Query Operation Actor.",
       "constructorArguments": [

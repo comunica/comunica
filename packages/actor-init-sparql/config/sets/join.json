@@ -23,7 +23,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "config-sets:join.json#myRdfJoinActorNone",
       "@type": "ActorRdfJoinNone",

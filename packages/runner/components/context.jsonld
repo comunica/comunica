@@ -5,9 +5,24 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cr": "npmd:@comunica/runner/",
       "files-cr": "cr:^1.0.0/",
-
-      "Runner": "cr:Runner",
-      "actors": "cr:actor"
+      "Runner": {
+        "@id": "cr:lib/Runner#Runner",
+        "@prefix": true,
+        "@context": {
+          "actors": {
+            "@id": "cr:lib/Runner#Runner_actors",
+            "@container": "@list"
+          },
+          "busInit": {
+            "@id": "cr:lib/Runner#Runner_busInit"
+          }
+        }
+      },
+      "ISetupProperties": {
+        "@id": "cr:lib/Setup#ISetupProperties",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

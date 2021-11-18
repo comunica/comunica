@@ -9,7 +9,7 @@
     {
       "@id": "caqops:Actor/QueryOperation/PathSeq",
       "@type": "Class",
-      "extends": "caap:Actor/AbstractPath",
+      "extends": "caap:lib/ActorAbstractPath#ActorAbstractPath",
       "requireElement": "ActorQueryOperationPathSeq",
       "comment": "A comunica Path Seq Query Operation Actor.",
       "parameters": [

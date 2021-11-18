@@ -9,7 +9,7 @@
     {
       "@id": "caqopa:Actor/QueryOperation/PathAlt",
       "@type": "Class",
-      "extends": "caap:Actor/AbstractPath",
+      "extends": "caap:lib/ActorAbstractPath#ActorAbstractPath",
       "requireElement": "ActorQueryOperationPathAlt",
       "comment": "A comunica Path Alt Query Operation Actor.",
       "constructorArguments": [

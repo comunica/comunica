@@ -1,43 +1,40 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/runner",
   "components": [
     {
-      "@id": "cr:Runner",
+      "@id": "cr:lib/Runner#Runner",
       "@type": "Class",
       "requireElement": "Runner",
-      "comment": "A Runner is used to instantiate a comunica workflow.",
+      "extends": [],
+      "comment": "A Runner is used to instantiate a comunica workflow.  It is instantiated dynamically using a Components.js config file. A bus and a list of actors are injected into this runner dynamically.  The {@link Runner#run} function must be called to instantiate the workflow.",
       "parameters": [
         {
-          "@id": "cr:busInit",
-          "comment": "The init bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": { "@id": "cbi:lib/ActorInit#ActorInit_default_bus" },
-          "unique": true
+          "@id": "cr:lib/Runner#Runner_actors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "The list of all actors that are part of the comunica workflow.",
+          "required": true
         },
         {
-          "@id": "cr:actor",
-          "comment": "An actor that can be used by the runner.",
-          "range": "cc:lib/Actor#Actor"
+          "@id": "cr:lib/Runner#Runner_busInit",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/lib/ActorInit#ActorInit_default_bus"
+          },
+          "comment": "The 'init' event bus.",
+          "unique": true,
+          "required": true
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cr:Runner/constructorArgumentsObject",
-          "fields": [
-            {
-              "keyRaw": "busInit",
-              "value": "cr:busInit"
-            },
-            {
-              "keyRaw": "actors",
-              "value": "cr:actor"
-            }
-          ]
+          "@id": "cr:lib/Runner#Runner_busInit"
+        },
+        {
+          "@id": "cr:lib/Runner#Runner_actors"
         }
       ]
     }

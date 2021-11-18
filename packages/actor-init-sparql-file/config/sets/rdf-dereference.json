@@ -20,7 +20,7 @@
     }
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "config-sets:rdf-dereference.json#myRdfFileDereferencer",
       "@type": "ActorRdfDereferenceFile",

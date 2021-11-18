@@ -25,7 +25,7 @@
         {
           "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_type",
           "range": "xsd:string",
-          "comment": "The way how the index should be selected. For choosing the minimum value: 'min' For choosing the maximum value: 'max'",
+          "comment": "The way how the index should be selected. For choosing the minimum value: 'min'. For choosing the maximum value: 'max'.",
           "unique": true,
           "required": true
         },

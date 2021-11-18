@@ -9,7 +9,7 @@
     {
       "@id": "caqorh:Actor/QueryOperation/ReducedHash",
       "@type": "Class",
-      "extends": "caabh:Actor/AbstractBindingsHash",
+      "extends": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash",
       "requireElement": "ActorQueryOperationReducedHash",
       "comment": "A comunica Reduced Hash Query Operation Actor.",
       "parameters": [
@@ -23,7 +23,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject",
+          "extends": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "cacheSize",

@@ -9,7 +9,7 @@
     {
       "@id": "caqopzom:Actor/QueryOperation/PathZeroOrMore",
       "@type": "Class",
-      "extends": "caap:Actor/AbstractPath",
+      "extends": "caap:lib/ActorAbstractPath#ActorAbstractPath",
       "requireElement": "ActorQueryOperationPathZeroOrMore",
       "comment": "A comunica Path ZeroOrMore Query Operation Actor.",
       "constructorArguments": [

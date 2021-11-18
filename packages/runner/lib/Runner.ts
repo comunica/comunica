@@ -9,12 +9,16 @@ import type { Actor, Bus, IAction, IActorOutput, IActorReply, IActorTest } from 
  *
  * The {@link Runner#run} function must be called to instantiate the workflow.
  */
-export class Runner implements IRunnerArgs {
-  public readonly busInit: Bus<ActorInit, IActionInit, IActorTest, IActorOutputInit>;
-  public readonly actors: Actor<IAction, IActorTest, IActorOutput>[];
-
-  public constructor(args: IRunnerArgs) {
-    Object.assign(this, args);
+export class Runner {
+  /* eslint-disable max-len */
+  /**
+   * @param busInit - The 'init' event bus. @default {<https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/lib/ActorInit#ActorInit_default_bus>}
+   * @param actors - The list of all actors that are part of the comunica workflow.
+   */
+  public constructor(
+    public readonly busInit: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>,
+    public readonly actors: Actor<IAction, IActorTest, IActorOutput>[],
+  ) {
     if (!this.busInit) {
       throw new Error('A valid "busInit" argument must be provided.');
     }
@@ -93,18 +97,4 @@ export class Runner implements IRunnerArgs {
 
     return actors;
   }
-}
-
-/**
- * The arguments that are passed to a Runner.
- */
-export interface IRunnerArgs {
-  /**
-   * The 'init' event bus.
-   */
-  busInit: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
-  /**
-   * The list of all actors that are part of the comunica workflow.
-   */
-  actors: Actor<IAction, IActorTest, IActorOutput>[];
 }

@@ -18,7 +18,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "config-sets:resolve-hypermedia.json#myHypermediaNoneResolver",
       "@type": "ActorRdfResolveHypermediaNone"

@@ -1,0 +1,101 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-abstract-path",
+  "components": [
+    {
+      "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath",
+      "@type": "AbstractClass",
+      "requireElement": "ActorAbstractPath",
+      "extends": [
+        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+      ],
+      "comment": "An abstract actor that handles Path operations.  Provides multiple helper functions used by the Path operation actors.",
+      "parameters": [
+        {
+          "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_predicateType",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_mediatorQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_name",
+          "range": "xsd:string",
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": {
+            "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
+            "@type": "cc:lib/Bus#Bus"
+          },
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": {
+                "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_mediatorQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_beforeActors"
+              }
+            }
+          ]
+        },
+        {
+          "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_predicateType"
+        }
+      ]
+    },
+    {
+      "@id": "caap:lib/ActorAbstractPath#IPathResultStream",
+      "@type": "AbstractClass",
+      "requireElement": "IPathResultStream",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

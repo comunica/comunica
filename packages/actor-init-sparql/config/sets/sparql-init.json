@@ -19,7 +19,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "urn:comunica:sparqlinit",
       "@type": "ActorInitSparql",

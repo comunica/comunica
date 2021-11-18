@@ -4,6 +4,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-ask/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-join/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-construct/^1.0.0/components/context.jsonld",
@@ -35,7 +36,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-join-coefficients-fixed/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "config-sets:sparql-queryoperators.json#myAskQueryOperator",
       "@type": "ActorQueryOperationAsk",
@@ -83,7 +84,7 @@
     {
       "@id": "config-sets:sparql-queryoperators.json#myDistinctQueryOperator",
       "@type": "ActorQueryOperationDistinctHash",
-      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
@@ -95,7 +96,7 @@
     {
       "@id": "config-sets:sparql-queryoperators.json#myReducedQueryOperator",
       "@type": "ActorQueryOperationReducedHash",
-      "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {

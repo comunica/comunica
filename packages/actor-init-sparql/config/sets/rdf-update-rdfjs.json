@@ -7,7 +7,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-rdfjs-store/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsRdfJsStore",
       "@type": "ActorRdfUpdateQuadsRdfJsStore"

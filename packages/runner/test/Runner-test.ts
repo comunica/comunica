@@ -16,7 +16,7 @@ describe('Runner', () => {
     });
 
     it('should be a Runner constructor', () => {
-      expect(new (<any> Runner)({ busInit: bus, actors: []})).toBeInstanceOf(Runner);
+      expect(new (<any> Runner)(bus, [])).toBeInstanceOf(Runner);
     });
 
     it('should not be able to create new Runner objects without \'new\'', () => {
@@ -24,11 +24,11 @@ describe('Runner', () => {
     });
 
     it('should throw an error when constructed without actors', () => {
-      expect(() => { new (<any> Runner)({ busInit: bus }); }).toThrow();
+      expect(() => { new (<any> Runner)(bus); }).toThrow();
     });
 
     it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> Runner)({ actors: []}); }).toThrow();
+      expect(() => { new (<any> Runner)(undefined, []); }).toThrow();
     });
 
     it('should throw an error when constructed without a name and bus', () => {
@@ -57,7 +57,7 @@ describe('Runner', () => {
     };
 
     beforeEach(() => {
-      runner = new (<any> Runner)({ busInit: bus, actors: []});
+      runner = new (<any> Runner)(bus, []);
       actor1 = new (<any> Actor)({ name: 'actor1', bus: new Bus({ name: 'bus1' }) });
       actor2 = new (<any> Actor)({ name: 'actor2', bus: new Bus({ name: 'bus2' }) });
 

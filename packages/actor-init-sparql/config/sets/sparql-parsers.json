@@ -6,7 +6,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-algebra/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "config-sets:sparql-parsers.json#mySparqlParser",
       "@type": "ActorSparqlParseAlgebra"

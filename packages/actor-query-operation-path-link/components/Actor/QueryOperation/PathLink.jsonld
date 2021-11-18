@@ -9,7 +9,7 @@
     {
       "@id": "caqopl:Actor/QueryOperation/PathLink",
       "@type": "Class",
-      "extends": "caap:Actor/AbstractPath",
+      "extends": "caap:lib/ActorAbstractPath#ActorAbstractPath",
       "requireElement": "ActorQueryOperationPathLink",
       "comment": "A comunica Path Link Query Operation Actor.",
       "constructorArguments": [

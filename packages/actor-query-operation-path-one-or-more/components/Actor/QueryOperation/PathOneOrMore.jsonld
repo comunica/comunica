@@ -9,7 +9,7 @@
     {
       "@id": "caqopoom:Actor/QueryOperation/PathOneOrMore",
       "@type": "Class",
-      "extends": "caap:Actor/AbstractPath",
+      "extends": "caap:lib/ActorAbstractPath#ActorAbstractPath",
       "requireElement": "ActorQueryOperationPathOneOrMore",
       "comment": "A comunica Path OneOrMore Query Operation Actor.",
       "constructorArguments": [

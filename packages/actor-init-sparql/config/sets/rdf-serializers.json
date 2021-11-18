@@ -9,7 +9,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-jsonld/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "actors": [
+  "Runner:_actors": [
     {
       "@id": "config-sets:rdf-serializers.json#myRdfSerializerN3",
       "@type": "ActorRdfSerializeN3"

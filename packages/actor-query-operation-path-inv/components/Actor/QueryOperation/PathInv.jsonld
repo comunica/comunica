@@ -9,7 +9,7 @@
     {
       "@id": "caqopi:Actor/QueryOperation/PathInv",
       "@type": "Class",
-      "extends": "caap:Actor/AbstractPath",
+      "extends": "caap:lib/ActorAbstractPath#ActorAbstractPath",
       "requireElement": "ActorQueryOperationPathInv",
       "comment": "A comunica Path Inv Query Operation Actor.",
       "constructorArguments": [
