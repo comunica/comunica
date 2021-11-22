@@ -62,7 +62,8 @@
   "scripts": {
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build": "npm run build:ts && npm run build:components-mediator",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
     "build:components-mediator": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
   }

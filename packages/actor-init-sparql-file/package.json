@@ -55,7 +55,8 @@
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build": "npm run build:ts && npm run build:components-actorinit",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
     "prepare": "comunica-compile-config config/config-default.json > engine-default.js && comunica-compile-config config/config-browser.json > engine-browser.js",
     "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
