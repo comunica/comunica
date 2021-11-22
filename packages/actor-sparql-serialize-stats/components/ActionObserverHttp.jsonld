@@ -31,7 +31,7 @@
           "range": "cc:lib/Bus#Bus",
           "default": [
             {
-              "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/lib/ActorHttp#ActorHttp_default_bus"
+              "@id": "npmd:@comunica/bus-http/lib/ActorHttp#ActorHttp_default_bus"
             }
           ],
           "comment": "The bus this observer can subscribe to.",

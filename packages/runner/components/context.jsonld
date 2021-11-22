@@ -17,11 +17,6 @@
             "@id": "cr:lib/Runner#Runner_busInit"
           }
         }
-      },
-      "ISetupProperties": {
-        "@id": "cr:lib/Setup#ISetupProperties",
-        "@prefix": true,
-        "@context": {}
       }
     }
   ]

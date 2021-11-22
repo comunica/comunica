@@ -10,7 +10,7 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
 
   /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/lib/ActorHttp#ActorHttp_default_bus>} bus
+   * @param args - @defaultNested {<npmd:@comunica/bus-http/lib/ActorHttp#ActorHttp_default_bus>} bus
    */
   public constructor(args: IActionObserverArgs<IActionHttp, IActorHttpOutput>) {
     super(args);

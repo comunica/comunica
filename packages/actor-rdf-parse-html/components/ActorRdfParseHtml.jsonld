@@ -20,7 +20,7 @@
           "range": "cc:lib/Bus#Bus",
           "default": [
             {
-              "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus"
+              "@id": "npmd:@comunica/bus-rdf-parse-html/lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus"
             }
           ],
           "comment": "The RDF Parse HTML bus for fetching HTML listeners",

@@ -138,7 +138,7 @@ export interface IActorRdfParseHtmlArgs extends IActorRdfParseFixedMediaTypesArg
   /* eslint-disable max-len */
   /**
    * The RDF Parse HTML bus for fetching HTML listeners
-   * @default {<https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus>}
+   * @default {<npmd:@comunica/bus-rdf-parse-html/lib/ActorRdfParseHtml#ActorRdfParseHtml_default_bus>}
    */
   busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>,
   IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;

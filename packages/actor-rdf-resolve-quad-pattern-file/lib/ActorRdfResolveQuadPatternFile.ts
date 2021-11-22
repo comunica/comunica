@@ -88,7 +88,7 @@ export interface IActorRdfResolveQuadPatternFileArgs
   /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events
-   * @default {<default_invalidator> a <https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable>}
+   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
 }

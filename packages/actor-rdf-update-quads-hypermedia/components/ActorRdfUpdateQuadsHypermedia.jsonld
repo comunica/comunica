@@ -32,7 +32,7 @@
           "default": [
             {
               "@id": "caruqh:lib/ActorRdfUpdateQuadsHypermedia#IActorRdfUpdateQuadsHypermediaArgs_default_invalidator",
-              "@type": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable"
+              "@type": "npmd:@comunica/bus-http-invalidate/lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable"
             }
           ],
           "comment": "An actor that listens to HTTP invalidation events",

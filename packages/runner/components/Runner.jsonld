@@ -23,7 +23,7 @@
           "range": "cc:lib/Bus#Bus",
           "default": [
             {
-              "@id": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/lib/ActorInit#ActorInit_default_bus"
+              "@id": "npmd:@comunica/bus-init/lib/ActorInit#ActorInit_default_bus"
             }
           ],
           "comment": "The 'init' event bus.",
