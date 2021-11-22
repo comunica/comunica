@@ -13,21 +13,21 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:resolve-sparql.json#mySparqlQuadPatternResolver",
+      "@id": "#mySparqlQuadPatternResolver",
       "@type": "ActorRdfResolveHypermediaSparql",
       "args_mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
+        "@id": "files-cais:config/sets/http.json#mediatorHttp"
       }
     },
     {
-      "@id": "config-sets:resolve-sparql.json#myRdfMetadataExtractSparqlService",
+      "@id": "#myRdfMetadataExtractSparqlService",
       "@type": "ActorRdfMetadataExtractSparqlService"
     },
     {
-      "@id": "config-sets:resolve-sparql.json#mySparqlEndpointResolver",
+      "@id": "#mySparqlEndpointResolver",
       "@type": "ActorQueryOperationSparqlEndpoint",
       "args_mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
+        "@id": "files-cais:config/sets/http.json#mediatorHttp"
       }
     }
   ]

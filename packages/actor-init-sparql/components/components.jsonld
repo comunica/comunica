@@ -1,9 +1,18 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-init-sparql",
   "@type": "Module",
   "requireName": "@comunica/actor-init-sparql",
   "import": [
-    "files-cais:components/Actor/Init/Sparql.jsonld"
+    "files-cais:components/ActorInitSparqlBase.jsonld",
+    "files-cais:components/ActorInitSparql.jsonld",
+    "files-cais:components/HttpServiceSparqlEndpoint.jsonld",
+    "files-cais:components/cli/CliArgsHandlerBase.jsonld",
+    "files-cais:components/cli/CliArgsHandlerHttp.jsonld",
+    "files-cais:components/cli/CliArgsHandlerQuery.jsonld",
+    "files-cais:components/cli/ICliArgsHandler.jsonld",
+    "files-cais:components/MemoryPhysicalQueryPlanLogger.jsonld"
   ]
 }

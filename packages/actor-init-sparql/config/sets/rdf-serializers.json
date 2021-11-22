@@ -11,11 +11,11 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:rdf-serializers.json#myRdfSerializerN3",
+      "@id": "#myRdfSerializerN3",
       "@type": "ActorRdfSerializeN3"
     },
     {
-      "@id": "config-sets:rdf-serializers.json#myRdfSerializeJsonLd",
+      "@id": "#myRdfSerializeJsonLd",
       "@type": "ActorRdfSerializeJsonLd",
       "args_jsonStringifyIndentSpaces": 2,
       "args_priorityScale": 0.9

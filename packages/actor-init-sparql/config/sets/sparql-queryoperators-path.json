@@ -22,52 +22,52 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#myAltPathOperator",
+      "@id": "#myAltPathOperator",
       "@type": "ActorQueryOperationPathAlt",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#myInvPathOperator",
+      "@id": "#myInvPathOperator",
       "@type": "ActorQueryOperationPathInv",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#myLinkPathOperator",
+      "@id": "#myLinkPathOperator",
       "@type": "ActorQueryOperationPathLink",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#myNpsPathOperator",
+      "@id": "#myNpsPathOperator",
       "@type": "ActorQueryOperationPathNps",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#myOneOrMorePathOperator",
+      "@id": "#myOneOrMorePathOperator",
       "@type": "ActorQueryOperationPathOneOrMore",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#mySeqPathOperator",
+      "@id": "#mySeqPathOperator",
       "@type": "ActorQueryOperationPathSeq",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorJoin": { "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "args_mediatorJoin": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorRdfJoin" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#myZeroOrMorePathOperator",
+      "@id": "#myZeroOrMorePathOperator",
       "@type": "ActorQueryOperationPathZeroOrMore",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-path.json#myZeroOrOnePathOperator",
+      "@id": "#myZeroOrOnePathOperator",
       "@type": "ActorQueryOperationPathZeroOrOne",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     }
   ]
 }

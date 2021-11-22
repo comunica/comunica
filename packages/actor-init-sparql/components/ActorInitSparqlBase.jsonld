@@ -1,0 +1,317 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-sparql",
+  "components": [
+    {
+      "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase",
+      "@type": "Class",
+      "requireElement": "ActorInitSparqlBase",
+      "extends": [
+        "cbi:lib/ActorInit#ActorInit",
+        "cais:lib/ActorInitSparqlBase#IActorInitSparqlBaseArgs"
+      ],
+      "comment": "A browser-safe comunica SPARQL Init Actor.",
+      "parameters": [
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorOptimizeQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The query operation optimize mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorQueryOperation",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The query operation mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlParse",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The query parse mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerialize",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The query serialize mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerializeMediaTypeCombiner",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The query serialize media type combinator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerializeMediaTypeFormatCombiner",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The query serialize media type format combinator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorContextPreprocess",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The context processing combinator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorHttpInvalidate",
+          "range": "cc:lib/Mediator#Mediator",
+          "comment": "The HTTP cache invalidation mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_logger",
+          "range": "cc:lib/Logger#Logger",
+          "default": [
+            {
+              "@type": "npmd:@comunica/logger-void/lib/LoggerVoid#LoggerVoid"
+            }
+          ],
+          "comment": "The logger of this actor",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_queryString",
+          "range": "xsd:string",
+          "comment": "A SPARQL query string",
+          "unique": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_defaultQueryInputFormat",
+          "range": "xsd:string",
+          "comment": "The default query input format",
+          "unique": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_context",
+          "range": "xsd:string",
+          "comment": "A JSON string of a query operation context",
+          "unique": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_contextKeyShortcuts",
+          "range": "rdf:JSON",
+          "default": [
+            {
+              "@type": "@json",
+              "@value": {
+                "source": "@comunica/bus-rdf-resolve-quad-pattern:source",
+                "sources": "@comunica/bus-rdf-resolve-quad-pattern:sources",
+                "destination": "@comunica/bus-rdf-update-quads:destination",
+                "initialBindings": "@comunica/actor-init-sparql:initialBindings",
+                "queryFormat": "@comunica/actor-init-sparql:queryFormat",
+                "baseIRI": "@comunica/actor-init-sparql:baseIRI",
+                "log": "@comunica/core:log",
+                "datetime": "@comunica/actor-http-memento:datetime",
+                "queryTimestamp": "@comunica/actor-init-sparql:queryTimestamp",
+                "httpProxyHandler": "@comunica/actor-http-proxy:httpProxyHandler",
+                "lenient": "@comunica/actor-init-sparql:lenient",
+                "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
+                "httpAuth": "@comunica/bus-http:auth",
+                "fetch": "@comunica/bus-http:fetch",
+                "readOnly": "@comunica/bus-query-operation:readOnly",
+                "extensionFunctions": "@comunica/actor-init-sparql:extensionFunctions",
+                "extensionFunctionCreator": "@comunica/actor-init-sparql:extensionFunctionCreator",
+                "explain": "@comunica/actor-init-sparql:explain"
+              }
+            }
+          ],
+          "comment": "A record of context shortcuts to full context keys (as defined in @comunica/context-entries).",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbi:lib/ActorInit#ActorInit_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorOptimizeQueryOperation",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorOptimizeQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorQueryOperation"
+              }
+            },
+            {
+              "keyRaw": "mediatorSparqlParse",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlParse"
+              }
+            },
+            {
+              "keyRaw": "mediatorSparqlSerialize",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerialize"
+              }
+            },
+            {
+              "keyRaw": "mediatorSparqlSerializeMediaTypeCombiner",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerializeMediaTypeCombiner"
+              }
+            },
+            {
+              "keyRaw": "mediatorSparqlSerializeMediaTypeFormatCombiner",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerializeMediaTypeFormatCombiner"
+              }
+            },
+            {
+              "keyRaw": "mediatorContextPreprocess",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorContextPreprocess"
+              }
+            },
+            {
+              "keyRaw": "mediatorHttpInvalidate",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorHttpInvalidate"
+              }
+            },
+            {
+              "keyRaw": "logger",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_logger"
+              }
+            },
+            {
+              "keyRaw": "queryString",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_queryString"
+              }
+            },
+            {
+              "keyRaw": "defaultQueryInputFormat",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_defaultQueryInputFormat"
+              }
+            },
+            {
+              "keyRaw": "context",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_context"
+              }
+            },
+            {
+              "keyRaw": "contextKeyShortcuts",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_contextKeyShortcuts"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cais:lib/ActorInitSparqlBase#IActorInitSparqlBaseArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorInitSparqlBaseArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cais:lib/ActorInitSparqlBase#IQueryResultBindings",
+      "@type": "AbstractClass",
+      "requireElement": "IQueryResultBindings",
+      "extends": [
+        "ct:lib/index#IActorQueryOperationOutputBindings"
+      ],
+      "comment": "Query operation output for a bindings stream. For example: SPARQL SELECT results",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cais:lib/ActorInitSparqlBase#IQueryResultQuads",
+      "@type": "AbstractClass",
+      "requireElement": "IQueryResultQuads",
+      "extends": [
+        "ct:lib/index#IActorQueryOperationOutputQuads"
+      ],
+      "comment": "Query operation output for quads. For example: SPARQL CONSTRUCT results",
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cais:lib/ActorInitSparqlBase#IQueryResultBoolean",
+      "@type": "AbstractClass",
+      "requireElement": "IQueryResultBoolean",
+      "extends": [
+        "ct:lib/index#IActorQueryOperationOutputBoolean"
+      ],
+      "comment": "Query operation output for booleans. For example: SPARQL ASK results",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

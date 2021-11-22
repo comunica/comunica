@@ -71,6 +71,7 @@
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components-actorinit": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore",
     "validate": "npm ls"
   }
 }

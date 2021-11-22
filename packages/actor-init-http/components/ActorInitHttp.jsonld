@@ -1,0 +1,131 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-http/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-http",
+  "components": [
+    {
+      "@id": "caih:lib/ActorInitHttp#ActorInitHttp",
+      "@type": "Class",
+      "requireElement": "ActorInitHttp",
+      "extends": [
+        "cbi:lib/ActorInit#ActorInit",
+        "caih:lib/ActorInitHttp#IActorInitHttpArgs"
+      ],
+      "comment": "A http actor that listens on the 'init' bus.  It will call `this.mediatorHttp.mediate`.",
+      "parameters": [
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_mediatorHttp",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_url",
+          "range": "xsd:string",
+          "unique": true
+        },
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_method",
+          "range": "xsd:string",
+          "unique": true
+        },
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_headers",
+          "range": "xsd:string"
+        },
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbi:lib/ActorInit#ActorInit_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": {
+                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_mediatorHttp"
+              }
+            },
+            {
+              "keyRaw": "url",
+              "value": {
+                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_url"
+              }
+            },
+            {
+              "keyRaw": "method",
+              "value": {
+                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_method"
+              }
+            },
+            {
+              "keyRaw": "headers",
+              "value": {
+                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_headers"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caih:lib/ActorInitHttp#IActorInitHttpArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorInitHttpArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

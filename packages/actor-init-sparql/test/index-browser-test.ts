@@ -19,7 +19,7 @@ jest.mock('../engine-default.js', () => {
   };
 });
 
-import { newEngine, newEngineDynamic, bindingsStreamToGraphQl, ActorInitSparql } from '..';
+import { newEngine, bindingsStreamToGraphQl, ActorInitSparql } from '../lib/index-browser';
 
 jest.setTimeout(30_000);
 
@@ -30,10 +30,6 @@ describe('index', () => {
 
   it('newEngine should return a query engine', () => {
     return expect(newEngine()).toMatchObject({ mocked: true });
-  });
-
-  it('newEngineDynamic should return a query engine', () => {
-    return expect(newEngineDynamic()).resolves.toMatchObject({ mocked: true });
   });
 
   it('ActorInitSparql to be a class', () => {

@@ -5,11 +5,33 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cairdp": "npmd:@comunica/actor-init-rdf-dereference-paged/",
       "files-cairdp": "cairdp:^1.0.0/",
-      "config-example": "files-cairdp:config/config-example.json#",
-
-      "ActorInitRdfDereferencePaged": "cairdp:Actor/Init/RdfDereferencePaged",
-      "mediatorRdfDereferencePaged": "cairdp:mediatorRdfDereferencePaged",
-      "url": "cairdp:url"
+      "ActorInitRdfDereferencePaged": {
+        "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorRdfDereferencePaged": {
+            "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_mediatorRdfDereferencePaged"
+          },
+          "args_url": {
+            "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_url"
+          },
+          "args_name": {
+            "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_name"
+          },
+          "args_bus": {
+            "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorInitRdfDereferencePagedArgs": {
+        "@id": "cairdp:lib/ActorInitRdfDereferencePaged#IActorInitRdfDereferencePagedArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

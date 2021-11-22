@@ -12,10 +12,10 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:resolve-federated.json#myFederatedQuadPatternResolver",
+      "@id": "#myFederatedQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternFederated",
       "args_mediatorResolveQuadPattern": {
-        "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern"
+        "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern"
       }
     }
   ]

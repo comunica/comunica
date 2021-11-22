@@ -9,7 +9,7 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:resolve-rdfjs.json#myRdfRdfJsSourceQuadPatternResolver",
+      "@id": "#myRdfRdfJsSourceQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternRdfJsSource"
     }
   ]

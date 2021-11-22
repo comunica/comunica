@@ -22,67 +22,67 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:sparql-queryoperator-update.json#myCompositeUpdateOperator",
+      "@id": "#myCompositeUpdateOperator",
       "@type": "ActorQueryOperationUpdateCompositeUpdate",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-update.json#myDeleteInsertOperator",
+      "@id": "#myDeleteInsertOperator",
       "@type": "ActorQueryOperationUpdateDeleteInsert",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
       "args_mediatorUpdateQuads": {
-        "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads",
+        "@id": "#mediatorUpdateQuads",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_default_bus" }
+        "args_bus": { "@id": "ActorRdfUpdateQuads:_default_bus" }
       }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperators.json#myLoadQueryOperator",
+      "@id": "#myLoadQueryOperator",
       "@type": "ActorQueryOperationLoad",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperators.json#myClearQueryOperator",
+      "@id": "#myClearQueryOperator",
       "@type": "ActorQueryOperationClear",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
     {
-      "@id": "config-sets:sparql-queryoperators.json#myDropQueryOperator",
+      "@id": "#myDropQueryOperator",
       "@type": "ActorQueryOperationDrop",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperators.json#myCreateQueryOperator",
+      "@id": "#myCreateQueryOperator",
       "@type": "ActorQueryOperationCreate",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-update.json#myAddOperator",
+      "@id": "#myAddOperator",
       "@type": "ActorQueryOperationAddRewrite",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
-      "@id": "config-sets:sparql-queryoperator-update.json#myMoveOperator",
+      "@id": "#myMoveOperator",
       "@type": "ActorQueryOperationMoveRewrite",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
-      "@id": "config-sets:sparql-queryoperator-update.json#myCopyOperator",
+      "@id": "#myCopyOperator",
       "@type": "ActorQueryOperationCopyRewrite",
-      "args_mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
-      "@id": "config-sets:sparql-queryoperator-update.json#myActorContextPreprocessSourceToDestination",
+      "@id": "#myActorContextPreprocessSourceToDestination",
       "@type": "ActorContextPreprocessSourceToDestination"
     }
   ]

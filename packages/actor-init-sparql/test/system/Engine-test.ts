@@ -10,7 +10,7 @@ import type * as RDF from '@rdfjs/types';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import type { IQueryResultBindings } from '../../lib/ActorInitSparql-browser';
+import type { IQueryResultBindings } from '../../lib/ActorInitSparqlBase';
 import type { ActorInitSparql, IQueryResultUpdate } from '../../lib/index-browser';
 import { newEngine } from '../../lib/index-browser';
 import { mockHttp } from './util';

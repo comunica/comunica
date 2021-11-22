@@ -1,0 +1,99 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-hello-world",
+  "components": [
+    {
+      "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld",
+      "@type": "Class",
+      "requireElement": "ActorInitHelloWorld",
+      "extends": [
+        "cbi:lib/ActorInit#ActorInit",
+        "caihw:lib/ActorInitHelloWorld#IActorInitHelloWorldArgs"
+      ],
+      "comment": "A Hello World actor that listens on the 'init' bus.  It takes an optional `hello` parameter, which defaults to 'Hello'. When run, it will print the `hello` parameter to the console, followed by all arguments it received.",
+      "parameters": [
+        {
+          "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_hello",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbi:lib/ActorInit#ActorInit_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "hello",
+              "value": {
+                "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_hello"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "caihw:lib/ActorInitHelloWorld#IActorInitHelloWorldArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorInitHelloWorldArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

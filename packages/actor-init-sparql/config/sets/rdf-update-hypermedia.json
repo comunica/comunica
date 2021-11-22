@@ -20,63 +20,63 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsHypermedia",
+      "@id": "#myRdfUpdateQuadsHypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
       "args_mediatorRdfDereference": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference"
+        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference"
       },
       "args_mediatorMetadata": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata"
+        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadata"
       },
       "args_mediatorMetadataExtract": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract"
+        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract"
       },
       "args_mediatorRdfUpdateHypermedia": {
-        "@id": "config-sets:rdf-update-rdfjs.json#mediatorRdfUpdateHypermedia",
+        "@id": "#mediatorRdfUpdateHypermedia",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus" }
+        "args_bus": { "@id": "ActorRdfUpdateHypermedia:_default_bus" }
       }
     },
 
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractPatchSparqlUpdate",
+      "@id": "#myRdfMetadataExtractPatchSparqlUpdate",
       "@type": "ActorRdfMetadataExtractPatchSparqlUpdate"
     },
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPatchSparqlUpdate",
+      "@id": "#myRdfUpdateHypermediaPatchSparqlUpdate",
       "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
       "args_mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
+        "@id": "files-cais:config/sets/http.json#mediatorHttp"
       }
     },
 
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractAllowHttpMethods",
+      "@id": "#myRdfMetadataExtractAllowHttpMethods",
       "@type": "ActorRdfMetadataExtractAllowHttpMethods"
     },
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractPutAccepted",
+      "@id": "#myRdfMetadataExtractPutAccepted",
       "@type": "ActorRdfMetadataExtractPutAccepted"
     },
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPutLdp",
+      "@id": "#myRdfUpdateHypermediaPutLdp",
       "@type": "ActorRdfUpdateHypermediaPutLdp",
       "args_mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
+        "@id": "files-cais:config/sets/http.json#mediatorHttp"
       },
       "args_mediatorRdfSerializeMediatypes": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes"
+        "@id": "files-cais:config/sets/sparql-serializers.json#mediatorRdfSerializeMediatypes"
       },
       "args_mediatorRdfSerialize": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
+        "@id": "files-cais:config/sets/sparql-serializers.json#mediatorRdfSerialize"
       }
     },
 
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaSparql",
+      "@id": "#myRdfUpdateHypermediaSparql",
       "@type": "ActorRdfUpdateHypermediaSparql",
       "args_mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
+        "@id": "files-cais:config/sets/http.json#mediatorHttp"
       }
     }
   ]

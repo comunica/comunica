@@ -10,10 +10,10 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:http-memento.json#myHttpFetcher",
+      "@id": "#myHttpFetcher",
       "@type": "ActorHttpMemento",
-      "args_mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" },
-      "args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
+      "args_mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" },
+      "args_beforeActors": { "@id": "files-cais:config/sets/http.json#myHttpFetcher" }
     }
   ]
 }

@@ -20,53 +20,53 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
+      "@id": "#myRdfParserN3",
       "@type": "ActorRdfParseN3",
       "args_priorityScale": 1.0
     },
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
+      "@id": "#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
       "args_priorityScale": 0.9,
-      "args_mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" }
+      "args_mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" }
     },
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
+      "@id": "#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
       "args_priorityScale": 0.5
     },
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserXmlRdfa",
+      "@id": "#myRdfParserXmlRdfa",
       "@type": "ActorRdfParseXmlRdfa",
       "args_priorityScale": 0.3
     },
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtml",
+      "@id": "#myRdfParserHtml",
       "@type": "ActorRdfParseHtml",
       "args_priorityScale": 0.2
     },
 
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlMicrodata",
+      "@id": "#myRdfParserHtmlMicrodata",
       "@type": "ActorRdfParseHtmlMicrodata"
     },
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlRdfa",
+      "@id": "#myRdfParserHtmlRdfa",
       "@type": "ActorRdfParseHtmlRdfa"
     },
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
+      "@id": "#myRdfParserHtmlScript",
       "@type": "ActorRdfParseHtmlScript",
       "args_mediatorRdfParseMediatypes": {
-        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
+        "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
         "args_field": "mediaTypes"
       },
       "args_mediatorRdfParseHandle": {
-        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseHandle",
+        "@id": "#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]

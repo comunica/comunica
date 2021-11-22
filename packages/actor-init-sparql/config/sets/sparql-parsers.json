@@ -8,7 +8,7 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:sparql-parsers.json#mySparqlParser",
+      "@id": "#mySparqlParser",
       "@type": "ActorSparqlParseAlgebra"
     }
   ]

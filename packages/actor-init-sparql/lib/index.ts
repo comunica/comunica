@@ -1,8 +1,11 @@
+export {
+  ActorInitSparqlBase,
+  IActorInitSparqlBaseArgs,
+} from './ActorInitSparqlBase';
 export * from './ActorInitSparql';
 export * from './HttpServiceSparqlEndpoint';
 export {
   newEngine,
-  evaluateQuery,
   bindingsStreamToGraphQl,
   IQueryResultBindings,
   IQueryResultQuads,

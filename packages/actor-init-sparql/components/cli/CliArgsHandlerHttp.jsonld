@@ -1,0 +1,19 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-sparql",
+  "components": [
+    {
+      "@id": "cais:lib/cli/CliArgsHandlerHttp#CliArgsHandlerHttp",
+      "@type": "Class",
+      "requireElement": "CliArgsHandlerHttp",
+      "extends": [
+        "cais:lib/cli/ICliArgsHandler#ICliArgsHandler"
+      ],
+      "comment": "CLI arguments handler that handles options for HTTP servers.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

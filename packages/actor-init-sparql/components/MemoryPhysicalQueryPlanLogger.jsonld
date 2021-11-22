@@ -1,0 +1,20 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/types/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-sparql",
+  "components": [
+    {
+      "@id": "cais:lib/MemoryPhysicalQueryPlanLogger#MemoryPhysicalQueryPlanLogger",
+      "@type": "Class",
+      "requireElement": "MemoryPhysicalQueryPlanLogger",
+      "extends": [
+        "ct:lib/index#IPhysicalQueryPlanLogger"
+      ],
+      "comment": "A physical query plan logger that stores everything in memory.",
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

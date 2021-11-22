@@ -1,0 +1,94 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-sparql",
+  "components": [
+    {
+      "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint",
+      "@type": "Class",
+      "requireElement": "HttpServiceSparqlEndpoint",
+      "extends": [],
+      "comment": "An HTTP service that exposes a Comunica engine as a SPARQL endpoint.",
+      "parameters": [
+        {
+          "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_context",
+          "unique": true
+        },
+        {
+          "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_timeout",
+          "range": "xsd:number",
+          "unique": true
+        },
+        {
+          "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_port",
+          "range": "xsd:number",
+          "unique": true
+        },
+        {
+          "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_workers",
+          "range": "xsd:number",
+          "unique": true
+        },
+        {
+          "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_invalidateCacheBeforeQuery",
+          "range": "xsd:boolean",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "context",
+              "value": {
+                "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_context"
+              }
+            },
+            {
+              "keyRaw": "timeout",
+              "value": {
+                "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_timeout"
+              }
+            },
+            {
+              "keyRaw": "port",
+              "value": {
+                "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_port"
+              }
+            },
+            {
+              "keyRaw": "workers",
+              "value": {
+                "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_workers"
+              }
+            },
+            {
+              "keyRaw": "invalidateCacheBeforeQuery",
+              "value": {
+                "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_invalidateCacheBeforeQuery"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cais:lib/HttpServiceSparqlEndpoint#IQueryBody",
+      "@type": "AbstractClass",
+      "requireElement": "IQueryBody",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    },
+    {
+      "@id": "cais:lib/HttpServiceSparqlEndpoint#IHttpServiceSparqlEndpointArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IHttpServiceSparqlEndpointArgs",
+      "extends": [],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

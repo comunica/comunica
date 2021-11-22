@@ -1,0 +1,111 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-parse/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-rdf-parse",
+  "components": [
+    {
+      "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse",
+      "@type": "Class",
+      "requireElement": "ActorInitRdfParse",
+      "extends": [
+        "cbi:lib/ActorInit#ActorInit",
+        "cairp:lib/ActorInitRdfParse#IActorInitRdfParseArgs"
+      ],
+      "comment": "An RDF Parse actor that listens on the 'init' bus.  It requires a mediator that is defined over the 'rdf-parse' bus, and a mediaType that identifies the RDF serialization.",
+      "parameters": [
+        {
+          "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_mediatorRdfParse",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_mediaType",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbi:lib/ActorInit#ActorInit_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfParse",
+              "value": {
+                "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_mediatorRdfParse"
+              }
+            },
+            {
+              "keyRaw": "mediaType",
+              "value": {
+                "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_mediaType"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cairp:lib/ActorInitRdfParse#ActorInitRdfParse_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cairp:lib/ActorInitRdfParse#IActorInitRdfParseArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorInitRdfParseArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}

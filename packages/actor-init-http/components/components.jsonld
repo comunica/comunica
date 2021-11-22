@@ -1,9 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-http/^1.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-http/^1.0.0/components/context.jsonld"
+  ],
   "@id": "npmd:@comunica/actor-init-http",
   "@type": "Module",
   "requireName": "@comunica/actor-init-http",
   "import": [
-    "files-cih:components/Actor/Init/Http.jsonld"
+    "files-caih:components/ActorInitHttp.jsonld"
   ]
 }

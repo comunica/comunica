@@ -6,8 +6,8 @@ import {
 } from '@comunica/context-entries';
 import type { IActorQueryOperationOutput, IQueryExplained } from '@comunica/types';
 import yargs from 'yargs';
-import type { IActorInitSparqlArgs } from './ActorInitSparql-browser';
-import { ActorInitSparql as ActorInitSparqlBrowser } from './ActorInitSparql-browser';
+import type { IActorInitSparqlBaseArgs } from './ActorInitSparqlBase';
+import { ActorInitSparqlBase } from './ActorInitSparqlBase';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import type { ICliArgsHandler } from './cli/ICliArgsHandler';
@@ -18,13 +18,13 @@ export {
   KEY_CONTEXT_INITIALBINDINGS,
   KEY_CONTEXT_QUERYFORMAT,
   KEY_CONTEXT_LENIENT,
-} from './ActorInitSparql-browser';
+} from './ActorInitSparqlBase';
 
 /**
  * A comunica SPARQL Init Actor.
  */
-export class ActorInitSparql extends ActorInitSparqlBrowser {
-  public constructor(args: IActorInitSparqlArgs) {
+export class ActorInitSparql extends ActorInitSparqlBase {
+  public constructor(args: IActorInitSparqlBaseArgs) {
     super(args);
   }
 

@@ -5,20 +5,208 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cais": "npmd:@comunica/actor-init-sparql/",
       "files-cais": "cais:^1.0.0/",
-      "config-sets": "files-cais:config/sets/",
-
-      "ActorInitSparql": "cais:Actor/Init/Sparql",
-      "mediatorOptimizeQueryOperation": "cais:mediatorOptimizeQueryOperation",
-      "mediatorQueryOperation": "cais:mediatorQueryOperation",
-      "mediatorSparqlParse": "cais:mediatorSparqlParse",
-      "mediatorSparqlSerialize": "cais:mediatorSparqlSerialize",
-      "mediatorSparqlSerializeMediaTypeCombiner": "cais:mediatorSparqlSerializeMediaTypeCombiner",
-      "mediatorSparqlSerializeMediaTypeFormatCombiner": "cais:mediatorSparqlSerializeMediaTypeFormatCombiner",
-      "mediatorContextPreprocess": "cais:mediatorContextPreprocess",
-      "mediatorHttpInvalidate": "cais:mediatorHttpInvalidate",
-
-      "contextShortcutKey": "cais:contextKeyShortcut/shortcut",
-      "contextShortcutValue": "cais:contextKeyShortcut/expanded"
+      "ActorInitSparqlBase": {
+        "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorOptimizeQueryOperation": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorOptimizeQueryOperation"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorQueryOperation"
+          },
+          "args_mediatorSparqlParse": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlParse"
+          },
+          "args_mediatorSparqlSerialize": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerialize"
+          },
+          "args_mediatorSparqlSerializeMediaTypeCombiner": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerializeMediaTypeCombiner"
+          },
+          "args_mediatorSparqlSerializeMediaTypeFormatCombiner": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorSparqlSerializeMediaTypeFormatCombiner"
+          },
+          "args_mediatorContextPreprocess": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorContextPreprocess"
+          },
+          "args_mediatorHttpInvalidate": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_mediatorHttpInvalidate"
+          },
+          "args_logger": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_logger"
+          },
+          "args_queryString": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_queryString"
+          },
+          "args_defaultQueryInputFormat": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_defaultQueryInputFormat"
+          },
+          "args_context": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_context"
+          },
+          "args_contextKeyShortcuts": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_contextKeyShortcuts",
+            "@type": "@json"
+          },
+          "args_name": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_name"
+          },
+          "args_bus": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cais:lib/ActorInitSparqlBase#ActorInitSparqlBase_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorInitSparqlBaseArgs": {
+        "@id": "cais:lib/ActorInitSparqlBase#IActorInitSparqlBaseArgs",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IQueryResultBindings": {
+        "@id": "cais:lib/ActorInitSparqlBase#IQueryResultBindings",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IQueryResultQuads": {
+        "@id": "cais:lib/ActorInitSparqlBase#IQueryResultQuads",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IQueryResultBoolean": {
+        "@id": "cais:lib/ActorInitSparqlBase#IQueryResultBoolean",
+        "@prefix": true,
+        "@context": {}
+      },
+      "ActorInitSparql": {
+        "@id": "cais:lib/ActorInitSparql#ActorInitSparql",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorOptimizeQueryOperation": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorOptimizeQueryOperation"
+          },
+          "args_mediatorQueryOperation": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorQueryOperation"
+          },
+          "args_mediatorSparqlParse": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorSparqlParse"
+          },
+          "args_mediatorSparqlSerialize": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorSparqlSerialize"
+          },
+          "args_mediatorSparqlSerializeMediaTypeCombiner": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorSparqlSerializeMediaTypeCombiner"
+          },
+          "args_mediatorSparqlSerializeMediaTypeFormatCombiner": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorSparqlSerializeMediaTypeFormatCombiner"
+          },
+          "args_mediatorContextPreprocess": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorContextPreprocess"
+          },
+          "args_mediatorHttpInvalidate": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_mediatorHttpInvalidate"
+          },
+          "args_logger": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_logger"
+          },
+          "args_queryString": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_queryString"
+          },
+          "args_defaultQueryInputFormat": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_defaultQueryInputFormat"
+          },
+          "args_context": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_context"
+          },
+          "args_contextKeyShortcuts": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_contextKeyShortcuts",
+            "@type": "@json"
+          },
+          "args_name": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_name"
+          },
+          "args_bus": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "cais:lib/ActorInitSparql#ActorInitSparql_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "HttpServiceSparqlEndpoint": {
+        "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint",
+        "@prefix": true,
+        "@context": {
+          "args_context": {
+            "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_context"
+          },
+          "args_timeout": {
+            "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_timeout"
+          },
+          "args_port": {
+            "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_port"
+          },
+          "args_workers": {
+            "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_workers"
+          },
+          "args_invalidateCacheBeforeQuery": {
+            "@id": "cais:lib/HttpServiceSparqlEndpoint#HttpServiceSparqlEndpoint_args_invalidateCacheBeforeQuery"
+          }
+        }
+      },
+      "IQueryBody": {
+        "@id": "cais:lib/HttpServiceSparqlEndpoint#IQueryBody",
+        "@prefix": true,
+        "@context": {}
+      },
+      "IHttpServiceSparqlEndpointArgs": {
+        "@id": "cais:lib/HttpServiceSparqlEndpoint#IHttpServiceSparqlEndpointArgs",
+        "@prefix": true,
+        "@context": {}
+      },
+      "CliArgsHandlerBase": {
+        "@id": "cais:lib/cli/CliArgsHandlerBase#CliArgsHandlerBase",
+        "@prefix": true,
+        "@context": {
+          "initialContext": {
+            "@id": "cais:lib/cli/CliArgsHandlerBase#CliArgsHandlerBase_initialContext"
+          }
+        }
+      },
+      "CliArgsHandlerHttp": {
+        "@id": "cais:lib/cli/CliArgsHandlerHttp#CliArgsHandlerHttp",
+        "@prefix": true,
+        "@context": {}
+      },
+      "CliArgsHandlerQuery": {
+        "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery",
+        "@prefix": true,
+        "@context": {
+          "defaultQueryInputFormat": {
+            "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_defaultQueryInputFormat"
+          },
+          "queryString": {
+            "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_queryString"
+          },
+          "context": {
+            "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_context"
+          }
+        }
+      },
+      "ICliArgsHandler": {
+        "@id": "cais:lib/cli/ICliArgsHandler#ICliArgsHandler",
+        "@prefix": true,
+        "@context": {}
+      },
+      "MemoryPhysicalQueryPlanLogger": {
+        "@id": "cais:lib/MemoryPhysicalQueryPlanLogger#MemoryPhysicalQueryPlanLogger",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

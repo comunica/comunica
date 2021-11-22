@@ -29,95 +29,95 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:resolve-hypermedia.json#myHypermediaQpfResolver",
+      "@id": "#myHypermediaQpfResolver",
       "@type": "ActorRdfResolveHypermediaQpf",
       "args_mediatorRdfDereference": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
+        "@id": "#mediatorRdfDereference",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus" }
+        "args_bus": { "@id": "ActorRdfDereference:_default_bus" }
       },
       "args_mediatorMetadata": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
+        "@id": "#mediatorMetadata",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus" }
+        "args_bus": { "@id": "ActorRdfMetadata:_default_bus" }
       },
       "args_mediatorMetadataExtract": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
+        "@id": "#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus" },
+        "args_bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
         "args_field": "metadata"
       }
     },
     {
-      "@id": "config-sets:resolve-hypermedia.json#myHypermediaNoneResolver",
+      "@id": "#myHypermediaNoneResolver",
       "@type": "ActorRdfResolveHypermediaNone"
     },
 
     {
-      "@id": "config-sets:resolve-hypermedia.json#myQuadPatternHypermediaResolver",
+      "@id": "#myQuadPatternHypermediaResolver",
       "@type": "ActorRdfResolveQuadPatternHypermedia",
       "args_mediatorRdfDereference": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference"
+        "@id": "#mediatorRdfDereference"
       },
       "args_mediatorMetadata": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata"
+        "@id": "#mediatorMetadata"
       },
       "args_mediatorMetadataExtract": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract"
+        "@id": "#mediatorMetadataExtract"
       },
       "args_mediatorRdfResolveHypermedia": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermedia",
+        "@id": "#mediatorRdfResolveHypermedia",
         "@type": "MediatorNumber",
         "args_type": "max",
         "args_field": "filterFactor",
         "args_ignoreErrors": true,
-        "args_bus": { "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus" }
+        "args_bus": { "@id": "ActorRdfResolveHypermedia:_default_bus" }
       },
       "args_mediatorRdfResolveHypermediaLinks": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
+        "@id": "#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ActorRdfResolveHypermediaLinks_default_bus" }
+        "args_bus": { "@id": "ActorRdfResolveHypermediaLinks:_default_bus" }
       },
       "args_mediatorRdfResolveHypermediaLinksQueue": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue",
+        "@id": "#mediatorRdfResolveHypermediaLinksQueue",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_default_bus" }
+        "args_bus": { "@id": "ActorRdfResolveHypermediaLinksQueue:_default_bus" }
       }
     },
 
     {
-      "@id": "config-sets:resolve-hypermedia.json#myHypermediaLinksNext",
+      "@id": "#myHypermediaLinksNext",
       "@type": "ActorRdfResolveHypermediaLinksNext"
     },
 
     {
-      "@id": "config-sets:resolve-hypermedia.json#myHypermediaLinksQueue",
+      "@id": "#myHypermediaLinksQueue",
       "@type": "ActorRdfResolveHypermediaLinksQueueFifo"
     },
 
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataPrimaryTopic",
+      "@id": "#myRdfMetadataPrimaryTopic",
       "@type": "ActorRdfMetadataPrimaryTopic"
     },
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataAll",
+      "@id": "#myRdfMetadataAll",
       "@type": "ActorRdfMetadataAll"
     },
 
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraControls",
+      "@id": "#myRdfMetadataExtractHydraControls",
       "@type": "ActorRdfMetadataExtractHydraControls"
     },
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraCount",
+      "@id": "#myRdfMetadataExtractHydraCount",
       "@type": "ActorRdfMetadataExtractHydraCount"
     },
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraPagesize",
+      "@id": "#myRdfMetadataExtractHydraPagesize",
       "@type": "ActorRdfMetadataExtractHydraPagesize"
     },
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractRequestTime",
+      "@id": "#myRdfMetadataExtractRequestTime",
       "@type": "ActorRdfMetadataExtractRequestTime"
     }
   ]

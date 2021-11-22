@@ -24,10 +24,8 @@ import {
   KEY_CONTEXT_QUERYFORMAT,
 } from '../lib/ActorInitSparql';
 import type { IQueryResultQuads,
-  IQueryResultBindings } from '../lib/ActorInitSparql-browser';
-import {
-  ActorInitSparql as ActorInitSparqlBrowser,
-} from '../lib/ActorInitSparql-browser';
+  IQueryResultBindings } from '../lib/ActorInitSparqlBase';
+import { ActorInitSparqlBase } from '../lib/ActorInitSparqlBase';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { ICliArgsHandler } from '../lib/cli/ICliArgsHandler';
 
@@ -42,9 +40,9 @@ describe('exported constants', () => {
   });
 });
 
-describe('ActorInitSparqlBrowser', () => {
+describe('ActorInitSparqlBase', () => {
   it('should not allow invoking its run method', () => {
-    return expect(new (<any> ActorInitSparqlBrowser)({ bus: new Bus({ name: 'bus' }) }).run()).rejects.toBeTruthy();
+    return expect(new (<any> ActorInitSparqlBase)({ bus: new Bus({ name: 'bus' }) }).run()).rejects.toBeTruthy();
   });
 });
 

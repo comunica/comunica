@@ -22,59 +22,59 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:sparql-serializers.json#myJsonSparqlSerializer",
+      "@id": "#myJsonSparqlSerializer",
       "@type": "ActorSparqlSerializeJson"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#myRdfSparqlSerializer",
+      "@id": "#myRdfSparqlSerializer",
       "@type": "ActorSparqlSerializeRdf",
       "args_mediatorRdfSerialize": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize",
+        "@id": "#mediatorRdfSerialize",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" }
+        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" }
       },
       "args_mediatorMediaTypeCombiner": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes",
+        "@id": "#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
+        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
         "args_field": "mediaTypes"
       },
       "args_mediatorMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
+        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
         "args_field": "mediaTypeFormats"
       }
     },
     {
-      "@id": "config-sets:sparql-serializers.json#mySimpleSparqlSerializer",
+      "@id": "#mySimpleSparqlSerializer",
       "@type": "ActorSparqlSerializeSimple"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#mySparqlCsvSparqlSerializer",
+      "@id": "#mySparqlCsvSparqlSerializer",
       "@type": "ActorSparqlSerializeSparqlCsv"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#mySparqlJsonSparqlSerializer",
+      "@id": "#mySparqlJsonSparqlSerializer",
       "@type": "ActorSparqlSerializeSparqlJson"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#mySparqlTsvSparqlSerializer",
+      "@id": "#mySparqlTsvSparqlSerializer",
       "@type": "ActorSparqlSerializeSparqlTsv"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#mySparqlXmlSparqlSerializer",
+      "@id": "#mySparqlXmlSparqlSerializer",
       "@type": "ActorSparqlSerializeSparqlXml"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#myStatsSparqlSerializer",
+      "@id": "#myStatsSparqlSerializer",
       "@type": "ActorSparqlSerializeStats"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#myTableSparqlSerializer",
+      "@id": "#myTableSparqlSerializer",
       "@type": "ActorSparqlSerializeTable"
     },
     {
-      "@id": "config-sets:sparql-serializers.json#myTreeSparqlSerializer",
+      "@id": "#myTreeSparqlSerializer",
       "@type": "ActorSparqlSerializeTree"
     }
   ]

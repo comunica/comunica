@@ -1,0 +1,48 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-sparql",
+  "components": [
+    {
+      "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery",
+      "@type": "Class",
+      "requireElement": "CliArgsHandlerQuery",
+      "extends": [
+        "cais:lib/cli/ICliArgsHandler#ICliArgsHandler"
+      ],
+      "comment": "CLI arguments handler that handles options for query execution.",
+      "parameters": [
+        {
+          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_defaultQueryInputFormat",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_queryString",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_context",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_defaultQueryInputFormat"
+        },
+        {
+          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_queryString"
+        },
+        {
+          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_context"
+        }
+      ]
+    }
+  ]
+}

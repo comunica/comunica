@@ -15,24 +15,24 @@
       "@id": "urn:comunica:my",
       "Runner:_actors": [
         {
-          "@id": "config-sets:http.json#myHttpProxy",
+          "@id": "#myHttpProxy",
           "@type": "ActorHttpProxy",
-          "args_mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" },
-          "args_beforeActors": { "@id": "config-sets:http.json#myHttpFetcher" }
+          "args_mediatorHttp": { "@id": "#mediatorHttp" },
+          "args_beforeActors": { "@id": "#myHttpFetcher" }
         },
         {
-          "@id": "config-sets:http.json#myHttpFetcher",
+          "@id": "#myHttpFetcher",
           "@type": "ActorHttpNodeFetch"
         }
       ]
     },
     {
-      "@id": "config-sets:http.json#mediatorHttp",
+      "@id": "#mediatorHttp",
       "@type": "MediatorNumber",
       "args_type": "min",
       "args_field": "time",
       "args_ignoreErrors": true,
-      "args_bus": { "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus" }
+      "args_bus": { "@id": "ActorHttp:_default_bus" }
     }
   ]
 }

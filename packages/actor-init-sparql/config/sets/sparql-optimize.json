@@ -11,15 +11,15 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:sparql-optimize.json#myJoinBgpOptimizer",
+      "@id": "#myJoinBgpOptimizer",
       "@type": "ActorOptimizeQueryOperationJoinBgp"
     },
     {
-      "@id": "config-sets:sparql-optimize.json#myBgpToJoinOptimizer",
+      "@id": "#myBgpToJoinOptimizer",
       "@type": "ActorOptimizeQueryOperationBgpToJoin"
     },
     {
-      "@id": "config-sets:sparql-optimize.json#myJoinConnectedOptimizer",
+      "@id": "#myJoinConnectedOptimizer",
       "@type": "ActorOptimizeQueryOperationJoinConnected"
     }
   ]

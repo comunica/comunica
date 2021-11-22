@@ -3,13 +3,35 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cird": "npmd:@comunica/actor-init-rdf-dereference/",
-      "files-cird": "cird:^1.0.0/",
-      "config-example": "files-cird:config/config-example.json#",
-
-      "ActorInitRdfDereference": "cird:Actor/Init/RdfDereference",
-      "mediatorRdfDereference": "cird:mediatorRdfDereference",
-      "url": "cird:url"
+      "caird": "npmd:@comunica/actor-init-rdf-dereference/",
+      "files-caird": "caird:^1.0.0/",
+      "ActorInitRdfDereference": {
+        "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorRdfDereference": {
+            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_mediatorRdfDereference"
+          },
+          "args_url": {
+            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_url"
+          },
+          "args_name": {
+            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_name"
+          },
+          "args_bus": {
+            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorInitRdfParseArgs": {
+        "@id": "caird:lib/ActorInitRdfDereference#IActorInitRdfParseArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

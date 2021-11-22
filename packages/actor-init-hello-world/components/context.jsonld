@@ -3,12 +3,32 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "chw": "npmd:@comunica/actor-init-hello-world/",
-      "files-chw": "chw:^1.0.0/",
-      "config-example": "files-chw:config/config-example.json#",
-
-      "ActorInitHelloWorld": "chw:Actor/Init/HelloWorld",
-      "hello": "chw:hello"
+      "caihw": "npmd:@comunica/actor-init-hello-world/",
+      "files-caihw": "caihw:^1.0.0/",
+      "ActorInitHelloWorld": {
+        "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld",
+        "@prefix": true,
+        "@context": {
+          "args_hello": {
+            "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_hello"
+          },
+          "args_name": {
+            "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_name"
+          },
+          "args_bus": {
+            "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "caihw:lib/ActorInitHelloWorld#ActorInitHelloWorld_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorInitHelloWorldArgs": {
+        "@id": "caihw:lib/ActorInitHelloWorld#IActorInitHelloWorldArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }

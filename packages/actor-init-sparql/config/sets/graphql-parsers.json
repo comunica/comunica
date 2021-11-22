@@ -8,7 +8,7 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:graphql-parsers.json#myGraphqlParser",
+      "@id": "#myGraphqlParser",
       "@type": "ActorSparqlParseGraphql"
     }
   ]

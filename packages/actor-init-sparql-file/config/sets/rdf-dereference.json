@@ -22,31 +22,31 @@
   "@id": "urn:comunica:my",
   "Runner:_actors": [
     {
-      "@id": "config-sets:rdf-dereference.json#myRdfFileDereferencer",
+      "@id": "files-cais:config/sets/rdf-dereference.json#myRdfFileDereferencer",
       "@type": "ActorRdfDereferenceFile",
       "args_mediatorRdfParse": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParse",
+        "@id": "files-cais:config/sets/rdf-dereference.json#mediatorRdfParse",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     },
 
     {
-      "@id": "config-sets:rdf-dereference.json#myRdfDereferencer",
+      "@id": "files-cais:config/sets/rdf-dereference.json#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
       "args_mediatorHttp": {
         "@id": "files-cais:config/sets/http.json#mediatorHttp"
       },
       "args_mediatorRdfParseMediatypes": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
+        "@id": "files-cais:config/sets/rdf-dereference.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
         "args_field": "mediaTypes"
       },
       "args_mediatorRdfParseHandle": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
+        "@id": "files-cais:config/sets/rdf-dereference.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]

@@ -1,0 +1,110 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference-paged/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-rdf-dereference-paged",
+  "components": [
+    {
+      "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged",
+      "@type": "Class",
+      "requireElement": "ActorInitRdfDereferencePaged",
+      "extends": [
+        "cbi:lib/ActorInit#ActorInit",
+        "cairdp:lib/ActorInitRdfDereferencePaged#IActorInitRdfDereferencePagedArgs"
+      ],
+      "comment": "A comunica RDF Dereference Paged Init Actor.",
+      "parameters": [
+        {
+          "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_mediatorRdfDereferencePaged",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_url",
+          "range": "xsd:string",
+          "unique": true
+        },
+        {
+          "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_name",
+          "range": "xsd:string",
+          "default": [
+            {
+              "@id": "rdf:subject"
+            }
+          ],
+          "comment": "The name for this actor.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_bus",
+          "range": "cc:lib/Bus#Bus",
+          "default": [
+            {
+              "@id": "cbi:lib/ActorInit#ActorInit_default_bus",
+              "@type": "cc:lib/Bus#Bus"
+            }
+          ],
+          "comment": "The bus this actor subscribes to.",
+          "unique": true,
+          "required": true
+        },
+        {
+          "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_beforeActors",
+          "range": "cc:lib/Actor#Actor",
+          "comment": "Actor that must be registered in the bus before this actor."
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args__constructorArgument",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfDereferencePaged",
+              "value": {
+                "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_mediatorRdfDereferencePaged"
+              }
+            },
+            {
+              "keyRaw": "url",
+              "value": {
+                "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_url"
+              }
+            },
+            {
+              "keyRaw": "name",
+              "value": {
+                "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_name"
+              }
+            },
+            {
+              "keyRaw": "bus",
+              "value": {
+                "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_bus"
+              }
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": {
+                "@id": "cairdp:lib/ActorInitRdfDereferencePaged#ActorInitRdfDereferencePaged_args_beforeActors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "cairdp:lib/ActorInitRdfDereferencePaged#IActorInitRdfDereferencePagedArgs",
+      "@type": "AbstractClass",
+      "requireElement": "IActorInitRdfDereferencePagedArgs",
+      "extends": [
+        "cc:lib/Actor#IActorArgs"
+      ],
+      "parameters": [],
+      "constructorArguments": []
+    }
+  ]
+}
