@@ -29,9 +29,9 @@ After installing, this mediator can be instantiated as follows:
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
+        "@id": "#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]
@@ -40,6 +40,6 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
+* `args_bus`: Identifier of the bus to mediate over.
 
 

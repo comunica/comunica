@@ -29,10 +29,10 @@ After installing, this mediator can be instantiated as follows:
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
+        "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
+        "args_field": "mediaTypes"
       }
     }
   ]
@@ -41,6 +41,6 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
-* `cmcu:Mediator/CombineUnion/field`: The field name to mediate over.
+* `args_bus`: Identifier of the bus to mediate over.
+* `args_field`: The field name to mediate over.
 

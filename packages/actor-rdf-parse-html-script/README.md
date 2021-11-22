@@ -28,18 +28,18 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
+      "@id": "#myRdfParserHtmlScript",
       "@type": "ActorRdfParseHtmlScript",
-      "carphs:mediatorRdfParseMediatypes": {
-        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
+      "args_mediatorRdfParseMediatypes": {
+        "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
+        "args_field": "mediaTypes"
       },
-      "carphs:mediatorRdfParseHandle": {
-        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseHandle",
+      "args_mediatorRdfParseHandle": {
+        "@id": "#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]
@@ -48,5 +48,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carphs:mediatorRdfParseMediatypes`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for collecting media types.
-* `carphs:mediatorRdfParseHandle`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.
+* `args_mediatorRdfParseMediatypes`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for collecting media types.
+* `args_mediatorRdfParseHandle`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.

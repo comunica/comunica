@@ -38,9 +38,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraCountQuery",
+      "@id": "#myRdfMetadataExtractHydraCountQuery",
       "@type": "ActorRdfMetadataExtractHydraCountQuery",
-      "carmehco:Actor/RdfMetadataExtract/HydraCountQuery/predicate": [
+      "args_predicates": [
         "http://www.w3.org/ns/hydra/core#totalItems",
         "http://rdfs.org/ns/void#triples"
       ]
@@ -51,5 +51,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carmehco:Actor/RdfMetadataExtract/HydraCountQuery/predicate`: The predicates to consider when determining counts, defaults to `http://www.w3.org/ns/hydra/core#totalItems` and `http://rdfs.org/ns/void#triples`.
+* `args_predicates`: The predicates to consider when determining counts, defaults to `http://www.w3.org/ns/hydra/core#totalItems` and `http://rdfs.org/ns/void#triples`.
 

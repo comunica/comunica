@@ -27,22 +27,23 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:sparql-serializers.json#myRdfSparqlSerializer",
+      "@id": "#myRdfSparqlSerializer",
       "@type": "ActorSparqlSerializeRdf",
-      "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize",
+      "args_mediatorRdfSerialize": {
+        "@id": "#mediatorRdfSerialize",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" }
+        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" }
       },
-      "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner": {
+      "args_mediatorMediaTypeCombiner": {
+        "@id": "#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
+        "args_field": "mediaTypes"
       },
-      "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner": {
+      "args_mediatorMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypeFormats"
+        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
+        "args_field": "mediaTypeFormats"
       }
     },
   ]
@@ -51,6 +52,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for actual serialization.
-* `cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media types.
-* `cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media type formats.
+* `args_mediatorRdfSerialize`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for actual serialization.
+* `args_mediatorRdfSerializeMediaTypeCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media types.
+* `args_mediatorRdfSerializeMediaTypeFormatCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media type formats.

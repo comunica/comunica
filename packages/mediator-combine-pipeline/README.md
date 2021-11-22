@@ -30,9 +30,9 @@ After installing, this mediator can be instantiated as follows:
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:sparql-init.json#mediatorOptimizeQueryOperation",
+        "@id": "#mediatorOptimizeQueryOperation",
         "@type": "MediatorCombinePipeline",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cboqo:lib/ActorOptimizeQueryOperation#ActorOptimizeQueryOperation_default_bus" }
+        "args_bus": { "@id": "ActorOptimizeQueryOperation:_default_bus" }
       }
     }
   ]
@@ -41,5 +41,5 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
+* `args_bus`: Identifier of the bus to mediate over.
 

@@ -30,13 +30,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": TODO,
+      "@id": "#myActorRdfDereferenceFallback",
       "@type": "ActorRdfDereferenceFallback"
     }
   ]
 }
 ```
-
-### Config Parameters
-
-TODO

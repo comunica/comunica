@@ -30,9 +30,9 @@ After installing, this mediator can be instantiated as follows:
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:sparql-init.json#mediatorHttpInvalidate",
+        "@id": "#mediatorHttpInvalidate",
         "@type": "MediatorAll",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_default_bus" }
+        "args_bus": { "@id": "ActorHttpInvalidate:_default_bus" }
       }
     }
   ]
@@ -41,4 +41,4 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
+* `args_bus`: Identifier of the bus to mediate over.

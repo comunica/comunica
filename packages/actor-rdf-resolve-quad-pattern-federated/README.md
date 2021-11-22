@@ -29,10 +29,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-federated.json#myFederatedQuadPatternResolver",
+      "@id": "#myFederatedQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternFederated",
-      "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
-        "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern"
+      "args_mediatorResolveQuadPattern": {
+        "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern"
       }
     }
   ]
@@ -41,4 +41,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
+* `args_mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).

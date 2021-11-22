@@ -18,7 +18,7 @@ $ yarn add @comunica/bus-rdf-update-hypermedia
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus`
+* **Bus name**: `ActorRdfUpdateHypermedia:_default_bus`
 
 ## Creating actors on this bus
 

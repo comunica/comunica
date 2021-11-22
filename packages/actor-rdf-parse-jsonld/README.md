@@ -27,10 +27,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
+      "@id": "#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
-      "priorityScale": 0.9,
-      "crpjl:Actor/RdfParse/JsonLd/mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" }
+      "args_priorityScale": 0.9,
+      "args_mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" }
     }
   ]
 }
@@ -38,8 +38,8 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
-* `crpjl:Actor/RdfParse/JsonLd/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http), for fetching remote JSON-LD contexts.
+* `args_priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
+* `args_mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http), for fetching remote JSON-LD contexts.
 
 ### Passing custom options
 

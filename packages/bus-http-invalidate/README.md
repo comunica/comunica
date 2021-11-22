@@ -18,4 +18,4 @@ $ yarn add @comunica/bus-http-invalidate
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_default_bus`
+* **Bus name**: `ActorHttpInvalidate:_default_bus`

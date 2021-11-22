@@ -31,24 +31,22 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-dereference.json#myRdfDereferencer",
+      "@id": "#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
-      "mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
-      },
-      "crdhp:mediatorRdfParseMediatypes": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
+      "args_mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" },
+      "args_mediatorRdfParseMediatypes": {
+        "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
+        "args_field": "mediaTypes"
       },
-      "crdhp:mediatorRdfParseHandle": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
+      "args_mediatorRdfParseHandle": {
+        "@id": "#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       },
-      "crdhp:maxAcceptHeaderLength": 1024,
-      "crdhp:maxAcceptHeaderLengthBrowser": 128,
+      "args_maxAcceptHeaderLength": 1024,
+      "args_maxAcceptHeaderLengthBrowser": 128,
     }
   ]
 }
@@ -56,8 +54,8 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `crdhp:mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
-* `crdhp:mediatorRdfParseMediatypes`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for collecting media types.
-* `crdhp:mediatorRdfParseHandle`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.
-* `crdhp:maxAcceptHeaderLength`: The maximum allowed accept header value length for non-browser environments, defaults to `1024`.
-* `crdhp:maxAcceptHeaderLengthBrowser`: The maximum allowed accept header value length for browser environments, defaults to `128`.
+* `args_mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `args_mediatorRdfParseMediatypes`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for collecting media types.
+* `args_mediatorRdfParseHandle`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.
+* `args_maxAcceptHeaderLength`: The maximum allowed accept header value length for non-browser environments, defaults to `1024`.
+* `args_maxAcceptHeaderLengthBrowser`: The maximum allowed accept header value length for browser environments, defaults to `128`.

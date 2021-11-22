@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-hypermedia.json#myHypermediaLinksQueue",
+      "@id": "#myHypermediaLinksQueue",
       "@type": "ActorRdfResolveHypermediaLinksQueueFifo"
     }
   ]

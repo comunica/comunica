@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:graphql-parsers.json#myGraphqlParser",
+      "@id": "#myGraphqlParser",
       "@type": "ActorSparqlParseGraphql"
     }
   ]

@@ -27,9 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserXmlRdfa",
+      "@id": "#myRdfParserXmlRdfa",
       "@type": "ActorRdfParseXmlRdfa",
-      "priorityScale": 0.3
+      "args_priorityScale": 0.3
     }
   ]
 }
@@ -37,4 +37,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
+* `args_priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.

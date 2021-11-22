@@ -30,9 +30,13 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:http.json#myHttpFetcher",
+      "@id": "#myHttpFetcher",
       "@type": "ActorHttpNative"
     }
   ]
 }
 ```
+
+### Config Parameters
+
+* `args_agentOptions`: The agent JSON options for the HTTP agent. _(optional)_ 

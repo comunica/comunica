@@ -28,19 +28,17 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:http-memento.json#myHttpFetcher",
+      "@id": "#myHttpFetcher",
       "@type": "ActorHttpMemento",
-      "cahm:Actor/Http/Memento/mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
-      },
-      "args_beforeActors": "config-sets:http.json#myHttpFetcher"
+      "args_mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" },
+      "args_beforeActors": { "@id": "files-cais:config/sets/http.json#myHttpFetcher" }
     }
   ]
 }
 ```
 
-Use `beforeActor` to indicate that this actor MUST always run _before_ your default HTTP actor.
+Use `args_beforeActors` to indicate that this actor MUST always run _before_ your default HTTP actor.
 
 ### Config Parameters
 
-* `cahm:Actor/Http/Memento/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `args_mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).

@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-rdfjs.json#myRdfRdfJsSourceQuadPatternResolver",
+      "@id": "#myRdfRdfJsSourceQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternRdfJsSource"
     }
   ]

@@ -29,12 +29,12 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-dereference.json#myRdfFileDereferencer",
+      "@id": "#myRdfFileDereferencer",
       "@type": "ActorRdfDereferenceFile",
-      "cardf:mediatorRdfParse": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParse",
+      "args_mediatorRdfParse": {
+        "@id": "#mediatorRdfParse",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus" }
+        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]
@@ -43,4 +43,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cardf:mediatorRdfParse`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.
+* `args_mediatorRdfParse`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.

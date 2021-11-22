@@ -27,8 +27,11 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": TODO,
-      "@type": "ActorRdfUpdateHypermediaSparql"
+      "@id": "#myRdfUpdateHypermediaSparql",
+      "@type": "ActorRdfUpdateHypermediaSparql",
+      "args_mediatorHttp": {
+        "@id": "files-cais:config/sets/http.json#mediatorHttp"
+      }
     }
   ]
 }
@@ -36,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-TODO
+* `args_mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).

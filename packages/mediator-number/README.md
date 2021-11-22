@@ -30,11 +30,12 @@ After installing, this mediator can be instantiated as follows:
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation",
-        "@type": "MediatorNumberMin",
-        "cmn:Mediator/Number/field": "httpRequests",
-        "ignoreErrors": true,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus" }
+        "@id": "#mediatorQueryOperation",
+        "@type": "MediatorNumber",
+        "args_field": "httpRequests",
+        "args_type": "min",
+        "args_ignoreErrors": true,
+        "args_bus": { "@id": "ActorQueryOperation:_default_bus" }
       }
     }
   ]
@@ -45,6 +46,7 @@ Instead of `MediatorNumberMin`, `MediatorNumberMax` could also be used to resolv
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
-* `cmn:Mediator/Number/field`: The field name to mediate over.
-* `cmn:Mediator/Number/ignoreErrors`: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.
+* `args_bus`: Identifier of the bus to mediate over.
+* `args_field`: The field name to mediate over.
+* `args_type`: The way how the index should be selected. For choosing the minimum value: 'min'. For choosing the maximum value: 'max'.
+* `args_ignoreErrors`: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.

@@ -35,7 +35,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-sparql.json#myRdfMetadataExtractSparqlService",
+      "@id": "#myRdfMetadataExtractSparqlService",
       "@type": "ActorRdfMetadataExtractSparqlService"
     }
   ]
@@ -44,4 +44,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carmess:Actor/RdfMetadataExtract/SparqlService#inferHttpsEndpoint`: If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based, defaults to `true`.
+* `args_inferHttpsEndpoint`: If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based, defaults to `true`.

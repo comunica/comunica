@@ -18,7 +18,7 @@ $ yarn add @comunica/bus-sparql-serialize
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus`
+* **Bus name**: `ActorSparqlSerialize:_default_bus`
 
 ## Creating actors on this bus
 

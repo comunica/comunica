@@ -20,7 +20,7 @@ $ yarn add @comunica/bus-rdf-join-selectivity
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-selectivity/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbrjs:lib/ActorRdfJoinSelectivity#ActorRdfJoinSelectivity_default_bus`
+* **Bus name**: `ActorRdfJoinSelectivity:_default_bus`
 
 ## Creating actors on this bus
 

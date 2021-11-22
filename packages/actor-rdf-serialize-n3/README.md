@@ -29,9 +29,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-serializers.json#myRdfSerializerN3",
+      "@id": "#myRdfSerializerN3",
       "@type": "ActorRdfSerializeN3",
-      "caam:Actor/AbstractMediaTypedFixed/priorityScale": 1
+      "args_priorityScale": 1
     }
   ]
 }
@@ -39,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.
+* `args_priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.

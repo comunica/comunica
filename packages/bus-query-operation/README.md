@@ -18,7 +18,7 @@ $ yarn add @comunica/bus-query-operation
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus`
+* **Bus name**: `ActorQueryOperation:_default_bus`
 
 ## Creating actors on this bus
 

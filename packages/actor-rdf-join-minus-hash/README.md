@@ -28,9 +28,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:join.json#myRdfJoinActorMinusHash",
+      "@id": "#myRdfJoinActorMinusHash",
       "@type": "ActorRdfJoinMinusHash",
-      "cbrj:lib/ActorRdfJoin#ActorRdfJoin#mediatorJoinSelectivity": { "@id": "config-sets:join.json#mediatorJoinSelectivity" }
+      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     }
   ]
 }
@@ -38,4 +38,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbrj:lib/ActorRdfJoin#ActorRdfJoin#mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `args_mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).

@@ -28,9 +28,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
+      "@id": "#myRdfParserN3",
       "@type": "ActorRdfParseN3",
-      "priorityScale": 1.0
+      "args_priorityScale": 1.0
     }
   ]
 }
@@ -38,4 +38,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
+* `args_priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.

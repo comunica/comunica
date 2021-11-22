@@ -34,9 +34,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraPagesize",
+      "@id": "#myRdfMetadataExtractHydraPagesize",
       "@type": "ActorRdfMetadataExtractHydraPagesize",
-      "carmehp:Actor/RdfMetadataExtract/HydraPagesize#predicate": [
+      "args_predicates": [
         "http://www.w3.org/ns/hydra/core#itemsPerPage"
       ]
     }
@@ -46,4 +46,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carmehp:Actor/RdfMetadataExtract/HydraPagesize#predicate`: The predicates to consider when determining page size, defaults to `http://www.w3.org/ns/hydra/core#itemsPerPage`.
+* `args_predicates`: The predicates to consider when determining page size, defaults to `http://www.w3.org/ns/hydra/core#itemsPerPage`.

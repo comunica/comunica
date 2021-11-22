@@ -30,13 +30,13 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPatchSparqlUpdate",
+      "@id": "#myRdfUpdateHypermediaPatchSparqlUpdate",
       "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
-      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
+      "args_mediatorHttp": {
+        "@id": "files-cais:config/sets/http.json#mediatorHttp"
       },
-      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
+      "args_mediatorRdfSerialize": {
+        "@id": "files-cais:config/sets/sparql-serializers.json#mediatorRdfSerialize"
       }
     }
   ]
@@ -45,5 +45,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
-* `caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize`: A mediator over the [RDF serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize).
+* `args_mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `args_mediatorRdfSerialize`: A mediator over the [RDF serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize).

@@ -30,23 +30,23 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-hypermedia.json#myHypermediaQpfResolver",
+      "@id": "#myHypermediaQpfResolver",
       "@type": "ActorRdfResolveHypermediaQpf",
-      "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorRdfDereference": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
+      "args_mediatorRdfDereference": {
+        "@id": "#mediatorRdfDereference",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_default_bus" }
+        "args_bus": { "@id": "ActorRdfDereference:_default_bus" }
       },
-      "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadata": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
+      "args_mediatorMetadata": {
+        "@id": "#mediatorMetadata",
         "@type": "MediatorRace",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus" }
+        "args_bus": { "@id": "ActorRdfMetadata:_default_bus" }
       },
-      "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadataExtract": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
+      "argsmediatorMetadataExtract": {
+        "@id": "#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus" },
-        "cmcu:Mediator/CombineUnion/field": "metadata"
+        "args_bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
+        "args_field": "metadata"
       }
     }
   ]
@@ -55,6 +55,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
-* `carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
-* `carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
+* `args_mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
+* `args_mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
+* `args_mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).

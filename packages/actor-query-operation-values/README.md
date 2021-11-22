@@ -27,13 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:sparql-queryoperators.json#myValuesQueryOperator",
+      "@id": "#myValuesQueryOperator",
       "@type": "ActorQueryOperationValues"
     }
   ]
 }
 ```
-
-### Config Parameters
-
-* `cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_args_mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).

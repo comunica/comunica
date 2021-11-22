@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:sparql-parsers.json#mySparqlParser",
+      "@id": "#mySparqlParser",
       "@type": "ActorSparqlParseAlgebra"
     }
   ]

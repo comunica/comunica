@@ -37,13 +37,13 @@ After installing, this mediator can be instantiated as follows:
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:sparql-queryoperators.json#mediatorRdfJoin",
+        "@id": "#mediatorRdfJoin",
         "@type": "MediatorJoinCoefficientsFixed",
-        "cmjcf:Mediator/JoinCoefficientsFixed#cpuWeight": 1,
-        "cmjcf:Mediator/JoinCoefficientsFixed#memoryWeight": 1,
-        "cmjcf:Mediator/JoinCoefficientsFixed#timeWeight": 1,
-        "cmjcf:Mediator/JoinCoefficientsFixed#ioWeight": 0.01,
-        "cc:lib/Mediator#Mediator_args_bus": { "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_default_bus" }
+        "args_cpuWeight": 1,
+        "args_memoryWeight": 1,
+        "args_timeWeight": 1,
+        "args_ioWeight": 0.01,
+        "args_bus": { "@id": ActorRdfJoin:_default_bus" }
       }
     }
   ]
@@ -52,9 +52,9 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `"cmjcf:Mediator/JoinCoefficientsFixed#cpuWeight"`: Weight for the CPU cost. Higher values lead to higher overall costs.
-* `"cmjcf:Mediator/JoinCoefficientsFixed#memoryWeight"`: Weight for the memory cost. Higher values lead to higher overall costs.
-* `"cmjcf:Mediator/JoinCoefficientsFixed#timeWeight"`: Weight for the execution time cost. Higher values lead to higher overall costs.
-* `"cmjcf:Mediator/JoinCoefficientsFixed#ioWeight"`: Weight for the I/O cost. Higher values lead to higher overall costs.
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
+* `"args_cpuWeight"`: Weight for the CPU cost. Higher values lead to higher overall costs.
+* `"args_memoryWeight"`: Weight for the memory cost. Higher values lead to higher overall costs.
+* `"args_timeWeight"`: Weight for the execution time cost. Higher values lead to higher overall costs.
+* `"args_ioWeight"`: Weight for the I/O cost. Higher values lead to higher overall costs.
+* `"args_bus"`: Identifier of the bus to mediate over.
 

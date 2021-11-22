@@ -28,21 +28,21 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsHypermedia",
+      "@id": "#myRdfUpdateQuadsHypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
       "args_mediatorRdfDereference": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference"
+        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference"
       },
       "args_mediatorMetadata": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata"
+        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadata"
       },
       "args_mediatorMetadataExtract": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract"
+        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract"
       },
       "args_mediatorRdfUpdateHypermedia": {
-        "@id": "config-sets:rdf-update-rdfjs.json#mediatorRdfUpdateHypermedia",
+        "@id": "#mediatorRdfUpdateHypermedia",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "cbruh:lib/ActorRdfUpdateHypermedia#ActorRdfUpdateHypermedia_default_bus" }
+        "args_bus": { "@id": "ActorRdfUpdateHypermedia:_default_bus" }
       }
     }
   ]

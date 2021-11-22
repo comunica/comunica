@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsRdfJsStore",
+      "@id": "#myRdfUpdateQuadsRdfJsStore",
       "@type": "ActorRdfUpdateQuadsRdfJsStore"
     }
   ]
