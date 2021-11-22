@@ -1,10 +1,10 @@
+import type { Readable } from 'stream';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import type { IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type * as RDF from '@rdfjs/types';
 import { JsonLdParser } from 'jsonld-streaming-parser';
 import { DocumentLoaderMediated } from './DocumentLoaderMediated';
 
@@ -41,7 +41,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
       strictValues: actionContext && actionContext.get(KeysRdfParseJsonLd.strictValues),
       ...(actionContext && actionContext.get(KeysRdfParseJsonLd.parserOptions)) || {},
     });
-    const quads: RDF.Stream = parser.import(action.input);
+    const quads = <Readable> parser.import(action.input);
     return { quads };
   }
 }
