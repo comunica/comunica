@@ -22,6 +22,12 @@
           "required": true
         },
         {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity",
+          "range": "cc:lib/Mediator#Mediator",
+          "unique": true,
+          "required": true
+        },
+        {
           "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_physicalName",
           "range": "xsd:string",
           "comment": "The physical name of join operation this actor implements. This is used for debug and query plan logs.",
@@ -35,24 +41,6 @@
           "unique": true
         },
         {
-          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntriesMin",
-          "range": "xsd:boolean",
-          "comment": "If true, the limitEntries field is a lower limit, otherwise, it is an upper limit. Defaults to false.",
-          "unique": true
-        },
-        {
-          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_canHandleUndefs",
-          "range": "xsd:boolean",
-          "comment": "If this actor can handle undefs in the bindings. Defaults to false.",
-          "unique": true
-        },
-        {
-          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
-        },
-        {
           "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_name",
           "range": "xsd:string",
           "default": [
@@ -63,6 +51,18 @@
           "comment": "The name for this actor.",
           "unique": true,
           "required": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntriesMin",
+          "range": "xsd:boolean",
+          "comment": "If true, the limitEntries field is a lower limit, otherwise, it is an upper limit. Defaults to false.",
+          "unique": true
+        },
+        {
+          "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_canHandleUndefs",
+          "range": "xsd:boolean",
+          "comment": "If this actor can handle undefs in the bindings. Defaults to false.",
+          "unique": true
         },
         {
           "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_bus",

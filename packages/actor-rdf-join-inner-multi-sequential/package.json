@@ -64,7 +64,7 @@
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "npm run build:ts && npm run build:components-actor",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components-actor": "componentsjs-generator -r carjimse",
+    "build:components-actor": "componentsjs-generator",
     "validate": "npm ls"
   }
 }

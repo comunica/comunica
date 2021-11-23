@@ -1,5 +1,20 @@
 {
   "source": "lib",
+  "ignorePackagePaths": [
+    "packages/actor-init-sparql-file",
+    "packages/actor-init-sparql-rdfjs",
+    "packages/bindings-factory",
+    "packages/context-entries",
+    "packages/data-factory",
+    "packages/mediatortype-accuracy",
+    "packages/mediatortype-httprequests",
+    "packages/mediatortype-join-coefficients",
+    "packages/mediatortype-priority",
+    "packages/mediatortype-time",
+    "packages/packager",
+    "packages/runner-cli",
+    "packages/utils-datasource"
+  ],
   "typeScopedContexts": true,
   "ignoreComponents": [
     "Error",
@@ -10,6 +25,7 @@
     "EventEmitter",
     "FetchDocumentLoader",
     "BindingsToQuadsIterator",
+    "AsyncIteratorJsonBindings",
     "newEngine",
     "evaluateQuery",
     "bindingsStreamToGraphQl",
@@ -21,5 +37,20 @@
     "KEY_CONTEXT_QUERY",
     "ISetupProperties",
     "IQueryOptions"
-  ]
+  ],
+  "modulePrefix": {
+    "@comunica/actor-query-operation-service": "caqose",
+    "@comunica/actor-query-operation-update-clear": "caqoucl",
+    "@comunica/actor-query-operation-update-compositeupdate": "caqoucu",
+    "@comunica/actor-query-operation-update-deleteinsert": "caqoudi",
+    "@comunica/actor-rdf-dereference-fallback": "cardf",
+    "@comunica/actor-rdf-join-inner-multi-sequential": "carjimse",
+    "@comunica/actor-rdf-join-inner-multi-smallest": "carjimsm",
+    "@comunica/actor-rdf-join-inner-none": "carjino",
+    "@comunica/actor-rdf-join-inner-single": "carjisi",
+    "@comunica/actor-rdf-join-inner-symmetrichash": "carjish",
+    "@comunica/actor-rdf-metadata-extract-hydra-count": "carmehco",
+    "@comunica/actor-sparql-serialize-stats": "cassst",
+    "@comunica/actor-sparql-serialize-tree": "casstr"
+  }
 }

@@ -101,7 +101,7 @@
       "constructorArguments": []
     },
     {
-      "@id": "IAction:QueryOperation",
+      "@id": "ct:lib/index#IActionQueryOperation",
       "@type": "AbstractClass",
       "requireElement": "IActionQueryOperation",
       "extends": [

@@ -36,8 +36,8 @@
         "@prefix": true,
         "@context": {}
       },
-      "QueryOperation": {
-        "@id": "IAction:QueryOperation",
+      "IActionQueryOperation": {
+        "@id": "ct:lib/index#IActionQueryOperation",
         "@prefix": true,
         "@context": {}
       },

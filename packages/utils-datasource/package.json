@@ -2,7 +2,6 @@
   "name": "@comunica/utils-datasource",
   "version": "1.22.2",
   "description": "An abstract actor for handling mediatype detection.",
-  "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {

@@ -12,23 +12,23 @@
           "options_logicalType": {
             "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_logicalType"
           },
+          "args_mediatorJoinSelectivity": {
+            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity"
+          },
           "options_physicalName": {
             "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_physicalName"
           },
           "options_limitEntries": {
             "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntries"
           },
+          "args_name": {
+            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_name"
+          },
           "options_limitEntriesMin": {
             "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntriesMin"
           },
           "options_canHandleUndefs": {
             "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_canHandleUndefs"
-          },
-          "args_mediatorJoinSelectivity": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity"
-          },
-          "args_name": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_name"
           },
           "args_bus": {
             "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_bus"

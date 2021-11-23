@@ -102,7 +102,7 @@
     "clean": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules",
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "tsc",
-    "build:components": "lerna run build:components-core && lerna run build:components-aux && lerna run build:components-bus && lerna run build:components-logger && lerna run build:components-mediator && lerna run build:components-actor && lerna run build:components-actorinit",
+    "build:components": "componentsjs-generator packages/*",
     "build-watch": "nodemon -e ts --ignore '*.d.ts' --exec yarn run build",
     "build-watch:ts": "tsc --watch",
     "build-watch:components": "nodemon -e d.ts --exec yarn run build:components",

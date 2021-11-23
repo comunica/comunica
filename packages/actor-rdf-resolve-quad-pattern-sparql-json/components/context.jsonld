@@ -5,9 +5,30 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carrqpsj": "npmd:@comunica/actor-rdf-resolve-quad-pattern-sparql-json/",
       "files-carrqpsj": "carrqpsj:^1.0.0/",
-
-      "ActorRdfResolveQuadPatternSparqlJson": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson",
-      "mediatorHttp": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp"
+      "ActorRdfResolveQuadPatternSparqlJson": {
+        "@id": "carrqpsj:lib/ActorRdfResolveQuadPatternSparqlJson#ActorRdfResolveQuadPatternSparqlJson",
+        "@prefix": true,
+        "@context": {
+          "args_mediatorHttp": {
+            "@id": "carrqpsj:lib/ActorRdfResolveQuadPatternSparqlJson#ActorRdfResolveQuadPatternSparqlJson_args_mediatorHttp"
+          },
+          "args_name": {
+            "@id": "carrqpsj:lib/ActorRdfResolveQuadPatternSparqlJson#ActorRdfResolveQuadPatternSparqlJson_args_name"
+          },
+          "args_bus": {
+            "@id": "carrqpsj:lib/ActorRdfResolveQuadPatternSparqlJson#ActorRdfResolveQuadPatternSparqlJson_args_bus"
+          },
+          "args_beforeActors": {
+            "@id": "carrqpsj:lib/ActorRdfResolveQuadPatternSparqlJson#ActorRdfResolveQuadPatternSparqlJson_args_beforeActors",
+            "@container": "@list"
+          }
+        }
+      },
+      "IActorRdfResolveQuadPatternSparqlJsonArgs": {
+        "@id": "carrqpsj:lib/ActorRdfResolveQuadPatternSparqlJson#IActorRdfResolveQuadPatternSparqlJsonArgs",
+        "@prefix": true,
+        "@context": {}
+      }
     }
   ]
 }
