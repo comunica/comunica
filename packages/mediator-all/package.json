@@ -55,6 +55,6 @@
     "build": "npm run build:ts && npm run build:components-mediator",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
-    "build:components-mediator": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore"
+    "build:components-mediator": "componentsjs-generator"
   }
 }

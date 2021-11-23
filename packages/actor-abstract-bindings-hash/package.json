@@ -59,7 +59,7 @@
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "npm run build:ts && npm run build:components-aux",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components-aux": "componentsjs-generator -s lib --typeScopedContexts -i ../../.componentsignore",
+    "build:components-aux": "componentsjs-generator",
     "validate": "npm ls"
   },
   "dependencies": {
