@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-metadata",
   "import": [
-    "files-cbrm:components/ActorRdfMetadata.jsonld",
-    "files-cbrm:components/ActorRdfMetadataQuadPredicate.jsonld"
+    "cbrm:components/ActorRdfMetadata.jsonld",
+    "cbrm:components/ActorRdfMetadataQuadPredicate.jsonld"
   ]
 }

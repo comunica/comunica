@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-selectivity-variable-counting",
   "import": [
-    "files-carjsvc:components/ActorRdfJoinSelectivityVariableCounting.jsonld"
+    "carjsvc:components/ActorRdfJoinSelectivityVariableCounting.jsonld"
   ]
 }

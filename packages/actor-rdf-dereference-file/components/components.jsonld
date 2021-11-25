@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-dereference-file",
   "import": [
-    "files-cardf:components/ActorRdfDereferenceFile.jsonld"
+    "cardf:components/ActorRdfDereferenceFile.jsonld"
   ]
 }

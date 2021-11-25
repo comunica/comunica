@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-sparql-parse",
   "import": [
-    "files-cbsp:components/ActorSparqlParse.jsonld"
+    "cbsp:components/ActorSparqlParse.jsonld"
   ]
 }

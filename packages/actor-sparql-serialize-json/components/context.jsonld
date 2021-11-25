@@ -3,31 +3,30 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cassj": "npmd:@comunica/actor-sparql-serialize-json/",
-      "files-cassj": "cassj:^1.0.0/",
+      "cassj": "npmd:@comunica/actor-sparql-serialize-json/^1.0.0/",
       "ActorSparqlSerializeJson": {
-        "@id": "cassj:lib/ActorSparqlSerializeJson#ActorSparqlSerializeJson",
+        "@id": "cassj:components/ActorSparqlSerializeJson.jsonld#ActorSparqlSerializeJson",
         "@prefix": true,
         "@context": {
           "args_mediaTypePriorities": {
-            "@id": "cassj:lib/ActorSparqlSerializeJson#ActorSparqlSerializeJson_args_mediaTypePriorities",
+            "@id": "cassj:components/ActorSparqlSerializeJson.jsonld#ActorSparqlSerializeJson_args_mediaTypePriorities",
             "@type": "@json"
           },
           "args_mediaTypeFormats": {
-            "@id": "cassj:lib/ActorSparqlSerializeJson#ActorSparqlSerializeJson_args_mediaTypeFormats",
+            "@id": "cassj:components/ActorSparqlSerializeJson.jsonld#ActorSparqlSerializeJson_args_mediaTypeFormats",
             "@type": "@json"
           },
           "args_priorityScale": {
-            "@id": "cassj:lib/ActorSparqlSerializeJson#ActorSparqlSerializeJson_args_priorityScale"
+            "@id": "cassj:components/ActorSparqlSerializeJson.jsonld#ActorSparqlSerializeJson_args_priorityScale"
           },
           "args_name": {
-            "@id": "cassj:lib/ActorSparqlSerializeJson#ActorSparqlSerializeJson_args_name"
+            "@id": "cassj:components/ActorSparqlSerializeJson.jsonld#ActorSparqlSerializeJson_args_name"
           },
           "args_bus": {
-            "@id": "cassj:lib/ActorSparqlSerializeJson#ActorSparqlSerializeJson_args_bus"
+            "@id": "cassj:components/ActorSparqlSerializeJson.jsonld#ActorSparqlSerializeJson_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cassj:lib/ActorSparqlSerializeJson#ActorSparqlSerializeJson_args_beforeActors",
+            "@id": "cassj:components/ActorSparqlSerializeJson.jsonld#ActorSparqlSerializeJson_args_beforeActors",
             "@container": "@list"
           }
         }

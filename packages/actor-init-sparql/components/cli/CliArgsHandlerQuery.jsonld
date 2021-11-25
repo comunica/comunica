@@ -5,42 +5,60 @@
   "@id": "npmd:@comunica/actor-init-sparql",
   "components": [
     {
-      "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery",
+      "@id": "cais:components/cli/CliArgsHandlerQuery.jsonld#CliArgsHandlerQuery",
       "@type": "Class",
       "requireElement": "CliArgsHandlerQuery",
       "extends": [
-        "cais:lib/cli/ICliArgsHandler#ICliArgsHandler"
+        "cais:components/cli/ICliArgsHandler.jsonld#ICliArgsHandler"
       ],
       "comment": "CLI arguments handler that handles options for query execution.",
       "parameters": [
         {
-          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_defaultQueryInputFormat",
-          "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "@id": "cais:components/cli/CliArgsHandlerQuery.jsonld#CliArgsHandlerQuery_defaultQueryInputFormat",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:string",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
         },
         {
-          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_queryString",
-          "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "@id": "cais:components/cli/CliArgsHandlerQuery.jsonld#CliArgsHandlerQuery_queryString",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:string",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
         },
         {
-          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_context",
-          "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "@id": "cais:components/cli/CliArgsHandlerQuery.jsonld#CliArgsHandlerQuery_context",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:string",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_defaultQueryInputFormat"
+          "@id": "cais:components/cli/CliArgsHandlerQuery.jsonld#CliArgsHandlerQuery_defaultQueryInputFormat"
         },
         {
-          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_queryString"
+          "@id": "cais:components/cli/CliArgsHandlerQuery.jsonld#CliArgsHandlerQuery_queryString"
         },
         {
-          "@id": "cais:lib/cli/CliArgsHandlerQuery#CliArgsHandlerQuery_context"
+          "@id": "cais:components/cli/CliArgsHandlerQuery.jsonld#CliArgsHandlerQuery_context"
         }
       ]
     }

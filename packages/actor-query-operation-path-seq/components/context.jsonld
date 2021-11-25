@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqops": "npmd:@comunica/actor-query-operation-path-seq/",
-      "files-caqops": "caqops:^1.0.0/",
+      "caqops": "npmd:@comunica/actor-query-operation-path-seq/^1.0.0/",
       "ActorQueryOperationPathSeq": {
-        "@id": "caqops:lib/ActorQueryOperationPathSeq#ActorQueryOperationPathSeq",
+        "@id": "caqops:components/ActorQueryOperationPathSeq.jsonld#ActorQueryOperationPathSeq",
         "@prefix": true,
         "@context": {
           "args_mediatorJoin": {
-            "@id": "caqops:lib/ActorQueryOperationPathSeq#ActorQueryOperationPathSeq_args_mediatorJoin"
+            "@id": "caqops:components/ActorQueryOperationPathSeq.jsonld#ActorQueryOperationPathSeq_args_mediatorJoin"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caqops:lib/ActorQueryOperationPathSeq#ActorQueryOperationPathSeq_args_mediatorQueryOperation"
+            "@id": "caqops:components/ActorQueryOperationPathSeq.jsonld#ActorQueryOperationPathSeq_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqops:lib/ActorQueryOperationPathSeq#ActorQueryOperationPathSeq_args_name"
+            "@id": "caqops:components/ActorQueryOperationPathSeq.jsonld#ActorQueryOperationPathSeq_args_name"
           },
           "args_bus": {
-            "@id": "caqops:lib/ActorQueryOperationPathSeq#ActorQueryOperationPathSeq_args_bus"
+            "@id": "caqops:components/ActorQueryOperationPathSeq.jsonld#ActorQueryOperationPathSeq_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqops:lib/ActorQueryOperationPathSeq#ActorQueryOperationPathSeq_args_beforeActors",
+            "@id": "caqops:components/ActorQueryOperationPathSeq.jsonld#ActorQueryOperationPathSeq_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorQueryOperationPathSeq": {
-        "@id": "caqops:lib/ActorQueryOperationPathSeq#IActorQueryOperationPathSeq",
+        "@id": "caqops:components/ActorQueryOperationPathSeq.jsonld#IActorQueryOperationPathSeq",
         "@prefix": true,
         "@context": {}
       }

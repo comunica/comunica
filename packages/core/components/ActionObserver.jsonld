@@ -5,46 +5,40 @@
   "@id": "npmd:@comunica/core",
   "components": [
     {
-      "@id": "cc:lib/ActionObserver#ActionObserver",
+      "@id": "cc:components/ActionObserver.jsonld#ActionObserver",
       "@type": "AbstractClass",
       "requireElement": "ActionObserver",
       "extends": [],
       "comment": "An ActionObserver can passively listen to {@link Actor#run} inputs and outputs for all actors on a certain bus.  ActionObserver should not edit inputs and outputs, they should be considered immutable.",
       "parameters": [
         {
-          "@id": "cc:lib/ActionObserver#ActionObserver_args_name",
+          "@id": "cc:components/ActionObserver.jsonld#ActionObserver_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this observer.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this observer."
         },
         {
-          "@id": "cc:lib/ActionObserver#ActionObserver_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "comment": "The bus this observer can subscribe to.",
-          "unique": true,
-          "required": true
+          "@id": "cc:components/ActionObserver.jsonld#ActionObserver_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "comment": "The bus this observer can subscribe to."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cc:lib/ActionObserver#ActionObserver_args__constructorArgument",
+          "@id": "cc:components/ActionObserver.jsonld#ActionObserver_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cc:lib/ActionObserver#ActionObserver_args_name"
+                "@id": "cc:components/ActionObserver.jsonld#ActionObserver_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cc:lib/ActionObserver#ActionObserver_args_bus"
+                "@id": "cc:components/ActionObserver.jsonld#ActionObserver_args_bus"
               }
             }
           ]
@@ -52,7 +46,7 @@
       ]
     },
     {
-      "@id": "cc:lib/ActionObserver#IActionObserverArgs",
+      "@id": "cc:components/ActionObserver.jsonld#IActionObserverArgs",
       "@type": "AbstractClass",
       "requireElement": "IActionObserverArgs",
       "extends": [],

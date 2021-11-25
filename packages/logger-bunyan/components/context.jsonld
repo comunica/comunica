@@ -3,91 +3,90 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "clb": "npmd:@comunica/logger-bunyan/",
-      "files-clb": "clb:^1.0.0/",
+      "clb": "npmd:@comunica/logger-bunyan/^1.0.0/",
       "LoggerBunyan": {
-        "@id": "clb:lib/LoggerBunyan#LoggerBunyan",
+        "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_name"
+            "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_name"
           },
           "args_streamProviders": {
-            "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_streamProviders",
+            "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_streamProviders",
             "@container": "@list"
           },
           "args_level": {
-            "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_level"
+            "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_level"
           },
           "args": {
-            "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args",
+            "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args",
             "@container": "@list"
           }
         }
       },
       "ILoggerBunyanArgs": {
-        "@id": "clb:lib/LoggerBunyan#ILoggerBunyanArgs",
+        "@id": "clb:components/LoggerBunyan.jsonld#ILoggerBunyanArgs",
         "@prefix": true,
         "@context": {}
       },
       "BunyanStreamProvider": {
-        "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider",
+        "@id": "clb:components/stream/BunyanStreamProvider.jsonld#BunyanStreamProvider",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args_name"
+            "@id": "clb:components/stream/BunyanStreamProvider.jsonld#BunyanStreamProvider_args_name"
           },
           "args_level": {
-            "@id": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider_args_level"
+            "@id": "clb:components/stream/BunyanStreamProvider.jsonld#BunyanStreamProvider_args_level"
           }
         }
       },
       "IBunyanStreamProviderArgs": {
-        "@id": "clb:lib/stream/BunyanStreamProvider#IBunyanStreamProviderArgs",
+        "@id": "clb:components/stream/BunyanStreamProvider.jsonld#IBunyanStreamProviderArgs",
         "@prefix": true,
         "@context": {}
       },
       "BunyanStreamProviderFile": {
-        "@id": "clb:lib/stream/BunyanStreamProviderFile#BunyanStreamProviderFile",
+        "@id": "clb:components/stream/BunyanStreamProviderFile.jsonld#BunyanStreamProviderFile",
         "@prefix": true,
         "@context": {
           "args_path": {
-            "@id": "clb:lib/stream/BunyanStreamProviderFile#BunyanStreamProviderFile_args_path"
+            "@id": "clb:components/stream/BunyanStreamProviderFile.jsonld#BunyanStreamProviderFile_args_path"
           },
           "args_name": {
-            "@id": "clb:lib/stream/BunyanStreamProviderFile#BunyanStreamProviderFile_args_name"
+            "@id": "clb:components/stream/BunyanStreamProviderFile.jsonld#BunyanStreamProviderFile_args_name"
           },
           "args_level": {
-            "@id": "clb:lib/stream/BunyanStreamProviderFile#BunyanStreamProviderFile_args_level"
+            "@id": "clb:components/stream/BunyanStreamProviderFile.jsonld#BunyanStreamProviderFile_args_level"
           }
         }
       },
       "IBunyanStreamProviderFileArgs": {
-        "@id": "clb:lib/stream/BunyanStreamProviderFile#IBunyanStreamProviderFileArgs",
+        "@id": "clb:components/stream/BunyanStreamProviderFile.jsonld#IBunyanStreamProviderFileArgs",
         "@prefix": true,
         "@context": {}
       },
       "BunyanStreamProviderStderr": {
-        "@id": "clb:lib/stream/BunyanStreamProviderStderr#BunyanStreamProviderStderr",
+        "@id": "clb:components/stream/BunyanStreamProviderStderr.jsonld#BunyanStreamProviderStderr",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "clb:lib/stream/BunyanStreamProviderStderr#BunyanStreamProviderStderr_args_name"
+            "@id": "clb:components/stream/BunyanStreamProviderStderr.jsonld#BunyanStreamProviderStderr_args_name"
           },
           "args_level": {
-            "@id": "clb:lib/stream/BunyanStreamProviderStderr#BunyanStreamProviderStderr_args_level"
+            "@id": "clb:components/stream/BunyanStreamProviderStderr.jsonld#BunyanStreamProviderStderr_args_level"
           }
         }
       },
       "BunyanStreamProviderStdout": {
-        "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout",
+        "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_name"
+            "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout_args_name"
           },
           "args_level": {
-            "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_level"
+            "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout_args_level"
           }
         }
       }

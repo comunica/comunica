@@ -3,26 +3,25 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carrhlqf": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo/",
-      "files-carrhlqf": "carrhlqf:^1.0.0/",
+      "carrhlqf": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo/^1.0.0/",
       "ActorRdfResolveHypermediaLinksQueueFifo": {
-        "@id": "carrhlqf:lib/ActorRdfResolveHypermediaLinksQueueFifo#ActorRdfResolveHypermediaLinksQueueFifo",
+        "@id": "carrhlqf:components/ActorRdfResolveHypermediaLinksQueueFifo.jsonld#ActorRdfResolveHypermediaLinksQueueFifo",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "carrhlqf:lib/ActorRdfResolveHypermediaLinksQueueFifo#ActorRdfResolveHypermediaLinksQueueFifo_args_name"
+            "@id": "carrhlqf:components/ActorRdfResolveHypermediaLinksQueueFifo.jsonld#ActorRdfResolveHypermediaLinksQueueFifo_args_name"
           },
           "args_bus": {
-            "@id": "carrhlqf:lib/ActorRdfResolveHypermediaLinksQueueFifo#ActorRdfResolveHypermediaLinksQueueFifo_args_bus"
+            "@id": "carrhlqf:components/ActorRdfResolveHypermediaLinksQueueFifo.jsonld#ActorRdfResolveHypermediaLinksQueueFifo_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carrhlqf:lib/ActorRdfResolveHypermediaLinksQueueFifo#ActorRdfResolveHypermediaLinksQueueFifo_args_beforeActors",
+            "@id": "carrhlqf:components/ActorRdfResolveHypermediaLinksQueueFifo.jsonld#ActorRdfResolveHypermediaLinksQueueFifo_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "LinkQueueFifo": {
-        "@id": "carrhlqf:lib/LinkQueueFifo#LinkQueueFifo",
+        "@id": "carrhlqf:components/LinkQueueFifo.jsonld#LinkQueueFifo",
         "@prefix": true,
         "@context": {}
       }

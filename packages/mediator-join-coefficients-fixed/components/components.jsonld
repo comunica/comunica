@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/mediator-join-coefficients-fixed",
   "import": [
-    "files-cmjcf:components/MediatorJoinCoefficientsFixed.jsonld"
+    "cmjcf:components/MediatorJoinCoefficientsFixed.jsonld"
   ]
 }

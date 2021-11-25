@@ -7,90 +7,89 @@
   "@id": "npmd:@comunica/actor-query-operation-update-deleteinsert",
   "components": [
     {
-      "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert",
+      "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert",
       "@type": "Class",
       "requireElement": "ActorQueryOperationUpdateDeleteInsert",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#ActorQueryOperationTypedMediated"
       ],
       "comment": "A comunica Update DeleteInsert Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_mediatorUpdateQuads",
-          "range": "cc:lib/Mediator#Mediator",
-          "comment": "The RDF Update Quads mediator",
-          "unique": true,
-          "required": true
+          "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_mediatorUpdateQuads",
+          "range": "cc:components/Mediator.jsonld#Mediator",
+          "comment": "The RDF Update Quads mediator"
         },
         {
-          "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_mediatorQueryOperation",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_mediatorQueryOperation",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_name",
+          "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args__constructorArgument",
+          "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorUpdateQuads",
               "value": {
-                "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_mediatorUpdateQuads"
+                "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_mediatorUpdateQuads"
               }
             },
             {
               "keyRaw": "mediatorQueryOperation",
               "value": {
-                "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_mediatorQueryOperation"
+                "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_mediatorQueryOperation"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_name"
+                "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_bus"
+                "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_beforeActors"
+                "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_beforeActors"
               }
             }
           ]
@@ -98,11 +97,11 @@
       ]
     },
     {
-      "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#IActorQueryOperationUpdateDeleteInsertArgs",
+      "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#IActorQueryOperationUpdateDeleteInsertArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationUpdateDeleteInsertArgs",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#IActorQueryOperationTypedMediatedArgs"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#IActorQueryOperationTypedMediatedArgs"
       ],
       "parameters": [],
       "constructorArguments": []

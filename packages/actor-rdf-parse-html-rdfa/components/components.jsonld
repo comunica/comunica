@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-parse-html-rdfa",
   "import": [
-    "files-carphr:components/ActorRdfParseHtmlRdfa.jsonld"
+    "carphr:components/ActorRdfParseHtmlRdfa.jsonld"
   ]
 }

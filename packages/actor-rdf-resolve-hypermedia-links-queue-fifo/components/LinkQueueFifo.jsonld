@@ -6,11 +6,11 @@
   "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo",
   "components": [
     {
-      "@id": "carrhlqf:lib/LinkQueueFifo#LinkQueueFifo",
+      "@id": "carrhlqf:components/LinkQueueFifo.jsonld#LinkQueueFifo",
       "@type": "Class",
       "requireElement": "LinkQueueFifo",
       "extends": [
-        "cbrrhlq:lib/ILinkQueue#ILinkQueue"
+        "cbrrhlq:components/ILinkQueue.jsonld#ILinkQueue"
       ],
       "comment": "A link queue in FIFO (first-in first-out) order.",
       "parameters": [],

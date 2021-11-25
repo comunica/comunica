@@ -7,106 +7,107 @@
   "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia",
   "components": [
     {
-      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia",
+      "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia",
       "@type": "AbstractClass",
       "requireElement": "ActorRdfResolveHypermedia",
       "extends": [
-        "cc:lib/Actor#Actor"
+        "cc:components/Actor.jsonld#Actor"
       ],
       "comment": "A comunica actor for rdf-resolve-hypermedia bus.  Actor types: * Input:  IActionRdfResolveHypermedia:      The metadata in the document and a query operation. * Test:   <none> * Output: IActorRdfResolveHypermediaOutput: An RDF source.",
       "parameters": [
         {
-          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_sourceType",
+          "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_sourceType",
+          "range": "xsd:string"
+        },
+        {
+          "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_args_name",
           "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_name",
-          "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args__constructorArgument",
+          "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_name"
+                "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_bus"
+                "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_args_beforeActors"
+                "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_args_beforeActors"
               }
             }
           ]
         },
         {
-          "@id": "cbrrh:lib/ActorRdfResolveHypermedia#ActorRdfResolveHypermedia_sourceType"
+          "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#ActorRdfResolveHypermedia_sourceType"
         }
       ]
     },
     {
-      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#IActionRdfResolveHypermedia",
+      "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#IActionRdfResolveHypermedia",
       "@type": "AbstractClass",
       "requireElement": "IActionRdfResolveHypermedia",
       "extends": [
-        "ct:lib/index#IAction"
+        "ct:components/index.jsonld#IAction"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#IActorRdfResolveHypermediaTest",
+      "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#IActorRdfResolveHypermediaTest",
       "@type": "AbstractClass",
       "requireElement": "IActorRdfResolveHypermediaTest",
       "extends": [
-        "cc:lib/Actor#IActorTest"
+        "cc:components/Actor.jsonld#IActorTest"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "cbrrh:lib/ActorRdfResolveHypermedia#IActorRdfResolveHypermediaOutput",
+      "@id": "cbrrh:components/ActorRdfResolveHypermedia.jsonld#IActorRdfResolveHypermediaOutput",
       "@type": "AbstractClass",
       "requireElement": "IActorRdfResolveHypermediaOutput",
       "extends": [
-        "cc:lib/Actor#IActorOutput"
+        "cc:components/Actor.jsonld#IActorOutput"
       ],
       "parameters": [],
       "constructorArguments": []

@@ -7,67 +7,70 @@
   "@id": "npmd:@comunica/actor-rdf-update-hypermedia-put-ldp",
   "components": [
     {
-      "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp",
+      "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp",
       "@type": "Class",
       "requireElement": "QuadDestinationPutLdp",
       "extends": [
-        "cbruq:lib/IQuadDestination#IQuadDestination"
+        "cbruq:components/IQuadDestination.jsonld#IQuadDestination"
       ],
       "comment": "A quad destination that represents a resource that can be PUT.",
       "parameters": [
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_url",
-          "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_url",
+          "range": "xsd:string"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_context",
-          "unique": true,
-          "required": true
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediaTypes",
+          "range": {
+            "@type": "ParameterRangeArray",
+            "parameterRangeValue": "xsd:string"
+          }
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediaTypes",
-          "range": "xsd:string",
-          "required": true
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_context",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeUndefined"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediatorHttp",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediatorHttp",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediatorRdfSerializeMediatypes",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediatorRdfSerializeMediatypes",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediatorRdfSerialize",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediatorRdfSerialize",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_url"
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_url"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_context"
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_context"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediaTypes"
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediaTypes"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediatorHttp"
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediatorHttp"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediatorRdfSerializeMediatypes"
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediatorRdfSerializeMediatypes"
         },
         {
-          "@id": "caruhpl:lib/QuadDestinationPutLdp#QuadDestinationPutLdp_mediatorRdfSerialize"
+          "@id": "caruhpl:components/QuadDestinationPutLdp.jsonld#QuadDestinationPutLdp_mediatorRdfSerialize"
         }
       ]
     }

@@ -6,36 +6,30 @@
   "@id": "npmd:@comunica/logger-pretty",
   "components": [
     {
-      "@id": "clp:lib/LoggerPretty#LoggerPretty",
+      "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty",
       "@type": "Class",
       "requireElement": "LoggerPretty",
       "extends": [
-        "cc:lib/Logger#Logger"
+        "cc:components/Logger.jsonld#Logger"
       ],
       "comment": "A logger that pretty-prints everything.",
       "parameters": [
         {
-          "@id": "clp:lib/LoggerPretty#LoggerPretty_args_level",
+          "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_level",
           "range": "xsd:string",
-          "comment": "The minimum logging level.",
-          "unique": true,
-          "required": true
+          "comment": "The minimum logging level."
         },
         {
-          "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors",
+          "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_actors",
           "range": {
-            "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_range",
-            "parameters": [
+            "@type": "ParameterRangeCollectEntries",
+            "parameterRangeCollectEntriesParameters": [
               {
-                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_key",
-                "required": true,
-                "unique": true
+                "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_actors_key"
               },
               {
-                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_value",
-                "range": "xsd:boolean",
-                "required": true,
-                "unique": true
+                "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_actors_value",
+                "range": "xsd:boolean"
               }
             ]
           },
@@ -44,24 +38,24 @@
       ],
       "constructorArguments": [
         {
-          "@id": "clp:lib/LoggerPretty#LoggerPretty_args__constructorArgument",
+          "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "level",
               "value": {
-                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_level"
+                "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_level"
               }
             },
             {
               "keyRaw": "actors",
               "value": {
-                "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors__constructorArgument",
+                "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_actors__constructorArgument",
                 "fields": [
                   {
-                    "collectEntries": "clp:lib/LoggerPretty#LoggerPretty_args_actors",
-                    "key": "clp:lib/LoggerPretty#LoggerPretty_args_actors_key",
+                    "collectEntries": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_actors",
+                    "key": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_actors_key",
                     "value": {
-                      "@id": "clp:lib/LoggerPretty#LoggerPretty_args_actors_value"
+                      "@id": "clp:components/LoggerPretty.jsonld#LoggerPretty_args_actors_value"
                     }
                   }
                 ]
@@ -72,7 +66,7 @@
       ]
     },
     {
-      "@id": "clp:lib/LoggerPretty#ILoggerPrettyArgs",
+      "@id": "clp:components/LoggerPretty.jsonld#ILoggerPrettyArgs",
       "@type": "AbstractClass",
       "requireElement": "ILoggerPrettyArgs",
       "extends": [],

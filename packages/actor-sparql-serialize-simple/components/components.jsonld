@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-serialize-simple",
   "import": [
-    "files-casss:components/ActorSparqlSerializeSimple.jsonld"
+    "casss:components/ActorSparqlSerializeSimple.jsonld"
   ]
 }

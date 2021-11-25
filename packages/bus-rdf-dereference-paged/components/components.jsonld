@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-dereference-paged",
   "import": [
-    "files-cbrdp:components/ActorRdfDereferencePaged.jsonld"
+    "cbrdp:components/ActorRdfDereferencePaged.jsonld"
   ]
 }

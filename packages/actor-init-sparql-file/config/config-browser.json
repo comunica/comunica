@@ -3,26 +3,25 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
     {
-      "caisf": "npmd:@comunica/actor-init-sparql-file/",
-      "files-caisf": "caisf:^1.0.0/"
+      "caisf": "npmd:@comunica/actor-init-sparql-file/^1.0.0/"
     }
   ],
   "@id": "urn:comunica:my",
   "@type": "Runner",
   "import": [
-    "files-cais:config/sets/http.json",
-    "files-cais:config/sets/join.json",
-    "files-cais:config/sets/rdf-dereference.json",
-    "files-cais:config/sets/rdf-parsers.json",
-    "files-cais:config/sets/rdf-serializers.json",
-    "files-cais:config/sets/rdf-update-rdfjs.json",
-    "files-cais:config/sets/resolve-federated.json",
-    "files-caisf:config/sets/resolve-hypermedia.json",
-    "files-cais:config/sets/sparql-init.json",
-    "files-cais:config/sets/sparql-parsers.json",
-    "files-cais:config/sets/sparql-queryoperators.json",
-    "files-cais:config/sets/sparql-queryoperators-path.json",
-    "files-cais:config/sets/sparql-queryoperators-update.json",
-    "files-cais:config/sets/sparql-serializers.json"
+    "cais:config/sets/http.json",
+    "cais:config/sets/join.json",
+    "cais:config/sets/rdf-dereference.json",
+    "cais:config/sets/rdf-parsers.json",
+    "cais:config/sets/rdf-serializers.json",
+    "cais:config/sets/rdf-update-rdfjs.json",
+    "cais:config/sets/resolve-federated.json",
+    "caisf:config/sets/resolve-hypermedia.json",
+    "cais:config/sets/sparql-init.json",
+    "cais:config/sets/sparql-parsers.json",
+    "cais:config/sets/sparql-queryoperators.json",
+    "cais:config/sets/sparql-queryoperators-path.json",
+    "cais:config/sets/sparql-queryoperators-update.json",
+    "cais:config/sets/sparql-serializers.json"
   ]
 }

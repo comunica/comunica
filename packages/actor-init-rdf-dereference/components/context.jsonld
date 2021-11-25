@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caird": "npmd:@comunica/actor-init-rdf-dereference/",
-      "files-caird": "caird:^1.0.0/",
+      "caird": "npmd:@comunica/actor-init-rdf-dereference/^1.0.0/",
       "ActorInitRdfDereference": {
-        "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference",
+        "@id": "caird:components/ActorInitRdfDereference.jsonld#ActorInitRdfDereference",
         "@prefix": true,
         "@context": {
           "args_mediatorRdfDereference": {
-            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_mediatorRdfDereference"
+            "@id": "caird:components/ActorInitRdfDereference.jsonld#ActorInitRdfDereference_args_mediatorRdfDereference"
           },
           "args_url": {
-            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_url"
+            "@id": "caird:components/ActorInitRdfDereference.jsonld#ActorInitRdfDereference_args_url"
           },
           "args_name": {
-            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_name"
+            "@id": "caird:components/ActorInitRdfDereference.jsonld#ActorInitRdfDereference_args_name"
           },
           "args_bus": {
-            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_bus"
+            "@id": "caird:components/ActorInitRdfDereference.jsonld#ActorInitRdfDereference_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caird:lib/ActorInitRdfDereference#ActorInitRdfDereference_args_beforeActors",
+            "@id": "caird:components/ActorInitRdfDereference.jsonld#ActorInitRdfDereference_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorInitRdfParseArgs": {
-        "@id": "caird:lib/ActorInitRdfDereference#IActorInitRdfParseArgs",
+        "@id": "caird:components/ActorInitRdfDereference.jsonld#IActorInitRdfParseArgs",
         "@prefix": true,
         "@context": {}
       }

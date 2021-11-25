@@ -9,7 +9,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-connected/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
       "@id": "#myJoinBgpOptimizer",
       "@type": "ActorOptimizeQueryOperationJoinBgp"

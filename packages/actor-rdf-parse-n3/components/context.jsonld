@@ -3,31 +3,30 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carpn": "npmd:@comunica/actor-rdf-parse-n3/",
-      "files-carpn": "carpn:^1.0.0/",
+      "carpn": "npmd:@comunica/actor-rdf-parse-n3/^1.0.0/",
       "ActorRdfParseN3": {
-        "@id": "carpn:lib/ActorRdfParseN3#ActorRdfParseN3",
+        "@id": "carpn:components/ActorRdfParseN3.jsonld#ActorRdfParseN3",
         "@prefix": true,
         "@context": {
           "args_mediaTypePriorities": {
-            "@id": "carpn:lib/ActorRdfParseN3#ActorRdfParseN3_args_mediaTypePriorities",
+            "@id": "carpn:components/ActorRdfParseN3.jsonld#ActorRdfParseN3_args_mediaTypePriorities",
             "@type": "@json"
           },
           "args_mediaTypeFormats": {
-            "@id": "carpn:lib/ActorRdfParseN3#ActorRdfParseN3_args_mediaTypeFormats",
+            "@id": "carpn:components/ActorRdfParseN3.jsonld#ActorRdfParseN3_args_mediaTypeFormats",
             "@type": "@json"
           },
           "args_priorityScale": {
-            "@id": "carpn:lib/ActorRdfParseN3#ActorRdfParseN3_args_priorityScale"
+            "@id": "carpn:components/ActorRdfParseN3.jsonld#ActorRdfParseN3_args_priorityScale"
           },
           "args_name": {
-            "@id": "carpn:lib/ActorRdfParseN3#ActorRdfParseN3_args_name"
+            "@id": "carpn:components/ActorRdfParseN3.jsonld#ActorRdfParseN3_args_name"
           },
           "args_bus": {
-            "@id": "carpn:lib/ActorRdfParseN3#ActorRdfParseN3_args_bus"
+            "@id": "carpn:components/ActorRdfParseN3.jsonld#ActorRdfParseN3_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carpn:lib/ActorRdfParseN3#ActorRdfParseN3_args_beforeActors",
+            "@id": "carpn:components/ActorRdfParseN3.jsonld#ActorRdfParseN3_args_beforeActors",
             "@container": "@list"
           }
         }

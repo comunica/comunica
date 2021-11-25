@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-distinct-hash",
   "import": [
-    "files-caqodh:components/ActorQueryOperationDistinctHash.jsonld"
+    "caqodh:components/ActorQueryOperationDistinctHash.jsonld"
   ]
 }

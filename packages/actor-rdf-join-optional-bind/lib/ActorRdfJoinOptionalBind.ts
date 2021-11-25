@@ -105,7 +105,6 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
 export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   /**
    * The order in which elements should be bound
-   * @range {string} // TODO: rm when generator is updated with union types
    * @default {depth-first}
    */
   bindOrder: BindOrder;

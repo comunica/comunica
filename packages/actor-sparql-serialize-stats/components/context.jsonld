@@ -3,52 +3,51 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cassst": "npmd:@comunica/actor-sparql-serialize-stats/",
-      "files-cassst": "cassst:^1.0.0/",
+      "cassst": "npmd:@comunica/actor-sparql-serialize-stats/^1.0.0/",
       "ActionObserverHttp": {
-        "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp",
+        "@id": "cassst:components/ActionObserverHttp.jsonld#ActionObserverHttp",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_name"
+            "@id": "cassst:components/ActionObserverHttp.jsonld#ActionObserverHttp_args_name"
           },
           "args_bus": {
-            "@id": "cassst:lib/ActionObserverHttp#ActionObserverHttp_args_bus"
+            "@id": "cassst:components/ActionObserverHttp.jsonld#ActionObserverHttp_args_bus"
           }
         }
       },
       "ActorSparqlSerializeStats": {
-        "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats",
+        "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats",
         "@prefix": true,
         "@context": {
           "args_httpObserver": {
-            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_httpObserver"
+            "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats_args_httpObserver"
           },
           "args_mediaTypePriorities": {
-            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_mediaTypePriorities",
+            "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats_args_mediaTypePriorities",
             "@type": "@json"
           },
           "args_mediaTypeFormats": {
-            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_mediaTypeFormats",
+            "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats_args_mediaTypeFormats",
             "@type": "@json"
           },
           "args_priorityScale": {
-            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_priorityScale"
+            "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats_args_priorityScale"
           },
           "args_name": {
-            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_name"
+            "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats_args_name"
           },
           "args_bus": {
-            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_bus"
+            "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cassst:lib/ActorSparqlSerializeStats#ActorSparqlSerializeStats_args_beforeActors",
+            "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#ActorSparqlSerializeStats_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorSparqlSerializeStatsArgs": {
-        "@id": "cassst:lib/ActorSparqlSerializeStats#IActorSparqlSerializeStatsArgs",
+        "@id": "cassst:components/ActorSparqlSerializeStats.jsonld#IActorSparqlSerializeStatsArgs",
         "@prefix": true,
         "@context": {}
       }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-update-hypermedia",
   "import": [
-    "files-cbruh:components/ActorRdfUpdateHypermedia.jsonld"
+    "cbruh:components/ActorRdfUpdateHypermedia.jsonld"
   ]
 }

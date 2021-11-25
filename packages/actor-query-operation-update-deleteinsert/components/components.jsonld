@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-update-deleteinsert",
   "import": [
-    "files-caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld"
+    "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld"
   ]
 }

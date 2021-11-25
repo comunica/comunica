@@ -6,82 +6,84 @@
   "@id": "npmd:@comunica/bus-rdf-metadata-extract",
   "components": [
     {
-      "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery",
+      "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery",
       "@type": "AbstractClass",
       "requireElement": "ActorRdfMetadataExtractQuery",
       "extends": [
-        "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract"
+        "cbrme:components/ActorRdfMetadataExtract.jsonld#ActorRdfMetadataExtract"
       ],
       "comment": "An {@link ActorRdfMetadataExtract} that extracts metadata based on a GraphQL-LD query.  It exposes the {@link #queryData} method using which a query can be applied over the metadata stream. For efficiency reasons, the query (and JSON-LD context) must be passed via the actor constructor so that these can be pre-compiled.",
       "parameters": [
         {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_context",
-          "unique": true,
-          "required": true
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_context",
+          "range": {
+            "@type": "ParameterRangeUndefined"
+          }
         },
         {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_query",
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_query",
+          "range": "xsd:string"
+        },
+        {
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_args_name",
           "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_name",
-          "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbrme:components/ActorRdfMetadataExtract.jsonld#ActorRdfMetadataExtract_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_context"
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_context"
         },
         {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_query"
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_query"
         },
         {
-          "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args__constructorArgument",
+          "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_name"
+                "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_bus"
+                "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#ActorRdfMetadataExtractQuery_args_beforeActors"
+                "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#ActorRdfMetadataExtractQuery_args_beforeActors"
               }
             }
           ]
@@ -89,11 +91,11 @@
       ]
     },
     {
-      "@id": "cbrme:lib/ActorRdfMetadataExtractQuery#IActorRdfMetadataExtractQueryArgs",
+      "@id": "cbrme:components/ActorRdfMetadataExtractQuery.jsonld#IActorRdfMetadataExtractQueryArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorRdfMetadataExtractQueryArgs",
       "extends": [
-        "cc:lib/Actor#IActorArgs"
+        "cc:components/Actor.jsonld#IActorArgs"
       ],
       "parameters": [],
       "constructorArguments": []

@@ -16,7 +16,7 @@ import type * as RDF from '@rdfjs/types';
 export abstract class ActorRdfMetadataExtract
   extends Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
     super(args);

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-group",
   "import": [
-    "files-caqog:components/ActorQueryOperationGroup.jsonld"
+    "caqog:components/ActorQueryOperationGroup.jsonld"
   ]
 }

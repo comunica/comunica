@@ -7,112 +7,111 @@
   "@id": "npmd:@comunica/actor-rdf-source-identifier-hypermedia-qpf",
   "components": [
     {
-      "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf",
+      "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf",
       "@type": "Class",
       "requireElement": "ActorRdfSourceIdentifierHypermediaQpf",
       "extends": [
-        "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier"
+        "cbrsi:components/ActorRdfSourceIdentifier.jsonld#ActorRdfSourceIdentifier"
       ],
       "comment": "A comunica Hypermedia Qpf RDF Source Identifier Actor.",
       "parameters": [
         {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_mediatorHttp",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_mediatorHttp",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_acceptHeader",
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_acceptHeader",
+          "range": "xsd:string"
+        },
+        {
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_toContain",
+          "range": {
+            "@type": "ParameterRangeArray",
+            "parameterRangeValue": "xsd:string"
+          }
+        },
+        {
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_priority",
+          "range": "xsd:number"
+        },
+        {
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_name",
           "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_toContain",
-          "range": "xsd:string",
-          "required": true
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbrsi:components/ActorRdfSourceIdentifier.jsonld#ActorRdfSourceIdentifier_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_priority",
-          "range": "xsd:number",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_name",
-          "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbrsi:lib/ActorRdfSourceIdentifier#ActorRdfSourceIdentifier_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args__constructorArgument",
+          "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",
               "value": {
-                "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_mediatorHttp"
+                "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_mediatorHttp"
               }
             },
             {
               "keyRaw": "acceptHeader",
               "value": {
-                "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_acceptHeader"
+                "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_acceptHeader"
               }
             },
             {
               "keyRaw": "toContain",
               "value": {
-                "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_toContain"
+                "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_toContain"
               }
             },
             {
               "keyRaw": "priority",
               "value": {
-                "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_priority"
+                "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_priority"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_name"
+                "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_bus"
+                "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#ActorRdfSourceIdentifierHypermediaQpf_args_beforeActors"
+                "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#ActorRdfSourceIdentifierHypermediaQpf_args_beforeActors"
               }
             }
           ]
@@ -120,11 +119,11 @@
       ]
     },
     {
-      "@id": "carsihq:lib/ActorRdfSourceIdentifierHypermediaQpf#IActorRdfSourceIdentifierHypermediaQpfArgs",
+      "@id": "carsihq:components/ActorRdfSourceIdentifierHypermediaQpf.jsonld#IActorRdfSourceIdentifierHypermediaQpfArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorRdfSourceIdentifierHypermediaQpfArgs",
       "extends": [
-        "cbrsi:lib/ActorRdfSourceIdentifier#IActorRdfSourceIdentifierArgs"
+        "cbrsi:components/ActorRdfSourceIdentifier.jsonld#IActorRdfSourceIdentifierArgs"
       ],
       "parameters": [],
       "constructorArguments": []

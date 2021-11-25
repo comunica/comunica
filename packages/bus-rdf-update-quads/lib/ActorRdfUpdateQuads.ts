@@ -43,7 +43,7 @@ export function getDataDestinationContext(dataDestination: IDataDestination, con
  */
 export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>) {
     super(args);

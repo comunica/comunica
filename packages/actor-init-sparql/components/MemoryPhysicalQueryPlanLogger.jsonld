@@ -6,11 +6,11 @@
   "@id": "npmd:@comunica/actor-init-sparql",
   "components": [
     {
-      "@id": "cais:lib/MemoryPhysicalQueryPlanLogger#MemoryPhysicalQueryPlanLogger",
+      "@id": "cais:components/MemoryPhysicalQueryPlanLogger.jsonld#MemoryPhysicalQueryPlanLogger",
       "@type": "Class",
       "requireElement": "MemoryPhysicalQueryPlanLogger",
       "extends": [
-        "ct:lib/index#IPhysicalQueryPlanLogger"
+        "ct:components/index.jsonld#IPhysicalQueryPlanLogger"
       ],
       "comment": "A physical query plan logger that stores everything in memory.",
       "parameters": [],

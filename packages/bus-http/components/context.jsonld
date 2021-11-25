@@ -3,31 +3,30 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbh": "npmd:@comunica/bus-http/",
-      "files-cbh": "cbh:^1.0.0/",
+      "cbh": "npmd:@comunica/bus-http/^1.0.0/",
       "ActorHttp": {
-        "@id": "cbh:lib/ActorHttp#ActorHttp",
+        "@id": "cbh:components/ActorHttp.jsonld#ActorHttp",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbh:lib/ActorHttp#ActorHttp_args_name"
+            "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_name"
           },
           "args_bus": {
-            "@id": "cbh:lib/ActorHttp#ActorHttp_args_bus"
+            "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbh:lib/ActorHttp#ActorHttp_args_beforeActors",
+            "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActionHttp": {
-        "@id": "cbh:lib/ActorHttp#IActionHttp",
+        "@id": "cbh:components/ActorHttp.jsonld#IActionHttp",
         "@prefix": true,
         "@context": {}
       },
       "IActorHttpOutput": {
-        "@id": "cbh:lib/ActorHttp#IActorHttpOutput",
+        "@id": "cbh:components/ActorHttp.jsonld#IActorHttpOutput",
         "@prefix": true,
         "@context": {}
       }

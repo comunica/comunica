@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-dereference-paged-next",
   "import": [
-    "files-cardpn:components/ActorRdfDereferencePagedNext.jsonld"
+    "cardpn:components/ActorRdfDereferencePagedNext.jsonld"
   ]
 }

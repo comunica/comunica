@@ -6,11 +6,11 @@
   "@id": "npmd:@comunica/logger-void",
   "components": [
     {
-      "@id": "clv:lib/LoggerVoid#LoggerVoid",
+      "@id": "clv:components/LoggerVoid.jsonld#LoggerVoid",
       "@type": "Class",
       "requireElement": "LoggerVoid",
       "extends": [
-        "cc:lib/Logger#Logger"
+        "cc:components/Logger.jsonld#Logger"
       ],
       "comment": "A logger that voids everything.",
       "parameters": [],

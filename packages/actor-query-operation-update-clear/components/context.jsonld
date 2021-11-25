@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoucl": "npmd:@comunica/actor-query-operation-update-clear/",
-      "files-caqoucl": "caqoucl:^1.0.0/",
+      "caqoucl": "npmd:@comunica/actor-query-operation-update-clear/^1.0.0/",
       "ActorQueryOperationClear": {
-        "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear",
+        "@id": "caqoucl:components/ActorQueryOperationClear.jsonld#ActorQueryOperationClear",
         "@prefix": true,
         "@context": {
           "args_mediatorUpdateQuads": {
-            "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_mediatorUpdateQuads"
+            "@id": "caqoucl:components/ActorQueryOperationClear.jsonld#ActorQueryOperationClear_args_mediatorUpdateQuads"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_mediatorQueryOperation"
+            "@id": "caqoucl:components/ActorQueryOperationClear.jsonld#ActorQueryOperationClear_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_name"
+            "@id": "caqoucl:components/ActorQueryOperationClear.jsonld#ActorQueryOperationClear_args_name"
           },
           "args_bus": {
-            "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_bus"
+            "@id": "caqoucl:components/ActorQueryOperationClear.jsonld#ActorQueryOperationClear_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqoucl:lib/ActorQueryOperationClear#ActorQueryOperationClear_args_beforeActors",
+            "@id": "caqoucl:components/ActorQueryOperationClear.jsonld#ActorQueryOperationClear_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorQueryOperationClearArgs": {
-        "@id": "caqoucl:lib/ActorQueryOperationClear#IActorQueryOperationClearArgs",
+        "@id": "caqoucl:components/ActorQueryOperationClear.jsonld#IActorQueryOperationClearArgs",
         "@prefix": true,
         "@context": {}
       }

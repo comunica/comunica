@@ -6,13 +6,13 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-sparql",
   "import": [
-    "files-cais:components/ActorInitSparqlBase.jsonld",
-    "files-cais:components/ActorInitSparql.jsonld",
-    "files-cais:components/HttpServiceSparqlEndpoint.jsonld",
-    "files-cais:components/cli/CliArgsHandlerBase.jsonld",
-    "files-cais:components/cli/CliArgsHandlerHttp.jsonld",
-    "files-cais:components/cli/CliArgsHandlerQuery.jsonld",
-    "files-cais:components/cli/ICliArgsHandler.jsonld",
-    "files-cais:components/MemoryPhysicalQueryPlanLogger.jsonld"
+    "cais:components/ActorInitSparqlBase.jsonld",
+    "cais:components/ActorInitSparql.jsonld",
+    "cais:components/HttpServiceSparqlEndpoint.jsonld",
+    "cais:components/cli/CliArgsHandlerBase.jsonld",
+    "cais:components/cli/CliArgsHandlerHttp.jsonld",
+    "cais:components/cli/CliArgsHandlerQuery.jsonld",
+    "cais:components/cli/ICliArgsHandler.jsonld",
+    "cais:components/MemoryPhysicalQueryPlanLogger.jsonld"
   ]
 }

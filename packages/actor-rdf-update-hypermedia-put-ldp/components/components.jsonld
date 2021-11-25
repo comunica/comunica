@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-update-hypermedia-put-ldp",
   "import": [
-    "files-caruhpl:components/ActorRdfUpdateHypermediaPutLdp.jsonld",
-    "files-caruhpl:components/QuadDestinationPutLdp.jsonld"
+    "caruhpl:components/ActorRdfUpdateHypermediaPutLdp.jsonld",
+    "caruhpl:components/QuadDestinationPutLdp.jsonld"
   ]
 }

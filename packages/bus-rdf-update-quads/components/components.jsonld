@@ -6,8 +6,8 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-update-quads",
   "import": [
-    "files-cbruq:components/ActorRdfUpdateQuads.jsonld",
-    "files-cbruq:components/ActorRdfUpdateQuadsDestination.jsonld",
-    "files-cbruq:components/IQuadDestination.jsonld"
+    "cbruq:components/ActorRdfUpdateQuads.jsonld",
+    "cbruq:components/ActorRdfUpdateQuadsDestination.jsonld",
+    "cbruq:components/IQuadDestination.jsonld"
   ]
 }

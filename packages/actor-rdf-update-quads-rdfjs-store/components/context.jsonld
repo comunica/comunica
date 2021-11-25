@@ -3,20 +3,19 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caruqrs": "npmd:@comunica/actor-rdf-update-quads-rdfjs-store/",
-      "files-caruqrs": "caruqrs:^1.0.0/",
+      "caruqrs": "npmd:@comunica/actor-rdf-update-quads-rdfjs-store/^1.0.0/",
       "ActorRdfUpdateQuadsRdfJsStore": {
-        "@id": "caruqrs:lib/ActorRdfUpdateQuadsRdfJsStore#ActorRdfUpdateQuadsRdfJsStore",
+        "@id": "caruqrs:components/ActorRdfUpdateQuadsRdfJsStore.jsonld#ActorRdfUpdateQuadsRdfJsStore",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "caruqrs:lib/ActorRdfUpdateQuadsRdfJsStore#ActorRdfUpdateQuadsRdfJsStore_args_name"
+            "@id": "caruqrs:components/ActorRdfUpdateQuadsRdfJsStore.jsonld#ActorRdfUpdateQuadsRdfJsStore_args_name"
           },
           "args_bus": {
-            "@id": "caruqrs:lib/ActorRdfUpdateQuadsRdfJsStore#ActorRdfUpdateQuadsRdfJsStore_args_bus"
+            "@id": "caruqrs:components/ActorRdfUpdateQuadsRdfJsStore.jsonld#ActorRdfUpdateQuadsRdfJsStore_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caruqrs:lib/ActorRdfUpdateQuadsRdfJsStore#ActorRdfUpdateQuadsRdfJsStore_args_beforeActors",
+            "@id": "caruqrs:components/ActorRdfUpdateQuadsRdfJsStore.jsonld#ActorRdfUpdateQuadsRdfJsStore_args_beforeActors",
             "@container": "@list"
           }
         }

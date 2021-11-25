@@ -13,11 +13,12 @@ import type { ActionObserverHttp } from './ActionObserverHttp';
 export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTypes {
   public readonly httpObserver: ActionObserverHttp;
 
+  /* eslint-disable max-len */
   /**
    * @param args -
    *   \ @defaultNested {{ "stats": 0.5 }} mediaTypePriorities
    *   \ @defaultNested {{ "stats": "https://comunica.linkeddatafragments.org/#results_stats" }} mediaTypeFormats
-   *   \ @defaultNested {<default_observer> a <cassst:lib/ActionObserverHttp#ActionObserverHttp>} httpObserver
+   *   \ @defaultNested {<default_observer> a <cassst:components/ActionObserverHttp.jsonld#ActionObserverHttp>} httpObserver
    */
   public constructor(args: IActorSparqlSerializeStatsArgs) {
     super(args);

@@ -6,11 +6,11 @@
   "@type": "Module",
   "requireName": "@comunica/core",
   "import": [
-    "files-cc:components/Bus.jsonld",
-    "files-cc:components/BusIndexed.jsonld",
-    "files-cc:components/ActionObserver.jsonld",
-    "files-cc:components/Actor.jsonld",
-    "files-cc:components/Logger.jsonld",
-    "files-cc:components/Mediator.jsonld"
+    "cc:components/Bus.jsonld",
+    "cc:components/BusIndexed.jsonld",
+    "cc:components/ActionObserver.jsonld",
+    "cc:components/Actor.jsonld",
+    "cc:components/Logger.jsonld",
+    "cc:components/Mediator.jsonld"
   ]
 }

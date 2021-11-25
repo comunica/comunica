@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-join-selectivity",
   "import": [
-    "files-cbrjs:components/ActorRdfJoinSelectivity.jsonld"
+    "cbrjs:components/ActorRdfJoinSelectivity.jsonld"
   ]
 }

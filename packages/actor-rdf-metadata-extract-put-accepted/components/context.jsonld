@@ -3,20 +3,19 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmepa": "npmd:@comunica/actor-rdf-metadata-extract-put-accepted/",
-      "files-carmepa": "carmepa:^1.0.0/",
+      "carmepa": "npmd:@comunica/actor-rdf-metadata-extract-put-accepted/^1.0.0/",
       "ActorRdfMetadataExtractPutAccepted": {
-        "@id": "carmepa:lib/ActorRdfMetadataExtractPutAccepted#ActorRdfMetadataExtractPutAccepted",
+        "@id": "carmepa:components/ActorRdfMetadataExtractPutAccepted.jsonld#ActorRdfMetadataExtractPutAccepted",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "carmepa:lib/ActorRdfMetadataExtractPutAccepted#ActorRdfMetadataExtractPutAccepted_args_name"
+            "@id": "carmepa:components/ActorRdfMetadataExtractPutAccepted.jsonld#ActorRdfMetadataExtractPutAccepted_args_name"
           },
           "args_bus": {
-            "@id": "carmepa:lib/ActorRdfMetadataExtractPutAccepted#ActorRdfMetadataExtractPutAccepted_args_bus"
+            "@id": "carmepa:components/ActorRdfMetadataExtractPutAccepted.jsonld#ActorRdfMetadataExtractPutAccepted_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carmepa:lib/ActorRdfMetadataExtractPutAccepted#ActorRdfMetadataExtractPutAccepted_args_beforeActors",
+            "@id": "carmepa:components/ActorRdfMetadataExtractPutAccepted.jsonld#ActorRdfMetadataExtractPutAccepted_args_beforeActors",
             "@container": "@list"
           }
         }

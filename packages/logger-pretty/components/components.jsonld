@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/logger-pretty",
   "import": [
-    "files-clp:components/LoggerPretty.jsonld"
+    "clp:components/LoggerPretty.jsonld"
   ]
 }

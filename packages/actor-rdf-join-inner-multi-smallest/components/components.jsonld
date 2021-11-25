@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-multi-smallest",
   "import": [
-    "files-carjimsm:components/ActorRdfJoinMultiSmallest.jsonld"
+    "carjimsm:components/ActorRdfJoinMultiSmallest.jsonld"
   ]
 }

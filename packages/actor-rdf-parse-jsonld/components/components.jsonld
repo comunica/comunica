@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-parse-jsonld",
   "import": [
-    "files-carpj:components/ActorRdfParseJsonLd.jsonld",
-    "files-carpj:components/DocumentLoaderMediated.jsonld"
+    "carpj:components/ActorRdfParseJsonLd.jsonld",
+    "carpj:components/DocumentLoaderMediated.jsonld"
   ]
 }

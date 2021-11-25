@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/types",
   "import": [
-    "files-ct:components/index.jsonld"
+    "ct:components/index.jsonld"
   ]
 }

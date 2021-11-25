@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/mediator-combine-pipeline",
   "import": [
-    "files-cmcp:components/MediatorCombinePipeline.jsonld"
+    "cmcp:components/MediatorCombinePipeline.jsonld"
   ]
 }

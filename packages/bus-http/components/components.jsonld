@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-http",
   "import": [
-    "files-cbh:components/ActorHttp.jsonld"
+    "cbh:components/ActorHttp.jsonld"
   ]
 }

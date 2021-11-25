@@ -7,41 +7,46 @@
   "@id": "npmd:@comunica/actor-rdf-update-hypermedia-patch-sparql-update",
   "components": [
     {
-      "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate",
+      "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate",
       "@type": "Class",
       "requireElement": "QuadDestinationPatchSparqlUpdate",
       "extends": [
-        "cbruq:lib/IQuadDestination#IQuadDestination"
+        "cbruq:components/IQuadDestination.jsonld#IQuadDestination"
       ],
       "comment": "A quad destination that represents a resource that is patchable via SPARQL Update.",
       "parameters": [
         {
-          "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_url",
-          "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_url",
+          "range": "xsd:string"
         },
         {
-          "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_context",
-          "unique": true,
-          "required": true
+          "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_context",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeUndefined"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
         },
         {
-          "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_mediatorHttp",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_mediatorHttp",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_url"
+          "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_url"
         },
         {
-          "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_context"
+          "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_context"
         },
         {
-          "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_mediatorHttp"
+          "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_mediatorHttp"
         }
       ]
     }

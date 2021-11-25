@@ -6,8 +6,8 @@
   "@type": "Module",
   "requireName": "@comunica/actor-http-proxy",
   "import": [
-    "files-cahp:components/ActorHttpProxy.jsonld",
-    "files-cahp:components/IProxyHandler.jsonld",
-    "files-cahp:components/ProxyHandlerStatic.jsonld"
+    "cahp:components/ActorHttpProxy.jsonld",
+    "cahp:components/IProxyHandler.jsonld",
+    "cahp:components/ProxyHandlerStatic.jsonld"
   ]
 }

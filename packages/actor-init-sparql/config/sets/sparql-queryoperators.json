@@ -36,7 +36,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-join-coefficients-fixed/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
       "@id": "#myAskQueryOperator",
       "@type": "ActorQueryOperationAsk",

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-abstract-path",
   "import": [
-    "files-caap:components/ActorAbstractPath.jsonld"
+    "caap:components/ActorAbstractPath.jsonld"
   ]
 }

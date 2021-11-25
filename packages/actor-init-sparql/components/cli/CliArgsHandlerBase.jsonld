@@ -5,22 +5,32 @@
   "@id": "npmd:@comunica/actor-init-sparql",
   "components": [
     {
-      "@id": "cais:lib/cli/CliArgsHandlerBase#CliArgsHandlerBase",
+      "@id": "cais:components/cli/CliArgsHandlerBase.jsonld#CliArgsHandlerBase",
       "@type": "Class",
       "requireElement": "CliArgsHandlerBase",
       "extends": [
-        "cais:lib/cli/ICliArgsHandler#ICliArgsHandler"
+        "cais:components/cli/ICliArgsHandler.jsonld#ICliArgsHandler"
       ],
       "comment": "Basic CLI arguments handler that handles common options.",
       "parameters": [
         {
-          "@id": "cais:lib/cli/CliArgsHandlerBase#CliArgsHandlerBase_initialContext",
-          "unique": true
+          "@id": "cais:components/cli/CliArgsHandlerBase.jsonld#CliArgsHandlerBase_initialContext",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeUndefined"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cais:lib/cli/CliArgsHandlerBase#CliArgsHandlerBase_initialContext"
+          "@id": "cais:components/cli/CliArgsHandlerBase.jsonld#CliArgsHandlerBase_initialContext"
         }
       ]
     }

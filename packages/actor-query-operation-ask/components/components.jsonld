@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-ask",
   "import": [
-    "files-caqoa:components/ActorQueryOperationAsk.jsonld"
+    "caqoa:components/ActorQueryOperationAsk.jsonld"
   ]
 }

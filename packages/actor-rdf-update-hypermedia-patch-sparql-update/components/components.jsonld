@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-update-hypermedia-patch-sparql-update",
   "import": [
-    "files-caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld",
-    "files-caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld"
+    "caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld",
+    "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld"
   ]
 }

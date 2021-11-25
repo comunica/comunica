@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-context-preprocess-source-to-destination",
   "import": [
-    "files-cacpstd:components/ActorContextPreprocessSourceToDestination.jsonld"
+    "cacpstd:components/ActorContextPreprocessSourceToDestination.jsonld"
   ]
 }

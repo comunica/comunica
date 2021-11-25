@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-source-identifier-sparql",
   "import": [
-    "files-carsis:components/ActorRdfSourceIdentifierSparql.jsonld"
+    "carsis:components/ActorRdfSourceIdentifierSparql.jsonld"
   ]
 }

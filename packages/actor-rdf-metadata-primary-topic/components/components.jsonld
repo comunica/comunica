@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-primary-topic",
   "import": [
-    "files-carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld"
+    "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld"
   ]
 }

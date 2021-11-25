@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjime": "npmd:@comunica/actor-rdf-join-inner-multi-empty/",
-      "files-carjime": "carjime:^1.0.0/",
+      "carjime": "npmd:@comunica/actor-rdf-join-inner-multi-empty/^1.0.0/",
       "ActorRdfJoinMultiEmpty": {
-        "@id": "carjime:lib/ActorRdfJoinMultiEmpty#ActorRdfJoinMultiEmpty",
+        "@id": "carjime:components/ActorRdfJoinMultiEmpty.jsonld#ActorRdfJoinMultiEmpty",
         "@prefix": true,
         "@context": {
           "args_mediatorJoinSelectivity": {
-            "@id": "carjime:lib/ActorRdfJoinMultiEmpty#ActorRdfJoinMultiEmpty_args_mediatorJoinSelectivity"
+            "@id": "carjime:components/ActorRdfJoinMultiEmpty.jsonld#ActorRdfJoinMultiEmpty_args_mediatorJoinSelectivity"
           },
           "args_name": {
-            "@id": "carjime:lib/ActorRdfJoinMultiEmpty#ActorRdfJoinMultiEmpty_args_name"
+            "@id": "carjime:components/ActorRdfJoinMultiEmpty.jsonld#ActorRdfJoinMultiEmpty_args_name"
           },
           "args_bus": {
-            "@id": "carjime:lib/ActorRdfJoinMultiEmpty#ActorRdfJoinMultiEmpty_args_bus"
+            "@id": "carjime:components/ActorRdfJoinMultiEmpty.jsonld#ActorRdfJoinMultiEmpty_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carjime:lib/ActorRdfJoinMultiEmpty#ActorRdfJoinMultiEmpty_args_beforeActors",
+            "@id": "carjime:components/ActorRdfJoinMultiEmpty.jsonld#ActorRdfJoinMultiEmpty_args_beforeActors",
             "@container": "@list"
           }
         }

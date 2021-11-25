@@ -3,52 +3,51 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbruq": "npmd:@comunica/bus-rdf-update-quads/",
-      "files-cbruq": "cbruq:^1.0.0/",
+      "cbruq": "npmd:@comunica/bus-rdf-update-quads/^1.0.0/",
       "ActorRdfUpdateQuads": {
-        "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads",
+        "@id": "cbruq:components/ActorRdfUpdateQuads.jsonld#ActorRdfUpdateQuads",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_args_name"
+            "@id": "cbruq:components/ActorRdfUpdateQuads.jsonld#ActorRdfUpdateQuads_args_name"
           },
           "args_bus": {
-            "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_args_bus"
+            "@id": "cbruq:components/ActorRdfUpdateQuads.jsonld#ActorRdfUpdateQuads_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbruq:lib/ActorRdfUpdateQuads#ActorRdfUpdateQuads_args_beforeActors",
+            "@id": "cbruq:components/ActorRdfUpdateQuads.jsonld#ActorRdfUpdateQuads_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActionRdfUpdateQuads": {
-        "@id": "cbruq:lib/ActorRdfUpdateQuads#IActionRdfUpdateQuads",
+        "@id": "cbruq:components/ActorRdfUpdateQuads.jsonld#IActionRdfUpdateQuads",
         "@prefix": true,
         "@context": {}
       },
       "IActorRdfUpdateQuadsOutput": {
-        "@id": "cbruq:lib/ActorRdfUpdateQuads#IActorRdfUpdateQuadsOutput",
+        "@id": "cbruq:components/ActorRdfUpdateQuads.jsonld#IActorRdfUpdateQuadsOutput",
         "@prefix": true,
         "@context": {}
       },
       "ActorRdfUpdateQuadsDestination": {
-        "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination",
+        "@id": "cbruq:components/ActorRdfUpdateQuadsDestination.jsonld#ActorRdfUpdateQuadsDestination",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination_args_name"
+            "@id": "cbruq:components/ActorRdfUpdateQuadsDestination.jsonld#ActorRdfUpdateQuadsDestination_args_name"
           },
           "args_bus": {
-            "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination_args_bus"
+            "@id": "cbruq:components/ActorRdfUpdateQuadsDestination.jsonld#ActorRdfUpdateQuadsDestination_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbruq:lib/ActorRdfUpdateQuadsDestination#ActorRdfUpdateQuadsDestination_args_beforeActors",
+            "@id": "cbruq:components/ActorRdfUpdateQuadsDestination.jsonld#ActorRdfUpdateQuadsDestination_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IQuadDestination": {
-        "@id": "cbruq:lib/IQuadDestination#IQuadDestination",
+        "@id": "cbruq:components/IQuadDestination.jsonld#IQuadDestination",
         "@prefix": true,
         "@context": {}
       }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-orderby-direct",
   "import": [
-    "files-caqood:components/ActorQueryOperationOrderByDirect.jsonld"
+    "caqood:components/ActorQueryOperationOrderByDirect.jsonld"
   ]
 }

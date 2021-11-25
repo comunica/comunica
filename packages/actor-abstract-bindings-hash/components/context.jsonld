@@ -3,54 +3,53 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caabh": "npmd:@comunica/actor-abstract-bindings-hash/",
-      "files-caabh": "caabh:^1.0.0/",
+      "caabh": "npmd:@comunica/actor-abstract-bindings-hash/^1.0.0/",
       "AbstractBindingsHash": {
-        "@id": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash",
+        "@id": "caabh:components/AbstractBindingsHash.jsonld#AbstractBindingsHash",
         "@prefix": true,
         "@context": {
           "operator": {
-            "@id": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_operator"
+            "@id": "caabh:components/AbstractBindingsHash.jsonld#AbstractBindingsHash_operator"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_args_mediatorQueryOperation"
+            "@id": "caabh:components/AbstractBindingsHash.jsonld#AbstractBindingsHash_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_args_name"
+            "@id": "caabh:components/AbstractBindingsHash.jsonld#AbstractBindingsHash_args_name"
           },
           "args_bus": {
-            "@id": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_args_bus"
+            "@id": "caabh:components/AbstractBindingsHash.jsonld#AbstractBindingsHash_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caabh:lib/AbstractBindingsHash#AbstractBindingsHash_args_beforeActors",
+            "@id": "caabh:components/AbstractBindingsHash.jsonld#AbstractBindingsHash_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "AbstractFilterHash": {
-        "@id": "caabh:lib/AbstractFilterHash#AbstractFilterHash",
+        "@id": "caabh:components/AbstractFilterHash.jsonld#AbstractFilterHash",
         "@prefix": true,
         "@context": {
           "operator": {
-            "@id": "caabh:lib/AbstractFilterHash#AbstractFilterHash_operator"
+            "@id": "caabh:components/AbstractFilterHash.jsonld#AbstractFilterHash_operator"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caabh:lib/AbstractFilterHash#AbstractFilterHash_args_mediatorQueryOperation"
+            "@id": "caabh:components/AbstractFilterHash.jsonld#AbstractFilterHash_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caabh:lib/AbstractFilterHash#AbstractFilterHash_args_name"
+            "@id": "caabh:components/AbstractFilterHash.jsonld#AbstractFilterHash_args_name"
           },
           "args_bus": {
-            "@id": "caabh:lib/AbstractFilterHash#AbstractFilterHash_args_bus"
+            "@id": "caabh:components/AbstractFilterHash.jsonld#AbstractFilterHash_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caabh:lib/AbstractFilterHash#AbstractFilterHash_args_beforeActors",
+            "@id": "caabh:components/AbstractFilterHash.jsonld#AbstractFilterHash_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorInitRdfDereferencePagedArgs": {
-        "@id": "caabh:lib/AbstractFilterHash#IActorInitRdfDereferencePagedArgs",
+        "@id": "caabh:components/AbstractFilterHash.jsonld#IActorInitRdfDereferencePagedArgs",
         "@prefix": true,
         "@context": {}
       }

@@ -7,119 +7,121 @@
   "@id": "npmd:@comunica/actor-sparql-serialize-sparql-tsv",
   "components": [
     {
-      "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv",
+      "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv",
       "@type": "Class",
       "requireElement": "ActorSparqlSerializeSparqlTsv",
       "extends": [
-        "cbss:lib/ActorSparqlSerializeFixedMediaTypes#ActorSparqlSerializeFixedMediaTypes"
+        "cbss:components/ActorSparqlSerializeFixedMediaTypes.jsonld#ActorSparqlSerializeFixedMediaTypes"
       ],
       "comment": "A comunica SPARQL TSV SPARQL Serialize Actor.",
       "parameters": [
         {
-          "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_mediaTypePriorities",
+          "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_mediaTypePriorities",
           "range": "rdf:JSON",
-          "default": [
-            {
-              "@type": "@json",
-              "@value": {
-                "text/tab-separated-values": 0.75
-              }
+          "default": {
+            "@type": "@json",
+            "@value": {
+              "text/tab-separated-values": 0.75
             }
-          ],
-          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1].",
-          "unique": true,
-          "required": true
+          },
+          "comment": "A record of media types, with media type name as key, and its priority as value. Priorities are numbers between [0, 1]."
         },
         {
-          "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_mediaTypeFormats",
+          "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_mediaTypeFormats",
           "range": "rdf:JSON",
-          "default": [
-            {
-              "@type": "@json",
-              "@value": {
-                "text/tab-separated-values": "http://www.w3.org/ns/formats/SPARQL_Results_TSV"
-              }
+          "default": {
+            "@type": "@json",
+            "@value": {
+              "text/tab-separated-values": "http://www.w3.org/ns/formats/SPARQL_Results_TSV"
             }
-          ],
-          "comment": "A record of media types, with media type name as key, and its format IRI as value.",
-          "unique": true,
-          "required": true
+          },
+          "comment": "A record of media types, with media type name as key, and its format IRI as value."
         },
         {
-          "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_priorityScale",
-          "range": "xsd:double",
-          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value.",
-          "unique": true
+          "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_priorityScale",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:double",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
+          "comment": "A multiplier for media type priorities. This can be used for keeping the original media types in place, but scaling all of their scores with a certain value."
         },
         {
-          "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_name",
+          "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbss:components/ActorSparqlSerialize.jsonld#ActorSparqlSerialize_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args__constructorArgument",
+          "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediaTypePriorities",
               "value": {
-                "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_mediaTypePriorities"
+                "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_mediaTypePriorities"
               }
             },
             {
               "keyRaw": "mediaTypeFormats",
               "value": {
-                "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_mediaTypeFormats"
+                "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_mediaTypeFormats"
               }
             },
             {
               "keyRaw": "priorityScale",
               "value": {
-                "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_priorityScale"
+                "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_priorityScale"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_name"
+                "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_bus"
+                "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "cassst:lib/ActorSparqlSerializeSparqlTsv#ActorSparqlSerializeSparqlTsv_args_beforeActors"
+                "@id": "cassst:components/ActorSparqlSerializeSparqlTsv.jsonld#ActorSparqlSerializeSparqlTsv_args_beforeActors"
               }
             }
           ]

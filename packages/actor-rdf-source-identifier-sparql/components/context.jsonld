@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carsis": "npmd:@comunica/actor-rdf-source-identifier-sparql/",
-      "files-carsis": "carsis:^1.0.0/",
+      "carsis": "npmd:@comunica/actor-rdf-source-identifier-sparql/^1.0.0/",
       "ActorRdfSourceIdentifierSparql": {
-        "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql",
+        "@id": "carsis:components/ActorRdfSourceIdentifierSparql.jsonld#ActorRdfSourceIdentifierSparql",
         "@prefix": true,
         "@context": {
           "args_mediatorHttp": {
-            "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_mediatorHttp"
+            "@id": "carsis:components/ActorRdfSourceIdentifierSparql.jsonld#ActorRdfSourceIdentifierSparql_args_mediatorHttp"
           },
           "args_priority": {
-            "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_priority"
+            "@id": "carsis:components/ActorRdfSourceIdentifierSparql.jsonld#ActorRdfSourceIdentifierSparql_args_priority"
           },
           "args_name": {
-            "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_name"
+            "@id": "carsis:components/ActorRdfSourceIdentifierSparql.jsonld#ActorRdfSourceIdentifierSparql_args_name"
           },
           "args_bus": {
-            "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_bus"
+            "@id": "carsis:components/ActorRdfSourceIdentifierSparql.jsonld#ActorRdfSourceIdentifierSparql_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#ActorRdfSourceIdentifierSparql_args_beforeActors",
+            "@id": "carsis:components/ActorRdfSourceIdentifierSparql.jsonld#ActorRdfSourceIdentifierSparql_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfSourceIdentifierSparqlArgs": {
-        "@id": "carsis:lib/ActorRdfSourceIdentifierSparql#IActorRdfSourceIdentifierSparqlArgs",
+        "@id": "carsis:components/ActorRdfSourceIdentifierSparql.jsonld#IActorRdfSourceIdentifierSparqlArgs",
         "@prefix": true,
         "@context": {}
       }

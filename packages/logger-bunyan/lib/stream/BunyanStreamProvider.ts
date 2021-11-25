@@ -22,7 +22,6 @@ export interface IBunyanStreamProviderArgs {
   name?: string;
   /**
    * The logging level to emit
-   * @range {string}
    */
   level?: LogLevelString;
 }

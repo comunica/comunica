@@ -3,20 +3,19 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqov": "npmd:@comunica/actor-query-operation-values/",
-      "files-caqov": "caqov:^1.0.0/",
+      "caqov": "npmd:@comunica/actor-query-operation-values/^1.0.0/",
       "ActorQueryOperationValues": {
-        "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues",
+        "@id": "caqov:components/ActorQueryOperationValues.jsonld#ActorQueryOperationValues",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues_args_name"
+            "@id": "caqov:components/ActorQueryOperationValues.jsonld#ActorQueryOperationValues_args_name"
           },
           "args_bus": {
-            "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues_args_bus"
+            "@id": "caqov:components/ActorQueryOperationValues.jsonld#ActorQueryOperationValues_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqov:lib/ActorQueryOperationValues#ActorQueryOperationValues_args_beforeActors",
+            "@id": "caqov:components/ActorQueryOperationValues.jsonld#ActorQueryOperationValues_args_beforeActors",
             "@container": "@list"
           }
         }

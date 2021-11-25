@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-hypermedia-sparql",
   "import": [
-    "files-carrhs:components/ActorRdfResolveHypermediaSparql.jsonld"
+    "carrhs:components/ActorRdfResolveHypermediaSparql.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-single",
   "import": [
-    "files-carjisi:components/ActorRdfJoinSingle.jsonld"
+    "carjisi:components/ActorRdfJoinSingle.jsonld"
   ]
 }

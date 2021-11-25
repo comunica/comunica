@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-serialize-jsonld",
   "import": [
-    "files-carsj:components/ActorRdfSerializeJsonLd.jsonld"
+    "carsj:components/ActorRdfSerializeJsonLd.jsonld"
   ]
 }

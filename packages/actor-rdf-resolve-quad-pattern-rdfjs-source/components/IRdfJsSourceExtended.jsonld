@@ -5,7 +5,7 @@
   "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source",
   "components": [
     {
-      "@id": "carrqprs:lib/IRdfJsSourceExtended#IRdfJsSourceExtended",
+      "@id": "carrqprs:components/IRdfJsSourceExtended.jsonld#IRdfJsSourceExtended",
       "@type": "AbstractClass",
       "requireElement": "IRdfJsSourceExtended",
       "extends": [],

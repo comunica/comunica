@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-optimize-query-operation-join-connected",
   "import": [
-    "files-caoqojc:components/ActorOptimizeQueryOperationJoinConnected.jsonld"
+    "caoqojc:components/ActorOptimizeQueryOperationJoinConnected.jsonld"
   ]
 }

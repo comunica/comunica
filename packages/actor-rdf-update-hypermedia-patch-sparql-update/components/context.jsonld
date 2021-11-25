@@ -3,44 +3,43 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caruhpsu": "npmd:@comunica/actor-rdf-update-hypermedia-patch-sparql-update/",
-      "files-caruhpsu": "caruhpsu:^1.0.0/",
+      "caruhpsu": "npmd:@comunica/actor-rdf-update-hypermedia-patch-sparql-update/^1.0.0/",
       "ActorRdfUpdateHypermediaPatchSparqlUpdate": {
-        "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate",
+        "@id": "caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld#ActorRdfUpdateHypermediaPatchSparqlUpdate",
         "@prefix": true,
         "@context": {
           "args_mediatorHttp": {
-            "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_mediatorHttp"
+            "@id": "caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_mediatorHttp"
           },
           "args_name": {
-            "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_name"
+            "@id": "caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_name"
           },
           "args_bus": {
-            "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_bus"
+            "@id": "caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_beforeActors",
+            "@id": "caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld#ActorRdfUpdateHypermediaPatchSparqlUpdate_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfUpdateHypermediaPatchSparqlUpdateArgs": {
-        "@id": "caruhpsu:lib/ActorRdfUpdateHypermediaPatchSparqlUpdate#IActorRdfUpdateHypermediaPatchSparqlUpdateArgs",
+        "@id": "caruhpsu:components/ActorRdfUpdateHypermediaPatchSparqlUpdate.jsonld#IActorRdfUpdateHypermediaPatchSparqlUpdateArgs",
         "@prefix": true,
         "@context": {}
       },
       "QuadDestinationPatchSparqlUpdate": {
-        "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate",
+        "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate",
         "@prefix": true,
         "@context": {
           "url": {
-            "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_url"
+            "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_url"
           },
           "context": {
-            "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_context"
+            "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_context"
           },
           "mediatorHttp": {
-            "@id": "caruhpsu:lib/QuadDestinationPatchSparqlUpdate#QuadDestinationPatchSparqlUpdate_mediatorHttp"
+            "@id": "caruhpsu:components/QuadDestinationPatchSparqlUpdate.jsonld#QuadDestinationPatchSparqlUpdate_mediatorHttp"
           }
         }
       }

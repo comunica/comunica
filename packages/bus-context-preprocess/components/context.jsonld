@@ -3,26 +3,25 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbcp": "npmd:@comunica/bus-context-preprocess/",
-      "files-cbcp": "cbcp:^1.0.0/",
+      "cbcp": "npmd:@comunica/bus-context-preprocess/^1.0.0/",
       "ActorContextPreprocess": {
-        "@id": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess",
+        "@id": "cbcp:components/ActorContextPreprocess.jsonld#ActorContextPreprocess",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess_args_name"
+            "@id": "cbcp:components/ActorContextPreprocess.jsonld#ActorContextPreprocess_args_name"
           },
           "args_bus": {
-            "@id": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess_args_bus"
+            "@id": "cbcp:components/ActorContextPreprocess.jsonld#ActorContextPreprocess_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbcp:lib/ActorContextPreprocess#ActorContextPreprocess_args_beforeActors",
+            "@id": "cbcp:components/ActorContextPreprocess.jsonld#ActorContextPreprocess_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorContextPreprocessOutput": {
-        "@id": "cbcp:lib/ActorContextPreprocess#IActorContextPreprocessOutput",
+        "@id": "cbcp:components/ActorContextPreprocess.jsonld#IActorContextPreprocessOutput",
         "@prefix": true,
         "@context": {}
       }

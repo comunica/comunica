@@ -3,30 +3,29 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmtp": "npmd:@comunica/actor-rdf-metadata-triple-predicate/",
-      "files-carmtp": "carmtp:^1.0.0/",
+      "carmtp": "npmd:@comunica/actor-rdf-metadata-triple-predicate/^1.0.0/",
       "ActorRdfMetadataTriplePredicate": {
-        "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate",
+        "@id": "carmtp:components/ActorRdfMetadataTriplePredicate.jsonld#ActorRdfMetadataTriplePredicate",
         "@prefix": true,
         "@context": {
           "args_predicateRegexes": {
-            "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_predicateRegexes",
+            "@id": "carmtp:components/ActorRdfMetadataTriplePredicate.jsonld#ActorRdfMetadataTriplePredicate_args_predicateRegexes",
             "@container": "@list"
           },
           "args_name": {
-            "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_name"
+            "@id": "carmtp:components/ActorRdfMetadataTriplePredicate.jsonld#ActorRdfMetadataTriplePredicate_args_name"
           },
           "args_bus": {
-            "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_bus"
+            "@id": "carmtp:components/ActorRdfMetadataTriplePredicate.jsonld#ActorRdfMetadataTriplePredicate_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#ActorRdfMetadataTriplePredicate_args_beforeActors",
+            "@id": "carmtp:components/ActorRdfMetadataTriplePredicate.jsonld#ActorRdfMetadataTriplePredicate_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfParseFixedMediaTypesArgs": {
-        "@id": "carmtp:lib/ActorRdfMetadataTriplePredicate#IActorRdfParseFixedMediaTypesArgs",
+        "@id": "carmtp:components/ActorRdfMetadataTriplePredicate.jsonld#IActorRdfParseFixedMediaTypesArgs",
         "@prefix": true,
         "@context": {}
       }

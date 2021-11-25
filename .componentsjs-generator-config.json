@@ -15,7 +15,6 @@
     "packages/runner-cli",
     "packages/utils-datasource"
   ],
-  "typeScopedContexts": true,
   "ignoreComponents": [
     "Error",
     "LogicalJoinType",

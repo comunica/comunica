@@ -76,7 +76,6 @@ export interface IMediatorNumberArgs<A extends Actor<I, T, O>, I extends IAction
    * The way how the index should be selected.
    * For choosing the minimum value: 'min'.
    * For choosing the maximum value: 'max'.
-   * @range {string} // TODO: remove when union types are supported
    */
   type: 'min' | 'max';
 

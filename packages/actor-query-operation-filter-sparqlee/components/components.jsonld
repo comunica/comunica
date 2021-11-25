@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-filter-sparqlee",
   "import": [
-    "files-caqofs:components/ActorQueryOperationFilterSparqlee.jsonld"
+    "caqofs:components/ActorQueryOperationFilterSparqlee.jsonld"
   ]
 }

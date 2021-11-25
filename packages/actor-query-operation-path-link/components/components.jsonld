@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-path-link",
   "import": [
-    "files-caqopl:components/ActorQueryOperationPathLink.jsonld"
+    "caqopl:components/ActorQueryOperationPathLink.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-allow-http-methods",
   "import": [
-    "files-carmeahm:components/ActorRdfMetadataExtractAllowHttpMethods.jsonld"
+    "carmeahm:components/ActorRdfMetadataExtractAllowHttpMethods.jsonld"
   ]
 }

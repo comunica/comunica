@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqopl": "npmd:@comunica/actor-query-operation-path-link/",
-      "files-caqopl": "caqopl:^1.0.0/",
+      "caqopl": "npmd:@comunica/actor-query-operation-path-link/^1.0.0/",
       "ActorQueryOperationPathLink": {
-        "@id": "caqopl:lib/ActorQueryOperationPathLink#ActorQueryOperationPathLink",
+        "@id": "caqopl:components/ActorQueryOperationPathLink.jsonld#ActorQueryOperationPathLink",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqopl:lib/ActorQueryOperationPathLink#ActorQueryOperationPathLink_args_mediatorQueryOperation"
+            "@id": "caqopl:components/ActorQueryOperationPathLink.jsonld#ActorQueryOperationPathLink_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqopl:lib/ActorQueryOperationPathLink#ActorQueryOperationPathLink_args_name"
+            "@id": "caqopl:components/ActorQueryOperationPathLink.jsonld#ActorQueryOperationPathLink_args_name"
           },
           "args_bus": {
-            "@id": "caqopl:lib/ActorQueryOperationPathLink#ActorQueryOperationPathLink_args_bus"
+            "@id": "caqopl:components/ActorQueryOperationPathLink.jsonld#ActorQueryOperationPathLink_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqopl:lib/ActorQueryOperationPathLink#ActorQueryOperationPathLink_args_beforeActors",
+            "@id": "caqopl:components/ActorQueryOperationPathLink.jsonld#ActorQueryOperationPathLink_args_beforeActors",
             "@container": "@list"
           }
         }

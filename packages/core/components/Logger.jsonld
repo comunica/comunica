@@ -5,7 +5,7 @@
   "@id": "npmd:@comunica/core",
   "components": [
     {
-      "@id": "cc:lib/Logger#Logger",
+      "@id": "cc:components/Logger.jsonld#Logger",
       "@type": "AbstractClass",
       "requireElement": "Logger",
       "extends": [],

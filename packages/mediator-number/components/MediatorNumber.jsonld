@@ -6,87 +6,96 @@
   "@id": "npmd:@comunica/mediator-number",
   "components": [
     {
-      "@id": "cmn:lib/MediatorNumber#MediatorNumber",
+      "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber",
       "@type": "Class",
       "requireElement": "MediatorNumber",
       "extends": [
-        "cc:lib/Mediator#Mediator",
-        "cmn:lib/MediatorNumber#IMediatorNumberArgs"
+        "cc:components/Mediator.jsonld#Mediator",
+        "cmn:components/MediatorNumber.jsonld#IMediatorNumberArgs"
       ],
       "comment": "A mediator that can mediate over a single number field.  It takes the required 'field' and 'type' parameters. The 'field' parameter represents the field name of the test result field over which must be mediated. The 'type' parameter",
       "parameters": [
         {
-          "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_field",
+          "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_field",
           "range": "xsd:string",
-          "comment": "The field name of the test result field over which must be mediated.",
-          "unique": true,
-          "required": true
+          "comment": "The field name of the test result field over which must be mediated."
         },
         {
-          "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_type",
+          "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_type",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeLiteral",
+                "parameterRangeValueLiteral": "min"
+              },
+              {
+                "@type": "ParameterRangeLiteral",
+                "parameterRangeValueLiteral": "max"
+              }
+            ]
+          },
+          "comment": "The way how the index should be selected. For choosing the minimum value: 'min'. For choosing the maximum value: 'max'."
+        },
+        {
+          "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_ignoreErrors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:boolean",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
+          "comment": "If actors that throw test errors should be ignored"
+        },
+        {
+          "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_name",
           "range": "xsd:string",
-          "comment": "The way how the index should be selected. For choosing the minimum value: 'min'. For choosing the maximum value: 'max'.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this mediator."
         },
         {
-          "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_ignoreErrors",
-          "range": "xsd:boolean",
-          "comment": "If actors that throw test errors should be ignored",
-          "unique": true
-        },
-        {
-          "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_name",
-          "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this mediator.",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "comment": "The bus this mediator will mediate over.",
-          "unique": true,
-          "required": true
+          "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "comment": "The bus this mediator will mediate over."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cmn:lib/MediatorNumber#MediatorNumber_args__constructorArgument",
+          "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "field",
               "value": {
-                "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_field"
+                "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_field"
               }
             },
             {
               "keyRaw": "type",
               "value": {
-                "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_type"
+                "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_type"
               }
             },
             {
               "keyRaw": "ignoreErrors",
               "value": {
-                "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_ignoreErrors"
+                "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_ignoreErrors"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_name"
+                "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cmn:lib/MediatorNumber#MediatorNumber_args_bus"
+                "@id": "cmn:components/MediatorNumber.jsonld#MediatorNumber_args_bus"
               }
             }
           ]
@@ -94,11 +103,11 @@
       ]
     },
     {
-      "@id": "cmn:lib/MediatorNumber#IMediatorNumberArgs",
+      "@id": "cmn:components/MediatorNumber.jsonld#IMediatorNumberArgs",
       "@type": "AbstractClass",
       "requireElement": "IMediatorNumberArgs",
       "extends": [
-        "cc:lib/Mediator#IMediatorArgs"
+        "cc:components/Mediator.jsonld#IMediatorArgs"
       ],
       "parameters": [],
       "constructorArguments": []

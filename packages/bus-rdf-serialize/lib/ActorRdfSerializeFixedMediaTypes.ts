@@ -20,7 +20,7 @@ IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>
   implements IActorRdfSerializeFixedMediaTypesArgs, ActorRdfSerialize {
   /**
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
-   * @param args - @defaultNested {<cbrs:lib/ActorRdfSerialize#ActorRdfSerialize_default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<cbrs:components/ActorRdfSerialize.jsonld#ActorRdfSerialize_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorRdfSerializeFixedMediaTypesArgs) {
     super(args);

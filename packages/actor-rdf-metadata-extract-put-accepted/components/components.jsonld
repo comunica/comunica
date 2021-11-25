@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-put-accepted",
   "import": [
-    "files-carmepa:components/ActorRdfMetadataExtractPutAccepted.jsonld"
+    "carmepa:components/ActorRdfMetadataExtractPutAccepted.jsonld"
   ]
 }

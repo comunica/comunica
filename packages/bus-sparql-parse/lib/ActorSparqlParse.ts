@@ -15,7 +15,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export abstract class ActorSparqlParse extends Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
     super(args);

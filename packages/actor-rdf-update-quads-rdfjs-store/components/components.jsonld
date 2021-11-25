@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-update-quads-rdfjs-store",
   "import": [
-    "files-caruqrs:components/ActorRdfUpdateQuadsRdfJsStore.jsonld"
+    "caruqrs:components/ActorRdfUpdateQuadsRdfJsStore.jsonld"
   ]
 }

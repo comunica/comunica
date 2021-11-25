@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-parse-algebra",
   "import": [
-    "files-caspa:components/ActorSparqlParseAlgebra.jsonld"
+    "caspa:components/ActorSparqlParseAlgebra.jsonld"
   ]
 }

@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-abstract-bindings-hash",
   "import": [
-    "files-caabh:components/AbstractBindingsHash.jsonld",
-    "files-caabh:components/AbstractFilterHash.jsonld"
+    "caabh:components/AbstractBindingsHash.jsonld",
+    "caabh:components/AbstractFilterHash.jsonld"
   ]
 }

@@ -5,7 +5,7 @@
   "@id": "npmd:@comunica/actor-init-sparql",
   "components": [
     {
-      "@id": "cais:lib/cli/ICliArgsHandler#ICliArgsHandler",
+      "@id": "cais:components/cli/ICliArgsHandler.jsonld#ICliArgsHandler",
       "@type": "AbstractClass",
       "requireElement": "ICliArgsHandler",
       "extends": [],

@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqopoom": "npmd:@comunica/actor-query-operation-path-one-or-more/",
-      "files-caqopoom": "caqopoom:^1.0.0/",
+      "caqopoom": "npmd:@comunica/actor-query-operation-path-one-or-more/^1.0.0/",
       "ActorQueryOperationPathOneOrMore": {
-        "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore",
+        "@id": "caqopoom:components/ActorQueryOperationPathOneOrMore.jsonld#ActorQueryOperationPathOneOrMore",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_mediatorQueryOperation"
+            "@id": "caqopoom:components/ActorQueryOperationPathOneOrMore.jsonld#ActorQueryOperationPathOneOrMore_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_name"
+            "@id": "caqopoom:components/ActorQueryOperationPathOneOrMore.jsonld#ActorQueryOperationPathOneOrMore_args_name"
           },
           "args_bus": {
-            "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_bus"
+            "@id": "caqopoom:components/ActorQueryOperationPathOneOrMore.jsonld#ActorQueryOperationPathOneOrMore_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqopoom:lib/ActorQueryOperationPathOneOrMore#ActorQueryOperationPathOneOrMore_args_beforeActors",
+            "@id": "caqopoom:components/ActorQueryOperationPathOneOrMore.jsonld#ActorQueryOperationPathOneOrMore_args_beforeActors",
             "@container": "@list"
           }
         }

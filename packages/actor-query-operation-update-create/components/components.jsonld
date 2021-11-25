@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-update-create",
   "import": [
-    "files-caqouc:components/ActorQueryOperationCreate.jsonld"
+    "caqouc:components/ActorQueryOperationCreate.jsonld"
   ]
 }

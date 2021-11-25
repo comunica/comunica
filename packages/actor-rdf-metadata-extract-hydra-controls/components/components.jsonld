@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-hydra-controls",
   "import": [
-    "files-carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld"
+    "carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld"
   ]
 }

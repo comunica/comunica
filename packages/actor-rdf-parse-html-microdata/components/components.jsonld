@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-parse-html-microdata",
   "import": [
-    "files-carphm:components/ActorRdfParseHtmlMicrodata.jsonld"
+    "carphm:components/ActorRdfParseHtmlMicrodata.jsonld"
   ]
 }

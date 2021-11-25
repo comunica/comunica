@@ -3,31 +3,30 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carpxr": "npmd:@comunica/actor-rdf-parse-xml-rdfa/",
-      "files-carpxr": "carpxr:^1.0.0/",
+      "carpxr": "npmd:@comunica/actor-rdf-parse-xml-rdfa/^1.0.0/",
       "ActorRdfParseXmlRdfa": {
-        "@id": "carpxr:lib/ActorRdfParseXmlRdfa#ActorRdfParseXmlRdfa",
+        "@id": "carpxr:components/ActorRdfParseXmlRdfa.jsonld#ActorRdfParseXmlRdfa",
         "@prefix": true,
         "@context": {
           "args_mediaTypePriorities": {
-            "@id": "carpxr:lib/ActorRdfParseXmlRdfa#ActorRdfParseXmlRdfa_args_mediaTypePriorities",
+            "@id": "carpxr:components/ActorRdfParseXmlRdfa.jsonld#ActorRdfParseXmlRdfa_args_mediaTypePriorities",
             "@type": "@json"
           },
           "args_mediaTypeFormats": {
-            "@id": "carpxr:lib/ActorRdfParseXmlRdfa#ActorRdfParseXmlRdfa_args_mediaTypeFormats",
+            "@id": "carpxr:components/ActorRdfParseXmlRdfa.jsonld#ActorRdfParseXmlRdfa_args_mediaTypeFormats",
             "@type": "@json"
           },
           "args_priorityScale": {
-            "@id": "carpxr:lib/ActorRdfParseXmlRdfa#ActorRdfParseXmlRdfa_args_priorityScale"
+            "@id": "carpxr:components/ActorRdfParseXmlRdfa.jsonld#ActorRdfParseXmlRdfa_args_priorityScale"
           },
           "args_name": {
-            "@id": "carpxr:lib/ActorRdfParseXmlRdfa#ActorRdfParseXmlRdfa_args_name"
+            "@id": "carpxr:components/ActorRdfParseXmlRdfa.jsonld#ActorRdfParseXmlRdfa_args_name"
           },
           "args_bus": {
-            "@id": "carpxr:lib/ActorRdfParseXmlRdfa#ActorRdfParseXmlRdfa_args_bus"
+            "@id": "carpxr:components/ActorRdfParseXmlRdfa.jsonld#ActorRdfParseXmlRdfa_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carpxr:lib/ActorRdfParseXmlRdfa#ActorRdfParseXmlRdfa_args_beforeActors",
+            "@id": "carpxr:components/ActorRdfParseXmlRdfa.jsonld#ActorRdfParseXmlRdfa_args_beforeActors",
             "@container": "@list"
           }
         }

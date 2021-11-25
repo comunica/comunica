@@ -3,86 +3,85 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carrqph": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hypermedia/",
-      "files-carrqph": "carrqph:^1.0.0/",
+      "carrqph": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^1.0.0/",
       "ActorRdfResolveQuadPatternHypermedia": {
-        "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia",
+        "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia",
         "@prefix": true,
         "@context": {
           "args_cacheSize": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_cacheSize"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_cacheSize"
           },
           "args_httpInvalidator": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_httpInvalidator"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_httpInvalidator"
           },
           "args_mediatorRdfDereference": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfDereference"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfDereference"
           },
           "args_mediatorMetadata": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_mediatorMetadata"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_mediatorMetadata"
           },
           "args_mediatorMetadataExtract": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_mediatorMetadataExtract"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_mediatorMetadataExtract"
           },
           "args_mediatorRdfResolveHypermedia": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfResolveHypermedia"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfResolveHypermedia"
           },
           "args_mediatorRdfResolveHypermediaLinks": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfResolveHypermediaLinks"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfResolveHypermediaLinks"
           },
           "args_mediatorRdfResolveHypermediaLinksQueue": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfResolveHypermediaLinksQueue"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_mediatorRdfResolveHypermediaLinksQueue"
           },
           "args_name": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_name"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_name"
           },
           "args_bus": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_bus"
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#ActorRdfResolveQuadPatternHypermedia_args_beforeActors",
+            "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#ActorRdfResolveQuadPatternHypermedia_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfResolveQuadPatternHypermediaArgs": {
-        "@id": "carrqph:lib/ActorRdfResolveQuadPatternHypermedia#IActorRdfResolveQuadPatternHypermediaArgs",
+        "@id": "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld#IActorRdfResolveQuadPatternHypermediaArgs",
         "@prefix": true,
         "@context": {}
       },
       "MediatedQuadSource": {
-        "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource",
+        "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource",
         "@prefix": true,
         "@context": {
           "cacheSize": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_cacheSize"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_cacheSize"
           },
           "context": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_context"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_context"
           },
           "firstUrl": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_firstUrl"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_firstUrl"
           },
           "forceSourceType": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_forceSourceType"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_forceSourceType"
           },
           "mediators_mediatorRdfDereference": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfDereference"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_mediators_mediatorRdfDereference"
           },
           "mediators_mediatorMetadata": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorMetadata"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_mediators_mediatorMetadata"
           },
           "mediators_mediatorMetadataExtract": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorMetadataExtract"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_mediators_mediatorMetadataExtract"
           },
           "mediators_mediatorRdfResolveHypermedia": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermedia"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_mediators_mediatorRdfResolveHypermedia"
           },
           "mediators_mediatorRdfResolveHypermediaLinks": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinks"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinks"
           },
           "mediators_mediatorRdfResolveHypermediaLinksQueue": {
-            "@id": "carrqph:lib/MediatedQuadSource#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinksQueue"
+            "@id": "carrqph:components/MediatedQuadSource.jsonld#MediatedQuadSource_mediators_mediatorRdfResolveHypermediaLinksQueue"
           }
         }
       }

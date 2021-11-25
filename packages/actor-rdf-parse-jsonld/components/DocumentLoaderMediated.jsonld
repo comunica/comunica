@@ -6,30 +6,29 @@
   "@id": "npmd:@comunica/actor-rdf-parse-jsonld",
   "components": [
     {
-      "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated",
+      "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated",
       "@type": "Class",
       "requireElement": "DocumentLoaderMediated",
       "extends": [],
       "comment": "A JSON-LD document loader that fetches over an HTTP bus using a given mediator.",
       "parameters": [
         {
-          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_context",
-          "unique": true,
-          "required": true
+          "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated_context",
+          "range": {
+            "@type": "ParameterRangeUndefined"
+          }
         },
         {
-          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_mediatorHttp",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated_mediatorHttp",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         }
       ],
       "constructorArguments": [
         {
-          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_mediatorHttp"
+          "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated_mediatorHttp"
         },
         {
-          "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_context"
+          "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated_context"
         }
       ]
     }

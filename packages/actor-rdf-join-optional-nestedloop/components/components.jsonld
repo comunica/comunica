@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-optional-nestedloop",
   "import": [
-    "files-carjon:components/ActorRdfJoinOptionalNestedLoop.jsonld"
+    "carjon:components/ActorRdfJoinOptionalNestedLoop.jsonld"
   ]
 }

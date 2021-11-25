@@ -13,7 +13,8 @@
   "@graph": [
     {
       "@id": "urn:comunica:my",
-      "Runner:_actors": [
+      "@type": "Runner",
+  "actors": [
         {
           "@id": "#myHttpProxy",
           "@type": "ActorHttpProxy",

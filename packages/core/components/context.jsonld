@@ -3,121 +3,120 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cc": "npmd:@comunica/core/",
-      "files-cc": "cc:^1.0.0/",
+      "cc": "npmd:@comunica/core/^1.0.0/",
       "Bus": {
-        "@id": "cc:lib/Bus#Bus",
+        "@id": "cc:components/Bus.jsonld#Bus",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cc:lib/Bus#Bus_args_name"
+            "@id": "cc:components/Bus.jsonld#Bus_args_name"
           }
         }
       },
       "IBusArgs": {
-        "@id": "cc:lib/Bus#IBusArgs",
+        "@id": "cc:components/Bus.jsonld#IBusArgs",
         "@prefix": true,
         "@context": {}
       },
       "IActorReply": {
-        "@id": "cc:lib/Bus#IActorReply",
+        "@id": "cc:components/Bus.jsonld#IActorReply",
         "@prefix": true,
         "@context": {}
       },
       "BusIndexed": {
-        "@id": "cc:lib/BusIndexed#BusIndexed",
+        "@id": "cc:components/BusIndexed.jsonld#BusIndexed",
         "@prefix": true,
         "@context": {
           "args_actorIdentifierFields": {
-            "@id": "cc:lib/BusIndexed#BusIndexed_args_actorIdentifierFields",
+            "@id": "cc:components/BusIndexed.jsonld#BusIndexed_args_actorIdentifierFields",
             "@container": "@list"
           },
           "args_actionIdentifierFields": {
-            "@id": "cc:lib/BusIndexed#BusIndexed_args_actionIdentifierFields",
+            "@id": "cc:components/BusIndexed.jsonld#BusIndexed_args_actionIdentifierFields",
             "@container": "@list"
           },
           "args_name": {
-            "@id": "cc:lib/BusIndexed#BusIndexed_args_name"
+            "@id": "cc:components/BusIndexed.jsonld#BusIndexed_args_name"
           }
         }
       },
       "IBusIndexedArgs": {
-        "@id": "cc:lib/BusIndexed#IBusIndexedArgs",
+        "@id": "cc:components/BusIndexed.jsonld#IBusIndexedArgs",
         "@prefix": true,
         "@context": {}
       },
       "ActionObserver": {
-        "@id": "cc:lib/ActionObserver#ActionObserver",
+        "@id": "cc:components/ActionObserver.jsonld#ActionObserver",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cc:lib/ActionObserver#ActionObserver_args_name"
+            "@id": "cc:components/ActionObserver.jsonld#ActionObserver_args_name"
           },
           "args_bus": {
-            "@id": "cc:lib/ActionObserver#ActionObserver_args_bus"
+            "@id": "cc:components/ActionObserver.jsonld#ActionObserver_args_bus"
           }
         }
       },
       "IActionObserverArgs": {
-        "@id": "cc:lib/ActionObserver#IActionObserverArgs",
+        "@id": "cc:components/ActionObserver.jsonld#IActionObserverArgs",
         "@prefix": true,
         "@context": {}
       },
       "Actor": {
-        "@id": "cc:lib/Actor#Actor",
+        "@id": "cc:components/Actor.jsonld#Actor",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cc:lib/Actor#Actor_args_name"
+            "@id": "cc:components/Actor.jsonld#Actor_args_name"
           },
           "args_bus": {
-            "@id": "cc:lib/Actor#Actor_args_bus"
+            "@id": "cc:components/Actor.jsonld#Actor_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cc:lib/Actor#Actor_args_beforeActors",
+            "@id": "cc:components/Actor.jsonld#Actor_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorArgs": {
-        "@id": "cc:lib/Actor#IActorArgs",
+        "@id": "cc:components/Actor.jsonld#IActorArgs",
         "@prefix": true,
         "@context": {}
       },
       "IActorTest": {
-        "@id": "cc:lib/Actor#IActorTest",
+        "@id": "cc:components/Actor.jsonld#IActorTest",
         "@prefix": true,
         "@context": {}
       },
       "IActorOutput": {
-        "@id": "cc:lib/Actor#IActorOutput",
+        "@id": "cc:components/Actor.jsonld#IActorOutput",
         "@prefix": true,
         "@context": {}
       },
       "IAction": {
-        "@id": "ct:lib/index#IAction",
+        "@id": "ct:components/index.jsonld#IAction",
         "@prefix": true,
         "@context": {}
       },
       "Logger": {
-        "@id": "cc:lib/Logger#Logger",
+        "@id": "cc:components/Logger.jsonld#Logger",
         "@prefix": true,
         "@context": {}
       },
       "Mediator": {
-        "@id": "cc:lib/Mediator#Mediator",
+        "@id": "cc:components/Mediator.jsonld#Mediator",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cc:lib/Mediator#Mediator_args_name"
+            "@id": "cc:components/Mediator.jsonld#Mediator_args_name"
           },
           "args_bus": {
-            "@id": "cc:lib/Mediator#Mediator_args_bus"
+            "@id": "cc:components/Mediator.jsonld#Mediator_args_bus"
           }
         }
       },
       "IMediatorArgs": {
-        "@id": "cc:lib/Mediator#IMediatorArgs",
+        "@id": "cc:components/Mediator.jsonld#IMediatorArgs",
         "@prefix": true,
         "@context": {}
       }

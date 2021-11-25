@@ -3,17 +3,16 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cma": "npmd:@comunica/mediator-all/",
-      "files-cma": "cma:^1.0.0/",
+      "cma": "npmd:@comunica/mediator-all/^1.0.0/",
       "MediatorAll": {
-        "@id": "cma:lib/MediatorAll#MediatorAll",
+        "@id": "cma:components/MediatorAll.jsonld#MediatorAll",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cma:lib/MediatorAll#MediatorAll_args_name"
+            "@id": "cma:components/MediatorAll.jsonld#MediatorAll_args_name"
           },
           "args_bus": {
-            "@id": "cma:lib/MediatorAll#MediatorAll_args_bus"
+            "@id": "cma:components/MediatorAll.jsonld#MediatorAll_args_bus"
           }
         }
       }

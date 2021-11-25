@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-update-add-rewrite",
   "import": [
-    "files-caqouar:components/ActorQueryOperationAddRewrite.jsonld"
+    "caqouar:components/ActorQueryOperationAddRewrite.jsonld"
   ]
 }

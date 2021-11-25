@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-sparql-endpoint",
   "import": [
-    "files-caqose:components/ActorQueryOperationSparqlEndpoint.jsonld"
+    "caqose:components/ActorQueryOperationSparqlEndpoint.jsonld"
   ]
 }

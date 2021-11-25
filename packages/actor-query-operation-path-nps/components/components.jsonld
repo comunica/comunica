@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-path-nps",
   "import": [
-    "files-caqopn:components/ActorQueryOperationPathNps.jsonld"
+    "caqopn:components/ActorQueryOperationPathNps.jsonld"
   ]
 }

@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqose": "npmd:@comunica/actor-query-operation-service/",
-      "files-caqose": "caqose:^1.0.0/",
+      "caqose": "npmd:@comunica/actor-query-operation-service/^1.0.0/",
       "ActorQueryOperationService": {
-        "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService",
+        "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService",
         "@prefix": true,
         "@context": {
           "args_forceSparqlEndpoint": {
-            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_forceSparqlEndpoint"
+            "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_forceSparqlEndpoint"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_mediatorQueryOperation"
+            "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_name"
+            "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_name"
           },
           "args_bus": {
-            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_bus"
+            "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_beforeActors",
+            "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorQueryOperationServiceArgs": {
-        "@id": "caqose:lib/ActorQueryOperationService#IActorQueryOperationServiceArgs",
+        "@id": "caqose:components/ActorQueryOperationService.jsonld#IActorQueryOperationServiceArgs",
         "@prefix": true,
         "@context": {}
       }

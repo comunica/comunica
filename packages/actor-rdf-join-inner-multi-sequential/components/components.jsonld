@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-multi-sequential",
   "import": [
-    "files-carjimse:components/ActorRdfJoinMultiSequential.jsonld"
+    "carjimse:components/ActorRdfJoinMultiSequential.jsonld"
   ]
 }

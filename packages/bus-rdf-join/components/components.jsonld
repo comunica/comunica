@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-join",
   "import": [
-    "files-cbrj:components/ActorRdfJoin.jsonld"
+    "cbrj:components/ActorRdfJoin.jsonld"
   ]
 }

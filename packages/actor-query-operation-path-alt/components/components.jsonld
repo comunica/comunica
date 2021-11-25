@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-path-alt",
   "import": [
-    "files-caqopa:components/ActorQueryOperationPathAlt.jsonld"
+    "caqopa:components/ActorQueryOperationPathAlt.jsonld"
   ]
 }

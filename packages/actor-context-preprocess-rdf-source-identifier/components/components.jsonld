@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-context-preprocess-rdf-source-identifier",
   "import": [
-    "files-cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld"
+    "cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld"
   ]
 }

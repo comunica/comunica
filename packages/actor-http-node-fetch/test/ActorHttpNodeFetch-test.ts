@@ -84,7 +84,7 @@ describe('ActorHttpNodeFetch', () => {
     });
 
     it('for custom agent options should run and pass a custom agent to node-fetch', async() => {
-      actor = new ActorHttpNodeFetch({ name: 'actor', bus, agentOptions: '{ "keepAlive": true, "maxSockets": 5 }' });
+      actor = new ActorHttpNodeFetch({ name: 'actor', bus, agentOptions: { keepAlive: true, maxSockets: 5 }});
 
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
 

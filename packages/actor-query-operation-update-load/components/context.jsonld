@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoul": "npmd:@comunica/actor-query-operation-update-load/",
-      "files-caqoul": "caqoul:^1.0.0/",
+      "caqoul": "npmd:@comunica/actor-query-operation-update-load/^1.0.0/",
       "ActorQueryOperationLoad": {
-        "@id": "caqoul:lib/ActorQueryOperationLoad#ActorQueryOperationLoad",
+        "@id": "caqoul:components/ActorQueryOperationLoad.jsonld#ActorQueryOperationLoad",
         "@prefix": true,
         "@context": {
           "args_mediatorUpdateQuads": {
-            "@id": "caqoul:lib/ActorQueryOperationLoad#ActorQueryOperationLoad_args_mediatorUpdateQuads"
+            "@id": "caqoul:components/ActorQueryOperationLoad.jsonld#ActorQueryOperationLoad_args_mediatorUpdateQuads"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caqoul:lib/ActorQueryOperationLoad#ActorQueryOperationLoad_args_mediatorQueryOperation"
+            "@id": "caqoul:components/ActorQueryOperationLoad.jsonld#ActorQueryOperationLoad_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqoul:lib/ActorQueryOperationLoad#ActorQueryOperationLoad_args_name"
+            "@id": "caqoul:components/ActorQueryOperationLoad.jsonld#ActorQueryOperationLoad_args_name"
           },
           "args_bus": {
-            "@id": "caqoul:lib/ActorQueryOperationLoad#ActorQueryOperationLoad_args_bus"
+            "@id": "caqoul:components/ActorQueryOperationLoad.jsonld#ActorQueryOperationLoad_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqoul:lib/ActorQueryOperationLoad#ActorQueryOperationLoad_args_beforeActors",
+            "@id": "caqoul:components/ActorQueryOperationLoad.jsonld#ActorQueryOperationLoad_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorQueryOperationLoadArgs": {
-        "@id": "caqoul:lib/ActorQueryOperationLoad#IActorQueryOperationLoadArgs",
+        "@id": "caqoul:components/ActorQueryOperationLoad.jsonld#IActorQueryOperationLoadArgs",
         "@prefix": true,
         "@context": {}
       }

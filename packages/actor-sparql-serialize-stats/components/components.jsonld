@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-serialize-stats",
   "import": [
-    "files-cassst:components/ActionObserverHttp.jsonld",
-    "files-cassst:components/ActorSparqlSerializeStats.jsonld"
+    "cassst:components/ActionObserverHttp.jsonld",
+    "cassst:components/ActorSparqlSerializeStats.jsonld"
   ]
 }

@@ -19,7 +19,7 @@ IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
   protected readonly sourceType: string;
 
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest,
   IActorRdfResolveHypermediaOutput>,

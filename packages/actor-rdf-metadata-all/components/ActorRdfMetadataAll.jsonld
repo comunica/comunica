@@ -1,71 +1,74 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-all/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-metadata-all",
   "components": [
     {
-      "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll",
+      "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll",
       "@type": "Class",
       "requireElement": "ActorRdfMetadataAll",
       "extends": [
-        "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata"
+        "cbrm:components/ActorRdfMetadata.jsonld#ActorRdfMetadata"
       ],
       "comment": "A comunica All RDF Metadata Actor.",
       "parameters": [
         {
-          "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_name",
+          "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbrm:lib/ActorRdfMetadata#ActorRdfMetadata_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbrm:components/ActorRdfMetadata.jsonld#ActorRdfMetadata_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args__constructorArgument",
+          "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_name"
+                "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_bus"
+                "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_beforeActors"
+                "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_beforeActors"
               }
             }
           ]

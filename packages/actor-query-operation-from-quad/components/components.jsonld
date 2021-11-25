@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-from-quad",
   "import": [
-    "files-caqofq:components/ActorQueryOperationFromQuad.jsonld"
+    "caqofq:components/ActorQueryOperationFromQuad.jsonld"
   ]
 }

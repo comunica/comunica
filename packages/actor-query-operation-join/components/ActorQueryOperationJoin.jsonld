@@ -7,90 +7,89 @@
   "@id": "npmd:@comunica/actor-query-operation-join",
   "components": [
     {
-      "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin",
+      "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin",
       "@type": "Class",
       "requireElement": "ActorQueryOperationJoin",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#ActorQueryOperationTypedMediated"
       ],
       "comment": "A comunica Join Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_mediatorJoin",
-          "range": "cc:lib/Mediator#Mediator",
-          "comment": "A mediator for joining Bindings streams",
-          "unique": true,
-          "required": true
+          "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_mediatorJoin",
+          "range": "cc:components/Mediator.jsonld#Mediator",
+          "comment": "A mediator for joining Bindings streams"
         },
         {
-          "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_mediatorQueryOperation",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_mediatorQueryOperation",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_name",
+          "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args__constructorArgument",
+          "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorJoin",
               "value": {
-                "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_mediatorJoin"
+                "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_mediatorJoin"
               }
             },
             {
               "keyRaw": "mediatorQueryOperation",
               "value": {
-                "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_mediatorQueryOperation"
+                "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_mediatorQueryOperation"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_name"
+                "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_bus"
+                "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "caqoj:lib/ActorQueryOperationJoin#ActorQueryOperationJoin_args_beforeActors"
+                "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#ActorQueryOperationJoin_args_beforeActors"
               }
             }
           ]
@@ -98,11 +97,11 @@
       ]
     },
     {
-      "@id": "caqoj:lib/ActorQueryOperationJoin#IActorQueryOperationJoinArgs",
+      "@id": "caqoj:components/ActorQueryOperationJoin.jsonld#IActorQueryOperationJoinArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationJoinArgs",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#IActorQueryOperationTypedMediatedArgs"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#IActorQueryOperationTypedMediatedArgs"
       ],
       "parameters": [],
       "constructorArguments": []

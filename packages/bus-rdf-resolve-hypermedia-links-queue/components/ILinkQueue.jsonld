@@ -6,7 +6,7 @@
   "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue",
   "components": [
     {
-      "@id": "cbrrhlq:lib/ILinkQueue#ILinkQueue",
+      "@id": "cbrrhlq:components/ILinkQueue.jsonld#ILinkQueue",
       "@type": "AbstractClass",
       "requireElement": "ILinkQueue",
       "extends": [],
@@ -15,7 +15,7 @@
       "constructorArguments": []
     },
     {
-      "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ILink",
+      "@id": "cbrrhl:components/ActorRdfResolveHypermediaLinks.jsonld#ILink",
       "@type": "AbstractClass",
       "requireElement": "ILink",
       "extends": [],

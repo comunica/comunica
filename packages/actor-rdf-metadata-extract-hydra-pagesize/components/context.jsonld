@@ -3,30 +3,29 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmehp": "npmd:@comunica/actor-rdf-metadata-extract-hydra-pagesize/",
-      "files-carmehp": "carmehp:^1.0.0/",
+      "carmehp": "npmd:@comunica/actor-rdf-metadata-extract-hydra-pagesize/^1.0.0/",
       "ActorRdfMetadataExtractHydraPagesize": {
-        "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize",
+        "@id": "carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld#ActorRdfMetadataExtractHydraPagesize",
         "@prefix": true,
         "@context": {
           "args_predicates": {
-            "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_predicates",
+            "@id": "carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld#ActorRdfMetadataExtractHydraPagesize_args_predicates",
             "@container": "@list"
           },
           "args_name": {
-            "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_name"
+            "@id": "carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld#ActorRdfMetadataExtractHydraPagesize_args_name"
           },
           "args_bus": {
-            "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_bus"
+            "@id": "carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld#ActorRdfMetadataExtractHydraPagesize_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#ActorRdfMetadataExtractHydraPagesize_args_beforeActors",
+            "@id": "carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld#ActorRdfMetadataExtractHydraPagesize_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfMetadataExtractHydraPagesizeArgs": {
-        "@id": "carmehp:lib/ActorRdfMetadataExtractHydraPagesize#IActorRdfMetadataExtractHydraPagesizeArgs",
+        "@id": "carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld#IActorRdfMetadataExtractHydraPagesizeArgs",
         "@prefix": true,
         "@context": {}
       }

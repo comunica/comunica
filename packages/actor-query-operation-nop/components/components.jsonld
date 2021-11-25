@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-nop",
   "import": [
-    "files-caqon:components/ActorQueryOperationNop.jsonld"
+    "caqon:components/ActorQueryOperationNop.jsonld"
   ]
 }

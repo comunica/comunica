@@ -7,77 +7,78 @@
   "@id": "npmd:@comunica/actor-rdf-join-inner-nestedloop",
   "components": [
     {
-      "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop",
+      "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop",
       "@type": "Class",
       "requireElement": "ActorRdfJoinNestedLoop",
       "extends": [
-        "cbrj:lib/ActorRdfJoin#ActorRdfJoin"
+        "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin"
       ],
       "comment": "A comunica NestedLoop RDF Join Actor.",
       "parameters": [
         {
-          "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_mediatorJoinSelectivity",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_mediatorJoinSelectivity",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_name",
+          "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args__constructorArgument",
+          "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorJoinSelectivity",
               "value": {
-                "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_mediatorJoinSelectivity"
+                "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_mediatorJoinSelectivity"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_name"
+                "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_bus"
+                "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "carjin:lib/ActorRdfJoinNestedLoop#ActorRdfJoinNestedLoop_args_beforeActors"
+                "@id": "carjin:components/ActorRdfJoinNestedLoop.jsonld#ActorRdfJoinNestedLoop_args_beforeActors"
               }
             }
           ]

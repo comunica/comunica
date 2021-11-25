@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-minus",
   "import": [
-    "files-caqom:components/ActorQueryOperationMinus.jsonld"
+    "caqom:components/ActorQueryOperationMinus.jsonld"
   ]
 }

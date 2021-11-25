@@ -3,31 +3,30 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmehc": "npmd:@comunica/actor-rdf-metadata-extract-hydra-controls/",
-      "files-carmehc": "carmehc:^1.0.0/",
+      "carmehc": "npmd:@comunica/actor-rdf-metadata-extract-hydra-controls/^1.0.0/",
       "ActorRdfMetadataExtractHydraControls": {
-        "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls",
+        "@id": "carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld#ActorRdfMetadataExtractHydraControls",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls_args_name"
+            "@id": "carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld#ActorRdfMetadataExtractHydraControls_args_name"
           },
           "args_bus": {
-            "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls_args_bus"
+            "@id": "carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld#ActorRdfMetadataExtractHydraControls_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ActorRdfMetadataExtractHydraControls_args_beforeActors",
+            "@id": "carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld#ActorRdfMetadataExtractHydraControls_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "ISearchForm": {
-        "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ISearchForm",
+        "@id": "carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld#ISearchForm",
         "@prefix": true,
         "@context": {}
       },
       "ISearchForms": {
-        "@id": "carmehc:lib/ActorRdfMetadataExtractHydraControls#ISearchForms",
+        "@id": "carmehc:components/ActorRdfMetadataExtractHydraControls.jsonld#ISearchForms",
         "@prefix": true,
         "@context": {}
       }

@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoumr": "npmd:@comunica/actor-query-operation-update-move-rewrite/",
-      "files-caqoumr": "caqoumr:^1.0.0/",
+      "caqoumr": "npmd:@comunica/actor-query-operation-update-move-rewrite/^1.0.0/",
       "ActorQueryOperationMoveRewrite": {
-        "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite",
+        "@id": "caqoumr:components/ActorQueryOperationMoveRewrite.jsonld#ActorQueryOperationMoveRewrite",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_mediatorQueryOperation"
+            "@id": "caqoumr:components/ActorQueryOperationMoveRewrite.jsonld#ActorQueryOperationMoveRewrite_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_name"
+            "@id": "caqoumr:components/ActorQueryOperationMoveRewrite.jsonld#ActorQueryOperationMoveRewrite_args_name"
           },
           "args_bus": {
-            "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_bus"
+            "@id": "caqoumr:components/ActorQueryOperationMoveRewrite.jsonld#ActorQueryOperationMoveRewrite_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqoumr:lib/ActorQueryOperationMoveRewrite#ActorQueryOperationMoveRewrite_args_beforeActors",
+            "@id": "caqoumr:components/ActorQueryOperationMoveRewrite.jsonld#ActorQueryOperationMoveRewrite_args_beforeActors",
             "@container": "@list"
           }
         }

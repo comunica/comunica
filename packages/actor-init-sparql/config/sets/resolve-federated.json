@@ -10,12 +10,13 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
       "@id": "#myFederatedQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternFederated",
       "args_mediatorResolveQuadPattern": {
-        "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern"
+        "@id": "cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern"
       }
     }
   ]

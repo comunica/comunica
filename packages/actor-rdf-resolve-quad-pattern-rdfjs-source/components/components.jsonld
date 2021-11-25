@@ -6,8 +6,8 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source",
   "import": [
-    "files-carrqprs:components/ActorRdfResolveQuadPatternRdfJsSource.jsonld",
-    "files-carrqprs:components/IRdfJsSourceExtended.jsonld",
-    "files-carrqprs:components/RdfJsQuadSource.jsonld"
+    "carrqprs:components/ActorRdfResolveQuadPatternRdfJsSource.jsonld",
+    "carrqprs:components/IRdfJsSourceExtended.jsonld",
+    "carrqprs:components/RdfJsQuadSource.jsonld"
   ]
 }

@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-http-invalidate",
   "import": [
-    "files-cbhi:components/ActorHttpInvalidate.jsonld",
-    "files-cbhi:components/ActorHttpInvalidateListenable.jsonld"
+    "cbhi:components/ActorHttpInvalidate.jsonld",
+    "cbhi:components/ActorHttpInvalidateListenable.jsonld"
   ]
 }

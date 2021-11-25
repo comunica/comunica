@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-source-identifier",
   "import": [
-    "files-cbrsi:components/ActorRdfSourceIdentifier.jsonld"
+    "cbrsi:components/ActorRdfSourceIdentifier.jsonld"
   ]
 }

@@ -3,47 +3,46 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carrhq": "npmd:@comunica/actor-rdf-resolve-hypermedia-qpf/",
-      "files-carrhq": "carrhq:^1.0.0/",
+      "carrhq": "npmd:@comunica/actor-rdf-resolve-hypermedia-qpf/^1.0.0/",
       "ActorRdfResolveHypermediaQpf": {
-        "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf",
+        "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf",
         "@prefix": true,
         "@context": {
           "args_mediatorMetadata": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorMetadata"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_mediatorMetadata"
           },
           "args_mediatorMetadataExtract": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorMetadataExtract"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_mediatorMetadataExtract"
           },
           "args_mediatorRdfDereference": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_mediatorRdfDereference"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_mediatorRdfDereference"
           },
           "args_subjectUri": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_subjectUri"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_subjectUri"
           },
           "args_predicateUri": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_predicateUri"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_predicateUri"
           },
           "args_objectUri": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_objectUri"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_objectUri"
           },
           "args_graphUri": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_graphUri"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_graphUri"
           },
           "args_name": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_name"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_name"
           },
           "args_bus": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_bus"
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#ActorRdfResolveHypermediaQpf_args_beforeActors",
+            "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#ActorRdfResolveHypermediaQpf_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfResolveHypermediaQpfArgs": {
-        "@id": "carrhq:lib/ActorRdfResolveHypermediaQpf#IActorRdfResolveHypermediaQpfArgs",
+        "@id": "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld#IActorRdfResolveHypermediaQpfArgs",
         "@prefix": true,
         "@context": {}
       }

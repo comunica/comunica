@@ -5,60 +5,60 @@
   "@id": "npmd:@comunica/types",
   "components": [
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputBindings",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputBindings",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputBindings",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputStream"
+        "ct:components/index.jsonld#IActorQueryOperationOutputStream"
       ],
       "comment": "Query operation output for a bindings stream. For example: SPARQL SELECT results",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputQuads",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputQuads",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputQuads",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputStream"
+        "ct:components/index.jsonld#IActorQueryOperationOutputStream"
       ],
       "comment": "Query operation output for quads. For example: SPARQL CONSTRUCT results",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputBoolean",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputBoolean",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputBoolean",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputBase"
+        "ct:components/index.jsonld#IActorQueryOperationOutputBase"
       ],
       "comment": "Query operation output for quads. For example: SPARQL ASK results",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputUpdate",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputUpdate",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputUpdate",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputBase"
+        "ct:components/index.jsonld#IActorQueryOperationOutputBase"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActionQueryOperation",
+      "@id": "ct:components/index.jsonld#IActionQueryOperation",
       "@type": "AbstractClass",
       "requireElement": "IActionQueryOperation",
       "extends": [
-        "ct:lib/index#IAction"
+        "ct:components/index.jsonld#IAction"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputBase",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputBase",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputBase",
       "extends": [],
@@ -66,7 +66,7 @@
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IMetadata",
+      "@id": "ct:components/index.jsonld#IMetadata",
       "@type": "AbstractClass",
       "requireElement": "IMetadata",
       "extends": [],
@@ -75,18 +75,18 @@
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputStream",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputStream",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputStream",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputBase"
+        "ct:components/index.jsonld#IActorQueryOperationOutputBase"
       ],
       "comment": "Super interface for query operation outputs that represent some for of stream.",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IQueryExplained",
+      "@id": "ct:components/index.jsonld#IQueryExplained",
       "@type": "AbstractClass",
       "requireElement": "IQueryExplained",
       "extends": [],
@@ -95,7 +95,7 @@
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IPhysicalQueryPlanLogger",
+      "@id": "ct:components/index.jsonld#IPhysicalQueryPlanLogger",
       "@type": "AbstractClass",
       "requireElement": "IPhysicalQueryPlanLogger",
       "extends": [],
@@ -104,7 +104,7 @@
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IAction",
+      "@id": "ct:components/index.jsonld#IAction",
       "@type": "AbstractClass",
       "requireElement": "IAction",
       "extends": [],

@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqopa": "npmd:@comunica/actor-query-operation-path-alt/",
-      "files-caqopa": "caqopa:^1.0.0/",
+      "caqopa": "npmd:@comunica/actor-query-operation-path-alt/^1.0.0/",
       "ActorQueryOperationPathAlt": {
-        "@id": "caqopa:lib/ActorQueryOperationPathAlt#ActorQueryOperationPathAlt",
+        "@id": "caqopa:components/ActorQueryOperationPathAlt.jsonld#ActorQueryOperationPathAlt",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqopa:lib/ActorQueryOperationPathAlt#ActorQueryOperationPathAlt_args_mediatorQueryOperation"
+            "@id": "caqopa:components/ActorQueryOperationPathAlt.jsonld#ActorQueryOperationPathAlt_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqopa:lib/ActorQueryOperationPathAlt#ActorQueryOperationPathAlt_args_name"
+            "@id": "caqopa:components/ActorQueryOperationPathAlt.jsonld#ActorQueryOperationPathAlt_args_name"
           },
           "args_bus": {
-            "@id": "caqopa:lib/ActorQueryOperationPathAlt#ActorQueryOperationPathAlt_args_bus"
+            "@id": "caqopa:components/ActorQueryOperationPathAlt.jsonld#ActorQueryOperationPathAlt_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqopa:lib/ActorQueryOperationPathAlt#ActorQueryOperationPathAlt_args_beforeActors",
+            "@id": "caqopa:components/ActorQueryOperationPathAlt.jsonld#ActorQueryOperationPathAlt_args_beforeActors",
             "@container": "@list"
           }
         }

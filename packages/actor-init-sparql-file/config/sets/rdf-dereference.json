@@ -14,37 +14,36 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld",
     {
-      "caisf": "npmd:@comunica/actor-init-sparql-file/",
-      "files-caisf": "caisf:^1.0.0/",
-      "config-sets": "files-caisf:config/sets/"
+      "caisf": "npmd:@comunica/actor-init-sparql-file/^1.0.0/"
     }
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
-      "@id": "files-cais:config/sets/rdf-dereference.json#myRdfFileDereferencer",
+      "@id": "cais:config/sets/rdf-dereference.json#myRdfFileDereferencer",
       "@type": "ActorRdfDereferenceFile",
       "args_mediatorRdfParse": {
-        "@id": "files-cais:config/sets/rdf-dereference.json#mediatorRdfParse",
+        "@id": "cais:config/sets/rdf-dereference.json#mediatorRdfParse",
         "@type": "MediatorRace",
         "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     },
 
     {
-      "@id": "files-cais:config/sets/rdf-dereference.json#myRdfDereferencer",
+      "@id": "cais:config/sets/rdf-dereference.json#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
       "args_mediatorHttp": {
-        "@id": "files-cais:config/sets/http.json#mediatorHttp"
+        "@id": "cais:config/sets/http.json#mediatorHttp"
       },
       "args_mediatorRdfParseMediatypes": {
-        "@id": "files-cais:config/sets/rdf-dereference.json#mediatorRdfParseMediatypes",
+        "@id": "cais:config/sets/rdf-dereference.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
         "args_bus": { "@id": "ActorRdfParse:_default_bus" },
         "args_field": "mediaTypes"
       },
       "args_mediatorRdfParseHandle": {
-        "@id": "files-cais:config/sets/rdf-dereference.json#mediatorRdfParseHandle",
+        "@id": "cais:config/sets/rdf-dereference.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
         "args_bus": { "@id": "ActorRdfParse:_default_bus" }
       }

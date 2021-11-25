@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-hypermedia-qpf",
   "import": [
-    "files-carrhq:components/ActorRdfResolveHypermediaQpf.jsonld"
+    "carrhq:components/ActorRdfResolveHypermediaQpf.jsonld"
   ]
 }

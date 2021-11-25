@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-extend",
   "import": [
-    "files-caqoe:components/ActorQueryOperationExtend.jsonld"
+    "caqoe:components/ActorQueryOperationExtend.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-http-memento",
   "import": [
-    "files-cahm:components/ActorHttpMemento.jsonld"
+    "cahm:components/ActorHttpMemento.jsonld"
   ]
 }

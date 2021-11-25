@@ -5,7 +5,7 @@
   "@id": "npmd:@comunica/actor-http-proxy",
   "components": [
     {
-      "@id": "cahp:lib/IProxyHandler#IProxyHandler",
+      "@id": "cahp:components/IProxyHandler.jsonld#IProxyHandler",
       "@type": "AbstractClass",
       "requireElement": "IProxyHandler",
       "extends": [],
@@ -14,7 +14,7 @@
       "constructorArguments": []
     },
     {
-      "@id": "cahp:lib/IProxyHandler#IRequest",
+      "@id": "cahp:components/IProxyHandler.jsonld#IRequest",
       "@type": "AbstractClass",
       "requireElement": "IRequest",
       "extends": [],

@@ -3,20 +3,19 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caoqobtj": "npmd:@comunica/actor-optimize-query-operation-bgp-to-join/",
-      "files-caoqobtj": "caoqobtj:^1.0.0/",
+      "caoqobtj": "npmd:@comunica/actor-optimize-query-operation-bgp-to-join/^1.0.0/",
       "ActorOptimizeQueryOperationBgpToJoin": {
-        "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin",
+        "@id": "caoqobtj:components/ActorOptimizeQueryOperationBgpToJoin.jsonld#ActorOptimizeQueryOperationBgpToJoin",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_name"
+            "@id": "caoqobtj:components/ActorOptimizeQueryOperationBgpToJoin.jsonld#ActorOptimizeQueryOperationBgpToJoin_args_name"
           },
           "args_bus": {
-            "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_bus"
+            "@id": "caoqobtj:components/ActorOptimizeQueryOperationBgpToJoin.jsonld#ActorOptimizeQueryOperationBgpToJoin_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caoqobtj:lib/ActorOptimizeQueryOperationBgpToJoin#ActorOptimizeQueryOperationBgpToJoin_args_beforeActors",
+            "@id": "caoqobtj:components/ActorOptimizeQueryOperationBgpToJoin.jsonld#ActorOptimizeQueryOperationBgpToJoin_args_beforeActors",
             "@container": "@list"
           }
         }

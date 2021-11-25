@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-path-inv",
   "import": [
-    "files-caqopi:components/ActorQueryOperationPathInv.jsonld"
+    "caqopi:components/ActorQueryOperationPathInv.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-filter-direct",
   "import": [
-    "files-caqofd:components/ActorQueryOperationFilterDirect.jsonld"
+    "caqofd:components/ActorQueryOperationFilterDirect.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-multi-bind",
   "import": [
-    "files-carjimb:components/ActorRdfJoinMultiBind.jsonld"
+    "carjimb:components/ActorRdfJoinMultiBind.jsonld"
   ]
 }

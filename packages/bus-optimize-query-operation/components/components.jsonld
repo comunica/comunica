@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-optimize-query-operation",
   "import": [
-    "files-cboqo:components/ActorOptimizeQueryOperation.jsonld"
+    "cboqo:components/ActorOptimizeQueryOperation.jsonld"
   ]
 }

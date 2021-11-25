@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-parse-xml-rdfa",
   "import": [
-    "files-carpxr:components/ActorRdfParseXmlRdfa.jsonld"
+    "carpxr:components/ActorRdfParseXmlRdfa.jsonld"
   ]
 }

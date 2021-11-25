@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-update-hypermedia-sparql",
   "import": [
-    "files-caruhs:components/ActorRdfUpdateHypermediaSparql.jsonld",
-    "files-caruhs:components/QuadDestinationSparql.jsonld"
+    "caruhs:components/ActorRdfUpdateHypermediaSparql.jsonld",
+    "caruhs:components/QuadDestinationSparql.jsonld"
   ]
 }

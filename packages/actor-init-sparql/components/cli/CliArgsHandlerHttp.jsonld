@@ -5,11 +5,11 @@
   "@id": "npmd:@comunica/actor-init-sparql",
   "components": [
     {
-      "@id": "cais:lib/cli/CliArgsHandlerHttp#CliArgsHandlerHttp",
+      "@id": "cais:components/cli/CliArgsHandlerHttp.jsonld#CliArgsHandlerHttp",
       "@type": "Class",
       "requireElement": "CliArgsHandlerHttp",
       "extends": [
-        "cais:lib/cli/ICliArgsHandler#ICliArgsHandler"
+        "cais:components/cli/ICliArgsHandler.jsonld#ICliArgsHandler"
       ],
       "comment": "CLI arguments handler that handles options for HTTP servers.",
       "parameters": [],

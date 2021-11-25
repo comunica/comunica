@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-optional-bind",
   "import": [
-    "files-carjob:components/ActorRdfJoinOptionalBind.jsonld"
+    "carjob:components/ActorRdfJoinOptionalBind.jsonld"
   ]
 }

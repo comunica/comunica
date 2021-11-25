@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-symmetrichash",
   "import": [
-    "files-carjish:components/ActorRdfJoinSymmetricHash.jsonld"
+    "carjish:components/ActorRdfJoinSymmetricHash.jsonld"
   ]
 }

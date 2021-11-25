@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/mediator-number",
   "import": [
-    "files-cmn:components/MediatorNumber.jsonld"
+    "cmn:components/MediatorNumber.jsonld"
   ]
 }

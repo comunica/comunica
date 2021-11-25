@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-serialize",
   "import": [
-    "files-cbrs:components/ActorRdfSerialize.jsonld",
-    "files-cbrs:components/ActorRdfSerializeFixedMediaTypes.jsonld"
+    "cbrs:components/ActorRdfSerialize.jsonld",
+    "cbrs:components/ActorRdfSerializeFixedMediaTypes.jsonld"
   ]
 }

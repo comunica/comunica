@@ -3,56 +3,55 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbrd": "npmd:@comunica/bus-rdf-dereference/",
-      "files-cbrd": "cbrd:^1.0.0/",
+      "cbrd": "npmd:@comunica/bus-rdf-dereference/^1.0.0/",
       "ActorRdfDereference": {
-        "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference",
+        "@id": "cbrd:components/ActorRdfDereference.jsonld#ActorRdfDereference",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_args_name"
+            "@id": "cbrd:components/ActorRdfDereference.jsonld#ActorRdfDereference_args_name"
           },
           "args_bus": {
-            "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_args_bus"
+            "@id": "cbrd:components/ActorRdfDereference.jsonld#ActorRdfDereference_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbrd:lib/ActorRdfDereference#ActorRdfDereference_args_beforeActors",
+            "@id": "cbrd:components/ActorRdfDereference.jsonld#ActorRdfDereference_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActionRdfDereference": {
-        "@id": "cbrd:lib/ActorRdfDereference#IActionRdfDereference",
+        "@id": "cbrd:components/ActorRdfDereference.jsonld#IActionRdfDereference",
         "@prefix": true,
         "@context": {}
       },
       "IActorRdfDereferenceOutput": {
-        "@id": "cbrd:lib/ActorRdfDereference#IActorRdfDereferenceOutput",
+        "@id": "cbrd:components/ActorRdfDereference.jsonld#IActorRdfDereferenceOutput",
         "@prefix": true,
         "@context": {}
       },
       "ActorRdfDereferenceMediaMappings": {
-        "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings",
+        "@id": "cbrd:components/ActorRdfDereferenceMediaMappings.jsonld#ActorRdfDereferenceMediaMappings",
         "@prefix": true,
         "@context": {
           "args_mediaMappings": {
-            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_mediaMappings",
+            "@id": "cbrd:components/ActorRdfDereferenceMediaMappings.jsonld#ActorRdfDereferenceMediaMappings_args_mediaMappings",
             "@type": "@json"
           },
           "args_name": {
-            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_name"
+            "@id": "cbrd:components/ActorRdfDereferenceMediaMappings.jsonld#ActorRdfDereferenceMediaMappings_args_name"
           },
           "args_bus": {
-            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_bus"
+            "@id": "cbrd:components/ActorRdfDereferenceMediaMappings.jsonld#ActorRdfDereferenceMediaMappings_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#ActorRdfDereferenceMediaMappings_args_beforeActors",
+            "@id": "cbrd:components/ActorRdfDereferenceMediaMappings.jsonld#ActorRdfDereferenceMediaMappings_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfDereferenceMediaMappingsArgs": {
-        "@id": "cbrd:lib/ActorRdfDereferenceMediaMappings#IActorRdfDereferenceMediaMappingsArgs",
+        "@id": "cbrd:components/ActorRdfDereferenceMediaMappings.jsonld#IActorRdfDereferenceMediaMappingsArgs",
         "@prefix": true,
         "@context": {}
       }

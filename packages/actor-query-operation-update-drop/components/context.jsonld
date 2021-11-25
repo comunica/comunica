@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoud": "npmd:@comunica/actor-query-operation-update-drop/",
-      "files-caqoud": "caqoud:^1.0.0/",
+      "caqoud": "npmd:@comunica/actor-query-operation-update-drop/^1.0.0/",
       "ActorQueryOperationDrop": {
-        "@id": "caqoud:lib/ActorQueryOperationDrop#ActorQueryOperationDrop",
+        "@id": "caqoud:components/ActorQueryOperationDrop.jsonld#ActorQueryOperationDrop",
         "@prefix": true,
         "@context": {
           "args_mediatorUpdateQuads": {
-            "@id": "caqoud:lib/ActorQueryOperationDrop#ActorQueryOperationDrop_args_mediatorUpdateQuads"
+            "@id": "caqoud:components/ActorQueryOperationDrop.jsonld#ActorQueryOperationDrop_args_mediatorUpdateQuads"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caqoud:lib/ActorQueryOperationDrop#ActorQueryOperationDrop_args_mediatorQueryOperation"
+            "@id": "caqoud:components/ActorQueryOperationDrop.jsonld#ActorQueryOperationDrop_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqoud:lib/ActorQueryOperationDrop#ActorQueryOperationDrop_args_name"
+            "@id": "caqoud:components/ActorQueryOperationDrop.jsonld#ActorQueryOperationDrop_args_name"
           },
           "args_bus": {
-            "@id": "caqoud:lib/ActorQueryOperationDrop#ActorQueryOperationDrop_args_bus"
+            "@id": "caqoud:components/ActorQueryOperationDrop.jsonld#ActorQueryOperationDrop_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqoud:lib/ActorQueryOperationDrop#ActorQueryOperationDrop_args_beforeActors",
+            "@id": "caqoud:components/ActorQueryOperationDrop.jsonld#ActorQueryOperationDrop_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorQueryOperationDropArgs": {
-        "@id": "caqoud:lib/ActorQueryOperationDrop#IActorQueryOperationDropArgs",
+        "@id": "caqoud:components/ActorQueryOperationDrop.jsonld#IActorQueryOperationDropArgs",
         "@prefix": true,
         "@context": {}
       }

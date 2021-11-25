@@ -3,46 +3,45 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbhi": "npmd:@comunica/bus-http-invalidate/",
-      "files-cbhi": "cbhi:^1.0.0/",
+      "cbhi": "npmd:@comunica/bus-http-invalidate/^1.0.0/",
       "ActorHttpInvalidate": {
-        "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate",
+        "@id": "cbhi:components/ActorHttpInvalidate.jsonld#ActorHttpInvalidate",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_name"
+            "@id": "cbhi:components/ActorHttpInvalidate.jsonld#ActorHttpInvalidate_args_name"
           },
           "args_bus": {
-            "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_bus"
+            "@id": "cbhi:components/ActorHttpInvalidate.jsonld#ActorHttpInvalidate_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbhi:lib/ActorHttpInvalidate#ActorHttpInvalidate_args_beforeActors",
+            "@id": "cbhi:components/ActorHttpInvalidate.jsonld#ActorHttpInvalidate_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActionHttpInvalidate": {
-        "@id": "cbhi:lib/ActorHttpInvalidate#IActionHttpInvalidate",
+        "@id": "cbhi:components/ActorHttpInvalidate.jsonld#IActionHttpInvalidate",
         "@prefix": true,
         "@context": {}
       },
       "IActorHttpInvalidateOutput": {
-        "@id": "cbhi:lib/ActorHttpInvalidate#IActorHttpInvalidateOutput",
+        "@id": "cbhi:components/ActorHttpInvalidate.jsonld#IActorHttpInvalidateOutput",
         "@prefix": true,
         "@context": {}
       },
       "ActorHttpInvalidateListenable": {
-        "@id": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable",
+        "@id": "cbhi:components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable_args_name"
+            "@id": "cbhi:components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable_args_name"
           },
           "args_bus": {
-            "@id": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable_args_bus"
+            "@id": "cbhi:components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbhi:lib/ActorHttpInvalidateListenable#ActorHttpInvalidateListenable_args_beforeActors",
+            "@id": "cbhi:components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable_args_beforeActors",
             "@container": "@list"
           }
         }

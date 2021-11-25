@@ -6,8 +6,8 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-resolve-hypermedia-links-queue",
   "import": [
-    "files-cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld",
-    "files-cbrrhlq:components/ILinkQueue.jsonld",
-    "files-cbrrhlq:components/LinkQueueWrapper.jsonld"
+    "cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld",
+    "cbrrhlq:components/ILinkQueue.jsonld",
+    "cbrrhlq:components/LinkQueueWrapper.jsonld"
   ]
 }

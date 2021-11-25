@@ -3,40 +3,39 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "casst": "npmd:@comunica/actor-sparql-serialize-table/",
-      "files-casst": "casst:^1.0.0/",
+      "casst": "npmd:@comunica/actor-sparql-serialize-table/^1.0.0/",
       "ActorSparqlSerializeTable": {
-        "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable",
+        "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable",
         "@prefix": true,
         "@context": {
           "args_columnWidth": {
-            "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_columnWidth"
+            "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable_args_columnWidth"
           },
           "args_mediaTypePriorities": {
-            "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_mediaTypePriorities",
+            "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable_args_mediaTypePriorities",
             "@type": "@json"
           },
           "args_mediaTypeFormats": {
-            "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_mediaTypeFormats",
+            "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable_args_mediaTypeFormats",
             "@type": "@json"
           },
           "args_priorityScale": {
-            "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_priorityScale"
+            "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable_args_priorityScale"
           },
           "args_name": {
-            "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_name"
+            "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable_args_name"
           },
           "args_bus": {
-            "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_bus"
+            "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable_args_bus"
           },
           "args_beforeActors": {
-            "@id": "casst:lib/ActorSparqlSerializeTable#ActorSparqlSerializeTable_args_beforeActors",
+            "@id": "casst:components/ActorSparqlSerializeTable.jsonld#ActorSparqlSerializeTable_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorSparqlSerializeTableArgs": {
-        "@id": "casst:lib/ActorSparqlSerializeTable#IActorSparqlSerializeTableArgs",
+        "@id": "casst:components/ActorSparqlSerializeTable.jsonld#IActorSparqlSerializeTableArgs",
         "@prefix": true,
         "@context": {}
       }

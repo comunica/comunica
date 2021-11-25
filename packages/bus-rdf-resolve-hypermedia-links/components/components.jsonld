@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-resolve-hypermedia-links",
   "import": [
-    "files-cbrrhl:components/ActorRdfResolveHypermediaLinks.jsonld"
+    "cbrrhl:components/ActorRdfResolveHypermediaLinks.jsonld"
   ]
 }

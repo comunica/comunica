@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caap": "npmd:@comunica/actor-abstract-path/",
-      "files-caap": "caap:^1.0.0/",
+      "caap": "npmd:@comunica/actor-abstract-path/^1.0.0/",
       "ActorAbstractPath": {
-        "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath",
+        "@id": "caap:components/ActorAbstractPath.jsonld#ActorAbstractPath",
         "@prefix": true,
         "@context": {
           "predicateType": {
-            "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_predicateType"
+            "@id": "caap:components/ActorAbstractPath.jsonld#ActorAbstractPath_predicateType"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_mediatorQueryOperation"
+            "@id": "caap:components/ActorAbstractPath.jsonld#ActorAbstractPath_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_name"
+            "@id": "caap:components/ActorAbstractPath.jsonld#ActorAbstractPath_args_name"
           },
           "args_bus": {
-            "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_bus"
+            "@id": "caap:components/ActorAbstractPath.jsonld#ActorAbstractPath_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caap:lib/ActorAbstractPath#ActorAbstractPath_args_beforeActors",
+            "@id": "caap:components/ActorAbstractPath.jsonld#ActorAbstractPath_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IPathResultStream": {
-        "@id": "caap:lib/ActorAbstractPath#IPathResultStream",
+        "@id": "caap:components/ActorAbstractPath.jsonld#IPathResultStream",
         "@prefix": true,
         "@context": {}
       }

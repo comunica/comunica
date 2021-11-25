@@ -18,33 +18,34 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
-      "@id": "files-cais:config/sets/resolve-hypermedia.json#myHypermediaNoneResolver",
+      "@id": "cais:config/sets/resolve-hypermedia.json#myHypermediaNoneResolver",
       "@type": "ActorRdfResolveHypermediaNone"
     },
 
     {
-      "@id": "files-cais:config/sets/resolve-hypermedia.json#myQuadPatternHypermediaResolver",
+      "@id": "cais:config/sets/resolve-hypermedia.json#myQuadPatternHypermediaResolver",
       "@type": "ActorRdfResolveQuadPatternHypermedia",
       "args_mediatorRdfDereference": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference",
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference",
         "@type": "MediatorRace",
         "args_bus": { "@id": "ActorRdfDereference:_default_bus" }
       },
       "args_mediatorMetadata": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadata",
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorMetadata",
         "@type": "MediatorRace",
         "args_bus": { "@id": "ActorRdfMetadata:_default_bus" }
       },
       "args_mediatorMetadataExtract": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract",
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
         "args_bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
         "args_field": "metadata"
       },
       "args_mediatorRdfResolveHypermedia": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfResolveHypermedia",
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorRdfResolveHypermedia",
         "@type": "MediatorNumber",
         "args_type": "max",
         "args_field": "filterFactor",
@@ -52,14 +53,14 @@
         "args_bus": { "@id": "ActorRdfResolveHypermedia:_default_bus" }
       },
       "args_mediatorRdfResolveHypermediaLinks": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
         "args_bus": { "@id": "ActorRdfResolveHypermediaLinks:_default_bus" }
       }
     },
 
     {
-      "@id": "files-cais:config/sets/resolve-hypermedia.json#myRdfMetadataAll",
+      "@id": "cais:config/sets/resolve-hypermedia.json#myRdfMetadataAll",
       "@type": "ActorRdfMetadataAll"
     }
   ]

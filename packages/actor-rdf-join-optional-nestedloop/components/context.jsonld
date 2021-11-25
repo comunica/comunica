@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjon": "npmd:@comunica/actor-rdf-join-optional-nestedloop/",
-      "files-carjon": "carjon:^1.0.0/",
+      "carjon": "npmd:@comunica/actor-rdf-join-optional-nestedloop/^1.0.0/",
       "ActorRdfJoinOptionalNestedLoop": {
-        "@id": "carjon:lib/ActorRdfJoinOptionalNestedLoop#ActorRdfJoinOptionalNestedLoop",
+        "@id": "carjon:components/ActorRdfJoinOptionalNestedLoop.jsonld#ActorRdfJoinOptionalNestedLoop",
         "@prefix": true,
         "@context": {
           "args_mediatorJoinSelectivity": {
-            "@id": "carjon:lib/ActorRdfJoinOptionalNestedLoop#ActorRdfJoinOptionalNestedLoop_args_mediatorJoinSelectivity"
+            "@id": "carjon:components/ActorRdfJoinOptionalNestedLoop.jsonld#ActorRdfJoinOptionalNestedLoop_args_mediatorJoinSelectivity"
           },
           "args_name": {
-            "@id": "carjon:lib/ActorRdfJoinOptionalNestedLoop#ActorRdfJoinOptionalNestedLoop_args_name"
+            "@id": "carjon:components/ActorRdfJoinOptionalNestedLoop.jsonld#ActorRdfJoinOptionalNestedLoop_args_name"
           },
           "args_bus": {
-            "@id": "carjon:lib/ActorRdfJoinOptionalNestedLoop#ActorRdfJoinOptionalNestedLoop_args_bus"
+            "@id": "carjon:components/ActorRdfJoinOptionalNestedLoop.jsonld#ActorRdfJoinOptionalNestedLoop_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carjon:lib/ActorRdfJoinOptionalNestedLoop#ActorRdfJoinOptionalNestedLoop_args_beforeActors",
+            "@id": "carjon:components/ActorRdfJoinOptionalNestedLoop.jsonld#ActorRdfJoinOptionalNestedLoop_args_beforeActors",
             "@container": "@list"
           }
         }

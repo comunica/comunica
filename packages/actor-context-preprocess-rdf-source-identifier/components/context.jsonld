@@ -3,29 +3,28 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cacprsi": "npmd:@comunica/actor-context-preprocess-rdf-source-identifier/",
-      "files-cacprsi": "cacprsi:^1.0.0/",
+      "cacprsi": "npmd:@comunica/actor-context-preprocess-rdf-source-identifier/^1.0.0/",
       "ActorContextPreprocessRdfSourceIdentifier": {
-        "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier",
+        "@id": "cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld#ActorContextPreprocessRdfSourceIdentifier",
         "@prefix": true,
         "@context": {
           "args_mediatorRdfSourceIdentifier": {
-            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_mediatorRdfSourceIdentifier"
+            "@id": "cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld#ActorContextPreprocessRdfSourceIdentifier_args_mediatorRdfSourceIdentifier"
           },
           "args_name": {
-            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_name"
+            "@id": "cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld#ActorContextPreprocessRdfSourceIdentifier_args_name"
           },
           "args_bus": {
-            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_bus"
+            "@id": "cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld#ActorContextPreprocessRdfSourceIdentifier_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#ActorContextPreprocessRdfSourceIdentifier_args_beforeActors",
+            "@id": "cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld#ActorContextPreprocessRdfSourceIdentifier_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorContextPreprocessRdfSourceIdentifierArgs": {
-        "@id": "cacprsi:lib/ActorContextPreprocessRdfSourceIdentifier#IActorContextPreprocessRdfSourceIdentifierArgs",
+        "@id": "cacprsi:components/ActorContextPreprocessRdfSourceIdentifier.jsonld#IActorContextPreprocessRdfSourceIdentifierArgs",
         "@prefix": true,
         "@context": {}
       }

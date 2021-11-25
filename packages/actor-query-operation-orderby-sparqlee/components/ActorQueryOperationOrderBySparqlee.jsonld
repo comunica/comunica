@@ -7,89 +7,97 @@
   "@id": "npmd:@comunica/actor-query-operation-orderby-sparqlee",
   "components": [
     {
-      "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee",
+      "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee",
       "@type": "Class",
       "requireElement": "ActorQueryOperationOrderBySparqlee",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#ActorQueryOperationTypedMediated"
       ],
       "comment": "A comunica OrderBy Sparqlee Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_window",
-          "range": "xsd:integer",
-          "comment": "The size of the window for the sort iterator.",
-          "unique": true
+          "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_window",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:integer",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
+          "comment": "The size of the window for the sort iterator."
         },
         {
-          "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_mediatorQueryOperation",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_mediatorQueryOperation",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_name",
+          "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args__constructorArgument",
+          "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "window",
               "value": {
-                "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_window"
+                "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_window"
               }
             },
             {
               "keyRaw": "mediatorQueryOperation",
               "value": {
-                "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_mediatorQueryOperation"
+                "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_mediatorQueryOperation"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_name"
+                "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_bus"
+                "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#ActorQueryOperationOrderBySparqlee_args_beforeActors"
+                "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#ActorQueryOperationOrderBySparqlee_args_beforeActors"
               }
             }
           ]
@@ -97,11 +105,11 @@
       ]
     },
     {
-      "@id": "caqoos:lib/ActorQueryOperationOrderBySparqlee#IActorQueryOperationOrderBySparqleeArgs",
+      "@id": "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld#IActorQueryOperationOrderBySparqleeArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOrderBySparqleeArgs",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#IActorQueryOperationTypedMediatedArgs"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#IActorQueryOperationTypedMediatedArgs"
       ],
       "comment": "The window parameter determines how many of the elements to consider when sorting.",
       "parameters": [],

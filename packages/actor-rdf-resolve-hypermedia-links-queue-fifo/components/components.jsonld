@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo",
   "import": [
-    "files-carrhlqf:components/ActorRdfResolveHypermediaLinksQueueFifo.jsonld",
-    "files-carrhlqf:components/LinkQueueFifo.jsonld"
+    "carrhlqf:components/ActorRdfResolveHypermediaLinksQueueFifo.jsonld",
+    "carrhlqf:components/LinkQueueFifo.jsonld"
   ]
 }

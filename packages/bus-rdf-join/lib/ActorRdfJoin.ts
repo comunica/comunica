@@ -52,7 +52,7 @@ export abstract class ActorRdfJoin
   protected readonly canHandleUndefs: boolean;
 
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorRdfJoinArgs, options: IActorRdfJoinInternalOptions) {
     super(args);

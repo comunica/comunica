@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-hydra-pagesize",
   "import": [
-    "files-carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld"
+    "carmehp:components/ActorRdfMetadataExtractHydraPagesize.jsonld"
   ]
 }

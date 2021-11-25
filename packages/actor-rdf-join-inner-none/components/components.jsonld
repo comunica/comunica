@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-none",
   "import": [
-    "files-carjino:components/ActorRdfJoinNone.jsonld"
+    "carjino:components/ActorRdfJoinNone.jsonld"
   ]
 }

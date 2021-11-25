@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqofq": "npmd:@comunica/actor-query-operation-from-quad/",
-      "files-caqofq": "caqofq:^1.0.0/",
+      "caqofq": "npmd:@comunica/actor-query-operation-from-quad/^1.0.0/",
       "ActorQueryOperationFromQuad": {
-        "@id": "caqofq:lib/ActorQueryOperationFromQuad#ActorQueryOperationFromQuad",
+        "@id": "caqofq:components/ActorQueryOperationFromQuad.jsonld#ActorQueryOperationFromQuad",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqofq:lib/ActorQueryOperationFromQuad#ActorQueryOperationFromQuad_args_mediatorQueryOperation"
+            "@id": "caqofq:components/ActorQueryOperationFromQuad.jsonld#ActorQueryOperationFromQuad_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqofq:lib/ActorQueryOperationFromQuad#ActorQueryOperationFromQuad_args_name"
+            "@id": "caqofq:components/ActorQueryOperationFromQuad.jsonld#ActorQueryOperationFromQuad_args_name"
           },
           "args_bus": {
-            "@id": "caqofq:lib/ActorQueryOperationFromQuad#ActorQueryOperationFromQuad_args_bus"
+            "@id": "caqofq:components/ActorQueryOperationFromQuad.jsonld#ActorQueryOperationFromQuad_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqofq:lib/ActorQueryOperationFromQuad#ActorQueryOperationFromQuad_args_beforeActors",
+            "@id": "caqofq:components/ActorQueryOperationFromQuad.jsonld#ActorQueryOperationFromQuad_args_beforeActors",
             "@container": "@list"
           }
         }

@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-parse",
   "import": [
-    "files-cbrp:components/ActorRdfParse.jsonld",
-    "files-cbrp:components/ActorRdfParseFixedMediaTypes.jsonld"
+    "cbrp:components/ActorRdfParse.jsonld",
+    "cbrp:components/ActorRdfParseFixedMediaTypes.jsonld"
   ]
 }

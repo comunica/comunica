@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-serialize-tree",
   "import": [
-    "files-casstr:components/ActorSparqlSerializeTree.jsonld"
+    "casstr:components/ActorSparqlSerializeTree.jsonld"
   ]
 }

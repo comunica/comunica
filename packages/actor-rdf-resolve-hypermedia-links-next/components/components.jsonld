@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-hypermedia-links-next",
   "import": [
-    "files-carrhln:components/ActorRdfResolveHypermediaLinksNext.jsonld"
+    "carrhln:components/ActorRdfResolveHypermediaLinksNext.jsonld"
   ]
 }

@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqofs": "npmd:@comunica/actor-query-operation-filter-sparqlee/",
-      "files-caqofs": "caqofs:^1.0.0/",
+      "caqofs": "npmd:@comunica/actor-query-operation-filter-sparqlee/^1.0.0/",
       "ActorQueryOperationFilterSparqlee": {
-        "@id": "caqofs:lib/ActorQueryOperationFilterSparqlee#ActorQueryOperationFilterSparqlee",
+        "@id": "caqofs:components/ActorQueryOperationFilterSparqlee.jsonld#ActorQueryOperationFilterSparqlee",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqofs:lib/ActorQueryOperationFilterSparqlee#ActorQueryOperationFilterSparqlee_args_mediatorQueryOperation"
+            "@id": "caqofs:components/ActorQueryOperationFilterSparqlee.jsonld#ActorQueryOperationFilterSparqlee_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqofs:lib/ActorQueryOperationFilterSparqlee#ActorQueryOperationFilterSparqlee_args_name"
+            "@id": "caqofs:components/ActorQueryOperationFilterSparqlee.jsonld#ActorQueryOperationFilterSparqlee_args_name"
           },
           "args_bus": {
-            "@id": "caqofs:lib/ActorQueryOperationFilterSparqlee#ActorQueryOperationFilterSparqlee_args_bus"
+            "@id": "caqofs:components/ActorQueryOperationFilterSparqlee.jsonld#ActorQueryOperationFilterSparqlee_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqofs:lib/ActorQueryOperationFilterSparqlee#ActorQueryOperationFilterSparqlee_args_beforeActors",
+            "@id": "caqofs:components/ActorQueryOperationFilterSparqlee.jsonld#ActorQueryOperationFilterSparqlee_args_beforeActors",
             "@container": "@list"
           }
         }

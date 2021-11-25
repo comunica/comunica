@@ -5,7 +5,7 @@
   "@id": "npmd:@comunica/bus-rdf-update-quads",
   "components": [
     {
-      "@id": "cbruq:lib/IQuadDestination#IQuadDestination",
+      "@id": "cbruq:components/IQuadDestination.jsonld#IQuadDestination",
       "@type": "AbstractClass",
       "requireElement": "IQuadDestination",
       "extends": [],

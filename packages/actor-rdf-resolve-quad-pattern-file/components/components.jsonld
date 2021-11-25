@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-quad-pattern-file",
   "import": [
-    "files-carrqpf:components/ActorRdfResolveQuadPatternFile.jsonld"
+    "carrqpf:components/ActorRdfResolveQuadPatternFile.jsonld"
   ]
 }

@@ -18,7 +18,7 @@ export abstract class ActorRdfSourceIdentifier
   public readonly priority: number;
 
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorRdfSourceIdentifierArgs) {
     super(args);

@@ -18,7 +18,7 @@ export abstract class ActorRdfParseFixedMediaTypes extends ActorAbstractMediaTyp
 IActionRdfParse, IActorTest, IActorRdfParseOutput> implements IActorRdfParseFixedMediaTypesArgs, ActorRdfParse {
   /**
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
-   * @param args - @defaultNested {<cbrp:lib/ActorRdfParse#ActorRdfParse_default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<cbrp:components/ActorRdfParse.jsonld#ActorRdfParse_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);

@@ -5,24 +5,22 @@
   "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue",
   "components": [
     {
-      "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper",
+      "@id": "cbrrhlq:components/LinkQueueWrapper.jsonld#LinkQueueWrapper",
       "@type": "Class",
       "requireElement": "LinkQueueWrapper",
       "extends": [
-        "cbrrhlq:lib/ILinkQueue#ILinkQueue"
+        "cbrrhlq:components/ILinkQueue.jsonld#ILinkQueue"
       ],
       "comment": "A link queue that wraps a given link queue.",
       "parameters": [
         {
-          "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper_linkQueue",
-          "range": "cbrrhlq:lib/ILinkQueue#ILinkQueue",
-          "unique": true,
-          "required": true
+          "@id": "cbrrhlq:components/LinkQueueWrapper.jsonld#LinkQueueWrapper_linkQueue",
+          "range": "cbrrhlq:components/ILinkQueue.jsonld#ILinkQueue"
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper_linkQueue"
+          "@id": "cbrrhlq:components/LinkQueueWrapper.jsonld#LinkQueueWrapper_linkQueue"
         }
       ]
     }

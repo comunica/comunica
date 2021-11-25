@@ -3,20 +3,19 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carma": "npmd:@comunica/actor-rdf-metadata-all/",
-      "files-carma": "carma:^1.0.0/",
+      "carma": "npmd:@comunica/actor-rdf-metadata-all/^1.0.0/",
       "ActorRdfMetadataAll": {
-        "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll",
+        "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_name"
+            "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_name"
           },
           "args_bus": {
-            "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_bus"
+            "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carma:lib/ActorRdfMetadataAll#ActorRdfMetadataAll_args_beforeActors",
+            "@id": "carma:components/ActorRdfMetadataAll.jsonld#ActorRdfMetadataAll_args_beforeActors",
             "@container": "@list"
           }
         }

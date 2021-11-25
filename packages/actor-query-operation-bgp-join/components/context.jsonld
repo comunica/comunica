@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqobj": "npmd:@comunica/actor-query-operation-bgp-join/",
-      "files-caqobj": "caqobj:^1.0.0/",
+      "caqobj": "npmd:@comunica/actor-query-operation-bgp-join/^1.0.0/",
       "ActorQueryOperationBgpJoin": {
-        "@id": "caqobj:lib/ActorQueryOperationBgpJoin#ActorQueryOperationBgpJoin",
+        "@id": "caqobj:components/ActorQueryOperationBgpJoin.jsonld#ActorQueryOperationBgpJoin",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqobj:lib/ActorQueryOperationBgpJoin#ActorQueryOperationBgpJoin_args_mediatorQueryOperation"
+            "@id": "caqobj:components/ActorQueryOperationBgpJoin.jsonld#ActorQueryOperationBgpJoin_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqobj:lib/ActorQueryOperationBgpJoin#ActorQueryOperationBgpJoin_args_name"
+            "@id": "caqobj:components/ActorQueryOperationBgpJoin.jsonld#ActorQueryOperationBgpJoin_args_name"
           },
           "args_bus": {
-            "@id": "caqobj:lib/ActorQueryOperationBgpJoin#ActorQueryOperationBgpJoin_args_bus"
+            "@id": "caqobj:components/ActorQueryOperationBgpJoin.jsonld#ActorQueryOperationBgpJoin_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqobj:lib/ActorQueryOperationBgpJoin#ActorQueryOperationBgpJoin_args_beforeActors",
+            "@id": "caqobj:components/ActorQueryOperationBgpJoin.jsonld#ActorQueryOperationBgpJoin_args_beforeActors",
             "@container": "@list"
           }
         }

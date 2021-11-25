@@ -18,18 +18,19 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
       "@id": "#myRdfUpdateQuadsHypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
       "args_mediatorRdfDereference": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference"
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference"
       },
       "args_mediatorMetadata": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadata"
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorMetadata"
       },
       "args_mediatorMetadataExtract": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract"
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract"
       },
       "args_mediatorRdfUpdateHypermedia": {
         "@id": "#mediatorRdfUpdateHypermedia",
@@ -46,7 +47,7 @@
       "@id": "#myRdfUpdateHypermediaPatchSparqlUpdate",
       "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
       "args_mediatorHttp": {
-        "@id": "files-cais:config/sets/http.json#mediatorHttp"
+        "@id": "cais:config/sets/http.json#mediatorHttp"
       }
     },
 
@@ -62,13 +63,13 @@
       "@id": "#myRdfUpdateHypermediaPutLdp",
       "@type": "ActorRdfUpdateHypermediaPutLdp",
       "args_mediatorHttp": {
-        "@id": "files-cais:config/sets/http.json#mediatorHttp"
+        "@id": "cais:config/sets/http.json#mediatorHttp"
       },
       "args_mediatorRdfSerializeMediatypes": {
-        "@id": "files-cais:config/sets/sparql-serializers.json#mediatorRdfSerializeMediatypes"
+        "@id": "cais:config/sets/sparql-serializers.json#mediatorRdfSerializeMediatypes"
       },
       "args_mediatorRdfSerialize": {
-        "@id": "files-cais:config/sets/sparql-serializers.json#mediatorRdfSerialize"
+        "@id": "cais:config/sets/sparql-serializers.json#mediatorRdfSerialize"
       }
     },
 
@@ -76,7 +77,7 @@
       "@id": "#myRdfUpdateHypermediaSparql",
       "@type": "ActorRdfUpdateHypermediaSparql",
       "args_mediatorHttp": {
-        "@id": "files-cais:config/sets/http.json#mediatorHttp"
+        "@id": "cais:config/sets/http.json#mediatorHttp"
       }
     }
   ]

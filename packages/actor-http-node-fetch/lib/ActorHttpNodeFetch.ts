@@ -81,5 +81,5 @@ export interface IActorHttpNodeFetchArgs extends IActorArgs<IActionHttp, IMediat
    * @range {json}
    * @default {{ "keepAlive": true, "maxSockets": 5 }}
    */
-  agentOptions?: string;
+  agentOptions?: Record<string, any>;
 }

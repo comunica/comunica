@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-parse-html",
   "import": [
-    "files-cbrph:components/ActorRdfParseHtml.jsonld"
+    "cbrph:components/ActorRdfParseHtml.jsonld"
   ]
 }

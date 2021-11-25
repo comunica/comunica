@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoucu": "npmd:@comunica/actor-query-operation-update-compositeupdate/",
-      "files-caqoucu": "caqoucu:^1.0.0/",
+      "caqoucu": "npmd:@comunica/actor-query-operation-update-compositeupdate/^1.0.0/",
       "ActorQueryOperationUpdateCompositeUpdate": {
-        "@id": "caqoucu:lib/ActorQueryOperationUpdateCompositeUpdate#ActorQueryOperationUpdateCompositeUpdate",
+        "@id": "caqoucu:components/ActorQueryOperationUpdateCompositeUpdate.jsonld#ActorQueryOperationUpdateCompositeUpdate",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqoucu:lib/ActorQueryOperationUpdateCompositeUpdate#ActorQueryOperationUpdateCompositeUpdate_args_mediatorQueryOperation"
+            "@id": "caqoucu:components/ActorQueryOperationUpdateCompositeUpdate.jsonld#ActorQueryOperationUpdateCompositeUpdate_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqoucu:lib/ActorQueryOperationUpdateCompositeUpdate#ActorQueryOperationUpdateCompositeUpdate_args_name"
+            "@id": "caqoucu:components/ActorQueryOperationUpdateCompositeUpdate.jsonld#ActorQueryOperationUpdateCompositeUpdate_args_name"
           },
           "args_bus": {
-            "@id": "caqoucu:lib/ActorQueryOperationUpdateCompositeUpdate#ActorQueryOperationUpdateCompositeUpdate_args_bus"
+            "@id": "caqoucu:components/ActorQueryOperationUpdateCompositeUpdate.jsonld#ActorQueryOperationUpdateCompositeUpdate_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqoucu:lib/ActorQueryOperationUpdateCompositeUpdate#ActorQueryOperationUpdateCompositeUpdate_args_beforeActors",
+            "@id": "caqoucu:components/ActorQueryOperationUpdateCompositeUpdate.jsonld#ActorQueryOperationUpdateCompositeUpdate_args_beforeActors",
             "@container": "@list"
           }
         }

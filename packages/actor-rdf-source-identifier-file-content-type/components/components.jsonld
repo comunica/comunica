@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-source-identifier-file-content-type",
   "import": [
-    "files-carsifct:components/ActorRdfSourceIdentifierFileContentType.jsonld"
+    "carsifct:components/ActorRdfSourceIdentifierFileContentType.jsonld"
   ]
 }

@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmpt": "npmd:@comunica/actor-rdf-metadata-primary-topic/",
-      "files-carmpt": "carmpt:^1.0.0/",
+      "carmpt": "npmd:@comunica/actor-rdf-metadata-primary-topic/^1.0.0/",
       "ActorRdfMetadataPrimaryTopic": {
-        "@id": "carmpt:lib/ActorRdfMetadataPrimaryTopic#ActorRdfMetadataPrimaryTopic",
+        "@id": "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld#ActorRdfMetadataPrimaryTopic",
         "@prefix": true,
         "@context": {
           "args_metadataToData": {
-            "@id": "carmpt:lib/ActorRdfMetadataPrimaryTopic#ActorRdfMetadataPrimaryTopic_args_metadataToData"
+            "@id": "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld#ActorRdfMetadataPrimaryTopic_args_metadataToData"
           },
           "args_dataToMetadataOnInvalidMetadataGraph": {
-            "@id": "carmpt:lib/ActorRdfMetadataPrimaryTopic#ActorRdfMetadataPrimaryTopic_args_dataToMetadataOnInvalidMetadataGraph"
+            "@id": "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld#ActorRdfMetadataPrimaryTopic_args_dataToMetadataOnInvalidMetadataGraph"
           },
           "args_name": {
-            "@id": "carmpt:lib/ActorRdfMetadataPrimaryTopic#ActorRdfMetadataPrimaryTopic_args_name"
+            "@id": "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld#ActorRdfMetadataPrimaryTopic_args_name"
           },
           "args_bus": {
-            "@id": "carmpt:lib/ActorRdfMetadataPrimaryTopic#ActorRdfMetadataPrimaryTopic_args_bus"
+            "@id": "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld#ActorRdfMetadataPrimaryTopic_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carmpt:lib/ActorRdfMetadataPrimaryTopic#ActorRdfMetadataPrimaryTopic_args_beforeActors",
+            "@id": "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld#ActorRdfMetadataPrimaryTopic_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfMetadataPrimaryTopicArgs": {
-        "@id": "carmpt:lib/ActorRdfMetadataPrimaryTopic#IActorRdfMetadataPrimaryTopicArgs",
+        "@id": "carmpt:components/ActorRdfMetadataPrimaryTopic.jsonld#IActorRdfMetadataPrimaryTopicArgs",
         "@prefix": true,
         "@context": {}
       }

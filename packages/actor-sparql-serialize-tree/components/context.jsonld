@@ -3,31 +3,30 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "casstr": "npmd:@comunica/actor-sparql-serialize-tree/",
-      "files-casstr": "casstr:^1.0.0/",
+      "casstr": "npmd:@comunica/actor-sparql-serialize-tree/^1.0.0/",
       "ActorSparqlSerializeTree": {
-        "@id": "casstr:lib/ActorSparqlSerializeTree#ActorSparqlSerializeTree",
+        "@id": "casstr:components/ActorSparqlSerializeTree.jsonld#ActorSparqlSerializeTree",
         "@prefix": true,
         "@context": {
           "args_mediaTypePriorities": {
-            "@id": "casstr:lib/ActorSparqlSerializeTree#ActorSparqlSerializeTree_args_mediaTypePriorities",
+            "@id": "casstr:components/ActorSparqlSerializeTree.jsonld#ActorSparqlSerializeTree_args_mediaTypePriorities",
             "@type": "@json"
           },
           "args_mediaTypeFormats": {
-            "@id": "casstr:lib/ActorSparqlSerializeTree#ActorSparqlSerializeTree_args_mediaTypeFormats",
+            "@id": "casstr:components/ActorSparqlSerializeTree.jsonld#ActorSparqlSerializeTree_args_mediaTypeFormats",
             "@type": "@json"
           },
           "args_priorityScale": {
-            "@id": "casstr:lib/ActorSparqlSerializeTree#ActorSparqlSerializeTree_args_priorityScale"
+            "@id": "casstr:components/ActorSparqlSerializeTree.jsonld#ActorSparqlSerializeTree_args_priorityScale"
           },
           "args_name": {
-            "@id": "casstr:lib/ActorSparqlSerializeTree#ActorSparqlSerializeTree_args_name"
+            "@id": "casstr:components/ActorSparqlSerializeTree.jsonld#ActorSparqlSerializeTree_args_name"
           },
           "args_bus": {
-            "@id": "casstr:lib/ActorSparqlSerializeTree#ActorSparqlSerializeTree_args_bus"
+            "@id": "casstr:components/ActorSparqlSerializeTree.jsonld#ActorSparqlSerializeTree_args_bus"
           },
           "args_beforeActors": {
-            "@id": "casstr:lib/ActorSparqlSerializeTree#ActorSparqlSerializeTree_args_beforeActors",
+            "@id": "casstr:components/ActorSparqlSerializeTree.jsonld#ActorSparqlSerializeTree_args_beforeActors",
             "@container": "@list"
           }
         }

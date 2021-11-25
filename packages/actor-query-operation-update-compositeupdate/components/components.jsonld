@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-update-compositeupdate",
   "import": [
-    "files-caqoucu:components/ActorQueryOperationUpdateCompositeUpdate.jsonld"
+    "caqoucu:components/ActorQueryOperationUpdateCompositeUpdate.jsonld"
   ]
 }

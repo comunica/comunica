@@ -6,8 +6,8 @@
   "@type": "Module",
   "requireName": "@comunica/bus-query-operation",
   "import": [
-    "files-cbqo:components/ActorQueryOperation.jsonld",
-    "files-cbqo:components/ActorQueryOperationTyped.jsonld",
-    "files-cbqo:components/ActorQueryOperationTypedMediated.jsonld"
+    "cbqo:components/ActorQueryOperation.jsonld",
+    "cbqo:components/ActorQueryOperationTyped.jsonld",
+    "cbqo:components/ActorQueryOperationTypedMediated.jsonld"
   ]
 }

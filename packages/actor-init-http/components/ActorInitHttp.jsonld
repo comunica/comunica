@@ -7,110 +7,136 @@
   "@id": "npmd:@comunica/actor-init-http",
   "components": [
     {
-      "@id": "caih:lib/ActorInitHttp#ActorInitHttp",
+      "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp",
       "@type": "Class",
       "requireElement": "ActorInitHttp",
       "extends": [
-        "cbi:lib/ActorInit#ActorInit",
-        "caih:lib/ActorInitHttp#IActorInitHttpArgs"
+        "cbi:components/ActorInit.jsonld#ActorInit",
+        "caih:components/ActorInitHttp.jsonld#IActorInitHttpArgs"
       ],
       "comment": "A http actor that listens on the 'init' bus.  It will call `this.mediatorHttp.mediate`.",
       "parameters": [
         {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_mediatorHttp",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_mediatorHttp",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_url",
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_url",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:string",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
+        },
+        {
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_method",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:string",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
+        },
+        {
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_headers",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "xsd:string"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
+        },
+        {
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_name",
           "range": "xsd:string",
-          "unique": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_method",
-          "range": "xsd:string",
-          "unique": true
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbi:components/ActorInit.jsonld#ActorInit_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_headers",
-          "range": "xsd:string"
-        },
-        {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_name",
-          "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbi:lib/ActorInit#ActorInit_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
-        },
-        {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args__constructorArgument",
+          "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "mediatorHttp",
               "value": {
-                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_mediatorHttp"
+                "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_mediatorHttp"
               }
             },
             {
               "keyRaw": "url",
               "value": {
-                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_url"
+                "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_url"
               }
             },
             {
               "keyRaw": "method",
               "value": {
-                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_method"
+                "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_method"
               }
             },
             {
               "keyRaw": "headers",
               "value": {
-                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_headers"
+                "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_headers"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_name"
+                "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_bus"
+                "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "caih:lib/ActorInitHttp#ActorInitHttp_args_beforeActors"
+                "@id": "caih:components/ActorInitHttp.jsonld#ActorInitHttp_args_beforeActors"
               }
             }
           ]
@@ -118,11 +144,11 @@
       ]
     },
     {
-      "@id": "caih:lib/ActorInitHttp#IActorInitHttpArgs",
+      "@id": "caih:components/ActorInitHttp.jsonld#IActorInitHttpArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorInitHttpArgs",
       "extends": [
-        "cc:lib/Actor#IActorArgs"
+        "cc:components/Actor.jsonld#IActorArgs"
       ],
       "parameters": [],
       "constructorArguments": []

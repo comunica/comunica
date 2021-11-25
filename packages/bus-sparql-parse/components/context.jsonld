@@ -3,31 +3,30 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbsp": "npmd:@comunica/bus-sparql-parse/",
-      "files-cbsp": "cbsp:^1.0.0/",
+      "cbsp": "npmd:@comunica/bus-sparql-parse/^1.0.0/",
       "ActorSparqlParse": {
-        "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse",
+        "@id": "cbsp:components/ActorSparqlParse.jsonld#ActorSparqlParse",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_name"
+            "@id": "cbsp:components/ActorSparqlParse.jsonld#ActorSparqlParse_args_name"
           },
           "args_bus": {
-            "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_bus"
+            "@id": "cbsp:components/ActorSparqlParse.jsonld#ActorSparqlParse_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbsp:lib/ActorSparqlParse#ActorSparqlParse_args_beforeActors",
+            "@id": "cbsp:components/ActorSparqlParse.jsonld#ActorSparqlParse_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActionSparqlParse": {
-        "@id": "cbsp:lib/ActorSparqlParse#IActionSparqlParse",
+        "@id": "cbsp:components/ActorSparqlParse.jsonld#IActionSparqlParse",
         "@prefix": true,
         "@context": {}
       },
       "IActorSparqlParseOutput": {
-        "@id": "cbsp:lib/ActorSparqlParse#IActorSparqlParseOutput",
+        "@id": "cbsp:components/ActorSparqlParse.jsonld#IActorSparqlParseOutput",
         "@prefix": true,
         "@context": {}
       }

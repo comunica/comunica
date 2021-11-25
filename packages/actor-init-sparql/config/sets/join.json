@@ -23,7 +23,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
       "@id": "#myRdfJoinActorNone",
       "@type": "ActorRdfJoinNone",
@@ -50,7 +51,7 @@
       "@id": "#myRdfJoinActorBind",
       "@type": "ActorRdfJoinMultiBind",
       "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "#myRdfJoinActorHash",
@@ -71,7 +72,7 @@
       "@id": "#myRdfJoinActorSmallest",
       "@type": "ActorRdfJoinMultiSmallest",
       "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "args_mediatorJoin": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorRdfJoin" }
+      "args_mediatorJoin": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorRdfJoin" }
     },
 
     {
@@ -89,7 +90,7 @@
       "@id": "#myRdfJoinActorOptionalBind",
       "@type": "ActorRdfJoinOptionalBind",
       "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "args_mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "#myRdfJoinActorOptionalNestedLoop",

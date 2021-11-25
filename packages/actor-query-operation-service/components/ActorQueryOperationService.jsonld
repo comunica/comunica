@@ -7,93 +7,90 @@
   "@id": "npmd:@comunica/actor-query-operation-service",
   "components": [
     {
-      "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService",
+      "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService",
       "@type": "Class",
       "requireElement": "ActorQueryOperationService",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#ActorQueryOperationTypedMediated"
       ],
       "comment": "A comunica Service Query Operation Actor. It unwraps the SERVICE operation and executes it on the given source.",
       "parameters": [
         {
-          "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_forceSparqlEndpoint",
+          "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_forceSparqlEndpoint",
           "range": "xsd:boolean",
-          "default": [
-            "false"
-          ],
-          "comment": "If the SERVICE target should be assumed to be a SPARQL endpoint.",
-          "unique": true,
-          "required": true
+          "default": "false",
+          "comment": "If the SERVICE target should be assumed to be a SPARQL endpoint."
         },
         {
-          "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_mediatorQueryOperation",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_mediatorQueryOperation",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         },
         {
-          "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_name",
+          "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args__constructorArgument",
+          "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "forceSparqlEndpoint",
               "value": {
-                "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_forceSparqlEndpoint"
+                "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_forceSparqlEndpoint"
               }
             },
             {
               "keyRaw": "mediatorQueryOperation",
               "value": {
-                "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_mediatorQueryOperation"
+                "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_mediatorQueryOperation"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_name"
+                "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_bus"
+                "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "caqose:lib/ActorQueryOperationService#ActorQueryOperationService_args_beforeActors"
+                "@id": "caqose:components/ActorQueryOperationService.jsonld#ActorQueryOperationService_args_beforeActors"
               }
             }
           ]
@@ -101,11 +98,11 @@
       ]
     },
     {
-      "@id": "caqose:lib/ActorQueryOperationService#IActorQueryOperationServiceArgs",
+      "@id": "caqose:components/ActorQueryOperationService.jsonld#IActorQueryOperationServiceArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationServiceArgs",
       "extends": [
-        "cbqo:lib/ActorQueryOperationTypedMediated#IActorQueryOperationTypedMediatedArgs"
+        "cbqo:components/ActorQueryOperationTypedMediated.jsonld#IActorQueryOperationTypedMediatedArgs"
       ],
       "parameters": [],
       "constructorArguments": []

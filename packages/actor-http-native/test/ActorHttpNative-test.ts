@@ -85,7 +85,7 @@ describe('ActorHttpNative', () => {
     });
 
     it('should run with agent options', () => {
-      actor = new ActorHttpNative({ name: 'actor', bus, agentOptions: '{ "name": "007" }' });
+      actor = new ActorHttpNative({ name: 'actor', bus, agentOptions: { name: '007' }});
       mockSetup({ statusCode: 404 });
       return expect(actor.run({ input: new Request('http://example.com') })).resolves
         .toMatchObject({ status: 404 });

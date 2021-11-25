@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqog": "npmd:@comunica/actor-query-operation-group/",
-      "files-caqog": "caqog:^1.0.0/",
+      "caqog": "npmd:@comunica/actor-query-operation-group/^1.0.0/",
       "ActorQueryOperationGroup": {
-        "@id": "caqog:lib/ActorQueryOperationGroup#ActorQueryOperationGroup",
+        "@id": "caqog:components/ActorQueryOperationGroup.jsonld#ActorQueryOperationGroup",
         "@prefix": true,
         "@context": {
           "args_mediatorQueryOperation": {
-            "@id": "caqog:lib/ActorQueryOperationGroup#ActorQueryOperationGroup_args_mediatorQueryOperation"
+            "@id": "caqog:components/ActorQueryOperationGroup.jsonld#ActorQueryOperationGroup_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqog:lib/ActorQueryOperationGroup#ActorQueryOperationGroup_args_name"
+            "@id": "caqog:components/ActorQueryOperationGroup.jsonld#ActorQueryOperationGroup_args_name"
           },
           "args_bus": {
-            "@id": "caqog:lib/ActorQueryOperationGroup#ActorQueryOperationGroup_args_bus"
+            "@id": "caqog:components/ActorQueryOperationGroup.jsonld#ActorQueryOperationGroup_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqog:lib/ActorQueryOperationGroup#ActorQueryOperationGroup_args_beforeActors",
+            "@id": "caqog:components/ActorQueryOperationGroup.jsonld#ActorQueryOperationGroup_args_beforeActors",
             "@container": "@list"
           }
         }

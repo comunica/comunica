@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-path-zero-or-more",
   "import": [
-    "files-caqopzom:components/ActorQueryOperationPathZeroOrMore.jsonld"
+    "caqopzom:components/ActorQueryOperationPathZeroOrMore.jsonld"
   ]
 }

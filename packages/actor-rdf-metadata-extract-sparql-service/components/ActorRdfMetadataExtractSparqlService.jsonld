@@ -1,87 +1,86 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-metadata-extract-sparql-service",
   "components": [
     {
-      "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService",
+      "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService",
       "@type": "Class",
       "requireElement": "ActorRdfMetadataExtractSparqlService",
       "extends": [
-        "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract"
+        "cbrme:components/ActorRdfMetadataExtract.jsonld#ActorRdfMetadataExtract"
       ],
       "comment": "A comunica RDF Metadata Extract Actor for SPARQL service descriptions.",
       "parameters": [
         {
-          "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_inferHttpsEndpoint",
+          "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_inferHttpsEndpoint",
           "range": "xsd:boolean",
-          "default": [
-            "true"
-          ],
-          "comment": "If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based",
-          "unique": true,
-          "required": true
+          "default": "true",
+          "comment": "If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based"
         },
         {
-          "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_name",
+          "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbrme:lib/ActorRdfMetadataExtract#ActorRdfMetadataExtract_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbrme:components/ActorRdfMetadataExtract.jsonld#ActorRdfMetadataExtract_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args__constructorArgument",
+          "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "inferHttpsEndpoint",
               "value": {
-                "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_inferHttpsEndpoint"
+                "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_inferHttpsEndpoint"
               }
             },
             {
               "keyRaw": "name",
               "value": {
-                "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_name"
+                "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_bus"
+                "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_beforeActors"
+                "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_beforeActors"
               }
             }
           ]
@@ -89,11 +88,11 @@
       ]
     },
     {
-      "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#IActorRdfMetadataExtractSparqlServiceArgs",
+      "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#IActorRdfMetadataExtractSparqlServiceArgs",
       "@type": "AbstractClass",
       "requireElement": "IActorRdfMetadataExtractSparqlServiceArgs",
       "extends": [
-        "cc:lib/Actor#IActorArgs"
+        "cc:components/Actor.jsonld#IActorArgs"
       ],
       "parameters": [],
       "constructorArguments": []

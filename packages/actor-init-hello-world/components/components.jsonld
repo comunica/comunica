@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-hello-world",
   "import": [
-    "files-caihw:components/ActorInitHelloWorld.jsonld"
+    "caihw:components/ActorInitHelloWorld.jsonld"
   ]
 }

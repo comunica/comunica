@@ -6,50 +6,82 @@
   "@id": "npmd:@comunica/logger-bunyan",
   "components": [
     {
-      "@id": "clb:lib/LoggerBunyan#LoggerBunyan",
+      "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan",
       "@type": "Class",
       "requireElement": "LoggerBunyan",
       "extends": [
-        "cc:lib/Logger#Logger"
+        "cc:components/Logger.jsonld#Logger"
       ],
       "comment": "A bunyan-based logger implementation.",
       "parameters": [
         {
-          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_name",
+          "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_name",
           "range": "xsd:string",
-          "default": [
-            "comunica"
-          ],
-          "comment": "The name of this logger",
-          "unique": true,
-          "required": true
+          "default": "comunica",
+          "comment": "The name of this logger"
         },
         {
-          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_streamProviders",
-          "range": "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider",
-          "comment": "A stream to output to",
-          "required": true
-        },
-        {
-          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_level",
-          "range": "xsd:string",
-          "comment": "The logging level to emit",
-          "unique": true
-        },
-        {
-          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args",
+          "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_streamProviders",
           "range": {
-            "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_range",
-            "parameters": [
+            "@type": "ParameterRangeArray",
+            "parameterRangeValue": "clb:components/stream/BunyanStreamProvider.jsonld#BunyanStreamProvider"
+          },
+          "comment": "A stream to output to"
+        },
+        {
+          "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_level",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
               {
-                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_key",
-                "required": true,
-                "unique": true
+                "@type": "ParameterRangeUnion",
+                "parameterRangeElements": [
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "trace"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "debug"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "info"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "warn"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "error"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "fatal"
+                  }
+                ]
               },
               {
-                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_value",
-                "required": true,
-                "unique": true
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
+          "comment": "The logging level to emit"
+        },
+        {
+          "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args",
+          "range": {
+            "@type": "ParameterRangeCollectEntries",
+            "parameterRangeCollectEntriesParameters": [
+              {
+                "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_key"
+              },
+              {
+                "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_value",
+                "range": {
+                  "@type": "ParameterRangeUndefined"
+                }
               }
             ]
           }
@@ -57,31 +89,31 @@
       ],
       "constructorArguments": [
         {
-          "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args__constructorArgument",
+          "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_name"
+                "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_name"
               }
             },
             {
               "keyRaw": "streamProviders",
               "value": {
-                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_streamProviders"
+                "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_streamProviders"
               }
             },
             {
               "keyRaw": "level",
               "value": {
-                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_level"
+                "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_level"
               }
             },
             {
-              "collectEntries": "clb:lib/LoggerBunyan#LoggerBunyan_args",
-              "key": "clb:lib/LoggerBunyan#LoggerBunyan_args_key",
+              "collectEntries": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args",
+              "key": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_key",
               "value": {
-                "@id": "clb:lib/LoggerBunyan#LoggerBunyan_args_value"
+                "@id": "clb:components/LoggerBunyan.jsonld#LoggerBunyan_args_value"
               }
             }
           ]
@@ -89,7 +121,7 @@
       ]
     },
     {
-      "@id": "clb:lib/LoggerBunyan#ILoggerBunyanArgs",
+      "@id": "clb:components/LoggerBunyan.jsonld#ILoggerBunyanArgs",
       "@type": "AbstractClass",
       "requireElement": "ILoggerBunyanArgs",
       "extends": [],

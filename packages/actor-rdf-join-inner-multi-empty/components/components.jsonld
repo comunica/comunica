@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-multi-empty",
   "import": [
-    "files-carjime:components/ActorRdfJoinMultiEmpty.jsonld"
+    "carjime:components/ActorRdfJoinMultiEmpty.jsonld"
   ]
 }

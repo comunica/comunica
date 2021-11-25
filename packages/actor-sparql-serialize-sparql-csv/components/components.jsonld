@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-serialize-sparql-csv",
   "import": [
-    "files-casssc:components/ActorSparqlSerializeSparqlCsv.jsonld"
+    "casssc:components/ActorSparqlSerializeSparqlCsv.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-construct",
   "import": [
-    "files-caqoc:components/ActorQueryOperationConstruct.jsonld"
+    "caqoc:components/ActorQueryOperationConstruct.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-http",
   "import": [
-    "files-caih:components/ActorInitHttp.jsonld"
+    "caih:components/ActorInitHttp.jsonld"
   ]
 }

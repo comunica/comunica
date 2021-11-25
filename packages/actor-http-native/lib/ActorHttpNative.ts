@@ -132,5 +132,5 @@ export interface IActorHttpNativeArgs extends IActorArgs<IActionHttp, IMediatorT
    * @range {json}
    * @default {{ "keepAlive": true, "maxSockets": 5 }}
    */
-  agentOptions?: any;
+  agentOptions?: Record<string, any>;
 }

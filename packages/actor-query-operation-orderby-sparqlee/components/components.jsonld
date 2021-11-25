@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-orderby-sparqlee",
   "import": [
-    "files-caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld"
+    "caqoos:components/ActorQueryOperationOrderBySparqlee.jsonld"
   ]
 }

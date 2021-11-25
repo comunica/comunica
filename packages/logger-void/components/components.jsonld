@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/logger-void",
   "import": [
-    "files-clv:components/LoggerVoid.jsonld"
+    "clv:components/LoggerVoid.jsonld"
   ]
 }

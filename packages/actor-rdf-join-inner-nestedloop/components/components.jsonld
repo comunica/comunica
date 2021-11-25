@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-nestedloop",
   "import": [
-    "files-carjin:components/ActorRdfJoinNestedLoop.jsonld"
+    "carjin:components/ActorRdfJoinNestedLoop.jsonld"
   ]
 }

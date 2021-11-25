@@ -20,7 +20,7 @@ IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>
   implements IActorSparqlSerializeFixedMediaTypesArgs, ActorSparqlSerialize {
   /**
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
-   * @param args - @defaultNested {<cbss:lib/ActorSparqlSerialize#ActorSparqlSerialize_default_bus> a <cc:lib/Bus#Bus>} bus
+   * @param args - @defaultNested {<cbss:components/ActorSparqlSerialize.jsonld#ActorSparqlSerialize_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);

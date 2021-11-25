@@ -7,65 +7,68 @@
   "@id": "npmd:@comunica/bus-query-operation",
   "components": [
     {
-      "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation",
+      "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation",
       "@type": "AbstractClass",
       "requireElement": "ActorQueryOperation",
       "extends": [
-        "cc:lib/Actor#Actor"
+        "cc:components/Actor.jsonld#Actor"
       ],
       "comment": "A comunica actor for query-operation events.  Actor types: * Input:  IActionQueryOperation:      A SPARQL Algebra operation. * Test:   <none> * Output: IActorQueryOperationOutput: A bindings stream.",
       "parameters": [
         {
-          "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_name",
+          "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args__constructorArgument",
+          "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_name"
+                "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_bus"
+                "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "cbqo:lib/ActorQueryOperation#ActorQueryOperation_args_beforeActors"
+                "@id": "cbqo:components/ActorQueryOperation.jsonld#ActorQueryOperation_args_beforeActors"
               }
             }
           ]
@@ -73,7 +76,7 @@
       ]
     },
     {
-      "@id": "cbqo:lib/ActorQueryOperation#IBaseExpressionContext",
+      "@id": "cbqo:components/ActorQueryOperation.jsonld#IBaseExpressionContext",
       "@type": "AbstractClass",
       "requireElement": "IBaseExpressionContext",
       "extends": [],
@@ -81,84 +84,84 @@
       "constructorArguments": []
     },
     {
-      "@id": "cbqo:lib/ActorQueryOperation#IExpressionContext",
+      "@id": "cbqo:components/ActorQueryOperation.jsonld#IExpressionContext",
       "@type": "AbstractClass",
       "requireElement": "IExpressionContext",
       "extends": [
-        "cbqo:lib/ActorQueryOperation#IBaseExpressionContext"
+        "cbqo:components/ActorQueryOperation.jsonld#IBaseExpressionContext"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "cbqo:lib/ActorQueryOperation#IAsyncExpressionContext",
+      "@id": "cbqo:components/ActorQueryOperation.jsonld#IAsyncExpressionContext",
       "@type": "AbstractClass",
       "requireElement": "IAsyncExpressionContext",
       "extends": [
-        "cbqo:lib/ActorQueryOperation#IBaseExpressionContext"
+        "cbqo:components/ActorQueryOperation.jsonld#IBaseExpressionContext"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActionQueryOperation",
+      "@id": "ct:components/index.jsonld#IActionQueryOperation",
       "@type": "AbstractClass",
       "requireElement": "IActionQueryOperation",
       "extends": [
-        "ct:lib/index#IAction"
+        "ct:components/index.jsonld#IAction"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputBindings",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputBindings",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputBindings",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputStream"
+        "ct:components/index.jsonld#IActorQueryOperationOutputStream"
       ],
       "comment": "Query operation output for a bindings stream. For example: SPARQL SELECT results",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputBoolean",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputBoolean",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputBoolean",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputBase"
+        "ct:components/index.jsonld#IActorQueryOperationOutputBase"
       ],
       "comment": "Query operation output for quads. For example: SPARQL ASK results",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputQuads",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputQuads",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputQuads",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputStream"
+        "ct:components/index.jsonld#IActorQueryOperationOutputStream"
       ],
       "comment": "Query operation output for quads. For example: SPARQL CONSTRUCT results",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputUpdate",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputUpdate",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputUpdate",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputBase"
+        "ct:components/index.jsonld#IActorQueryOperationOutputBase"
       ],
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "ct:lib/index#IActorQueryOperationOutputStream",
+      "@id": "ct:components/index.jsonld#IActorQueryOperationOutputStream",
       "@type": "AbstractClass",
       "requireElement": "IActorQueryOperationOutputStream",
       "extends": [
-        "ct:lib/index#IActorQueryOperationOutputBase"
+        "ct:components/index.jsonld#IActorQueryOperationOutputBase"
       ],
       "comment": "Super interface for query operation outputs that represent some for of stream.",
       "parameters": [],

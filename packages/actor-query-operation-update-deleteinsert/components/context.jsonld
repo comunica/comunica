@@ -3,32 +3,31 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqoudi": "npmd:@comunica/actor-query-operation-update-deleteinsert/",
-      "files-caqoudi": "caqoudi:^1.0.0/",
+      "caqoudi": "npmd:@comunica/actor-query-operation-update-deleteinsert/^1.0.0/",
       "ActorQueryOperationUpdateDeleteInsert": {
-        "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert",
+        "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert",
         "@prefix": true,
         "@context": {
           "args_mediatorUpdateQuads": {
-            "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_mediatorUpdateQuads"
+            "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_mediatorUpdateQuads"
           },
           "args_mediatorQueryOperation": {
-            "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_mediatorQueryOperation"
+            "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_mediatorQueryOperation"
           },
           "args_name": {
-            "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_name"
+            "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_name"
           },
           "args_bus": {
-            "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_bus"
+            "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_bus"
           },
           "args_beforeActors": {
-            "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#ActorQueryOperationUpdateDeleteInsert_args_beforeActors",
+            "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#ActorQueryOperationUpdateDeleteInsert_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorQueryOperationUpdateDeleteInsertArgs": {
-        "@id": "caqoudi:lib/ActorQueryOperationUpdateDeleteInsert#IActorQueryOperationUpdateDeleteInsertArgs",
+        "@id": "caqoudi:components/ActorQueryOperationUpdateDeleteInsert.jsonld#IActorQueryOperationUpdateDeleteInsertArgs",
         "@prefix": true,
         "@context": {}
       }

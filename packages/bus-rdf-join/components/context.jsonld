@@ -3,64 +3,63 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbrj": "npmd:@comunica/bus-rdf-join/",
-      "files-cbrj": "cbrj:^1.0.0/",
+      "cbrj": "npmd:@comunica/bus-rdf-join/^1.0.0/",
       "ActorRdfJoin": {
-        "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin",
+        "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin",
         "@prefix": true,
         "@context": {
           "options_logicalType": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_logicalType"
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_logicalType"
           },
           "args_mediatorJoinSelectivity": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_mediatorJoinSelectivity"
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_mediatorJoinSelectivity"
           },
           "options_physicalName": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_physicalName"
-          },
-          "options_limitEntries": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntries"
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_physicalName"
           },
           "args_name": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_name"
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_name"
+          },
+          "options_limitEntries": {
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_limitEntries"
           },
           "options_limitEntriesMin": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_limitEntriesMin"
-          },
-          "options_canHandleUndefs": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_options_canHandleUndefs"
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_limitEntriesMin"
           },
           "args_bus": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_bus"
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_bus"
+          },
+          "options_canHandleUndefs": {
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_canHandleUndefs"
           },
           "args_beforeActors": {
-            "@id": "cbrj:lib/ActorRdfJoin#ActorRdfJoin_args_beforeActors",
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfJoinArgs": {
-        "@id": "cbrj:lib/ActorRdfJoin#IActorRdfJoinArgs",
+        "@id": "cbrj:components/ActorRdfJoin.jsonld#IActorRdfJoinArgs",
         "@prefix": true,
         "@context": {}
       },
       "IActorRdfJoinInternalOptions": {
-        "@id": "cbrj:lib/ActorRdfJoin#IActorRdfJoinInternalOptions",
+        "@id": "cbrj:components/ActorRdfJoin.jsonld#IActorRdfJoinInternalOptions",
         "@prefix": true,
         "@context": {}
       },
       "IActionRdfJoin": {
-        "@id": "cbrj:lib/ActorRdfJoin#IActionRdfJoin",
+        "@id": "cbrj:components/ActorRdfJoin.jsonld#IActionRdfJoin",
         "@prefix": true,
         "@context": {}
       },
       "IJoinEntry": {
-        "@id": "cbrj:lib/ActorRdfJoin#IJoinEntry",
+        "@id": "cbrj:components/ActorRdfJoin.jsonld#IJoinEntry",
         "@prefix": true,
         "@context": {}
       },
       "IActorRdfJoinOutputInner": {
-        "@id": "cbrj:lib/ActorRdfJoin#IActorRdfJoinOutputInner",
+        "@id": "cbrj:components/ActorRdfJoin.jsonld#IActorRdfJoinOutputInner",
         "@prefix": true,
         "@context": {}
       }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-parse-graphql",
   "import": [
-    "files-caspg:components/ActorSparqlParseGraphql.jsonld"
+    "caspg:components/ActorSparqlParseGraphql.jsonld"
   ]
 }

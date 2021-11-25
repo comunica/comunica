@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-inner-hash",
   "import": [
-    "files-carjih:components/ActorRdfJoinHash.jsonld"
+    "carjih:components/ActorRdfJoinHash.jsonld"
   ]
 }

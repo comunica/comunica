@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-update-clear",
   "import": [
-    "files-caqoucl:components/ActorQueryOperationClear.jsonld"
+    "caqoucl:components/ActorQueryOperationClear.jsonld"
   ]
 }

@@ -5,35 +5,31 @@
   "@id": "npmd:@comunica/core",
   "components": [
     {
-      "@id": "cc:lib/Bus#Bus",
+      "@id": "cc:components/Bus.jsonld#Bus",
       "@type": "Class",
       "requireElement": "Bus",
       "extends": [
-        "cc:lib/Bus#IBusArgs"
+        "cc:components/Bus.jsonld#IBusArgs"
       ],
       "comment": "A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.  This bus does not run the action itself, for that a {@link Mediator} can be used.",
       "parameters": [
         {
-          "@id": "cc:lib/Bus#Bus_args_name",
+          "@id": "cc:components/Bus.jsonld#Bus_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this bus.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this bus."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cc:lib/Bus#Bus_args__constructorArgument",
+          "@id": "cc:components/Bus.jsonld#Bus_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cc:lib/Bus#Bus_args_name"
+                "@id": "cc:components/Bus.jsonld#Bus_args_name"
               }
             }
           ]
@@ -41,7 +37,7 @@
       ]
     },
     {
-      "@id": "cc:lib/Bus#IBusArgs",
+      "@id": "cc:components/Bus.jsonld#IBusArgs",
       "@type": "AbstractClass",
       "requireElement": "IBusArgs",
       "extends": [],
@@ -49,7 +45,7 @@
       "constructorArguments": []
     },
     {
-      "@id": "cc:lib/Bus#IActorReply",
+      "@id": "cc:components/Bus.jsonld#IActorReply",
       "@type": "AbstractClass",
       "requireElement": "IActorReply",
       "extends": [],

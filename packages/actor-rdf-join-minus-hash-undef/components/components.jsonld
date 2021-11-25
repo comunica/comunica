@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-minus-hash-undef",
   "import": [
-    "files-carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld"
+    "carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld"
   ]
 }

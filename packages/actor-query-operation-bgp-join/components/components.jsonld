@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-bgp-join",
   "import": [
-    "files-caqobj:components/ActorQueryOperationBgpJoin.jsonld"
+    "caqobj:components/ActorQueryOperationBgpJoin.jsonld"
   ]
 }

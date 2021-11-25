@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-update-quads-hypermedia",
   "import": [
-    "files-caruqh:components/ActorRdfUpdateQuadsHypermedia.jsonld"
+    "caruqh:components/ActorRdfUpdateQuadsHypermedia.jsonld"
   ]
 }

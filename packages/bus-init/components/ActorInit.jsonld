@@ -7,65 +7,68 @@
   "@id": "npmd:@comunica/bus-init",
   "components": [
     {
-      "@id": "cbi:lib/ActorInit#ActorInit",
+      "@id": "cbi:components/ActorInit.jsonld#ActorInit",
       "@type": "AbstractClass",
       "requireElement": "ActorInit",
       "extends": [
-        "cc:lib/Actor#Actor"
+        "cc:components/Actor.jsonld#Actor"
       ],
       "comment": "A base actor for listening to init events.  Actor types: * Input:  IActionInit:      Contains process information such as the list of arguments, environment variables and input stream. * Test:   <none> * Output: IActorOutputInit: Contains process output streams.",
       "parameters": [
         {
-          "@id": "cbi:lib/ActorInit#ActorInit_args_name",
+          "@id": "cbi:components/ActorInit.jsonld#ActorInit_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "cbi:lib/ActorInit#ActorInit_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbi:lib/ActorInit#ActorInit_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "cbi:components/ActorInit.jsonld#ActorInit_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbi:components/ActorInit.jsonld#ActorInit_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "cbi:lib/ActorInit#ActorInit_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "cbi:components/ActorInit.jsonld#ActorInit_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cbi:lib/ActorInit#ActorInit_args__constructorArgument",
+          "@id": "cbi:components/ActorInit.jsonld#ActorInit_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cbi:lib/ActorInit#ActorInit_args_name"
+                "@id": "cbi:components/ActorInit.jsonld#ActorInit_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cbi:lib/ActorInit#ActorInit_args_bus"
+                "@id": "cbi:components/ActorInit.jsonld#ActorInit_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "cbi:lib/ActorInit#ActorInit_args_beforeActors"
+                "@id": "cbi:components/ActorInit.jsonld#ActorInit_args_beforeActors"
               }
             }
           ]
@@ -73,22 +76,22 @@
       ]
     },
     {
-      "@id": "cbi:lib/ActorInit#IActionInit",
+      "@id": "cbi:components/ActorInit.jsonld#IActionInit",
       "@type": "AbstractClass",
       "requireElement": "IActionInit",
       "extends": [
-        "ct:lib/index#IAction"
+        "ct:components/index.jsonld#IAction"
       ],
       "comment": "The init input, which contains the program arguments.",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "cbi:lib/ActorInit#IActorOutputInit",
+      "@id": "cbi:components/ActorInit.jsonld#IActorOutputInit",
       "@type": "AbstractClass",
       "requireElement": "IActorOutputInit",
       "extends": [
-        "cc:lib/Actor#IActorOutput"
+        "cc:components/Actor.jsonld#IActorOutput"
       ],
       "parameters": [],
       "constructorArguments": []

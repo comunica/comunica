@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-update-drop",
   "import": [
-    "files-caqoud:components/ActorQueryOperationDrop.jsonld"
+    "caqoud:components/ActorQueryOperationDrop.jsonld"
   ]
 }

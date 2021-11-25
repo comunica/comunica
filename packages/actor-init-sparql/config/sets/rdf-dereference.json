@@ -14,13 +14,14 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
       "@id": "#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
       "args_beforeActors": { "@id": "#myRdfDereferencerFallback" },
       "args_mediatorHttp": {
-        "@id": "files-cais:config/sets/http.json#mediatorHttp"
+        "@id": "cais:config/sets/http.json#mediatorHttp"
       },
       "args_mediatorRdfParseMediatypes": {
         "@id": "#mediatorRdfParseMediatypes",

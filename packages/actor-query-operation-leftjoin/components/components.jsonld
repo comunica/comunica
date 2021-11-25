@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-leftjoin",
   "import": [
-    "files-caqol:components/ActorQueryOperationLeftJoin.jsonld"
+    "caqol:components/ActorQueryOperationLeftJoin.jsonld"
   ]
 }

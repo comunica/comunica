@@ -3,50 +3,49 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cbrrhlq": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue/",
-      "files-cbrrhlq": "cbrrhlq:^1.0.0/",
+      "cbrrhlq": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/",
       "ActorRdfResolveHypermediaLinksQueue": {
-        "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue",
+        "@id": "cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld#ActorRdfResolveHypermediaLinksQueue",
         "@prefix": true,
         "@context": {
           "args_name": {
-            "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_name"
+            "@id": "cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld#ActorRdfResolveHypermediaLinksQueue_args_name"
           },
           "args_bus": {
-            "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_bus"
+            "@id": "cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld#ActorRdfResolveHypermediaLinksQueue_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#ActorRdfResolveHypermediaLinksQueue_args_beforeActors",
+            "@id": "cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld#ActorRdfResolveHypermediaLinksQueue_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActionRdfResolveHypermediaLinksQueue": {
-        "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#IActionRdfResolveHypermediaLinksQueue",
+        "@id": "cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld#IActionRdfResolveHypermediaLinksQueue",
         "@prefix": true,
         "@context": {}
       },
       "IActorRdfResolveHypermediaLinksQueueOutput": {
-        "@id": "cbrrhlq:lib/ActorRdfResolveHypermediaLinksQueue#IActorRdfResolveHypermediaLinksQueueOutput",
+        "@id": "cbrrhlq:components/ActorRdfResolveHypermediaLinksQueue.jsonld#IActorRdfResolveHypermediaLinksQueueOutput",
         "@prefix": true,
         "@context": {}
       },
       "ILinkQueue": {
-        "@id": "cbrrhlq:lib/ILinkQueue#ILinkQueue",
+        "@id": "cbrrhlq:components/ILinkQueue.jsonld#ILinkQueue",
         "@prefix": true,
         "@context": {}
       },
       "ILink": {
-        "@id": "cbrrhl:lib/ActorRdfResolveHypermediaLinks#ILink",
+        "@id": "cbrrhl:components/ActorRdfResolveHypermediaLinks.jsonld#ILink",
         "@prefix": true,
         "@context": {}
       },
       "LinkQueueWrapper": {
-        "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper",
+        "@id": "cbrrhlq:components/LinkQueueWrapper.jsonld#LinkQueueWrapper",
         "@prefix": true,
         "@context": {
           "linkQueue": {
-            "@id": "cbrrhlq:lib/LinkQueueWrapper#LinkQueueWrapper_linkQueue"
+            "@id": "cbrrhlq:components/LinkQueueWrapper.jsonld#LinkQueueWrapper_linkQueue"
           }
         }
       }

@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjmhu": "npmd:@comunica/actor-rdf-join-minus-hash-undef/",
-      "files-carjmhu": "carjmhu:^1.0.0/",
+      "carjmhu": "npmd:@comunica/actor-rdf-join-minus-hash-undef/^1.0.0/",
       "ActorRdfJoinMinusHashUndef": {
-        "@id": "carjmhu:lib/ActorRdfJoinMinusHashUndef#ActorRdfJoinMinusHashUndef",
+        "@id": "carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld#ActorRdfJoinMinusHashUndef",
         "@prefix": true,
         "@context": {
           "args_mediatorJoinSelectivity": {
-            "@id": "carjmhu:lib/ActorRdfJoinMinusHashUndef#ActorRdfJoinMinusHashUndef_args_mediatorJoinSelectivity"
+            "@id": "carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld#ActorRdfJoinMinusHashUndef_args_mediatorJoinSelectivity"
           },
           "args_name": {
-            "@id": "carjmhu:lib/ActorRdfJoinMinusHashUndef#ActorRdfJoinMinusHashUndef_args_name"
+            "@id": "carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld#ActorRdfJoinMinusHashUndef_args_name"
           },
           "args_bus": {
-            "@id": "carjmhu:lib/ActorRdfJoinMinusHashUndef#ActorRdfJoinMinusHashUndef_args_bus"
+            "@id": "carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld#ActorRdfJoinMinusHashUndef_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carjmhu:lib/ActorRdfJoinMinusHashUndef#ActorRdfJoinMinusHashUndef_args_beforeActors",
+            "@id": "carjmhu:components/ActorRdfJoinMinusHashUndef.jsonld#ActorRdfJoinMinusHashUndef_args_beforeActors",
             "@container": "@list"
           }
         }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-patch-sparql-update",
   "import": [
-    "files-carmepsu:components/ActorRdfMetadataExtractPatchSparqlUpdate.jsonld"
+    "carmepsu:components/ActorRdfMetadataExtractPatchSparqlUpdate.jsonld"
   ]
 }

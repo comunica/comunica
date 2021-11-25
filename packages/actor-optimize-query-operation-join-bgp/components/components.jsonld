@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-optimize-query-operation-join-bgp",
   "import": [
-    "files-caoqojb:components/ActorOptimizeQueryOperationJoinBgp.jsonld"
+    "caoqojb:components/ActorOptimizeQueryOperationJoinBgp.jsonld"
   ]
 }

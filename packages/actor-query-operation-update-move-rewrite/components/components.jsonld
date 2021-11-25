@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-update-move-rewrite",
   "import": [
-    "files-caqoumr:components/ActorQueryOperationMoveRewrite.jsonld"
+    "caqoumr:components/ActorQueryOperationMoveRewrite.jsonld"
   ]
 }

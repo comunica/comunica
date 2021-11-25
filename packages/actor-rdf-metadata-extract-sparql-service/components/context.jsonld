@@ -3,29 +3,28 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmess": "npmd:@comunica/actor-rdf-metadata-extract-sparql-service/",
-      "files-carmess": "carmess:^1.0.0/",
+      "carmess": "npmd:@comunica/actor-rdf-metadata-extract-sparql-service/^1.0.0/",
       "ActorRdfMetadataExtractSparqlService": {
-        "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService",
+        "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService",
         "@prefix": true,
         "@context": {
           "args_inferHttpsEndpoint": {
-            "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_inferHttpsEndpoint"
+            "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_inferHttpsEndpoint"
           },
           "args_name": {
-            "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_name"
+            "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_name"
           },
           "args_bus": {
-            "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_bus"
+            "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#ActorRdfMetadataExtractSparqlService_args_beforeActors",
+            "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#ActorRdfMetadataExtractSparqlService_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfMetadataExtractSparqlServiceArgs": {
-        "@id": "carmess:lib/ActorRdfMetadataExtractSparqlService#IActorRdfMetadataExtractSparqlServiceArgs",
+        "@id": "carmess:components/ActorRdfMetadataExtractSparqlService.jsonld#IActorRdfMetadataExtractSparqlServiceArgs",
         "@prefix": true,
         "@context": {}
       }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-all",
   "import": [
-    "files-carma:components/ActorRdfMetadataAll.jsonld"
+    "carma:components/ActorRdfMetadataAll.jsonld"
   ]
 }

@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/mediator-all",
   "import": [
-    "files-cma:components/MediatorAll.jsonld"
+    "cma:components/MediatorAll.jsonld"
   ]
 }

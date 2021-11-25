@@ -3,52 +3,51 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carpj": "npmd:@comunica/actor-rdf-parse-jsonld/",
-      "files-carpj": "carpj:^1.0.0/",
+      "carpj": "npmd:@comunica/actor-rdf-parse-jsonld/^1.0.0/",
       "ActorRdfParseJsonLd": {
-        "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd",
+        "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd",
         "@prefix": true,
         "@context": {
           "args_mediatorHttp": {
-            "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediatorHttp"
+            "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd_args_mediatorHttp"
           },
           "args_mediaTypePriorities": {
-            "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediaTypePriorities",
+            "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd_args_mediaTypePriorities",
             "@type": "@json"
           },
           "args_mediaTypeFormats": {
-            "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_mediaTypeFormats",
+            "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd_args_mediaTypeFormats",
             "@type": "@json"
           },
           "args_priorityScale": {
-            "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_priorityScale"
+            "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd_args_priorityScale"
           },
           "args_name": {
-            "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_name"
+            "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd_args_name"
           },
           "args_bus": {
-            "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_bus"
+            "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carpj:lib/ActorRdfParseJsonLd#ActorRdfParseJsonLd_args_beforeActors",
+            "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#ActorRdfParseJsonLd_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorRdfParseJsonLdArgs": {
-        "@id": "carpj:lib/ActorRdfParseJsonLd#IActorRdfParseJsonLdArgs",
+        "@id": "carpj:components/ActorRdfParseJsonLd.jsonld#IActorRdfParseJsonLdArgs",
         "@prefix": true,
         "@context": {}
       },
       "DocumentLoaderMediated": {
-        "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated",
+        "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated",
         "@prefix": true,
         "@context": {
           "context": {
-            "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_context"
+            "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated_context"
           },
           "mediatorHttp": {
-            "@id": "carpj:lib/DocumentLoaderMediated#DocumentLoaderMediated_mediatorHttp"
+            "@id": "carpj:components/DocumentLoaderMediated.jsonld#DocumentLoaderMediated_mediatorHttp"
           }
         }
       }

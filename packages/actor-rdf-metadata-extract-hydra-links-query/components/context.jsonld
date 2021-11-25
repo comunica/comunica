@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmehlq": "npmd:@comunica/actor-rdf-metadata-extract-hydra-links-query/",
-      "files-carmehlq": "carmehlq:^1.0.0/",
+      "carmehlq": "npmd:@comunica/actor-rdf-metadata-extract-hydra-links-query/^1.0.0/",
       "ActorRdfMetadataExtractHydraLinksQuery": {
-        "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery",
+        "@id": "carmehlq:components/ActorRdfMetadataExtractHydraLinksQuery.jsonld#ActorRdfMetadataExtractHydraLinksQuery",
         "@prefix": true,
         "@context": {
           "args_queryEngine": {
-            "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_queryEngine"
+            "@id": "carmehlq:components/ActorRdfMetadataExtractHydraLinksQuery.jsonld#ActorRdfMetadataExtractHydraLinksQuery_args_queryEngine"
           },
           "args_name": {
-            "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_name"
+            "@id": "carmehlq:components/ActorRdfMetadataExtractHydraLinksQuery.jsonld#ActorRdfMetadataExtractHydraLinksQuery_args_name"
           },
           "args_bus": {
-            "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_bus"
+            "@id": "carmehlq:components/ActorRdfMetadataExtractHydraLinksQuery.jsonld#ActorRdfMetadataExtractHydraLinksQuery_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carmehlq:lib/ActorRdfMetadataExtractHydraLinksQuery#ActorRdfMetadataExtractHydraLinksQuery_args_beforeActors",
+            "@id": "carmehlq:components/ActorRdfMetadataExtractHydraLinksQuery.jsonld#ActorRdfMetadataExtractHydraLinksQuery_args_beforeActors",
             "@container": "@list"
           }
         }

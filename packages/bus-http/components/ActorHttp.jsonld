@@ -7,65 +7,68 @@
   "@id": "npmd:@comunica/bus-http",
   "components": [
     {
-      "@id": "cbh:lib/ActorHttp#ActorHttp",
+      "@id": "cbh:components/ActorHttp.jsonld#ActorHttp",
       "@type": "AbstractClass",
       "requireElement": "ActorHttp",
       "extends": [
-        "cc:lib/Actor#Actor"
+        "cc:components/Actor.jsonld#Actor"
       ],
       "comment": "A base actor for listening to HTTP events.  Actor types: * Input:  IActionHttp:      The HTTP request. * Test:   IActorHttpTest:   An estimate for the response time. * Output: IActorHttpOutput: The HTTP response.",
       "parameters": [
         {
-          "@id": "cbh:lib/ActorHttp#ActorHttp_args_name",
+          "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_name",
           "range": "xsd:string",
-          "default": [
-            {
-              "@id": "rdf:subject"
-            }
-          ],
-          "comment": "The name for this actor.",
-          "unique": true,
-          "required": true
+          "default": {
+            "@id": "rdf:subject"
+          },
+          "comment": "The name for this actor."
         },
         {
-          "@id": "cbh:lib/ActorHttp#ActorHttp_args_bus",
-          "range": "cc:lib/Bus#Bus",
-          "default": [
-            {
-              "@id": "cbh:lib/ActorHttp#ActorHttp_default_bus",
-              "@type": "cc:lib/Bus#Bus"
-            }
-          ],
-          "comment": "The bus this actor subscribes to.",
-          "unique": true,
-          "required": true
+          "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
         },
         {
-          "@id": "cbh:lib/ActorHttp#ActorHttp_args_beforeActors",
-          "range": "cc:lib/Actor#Actor",
+          "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_beforeActors",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeArray",
+                "parameterRangeValue": "cc:components/Actor.jsonld#Actor"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
           "comment": "Actor that must be registered in the bus before this actor."
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cbh:lib/ActorHttp#ActorHttp_args__constructorArgument",
+          "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "cbh:lib/ActorHttp#ActorHttp_args_name"
+                "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_name"
               }
             },
             {
               "keyRaw": "bus",
               "value": {
-                "@id": "cbh:lib/ActorHttp#ActorHttp_args_bus"
+                "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_bus"
               }
             },
             {
               "keyRaw": "beforeActors",
               "value": {
-                "@id": "cbh:lib/ActorHttp#ActorHttp_args_beforeActors"
+                "@id": "cbh:components/ActorHttp.jsonld#ActorHttp_args_beforeActors"
               }
             }
           ]
@@ -73,22 +76,22 @@
       ]
     },
     {
-      "@id": "cbh:lib/ActorHttp#IActionHttp",
+      "@id": "cbh:components/ActorHttp.jsonld#IActionHttp",
       "@type": "AbstractClass",
       "requireElement": "IActionHttp",
       "extends": [
-        "ct:lib/index#IAction"
+        "ct:components/index.jsonld#IAction"
       ],
       "comment": "The HTTP input, which contains the HTTP request.",
       "parameters": [],
       "constructorArguments": []
     },
     {
-      "@id": "cbh:lib/ActorHttp#IActorHttpOutput",
+      "@id": "cbh:components/ActorHttp.jsonld#IActorHttpOutput",
       "@type": "AbstractClass",
       "requireElement": "IActorHttpOutput",
       "extends": [
-        "cc:lib/Actor#IActorOutput"
+        "cc:components/Actor.jsonld#IActorOutput"
       ],
       "comment": "The HTTP output, which contains the HTTP response.",
       "parameters": [],

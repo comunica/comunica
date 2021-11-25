@@ -6,7 +6,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-graphql/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
-  "Runner:_actors": [
+  "@type": "Runner",
+  "actors": [
     {
       "@id": "#myGraphqlParser",
       "@type": "ActorSparqlParseGraphql"

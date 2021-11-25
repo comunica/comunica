@@ -3,23 +3,22 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carjino": "npmd:@comunica/actor-rdf-join-inner-none/",
-      "files-carjino": "carjino:^1.0.0/",
+      "carjino": "npmd:@comunica/actor-rdf-join-inner-none/^1.0.0/",
       "ActorRdfJoinNone": {
-        "@id": "carjino:lib/ActorRdfJoinNone#ActorRdfJoinNone",
+        "@id": "carjino:components/ActorRdfJoinNone.jsonld#ActorRdfJoinNone",
         "@prefix": true,
         "@context": {
           "args_mediatorJoinSelectivity": {
-            "@id": "carjino:lib/ActorRdfJoinNone#ActorRdfJoinNone_args_mediatorJoinSelectivity"
+            "@id": "carjino:components/ActorRdfJoinNone.jsonld#ActorRdfJoinNone_args_mediatorJoinSelectivity"
           },
           "args_name": {
-            "@id": "carjino:lib/ActorRdfJoinNone#ActorRdfJoinNone_args_name"
+            "@id": "carjino:components/ActorRdfJoinNone.jsonld#ActorRdfJoinNone_args_name"
           },
           "args_bus": {
-            "@id": "carjino:lib/ActorRdfJoinNone#ActorRdfJoinNone_args_bus"
+            "@id": "carjino:components/ActorRdfJoinNone.jsonld#ActorRdfJoinNone_args_bus"
           },
           "args_beforeActors": {
-            "@id": "carjino:lib/ActorRdfJoinNone#ActorRdfJoinNone_args_beforeActors",
+            "@id": "carjino:components/ActorRdfJoinNone.jsonld#ActorRdfJoinNone_args_beforeActors",
             "@container": "@list"
           }
         }

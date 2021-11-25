@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-http-node-fetch",
   "import": [
-    "files-cahnf:components/ActorHttpNodeFetch.jsonld"
+    "cahnf:components/ActorHttpNodeFetch.jsonld"
   ]
 }

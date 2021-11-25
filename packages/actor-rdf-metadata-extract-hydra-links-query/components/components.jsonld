@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-hydra-links-query",
   "import": [
-    "files-carmehlq:components/ActorRdfMetadataExtractHydraLinksQuery.jsonld"
+    "carmehlq:components/ActorRdfMetadataExtractHydraLinksQuery.jsonld"
   ]
 }

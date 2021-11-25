@@ -5,44 +5,84 @@
   "@id": "npmd:@comunica/logger-bunyan",
   "components": [
     {
-      "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout",
+      "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout",
       "@type": "Class",
       "requireElement": "BunyanStreamProviderStdout",
       "extends": [
-        "clb:lib/stream/BunyanStreamProvider#BunyanStreamProvider"
+        "clb:components/stream/BunyanStreamProvider.jsonld#BunyanStreamProvider"
       ],
       "comment": "A stdout bunyan stream provider.",
       "parameters": [
         {
-          "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_name",
-          "range": "xsd:string",
-          "default": [
-            "comunica"
-          ],
-          "comment": "The name of this logger",
-          "unique": true
+          "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout_args_name",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              "xsd:string",
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
+          "default": "comunica",
+          "comment": "The name of this logger"
         },
         {
-          "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_level",
-          "range": "xsd:string",
-          "comment": "The logging level to emit",
-          "unique": true
+          "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout_args_level",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeUnion",
+                "parameterRangeElements": [
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "trace"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "debug"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "info"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "warn"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "error"
+                  },
+                  {
+                    "@type": "ParameterRangeLiteral",
+                    "parameterRangeValueLiteral": "fatal"
+                  }
+                ]
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          },
+          "comment": "The logging level to emit"
         }
       ],
       "constructorArguments": [
         {
-          "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args__constructorArgument",
+          "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout_args__constructorArgument",
           "fields": [
             {
               "keyRaw": "name",
               "value": {
-                "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_name"
+                "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout_args_name"
               }
             },
             {
               "keyRaw": "level",
               "value": {
-                "@id": "clb:lib/stream/BunyanStreamProviderStdout#BunyanStreamProviderStdout_args_level"
+                "@id": "clb:components/stream/BunyanStreamProviderStdout.jsonld#BunyanStreamProviderStdout_args_level"
               }
             }
           ]

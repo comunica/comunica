@@ -3,35 +3,34 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cassr": "npmd:@comunica/actor-sparql-serialize-rdf/",
-      "files-cassr": "cassr:^1.0.0/",
+      "cassr": "npmd:@comunica/actor-sparql-serialize-rdf/^1.0.0/",
       "ActorSparqlSerializeRdf": {
-        "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf",
+        "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#ActorSparqlSerializeRdf",
         "@prefix": true,
         "@context": {
           "args_mediatorRdfSerialize": {
-            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorRdfSerialize"
+            "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#ActorSparqlSerializeRdf_args_mediatorRdfSerialize"
           },
           "args_mediatorMediaTypeCombiner": {
-            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeCombiner"
+            "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#ActorSparqlSerializeRdf_args_mediatorMediaTypeCombiner"
           },
           "args_mediatorMediaTypeFormatCombiner": {
-            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_mediatorMediaTypeFormatCombiner"
+            "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#ActorSparqlSerializeRdf_args_mediatorMediaTypeFormatCombiner"
           },
           "args_name": {
-            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_name"
+            "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#ActorSparqlSerializeRdf_args_name"
           },
           "args_bus": {
-            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_bus"
+            "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#ActorSparqlSerializeRdf_args_bus"
           },
           "args_beforeActors": {
-            "@id": "cassr:lib/ActorSparqlSerializeRdf#ActorSparqlSerializeRdf_args_beforeActors",
+            "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#ActorSparqlSerializeRdf_args_beforeActors",
             "@container": "@list"
           }
         }
       },
       "IActorSparqlSerializeRdfArgs": {
-        "@id": "cassr:lib/ActorSparqlSerializeRdf#IActorSparqlSerializeRdfArgs",
+        "@id": "cassr:components/ActorSparqlSerializeRdf.jsonld#IActorSparqlSerializeRdfArgs",
         "@prefix": true,
         "@context": {}
       }

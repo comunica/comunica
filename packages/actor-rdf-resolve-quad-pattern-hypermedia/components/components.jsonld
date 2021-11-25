@@ -6,7 +6,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
   "import": [
-    "files-carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld",
-    "files-carrqph:components/MediatedQuadSource.jsonld"
+    "carrqph:components/ActorRdfResolveQuadPatternHypermedia.jsonld",
+    "carrqph:components/MediatedQuadSource.jsonld"
   ]
 }

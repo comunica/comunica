@@ -6,6 +6,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-request-time",
   "import": [
-    "files-carmert:components/ActorRdfMetadataExtractRequestTime.jsonld"
+    "carmert:components/ActorRdfMetadataExtractRequestTime.jsonld"
   ]
 }

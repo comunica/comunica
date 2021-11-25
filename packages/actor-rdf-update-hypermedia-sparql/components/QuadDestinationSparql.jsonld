@@ -7,41 +7,46 @@
   "@id": "npmd:@comunica/actor-rdf-update-hypermedia-sparql",
   "components": [
     {
-      "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql",
+      "@id": "caruhs:components/QuadDestinationSparql.jsonld#QuadDestinationSparql",
       "@type": "Class",
       "requireElement": "QuadDestinationSparql",
       "extends": [
-        "cbruq:lib/IQuadDestination#IQuadDestination"
+        "cbruq:components/IQuadDestination.jsonld#IQuadDestination"
       ],
       "comment": "A quad destination that represents an LDP resource.",
       "parameters": [
         {
-          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_url",
-          "range": "xsd:string",
-          "unique": true,
-          "required": true
+          "@id": "caruhs:components/QuadDestinationSparql.jsonld#QuadDestinationSparql_url",
+          "range": "xsd:string"
         },
         {
-          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_context",
-          "unique": true,
-          "required": true
+          "@id": "caruhs:components/QuadDestinationSparql.jsonld#QuadDestinationSparql_context",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeUndefined"
+              },
+              {
+                "@type": "ParameterRangeUndefined"
+              }
+            ]
+          }
         },
         {
-          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_mediatorHttp",
-          "range": "cc:lib/Mediator#Mediator",
-          "unique": true,
-          "required": true
+          "@id": "caruhs:components/QuadDestinationSparql.jsonld#QuadDestinationSparql_mediatorHttp",
+          "range": "cc:components/Mediator.jsonld#Mediator"
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_url"
+          "@id": "caruhs:components/QuadDestinationSparql.jsonld#QuadDestinationSparql_url"
         },
         {
-          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_context"
+          "@id": "caruhs:components/QuadDestinationSparql.jsonld#QuadDestinationSparql_context"
         },
         {
-          "@id": "caruhs:lib/QuadDestinationSparql#QuadDestinationSparql_mediatorHttp"
+          "@id": "caruhs:components/QuadDestinationSparql.jsonld#QuadDestinationSparql_mediatorHttp"
         }
       ]
     }
