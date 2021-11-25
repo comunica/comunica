@@ -19,7 +19,7 @@ if (args.length > 1) {
   exportVariableName = args[1];
 }
 
-compileConfig(mainModulePath, configPath, configResourceUri, exportVariableName)
+compileConfig(mainModulePath, configPath, configResourceUri, exportVariableName, false, true)
   .then(out => {
     // This instantiation is unneeded (MUST be done for excluding Components.js in browser environnments)
     out = out.replace('new (require(\'@comunica/runner\').Runner)', '');
