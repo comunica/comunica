@@ -34,10 +34,10 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     context = context || ActionContext({});
     let subContext: ActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
-      .delete(KeysRdfResolveQuadPattern.sources);
+      .delete(KeysRdfResolveQuadPattern.sources)
+      .delete(KeysInitSparql.queryString);
     const sourceType = this.forceSparqlEndpoint ? 'sparql' : undefined;
     subContext = subContext.set(KeysRdfResolveQuadPattern.sources, [{ type: sourceType, value: endpoint }]);
-    subContext = subContext.delete(KeysInitSparql.queryString);
     // Query the source
     let output: IActorQueryOperationOutputBindings;
     try {

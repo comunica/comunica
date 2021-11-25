@@ -73,7 +73,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
     const source = await DataSourceUtils.getSingleSource(action.context);
-    if (!source) {
+    if (!action.context || !source) {
       throw new Error('Illegal state: undefined sparql endpoint source.');
     }
     const endpoint: string = <string> getDataSourceValue(source);
@@ -86,7 +86,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     let variables: RDF.Variable[] | undefined;
     try {
       // Use the original query string if available
-      query = action.context?.get(KeysInitSparql.queryString) ?? toSparql(action.operation);
+      query = action.context.get(KeysInitSparql.queryString) ?? toSparql(action.operation);
       // This will throw an error in case the result is an invalid SPARQL query
       type = this.endpointFetcher.getQueryType(query);
 
