@@ -182,6 +182,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
     // Parse query
     let operation: Algebra.Operation;
     if (typeof query === 'string') {
+      // Save the original query string in the context
+      context = context.set(KeysInitSparql.queryString, query);
       const queryParseOutput = await this.mediatorSparqlParse.mediate({ context, query, queryFormat, baseIRI });
       operation = queryParseOutput.operation;
       // Update the baseIRI in the context if the query modified it.

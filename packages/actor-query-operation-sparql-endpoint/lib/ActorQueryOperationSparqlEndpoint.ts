@@ -6,6 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataDestinationType, getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
+import { KeysInitSparql } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
 import type { IActionQueryOperation,
@@ -80,11 +81,12 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
     // Determine the full SPARQL query that needs to be sent to the endpoint
     // Also check the type of the query (SELECT, CONSTRUCT (includes DESCRIBE) or ASK)
-    let query: string | undefined;
+    let query: string;
     let type: 'SELECT' | 'CONSTRUCT' | 'ASK' | 'UNKNOWN' | IUpdateTypes | undefined;
     let variables: RDF.Variable[] | undefined;
     try {
-      query = toSparql(action.operation);
+      // Use the original query string if available
+      query = action.context?.get(KeysInitSparql.queryString) ?? toSparql(action.operation);
       // This will throw an error in case the result is an invalid SPARQL query
       type = this.endpointFetcher.getQueryType(query);
 
