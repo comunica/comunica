@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated,
   Bindings } from '@comunica/bus-query-operation';
-import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
@@ -34,10 +34,10 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     context = context || ActionContext({});
     let subContext: ActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
-      .delete(KeysRdfResolveQuadPattern.sources);
+      .delete(KeysRdfResolveQuadPattern.sources)
+      .delete(KeysInitSparql.queryString);
     const sourceType = this.forceSparqlEndpoint ? 'sparql' : undefined;
     subContext = subContext.set(KeysRdfResolveQuadPattern.sources, [{ type: sourceType, value: endpoint }]);
-
     // Query the source
     let output: IActorQueryOperationOutputBindings;
     try {

@@ -52,6 +52,10 @@ export enum KeysInitSparql {
    */
   lenient = '@comunica/actor-init-sparql:lenient',
   /**
+   * @range {string} The original query string.
+   */
+  queryString = '@comunica/actor-init-sparql:queryString',
+  /**
    * @range {Algebra.Operation} The original parsed query.
    */
   query = '@comunica/actor-init-sparql:query',
