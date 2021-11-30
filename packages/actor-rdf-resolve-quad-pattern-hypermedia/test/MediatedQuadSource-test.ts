@@ -59,7 +59,7 @@ describe('MediatedQuadSource', () => {
       }),
     };
     mediatorRdfResolveHypermediaLinks = {
-      mediate: () => Promise.resolve({ urls: [ 'next' ]}),
+      mediate: () => Promise.resolve({ links: [{ url: 'next' }]}),
     };
     mediatorRdfResolveHypermediaLinksQueue = {
       mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
@@ -178,7 +178,7 @@ describe('MediatedQuadSource', () => {
 
       it('should match three chained sources', async() => {
         let i = 0;
-        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: [ `next${i}` ]});
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ links: [{ url: `next${i}` }]});
         mediatorRdfResolveHypermedia.mediate = (args: any) => {
           if (i < 3) {
             i++;

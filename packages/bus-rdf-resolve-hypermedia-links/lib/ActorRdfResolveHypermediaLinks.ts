@@ -36,7 +36,7 @@ export interface IActorRdfResolveHypermediaLinksOutput extends IActorOutput {
   /**
    * An array of links to follow.
    */
-  urls: (string | ILink)[];
+  links: ILink[];
 }
 
 /**

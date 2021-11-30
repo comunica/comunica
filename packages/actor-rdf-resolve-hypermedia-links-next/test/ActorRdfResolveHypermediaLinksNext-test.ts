@@ -43,7 +43,7 @@ describe('ActorRdfResolveHypermediaLinksNext', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run({ metadata: { next: 'NEXT' }})).resolves.toMatchObject({ urls: [ 'NEXT' ]});
+      return expect(actor.run({ metadata: { next: 'NEXT' }})).resolves.toMatchObject({ links: [{ url: 'NEXT' }]});
     });
   });
 });

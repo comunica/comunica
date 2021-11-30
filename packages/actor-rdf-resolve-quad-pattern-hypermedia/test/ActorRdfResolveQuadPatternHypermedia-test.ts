@@ -53,7 +53,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       }),
     };
     mediatorRdfResolveHypermediaLinks = {
-      mediate: () => Promise.resolve({ urls: [ 'next' ]}),
+      mediate: () => Promise.resolve({ links: [{ url: 'next' }]}),
     };
     mediatorRdfResolveHypermediaLinksQueue = {
       mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),

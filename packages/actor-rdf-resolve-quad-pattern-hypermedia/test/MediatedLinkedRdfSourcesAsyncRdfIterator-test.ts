@@ -50,7 +50,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       };
       mediatorRdfResolveHypermediaLinks = {
         mediate: jest.fn(({ metadata }: any) => Promise
-          .resolve({ urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ]})),
+          .resolve({ links: [{ url: `${metadata.baseURL}url1` }, { url: `${metadata.baseURL}url2` }]})),
       };
       mediatorRdfResolveHypermediaLinksQueue = {
         mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
@@ -104,7 +104,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should not re-emit any the first url', async() => {
-        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: [ 'first' ]});
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ links: [{ url: 'first' }]});
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
       });
 
@@ -125,26 +125,6 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           new Error('MediatedLinkedRdfSourcesAsyncRdfIterator error'),
         );
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
-      });
-
-      it('should get urls based on mediatorRdfResolveHypermediaLinks when they are provided as string', async() => {
-        mediatorRdfResolveHypermediaLinks.mediate = ({ metadata }: any) => Promise.resolve({
-          urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ],
-        });
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
-          { url: 'http://base.org/url1' },
-          { url: 'http://base.org/url2' },
-        ]);
-      });
-
-      it('should get urls based on mediatorRdfResolveHypermediaLinks when they are provided as links', async() => {
-        mediatorRdfResolveHypermediaLinks.mediate = ({ metadata }: any) => Promise.resolve({
-          urls: [{ url: `${metadata.baseURL}url1` }, { url: `${metadata.baseURL}url2` }],
-        });
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
-          { url: 'http://base.org/url1' },
-          { url: 'http://base.org/url2' },
-        ]);
       });
     });
 

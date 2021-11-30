@@ -20,6 +20,6 @@ export class ActorRdfResolveHypermediaLinksNext extends ActorRdfResolveHypermedi
   }
 
   public async run(action: IActionRdfResolveHypermediaLinks): Promise<IActorRdfResolveHypermediaLinksOutput> {
-    return { urls: [ action.metadata.next ]};
+    return { links: [{ url: action.metadata.next }]};
   }
 }
