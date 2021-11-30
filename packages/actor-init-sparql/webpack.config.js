@@ -2,7 +2,7 @@ const path = require('path');
 const ProgressPlugin = require('webpack').ProgressPlugin;
 
 module.exports = {
-  entry: [ path.resolve(__dirname, 'index-browser.js') ],
+  entry: [ path.resolve(__dirname, 'lib/index-browser.js') ],
   output: {
     filename: 'comunica-browser.js',
     path: __dirname,

@@ -8,7 +8,7 @@ COPY components ${dir}/components/
 COPY config ${dir}/config/
 COPY lib/*.js ${dir}/lib/
 COPY bin/*.js ${dir}/bin/
-COPY index.js index-browser.js engine-default.js package.json ${dir}
+COPY engine-default.js package.json ${dir}
 
 # Set the npm registry
 ARG NPM_REGISTRY=https://registry.npmjs.org/
