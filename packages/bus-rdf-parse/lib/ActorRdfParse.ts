@@ -1,3 +1,4 @@
+import type { Readable } from 'stream';
 import type { IActionAbstractMediaTyped,
   IActionAbstractMediaTypedHandle, IActionAbstractMediaTypedMediaTypes,
   IActorArgsMediaTyped,
@@ -67,7 +68,7 @@ export interface IActorRdfParseOutput extends IActorOutput {
   /**
    * The resulting quad stream.
    */
-  quads: RDF.Stream;
+  quads: RDF.Stream & Readable;
   /**
    * An optional field indicating if the given quad stream originates from a triple-based serialization,
    * in which everything is serialized in the default graph.

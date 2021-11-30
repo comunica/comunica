@@ -377,5 +377,22 @@ this is a body`));
         return actor.run(op).then(async output => (<any> output).bindingsStream.on('error', resolve));
       })).resolves.toEqual(new Error('MY ERROR'));
     });
+
+    it('should run using the original query string in the context if one exists', async() => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
+        '@comunica/actor-init-sparql:queryString': 'SELECT ?myP WHERE { <http://s> ?p <http://o>. }',
+      });
+      const op: any = { context,
+        operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      expect(await (<any> output).metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        BF.bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
+        BF.bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2') }),
+        BF.bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3') }),
+      ]);
+    });
   });
 });

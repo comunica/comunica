@@ -5373,10 +5373,10 @@ eslint-plugin-unicorn@31.0.0:
     safe-regex "^2.1.1"
     semver "^7.3.5"
 
-eslint-plugin-unused-imports@^1.0.0:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-unused-imports/-/eslint-plugin-unused-imports-1.1.3.tgz#b4ff04d2ae530e282215bb86047f11ce9e662cf5"
-  integrity sha512-KNAiVdwUz2s3bU5igt4ysgUGOWNEH5JLHOI1YtZK37krV+8ALy+3NNszIhD7c45JR9hbnFMDZ9P2vzZrJ72S8g==
+eslint-plugin-unused-imports@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unused-imports/-/eslint-plugin-unused-imports-2.0.0.tgz#d8db8c4d0cfa0637a8b51ce3fd7d1b6bc3f08520"
+  integrity sha512-3APeS/tQlTrFa167ThtP0Zm0vctjr4M44HMpeg1P4bK6wItarumq0Ma82xorMKdFsWpphQBlRPzw/pxiVELX1A==
   dependencies:
     eslint-rule-composer "^0.3.0"
 

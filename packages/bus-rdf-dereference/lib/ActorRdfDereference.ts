@@ -43,7 +43,8 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @param {Stream} quads A quad stream.
    * @return {Stream} The resulting quad stream.
    */
-  protected handleDereferenceStreamErrors(action: IActionRdfDereference, quads: RDF.Stream): RDF.Stream {
+  protected handleDereferenceStreamErrors(action: IActionRdfDereference,
+    quads: RDF.Stream & Readable): RDF.Stream & Readable {
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!this.isHardError(action)) {
       quads.on('error', error => {
@@ -121,7 +122,7 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
   /**
    * The resulting quad stream.
    */
-  quads: RDF.Stream;
+  quads: RDF.Stream & Readable;
   /**
    * This will always be true, unless `acceptErrors` was set to true in the action and the dereferencing failed.
    */

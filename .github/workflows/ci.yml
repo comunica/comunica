@@ -27,7 +27,7 @@ jobs:
             **/node_modules
             .rdf-test-suite-cache
             .rdf-test-suite-ldf-cache
-          key: ${{ runner.os }}-test-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install --pure-lockfile
       - name: Build project
@@ -68,7 +68,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-lint-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-lint-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install --pure-lockfile
       - name: Run linter
@@ -90,7 +90,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-browser-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-browser-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install --pure-lockfile
       - name: Build for browser
@@ -117,7 +117,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-docker-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install --pure-lockfile
       - name: Install Lerna Docker
@@ -147,14 +147,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-docs-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-docs-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install --pure-lockfile
       - name: Build docs
         run: yarn run doc
       - name: Deploy TSDoc to GitHub Pages
         if: startsWith(github.ref, 'refs/heads/master')
-        uses: JamesIves/github-pages-deploy-action@4.1.5
+        uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           branch: gh-pages
           folder: documentation
