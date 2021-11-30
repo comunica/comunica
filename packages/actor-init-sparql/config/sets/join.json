@@ -28,74 +28,74 @@
     {
       "@id": "#myRdfJoinActorNone",
       "@type": "ActorRdfJoinNone",
-      "args_mediatorJoinSelectivity": {
+      "mediatorJoinSelectivity": {
         "@id": "#mediatorJoinSelectivity",
         "@type": "MediatorNumber",
-        "args_type": "max",
-        "args_field": "accuracy",
-        "args_ignoreErrors": true,
-        "args_bus": { "@id": "ActorRdfJoinSelectivity:_default_bus" }
+        "type": "max",
+        "field": "accuracy",
+        "ignoreErrors": true,
+        "bus": { "@id": "ActorRdfJoinSelectivity:_default_bus" }
       }
     },
     {
       "@id": "#myRdfJoinActorSingle",
       "@type": "ActorRdfJoinSingle",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
     {
       "@id": "#myRdfJoinActorEmpty",
       "@type": "ActorRdfJoinMultiEmpty",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
     {
       "@id": "#myRdfJoinActorBind",
       "@type": "ActorRdfJoinMultiBind",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "#myRdfJoinActorHash",
       "@type": "ActorRdfJoinHash",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
     {
       "@id": "#myRdfJoinActorSymmetricHash",
       "@type": "ActorRdfJoinSymmetricHash",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
     {
       "@id": "#myRdfJoinActorNestedLoop",
       "@type": "ActorRdfJoinNestedLoop",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
     {
       "@id": "#myRdfJoinActorSmallest",
       "@type": "ActorRdfJoinMultiSmallest",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "args_mediatorJoin": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorRdfJoin" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
+      "mediatorJoin": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorRdfJoin" }
     },
 
     {
       "@id": "#myRdfJoinActorMinusHash",
       "@type": "ActorRdfJoinMinusHash",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
     {
       "@id": "#myRdfJoinActorMinusHashUndef",
       "@type": "ActorRdfJoinMinusHashUndef",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
 
     {
       "@id": "#myRdfJoinActorOptionalBind",
       "@type": "ActorRdfJoinOptionalBind",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "#myRdfJoinActorOptionalNestedLoop",
       "@type": "ActorRdfJoinOptionalNestedLoop",
-      "args_mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
     },
 
     {

@@ -18,8 +18,8 @@
         {
           "@id": "#myHttpProxy",
           "@type": "ActorHttpProxy",
-          "args_mediatorHttp": { "@id": "#mediatorHttp" },
-          "args_beforeActors": { "@id": "#myHttpFetcher" }
+          "mediatorHttp": { "@id": "#mediatorHttp" },
+          "beforeActors": { "@id": "#myHttpFetcher" }
         },
         {
           "@id": "#myHttpFetcher",
@@ -30,10 +30,10 @@
     {
       "@id": "#mediatorHttp",
       "@type": "MediatorNumber",
-      "args_type": "min",
-      "args_field": "time",
-      "args_ignoreErrors": true,
-      "args_bus": { "@id": "ActorHttp:_default_bus" }
+      "type": "min",
+      "field": "time",
+      "ignoreErrors": true,
+      "bus": { "@id": "ActorHttp:_default_bus" }
     }
   ]
 }

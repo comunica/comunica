@@ -31,7 +31,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfSerializerN3",
       "@type": "ActorRdfSerializeN3",
-      "args_priorityScale": 1
+      "priorityScale": 1
     }
   ]
 }
@@ -39,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.
+* `priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.

@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myQuadPatternQueryOperator",
       "@type": "ActorQueryOperationQuadpattern",
-      "args_mediatorResolveQuadPattern": { "files-cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern" }
+      "mediatorResolveQuadPattern": { "files-cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern" }
     }
   ]
 }
@@ -38,7 +38,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
+* `mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
 
 ## Notes
 

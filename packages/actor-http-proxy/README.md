@@ -30,15 +30,15 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myHttpProxy",
       "@type": "ActorHttpProxy",
-      "args_mediatorHttp": { "@id": "#mediatorHttp" },
-      "args_beforeActors": { "@id": "#myHttpFetcher" }
+      "mediatorHttp": { "@id": "#mediatorHttp" },
+      "beforeActors": { "@id": "#myHttpFetcher" }
     }
   ]
 }
 ```
 
-Use `args_beforeActors` to indicate that this actor MUST always run _before_ your default HTTP actor.
+Use `beforeActors` to indicate that this actor MUST always run _before_ your default HTTP actor.
 
 ### Config Parameters
 
-* `args_mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).

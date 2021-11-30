@@ -44,4 +44,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_inferHttpsEndpoint`: If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based, defaults to `true`.
+* `inferHttpsEndpoint`: If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based, defaults to `true`.

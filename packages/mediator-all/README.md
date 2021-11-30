@@ -32,7 +32,7 @@ After installing, this mediator can be instantiated as follows:
       "someMediator": {
         "@id": "#mediatorHttpInvalidate",
         "@type": "MediatorAll",
-        "args_bus": { "@id": "ActorHttpInvalidate:_default_bus" }
+        "bus": { "@id": "ActorHttpInvalidate:_default_bus" }
       }
     }
   ]
@@ -41,4 +41,4 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `args_bus`: Identifier of the bus to mediate over.
+* `bus`: Identifier of the bus to mediate over.

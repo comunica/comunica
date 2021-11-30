@@ -31,7 +31,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfParserHtml",
       "@type": "ActorRdfParseHtml",
-      "args_priorityScale": 0.2
+      "priorityScale": 0.2
     }
   ]
 }
@@ -39,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
+* `priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.

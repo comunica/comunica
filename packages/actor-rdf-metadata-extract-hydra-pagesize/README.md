@@ -36,7 +36,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfMetadataExtractHydraPagesize",
       "@type": "ActorRdfMetadataExtractHydraPagesize",
-      "args_predicates": [
+      "predicates": [
         "http://www.w3.org/ns/hydra/core#itemsPerPage"
       ]
     }
@@ -46,4 +46,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_predicates`: The predicates to consider when determining page size, defaults to `http://www.w3.org/ns/hydra/core#itemsPerPage`.
+* `predicates`: The predicates to consider when determining page size, defaults to `http://www.w3.org/ns/hydra/core#itemsPerPage`.

@@ -29,21 +29,21 @@
     {
       "@id": "#myRdfSparqlSerializer",
       "@type": "ActorSparqlSerializeRdf",
-      "args_mediatorRdfSerialize": {
+      "mediatorRdfSerialize": {
         "@id": "#mediatorRdfSerialize",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" }
+        "bus": { "@id": "ActorRdfSerialize:_default_bus" }
       },
-      "args_mediatorMediaTypeCombiner": {
+      "mediatorMediaTypeCombiner": {
         "@id": "#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
-        "args_field": "mediaTypes"
+        "bus": { "@id": "ActorRdfSerialize:_default_bus" },
+        "field": "mediaTypes"
       },
-      "args_mediatorMediaTypeFormatCombiner": {
+      "mediatorMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
-        "args_field": "mediaTypeFormats"
+        "bus": { "@id": "ActorRdfSerialize:_default_bus" },
+        "field": "mediaTypeFormats"
       }
     },
     {

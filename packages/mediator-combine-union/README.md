@@ -31,8 +31,8 @@ After installing, this mediator can be instantiated as follows:
       "someMediator": {
         "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
-        "args_field": "mediaTypes"
+        "bus": { "@id": "ActorRdfParse:_default_bus" },
+        "field": "mediaTypes"
       }
     }
   ]
@@ -41,6 +41,6 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `args_bus`: Identifier of the bus to mediate over.
-* `args_field`: The field name to mediate over.
+* `bus`: Identifier of the bus to mediate over.
+* `field`: The field name to mediate over.
 

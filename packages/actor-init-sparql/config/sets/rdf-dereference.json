@@ -19,20 +19,20 @@
     {
       "@id": "#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
-      "args_beforeActors": { "@id": "#myRdfDereferencerFallback" },
-      "args_mediatorHttp": {
+      "beforeActors": { "@id": "#myRdfDereferencerFallback" },
+      "mediatorHttp": {
         "@id": "cais:config/sets/http.json#mediatorHttp"
       },
-      "args_mediatorRdfParseMediatypes": {
+      "mediatorRdfParseMediatypes": {
         "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
-        "args_field": "mediaTypes"
+        "bus": { "@id": "ActorRdfParse:_default_bus" },
+        "field": "mediaTypes"
       },
-      "args_mediatorRdfParseHandle": {
+      "mediatorRdfParseHandle": {
         "@id": "#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
+        "bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     },
 

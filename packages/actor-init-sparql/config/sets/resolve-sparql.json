@@ -16,7 +16,7 @@
     {
       "@id": "#mySparqlQuadPatternResolver",
       "@type": "ActorRdfResolveHypermediaSparql",
-      "args_mediatorHttp": {
+      "mediatorHttp": {
         "@id": "cais:config/sets/http.json#mediatorHttp"
       }
     },
@@ -27,7 +27,7 @@
     {
       "@id": "#mySparqlEndpointResolver",
       "@type": "ActorQueryOperationSparqlEndpoint",
-      "args_mediatorHttp": {
+      "mediatorHttp": {
         "@id": "cais:config/sets/http.json#mediatorHttp"
       }
     }

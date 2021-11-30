@@ -37,7 +37,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfMetadataExtractHydraCount",
       "@type": "ActorRdfMetadataExtractHydraCount",
-      "args_predicates": [
+      "predicates": [
         "http://www.w3.org/ns/hydra/core#totalItems",
         "http://rdfs.org/ns/void#triples"
       ]
@@ -48,4 +48,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_predicate`: The predicates to consider when determining counts, defaults to `http://www.w3.org/ns/hydra/core#totalItems` and `http://rdfs.org/ns/void#triples`.
+* `predicate`: The predicates to consider when determining counts, defaults to `http://www.w3.org/ns/hydra/core#totalItems` and `http://rdfs.org/ns/void#triples`.

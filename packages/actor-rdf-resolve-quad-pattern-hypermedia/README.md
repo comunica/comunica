@@ -28,31 +28,31 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myQuadPatternHypermediaResolver",
       "@type": "ActorRdfResolveQuadPatternHypermedia",
-      "args_mediatorRdfDereference": {
+      "mediatorRdfDereference": {
         "@id": "#mediatorRdfDereference"
       },
-      "args_mediatorMetadata": {
+      "mediatorMetadata": {
         "@id": "#mediatorMetadata"
       },
-      "args_mediatorMetadataExtract": {
+      "mediatorMetadataExtract": {
         "@id": "#mediatorMetadataExtract"
       },
-      "args_mediatorRdfResolveHypermedia": {
+      "mediatorRdfResolveHypermedia": {
         "@id": "#mediatorRdfResolveHypermedia",
         "@type": "MediatorNumberMax",
         "field": "filterFactor",
         "ignoreErrors": true,
-        "args_bus": { "@id": "ActorRdfResolveHypermedia:_default_bus" }
+        "bus": { "@id": "ActorRdfResolveHypermedia:_default_bus" }
       },
-      "args_mediatorRdfResolveHypermediaLinks": {
+      "mediatorRdfResolveHypermediaLinks": {
         "@id": "#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfResolveHypermediaLinks:_default_bus" }
+        "bus": { "@id": "ActorRdfResolveHypermediaLinks:_default_bus" }
       },
-      "args_mediatorRdfResolveHypermediaLinksQueue": {
+      "mediatorRdfResolveHypermediaLinksQueue": {
         "@id": "#mediatorRdfResolveHypermediaLinksQueue",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfResolveHypermediaLinksQueue:_default_bus" }
+        "bus": { "@id": "ActorRdfResolveHypermediaLinksQueue:_default_bus" }
       }
     }
   ]
@@ -61,9 +61,9 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
-* `args_mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
-* `args_mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
-* `args_mediatorRdfResolveHypermedia`: A mediator over the [RDF Resolve Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia).
-* `args_mediatorRdfResolveHypermediaLinks`: A mediator over the [RDF Resolve Hypermedia Links bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links).
-* `args_mediatorRdfResolveHypermediaLinksQueue`: A mediator over the [RDF Resolve Hypermedia Links Queue bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links-queue).
+* `mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
+* `mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
+* `mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
+* `mediatorRdfResolveHypermedia`: A mediator over the [RDF Resolve Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia).
+* `mediatorRdfResolveHypermediaLinks`: A mediator over the [RDF Resolve Hypermedia Links bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links).
+* `mediatorRdfResolveHypermediaLinksQueue`: A mediator over the [RDF Resolve Hypermedia Links Queue bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links-queue).

@@ -32,10 +32,10 @@ After installing, this mediator can be instantiated as follows:
       "someMediator": {
         "@id": "#mediatorQueryOperation",
         "@type": "MediatorNumber",
-        "args_field": "httpRequests",
-        "args_type": "min",
-        "args_ignoreErrors": true,
-        "args_bus": { "@id": "ActorQueryOperation:_default_bus" }
+        "field": "httpRequests",
+        "type": "min",
+        "ignoreErrors": true,
+        "bus": { "@id": "ActorQueryOperation:_default_bus" }
       }
     }
   ]
@@ -46,7 +46,7 @@ Instead of `MediatorNumberMin`, `MediatorNumberMax` could also be used to resolv
 
 ### Config Parameters
 
-* `args_bus`: Identifier of the bus to mediate over.
-* `args_field`: The field name to mediate over.
-* `args_type`: The way how the index should be selected. For choosing the minimum value: 'min'. For choosing the maximum value: 'max'.
-* `args_ignoreErrors`: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.
+* `bus`: Identifier of the bus to mediate over.
+* `field`: The field name to mediate over.
+* `type`: The way how the index should be selected. For choosing the minimum value: 'min'. For choosing the maximum value: 'max'.
+* `ignoreErrors`: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.

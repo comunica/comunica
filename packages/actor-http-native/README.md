@@ -39,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_agentOptions`: The agent JSON options for the HTTP agent. _(optional)_ 
+* `agentOptions`: The agent JSON options for the HTTP agent. _(optional)_ 

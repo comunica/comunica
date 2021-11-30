@@ -32,21 +32,21 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myHypermediaQpfResolver",
       "@type": "ActorRdfResolveHypermediaQpf",
-      "args_mediatorRdfDereference": {
+      "mediatorRdfDereference": {
         "@id": "#mediatorRdfDereference",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfDereference:_default_bus" }
+        "bus": { "@id": "ActorRdfDereference:_default_bus" }
       },
-      "args_mediatorMetadata": {
+      "mediatorMetadata": {
         "@id": "#mediatorMetadata",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfMetadata:_default_bus" }
+        "bus": { "@id": "ActorRdfMetadata:_default_bus" }
       },
       "argsmediatorMetadataExtract": {
         "@id": "#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
-        "args_field": "metadata"
+        "bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
+        "field": "metadata"
       }
     }
   ]
@@ -55,6 +55,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
-* `args_mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
-* `args_mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
+* `mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
+* `mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
+* `mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).

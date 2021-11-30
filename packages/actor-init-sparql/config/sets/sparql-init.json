@@ -24,43 +24,43 @@
     {
       "@id": "urn:comunica:sparqlinit",
       "@type": "ActorInitSparql",
-      "args_mediatorOptimizeQueryOperation": {
+      "mediatorOptimizeQueryOperation": {
         "@id": "#mediatorOptimizeQueryOperation",
         "@type": "MediatorCombinePipeline",
-        "args_bus": { "@id": "ActorOptimizeQueryOperation:_default_bus" }
+        "bus": { "@id": "ActorOptimizeQueryOperation:_default_bus" }
       },
-      "args_mediatorQueryOperation": {
+      "mediatorQueryOperation": {
         "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation"
       },
-      "args_mediatorSparqlParse": {
+      "mediatorSparqlParse": {
         "@id": "#mediatorSparqlParse",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorSparqlParse:_default_bus" }
+        "bus": { "@id": "ActorSparqlParse:_default_bus" }
       },
-      "args_mediatorSparqlSerialize": {
+      "mediatorSparqlSerialize": {
         "@id": "#mediatorSparqlSerialize",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorSparqlSerialize:_default_bus" }
+        "bus": { "@id": "ActorSparqlSerialize:_default_bus" }
       },
-      "args_mediatorSparqlSerializeMediaTypeCombiner": {
+      "mediatorSparqlSerializeMediaTypeCombiner": {
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorSparqlSerialize:_default_bus" },
-        "args_field": "mediaTypes"
+        "bus": { "@id": "ActorSparqlSerialize:_default_bus" },
+        "field": "mediaTypes"
       },
-      "args_mediatorSparqlSerializeMediaTypeFormatCombiner": {
+      "mediatorSparqlSerializeMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorSparqlSerialize:_default_bus" },
-        "args_field": "mediaTypeFormats"
+        "bus": { "@id": "ActorSparqlSerialize:_default_bus" },
+        "field": "mediaTypeFormats"
       },
-      "args_mediatorContextPreprocess": {
+      "mediatorContextPreprocess": {
         "@id": "#mediatorContextPreprocess",
         "@type": "MediatorCombinePipeline",
-        "args_bus": { "@id": "ActorContextPreprocess:_default_bus" }
+        "bus": { "@id": "ActorContextPreprocess:_default_bus" }
       },
-      "args_mediatorHttpInvalidate": {
+      "mediatorHttpInvalidate": {
         "@id": "#mediatorHttpInvalidate",
         "@type": "MediatorAll",
-        "args_bus": { "@id": "ActorHttpInvalidate:_default_bus" }
+        "bus": { "@id": "ActorHttpInvalidate:_default_bus" }
       }
     }
   ]

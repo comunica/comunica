@@ -41,134 +41,134 @@
     {
       "@id": "#myAskQueryOperator",
       "@type": "ActorQueryOperationAsk",
-      "args_mediatorQueryOperation": {
+      "mediatorQueryOperation": {
         "@id": "#mediatorQueryOperation",
         "@type": "MediatorNumber",
-        "args_type": "min",
-        "args_field": "httpRequests",
-        "args_ignoreErrors": true,
-        "args_bus": { "@id": "ActorQueryOperation:_default_bus" }
+        "type": "min",
+        "field": "httpRequests",
+        "ignoreErrors": true,
+        "bus": { "@id": "ActorQueryOperation:_default_bus" }
       }
     },
 
     {
       "@id": "#myServiceQueryOperator",
       "@type": "ActorQueryOperationService",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
-      "args_forceSparqlEndpoint": false
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "forceSparqlEndpoint": false
     },
 
     {
       "@id": "#mySliceQueryOperator",
       "@type": "ActorQueryOperationSlice",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myJoinBgpQueryOperator",
       "@type": "ActorQueryOperationBgpJoin",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myConstructQueryOperator",
       "@type": "ActorQueryOperationConstruct",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myDescribeQueryOperator",
       "@type": "ActorQueryOperationDescribeSubject",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myDistinctQueryOperator",
       "@type": "ActorQueryOperationDistinctHash",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myExtendQueryOperator",
       "@type": "ActorQueryOperationExtend",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myReducedQueryOperator",
       "@type": "ActorQueryOperationReducedHash",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myFilterQueryOperator",
       "@type": "ActorQueryOperationFilterSparqlee",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myFromQueryOperator",
       "@type": "ActorQueryOperationFromQuad",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myGroupQueryOperator",
       "@type": "ActorQueryOperationGroup",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myJoinQueryOperator",
       "@type": "ActorQueryOperationJoin",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
-      "args_mediatorJoin": {
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "mediatorJoin": {
         "@id": "#mediatorRdfJoin",
         "@type": "MediatorJoinCoefficientsFixed",
-        "args_cpuWeight": 1,
-        "args_memoryWeight": 1,
-        "args_timeWeight": 10,
-        "args_ioWeight": 100,
-        "args_bus": { "@id": "ActorRdfJoin:_default_bus" }
+        "cpuWeight": 1,
+        "memoryWeight": 1,
+        "timeWeight": 10,
+        "ioWeight": 100,
+        "bus": { "@id": "ActorRdfJoin:_default_bus" }
       }
     },
 
     {
       "@id": "#myLeftJoinQueryOperator",
       "@type": "ActorQueryOperationLeftJoin",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
-      "args_mediatorJoin": { "@id": "#mediatorRdfJoin" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "mediatorJoin": { "@id": "#mediatorRdfJoin" }
     },
 
     {
       "@id": "#myOrderByQueryOperator",
       "@type": "ActorQueryOperationOrderBySparqlee",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myProjectQueryOperator",
       "@type": "ActorQueryOperationProject",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myUnionQueryOperator",
       "@type": "ActorQueryOperationUnion",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myMinusQueryOperator",
       "@type": "ActorQueryOperationMinus",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
-      "args_mediatorJoin": { "@id": "#mediatorRdfJoin" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "mediatorJoin": { "@id": "#mediatorRdfJoin" }
     },
 
     {
       "@id": "#myNopQueryOperator",
       "@type": "ActorQueryOperationNop",
-      "args_mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
     },
 
     {
@@ -179,10 +179,10 @@
     {
       "@id": "#myQuadPatternQueryOperator",
       "@type": "ActorQueryOperationQuadpattern",
-      "args_mediatorResolveQuadPattern": {
+      "mediatorResolveQuadPattern": {
         "@id": "#mediatorResolveQuadPattern",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfResolveQuadPattern:_default_bus" }
+        "bus": { "@id": "ActorRdfResolveQuadPattern:_default_bus" }
       }
     }
   ]

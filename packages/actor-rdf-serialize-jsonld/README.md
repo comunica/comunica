@@ -30,8 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfSerializeJsonLd",
       "@type": "ActorRdfSerializeJsonLd",
-      "args_jsonStringifyIndentSpaces": 2,
-      "args_priorityScale": 0.9
+      "jsonStringifyIndentSpaces": 2,
+      "priorityScale": 0.9
     }
   ]
 }
@@ -39,5 +39,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_jsonStringifyIndentSpaces`: An optional parameter to indicate with how many spaces JSON should be indented, defaults to `2`.
-* `args_priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.
+* `jsonStringifyIndentSpaces`: An optional parameter to indicate with how many spaces JSON should be indented, defaults to `2`.
+* `priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.

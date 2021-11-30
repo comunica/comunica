@@ -32,7 +32,7 @@ After installing, this mediator can be instantiated as follows:
       "someMediator": {
         "@id": "#mediatorOptimizeQueryOperation",
         "@type": "MediatorCombinePipeline",
-        "args_bus": { "@id": "ActorOptimizeQueryOperation:_default_bus" }
+        "bus": { "@id": "ActorOptimizeQueryOperation:_default_bus" }
       }
     }
   ]
@@ -41,5 +41,5 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `args_bus`: Identifier of the bus to mediate over.
+* `bus`: Identifier of the bus to mediate over.
 

@@ -30,19 +30,19 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfUpdateQuadsHypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
-      "args_mediatorRdfDereference": {
+      "mediatorRdfDereference": {
         "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference"
       },
-      "args_mediatorMetadata": {
+      "mediatorMetadata": {
         "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadata"
       },
-      "args_mediatorMetadataExtract": {
+      "mediatorMetadataExtract": {
         "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract"
       },
-      "args_mediatorRdfUpdateHypermedia": {
+      "mediatorRdfUpdateHypermedia": {
         "@id": "#mediatorRdfUpdateHypermedia",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfUpdateHypermedia:_default_bus" }
+        "bus": { "@id": "ActorRdfUpdateHypermedia:_default_bus" }
       }
     }
   ]
@@ -51,7 +51,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
-* `args_mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
-* `args_mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
-* `args_mediatorRdfUpdateHypermedia`: A mediator over the [RDF Update Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-hypermedia).
+* `mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
+* `mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
+* `mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
+* `mediatorRdfUpdateHypermedia`: A mediator over the [RDF Update Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-hypermedia).

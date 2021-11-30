@@ -31,10 +31,10 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfFileDereferencer",
       "@type": "ActorRdfDereferenceFile",
-      "args_mediatorRdfParse": {
+      "mediatorRdfParse": {
         "@id": "#mediatorRdfParse",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
+        "bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]
@@ -43,4 +43,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_mediatorRdfParse`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.
+* `mediatorRdfParse`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.

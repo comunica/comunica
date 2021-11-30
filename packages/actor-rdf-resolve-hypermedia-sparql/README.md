@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#mySparqlQuadPatternResolver",
       "@type": "ActorRdfResolveHypermediaSparql",
-      "args_mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" }
+      "mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" }
     }
   ]
 }
@@ -37,5 +37,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
-* `args_forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.

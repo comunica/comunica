@@ -39,11 +39,11 @@ After installing, this mediator can be instantiated as follows:
       "someMediator": {
         "@id": "#mediatorRdfJoin",
         "@type": "MediatorJoinCoefficientsFixed",
-        "args_cpuWeight": 1,
-        "args_memoryWeight": 1,
-        "args_timeWeight": 1,
-        "args_ioWeight": 0.01,
-        "args_bus": { "@id": ActorRdfJoin:_default_bus" }
+        "cpuWeight": 1,
+        "memoryWeight": 1,
+        "timeWeight": 1,
+        "ioWeight": 0.01,
+        "bus": { "@id": ActorRdfJoin:_default_bus" }
       }
     }
   ]
@@ -52,9 +52,9 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `"args_cpuWeight"`: Weight for the CPU cost. Higher values lead to higher overall costs.
-* `"args_memoryWeight"`: Weight for the memory cost. Higher values lead to higher overall costs.
-* `"args_timeWeight"`: Weight for the execution time cost. Higher values lead to higher overall costs.
-* `"args_ioWeight"`: Weight for the I/O cost. Higher values lead to higher overall costs.
-* `"args_bus"`: Identifier of the bus to mediate over.
+* `"cpuWeight"`: Weight for the CPU cost. Higher values lead to higher overall costs.
+* `"memoryWeight"`: Weight for the memory cost. Higher values lead to higher overall costs.
+* `"timeWeight"`: Weight for the execution time cost. Higher values lead to higher overall costs.
+* `"ioWeight"`: Weight for the I/O cost. Higher values lead to higher overall costs.
+* `"bus"`: Identifier of the bus to mediate over.
 

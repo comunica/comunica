@@ -23,28 +23,28 @@
     {
       "@id": "#myRdfParserN3",
       "@type": "ActorRdfParseN3",
-      "args_priorityScale": 1.0
+      "priorityScale": 1.0
     },
     {
       "@id": "#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
-      "args_priorityScale": 0.9,
-      "args_mediatorHttp": { "@id": "cais:config/sets/http.json#mediatorHttp" }
+      "priorityScale": 0.9,
+      "mediatorHttp": { "@id": "cais:config/sets/http.json#mediatorHttp" }
     },
     {
       "@id": "#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
-      "args_priorityScale": 0.5
+      "priorityScale": 0.5
     },
     {
       "@id": "#myRdfParserXmlRdfa",
       "@type": "ActorRdfParseXmlRdfa",
-      "args_priorityScale": 0.3
+      "priorityScale": 0.3
     },
     {
       "@id": "#myRdfParserHtml",
       "@type": "ActorRdfParseHtml",
-      "args_priorityScale": 0.2
+      "priorityScale": 0.2
     },
 
     {
@@ -58,16 +58,16 @@
     {
       "@id": "#myRdfParserHtmlScript",
       "@type": "ActorRdfParseHtmlScript",
-      "args_mediatorRdfParseMediatypes": {
+      "mediatorRdfParseMediatypes": {
         "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfParse:_default_bus" },
-        "args_field": "mediaTypes"
+        "bus": { "@id": "ActorRdfParse:_default_bus" },
+        "field": "mediaTypes"
       },
-      "args_mediatorRdfParseHandle": {
+      "mediatorRdfParseHandle": {
         "@id": "#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfParse:_default_bus" }
+        "bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]

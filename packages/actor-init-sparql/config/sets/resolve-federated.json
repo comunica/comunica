@@ -15,7 +15,7 @@
     {
       "@id": "#myFederatedQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternFederated",
-      "args_mediatorResolveQuadPattern": {
+      "mediatorResolveQuadPattern": {
         "@id": "cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern"
       }
     }

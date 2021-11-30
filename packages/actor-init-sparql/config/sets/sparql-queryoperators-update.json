@@ -25,61 +25,61 @@
     {
       "@id": "#myCompositeUpdateOperator",
       "@type": "ActorQueryOperationUpdateCompositeUpdate",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {
       "@id": "#myDeleteInsertOperator",
       "@type": "ActorQueryOperationUpdateDeleteInsert",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": {
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "mediatorUpdateQuads": {
         "@id": "#mediatorUpdateQuads",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfUpdateQuads:_default_bus" }
+        "bus": { "@id": "ActorRdfUpdateQuads:_default_bus" }
       }
     },
 
     {
       "@id": "#myLoadQueryOperator",
       "@type": "ActorQueryOperationLoad",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
 
     {
       "@id": "#myClearQueryOperator",
       "@type": "ActorQueryOperationClear",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
     {
       "@id": "#myDropQueryOperator",
       "@type": "ActorQueryOperationDrop",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
 
     {
       "@id": "#myCreateQueryOperator",
       "@type": "ActorQueryOperationCreate",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
-      "args_mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
     },
 
     {
       "@id": "#myAddOperator",
       "@type": "ActorQueryOperationAddRewrite",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "#myMoveOperator",
       "@type": "ActorQueryOperationMoveRewrite",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
     {
       "@id": "#myCopyOperator",
       "@type": "ActorQueryOperationCopyRewrite",
-      "args_mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
     },
 
     {

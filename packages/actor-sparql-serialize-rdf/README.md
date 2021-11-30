@@ -29,21 +29,21 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfSparqlSerializer",
       "@type": "ActorSparqlSerializeRdf",
-      "args_mediatorRdfSerialize": {
+      "mediatorRdfSerialize": {
         "@id": "#mediatorRdfSerialize",
         "@type": "MediatorRace",
-        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" }
+        "bus": { "@id": "ActorRdfSerialize:_default_bus" }
       },
-      "args_mediatorMediaTypeCombiner": {
+      "mediatorMediaTypeCombiner": {
         "@id": "#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
-        "args_field": "mediaTypes"
+        "bus": { "@id": "ActorRdfSerialize:_default_bus" },
+        "field": "mediaTypes"
       },
-      "args_mediatorMediaTypeFormatCombiner": {
+      "mediatorMediaTypeFormatCombiner": {
         "@type": "MediatorCombineUnion",
-        "args_bus": { "@id": "ActorRdfSerialize:_default_bus" },
-        "args_field": "mediaTypeFormats"
+        "bus": { "@id": "ActorRdfSerialize:_default_bus" },
+        "field": "mediaTypeFormats"
       }
     },
   ]
@@ -52,6 +52,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_mediatorRdfSerialize`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for actual serialization.
-* `args_mediatorRdfSerializeMediaTypeCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media types.
-* `args_mediatorRdfSerializeMediaTypeFormatCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media type formats.
+* `mediatorRdfSerialize`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for actual serialization.
+* `mediatorRdfSerializeMediaTypeCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media types.
+* `mediatorRdfSerializeMediaTypeFormatCombiner`: A mediator over the [RDF Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for collecting media type formats.

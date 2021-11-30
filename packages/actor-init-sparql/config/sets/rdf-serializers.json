@@ -18,8 +18,8 @@
     {
       "@id": "#myRdfSerializeJsonLd",
       "@type": "ActorRdfSerializeJsonLd",
-      "args_jsonStringifyIndentSpaces": 2,
-      "args_priorityScale": 0.9
+      "jsonStringifyIndentSpaces": 2,
+      "priorityScale": 0.9
     }
   ]
 }

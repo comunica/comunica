@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myRdfParserN3",
       "@type": "ActorRdfParseN3",
-      "args_priorityScale": 1.0
+      "priorityScale": 1.0
     }
   ]
 }
@@ -38,4 +38,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `args_priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
+* `priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
