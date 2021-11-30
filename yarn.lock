@@ -6271,29 +6271,6 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.8.tgz#e412b8d33f5e006593cbd3cee6df9f2cebbe802a"
   integrity sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==
 
-graphql-ld@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/graphql-ld/-/graphql-ld-1.4.0.tgz#aab1a42459ad25b589ddfbddf2202a6eb9aa975b"
-  integrity sha512-HCxUJ6Rm+6xj9iK8D2FW/Nd2kKBiEe8j1AsNpl5mdEAan3LJWwfG4Fb1gUaaVkRIswrROM6HdSfyd73+vmZoBg==
-  dependencies:
-    "@rdfjs/types" "*"
-    graphql-to-sparql "^2.4.0"
-    jsonld-context-parser "^2.1.0"
-    sparqlalgebrajs "^3.0.2"
-    sparqljson-to-tree "^2.1.0"
-
-graphql-to-sparql@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/graphql-to-sparql/-/graphql-to-sparql-2.4.0.tgz#c810923db0f5d0285dc80e061d381b03198f5e5a"
-  integrity sha512-AwfWSV8NUe5aY2QR+NzUUxImbe8GrUR12PvYBHq6r62aj66667yLdI5xOPsVGcS0DsQJN8+9CXC+vhkjc8mR9Q==
-  dependencies:
-    "@rdfjs/types" "*"
-    graphql "^15.0.0"
-    jsonld-context-parser "^2.0.2"
-    minimist "^1.2.0"
-    rdf-data-factory "^1.1.0"
-    sparqlalgebrajs "^3.0.2"
-
 graphql-to-sparql@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/graphql-to-sparql/-/graphql-to-sparql-3.0.0.tgz#678ba3f68387320e8ea250690f4de75e687bf3e8"
@@ -6305,11 +6282,6 @@ graphql-to-sparql@^3.0.0:
     minimist "^1.2.0"
     rdf-data-factory "^1.1.0"
     sparqlalgebrajs "^4.0.0"
-
-graphql@^15.0.0:
-  version "15.5.1"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.5.1.tgz#f2f84415d8985e7b84731e7f3536f8bb9d383aad"
-  integrity sha512-FeTRX67T3LoE3LWAxxOlW2K3Bz+rMYAC18rRguK4wgXaTZMiJwSUwDmPFo3UadAKbzirKIg5Qy+sNJXbpPRnQw==
 
 graphql@^15.5.2:
   version "15.7.0"
@@ -7766,7 +7738,7 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
-jsonld-context-parser@^2.0.0, jsonld-context-parser@^2.0.2, jsonld-context-parser@^2.1.0, jsonld-context-parser@^2.1.1, jsonld-context-parser@^2.1.2, jsonld-context-parser@^2.1.3:
+jsonld-context-parser@^2.0.0, jsonld-context-parser@^2.0.2, jsonld-context-parser@^2.1.1, jsonld-context-parser@^2.1.2, jsonld-context-parser@^2.1.3:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-2.1.4.tgz#bb1706a85ebfb35ec98b91cb0a02eccf12dbf012"
   integrity sha512-XpV9MPHVrzyPPNuWejJG4MBJObEcod70RazvZKIgzrillv6xeH3Eb9pHAQJt94im2/Vd8lvTnzzWwCBGzEtWvQ==
@@ -11086,7 +11058,7 @@ sparqljson-parse@^1.6.0, sparqljson-parse@^1.7.0:
     JSONStream "^1.3.3"
     rdf-data-factory "^1.1.0"
 
-sparqljson-to-tree@^2.0.0, sparqljson-to-tree@^2.1.0:
+sparqljson-to-tree@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/sparqljson-to-tree/-/sparqljson-to-tree-2.1.0.tgz#cb64b6907ad16c7b05a6bda1856272d236206468"
   integrity sha512-LwEMlrvjzEigatJ8iw1RKGWL9dKmATQNbTEXyadzsOQxbBhJNaGk8G9/WPCcVj2zlCPKGMysfNGb4UfvwHKeSw==
