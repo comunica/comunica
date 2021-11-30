@@ -16,15 +16,29 @@
       "comment": "A comunica actor for joining 2 binding streams.  Actor types: * Input:  IActionRdfJoin:                The streams that need to be joined. * Test:   IMediatorTypeJoinCoefficients: Join coefficients. * Output: IActorRdfJoinOutput:           The resulting joined stream.",
       "parameters": [
         {
-          "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_logicalType",
-          "range": {
-            "@type": "ParameterRangeUndefined"
-          },
-          "comment": "The logical join type this actor can handle."
-        },
-        {
           "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_mediatorJoinSelectivity",
           "range": "cc:components/Mediator.jsonld#Mediator"
+        },
+        {
+          "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_logicalType",
+          "range": {
+            "@type": "ParameterRangeUnion",
+            "parameterRangeElements": [
+              {
+                "@type": "ParameterRangeLiteral",
+                "parameterRangeValueLiteral": "inner"
+              },
+              {
+                "@type": "ParameterRangeLiteral",
+                "parameterRangeValueLiteral": "optional"
+              },
+              {
+                "@type": "ParameterRangeLiteral",
+                "parameterRangeValueLiteral": "minus"
+              }
+            ]
+          },
+          "comment": "The logical join type this actor can handle."
         },
         {
           "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_physicalName",
@@ -53,6 +67,15 @@
           "comment": "Can be used by subclasses to indicate the max or min number of streams that can be joined. 0 for infinity. By default, this indicates the max number, but can be inverted by setting limitEntriesMin to true."
         },
         {
+          "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_bus",
+          "range": "cc:components/Bus.jsonld#Bus",
+          "default": {
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_default_bus",
+            "@type": "cc:components/Bus.jsonld#Bus"
+          },
+          "comment": "The bus this actor subscribes to."
+        },
+        {
           "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_limitEntriesMin",
           "range": {
             "@type": "ParameterRangeUnion",
@@ -64,15 +87,6 @@
             ]
           },
           "comment": "If true, the limitEntries field is a lower limit, otherwise, it is an upper limit. Defaults to false."
-        },
-        {
-          "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_bus",
-          "range": "cc:components/Bus.jsonld#Bus",
-          "default": {
-            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_default_bus",
-            "@type": "cc:components/Bus.jsonld#Bus"
-          },
-          "comment": "The bus this actor subscribes to."
         },
         {
           "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_canHandleUndefs",

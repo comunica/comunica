@@ -16,6 +16,11 @@
             "@container": "@list"
           }
         }
+      },
+      "ISetupProperties": {
+        "@id": "cr:components/Setup.jsonld#ISetupProperties",
+        "@prefix": true,
+        "@context": {}
       }
     }
   ]

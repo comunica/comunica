@@ -8,11 +8,11 @@
         "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin",
         "@prefix": true,
         "@context": {
-          "options_logicalType": {
-            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_logicalType"
-          },
           "args_mediatorJoinSelectivity": {
             "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_mediatorJoinSelectivity"
+          },
+          "options_logicalType": {
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_logicalType"
           },
           "options_physicalName": {
             "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_physicalName"
@@ -23,11 +23,11 @@
           "options_limitEntries": {
             "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_limitEntries"
           },
-          "options_limitEntriesMin": {
-            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_limitEntriesMin"
-          },
           "args_bus": {
             "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_args_bus"
+          },
+          "options_limitEntriesMin": {
+            "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_limitEntriesMin"
           },
           "options_canHandleUndefs": {
             "@id": "cbrj:components/ActorRdfJoin.jsonld#ActorRdfJoin_options_canHandleUndefs"
