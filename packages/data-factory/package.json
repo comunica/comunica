@@ -3,9 +3,6 @@
   "version": "2.0.0",
   "description": "RDFJS DataFactory utilities",
   "main": "lib/index.js",
-  "engines": {
-    "node": ">=8.0"
-  },
   "typings": "lib/index",
   "repository": {
     "type": "git",

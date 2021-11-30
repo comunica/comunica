@@ -4,9 +4,6 @@
   "workspaces": [
     "packages/*"
   ],
-  "engines": {
-    "node": ">=8.0"
-  },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-syntax-object-rest-spread": "^7.8.3",
