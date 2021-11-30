@@ -37,7 +37,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
-    "componentsjs": "^4.0.6"
+    "componentsjs": "5.0.0-beta.0"
   },
   "devDependencies": {
     "@comunica/bus-init": "^2.0.0",

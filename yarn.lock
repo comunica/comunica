@@ -4325,44 +4325,26 @@ component-emitter@^1.2.1:
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.3.0.tgz#16e4070fba8ae29b679f2215853ee181ab2eabc0"
   integrity sha512-Rd3se6QB+sO1TwqZjscQrurpEPIfO0/yYnSin6Q/rD3mOutHvUrCAhJub3r90uNb+SESBuE0QYoB90YdfatsRg==
 
-componentsjs-generator@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-2.6.1.tgz#9540b27aadec6151da08447a42d7efdddca905d5"
-  integrity sha512-WA8UNWbBbTmJmC5IxP/N+TJz/XBPfpdzlnzRB5fS2vOmZbwul54/kTxl2V+jjEh/k7Nyh8oKFd/4kE9ZRFSChA==
+componentsjs-generator@3.0.0-beta.0:
+  version "3.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-3.0.0-beta.0.tgz#6d80b9dee02ab2dfffad5b0af1355ada14a933ca"
+  integrity sha512-HRV7zAtViAErdwGF+Nqa5VdYWqBLKWLl/2W1SO7VZ24oVQrgyjUETMoLTdsVPtClhb7NToLAl1UC4tP0tw5eBg==
   dependencies:
     "@types/lru-cache" "^5.1.0"
     "@types/semver" "^7.3.4"
     "@typescript-eslint/typescript-estree" "^4.6.1"
     comment-parser "^0.7.6"
-    componentsjs "^4.4.0"
-    jsonld-context-parser "^2.0.2"
+    componentsjs "5.0.0-beta.0"
+    jsonld-context-parser "^2.1.5"
     lru-cache "^6.0.0"
     minimist "^1.2.5"
+    rdf-object "^1.12.0"
     semver "^7.3.2"
 
-componentsjs@^4.0.6:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-4.4.1.tgz#7a5425330c517b0336880856089dd19d9430a74e"
-  integrity sha512-szjk/CsAZ4DNjJJdagIx5+LxgTnExtOBTuWHKoxBFjU2G7XyfTMx+VevuwKZN3It+O/vd2//JZ17U9B/eScXkg==
-  dependencies:
-    "@types/minimist" "^1.2.0"
-    "@types/node" "^14.14.7"
-    "@types/rdf-js" "*"
-    "@types/semver" "^7.3.4"
-    jsonld-context-parser "^2.1.1"
-    minimist "^1.2.0"
-    rdf-data-factory "^1.0.4"
-    rdf-object "^1.8.0"
-    rdf-parse "^1.8.1"
-    rdf-quad "^1.5.0"
-    rdf-terms "^1.6.2"
-    semver "^7.3.2"
-    winston "^3.3.3"
-
-componentsjs@^4.4.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-4.5.0.tgz#099f6b823b7c4fa9d16e26ce8f3b30412a99c0fa"
-  integrity sha512-0F473HDUFfizVXZH1KBP4jmZRBAqYdVdpGhaNmHFmla/AB76B8NN7hQk7YDGaKkESl9zYqQ6kF3i8UgJBQ+rtg==
+componentsjs@5.0.0-beta.0:
+  version "5.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-5.0.0-beta.0.tgz#f55224e647e7e077e87387e1891a44478ae40e03"
+  integrity sha512-kdxIpCTDwpXhLFQNiccrm78LCuCxMDXLpWSer8WvaTnHu0RqknOe9IHFOu6qctBpiZyml02lEPIQrj+AEs1Wrw==
   dependencies:
     "@rdfjs/types" "*"
     "@types/minimist" "^1.2.0"
@@ -4371,7 +4353,7 @@ componentsjs@^4.4.0:
     jsonld-context-parser "^2.1.1"
     minimist "^1.2.0"
     rdf-data-factory "^1.1.0"
-    rdf-object "^1.11.1"
+    rdf-object "^1.12.0"
     rdf-parse "^1.9.1"
     rdf-quad "^1.5.0"
     rdf-terms "^1.7.0"
@@ -7801,10 +7783,22 @@ jsonld-context-parser@^2.0.0, jsonld-context-parser@^2.0.2, jsonld-context-parse
     http-link-header "^1.0.2"
     relative-to-absolute-iri "^1.0.5"
 
-jsonld-streaming-parser@^2.3.2, jsonld-streaming-parser@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-2.4.0.tgz#22ebc35c883806099db0bbfaf3259e75ba6699d2"
-  integrity sha512-bDXUcHgeoEXX3uNNO9L9zsx/HEO9X4yxHi14Xfd6yS7kuaXqcUzKB6QaeJFwEoQAJB5v4XoXU/bcOcErWaEPLg==
+jsonld-context-parser@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-2.1.5.tgz#07f8632ce5c29072c5f91295044ab31761e84fa9"
+  integrity sha512-rsu5hB6bADa511l0QhG4lndAqlN7PQ4wsS0UKqLWUKg1GUQqYmh2SNfbwXiRiHZRJqhvCNqv9/5tQ3zzk4hMtg==
+  dependencies:
+    "@types/http-link-header" "^1.0.1"
+    "@types/node" "^13.1.0"
+    canonicalize "^1.0.1"
+    cross-fetch "^3.0.6"
+    http-link-header "^1.0.2"
+    relative-to-absolute-iri "^1.0.5"
+
+jsonld-streaming-parser@^2.3.2, jsonld-streaming-parser@^2.4.0, jsonld-streaming-parser@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-2.4.2.tgz#35fe761bf322a940ad102db8d71bb05125998196"
+  integrity sha512-kA1+LD9jTPX3bz81c+zjF4ng8UVmVnOmLhKj5pE8pQE0GHc4HJrr0+dHRUgAQzg8jvCml1B9HRmr9egYw4ZfJA==
   dependencies:
     "@rdfjs/types" "*"
     "@types/http-link-header" "^1.0.1"
@@ -9968,7 +9962,7 @@ rdf-literal@^1.2.0, rdf-literal@^1.3.0:
     "@rdfjs/types" "*"
     rdf-data-factory "^1.1.0"
 
-rdf-object@^1.11.0, rdf-object@^1.8.0:
+rdf-object@^1.11.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.11.0.tgz#b9744ce99b1e3b584cd8f1e802118cefda8cd7e3"
   integrity sha512-qJM2ZXAJAQh73NT1tNk8HpolciSKs0WRLI9Srav6bOgOoBblaie7Zgz1v3hn79iDdbCaajBlf0tfyk9yn78XRA==
@@ -9979,7 +9973,7 @@ rdf-object@^1.11.0, rdf-object@^1.8.0:
     rdf-string "^1.6.0"
     streamify-array "^1.0.1"
 
-rdf-object@^1.11.1:
+rdf-object@^1.12.0:
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.12.0.tgz#76f786f333a5bd4eb9f11b10af8879950123249e"
   integrity sha512-LF4LjYCneh2RJcUSPWbTfGgsYqRMcElmHDR3lPkMrJQ6azrCqY9DLdVWaqK7xRn1ujeHWiOkS34ThTZgzzvuUQ==
@@ -9990,7 +9984,7 @@ rdf-object@^1.11.1:
     rdf-string "^1.6.0"
     streamify-array "^1.0.1"
 
-rdf-parse@^1.5.0, rdf-parse@^1.8.1:
+rdf-parse@^1.5.0:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/rdf-parse/-/rdf-parse-1.8.1.tgz#99658d13dc4cf0f7d8310b914439b40eb4665df7"
   integrity sha512-sNcQ1Vc8hDf/hVjVHYS9CSHyFShVX8LVwBrFARKkGgGe+K9DZJRaZQI06VCwmEW027ZFjfxFgmjQlc09FLmI4A==

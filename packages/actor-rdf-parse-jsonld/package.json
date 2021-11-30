@@ -40,8 +40,8 @@
   "dependencies": {
     "@comunica/context-entries": "^2.0.0",
     "@rdfjs/types": "*",
-    "jsonld-context-parser": "^2.1.2",
-    "jsonld-streaming-parser": "^2.4.0",
+    "jsonld-context-parser": "^2.1.5",
+    "jsonld-streaming-parser": "^2.4.2",
     "stream-to-string": "^1.2.0"
   },
   "jest": {
