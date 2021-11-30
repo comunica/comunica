@@ -12,7 +12,7 @@ export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS
       results.forEach((result: IActorOutputInit) => {
         if (result.stdout) {
           result.stdout.on('error', error => {
-            stderr.write(`${error.message}\n`);
+            stderr.write(errorToString(error, argv));
             exit(1);
           });
           result.stdout.pipe(stdout);
@@ -22,7 +22,7 @@ export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS
         }
         if (result.stderr) {
           result.stderr.on('error', error => {
-            stderr.write(`${error.message}\n`);
+            stderr.write(errorToString(error, argv));
             exit(1);
           });
           result.stderr.pipe(stderr);
@@ -32,7 +32,7 @@ export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS
         }
       });
     }).catch((error: Error) => {
-      stderr.write(`${error.message}\n`);
+      stderr.write(errorToString(error, argv));
       exit(1);
     });
 }
@@ -72,7 +72,7 @@ export function runArgsInProcessStatic(actor: any, options?: { context?: ActionC
     .then((result: IActorOutputInit) => {
       if (result.stdout) {
         result.stdout.on('error', error => {
-          process.stderr.write(`${error.message}\n`);
+          process.stderr.write(errorToString(error, argv));
           if (options?.onDone) {
             options?.onDone();
           }
@@ -87,7 +87,7 @@ export function runArgsInProcessStatic(actor: any, options?: { context?: ActionC
       }
       if (result.stderr) {
         result.stderr.on('error', error => {
-          process.stderr.write(`${error.message}\n`);
+          process.stderr.write(errorToString(error, argv));
           if (options?.onDone) {
             options?.onDone();
           }
@@ -103,10 +103,14 @@ export function runArgsInProcessStatic(actor: any, options?: { context?: ActionC
       }
     })
     .catch((error: Error) => {
-      process.stderr.write(`${error.message}\n`);
+      process.stderr.write(errorToString(error, argv));
       if (options?.onDone) {
         options?.onDone();
       }
       process.exit(1);
     });
+}
+
+function errorToString(error: Error, argv: string[]): string {
+  return argv.includes('--showStackTrace') ? `${error.stack}\n` : `${error.message}\n`;
 }

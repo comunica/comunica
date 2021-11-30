@@ -110,6 +110,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'Prints version information',
         },
+        showStackTrace: {
+          type: 'boolean',
+          describe: 'Prints the full stacktrace when errors are thrown',
+        },
       })
       .exitProcess(false)
       .fail(false)
