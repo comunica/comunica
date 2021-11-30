@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-rdf-serialize
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^2.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfSerialize:_default_bus`
 
 ## Creating actors on this bus

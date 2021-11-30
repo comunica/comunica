@@ -398,7 +398,7 @@ export interface IActorInitSparqlBaseArgs extends IActorArgs<IActionInit, IActor
   IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
   /**
    * The logger of this actor
-   * @default {a <npmd:@comunica/logger-void/^1.0.0/components/LoggerVoid.jsonld#LoggerVoid>}
+   * @default {a <npmd:@comunica/logger-void/^2.0.0/components/LoggerVoid.jsonld#LoggerVoid>}
    */
   logger: Logger;
   /**

@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-sparql-parse
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^2.0.0/components/context.jsonld"`
 * **Bus name**: `ActorSparqlParse:_default_bus`
 
 ## Creating actors on this bus

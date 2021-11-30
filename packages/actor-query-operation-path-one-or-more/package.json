@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-one-or-more",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "A path-one-or-more query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -35,16 +35,16 @@
     "@comunica/core": "^1.2.0"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^1.22.0",
-    "@comunica/types": "^1.22.0",
+    "@comunica/actor-abstract-path": "^2.0.0",
+    "@comunica/types": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.2.1",
     "rdf-string": "^1.5.0",
     "sparqlalgebrajs": "^4.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.22.0",
-    "@comunica/core": "^1.22.0"
+    "@comunica/bus-query-operation": "^2.0.0",
+    "@comunica/core": "^2.0.0"
   },
   "jest": {
     "globals": {

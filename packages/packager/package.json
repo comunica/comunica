@@ -1,6 +1,6 @@
 {
   "name": "@comunica/packager",
-  "version": "1.22.3",
+  "version": "2.0.0",
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -28,14 +28,14 @@
     "bin/package.js"
   ],
   "dependencies": {
-    "@comunica/actor-init-hello-world": "^1.22.0",
-    "@comunica/actor-init-http": "^1.22.3",
-    "@comunica/actor-init-rdf-dereference": "^1.22.3",
-    "@comunica/actor-init-rdf-dereference-paged": "^1.22.3",
-    "@comunica/actor-init-rdf-parse": "^1.22.1",
-    "@comunica/actor-init-sparql": "^1.22.3",
-    "@comunica/runner": "^1.22.0",
-    "@comunica/runner-cli": "^1.22.0",
+    "@comunica/actor-init-hello-world": "^2.0.0",
+    "@comunica/actor-init-http": "^2.0.0",
+    "@comunica/actor-init-rdf-dereference": "^2.0.0",
+    "@comunica/actor-init-rdf-dereference-paged": "^2.0.0",
+    "@comunica/actor-init-rdf-parse": "^2.0.0",
+    "@comunica/actor-init-sparql": "^2.0.0",
+    "@comunica/runner": "^2.0.0",
+    "@comunica/runner-cli": "^2.0.0",
     "@types/minimist": "^1.2.0",
     "componentsjs": "^4.0.6",
     "minimist": "^1.2.0"

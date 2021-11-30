@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bindings-factory",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "Bindings factory module for Comunica",
   "main": "index.js",
   "typings": "index",
@@ -31,7 +31,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/types": "1.22.0",
+    "@comunica/types": "^2.0.0",
     "@rdfjs/types": "*",
     "immutable": "^3.8.2"
   },

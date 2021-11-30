@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-describe-subject",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "A describe-subject query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,8 +30,8 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-query-operation-union": "^1.22.0",
-    "@comunica/types": "^1.22.0",
+    "@comunica/actor-query-operation-union": "^2.0.0",
+    "@comunica/types": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.2.1",
     "rdf-data-factory": "^1.0.3",
@@ -42,8 +42,8 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.22.0",
-    "@comunica/core": "^1.22.0"
+    "@comunica/bus-query-operation": "^2.0.0",
+    "@comunica/core": "^2.0.0"
   },
   "jest": {
     "globals": {

@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-rdf-resolve-quad-pattern
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^2.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfResolveQuadPattern:_default_bus`
 
 ## Creating actors on this bus

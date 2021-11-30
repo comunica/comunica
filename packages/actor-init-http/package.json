@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-http",
-  "version": "1.22.3",
+  "version": "2.0.0",
   "description": "A Comunica engine for triggering HTTP requests",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -34,19 +34,19 @@
     "bin/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-http-node-fetch": "^1.22.3",
-    "@comunica/bus-http": "^1.22.1",
-    "@comunica/bus-init": "^1.22.0",
-    "@comunica/core": "^1.22.0",
-    "@comunica/mediator-number": "^1.22.0",
-    "@comunica/runner": "^1.22.0",
-    "@comunica/runner-cli": "^1.22.0"
+    "@comunica/actor-http-node-fetch": "^2.0.0",
+    "@comunica/bus-http": "^2.0.0",
+    "@comunica/bus-init": "^2.0.0",
+    "@comunica/core": "^2.0.0",
+    "@comunica/mediator-number": "^2.0.0",
+    "@comunica/runner": "^2.0.0",
+    "@comunica/runner-cli": "^2.0.0"
   },
   "devDependencies": {
     "@comunica/bus-http": "^1.2.0",
     "@comunica/bus-init": "^1.2.0",
     "@comunica/core": "^1.2.0",
-    "@comunica/mediatortype-time": "^1.22.0",
+    "@comunica/mediatortype-time": "^2.0.0",
     "cross-fetch": "^3.0.5"
   },
   "jest": {

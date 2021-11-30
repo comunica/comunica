@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-rdf-resolve-hypermedia-links-queue
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^2.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfResolveHypermediaLinksQueue:_default_bus`
 
 ## Creating actors on this bus

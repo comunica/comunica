@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-optional-bind",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A optional-bind rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,19 +30,19 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-join-inner-multi-bind": "^1.0.0",
-    "@comunica/bus-query-operation": "^1.22.0",
-    "@comunica/context-entries": "^1.22.0",
+    "@comunica/actor-rdf-join-inner-multi-bind": "^2.0.0",
+    "@comunica/bus-query-operation": "^2.0.0",
+    "@comunica/context-entries": "^2.0.0",
     "asynciterator": "^3.2.1",
     "sparqlalgebrajs": "^4.0.0"
   },
   "peerDependencies": {
-    "@comunica/core": "^1.22.0",
-    "@comunica/bus-rdf-join": "^1.22.0"
+    "@comunica/bus-rdf-join": "^1.22.0",
+    "@comunica/core": "^1.22.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.22.0",
-    "@comunica/bus-rdf-join": "^1.22.0"
+    "@comunica/bus-rdf-join": "^2.0.0",
+    "@comunica/core": "^2.0.0"
   },
   "jest": {
     "globals": {
