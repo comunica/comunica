@@ -40,6 +40,15 @@ describe('ActorRdfResolveQuadPatternSource', () => {
         return expect(actor.getContextSourceUrl({ value: 'abc' })).toEqual('abc');
       });
 
+      it('should return undefined when a source is available with an object value', () => {
+        const src = {};
+        return expect(actor.getContextSourceUrl({ value: src })).toBeUndefined();
+      });
+
+      it('should return when a source is available and is a string', () => {
+        return expect(actor.getContextSourceUrl('abc')).toEqual('abc');
+      });
+
       it('should strip away everything after the hash', () => {
         return expect(actor.getContextSourceUrl({ value: 'http://ex.org/#abcdef#xyz' })).toEqual('http://ex.org/');
       });

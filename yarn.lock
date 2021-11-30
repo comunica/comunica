@@ -2523,11 +2523,6 @@
   resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.33.tgz#099b0712d824d15e2660c20e1c16e6a8381f308c"
   integrity sha512-qEWiQff6q2tA5gcJGWwzplQcXdJtm+0oy6IHGHzlOf3eFAkGE/FIPXZK9ofWgNSHVp8AFFI33PJJshS0ei3Gvw==
 
-"@types/lodash@*":
-  version "4.14.172"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.172.tgz#aad774c28e7bfd7a67de25408e03ee5a8c3d028a"
-  integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
-
 "@types/log-symbols@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/log-symbols/-/log-symbols-3.0.0.tgz#bcd48948cb85de11e64c6654cc18a67e256b3a1a"
@@ -2550,7 +2545,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.2.tgz#ee771e2ba4b3dc5b372935d549fd9617bf345b8c"
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
-"@types/n3@^1.10.3", "@types/n3@^1.4.2", "@types/n3@^1.4.4":
+"@types/n3@^1.10.3", "@types/n3@^1.4.4":
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.10.3.tgz#8f295db172a29c4daeced360c9460d4e0603cc9a"
   integrity sha512-eVw/weCi6JPooPTz7Zgezmdw5ypNE57Ep+SlxFhT75F0nL9snsu1TIpAMAqtzHvi7VKJKJbnuOxAy9jgFCXDTA==
@@ -8718,7 +8713,7 @@ mv@~2:
     ncp "~2.0.0"
     rimraf "~2.4.0"
 
-n3@^1.0.0, n3@^1.11.1, n3@^1.6.3:
+n3@^1.11.1, n3@^1.6.3:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/n3/-/n3-1.11.1.tgz#50015008afcb71e587ff9413f32e4a9bef09bc8b"
   integrity sha512-yeTeYoatabMs6IMv71dYSIfgf+s+4DpLrnvRv8CKGRLnAt1lfWcnb+mwP67PZKq7Wvh7MCIGXaflayPkn0WzHw==
