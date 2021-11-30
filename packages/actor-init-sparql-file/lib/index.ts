@@ -7,7 +7,7 @@ import { newEngineDynamicArged } from '@comunica/actor-init-sparql/lib/QueryDyna
  * @return {ActorInitSparql} A comunica engine.
  */
 export function newEngine(): ActorInitSparql {
-  return require('./engine-default.js');
+  return require('../engine-default.js');
 }
 
 /**
