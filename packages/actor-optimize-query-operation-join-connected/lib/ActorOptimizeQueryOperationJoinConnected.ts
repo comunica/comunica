@@ -73,7 +73,7 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
       for (const newEntry of newClusters) {
         if (ActorOptimizeQueryOperationJoinConnected
           .haveOverlappingVariables(entry.inScopeVariables, newEntry.inScopeVariables)) {
-          newEntry.entries = newEntry.entries.concat(entry.entries);
+          newEntry.entries = [ ...newEntry.entries, ...entry.entries ];
           newEntry.inScopeVariables = { ...newEntry.inScopeVariables, ...entry.inScopeVariables };
           joined = true;
           break;

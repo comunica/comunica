@@ -28,7 +28,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const entries: IJoinEntry[] = action.entries.slice();
+    const entries: IJoinEntry[] = [ ...action.entries ];
 
     // Determine the two smallest streams by estimated count
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);

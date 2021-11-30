@@ -106,9 +106,7 @@ export abstract class ActorRdfJoin
    * @returns {string[]}
    */
   public static joinVariablesStreams(streams: IActorQueryOperationOutputBindings[]): string[] {
-    const variables = streams.map(entry => entry.variables);
-    const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
-    return [ ...new Set(withDuplicates) ];
+    return [ ...new Set(streams.flatMap(entry => entry.variables)) ];
   }
 
   /**

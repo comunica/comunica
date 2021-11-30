@@ -229,7 +229,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(2);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -261,7 +261,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {
-          expect(result).toEqual(flatten(quads));
+          expect(result).toEqual(quads.flat());
           resolve();
         });
       });
@@ -295,7 +295,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {
-          expect(result).toEqual(flatten(quads));
+          expect(result).toEqual(quads.flat());
           resolve();
         });
       });
@@ -324,7 +324,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {
-          expect(result).toEqual(flatten(quads));
+          expect(result).toEqual(quads.flat());
           resolve();
         });
       });
@@ -354,7 +354,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {
-          expect(result).toEqual(flatten(quads));
+          expect(result).toEqual(quads.flat());
           resolve();
         });
       });
@@ -373,7 +373,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(2);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -406,7 +406,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it2.on('data', d => result.push(d));
       it2.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it2).handleNextUrl).toHaveBeenCalledTimes(2);
         expect((<any> it2).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -448,7 +448,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(4);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -503,7 +503,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(4);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -552,7 +552,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', (d: any) => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(toTerms([
+        expect(result).toEqual(toTerms([
           [
             [ 'a', 'b', 'c' ],
             [ 'd', 'e', 'f' ],
@@ -568,7 +568,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
             [ 'd', 'e', '2' ],
             [ 'g', 'h', '3' ],
           ],
-        ])));
+        ]).flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(7);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -657,7 +657,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(3);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -689,7 +689,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(1);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -709,7 +709,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
+        expect(result).toEqual(quads.flat());
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(1);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
           link: { url: 'first' },
@@ -786,9 +786,4 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
 
 function toTerms(data: any) {
   return data.map((page: any) => page.map((terms: any) => DF.literal.call(null, terms)));
-}
-
-function flatten(a: any) {
-  // eslint-disable-next-line prefer-spread
-  return [].concat.apply([], a);
 }

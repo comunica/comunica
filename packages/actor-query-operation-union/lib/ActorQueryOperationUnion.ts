@@ -23,8 +23,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @return {string[]} The union of the given variables.
    */
   public static unionVariables(variables: string[][]): string[] {
-    const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
-    return [ ...new Set(withDuplicates) ];
+    return [ ...new Set(variables.flat()) ];
   }
 
   /**

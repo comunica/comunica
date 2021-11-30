@@ -74,7 +74,7 @@ describe('ActorQueryOperationPathSeq', () => {
           metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
-          variables: arg.entries[0].output.variables.concat(arg.entries[1].output.variables),
+          variables: [ ...arg.entries[0].output.variables, ...arg.entries[1].output.variables ],
         });
       },
     };
