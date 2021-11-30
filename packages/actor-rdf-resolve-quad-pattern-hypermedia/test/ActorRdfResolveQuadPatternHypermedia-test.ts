@@ -299,46 +299,5 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         ]);
       });
     });
-
-    describe('run without mediatorRdfResolveHypermediaLinksQueue', () => {
-      beforeEach(() => {
-        actor = new ActorRdfResolveQuadPatternHypermedia({
-          bus,
-          cacheSize: 10,
-          httpInvalidator,
-          mediatorMetadata,
-          mediatorMetadataExtract,
-          mediatorRdfDereference,
-          mediatorRdfResolveHypermedia,
-          mediatorRdfResolveHypermediaLinks,
-          mediatorRdfResolveHypermediaLinksQueue: undefined,
-          name: 'actor',
-        });
-      });
-
-      it('should return a quad stream and metadata', async() => {
-        const { data } = await actor.run({ context, pattern });
-        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s2', 'p2', 'o2'),
-          quad('s3', 'p3', 'o3'),
-          quad('s4', 'p4', 'o4'),
-        ]);
-        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-          .toEqual({ firstMeta: true, a: 1 });
-      });
-
-      it('should return a quad stream and metadata, with metadata resolving first', async() => {
-        const { data } = await actor.run({ context, pattern });
-        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-          .toEqual({ firstMeta: true, a: 1 });
-        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s2', 'p2', 'o2'),
-          quad('s3', 'p3', 'o3'),
-          quad('s4', 'p4', 'o4'),
-        ]);
-      });
-    });
   });
 });

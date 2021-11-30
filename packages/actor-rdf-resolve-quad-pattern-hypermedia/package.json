@@ -30,7 +30,6 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo": "^2.0.0",
     "@comunica/bus-rdf-metadata": "^2.0.0",
     "@comunica/bus-rdf-metadata-extract": "^2.0.0",
     "@comunica/types": "^2.0.0",

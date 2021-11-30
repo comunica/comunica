@@ -1,4 +1,3 @@
-import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
@@ -46,7 +45,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>;
 
-  public readonly mediatorRdfResolveHypermediaLinksQueue?: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
+  public readonly mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
   IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
   IActorRdfResolveHypermediaLinksQueueOutput>;
 
@@ -89,10 +88,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
         mediatorRdfDereference: this.mediatorRdfDereference,
         mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
-        mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue || <any> {
-          // TODO: remove backwards-compatibility in next major version
-          mediate: async() => ({ linkQueue: new LinkQueueFifo() }),
-        },
+        mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
       });
 
       // Set in cache
