@@ -3,7 +3,7 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IQueryableResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -36,7 +36,7 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
   }
 
   public async runOperation(pattern: Algebra.Load, context: ActionContext):
-  Promise<IActorQueryOperationOutput> {
+  Promise<IQueryableResult> {
     // Create CONSTRUCT query on the given source
     if (!context) {
       context = ActionContext({});

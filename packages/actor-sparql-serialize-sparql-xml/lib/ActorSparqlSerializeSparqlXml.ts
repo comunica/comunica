@@ -3,8 +3,8 @@ import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
-import type { Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean } from '@comunica/types';
+import type { Bindings, IQueryableResultBindings,
+  IQueryableResultBoolean } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as xml from 'xml';
 
@@ -69,15 +69,15 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
     const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' }});
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
       .on('data', chunk => data.push(`${chunk}\n`));
-    if (action.type === 'bindings' && (<IActorQueryOperationOutputBindings> action).variables.length > 0) {
-      root.push({ head: (<IActorQueryOperationOutputBindings> action).variables
+    if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
+      root.push({ head: (<IQueryableResultBindings> action).variables
         .map(variable => ({ variable: { _attr: { name: variable.slice(1) }}})) });
     }
 
     if (action.type === 'bindings') {
       const results = xml.element({});
       root.push({ results });
-      const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+      const resultStream: NodeJS.EventEmitter = (<IQueryableResultBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('error', (error: Error) => {
@@ -97,7 +97,7 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
       });
     } else {
       try {
-        root.push({ boolean: await (<IActorQueryOperationOutputBoolean> action).booleanResult });
+        root.push({ boolean: await (<IQueryableResultBoolean> action).booleanResult });
         root.close();
         setImmediate(() => data.push(null));
       } catch (error: unknown) {

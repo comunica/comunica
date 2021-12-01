@@ -5,8 +5,8 @@ import {
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type {
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads, IMetadata,
+  IQueryableResultBindings,
+  IQueryableResultQuads, IMetadata,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -37,13 +37,13 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
   }
 
   public async runOperation(pattern: Algebra.Construct, context: ActionContext):
-  Promise<IActorQueryOperationOutputQuads> {
+  Promise<IQueryableResultQuads> {
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
     const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: pattern.input, variables };
 
     // Evaluate the input query
-    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation, context }),
     );
 

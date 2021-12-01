@@ -1,6 +1,6 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { IQueryableResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -85,7 +85,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
           input: { type: 'bgp', patterns: []},
         },
       };
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
+      return actor.run(op).then(async(output: IQueryableResultQuads) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
@@ -104,7 +104,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
           type: 'describe',
         },
       };
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
+      return actor.run(op).then(async(output: IQueryableResultQuads) => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
@@ -124,7 +124,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
           type: 'describe',
         },
       };
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
+      return actor.run(op).then(async(output: IQueryableResultQuads) => {
         expect(await output.metadata()).toEqual({ cardinality: 4, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([

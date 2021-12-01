@@ -3,7 +3,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
+import type { IQueryableResultBindings, Bindings } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
@@ -20,7 +20,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     super(args, Algebra.types.ONE_OR_MORE_PATH);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IQueryableResultBindings> {
     const distinct = await this.isPathArbitraryLengthDistinct(context, path);
     if (distinct.operation) {
       return distinct.operation;
@@ -140,7 +140,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       return { type: 'bindings', bindingsStream, variables, metadata: results.metadata };
     }
     if (sVar && !oVar) {
-      return <Promise<IActorQueryOperationOutputBindings>> this.mediatorQueryOperation.mediate({
+      return <Promise<IQueryableResultBindings>> this.mediatorQueryOperation.mediate({
         context,
         operation: ActorAbstractPath.FACTORY.createPath(
           path.object,

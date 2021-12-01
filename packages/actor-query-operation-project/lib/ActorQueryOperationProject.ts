@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, BindingsStream, IQueryableResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
@@ -22,9 +22,9 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
   }
 
   public async runOperation(pattern: Algebra.Project, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
+  Promise<IQueryableResultBindings> {
     // Resolve the input
-    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }),
     );
 

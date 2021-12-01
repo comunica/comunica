@@ -4,7 +4,7 @@ import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import {
   KeysInitSparql,
 } from '@comunica/context-entries';
-import type { IActorQueryOperationOutput, IQueryExplained } from '@comunica/types';
+import type { IQueryableResult, IQueryExplained } from '@comunica/types';
 import yargs from 'yargs';
 import type { IActorInitSparqlBaseArgs } from './ActorInitSparqlBase';
 import { ActorInitSparqlBase } from './ActorInitSparqlBase';
@@ -84,7 +84,7 @@ export class ActorInitSparql extends ActorInitSparqlBase {
     }
 
     // Evaluate query
-    const queryResult: IActorQueryOperationOutput | IQueryExplained = await this.queryOrExplain(query!, context);
+    const queryResult: IQueryableResult | IQueryExplained = await this.queryOrExplain(query!, context);
 
     // Output query explanations in a different way
     if ('explain' in queryResult) {

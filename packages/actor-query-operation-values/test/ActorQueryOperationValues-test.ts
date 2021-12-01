@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationValues } from '../lib/ActorQueryOperationValues';
 const arrayifyStream = require('arrayify-stream');
@@ -54,7 +54,7 @@ describe('ActorQueryOperationValues', () => {
       const variables = [ DF.variable('v') ];
       const bindings = [{ '?v': DF.namedNode('v1') }];
       const op: any = { operation: { type: 'values', variables, bindings }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
@@ -68,7 +68,7 @@ describe('ActorQueryOperationValues', () => {
       const variables = [ DF.variable('v') ];
       const bindings = [{ '?v': DF.namedNode('v1') }, { '?v': DF.namedNode('v2') }];
       const op: any = { operation: { type: 'values', variables, bindings }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
@@ -86,7 +86,7 @@ describe('ActorQueryOperationValues', () => {
         { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
       ];
       const op: any = { operation: { type: 'values', variables, bindings }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');
@@ -104,7 +104,7 @@ describe('ActorQueryOperationValues', () => {
         { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
       ];
       const op: any = { operation: { type: 'values', variables, bindings }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: true });
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');

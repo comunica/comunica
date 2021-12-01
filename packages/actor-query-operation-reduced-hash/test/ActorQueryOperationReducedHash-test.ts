@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationReducedHash } from '..';
@@ -101,7 +101,7 @@ describe('ActorQueryOperationReducedHash', () => {
 
     it('should run', () => {
       const op: any = { operation: { type: 'reduced' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await (<any> output).metadata()).toEqual({ cardinality: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
@@ -148,7 +148,7 @@ describe('Smaller cache than number of queries', () => {
   });
   it('should run', () => {
     const op: any = { operation: { type: 'reduced' }};
-    return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+    return actor.run(op).then(async(output: IQueryableResultBindings) => {
       expect(await (<any> output).metadata()).toEqual({ cardinality: 7 });
       expect(output.variables).toEqual([ 'a' ]);
       expect(output.type).toEqual('bindings');

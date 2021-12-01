@@ -5,7 +5,7 @@ import {
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type { Bindings,
   BindingsStream,
-  IActorQueryOperationOutputBindings } from '@comunica/types';
+  IQueryableResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActorInitRdfDereferencePagedArgs } from './AbstractFilterHash';
 
@@ -29,8 +29,8 @@ export abstract class AbstractBindingsHash<T extends Algebra.Operation> extends 
     return true;
   }
 
-  public async runOperation(pattern: T, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
-    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+  public async runOperation(pattern: T, context: ActionContext): Promise<IQueryableResultBindings> {
+    const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }),
     );
     const bindingsStream: BindingsStream = output.bindingsStream.filter(

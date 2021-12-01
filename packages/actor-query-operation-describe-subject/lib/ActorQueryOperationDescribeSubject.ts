@@ -4,7 +4,7 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutputQuads, IMetadata } from '@comunica/types';
+import type { IQueryableResultQuads, IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -24,7 +24,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
   }
 
   public async runOperation(pattern: Algebra.Describe, context: ActionContext):
-  Promise<IActorQueryOperationOutputQuads> {
+  Promise<IQueryableResultQuads> {
     // Create separate construct queries for all non-variable terms
     const operations: Algebra.Construct[] = pattern.terms
       .filter(term => term.termType !== 'Variable')
@@ -80,7 +80,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     }
 
     // Evaluate the construct queries
-    const outputs: IActorQueryOperationOutputQuads[] = (await Promise.all(operations.map(
+    const outputs: IQueryableResultQuads[] = (await Promise.all(operations.map(
       operation => this.mediatorQueryOperation.mediate({ operation, context }),
     )))
       .map(ActorQueryOperation.getSafeQuads);

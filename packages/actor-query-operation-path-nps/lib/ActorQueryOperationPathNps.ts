@@ -4,7 +4,7 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, IQueryableResultBindings } from '@comunica/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -16,7 +16,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     super(args, Algebra.types.NPS);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IQueryableResultBindings> {
     const predicate = <Algebra.Nps> path.predicate;
     const blank = this.generateVariable(path);
     const blankName = termToString(blank);

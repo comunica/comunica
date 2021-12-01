@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
@@ -22,7 +22,7 @@ export class ActorQueryOperationMoveRewrite extends ActorQueryOperationTypedMedi
     return true;
   }
 
-  public runOperation(pattern: Algebra.Move, context: ActionContext): Promise<IActorQueryOperationOutput> {
+  public runOperation(pattern: Algebra.Move, context: ActionContext): Promise<IQueryableResult> {
     // No-op if source === destination
     if ((typeof pattern.destination === 'string' && typeof pattern.source === 'string' &&
       pattern.destination === pattern.source) ||

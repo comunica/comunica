@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, IMetadata, Bindings } from '@comunica/types';
+import type { IQueryableResultBindings, IMetadata, Bindings } from '@comunica/types';
 import type { Term, Variable } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
@@ -62,7 +62,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
   // https://www.w3.org/TR/sparql11-query/#propertypaths
   public async isPathArbitraryLengthDistinct(context: ActionContext, path: Algebra.Path):
-  Promise<{ context: ActionContext; operation: IActorQueryOperationOutputBindings | undefined }> {
+  Promise<{ context: ActionContext; operation: IQueryableResultBindings | undefined }> {
     if (!context || !context.get(ActorAbstractPath.isPathArbitraryLengthDistinctKey)) {
       context = context ?
         context.set(ActorAbstractPath.isPathArbitraryLengthDistinctKey, true) :

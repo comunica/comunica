@@ -4,7 +4,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -29,7 +29,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 
   public async runOperation(pattern: Algebra.Group, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
+  Promise<IQueryableResultBindings> {
     // Get result stream for the input query
     const { input, aggregates } = pattern;
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });

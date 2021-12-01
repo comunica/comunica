@@ -3,8 +3,8 @@ import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
-import type { Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean } from '@comunica/types';
+import type { Bindings, IQueryableResultBindings,
+  IQueryableResultBoolean } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -64,14 +64,14 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
 
     // Write head
     const head: any = {};
-    if (action.type === 'bindings' && (<IActorQueryOperationOutputBindings> action).variables.length > 0) {
-      head.vars = (<IActorQueryOperationOutputBindings> action).variables.map((variable: string) => variable.slice(1));
+    if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
+      head.vars = (<IQueryableResultBindings> action).variables.map((variable: string) => variable.slice(1));
     }
     data.push(`{"head": ${JSON.stringify(head)},\n`);
     let empty = true;
 
     if (action.type === 'bindings') {
-      const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+      const resultStream: NodeJS.EventEmitter = (<IQueryableResultBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('error', (error: Error) => {
@@ -105,7 +105,7 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
       });
     } else {
       try {
-        data.push(`"boolean":${await (<IActorQueryOperationOutputBoolean> action).booleanResult}\n}\n`);
+        data.push(`"boolean":${await (<IQueryableResultBoolean> action).booleanResult}\n}\n`);
         data.push(null);
       } catch (error: unknown) {
         data.once('newListener', () => data.emit('error', error));

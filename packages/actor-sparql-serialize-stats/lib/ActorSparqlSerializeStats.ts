@@ -3,8 +3,8 @@ import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { IQueryableResultBindings,
+  IQueryableResultQuads } from '@comunica/types';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
 /**
@@ -58,8 +58,8 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
     };
 
     const resultStream: NodeJS.EventEmitter = action.type === 'bindings' ?
-      (<IActorQueryOperationOutputBindings> action).bindingsStream :
-      (<IActorQueryOperationOutputQuads> action).quadStream;
+      (<IQueryableResultBindings> action).bindingsStream :
+      (<IQueryableResultQuads> action).quadStream;
 
     // TODO: Make initiation timer configurable
     const startTime = process.hrtime();

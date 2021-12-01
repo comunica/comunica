@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -20,8 +20,7 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Nop, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(pattern: Algebra.Nop, context: ActionContext): Promise<IQueryableResultBindings> {
     return {
       bindingsStream: new SingletonIterator(BF.bindings({})),
       metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),

@@ -3,7 +3,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
+import type { IQueryableResultBindings, Bindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 
 import { termToString } from 'rdf-string';
@@ -19,7 +19,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     super(args, Algebra.types.ZERO_OR_ONE_PATH);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IQueryableResultBindings> {
     const predicate = <Algebra.ZeroOrOnePath> path.predicate;
 
     const sVar = path.subject.termType === 'Variable';

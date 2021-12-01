@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
@@ -67,7 +67,7 @@ describe('ActorQueryOperationProject', () => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.blankNode('delet') ]},
       };
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
         expect(output.type).toEqual('bindings');
@@ -79,7 +79,7 @@ describe('ActorQueryOperationProject', () => {
 
     it('should run on a stream with variables that should be deleted', () => {
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
@@ -110,7 +110,7 @@ describe('ActorQueryOperationProject', () => {
         variables: [ '?a' ],
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
@@ -135,7 +135,7 @@ describe('ActorQueryOperationProject', () => {
         variables: [ '?a' ],
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
@@ -161,7 +161,7 @@ describe('ActorQueryOperationProject', () => {
         canContainUndefs: true,
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
@@ -187,7 +187,7 @@ describe('ActorQueryOperationProject', () => {
         variables: [ '?a' ],
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');

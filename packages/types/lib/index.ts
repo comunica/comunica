@@ -15,19 +15,42 @@ export type Bindings = Map<string, RDF.Term>;
 
 /**
  * A stream of bindings.
- *
- * Next to the list of available variables,
- * an optional metadata hash can be present.
- *
  * @see Bindings
  */
 export type BindingsStream = AsyncIterator<Bindings>;
+
+export interface IQueryableResultBase {
+  /**
+   * The type of output.
+   */
+  type: string;
+  /**
+   * The resulting action context.
+   */
+  context?: ActionContext;
+}
+
+/**
+ * Super interface for query results that represent some for of stream.
+ * @see IQueryableResultBindings, IQueryableResultQuads
+ */
+export interface IQueryableResultStream extends IQueryableResultBase {
+  /**
+   * Callback that returns a promise that resolves to the metadata about the stream.
+   * This can contain things like the estimated number of total stream elements,
+   * or the order in which the bindings appear.
+   * This callback can be invoked multiple times.
+   * The actors that return this metadata will make sure that multiple calls properly cache this promise.
+   * Metadata will not be collected until this callback is invoked.
+   */
+  metadata: () => Promise<IMetadata>;
+}
 
 /**
  * Query operation output for a bindings stream.
  * For example: SPARQL SELECT results
  */
-export interface IActorQueryOperationOutputBindings extends IActorQueryOperationOutputStream {
+export interface IQueryableResultBindings extends IQueryableResultStream {
   /**
    * The type of output.
    */
@@ -46,7 +69,7 @@ export interface IActorQueryOperationOutputBindings extends IActorQueryOperation
  * Query operation output for quads.
  * For example: SPARQL CONSTRUCT results
  */
-export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOutputStream {
+export interface IQueryableResultQuads extends IQueryableResultStream {
   /**
    * The type of output.
    */
@@ -58,10 +81,10 @@ export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOut
 }
 
 /**
- * Query operation output for quads.
+ * Query operation output for boolean results.
  * For example: SPARQL ASK results
  */
-export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationOutputBase {
+export interface IQueryableResultBoolean extends IQueryableResultBase {
   /**
    * The type of output.
    */
@@ -70,10 +93,13 @@ export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationO
    * A promise resolving to the boolean output of the operation.
    */
   booleanResult: Promise<boolean>;
-
 }
 
-export interface IActorQueryOperationOutputUpdate extends IActorQueryOperationOutputBase {
+/**
+ * Query operation output for boolean results.
+ * For example: SPARQL UPDATE results
+ */
+export interface IQueryableResultVoid extends IQueryableResultBase {
   /**
    * The type of output.
    */
@@ -84,33 +110,15 @@ export interface IActorQueryOperationOutputUpdate extends IActorQueryOperationOu
   updateResult: Promise<void>;
 }
 
-export interface IActionQueryOperation extends IAction {
-  /**
-   * The query operation to handle.
-   */
-  operation: Algebra.Operation;
-}
-
 /**
  * Query operation output.
- * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads, IActorQueryOperationOutputBoolean
+ * @see IQueryableResultBindings, IQueryableResultQuads, IQueryableResultBoolean, IQueryableResultVoid
  */
-// TODO: rename to QueryOutput in next major update
-export type IActorQueryOperationOutput =
-  IActorQueryOperationOutputStream |
-  IActorQueryOperationOutputQuads |
-  IActorQueryOperationOutputBoolean |
-  IActorQueryOperationOutputUpdate;
-export interface IActorQueryOperationOutputBase {
-  /**
-   * The type of output.
-   */
-  type: string;
-  /**
-   * The resulting action context.
-   */
-  context?: ActionContext;
-}
+export type IQueryableResult =
+  IQueryableResultBindings |
+  IQueryableResultQuads |
+  IQueryableResultBoolean |
+  IQueryableResultVoid;
 
 /**
  * A type-safe metadata object.
@@ -154,22 +162,6 @@ export interface IMetadata extends Record<string, any> {
    * If order is undefined, then the order is unknown.
    */
   order?: { variable: string; order: 'asc' | 'desc' }[];
-}
-
-/**
- * Super interface for query operation outputs that represent some for of stream.
- * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads
- */
-export interface IActorQueryOperationOutputStream extends IActorQueryOperationOutputBase {
-  /**
-   * Callback that returns a promise that resolves to the metadata about the stream.
-   * This can contain things like the estimated number of total stream elements,
-   * or the order in which the bindings appear.
-   * This callback can be invoked multiple times.
-   * The actors that return this metadata will make sure that multiple calls properly cache this promise.
-   * Metadata will not be collected until this callback is invoked.
-   */
-  metadata: () => Promise<IMetadata>;
 }
 
 /**
@@ -226,17 +218,6 @@ export interface IPhysicalQueryPlanLogger {
 }
 
 /**
- * Data interface for the type of action.
- */
-export interface IAction {
-
-  /**
-   * The optional input context that is passed through by actors.
-   */
-  context?: ActionContext;
-}
-
-/**
  * An immutable key-value mapped context that can be passed to any (@link IAction}.
  * All actors that receive a context must forward this context to any actor, mediator or bus that it calls.
  * This context may be transformed before forwarding.
@@ -261,20 +242,20 @@ export interface IQueryEngine {
    * Evaluate the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
    * @param context An optional query context.
-   * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
+   * @return {Promise<IQueryableResult>} A promise that resolves to the query output.
    */
-  query: (query: string | Algebra.Operation, context?: any) => Promise<IActorQueryOperationOutput>;
+  query: (query: string | Algebra.Operation, context?: any) => Promise<IQueryableResult>;
   /**
    * Evaluate the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
    * @param context An optional query context.
-   * @return {Promise<IActorQueryOperationOutput | IQueryExplained>}
+   * @return {Promise<IQueryableResult | IQueryExplained>}
    *  A promise that resolves to the query output.
    */
   queryOrExplain: (
     query: string | Algebra.Operation,
     context?: any,
-  ) => Promise<IActorQueryOperationOutput | IQueryExplained>;
+  ) => Promise<IQueryableResult | IQueryExplained>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
@@ -287,12 +268,12 @@ export interface IQueryEngine {
   getResultMediaTypeFormats: (context?: ActionContext) => Promise<Record<string, string>>;
   /**
    * Convert a query result to a string stream based on a certain media type.
-   * @param {IActorQueryOperationOutput} queryResult A query result.
+   * @param {IQueryableResult} queryResult A query result.
    * @param {string} mediaType A media type.
    * @param {ActionContext} context An optional context.
    * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
    */
-  resultToString: (queryResult: IActorQueryOperationOutput, mediaType?: string, context?: any) => any;
+  resultToString: (queryResult: IQueryableResult, mediaType?: string, context?: any) => any;
   /**
    * Invalidate all internal caches related to the given page URL.
    * If no page URL is given, then all pages will be invalidated.

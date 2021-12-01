@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
@@ -118,7 +118,7 @@ describe('ActorQueryOperationExtend', () => {
 
     it('should run', async() => {
       const op: any = { operation: example(defaultExpression) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IQueryableResultBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         BF.bindings({
           '?a': DF.literal('1'),
@@ -144,7 +144,7 @@ describe('ActorQueryOperationExtend', () => {
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
       const op: any = { operation: example(faultyExpression) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IQueryableResultBindings = <any> await actor.run(op);
 
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
@@ -161,7 +161,7 @@ describe('ActorQueryOperationExtend', () => {
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
       const op: any = { operation: example(faultyExpression) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IQueryableResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
       expect(warn).toBeCalledTimes(0);
     });

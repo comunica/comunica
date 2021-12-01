@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IJoinEntry } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationJoin } from '../lib/ActorQueryOperationJoin';
@@ -78,7 +78,7 @@ describe('ActorQueryOperationJoin', () => {
 
     it('should run', () => {
       const op: any = { operation: { type: 'join', input: [{}, {}, {}]}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await output.metadata()).toEqual({ cardinality: 100, canContainUndefs: false });

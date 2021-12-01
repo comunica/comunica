@@ -3,8 +3,8 @@ import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { IQueryableResultBindings, IQueryableResultBoolean,
+  IQueryableResultQuads } from '@comunica/types';
 import * as RdfString from 'rdf-string';
 
 /**
@@ -40,7 +40,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
 
     let empty = true;
     if (action.type === 'bindings') {
-      const resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+      const resultStream = (<IQueryableResultBindings> action).bindingsStream;
       data.push('[');
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', element => {
@@ -53,7 +53,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
         data.push(null);
       });
     } else if (action.type === 'quads') {
-      const resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
+      const resultStream = (<IQueryableResultQuads> action).quadStream;
       data.push('[');
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', element => {
@@ -67,7 +67,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
       });
     } else {
       try {
-        data.push(`${JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult)}\n`);
+        data.push(`${JSON.stringify(await (<IQueryableResultBoolean> action).booleanResult)}\n`);
         data.push(null);
       } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));

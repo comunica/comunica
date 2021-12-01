@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IQueryableResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -27,7 +27,7 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
   }
 
   public async runOperation(pattern: Algebra.Clear, context: ActionContext):
-  Promise<IActorQueryOperationOutput> {
+  Promise<IQueryableResult> {
     // Delegate to update-quads bus
     let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];
     if (pattern.source === 'DEFAULT') {

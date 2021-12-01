@@ -2,8 +2,8 @@ import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
-import type { ActionContext, IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputQuads, IActorQueryOperationOutputUpdate } from '@comunica/types';
+import type { ActionContext, IQueryableResultBindings, IQueryableResultBoolean,
+  IQueryableResultQuads, IQueryableResultVoid } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -35,14 +35,14 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
 
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+      resultStream = (<IQueryableResultBindings> action).bindingsStream;
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', bindings => data.push(`${bindings.map(
         (value: RDF.Term, key: string) => `${key}: ${value.value}`,
       ).join('\n')}\n\n`));
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'quads') {
-      resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
+      resultStream = (<IQueryableResultQuads> action).quadStream;
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', quad => data.push(
         `subject: ${quad.subject.value}\n` +
@@ -53,13 +53,13 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'boolean') {
       try {
-        data.push(`${JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult)}\n`);
+        data.push(`${JSON.stringify(await (<IQueryableResultBoolean> action).booleanResult)}\n`);
         data.push(null);
       } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));
       }
     } else {
-      (<IActorQueryOperationOutputUpdate> action).updateResult
+      (<IQueryableResultVoid> action).updateResult
         .then(() => {
           data.push('ok\n');
           data.push(null);

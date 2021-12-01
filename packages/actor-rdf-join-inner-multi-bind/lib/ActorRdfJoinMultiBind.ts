@@ -1,3 +1,4 @@
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
@@ -9,10 +10,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings,
-  BindingsStream, IActionQueryOperation,
-  IActorQueryOperationOutputBindings,
-  IMetadata } from '@comunica/types';
+import type { Bindings, BindingsStream, IQueryableResultBindings, IMetadata } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra } from 'sparqlalgebrajs';
 
@@ -23,8 +21,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly mediatorQueryOperation: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
+  Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
+  IActionQueryOperation, IActorTest, IQueryableResultBindings>;
 
   public static readonly FACTORY = new Factory();
 
@@ -153,7 +151,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     }
 
     // Take the stream with the lowest cardinality
-    const smallestStream: IActorQueryOperationOutputBindings = action.entries.slice(smallestIndex)[0].output;
+    const smallestStream: IQueryableResultBindings = action.entries.slice(smallestIndex)[0].output;
     const remainingEntries = [ ...action.entries ];
     remainingEntries.splice(smallestIndex, 1);
     const remainingMetadatas: Record<string, any>[] = [ ...metadatas ];
@@ -267,8 +265,8 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
   /**
    * The query operation mediator
    */
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
+  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
+  IActionQueryOperation, IActorTest, IQueryableResultBindings>;
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';

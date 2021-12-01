@@ -3,10 +3,10 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputStream, IMetadata } from '@comunica/types';
+import type { IQueryableResult,
+  IQueryableResultBindings,
+  IQueryableResultQuads,
+  IQueryableResultStream, IMetadata } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -22,29 +22,28 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Slice, context: ActionContext): Promise<IActorQueryOperationOutputStream> {
+  public async runOperation(pattern: Algebra.Slice, context: ActionContext):
+  Promise<IQueryableResultBindings | IQueryableResultQuads> {
     // Resolve the input
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation
+    const output: IQueryableResult = await this.mediatorQueryOperation
       .mediate({ operation: pattern.input, context });
 
     if (output.type === 'bindings') {
-      const bindingsOutput = <IActorQueryOperationOutputBindings> output;
-      const bindingsStream = this.sliceStream(bindingsOutput.bindingsStream, pattern);
-      return <IActorQueryOperationOutputBindings> {
+      const bindingsStream = this.sliceStream(output.bindingsStream, pattern);
+      return <IQueryableResultBindings> {
         type: 'bindings',
         bindingsStream,
-        metadata: this.sliceMetadata(bindingsOutput, pattern),
-        variables: bindingsOutput.variables,
+        metadata: this.sliceMetadata(output, pattern),
+        variables: output.variables,
       };
     }
 
     if (output.type === 'quads') {
-      const quadOutput = <IActorQueryOperationOutputQuads> output;
-      const quadStream = this.sliceStream(quadOutput.quadStream, pattern);
-      return <IActorQueryOperationOutputQuads> {
+      const quadStream = this.sliceStream(output.quadStream, pattern);
+      return <IQueryableResultQuads> {
         type: 'quads',
         quadStream,
-        metadata: this.sliceMetadata(quadOutput, pattern),
+        metadata: this.sliceMetadata(output, pattern),
       };
     }
 
@@ -61,7 +60,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
   }
 
   // If we find metadata, apply slicing on the total number of items
-  private sliceMetadata(output: IActorQueryOperationOutputStream, pattern: Algebra.Slice): () => Promise<IMetadata> {
+  private sliceMetadata(output: IQueryableResultStream, pattern: Algebra.Slice): () => Promise<IMetadata> {
     // eslint-disable-next-line unicorn/explicit-length-check
     const hasLength: boolean = Boolean(pattern.length) || pattern.length === 0;
     return () => (<() => Promise<IMetadata>>output.metadata)()

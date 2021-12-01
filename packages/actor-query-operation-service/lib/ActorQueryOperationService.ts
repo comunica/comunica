@@ -4,7 +4,7 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import { KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -29,7 +29,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   }
 
   public async runOperation(pattern: Algebra.Service, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
+  Promise<IQueryableResultBindings> {
     const endpoint: string = pattern.name.value;
 
     // Adjust our context to only have the endpoint as source
@@ -41,7 +41,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     const sourceType = this.forceSparqlEndpoint ? 'sparql' : undefined;
     subContext = subContext.set(KeysRdfResolveQuadPattern.sources, [{ type: sourceType, value: endpoint }]);
     // Query the source
-    let output: IActorQueryOperationOutputBindings;
+    let output: IQueryableResultBindings;
     try {
       output = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ operation: pattern.input, context: subContext }),

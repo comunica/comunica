@@ -1,11 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import type { BindingsStream,
-  IActionQueryOperation, IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
+import type { BindingsStream, IQueryableResult, IQueryableResultBindings, IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
@@ -133,7 +132,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   }
 
   public async runOperation(pattern: Algebra.Pattern, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
+  Promise<IQueryableResultBindings> {
     // Apply the (optional) pattern-specific context
     if (pattern.context) {
       context = context ? context.merge(pattern.context) : pattern.context;
@@ -200,7 +199,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 }
 
 export interface IActorQueryOperationQuadpatternArgs extends
-  IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
+  IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult> {
   /**
    * The quad pattern resolve mediator
    */

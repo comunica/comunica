@@ -4,7 +4,7 @@ import type { IActionSparqlSerialize,
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
 import { ensureActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/types';
+import type { IQueryableResultBindings, BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IConverterSettings, ISchema } from 'sparqljson-to-tree';
 import { Converter } from 'sparqljson-to-tree';
@@ -71,7 +71,7 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
       // Do nothing
     };
 
-    const resultStream: BindingsStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+    const resultStream: BindingsStream = (<IQueryableResultBindings> action).bindingsStream;
     resultStream.on('error', error => data.emit('error', error));
     ActorSparqlSerializeTree.bindingsStreamToGraphQl(resultStream, action.context, { materializeRdfJsTerms: true })
       .then((result: any) => {

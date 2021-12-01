@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IQueryableResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -25,7 +25,7 @@ export class ActorQueryOperationAddRewrite extends ActorQueryOperationTypedMedia
     return true;
   }
 
-  public runOperation(pattern: Algebra.Add, context: ActionContext): Promise<IActorQueryOperationOutput> {
+  public runOperation(pattern: Algebra.Add, context: ActionContext): Promise<IQueryableResult> {
     // CONSTRUCT all quads from the source, and INSERT them into the destination
     const destination = pattern.destination === 'DEFAULT' ? DF.defaultGraph() : pattern.destination;
     const source = pattern.source === 'DEFAULT' ? DF.defaultGraph() : pattern.source;

@@ -5,7 +5,7 @@ import {
   ActorSparqlSerializeFixedMediaTypes,
 } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, IQueryableResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string-ttl';
 
@@ -52,7 +52,7 @@ export class ActorSparqlSerializeSparqlTsv extends ActorSparqlSerializeFixedMedi
 
   public async runHandle(action: IActionSparqlSerialize, mediaType?: string, context?: ActionContext):
   Promise<IActorSparqlSerializeOutput> {
-    const bindingsAction = <IActorQueryOperationOutputBindings> action;
+    const bindingsAction = <IQueryableResultBindings> action;
 
     const data = new Readable();
     data._read = () => {

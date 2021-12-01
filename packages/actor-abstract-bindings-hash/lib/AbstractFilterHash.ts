@@ -3,7 +3,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, IQueryableResultBindings } from '@comunica/types';
 import { sha1 } from 'hash.js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -28,7 +28,7 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
       .digest('hex');
   }
 
-  public abstract runOperation(pattern: T, context: ActionContext): Promise<IActorQueryOperationOutputBindings>;
+  public abstract runOperation(pattern: T, context: ActionContext): Promise<IQueryableResultBindings>;
 }
 
 export interface IActorInitRdfDereferencePagedArgs extends IActorQueryOperationTypedMediatedArgs {

@@ -1,6 +1,6 @@
-import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
 import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryableResultVoid } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLoad, KEY_CONTEXT_LENIENT, KEY_CONTEXT_SOURCES } from '../lib/ActorQueryOperationLoad';
@@ -59,7 +59,7 @@ describe('ActorQueryOperationLoad', () => {
           source: DF.namedNode('URL'),
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
@@ -84,7 +84,7 @@ describe('ActorQueryOperationLoad', () => {
           [KEY_CONTEXT_SOURCES]: [ 'SOMETHINGELSE' ],
         }),
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
@@ -107,7 +107,7 @@ describe('ActorQueryOperationLoad', () => {
           source: DF.namedNode('URL'),
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
@@ -124,7 +124,7 @@ describe('ActorQueryOperationLoad', () => {
           destination: DF.namedNode('GRAPH'),
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
@@ -145,7 +145,7 @@ describe('ActorQueryOperationLoad', () => {
         metadata: () => Promise.resolve({ cardinality: 0 }),
         type: 'quads',
       });
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([]);
@@ -160,7 +160,7 @@ describe('ActorQueryOperationLoad', () => {
           silent: true,
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([

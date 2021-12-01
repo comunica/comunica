@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationNop } from '../lib/ActorQueryOperationNop';
@@ -50,7 +50,7 @@ describe('ActorQueryOperationNop', () => {
 
     it('should run', () => {
       const op: any = { operation: { type: 'nop' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ BF.bindings({}) ]);
         expect(output.variables).toEqual([]);
         expect(await output.metadata()).toMatchObject({ cardinality: 1, canContainUndefs: false });

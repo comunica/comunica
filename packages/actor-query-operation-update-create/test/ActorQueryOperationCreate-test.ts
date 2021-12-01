@@ -1,8 +1,6 @@
-import type {
-  IActorQueryOperationOutputUpdate,
-} from '@comunica/bus-query-operation';
 import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryableResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationCreate } from '../lib/ActorQueryOperationCreate';
 const DF = new DataFactory();
@@ -51,7 +49,7 @@ describe('ActorQueryOperationCreate', () => {
           silent: false,
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
@@ -68,7 +66,7 @@ describe('ActorQueryOperationCreate', () => {
           silent: true,
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({

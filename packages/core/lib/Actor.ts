@@ -1,10 +1,8 @@
 import { KeysCore } from '@comunica/context-entries';
-import type { IAction, ActionContext as _ActionContext } from '@comunica/types';
+import type { ActionContext as _ActionContext } from '@comunica/types';
 import { Map } from 'immutable';
 import type { Bus } from './Bus';
 import type { Logger } from './Logger';
-
-export type { IAction };
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.
@@ -219,6 +217,17 @@ export function ActionContext(hash: Record<string, any>): ActionContext {
  */
 export function ensureActionContext(maybeActionContext: any): ActionContext {
   return Map.isMap(maybeActionContext) ? maybeActionContext : ActionContext(maybeActionContext);
+}
+
+/**
+ * Data interface for the type of action.
+ */
+export interface IAction {
+
+  /**
+   * The optional input context that is passed through by actors.
+   */
+  context?: ActionContext;
 }
 
 /**

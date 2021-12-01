@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -55,7 +55,7 @@ describe('ActorQueryOperationBgpJoin', () => {
       const context = ActionContext({ a: 'b' });
       const op = <any> { operation: { type: 'bgp', patterns }, context };
 
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IQueryableResultBindings = <any> await actor.run(op);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(output.variables).toEqual([ '?a' ]);
       expect(output.type).toEqual('bindings');

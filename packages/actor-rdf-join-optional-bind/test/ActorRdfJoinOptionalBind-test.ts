@@ -1,10 +1,11 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionQueryOperation, IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
+import type { IQueryableResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs/index';
@@ -26,8 +27,8 @@ describe('ActorRdfJoinOptionalBind', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
-    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>,
-    IActionQueryOperation, IActorTest, IActorQueryOperationOutputBindings>;
+    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
+    IActionQueryOperation, IActorTest, IQueryableResultBindings>;
     let actor: ActorRdfJoinOptionalBind;
 
     beforeEach(() => {
@@ -35,7 +36,7 @@ describe('ActorRdfJoinOptionalBind', () => {
         mediate: async() => ({ selectivity: 0.8 }),
       };
       mediatorQueryOperation = <any> {
-        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> => {
+        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryableResultBindings> => {
           let data: Bindings[] = [];
           switch ((<Algebra.Pattern> arg.operation).subject.value) {
             case '1':

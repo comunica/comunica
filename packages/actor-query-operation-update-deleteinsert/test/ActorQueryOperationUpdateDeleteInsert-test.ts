@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryableResultVoid } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -86,7 +86,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
 
     it('should run without operation input', async() => {
       const op: any = { operation: { type: 'deleteinsert' }};
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -102,7 +102,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
@@ -120,7 +120,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -141,7 +141,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
@@ -162,7 +162,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           where: factory.createBgp([]), // Dummy operation
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toBeRdfIsomorphic([
@@ -183,7 +183,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           where: factory.createBgp([]), // Dummy operation
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -207,7 +207,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           where: factory.createBgp([]), // Dummy operation
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toBeRdfIsomorphic([
@@ -233,7 +233,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           type: 'deleteinsert',
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).rejects.toBe(error);
     });
@@ -256,7 +256,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           where: factory.createBgp([]), // Dummy operation
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([]);
@@ -281,7 +281,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           where: factory.createBgp([]), // Dummy operation
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -309,7 +309,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           where: factory.createBgp([]), // Dummy operation
         },
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      const output = <IQueryableResultVoid> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([]);

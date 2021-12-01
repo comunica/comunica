@@ -1,14 +1,13 @@
 import * as cluster from 'cluster';
 import type { EventEmitter } from 'events';
-
 import * as http from 'http';
 import * as querystring from 'querystring';
 import type { Writable } from 'stream';
 import * as url from 'url';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationOutputQuads, IActorQueryOperationOutputUpdate } from '@comunica/types';
+import type { IQueryableResult,
+  IQueryableResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import yargs from 'yargs';
@@ -309,13 +308,13 @@ export class HttpServiceSparqlEndpoint {
       context = { ...context, [KeysQueryOperation.readOnly]: readOnly };
     }
 
-    let result: IActorQueryOperationOutput;
+    let result: IQueryableResult;
     try {
       result = await engine.query(queryBody.value, context);
 
       // For update queries, also await the result
       if (result.type === 'update') {
-        await (<IActorQueryOperationOutputUpdate> result).updateResult;
+        await result.updateResult;
       }
     } catch (error: unknown) {
       stdout.write('[400] Bad request\n');
@@ -425,7 +424,7 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Flush results
-      const { data } = await engine.resultToString(<IActorQueryOperationOutputQuads> {
+      const { data } = await engine.resultToString(<IQueryableResultQuads> {
         metadata: <any> undefined,
         type: 'quads',
         quadStream: new ArrayIterator(quads),

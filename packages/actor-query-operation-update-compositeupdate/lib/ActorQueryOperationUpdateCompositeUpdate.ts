@@ -4,7 +4,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -22,7 +22,7 @@ export class ActorQueryOperationUpdateCompositeUpdate
   }
 
   public async runOperation(pattern: Algebra.CompositeUpdate, context: ActionContext):
-  Promise<IActorQueryOperationOutput> {
+  Promise<IQueryableResult> {
     const updateResult = (async(): Promise<void> => {
       // Execute update operations in sequence
       for (const operation of pattern.updates) {

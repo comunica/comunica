@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -236,7 +236,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run({ operation }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
@@ -260,7 +260,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run({ operation }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
@@ -284,7 +284,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       const context = ActionContext({});
-      return actor.run({ operation, context }).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await output.metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
@@ -320,7 +320,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
 
-      return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run({ operation }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?v' ]);
         expect(await output.metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

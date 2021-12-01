@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/filename-case */
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
 import type { IActionHttpInvalidate, IActorHttpInvalidateOutput } from '@comunica/bus-http-invalidate';
@@ -8,6 +7,7 @@ import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
 import type {
@@ -25,12 +25,11 @@ import { KeysInitSparql, KeysCore } from '@comunica/context-entries';
 import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type {
-  IActionQueryOperation,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputUpdate,
+  IQueryableResult,
+  IQueryableResultBindings,
+  IQueryableResultQuads,
+  IQueryableResultBoolean,
+  IQueryableResultVoid,
   Bindings,
   IQueryEngine, IQueryExplained, IPhysicalQueryPlanLogger,
 } from '@comunica/types';
@@ -53,8 +52,8 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
   public readonly mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
   IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
 
-  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
+  IActionQueryOperation, IActorTest, IQueryableResult>;
 
   public readonly mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
   IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
@@ -91,10 +90,10 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
 
   /**
    * Add convenience methods to query results
-   * @param {IActorQueryOperationOutput} results Basic query results.
+   * @param {IQueryableResult} results Basic query results.
    * @return {IQueryResult} Same query results with added fields.
    */
-  public static enhanceQueryResults(results: IActorQueryOperationOutput): IQueryResult {
+  public static enhanceQueryResults(results: IQueryableResult): IQueryResult {
     // Set bindings
     if ((<IQueryResultBindings>results).bindingsStream) {
       (<IQueryResultBindings>results).bindings = () => new Promise((resolve, reject) => {
@@ -298,12 +297,12 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
 
   /**
    * Convert a query result to a string stream based on a certain media type.
-   * @param {IActorQueryOperationOutput} queryResult A query result.
+   * @param {IQueryableResult} queryResult A query result.
    * @param {string} mediaType A media type.
    * @param {ActionContext} context An optional context.
    * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
    */
-  public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string, context?: any):
+  public async resultToString(queryResult: IQueryableResult, mediaType?: string, context?: any):
   Promise<IActorSparqlSerializeOutput> {
     context = ActionContext(context);
 
@@ -349,8 +348,8 @@ export interface IActorInitSparqlBaseArgs extends IActorArgs<IActionInit, IActor
   /**
    * The query operation mediator
    */
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
+  IActionQueryOperation, IActorTest, IQueryableResult>;
   /**
    * The query parse mediator
    */
@@ -434,7 +433,7 @@ export interface IActorInitSparqlBaseArgs extends IActorArgs<IActionInit, IActor
  * Query operation output for a bindings stream.
  * For example: SPARQL SELECT results
  */
-export interface IQueryResultBindings extends IActorQueryOperationOutputBindings {
+export interface IQueryResultBindings extends IQueryableResultBindings {
   /**
    * The collection of bindings after an 'end' event occured.
    */
@@ -445,7 +444,7 @@ export interface IQueryResultBindings extends IActorQueryOperationOutputBindings
  * Query operation output for quads.
  * For example: SPARQL CONSTRUCT results
  */
-export interface IQueryResultQuads extends IActorQueryOperationOutputQuads {
+export interface IQueryResultQuads extends IQueryableResultQuads {
   /**
    * The collection of bindings after an 'end' event occured.
    */
@@ -456,13 +455,13 @@ export interface IQueryResultQuads extends IActorQueryOperationOutputQuads {
  * Query operation output for booleans.
  * For example: SPARQL ASK results
  */
-export interface IQueryResultBoolean extends IActorQueryOperationOutputBoolean {}
+export interface IQueryResultBoolean extends IQueryableResultBoolean {}
 
 /**
  * Query operation output for updates.
  * For example: SPARQL INSERT/DELETE results
  */
-export interface IQueryResultUpdate extends IActorQueryOperationOutputUpdate {}
+export interface IQueryResultUpdate extends IQueryableResultVoid {}
 
 export type IQueryResult = IQueryResultBindings | IQueryResultQuads | IQueryResultBoolean | IQueryResultUpdate;
 

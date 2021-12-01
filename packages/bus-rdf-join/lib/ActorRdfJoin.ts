@@ -5,7 +5,7 @@ import type { IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
-  IActorQueryOperationOutputBindings, IMetadata,
+  IQueryableResultBindings, IMetadata,
   IPhysicalQueryPlanLogger, Bindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -24,7 +24,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorRdfJoin
-  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
+  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
   public readonly mediatorJoinSelectivity: Mediator<
   Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
   IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
@@ -102,10 +102,10 @@ export abstract class ActorRdfJoin
 
   /**
    * Returns the variables that will occur in the joined bindings.
-   * @param {IActorQueryOperationOutputBindings[]} streams The streams to consider
+   * @param {IQueryableResultBindings[]} streams The streams to consider
    * @returns {string[]}
    */
-  public static joinVariablesStreams(streams: IActorQueryOperationOutputBindings[]): string[] {
+  public static joinVariablesStreams(streams: IQueryableResultBindings[]): string[] {
     return [ ...new Set(streams.flatMap(entry => entry.variables)) ];
   }
 
@@ -253,7 +253,7 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action
    * @returns {Promise<IActorQueryOperationOutput>}
    */
-  public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
+  public async run(action: IActionRdfJoin): Promise<IQueryableResultBindings> {
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
@@ -310,7 +310,7 @@ export abstract class ActorRdfJoin
 }
 
 export interface IActorRdfJoinArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IActorQueryOperationOutputBindings> {
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
   mediatorJoinSelectivity: Mediator<
   Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
   IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
@@ -368,7 +368,7 @@ export interface IJoinEntry {
   /**
    * A (lazy) resolved bindings stream, from which metadata may be obtained.
    */
-  output: IActorQueryOperationOutputBindings;
+  output: IQueryableResultBindings;
   /**
    * The original query operation from which the bindings stream was produced.
    */
@@ -379,7 +379,7 @@ export interface IActorRdfJoinOutputInner {
   /**
    * The join result.
    */
-  result: IActorQueryOperationOutputBindings;
+  result: IQueryableResultBindings;
   /**
    * Optional metadata that will be included as metadata within the physical query plan output.
    */

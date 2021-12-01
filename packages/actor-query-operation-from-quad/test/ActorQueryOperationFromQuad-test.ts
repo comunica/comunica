@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
@@ -845,7 +845,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should run', async() => {
       const input = Object.assign(quad('s', 'p', 'o'), { type: 'path' });
       const op: any = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input }};
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IQueryableResultBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         BF.bindings({ a: DF.literal('1') }),
         BF.bindings({ a: DF.literal('2') }),

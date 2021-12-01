@@ -2,9 +2,9 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type {
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean,
+  IQueryableResult,
+  IQueryableResultBindings,
+  IQueryableResultBoolean,
 } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -20,12 +20,12 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Ask, context: ActionContext): Promise<IActorQueryOperationOutputBoolean> {
+  public async runOperation(pattern: Algebra.Ask, context: ActionContext): Promise<IQueryableResultBoolean> {
     // Call other query operations like this:
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
+    const output: IQueryableResult = await this.mediatorQueryOperation.mediate(
       { operation: pattern.input, context },
     );
-    const bindings: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(output);
+    const bindings: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(output);
     const booleanResult: Promise<boolean> = new Promise<boolean>((resolve, reject) => {
       // Resolve to true if we find one element, and close immediately
       bindings.bindingsStream.once('data', () => {

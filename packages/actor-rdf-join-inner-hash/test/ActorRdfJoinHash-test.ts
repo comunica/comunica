@@ -4,7 +4,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, Bindings } from '@comunica/types';
+import type { IQueryableResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinHash } from '../lib/ActorRdfJoinHash';
@@ -194,7 +194,7 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should generate correct metadata', async() => {
-      await actor.run(action).then(async(result: IActorQueryOperationOutputBindings) => {
+      await actor.run(action).then(async(result: IQueryableResultBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
           (await (<any> action.entries[0].output).metadata()).cardinality *
           (await (<any> action.entries[1].output).metadata()).cardinality);
@@ -202,7 +202,7 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should return an empty stream for empty input', () => {
-      return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(action).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([]);
         expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -218,7 +218,7 @@ describe('ActorRdfJoinHash', () => {
         BF.bindings({ a: DF.literal('a'), c: DF.literal('c') }),
       ]);
       action.entries[1].output.variables = [ 'a', 'c' ];
-      return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(action).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
         expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -236,7 +236,7 @@ describe('ActorRdfJoinHash', () => {
         BF.bindings({ a: DF.literal('d'), c: DF.literal('c') }),
       ]);
       action.entries[1].output.variables = [ 'a', 'c' ];
-      return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(action).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
         expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -262,7 +262,7 @@ describe('ActorRdfJoinHash', () => {
         BF.bindings({ a: DF.literal('0'), c: DF.literal('4') }),
       ]);
       action.entries[1].output.variables = [ 'a', 'c' ];
-      return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
+      return actor.run(action).then(async(output: IQueryableResultBindings) => {
         const expected = [
           BF.bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('4') }),
           BF.bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('5') }),

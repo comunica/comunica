@@ -4,7 +4,7 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, IMetadata } from '@comunica/types';
+import type { IQueryableResultBindings, IMetadata } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -38,10 +38,10 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     };
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IQueryableResultBindings> {
     const predicate = <Algebra.Alt> path.predicate;
 
-    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all(predicate.input
+    const subOperations: IQueryableResultBindings[] = (await Promise.all(predicate.input
       .map(subPredicate => this.mediatorQueryOperation.mediate({
         context,
         operation: ActorAbstractPath.FACTORY.createPath(path.subject, subPredicate, path.object, path.graph),
