@@ -12,6 +12,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld",
@@ -56,6 +57,11 @@
         "@id": "cais:config/sets/resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
         "bus": { "@id": "ActorRdfResolveHypermediaLinks:_default_bus" }
+      },
+      "mediatorRdfResolveHypermediaLinksQueue": {
+        "@id": "cais:config/sets/resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue",
+        "@type": "MediatorRace",
+        "bus": { "@id": "ActorRdfResolveHypermediaLinksQueue:_default_bus" }
       }
     },
 
