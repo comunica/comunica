@@ -30,18 +30,12 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/bus-rdf-join": "^2.0.0",
+    "@comunica/core": "^2.0.0",
     "@comunica/types": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.2.1",
     "rdf-string": "^1.5.0"
-  },
-  "peerDependencies": {
-    "@comunica/bus-rdf-join": "^1.22.0",
-    "@comunica/core": "^1.22.0"
-  },
-  "devDependencies": {
-    "@comunica/bus-rdf-join": "^2.0.0",
-    "@comunica/core": "^2.0.0"
   },
   "jest": {
     "globals": {

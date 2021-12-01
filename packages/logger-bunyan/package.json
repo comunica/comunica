@@ -29,14 +29,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/core": "^2.0.0",
     "@types/bunyan": "^1.8.4",
     "bunyan": "^1.8.12"
-  },
-  "peerDependencies": {
-    "@comunica/core": "^1.0.0"
-  },
-  "devDependencies": {
-    "@comunica/core": "^2.0.0"
   },
   "jest": {
     "globals": {

@@ -30,13 +30,14 @@
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "peerDependencies": {
-    "@comunica/bus-query-operation": "^1.0.0",
-    "@comunica/core": "^1.0.0"
-  },
-  "devDependencies": {
+  "dependencies": {
     "@comunica/bus-query-operation": "^2.0.0",
-    "@comunica/core": "^2.0.0"
+    "@comunica/core": "^2.0.0",
+    "@comunica/types": "^2.0.0",
+    "canonicalize": "^1.0.1",
+    "hash.js": "^1.1.7",
+    "rdf-string": "^1.5.0",
+    "sparqlalgebrajs": "^4.0.0"
   },
   "jest": {
     "globals": {
@@ -61,12 +62,5 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator",
     "validate": "npm ls"
-  },
-  "dependencies": {
-    "@comunica/types": "^2.0.0",
-    "canonicalize": "^1.0.1",
-    "hash.js": "^1.1.7",
-    "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^4.0.0"
   }
 }

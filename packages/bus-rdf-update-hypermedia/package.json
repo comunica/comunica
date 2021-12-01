@@ -29,12 +29,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-update-quads": "^2.0.0"
-  },
-  "peerDependencies": {
-    "@comunica/core": "^1.20.0"
-  },
-  "devDependencies": {
+    "@comunica/bus-rdf-update-quads": "^2.0.0",
     "@comunica/core": "^2.0.0"
   },
   "scripts": {

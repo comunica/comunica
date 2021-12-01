@@ -28,22 +28,14 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "cross-fetch": "^3.0.5",
-    "relative-to-absolute-iri": "^1.0.5",
-    "stream-to-string": "^1.2.0"
-  },
-  "peerDependencies": {
-    "@comunica/bus-http": "^1.0.0",
-    "@comunica/bus-rdf-dereference": "^1.0.0",
-    "@comunica/bus-rdf-parse": "^1.0.0",
-    "@comunica/core": "^1.0.0"
-  },
-  "devDependencies": {
     "@comunica/bus-http": "^2.0.0",
     "@comunica/bus-rdf-dereference": "^2.0.0",
     "@comunica/bus-rdf-parse": "^2.0.0",
     "@comunica/core": "^2.0.0",
-    "@comunica/mediator-race": "^2.0.0"
+    "@comunica/mediator-race": "^2.0.0",
+    "cross-fetch": "^3.0.5",
+    "relative-to-absolute-iri": "^1.0.5",
+    "stream-to-string": "^1.2.0"
   },
   "jest": {
     "globals": {

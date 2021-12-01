@@ -31,17 +31,11 @@
   ],
   "dependencies": {
     "@comunica/bus-query-operation": "^2.0.0",
+    "@comunica/bus-sparql-serialize": "^2.0.0",
+    "@comunica/core": "^2.0.0",
     "@comunica/types": "^2.0.0",
     "@rdfjs/types": "*",
     "rdf-string-ttl": "^1.1.0"
-  },
-  "peerDependencies": {
-    "@comunica/bus-sparql-serialize": "^1.15.0",
-    "@comunica/core": "^1.15.0"
-  },
-  "devDependencies": {
-    "@comunica/bus-sparql-serialize": "^2.0.0",
-    "@comunica/core": "^2.0.0"
   },
   "jest": {
     "globals": {

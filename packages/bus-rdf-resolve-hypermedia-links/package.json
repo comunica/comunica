@@ -28,10 +28,7 @@
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "peerDependencies": {
-    "@comunica/core": "^1.8.0"
-  },
-  "devDependencies": {
+  "dependencies": {
     "@comunica/core": "^2.0.0"
   },
   "scripts": {

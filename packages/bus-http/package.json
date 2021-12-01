@@ -28,18 +28,13 @@
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "peerDependencies": {
-    "@comunica/core": "^1.0.0"
-  },
   "dependencies": {
     "@comunica/context-entries": "^2.0.0",
+    "@comunica/core": "^2.0.0",
     "@types/readable-stream": "^2.3.11",
     "is-stream": "^2.0.0",
     "readable-web-to-node-stream": "^3.0.2",
     "web-streams-node": "^0.4.0"
-  },
-  "devDependencies": {
-    "@comunica/core": "^2.0.0"
   },
   "jest": {
     "globals": {

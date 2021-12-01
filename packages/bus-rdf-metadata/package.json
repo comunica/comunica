@@ -29,13 +29,8 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/core": "^2.0.0",
     "@rdfjs/types": "*"
-  },
-  "peerDependencies": {
-    "@comunica/core": "^1.0.0"
-  },
-  "devDependencies": {
-    "@comunica/core": "^2.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
