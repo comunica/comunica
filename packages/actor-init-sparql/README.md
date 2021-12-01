@@ -19,6 +19,18 @@ It's main distinguishing features are the following:
 
 _Internally, this is a [Comunica module](https://comunica.dev/) that is configured with modules to execute SPARQL queries._
 
+## Supported by
+
+Comunica is a community-driven project, sustained by the [Comunica Association](https://comunica.dev/association/).
+If you are using Comunica, [becoming a sponsor or member](https://opencollective.com/comunica-association) is a way to make Comunica sustainable in the long-term.
+
+Our top sponsors are shown below!
+
+<a href="https://opencollective.com/comunica-association/sponsor/0/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/1/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/2/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/3/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/3/avatar.svg"></a>
+
 ## Installation
 
 Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and is tested on OSX and Linux.

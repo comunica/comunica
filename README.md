@@ -26,6 +26,18 @@ If you would like to support this project, you may consider:
 * Contributing directly by [writing code or documentation](https://comunica.dev/contribute/); or
 * Contributing indirectly by funding this project via [Open Collective](https://opencollective.com/comunica-association).
 
+## Supported by
+
+Comunica is a community-driven project, sustained by the [Comunica Association](https://comunica.dev/association/).
+If you are using Comunica, [becoming a sponsor or member](https://opencollective.com/comunica-association) is a way to make Comunica sustainable in the long-term.
+
+Our top sponsors are shown below!
+
+<a href="https://opencollective.com/comunica-association/sponsor/0/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/1/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/2/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/3/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/3/avatar.svg"></a>
+
 ## Query with Comunica
 
 Read one of our [guides to **get started** with querying](https://comunica.dev/docs/query/getting_started/):
