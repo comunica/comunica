@@ -29,8 +29,8 @@ import * as stringifyStream from 'stream-to-string';
  * After that, it resolves the URL using the HTTP bus using an accept header compiled from the available media types.
  * Finally, the response is parsed using the RDF parse bus.
  */
-export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferenceMediaMappings
-  implements IActorRdfDereferenceHttpParseArgs {
+export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMediaMappings
+  implements IActorRdfDereferenceHttpArgs {
   public static readonly REGEX_MEDIATYPE: RegExp = /^[^ ;]*/u;
 
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
@@ -47,7 +47,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
   public readonly maxAcceptHeaderLength: number;
   public readonly maxAcceptHeaderLengthBrowser: number;
 
-  public constructor(args: IActorRdfDereferenceHttpParseArgs) {
+  public constructor(args: IActorRdfDereferenceHttpArgs) {
     super(args);
   }
 
@@ -123,7 +123,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     }
 
     // Parse the resulting response
-    const match: RegExpExecArray = ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE
+    const match: RegExpExecArray = ActorRdfDereferenceHttpBase.REGEX_MEDIATYPE
       .exec(httpResponse.headers.get('content-type') ?? '')!;
     let mediaType: string | undefined = match[0];
     // If no media type could be found, try to determine it via the file extension
@@ -192,7 +192,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
   protected abstract getMaxAcceptHeaderLength(): number;
 }
 
-export interface IActorRdfDereferenceHttpParseArgs extends
+export interface IActorRdfDereferenceHttpArgs extends
   IActorRdfDereferenceMediaMappingsArgs {
   /**
    * The HTTP mediator.

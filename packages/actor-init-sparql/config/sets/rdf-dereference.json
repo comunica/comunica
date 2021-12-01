@@ -4,7 +4,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-fallback/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^2.0.0/components/context.jsonld",
@@ -18,7 +18,7 @@
   "actors": [
     {
       "@id": "#myRdfDereferencer",
-      "@type": "ActorRdfDereferenceHttpParse",
+      "@type": "ActorRdfDereferenceHttp",
       "beforeActors": { "@id": "#myRdfDereferencerFallback" },
       "mediatorHttp": {
         "@id": "cais:config/sets/http.json#mediatorHttp"

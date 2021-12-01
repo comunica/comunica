@@ -5,7 +5,7 @@
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-file/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^2.0.0/components/context.jsonld",
@@ -32,7 +32,7 @@
 
     {
       "@id": "cais:config/sets/rdf-dereference.json#myRdfDereferencer",
-      "@type": "ActorRdfDereferenceHttpParse",
+      "@type": "ActorRdfDereferenceHttp",
       "mediatorHttp": {
         "@id": "cais:config/sets/http.json#mediatorHttp"
       },

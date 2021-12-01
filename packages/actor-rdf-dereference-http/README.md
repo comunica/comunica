@@ -1,6 +1,6 @@
 # Comunica HTTP Parse RDF Dereference Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-dereference-http-parse.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-dereference-http-parse)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-dereference-http.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-dereference-http)
 
 An [RDF Dereference](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference) actor that
 resolves the URL using the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http)
@@ -16,7 +16,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-rdf-dereference-http-parse
+$ yarn add @comunica/actor-rdf-dereference-http
 ```
 
 ## Configure
@@ -26,13 +26,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@id": "#myRdfDereferencer",
-      "@type": "ActorRdfDereferenceHttpParse",
+      "@type": "ActorRdfDereferenceHttp",
       "mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" },
       "mediatorRdfParseMediatypes": {
         "@id": "#mediatorRdfParseMediatypes",

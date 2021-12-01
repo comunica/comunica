@@ -96,7 +96,7 @@
     "@comunica/actor-query-operation-update-move-rewrite": "^2.0.0",
     "@comunica/actor-query-operation-values": "^2.0.0",
     "@comunica/actor-rdf-dereference-fallback": "^2.0.0",
-    "@comunica/actor-rdf-dereference-http-parse": "^2.0.0",
+    "@comunica/actor-rdf-dereference-http": "^2.0.0",
     "@comunica/actor-rdf-join-inner-hash": "^2.0.0",
     "@comunica/actor-rdf-join-inner-multi-bind": "^2.0.0",
     "@comunica/actor-rdf-join-inner-multi-empty": "^2.0.0",

@@ -5,11 +5,11 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import 'cross-fetch/polyfill';
-import { ActorRdfDereferenceHttpParse } from '../lib/ActorRdfDereferenceHttpParse';
+import { ActorRdfDereferenceHttp } from '../lib/ActorRdfDereferenceHttp';
 const arrayifyStream = require('arrayify-stream');
 const streamifyString = require('streamify-string');
 
-describe('ActorRdfDereferenceHttpParse', () => {
+describe('ActorRdfDereferenceHttp', () => {
   let bus: any;
   let mediatorHttp: any;
   let mediatorRdfParse: any;
@@ -24,29 +24,29 @@ describe('ActorRdfDereferenceHttpParse', () => {
     };
   });
 
-  describe('The ActorRdfDereferenceHttpParse module', () => {
+  describe('The ActorRdfDereferenceHttp module', () => {
     it('should be a function', () => {
-      expect(ActorRdfDereferenceHttpParse).toBeInstanceOf(Function);
+      expect(ActorRdfDereferenceHttp).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorRdfDereferenceHttpParse constructor', () => {
-      expect(new (<any> ActorRdfDereferenceHttpParse)(
+    it('should be a ActorRdfDereferenceHttp constructor', () => {
+      expect(new (<any> ActorRdfDereferenceHttp)(
         { name: 'actor', bus, mediatorHttp, mediatorRdfParse, mediaMappings },
       ))
-        .toBeInstanceOf(ActorRdfDereferenceHttpParse);
-      expect(new (<any> ActorRdfDereferenceHttpParse)(
+        .toBeInstanceOf(ActorRdfDereferenceHttp);
+      expect(new (<any> ActorRdfDereferenceHttp)(
         { name: 'actor', bus, mediatorHttp, mediatorRdfParse, mediaMappings },
       ))
         .toBeInstanceOf(ActorRdfDereference);
     });
 
-    it('should not be able to create new ActorRdfDereferenceHttpParse objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfDereferenceHttpParse)(); }).toThrow();
+    it('should not be able to create new ActorRdfDereferenceHttp objects without \'new\'', () => {
+      expect(() => { (<any> ActorRdfDereferenceHttp)(); }).toThrow();
     });
   });
 
-  describe('An ActorRdfDereferenceHttpParse instance', () => {
-    let actor: ActorRdfDereferenceHttpParse;
+  describe('An ActorRdfDereferenceHttp instance', () => {
+    let actor: ActorRdfDereferenceHttp;
 
     beforeEach(() => {
       mediatorRdfParse.mediate = jest.fn((action: any) => {
@@ -123,7 +123,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
           url,
         };
       };
-      actor = new ActorRdfDereferenceHttpParse({
+      actor = new ActorRdfDereferenceHttp({
         bus,
         maxAcceptHeaderLength: 127,
         maxAcceptHeaderLengthBrowser: 127,
