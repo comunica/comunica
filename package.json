@@ -14,7 +14,7 @@
     "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.9.5",
     "@pollyjs/adapter-node-http": "^5.1.0",
-    "@pollyjs/core": "^5.1.0",
+    "@pollyjs/core": "^6.0.0",
     "@pollyjs/persister-fs": "^5.0.0",
     "rdf-data-factory": "^1.1.0",
     "@types/jest": "^27.0.0",
