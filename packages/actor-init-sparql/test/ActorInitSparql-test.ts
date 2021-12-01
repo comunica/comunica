@@ -112,9 +112,9 @@ describe('ActorInitSparql', () => {
 
   describe('An ActorInitSparql instance', () => {
     const sourceHypermedia = 'http://example.org/';
-    const sourceHypermediaTagged = 'hypermedia@http://example.org/';
-    const sourceHypermediaAuth = 'http://username:passwd@example.org/';
-    const sourceHypermediaTaggedAuth = 'hypermedia@http://username:passwd@example.org/';
+    const sourceSparqlTagged = 'sparql@http://example.org/';
+    const sourceAuth = 'http://username:passwd@example.org/';
+    const sourceSparqlTaggedAuth = 'sparql@http://username:passwd@example.org/';
     const sourceOther = 'other@http://example.org/';
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
     const context: any = JSON.stringify({ hypermedia: sourceHypermedia });
@@ -572,10 +572,10 @@ LIMIT 100
           stdin: new PassThrough() })).rejects.toThrowError('no such file or directory');
       });
 
-      it('handles a tagged hypermedia source and query option', async() => {
+      it('handles a tagged sparql source and query option', async() => {
         const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermediaTagged, '-q', queryString ],
+          argv: [ sourceSparqlTagged, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
         })).stdout);
@@ -583,7 +583,7 @@ LIMIT 100
         expect(spy).toHaveBeenCalledWith(queryString, {
           [KeysInitSparql.queryFormat]: 'sparql',
           [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
+          [KeysRdfResolveQuadPattern.sources]: [{ type: 'sparql', value: sourceHypermedia }],
           [KeysCore.log]: expect.any(LoggerPretty),
         });
       });
@@ -591,7 +591,7 @@ LIMIT 100
       it('handles credentials in url and query option', async() => {
         const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermediaAuth, '-q', queryString ],
+          argv: [ sourceAuth, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
         })).stdout);
@@ -609,10 +609,10 @@ LIMIT 100
         });
       });
 
-      it('handles a tagged hypermedia and credentials in url and query option', async() => {
+      it('handles a tagged sparql and credentials in url and query option', async() => {
         const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermediaTaggedAuth, '-q', queryString ],
+          argv: [ sourceSparqlTaggedAuth, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
         })).stdout);
@@ -621,6 +621,7 @@ LIMIT 100
           [KeysInitSparql.queryFormat]: 'sparql',
           [KeysInitSparql.queryTimestamp]: expect.any(Date),
           [KeysRdfResolveQuadPattern.sources]: [{
+            type: 'sparql',
             value: sourceHypermedia,
             context: ActionContext({
               [KeysHttp.auth]: 'username:passwd',
@@ -662,10 +663,10 @@ LIMIT 100
         });
       });
 
-      it('handles multiple tagged hypermedia sources and a query option', async() => {
+      it('handles multiple tagged sparql sources and a query option', async() => {
         const spy = jest.spyOn(actor, 'queryOrExplain');
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermediaTagged, sourceHypermediaTagged, '-q', queryString ],
+          argv: [ sourceSparqlTagged, sourceSparqlTagged, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
         })).stdout);
@@ -673,7 +674,10 @@ LIMIT 100
         expect(spy).toHaveBeenCalledWith(queryString, {
           [KeysInitSparql.queryFormat]: 'sparql',
           [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
+          [KeysRdfResolveQuadPattern.sources]: [
+            { type: 'sparql', value: sourceHypermedia },
+            { type: 'sparql', value: sourceHypermedia },
+          ],
           [KeysCore.log]: expect.any(LoggerPretty),
         });
       });

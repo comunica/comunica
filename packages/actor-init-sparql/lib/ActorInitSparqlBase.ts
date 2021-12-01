@@ -9,8 +9,6 @@ import type {
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { materializeOperation } from '@comunica/bus-query-operation';
-import type { IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { isDataSourceRawType } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
 import type {
   IActionSparqlSerialize,
@@ -23,7 +21,7 @@ import type {
   IActorTestSparqlSerializeHandle, IActorTestSparqlSerializeMediaTypeFormats,
   IActorTestSparqlSerializeMediaTypes,
 } from '@comunica/bus-sparql-serialize';
-import { KeysInitSparql, KeysCore, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysInitSparql, KeysCore } from '@comunica/context-entries';
 import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type {
@@ -170,16 +168,6 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
 
     if (!context[KeysInitSparql.queryTimestamp]) {
       context[KeysInitSparql.queryTimestamp] = new Date();
-    }
-
-    // Ensure sources are an async re-iterable
-    if (Array.isArray(context[KeysRdfResolveQuadPattern.sources])) {
-      // TODO: backwards compatibility
-      context[KeysRdfResolveQuadPattern.sources].forEach((source: IDataSource): void => {
-        if (!isDataSourceRawType(source) && (source.type === 'auto' || source.type === 'hypermedia')) {
-          delete source.type;
-        }
-      });
     }
 
     // Prepare context
