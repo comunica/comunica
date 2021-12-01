@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/filename-case */
+/* eslint-enable unicorn/filename-case */
 import type { ActorInitSparql } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
 
 /**

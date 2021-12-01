@@ -1,4 +1,3 @@
-/* eslint-disable id-length */
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
 import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
@@ -204,12 +203,14 @@ export class RdfSourceQpf implements IQuadSource {
   }
 
   protected getPatternId(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
+    /* eslint-disable id-length */
     return JSON.stringify({
       s: subject.termType === 'Variable' ? '' : termToString(subject),
       p: predicate.termType === 'Variable' ? '' : termToString(predicate),
       o: object.termType === 'Variable' ? '' : termToString(object),
       g: graph.termType === 'Variable' ? '' : termToString(graph),
     });
+    /* eslint-enable id-length */
   }
 
   protected cacheQuads(quads: AsyncIterator<RDF.Quad>,

@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/filename-case */
+/* eslint-enable unicorn/filename-case */
 import type { IActorRdfDereferenceHttpArgs } from './ActorRdfDereferenceHttpBase';
 import {
   ActorRdfDereferenceHttpBase,

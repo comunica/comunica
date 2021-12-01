@@ -49,7 +49,7 @@ export class ActorSparqlSerializeSparqlCsv extends ActorSparqlSerializeFixedMedi
     // If a value contains certain characters, put it between double quotes
     if (/[",\n\r]/u.test(stringValue)) {
       // Within quote strings, " is written using a pair of quotation marks "".
-      stringValue = `"${stringValue.replace(/"/gu, '""')}"`;
+      stringValue = `"${stringValue.replaceAll('"', '""')}"`;
     }
 
     return stringValue;

@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import type { ActionContext, IActorTest } from '@comunica/core';
@@ -18,6 +17,7 @@ import type { IActionSparqlSerialize, IActorSparqlSerializeOutput,
 export abstract class ActorSparqlSerializeFixedMediaTypes extends ActorAbstractMediaTypedFixed<
 IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>
   implements IActorSparqlSerializeFixedMediaTypesArgs, ActorSparqlSerialize {
+  /* eslint-disable max-len */
   /**
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
    * @param args - @defaultNested {<cbss:components/ActorSparqlSerialize.jsonld#ActorSparqlSerialize_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
@@ -25,6 +25,7 @@ IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>
   public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }
+  /* eslint-enable max-len */
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext): Promise<boolean> {
     return true;

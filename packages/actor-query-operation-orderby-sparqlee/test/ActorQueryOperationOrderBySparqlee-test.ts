@@ -1,4 +1,3 @@
-/* eslint-disable mocha/max-top-level-suites */
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
@@ -173,6 +172,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
   let bus: any;
   let mediatorQueryOperation: any;

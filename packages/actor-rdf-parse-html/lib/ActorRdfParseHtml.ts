@@ -142,4 +142,5 @@ export interface IActorRdfParseHtmlArgs extends IActorRdfParseFixedMediaTypesArg
    */
   busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>,
   IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
+  /* eslint-enable max-len */
 }

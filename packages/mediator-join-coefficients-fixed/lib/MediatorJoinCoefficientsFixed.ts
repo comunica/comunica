@@ -68,14 +68,14 @@ export class MediatorJoinCoefficientsFixed
       Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
         entries: action.entries.length,
         variables: action.entries.map(entry => entry.output.variables),
-        costs: costs.reduce<any>((acc, coeff, i) => {
-          acc[`${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`] = coeff;
-          return acc;
-        }, {}),
-        coefficients: coefficients.reduce<any>((acc, coeff, i) => {
-          acc[`${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`] = coeff;
-          return acc;
-        }, {}),
+        costs: Object.fromEntries(costs.map((coeff, i) => [
+          `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
+          coeff,
+        ])),
+        coefficients: Object.fromEntries(coefficients.map((coeff, i) => [
+          `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
+          coeff,
+        ])),
       });
     }
 

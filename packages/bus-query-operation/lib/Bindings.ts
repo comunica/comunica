@@ -147,13 +147,13 @@ export function materializeOperation(
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = BF.bindings(op.variables.reduce<any>((acc, variable) => {
+      const subBindings = BF.bindings(Object.fromEntries(op.variables.map(variable => {
         const binding = bindings.get(termToString(variable));
         if (binding) {
-          acc[termToString(variable)] = binding;
+          return [ termToString(variable), binding ];
         }
-        return acc;
-      }, {}));
+        return [];
+      })));
 
       return {
         recurse: false,

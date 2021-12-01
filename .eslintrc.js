@@ -128,6 +128,7 @@ module.exports = {
     'tsdoc/syntax': 'off',
     'unicorn/expiring-todo-comments': 'off',
     'unicorn/import-style': 'off',
+    'unicorn/prefer-at': 'off',
   },
   overrides: [
     {

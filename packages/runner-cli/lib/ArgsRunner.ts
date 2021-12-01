@@ -114,3 +114,5 @@ export function runArgsInProcessStatic(actor: any, options?: { context?: ActionC
 function errorToString(error: Error, argv: string[]): string {
   return argv.includes('--showStackTrace') ? `${error.stack}\n` : `${error.message}\n`;
 }
+
+/* eslint-enable no-process-env,unicorn/no-process-exit */

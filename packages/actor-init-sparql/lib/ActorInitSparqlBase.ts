@@ -44,11 +44,8 @@ const BF = new BindingsFactory();
  * A browser-safe comunica SPARQL Init Actor.
  */
 export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBaseArgs, IQueryEngine {
-  private static readonly ALGEBRA_TYPES: Record<string, boolean> = Object.keys(Algebra.types)
-    .reduce((acc: Record<string, boolean>, key) => {
-      acc[(<any> Algebra.types)[key]] = true;
-      return acc;
-    }, {});
+  private static readonly ALGEBRA_TYPES: Record<string, boolean> = Object.fromEntries(Object.keys(Algebra.types)
+    .map(key => [ (<any> Algebra.types)[key], true ]));
 
   public readonly mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
   IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;

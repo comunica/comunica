@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -40,14 +39,17 @@ export class RdfJsQuadDestination implements IQuadDestination {
   ): Promise<void> {
     switch (graphs) {
       case 'ALL':
+        /* eslint-disable no-fallthrough */
         // Remove the default graph
         await this.promisifyEventEmitter(this.store.deleteGraph(DF.defaultGraph()));
         // Drop through to remove all named graphs
-      // eslint-disable-next-line no-fallthrough
       case 'NAMED':
+        /* eslint-enable no-fallthrough */
         // Warning: this is sub-optimal!
         // Query ALL quads to determine all named graphs
+        // eslint-disable-next-line no-case-declarations
         const allQuads = this.store.match();
+        // eslint-disable-next-line no-case-declarations
         const namedGraphs: Record<string, boolean> = {};
         allQuads.on('data', (quad: RDF.Quad) => {
           if (quad.graph.termType !== 'DefaultGraph') {

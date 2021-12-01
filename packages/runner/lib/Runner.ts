@@ -26,6 +26,7 @@ export class Runner {
       throw new Error('A valid "actors" argument must be provided.');
     }
   }
+  /* eslint-enable max-len */
 
   /**
    * Run a comunica workflow.

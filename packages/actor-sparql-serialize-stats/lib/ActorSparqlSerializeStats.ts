@@ -23,6 +23,7 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
   public constructor(args: IActorSparqlSerializeStatsArgs) {
     super(args);
   }
+  /* eslint-enable max-len */
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext): Promise<boolean> {
     if (![ 'bindings', 'quads' ].includes(action.type)) {

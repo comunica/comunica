@@ -1,4 +1,3 @@
-/* eslint-disable mocha/max-top-level-suites */
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -109,6 +108,7 @@ describe('materializeTerm', () => {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('materializeOperation', () => {
   it('should materialize a quad pattern with empty bindings', () => {
     return expect(materializeOperation(

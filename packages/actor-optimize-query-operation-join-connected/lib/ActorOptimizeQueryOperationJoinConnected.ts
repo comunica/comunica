@@ -39,10 +39,7 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
   public static cluster(op: Algebra.Join, factory: Factory): Algebra.Join {
     // Initialize each entry to be in a separate cluster
     const initialClusters: IJoinCluster[] = op.input.map(subOp => ({
-      inScopeVariables: Util.inScopeVariables(subOp).reduce<Record<string, boolean>>((acc, variable) => {
-        acc[variable.value] = true;
-        return acc;
-      }, {}),
+      inScopeVariables: Object.fromEntries(Util.inScopeVariables(subOp).map(variable => [ variable.value, true ])),
       entries: [ subOp ],
     }));
 

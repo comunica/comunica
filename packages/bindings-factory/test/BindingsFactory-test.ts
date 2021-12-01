@@ -1,4 +1,3 @@
-/* eslint-disable mocha/max-top-level-suites */
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import { BindingsFactory } from '../lib/BindingsFactory';
@@ -12,6 +11,7 @@ describe('Bindings', () => {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('isBindings', () => {
   it('should be true for bindings', () => {
     expect(BF.isBindings(BF.bindings({}))).toBeTruthy();

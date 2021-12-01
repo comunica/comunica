@@ -119,6 +119,7 @@ export interface IActorRdfUpdateQuadsHypermediaArgs
    * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^2.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
+  /* eslint-enable max-len */
   /**
    * The RDF dereference mediator
    */

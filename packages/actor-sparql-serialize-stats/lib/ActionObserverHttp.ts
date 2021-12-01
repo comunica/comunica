@@ -16,6 +16,7 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
     super(args);
     this.bus.subscribeObserver(this);
   }
+  /* eslint-enable max-len */
 
   public onRun(actor: Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     action: IActionHttp, output: Promise<IActorHttpOutput>): void {

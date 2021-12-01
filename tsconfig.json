@@ -4,6 +4,7 @@
     "module": "commonjs",
     "lib": [
       "es2020",
+      "es2021",
       "dom"
     ],
     "target": "es2020",

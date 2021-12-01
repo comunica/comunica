@@ -190,8 +190,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         });
       }
 
-      return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, {})),
-        { autoStart: true, maxBufferSize: 128 });
+      return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, {})));
     }, { autoStart: false });
 
     return { type: 'bindings', bindingsStream, variables, metadata };

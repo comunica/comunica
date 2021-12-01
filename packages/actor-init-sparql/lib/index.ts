@@ -10,8 +10,6 @@ export * from './cli/CliArgsHandlerHttp';
 export * from './cli/CliArgsHandlerQuery';
 export * from './cli/ICliArgsHandler';
 export * from './MemoryPhysicalQueryPlanLogger';
-
-// eslint-disable-next-line no-duplicate-imports
 import type { ActorInitSparql } from './ActorInitSparql';
 import type { IQueryOptions } from './QueryDynamic';
 import { newEngineDynamicArged } from './QueryDynamic';

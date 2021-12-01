@@ -1,4 +1,3 @@
-/* eslint-disable mocha/max-top-level-suites */
 import { PassThrough, Readable, Transform } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import { BindingsFactory } from '@comunica/bindings-factory';
@@ -35,6 +34,7 @@ describe('ActorInitSparqlBase', () => {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('ActorInitSparql', () => {
   let bus: any;
   let logger: any;

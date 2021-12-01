@@ -260,7 +260,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
     it('should use logger from given context if available', async() => {
       fs.existsSync.mockReturnValue(false);
-      const context = { ...testArgumentDict, ...{ log: new LoggerPretty({ level: 'test_loglevel' }) }};
+      const context = { ...testArgumentDict, log: new LoggerPretty({ level: 'test_loglevel' }) };
 
       const log = (await HttpServiceSparqlEndpoint
         .generateConstructorArguments([ '-c', JSON.stringify(context) ],

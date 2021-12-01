@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-sync */
 import * as fs from 'fs';
 import * as Path from 'path';
 import { compileConfig } from 'componentsjs';
@@ -32,6 +31,8 @@ const packageName = args.o;
 if (!/^[\dA-Za-z-]*$/u.test(packageName)) {
   throw new Error(`Invalid package name: ${packageName}`);
 }
+
+/* eslint-disable no-sync */
 
 // Make the target package directory if it does not exist yet.
 let packageJson: any = {};
@@ -76,3 +77,5 @@ compileConfig(mainModulePath, configPath, configResourceUri, exportVariableName)
     fs.writeFileSync(`${packageName}/index.js`, document);
     fs.writeFileSync(`${packageName}/package.json`, JSON.stringify(packageJson, null, '  '));
   }).catch(error => process.stderr.write(`${error}\n`));
+
+/* eslint-enable no-sync */
