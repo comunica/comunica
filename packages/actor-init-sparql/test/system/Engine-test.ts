@@ -2,7 +2,12 @@
 
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
 
-import type { IQueryExplained } from '@comunica/types';
+import type {
+  IQueryableResultBindings,
+  IQueryableResultBindingsEnhanced,
+  IQueryableResultVoid,
+  IQueryExplained,
+} from '@comunica/types';
 
 jest.unmock('follow-redirects');
 
@@ -10,8 +15,7 @@ import type * as RDF from '@rdfjs/types';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import type { IQueryResultBindings } from '../../lib/ActorInitSparqlBase';
-import type { ActorInitSparql, IQueryResultUpdate } from '../../lib/index-browser';
+import type { ActorInitSparql } from '../../lib/index-browser';
 import { newEngine } from '../../lib/index-browser';
 import { mockHttp } from './util';
 import 'jest-rdf';
@@ -39,21 +43,21 @@ describe('System test: ActorInitSparql', () => {
   describe('query', () => {
     describe('simple SPO on a raw RDF document', () => {
       it('with results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT * WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(result.bindingsStream)).length).toBeGreaterThan(100);
       });
 
       it('without results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT * WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT * WHERE {
       ?s <ex:dummy> ?o.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(result.bindingsStream))).toEqual([]);
       });
 
       it('for the single source context entry', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT * WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     }`, { source: 'https://www.rubensworks.net/' });
         expect((await arrayifyStream(result.bindingsStream)).length).toBeGreaterThan(100);
@@ -64,15 +68,15 @@ describe('System test: ActorInitSparql', () => {
       ?s ?p ?o.
     }`;
         const context = { sources: [ 'https://www.rubensworks.net/' ]};
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream))
           .length).toBeGreaterThan(100);
       });
 
@@ -81,15 +85,15 @@ describe('System test: ActorInitSparql', () => {
       ?s <ex:dummy> ?o.
     }`;
         const context = { sources: [ 'https://www.rubensworks.net/' ]};
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream)))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream)))
           .toEqual([]);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream)))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream)))
           .toEqual([]);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream)))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream)))
           .toEqual([]);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream)))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream)))
           .toEqual([]);
-        expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream)))
+        expect((await arrayifyStream((<IQueryableResultBindings> await engine.query(query, context)).bindingsStream)))
           .toEqual([]);
       });
 
@@ -142,14 +146,14 @@ describe('System test: ActorInitSparql', () => {
         it('with results and pointless custom filter given by creator', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = baseFunctionCreator;
-          const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
+          const result = <IQueryableResultBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(result.bindingsStream)).length).toEqual(store.size);
         });
 
         it('with results and pointless custom filter given by record', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
-          const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
+          const result = <IQueryableResultBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(result.bindingsStream)).length).toEqual(4);
         });
 
@@ -157,7 +161,7 @@ describe('System test: ActorInitSparql', () => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => () =>
             DF.literal('false', booleanType);
-          const result = <IQueryResultBindings> await engine.query(baseQuery('rejectAll'), context);
+          const result = <IQueryableResultBindings> await engine.query(baseQuery('rejectAll'), context);
           expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
         });
 
@@ -186,7 +190,7 @@ describe('System test: ActorInitSparql', () => {
               return arg;
             },
           };
-          const result = <IQueryResultBindings> await engine.query(complexQuery, context);
+          const result = <IQueryableResultBindingsEnhanced> await engine.query(complexQuery, context);
           expect((await result.bindings()).map(res => res.get('?caps').value)).toEqual(
             quads.map(q => q.object.value.toUpperCase()),
           );
@@ -220,7 +224,7 @@ describe('System test: ActorInitSparql', () => {
             context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(false),
             };
-            const result = <IQueryResultBindings> await engine.query(complexQuery, context);
+            const result = <IQueryableResultBindingsEnhanced> await engine.query(complexQuery, context);
             expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
           });
 
@@ -228,7 +232,7 @@ describe('System test: ActorInitSparql', () => {
             context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(true),
             };
-            const result = <IQueryResultBindings> await engine.query(complexQuery, context);
+            const result = <IQueryableResultBindingsEnhanced> await engine.query(complexQuery, context);
             expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
           });
         });
@@ -237,7 +241,7 @@ describe('System test: ActorInitSparql', () => {
 
     describe('two-pattern query on a raw RDF document', () => {
       it('with results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT ?name WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
@@ -245,7 +249,7 @@ describe('System test: ActorInitSparql', () => {
       });
 
       it('without results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT ?name WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <ex:dummy> ?name.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
@@ -253,7 +257,7 @@ describe('System test: ActorInitSparql', () => {
       });
 
       it('for the single source entry', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT ?name WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
     }`, { source: 'https://www.rubensworks.net/' });
@@ -263,14 +267,14 @@ describe('System test: ActorInitSparql', () => {
 
     describe('simple SPO on a TPF entrypoint', () => {
       it('with results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT * WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(result.bindingsStream)).length).toEqual(300);
       });
 
       it('with filtered results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT * WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT * WHERE {
       ?s a ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(result.bindingsStream)).length).toEqual(300);
@@ -279,7 +283,7 @@ describe('System test: ActorInitSparql', () => {
 
     describe('two-pattern query on a TPF entrypoint', () => {
       it('with results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT * WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT * WHERE {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/Italy>.
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
@@ -287,7 +291,7 @@ describe('System test: ActorInitSparql', () => {
       });
 
       it('without results', async() => {
-        const result = <IQueryResultBindings> await engine.query(`SELECT * WHERE {
+        const result = <IQueryableResultBindings> await engine.query(`SELECT * WHERE {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/UNKNOWN>.
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
@@ -303,7 +307,7 @@ describe('System test: ActorInitSparql', () => {
         const store = new Store();
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`INSERT DATA {
+        const result = <IQueryableResultVoid> await engine.query(`INSERT DATA {
       <ex:s> <ex:p> <ex:o>.
     }`, {
           sources: [],
@@ -322,7 +326,7 @@ describe('System test: ActorInitSparql', () => {
         const store = new Store();
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`INSERT DATA {
+        const result = <IQueryableResultVoid> await engine.query(`INSERT DATA {
       <ex:s> <ex:p> <ex:o>.
     }`, {
           sources: [ store ],
@@ -341,7 +345,7 @@ describe('System test: ActorInitSparql', () => {
         store.addQuad(DF.quad(DF.namedNode('ex:s-pre'), DF.namedNode('ex:p-pre'), DF.namedNode('ex:o-pre')));
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`INSERT DATA {
+        const result = <IQueryableResultVoid> await engine.query(`INSERT DATA {
       <ex:s> <ex:p> <ex:o>.
     };
     DELETE DATA {
@@ -373,7 +377,7 @@ describe('System test: ActorInitSparql', () => {
         expect(store.size).toEqual(4);
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`DELETE WHERE {
+        const result = <IQueryableResultVoid> await engine.query(`DELETE WHERE {
       <ex:s> ?p ?o.
     }`, {
           sources: [ store ],
@@ -392,7 +396,7 @@ describe('System test: ActorInitSparql', () => {
         const store = new Store();
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(
+        const result = <IQueryableResultVoid> await engine.query(
           `LOAD <https://www.rubensworks.net/> INTO GRAPH <ex:graph>`,
           {
             sources: [],
@@ -417,7 +421,7 @@ describe('System test: ActorInitSparql', () => {
         expect(store.size).toEqual(4);
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`CLEAR NAMED`, {
+        const result = <IQueryableResultVoid> await engine.query(`CLEAR NAMED`, {
           sources: [ store ],
           destination: store,
         });
@@ -441,7 +445,7 @@ describe('System test: ActorInitSparql', () => {
         expect(store.size).toEqual(4);
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`DROP DEFAULT`, {
+        const result = <IQueryableResultVoid> await engine.query(`DROP DEFAULT`, {
           sources: [ store ],
           destination: store,
         });
@@ -463,19 +467,19 @@ describe('System test: ActorInitSparql', () => {
         expect(store.size).toEqual(2);
 
         // Resolve for non-existing graph
-        await expect((<IQueryResultUpdate> await engine.query(`CREATE GRAPH <ex:g2>`, {
+        await expect((<IQueryableResultVoid> await engine.query(`CREATE GRAPH <ex:g2>`, {
           sources: [ store ],
           destination: store,
         })).updateResult).resolves.toBeUndefined();
 
         // Reject for existing graph
-        await expect((<IQueryResultUpdate> await engine.query(`CREATE GRAPH <ex:g1>`, {
+        await expect((<IQueryableResultVoid> await engine.query(`CREATE GRAPH <ex:g1>`, {
           sources: [ store ],
           destination: store,
         })).updateResult).rejects.toThrowError('Unable to create graph ex:g1 as it already exists');
 
         // Resolve for existing graph in silent mode
-        await expect((<IQueryResultUpdate> await engine.query(`CREATE SILENT GRAPH <ex:g1>`, {
+        await expect((<IQueryableResultVoid> await engine.query(`CREATE SILENT GRAPH <ex:g1>`, {
           sources: [ store ],
           destination: store,
         })).updateResult).resolves.toBeUndefined();
@@ -491,7 +495,7 @@ describe('System test: ActorInitSparql', () => {
         expect(store.size).toEqual(2);
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`ADD DEFAULT TO <ex:g1>`, {
+        const result = <IQueryableResultVoid> await engine.query(`ADD DEFAULT TO <ex:g1>`, {
           sources: [ store ],
           destination: store,
         });
@@ -514,7 +518,7 @@ describe('System test: ActorInitSparql', () => {
         expect(store.size).toEqual(2);
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`MOVE DEFAULT TO <ex:g1>`, {
+        const result = <IQueryableResultVoid> await engine.query(`MOVE DEFAULT TO <ex:g1>`, {
           sources: [ store ],
           destination: store,
         });
@@ -537,7 +541,7 @@ describe('System test: ActorInitSparql', () => {
         expect(store.size).toEqual(2);
 
         // Execute query
-        const result = <IQueryResultUpdate> await engine.query(`COPY DEFAULT TO <ex:g1>`, {
+        const result = <IQueryableResultVoid> await engine.query(`COPY DEFAULT TO <ex:g1>`, {
           sources: [ store ],
           destination: store,
         });

@@ -5,19 +5,6 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
-/**
- * @type {string} Context entry for data sources.
- * @value {DataSources} An array of sources.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_SOURCES = KeysRdfResolveQuadPattern.sources;
-/**
- * @type {string} Context entry for a data source.
- * @value {IDataSource} A source.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_SOURCE = KeysRdfResolveQuadPattern.source;
-
 export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
   return typeof dataSource === 'string' || 'match' in dataSource;
 }

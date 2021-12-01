@@ -13,13 +13,6 @@ import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import type { ICliArgsHandler } from './cli/ICliArgsHandler';
 const streamifyString = require('streamify-string');
 
-// eslint-disable-next-line no-duplicate-imports
-export {
-  KEY_CONTEXT_INITIALBINDINGS,
-  KEY_CONTEXT_QUERYFORMAT,
-  KEY_CONTEXT_LENIENT,
-} from './ActorInitSparqlBase';
-
 /**
  * A comunica SPARQL Init Actor.
  */

@@ -193,8 +193,6 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
  *
  * This context can contain any information that might be relevant for certain actors.
  * For instance, this context can contain a list of datasources over which operators should query.
- *
- * @deprecated Use the same type from @comunica/types
  */
 export type ActionContext = _ActionContext;
 

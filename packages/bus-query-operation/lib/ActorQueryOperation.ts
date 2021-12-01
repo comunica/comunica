@@ -16,27 +16,6 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
 
 /**
- * @type {string} Context entry for query's base IRI.
- * @value {any} A string.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BASEIRI = KeysInitSparql.baseIRI;
-/**
- * @type {string} A timestamp representing the current time.
- *                This is required for certain SPARQL operations such as NOW().
- * @value {any} a date.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_QUERY_TIMESTAMP = KeysInitSparql.queryTimestamp;
-
-/**
- * @type {string} Context entry for indicating that only read operations are allowed, defaults to false.
- * @value {any} A boolean.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_READONLY = KeysQueryOperation.readOnly;
-
-/**
  * A counter that keeps track blank node generated through BNODE() SPARQL
  * expressions.
  *
@@ -224,7 +203,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param context An action context.
    */
   public static throwOnReadOnly(context?: ActionContext): void {
-    if (context && context.get(KEY_CONTEXT_READONLY)) {
+    if (context && context.get(KeysQueryOperation.readOnly)) {
       throw new Error(`Attempted a write operation in read-only mode`);
     }
   }

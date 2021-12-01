@@ -6,12 +6,6 @@ import type { IActionQueryOperation } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
 
 /**
- * @type {string} Context entry for the current query operation.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_QUERYOPERATION = KeysQueryOperation.operation;
-
-/**
  * A base implementation for query operation actors for a specific operation type.
  */
 export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> extends ActorQueryOperation {

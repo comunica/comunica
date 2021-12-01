@@ -1,4 +1,4 @@
-import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryableResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -33,7 +33,7 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should not test on readOnly', () => {
-      const op: any = { operation: { type: 'drop' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = { operation: { type: 'drop' }, context: ActionContext({ [KeysQueryOperation.readOnly]: true }) };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 

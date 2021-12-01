@@ -12,33 +12,22 @@ import {
 } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { IPhysicalQueryPlanLogger } from '@comunica/types';
+import type {
+  IPhysicalQueryPlanLogger,
+  IQueryableResultBindingsEnhanced,
+  IQueryableResultQuadsEnhanced,
+} from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
 import * as stringifyStream from 'stream-to-string';
-import {
-  ActorInitSparql,
-  KEY_CONTEXT_INITIALBINDINGS,
-  KEY_CONTEXT_LENIENT,
-  KEY_CONTEXT_QUERYFORMAT,
-} from '../lib/ActorInitSparql';
-import type { IQueryResultQuads,
-  IQueryResultBindings } from '../lib/ActorInitSparqlBase';
+import { ActorInitSparql } from '../lib/ActorInitSparql';
 import { ActorInitSparqlBase } from '../lib/ActorInitSparqlBase';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { ICliArgsHandler } from '../lib/cli/ICliArgsHandler';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
-
-describe('exported constants', () => {
-  it('should be correct', () => {
-    expect(KEY_CONTEXT_INITIALBINDINGS).toEqual('@comunica/actor-init-sparql:initialBindings');
-    expect(KEY_CONTEXT_QUERYFORMAT).toEqual('@comunica/actor-init-sparql:queryFormat');
-    expect(KEY_CONTEXT_LENIENT).toEqual('@comunica/actor-init-sparql:lenient');
-  });
-});
 
 describe('ActorInitSparqlBase', () => {
   it('should not allow invoking its run method', () => {
@@ -314,7 +303,7 @@ describe('ActorInitSparql', () => {
       it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
         const ctx = { sources: []};
         const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
-        const array = await (<IQueryResultBindings> result).bindings();
+        const array = await (<IQueryableResultBindingsEnhanced> result).bindings();
         expect(array).toEqual([{ a: 'triple' }]);
       });
 
@@ -326,10 +315,10 @@ describe('ActorInitSparql', () => {
           inputThis.push(null);
         };
         mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-          Promise.resolve({ bindingsStream: inputThis }) :
+          Promise.resolve({ bindingsStream: inputThis, type: 'bindings' }) :
           Promise.reject(new Error('a'));
         const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
-        const array = await (<IQueryResultBindings> result).bindings();
+        const array = await (<IQueryableResultBindingsEnhanced> result).bindings();
         expect(array).toEqual([]);
       });
 
@@ -1280,7 +1269,7 @@ LIMIT 100
       };
       const factory = new Factory();
       mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-        Promise.resolve({ quadStream: input }) :
+        Promise.resolve({ quadStream: input, type: 'quads' }) :
         Promise.reject(new Error('a'));
       mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
         Promise.resolve(action.query) :
@@ -1318,7 +1307,7 @@ LIMIT 100
     it('quads() should collect all quads until "end" event occurs', async() => {
       const ctx = { sources: []};
       const result = await actor.query('CONSTRUCT WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryResultQuads> result).quads();
+      const array = await (<IQueryableResultQuadsEnhanced> result).quads();
       expect(array).toEqual([ DF.quad(
         DF.namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
         DF.namedNode('http://dbpedia.org/ontology/assembly'),
@@ -1335,10 +1324,10 @@ LIMIT 100
         input.push(null);
       };
       mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-        Promise.resolve({ quadStream: input }) :
+        Promise.resolve({ quadStream: input, type: 'quads' }) :
         Promise.reject(new Error('a'));
       const result = await actor.query('CONSTRUCT * WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryResultQuads> result).quads();
+      const array = await (<IQueryableResultQuadsEnhanced> result).quads();
       expect(array).toEqual([]);
     });
 

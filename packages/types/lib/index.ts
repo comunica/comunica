@@ -121,6 +121,38 @@ export type IQueryableResult =
   IQueryableResultVoid;
 
 /**
+ * Enhanced query operation output for a bindings stream.
+ * For example: SPARQL SELECT results
+ */
+export interface IQueryableResultBindingsEnhanced extends IQueryableResultBindings {
+  /**
+   * The collection of bindings after an 'end' event occured.
+   */
+  bindings: () => Promise<Bindings[]>;
+}
+
+/**
+ * Enhanced query operation output for quads.
+ * For example: SPARQL CONSTRUCT results
+ */
+export interface IQueryableResultQuadsEnhanced extends IQueryableResultQuads {
+  /**
+   * The collection of bindings after an 'end' event occured.
+   */
+  quads: () => Promise<RDF.Quad[]>;
+}
+
+/**
+ * Enhanced query operation output.
+ * @see IQueryableResultBindingsEnhanced, IQueryableResultQuadsEnhanced, IQueryableResultBoolean, IQueryableResultVoid
+ */
+export type IQueryableResultEnhanced =
+  IQueryableResultBindingsEnhanced |
+  IQueryableResultQuadsEnhanced |
+  IQueryableResultBoolean |
+  IQueryableResultVoid;
+
+/**
  * A type-safe metadata object.
  * This interface still allows other non-standard metadata entries to be added.
  */

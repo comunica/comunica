@@ -59,8 +59,3 @@ export interface IActorHttpProxyArgs extends IActorArgs<IActionHttp, IActorTest,
    */
   mediatorHttp: Mediator<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
 }
-
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_HTTPPROXYHANDLER = KeysHttpProxy.httpProxyHandler;

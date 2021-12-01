@@ -1,5 +1,3 @@
-import { KeysCore } from '@comunica/context-entries';
-
 /**
  * A logger accepts messages from different levels
  * and emits them in a certain way.
@@ -35,10 +33,3 @@ export abstract class Logger {
   public abstract error(message: string, data?: any): void;
   public abstract fatal(message: string, data?: any): void;
 }
-
-/**
- * @type {string} Context entry for a logger instance.
- * @value {Logger} A logger.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_LOG = KeysCore.log;

@@ -2,7 +2,7 @@ import * as cluster from 'cluster';
 import * as EventEmitter from 'events';
 import * as querystring from 'querystring';
 import { PassThrough } from 'stream';
-import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import { ArrayIterator } from 'asynciterator';
 import { WritableStream } from 'memory-streams';
@@ -409,7 +409,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           stderr,
           exit,
           []))
-        .context[KEY_CONTEXT_READONLY]).toBe(true);
+        .context[KeysQueryOperation.readOnly]).toBe(true);
 
       testCommandlineArguments.push('-u');
       expect((await HttpServiceSparqlEndpoint
@@ -420,7 +420,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           stderr,
           exit,
           []))
-        .context[KEY_CONTEXT_READONLY]).toBe(false);
+        .context[KeysQueryOperation.readOnly]).toBe(false);
     });
   });
 
@@ -1316,7 +1316,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           true);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { [KEY_CONTEXT_READONLY]: true });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { [KeysQueryOperation.readOnly]: true });
       });
 
       it('should set not readOnly in the context if called with readOnly false', async() => {

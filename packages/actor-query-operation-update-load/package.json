@@ -31,7 +31,8 @@
   ],
   "dependencies": {
     "rdf-data-factory": "^1.0.4",
-    "sparqlalgebrajs": "^4.0.0"
+    "sparqlalgebrajs": "^4.0.0",
+    "@comunica/context-entries": "^2.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.19.2",

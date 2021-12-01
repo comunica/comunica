@@ -1,4 +1,4 @@
-import { KEY_CONTEXT_LENIENT } from '@comunica/bus-rdf-dereference';
+import { KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorRdfDereferenceFallback } from '../lib/ActorRdfDereferenceFallback';
 const arrayifyStream = require('arrayify-stream');
@@ -26,7 +26,7 @@ describe('ActorRdfDereferenceFallback', () => {
     });
 
     it('should run and log on lenient mode', async() => {
-      const context = ActionContext({ [KEY_CONTEXT_LENIENT]: true });
+      const context = ActionContext({ [KeysInitSparql.lenient]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'URL', context });
       expect(output.url).toEqual('URL');

@@ -4,14 +4,7 @@ export {
 } from './ActorInitSparqlBase';
 export * from './ActorInitSparql';
 export * from './HttpServiceSparqlEndpoint';
-export {
-  newEngine,
-  bindingsStreamToGraphQl,
-  IQueryResultBindings,
-  IQueryResultQuads,
-  IQueryResultBoolean,
-  IQueryResult,
-} from './index-browser';
+export { newEngine, bindingsStreamToGraphQl } from './index-browser';
 export * from './cli/CliArgsHandlerBase';
 export * from './cli/CliArgsHandlerHttp';
 export * from './cli/CliArgsHandlerQuery';

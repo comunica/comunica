@@ -26,12 +26,13 @@ import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@
 import { ActionContext } from '@comunica/core';
 import type {
   IQueryableResult,
-  IQueryableResultBindings,
-  IQueryableResultQuads,
-  IQueryableResultBoolean,
-  IQueryableResultVoid,
   Bindings,
-  IQueryEngine, IQueryExplained, IPhysicalQueryPlanLogger,
+  IQueryEngine,
+  IQueryExplained,
+  IPhysicalQueryPlanLogger,
+  IQueryableResultEnhanced,
+  IQueryableResultBindingsEnhanced,
+  IQueryableResultQuadsEnhanced,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
@@ -93,32 +94,32 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * @param {IQueryableResult} results Basic query results.
    * @return {IQueryResult} Same query results with added fields.
    */
-  public static enhanceQueryResults(results: IQueryableResult): IQueryResult {
+  public static enhanceQueryResults(results: IQueryableResult): IQueryableResultEnhanced {
     // Set bindings
-    if ((<IQueryResultBindings>results).bindingsStream) {
-      (<IQueryResultBindings>results).bindings = () => new Promise((resolve, reject) => {
+    if (results.type === 'bindings') {
+      (<IQueryableResultBindingsEnhanced> results).bindings = () => new Promise((resolve, reject) => {
         const result: Bindings[] = [];
-        (<IQueryResultBindings>results).bindingsStream.on('data', data => {
+        results.bindingsStream.on('data', data => {
           result.push(data);
         });
-        (<IQueryResultBindings>results).bindingsStream.on('end', () => {
+        results.bindingsStream.on('end', () => {
           resolve(result);
         });
-        (<IQueryResultBindings>results).bindingsStream.on('error', reject);
+        results.bindingsStream.on('error', reject);
       });
-    } else if ((<IQueryResultQuads>results).quadStream) {
-      (<IQueryResultQuads>results).quads = () => new Promise((resolve, reject) => {
+    } else if (results.type === 'quads') {
+      (<IQueryableResultQuadsEnhanced>results).quads = () => new Promise((resolve, reject) => {
         const result: RDF.Quad[] = [];
-        (<IQueryResultQuads>results).quadStream.on('data', data => {
+        results.quadStream.on('data', data => {
           result.push(data);
         });
-        (<IQueryResultQuads>results).quadStream.on('end', () => {
+        results.quadStream.on('end', () => {
           resolve(result);
         });
-        (<IQueryResultQuads>results).quadStream.on('error', reject);
+        results.quadStream.on('error', reject);
       });
     }
-    return <IQueryResult> results;
+    return <IQueryableResultEnhanced> results;
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
@@ -131,7 +132,7 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * @param context An optional query context.
    * @return {Promise<IQueryResult>} A promise that resolves to the query output.
    */
-  public async query(query: string | Algebra.Operation, context?: any): Promise<IQueryResult> {
+  public async query(query: string | Algebra.Operation, context?: any): Promise<IQueryableResultEnhanced> {
     const output = await this.queryOrExplain(query, context);
     if ('explain' in output) {
       throw new Error(`Tried to explain a query when in query-only mode`);
@@ -148,7 +149,7 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
   public async queryOrExplain(
     query: string | Algebra.Operation,
     context?: any,
-  ): Promise<IQueryResult | IQueryExplained> {
+  ): Promise<IQueryableResultEnhanced | IQueryExplained> {
     context = context || {};
 
     // Expand shortcuts
@@ -245,9 +246,10 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
     }
 
     // Execute query
-    const resolve: IActionQueryOperation = { context, operation };
-    let output = <IQueryResult> await this.mediatorQueryOperation.mediate(resolve);
-    output = ActorInitSparqlBase.enhanceQueryResults(output);
+    const output = ActorInitSparqlBase.enhanceQueryResults(await this.mediatorQueryOperation.mediate({
+      context,
+      operation,
+    }));
     output.context = context;
 
     // Output physical query plan after query exec if needed
@@ -428,60 +430,3 @@ export interface IActorInitSparqlBaseArgs extends IActorArgs<IActionInit, IActor
    */
   contextKeyShortcuts: Record<string, string>;
 }
-
-/**
- * Query operation output for a bindings stream.
- * For example: SPARQL SELECT results
- */
-export interface IQueryResultBindings extends IQueryableResultBindings {
-  /**
-   * The collection of bindings after an 'end' event occured.
-   */
-  bindings: () => Promise<Bindings[]>;
-}
-
-/**
- * Query operation output for quads.
- * For example: SPARQL CONSTRUCT results
- */
-export interface IQueryResultQuads extends IQueryableResultQuads {
-  /**
-   * The collection of bindings after an 'end' event occured.
-   */
-  quads: () => Promise<RDF.Quad[]>;
-}
-
-/**
- * Query operation output for booleans.
- * For example: SPARQL ASK results
- */
-export interface IQueryResultBoolean extends IQueryableResultBoolean {}
-
-/**
- * Query operation output for updates.
- * For example: SPARQL INSERT/DELETE results
- */
-export interface IQueryResultUpdate extends IQueryableResultVoid {}
-
-export type IQueryResult = IQueryResultBindings | IQueryResultQuads | IQueryResultBoolean | IQueryResultUpdate;
-
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_INITIALBINDINGS = KeysInitSparql.initialBindings;
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_QUERYFORMAT = KeysInitSparql.queryFormat;
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES = KeysInitSparql.graphqlSingularizeVariables;
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_LENIENT = KeysInitSparql.lenient;
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_QUERY = KeysInitSparql.query;

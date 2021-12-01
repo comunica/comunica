@@ -64,12 +64,3 @@ export interface IActorRdfParseJsonLdArgs extends IActorRdfParseFixedMediaTypesA
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 }
-
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_DOCUMENTLOADER = KeysRdfParseJsonLd.documentLoader;
-/**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_STRICTVALUES = KeysRdfParseJsonLd.strictValues;

@@ -4,13 +4,6 @@ import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
-/**
- * @type {string} Context entry for a data destination.
- * @value {IDataDestination} A destination.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_DESTINATION = KeysRdfUpdateQuads.destination;
-
 export function isDataDestinationRawType(dataDestination: IDataDestination): dataDestination is string | RDF.Store {
   return typeof dataDestination === 'string' || 'remove' in dataDestination;
 }
@@ -55,7 +48,7 @@ export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, I
    * @return {IDataDestination} The destination or undefined.
    */
   protected getContextDestination(context?: ActionContext): IDataDestination | undefined {
-    return context ? context.get(KEY_CONTEXT_DESTINATION) : undefined;
+    return context ? context.get(KeysRdfUpdateQuads.destination) : undefined;
   }
 
   /**

@@ -5,11 +5,6 @@ import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_LENIENT = KeysInitSparql.lenient;
-
-/**
  * A base actor for dereferencing URLs to quad streams.
  *
  * Actor types:

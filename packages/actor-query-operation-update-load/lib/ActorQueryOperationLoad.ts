@@ -1,6 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
+import { KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IQueryableResult } from '@comunica/types';
@@ -41,9 +42,9 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     if (!context) {
       context = ActionContext({});
     }
-    let subContext = context.set(KEY_CONTEXT_SOURCES, [ pattern.source.value ]);
+    let subContext = context.set(KeysRdfResolveQuadPattern.sources, [ pattern.source.value ]);
     if (pattern.silent) {
-      subContext = subContext.set(KEY_CONTEXT_LENIENT, true);
+      subContext = subContext.set(KeysInitSparql.lenient, true);
     }
     const output = ActorQueryOperationLoad.getSafeQuads(await this.mediatorQueryOperation.mediate({
       operation: this.constructOperation,
@@ -76,6 +77,3 @@ export interface IActorQueryOperationLoadArgs extends IActorQueryOperationTypedM
   mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
   IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
 }
-
-export const KEY_CONTEXT_SOURCES = '@comunica/bus-rdf-resolve-quad-pattern:sources';
-export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';

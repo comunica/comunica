@@ -1,4 +1,3 @@
-import { KeysHttp } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
@@ -74,16 +73,3 @@ export interface IActionHttp extends IAction {
 export interface IActorHttpOutput extends IActorOutput, Response {
 
 }
-
-/**
- * @type {string} Context entry for the include credentials flags.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_INCLUDE_CREDENTIALS = KeysHttp.includeCredentials;
-
-/**
- * @type {string} Context entry for the authentication for a source.
- * @value {string} "username:password"-pair.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_AUTH = KeysHttp.auth;
