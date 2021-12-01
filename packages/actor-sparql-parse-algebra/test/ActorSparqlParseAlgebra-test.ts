@@ -45,9 +45,7 @@ describe('ActorSparqlParseAlgebra', () => {
 
     it('should run', async() => {
       const result = await actor.run({ query: 'SELECT * WHERE { ?a a ?b }' });
-
-      // TODO: I am unable to find why the match only works like this
-      expect(JSON.parse(JSON.stringify(result))).toMatchObject(
+      expect(result).toMatchObject(
         {
           operation: {
             input: { patterns: [
@@ -76,9 +74,7 @@ describe('ActorSparqlParseAlgebra', () => {
 
     it('should run for an update query', async() => {
       const result = await actor.run({ query: 'INSERT { <http://example/egbook> <http://ex.org/p> "A" } WHERE {}' });
-
-      // TODO: I am unable to find why the match only works like this
-      expect(JSON.parse(JSON.stringify(result))).toMatchObject({
+      expect(result).toMatchObject({
         operation: {
           insert: [
             {
@@ -96,9 +92,7 @@ describe('ActorSparqlParseAlgebra', () => {
 
     it('should run with an overridden baseIRI', async() => {
       const result = await actor.run({ query: 'BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }' });
-
-      // TODO: I am unable to find why the match only works like this
-      expect(JSON.parse(JSON.stringify(result))).toMatchObject({
+      expect(result).toMatchObject({
         baseIRI: 'http://example.org/book/',
         operation: {
           input: { patterns: [
