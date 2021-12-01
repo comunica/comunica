@@ -166,5 +166,4 @@ export interface ISearchForms {
    * All available search forms.
    */
   values: ISearchForm[];
-  // TODO: in the future, a query-based search form getter should be available here.
 }

@@ -27,7 +27,6 @@ export class ActorHttpNative extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
-    // TODO: check for unsupported fetch features
     return { time: Number.POSITIVE_INFINITY };
   }
 

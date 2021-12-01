@@ -66,7 +66,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   private getLogicalMetadata(rawNode: any): any {
     if ('type' in rawNode) {
       const operation: Algebra.Operation = rawNode;
-      // TODO: In the future, we may want to add support for other operations as well
       // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
       switch (operation.type) {
         case 'pattern':

@@ -61,7 +61,6 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
       (<IQueryableResultBindings> action).bindingsStream :
       (<IQueryableResultQuads> action).quadStream;
 
-    // TODO: Make initiation timer configurable
     const startTime = process.hrtime();
     let result = 1;
 

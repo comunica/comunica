@@ -81,8 +81,6 @@ export class RdfSourceQpf implements IQuadSource {
 
     // Find a quad pattern or triple pattern search form
     const { searchForms } = metadata;
-
-    // TODO: in the future, a query-based search form getter should be used.
     for (const searchForm of searchForms.values) {
       if (this.graphUri &&
         this.subjectUri in searchForm.mappings &&
