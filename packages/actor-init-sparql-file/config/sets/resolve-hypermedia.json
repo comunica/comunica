@@ -8,6 +8,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-all/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-none/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^2.0.0/components/context.jsonld",
@@ -68,6 +69,11 @@
     {
       "@id": "cais:config/sets/resolve-hypermedia.json#myRdfMetadataAll",
       "@type": "ActorRdfMetadataAll"
+    },
+
+    {
+      "@id": "#myHypermediaLinksQueue",
+      "@type": "ActorRdfResolveHypermediaLinksQueueFifo"
     }
   ]
 }
