@@ -256,6 +256,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           mediatorRdfDereference,
           mediatorRdfResolveHypermedia,
           mediatorRdfResolveHypermediaLinks,
+          mediatorRdfResolveHypermediaLinksQueue,
           name: 'actor',
         });
 
