@@ -141,11 +141,10 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends
   mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>;
-  // TODO: make the following mandatory upon the next breaking change
   /**
    * The hypermedia links queue resolve mediator
    */
-  mediatorRdfResolveHypermediaLinksQueue?: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
+  mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
   IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
   IActorRdfResolveHypermediaLinksQueueOutput>;
 }
