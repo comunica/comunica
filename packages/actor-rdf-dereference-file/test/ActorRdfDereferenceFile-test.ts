@@ -9,7 +9,7 @@ import { ActorRdfDereferenceFile } from '../lib/ActorRdfDereferenceFile';
 const arrayifyStream = require('arrayify-stream');
 
 function fileUrl(str: string): string {
-  let pathName = path.resolve(str).replaceAll('\\', '/');
+  let pathName = path.resolve(str).replace(/\\/ug, '/');
 
   // Windows drive letter must be prefixed with a slash
   if (!pathName.startsWith('/')) {
