@@ -32,26 +32,9 @@
     "@comunica/bus-rdf-resolve-hypermedia-links": "^2.0.0",
     "@comunica/core": "^2.0.0"
   },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "../../tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "collectCoverage": true
-  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator",
-    "validate": "npm ls"
+    "build:components": "componentsjs-generator"
   }
 }

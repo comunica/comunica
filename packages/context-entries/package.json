@@ -29,7 +29,6 @@
     "lib/**/*.js"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
   }
 }

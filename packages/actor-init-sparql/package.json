@@ -201,29 +201,10 @@
     "streamify-string": "^1.0.1",
     "yargs": "^17.1.1"
   },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "../../tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\-test.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "collectCoverage": true
-  },
   "scripts": {
-    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
-    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator",
-    "validate": "npm ls",
     "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
     "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
     "browser-profile": "\"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --profile --mode production --json > stats.json && webpack-bundle-analyzer stats.json && rm stats.json",

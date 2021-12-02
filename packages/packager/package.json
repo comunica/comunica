@@ -36,7 +36,6 @@
     "minimist": "^1.2.0"
   },
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
   }
 }
