@@ -24,7 +24,7 @@
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^3.2.0",
     "babel-loader": "^8.2.3",
-    "componentsjs-generator": "3.0.0-beta.0",
+    "componentsjs-generator": "3.0.0-beta.1",
     "eslint": "^8.3.0",
     "eslint-config-es": "^4.1.0",
     "eslint-plugin-eslint-comments": "3.2.0",

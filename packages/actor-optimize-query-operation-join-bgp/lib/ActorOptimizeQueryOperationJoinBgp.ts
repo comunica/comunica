@@ -1,7 +1,7 @@
 import type { IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
@@ -9,10 +9,6 @@ import { Util } from 'sparqlalgebrajs';
  * A comunica Join BGP Optimize Query Operation Actor.
  */
 export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperation {
-  public constructor(args: IActorArgs<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>) {
-    super(args);
-  }
-
   public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
     return true;
   }

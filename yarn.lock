@@ -4317,10 +4317,10 @@ compare-func@^2.0.0:
     array-ify "^1.0.0"
     dot-prop "^5.1.0"
 
-componentsjs-generator@3.0.0-beta.0:
-  version "3.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-3.0.0-beta.0.tgz#6d80b9dee02ab2dfffad5b0af1355ada14a933ca"
-  integrity sha512-HRV7zAtViAErdwGF+Nqa5VdYWqBLKWLl/2W1SO7VZ24oVQrgyjUETMoLTdsVPtClhb7NToLAl1UC4tP0tw5eBg==
+componentsjs-generator@3.0.0-beta.1:
+  version "3.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-3.0.0-beta.1.tgz#0699daed965e03a0ab7f2b824fcaeca671361099"
+  integrity sha512-NCsyyGPHiZi91ff861mTLuVzMyDQUTXTM5T7Fa2w8AbahE0wee0+b6wJc40pEP13qOj5j41YvwraLaxRwqV4Zg==
   dependencies:
     "@types/lru-cache" "^5.1.0"
     "@types/semver" "^7.3.4"

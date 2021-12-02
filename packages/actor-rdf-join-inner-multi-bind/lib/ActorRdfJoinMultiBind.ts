@@ -1,4 +1,4 @@
-import type { IActionQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
@@ -8,7 +8,6 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, IQueryableResultBindings, IMetadata } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
@@ -20,9 +19,7 @@ import { Factory, Algebra } from 'sparqlalgebrajs';
 export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
-  public readonly mediatorQueryOperation: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
-  IActionQueryOperation, IActorTest, IQueryableResultBindings>;
+  public readonly mediatorQueryOperation: MediatorQueryOperation;
 
   public static readonly FACTORY = new Factory();
 
@@ -265,8 +262,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
   /**
    * The query operation mediator
    */
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
-  IActionQueryOperation, IActorTest, IQueryableResultBindings>;
+  mediatorQueryOperation: MediatorQueryOperation;
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';

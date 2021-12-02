@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
-import type { IActionHandleRdfParse, IActorOutputHandleRdfParse,
-  IActorTestHandleRdfParse } from '@comunica/bus-rdf-parse';
+import type { IActionRdfParseHandle, IActorOutputRdfParseHandle,
+  IActorTestRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
 import type { Actor, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
@@ -13,8 +13,8 @@ import { resolve as resolveIri } from 'relative-to-absolute-iri';
  */
 export class HtmlScriptListener implements IHtmlParseListener {
   private readonly mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
+  IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>;
 
   private readonly cbQuad: (quad: RDF.Quad) => void;
   private readonly cbError: (error: Error) => void;
@@ -34,8 +34,8 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private isFinalJsonLdProcessing = false;
 
   public constructor(mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+  Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
+  IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
   cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
   supportedTypes: Record<string, number>, context: ActionContext | undefined, baseIRI: string,
   headers: Headers | undefined) {

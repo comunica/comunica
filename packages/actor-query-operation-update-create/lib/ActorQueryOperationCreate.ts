@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type { IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -10,8 +10,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * handles SPARQL create operations.
  */
 export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<Algebra.Create> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   public constructor(args: IActorQueryOperationCreateArgs) {
     super(args, 'create');
@@ -44,6 +43,5 @@ export interface IActorQueryOperationCreateArgs extends IActorQueryOperationType
   /**
    * The RDF Update Quads mediator
    */
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }

@@ -1,10 +1,9 @@
 import type {
-  IActionRdfUpdateQuads,
-  IActorRdfUpdateQuadsOutput,
+  IActionRdfUpdateQuads, IActorRdfUpdateQuadsArgs,
   IQuadDestination,
 } from '@comunica/bus-rdf-update-quads';
 import { ActorRdfUpdateQuadsDestination } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { RdfJsQuadDestination } from './RdfJsQuadDestination';
 
@@ -12,7 +11,7 @@ import { RdfJsQuadDestination } from './RdfJsQuadDestination';
  * A comunica RDFJS Store RDF Update Quads Actor.
  */
 export class ActorRdfUpdateQuadsRdfJsStore extends ActorRdfUpdateQuadsDestination {
-  public constructor(args: IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>) {
+  public constructor(args: IActorRdfUpdateQuadsArgs) {
     super(args);
   }
 

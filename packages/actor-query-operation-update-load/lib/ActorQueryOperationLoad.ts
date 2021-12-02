@@ -1,8 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IQueryableResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -16,8 +16,7 @@ const DF = new DataFactory();
  * that handles SPARQL load operations.
  */
 export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Algebra.Load> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   private readonly factory: Factory;
   private readonly constructOperation: Algebra.Construct;
@@ -74,6 +73,5 @@ export interface IActorQueryOperationLoadArgs extends IActorQueryOperationTypedM
   /**
    * The RDF Update Quads mediator
    */
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }

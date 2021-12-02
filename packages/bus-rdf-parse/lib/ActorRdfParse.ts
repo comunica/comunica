@@ -6,11 +6,14 @@ import type { IActionAbstractMediaTyped,
   IActorOutputAbstractMediaTypedHandle, IActorOutputAbstractMediaTypedMediaTypes,
   IActorTestAbstractMediaTyped,
   IActorTestAbstractMediaTypedHandle,
-  IActorTestAbstractMediaTypedMediaTypes } from '@comunica/actor-abstract-mediatyped';
+  IActorTestAbstractMediaTypedMediaTypes,
+  IActionAbstractMediaTypedMediaTypeFormats,
+  IActorOutputAbstractMediaTypedMediaTypeFormats,
+  IActorTestAbstractMediaTypedMediaTypeFormats } from '@comunica/actor-abstract-mediatyped';
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, Actor, Mediator } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -28,7 +31,7 @@ export abstract class ActorRdfParse extends
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>) {
+  public constructor(args: IActorRdfParseArgs) {
     super(args);
   }
 }
@@ -37,13 +40,17 @@ export type IActionRootRdfParse = IActionAbstractMediaTyped<IActionRdfParse>;
 export type IActorTestRootRdfParse = IActorTestAbstractMediaTyped<IActorTest>;
 export type IActorOutputRootRdfParse = IActorOutputAbstractMediaTyped<IActorRdfParseOutput>;
 
-export type IActionHandleRdfParse = IActionAbstractMediaTypedHandle<IActionRdfParse>;
-export type IActorTestHandleRdfParse = IActorTestAbstractMediaTypedHandle<IActorTest>;
-export type IActorOutputHandleRdfParse = IActorOutputAbstractMediaTypedHandle<IActorRdfParseOutput>;
+export type IActionRdfParseHandle = IActionAbstractMediaTypedHandle<IActionRdfParse>;
+export type IActorTestRdfParseHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
+export type IActorOutputRdfParseHandle = IActorOutputAbstractMediaTypedHandle<IActorRdfParseOutput>;
 
-export type IActionMediaTypesRdfParse = IActionAbstractMediaTypedMediaTypes;
-export type IActorTestMediaTypesRdfParse = IActorTestAbstractMediaTypedMediaTypes;
-export type IActorOutputMediaTypesRdfParse = IActorOutputAbstractMediaTypedMediaTypes;
+export type IActionRdfParseMediaTypes = IActionAbstractMediaTypedMediaTypes;
+export type IActorTestRdfParseMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
+export type IActorOutputRdfParseMediaTypes = IActorOutputAbstractMediaTypedMediaTypes;
+
+export type IActionRdfParseMediaTypeFormats = IActionAbstractMediaTypedMediaTypeFormats;
+export type IActorTestRdfParseMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
+export type IActorOutputRdfParseMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
 /**
  * The RDF parse input, which contains the input stream in the given media type.
@@ -76,3 +83,17 @@ export interface IActorRdfParseOutput extends IActorOutput {
    */
   triples?: boolean;
 }
+
+export type IActorRdfParseArgs = IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>;
+
+export type MediatorRdfParseHandle = Mediator<
+Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
+IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>;
+
+export type MediatorRdfParseMediaTypes = Mediator<
+Actor<IActionRdfParseMediaTypes, IActorTestRdfParseMediaTypes, IActorOutputRdfParseMediaTypes>,
+IActionRdfParseMediaTypes, IActorTestRdfParseMediaTypes, IActorOutputRdfParseMediaTypes>;
+
+export type MediatorRdfParseMediaTypeFormats = Mediator<
+Actor<IActionRdfParseMediaTypeFormats, IActorTestRdfParseMediaTypeFormats, IActorOutputRdfParseMediaTypeFormats>,
+IActionRdfParseMediaTypeFormats, IActorTestRdfParseMediaTypeFormats, IActorOutputRdfParseMediaTypeFormats>;

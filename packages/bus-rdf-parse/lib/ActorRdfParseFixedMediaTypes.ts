@@ -30,5 +30,5 @@ IActionRdfParse, IActorTest, IActorRdfParseOutput> implements IActorRdfParseFixe
   }
 }
 
-export interface IActorRdfParseFixedMediaTypesArgs
-  extends IActorArgsMediaTypedFixed<IActionRdfParse, IActorTest, IActorRdfParseOutput> {}
+export type IActorRdfParseFixedMediaTypesArgs = IActorArgsMediaTypedFixed<
+IActionRdfParse, IActorTest, IActorRdfParseOutput>;

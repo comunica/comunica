@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -17,7 +17,7 @@ export abstract class ActorRdfMetadata extends Actor<IActionRdfMetadata, IActorT
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
+  public constructor(args: IActorRdfMetadataArgs) {
     super(args);
   }
 }
@@ -49,3 +49,9 @@ export interface IActorRdfMetadataOutput extends IActorOutput {
    */
   metadata: RDF.Stream;
 }
+
+export type IActorRdfMetadataArgs = IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+
+export type MediatorRdfMetadata = Mediator<
+Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
+IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;

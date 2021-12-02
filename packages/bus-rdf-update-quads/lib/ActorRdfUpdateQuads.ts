@@ -1,5 +1,5 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -38,7 +38,7 @@ export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, I
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>) {
+  public constructor(args: IActorRdfUpdateQuadsArgs) {
     super(args);
   }
 
@@ -133,3 +133,9 @@ export interface IActorRdfUpdateQuadsOutput extends IActorOutput {
    */
   updateResult: Promise<void>;
 }
+
+export type IActorRdfUpdateQuadsArgs = IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+
+export type MediatorRdfUpdateQuads = Mediator<
+Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
+IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;

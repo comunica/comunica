@@ -1,16 +1,16 @@
-import type { IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
-  IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { IActionRdfResolveQuadPattern,
+  IQuadSource, IActorRdfResolveQuadPatternArgs } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
   ActorRdfResolveQuadPatternSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import { RdfJsQuadSource } from './RdfJsQuadSource';
 
 /**
  * A comunica RDFJS Source RDF Resolve Quad Pattern Actor.
  */
 export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPatternSource {
-  public constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
+  public constructor(args: IActorRdfResolveQuadPatternArgs) {
     super(args);
   }
 

@@ -1,7 +1,7 @@
-import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IActionQueryOperation } from './ActorQueryOperation';
+import type { IActionQueryOperation, IActorQueryOperationArgs, MediatorQueryOperation } from './ActorQueryOperation';
 import { ActorQueryOperationTyped } from './ActorQueryOperationTyped';
 
 /**
@@ -9,16 +9,14 @@ import { ActorQueryOperationTyped } from './ActorQueryOperationTyped';
  */
 export abstract class ActorQueryOperationTypedMediated<O extends Algebra.Operation> extends ActorQueryOperationTyped<O>
   implements IActorQueryOperationTypedMediatedArgs {
-  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
-  IActionQueryOperation, IActorTest, IQueryableResult>;
+  public readonly mediatorQueryOperation: MediatorQueryOperation;
 
   public constructor(args: IActorQueryOperationTypedMediatedArgs, operationName: string) {
     super(args, operationName);
   }
 }
 
-export interface IActorQueryOperationTypedMediatedArgs
-  extends IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult> {
+export interface IActorQueryOperationTypedMediatedArgs extends IActorQueryOperationArgs {
   mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
   IActionQueryOperation, IActorTest, IQueryableResult>;
 }

@@ -3,10 +3,9 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { ActorRdfJoin, IActionRdfJoin, IJoinEntry } from '@comunica/bus-rdf-join';
-import type { ActionContext, Mediator } from '@comunica/core';
-import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, IQueryableResult, IQueryableResultBindings } from '@comunica/types';
+import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import type { ActionContext } from '@comunica/core';
+import type { Bindings, IQueryableResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -15,8 +14,7 @@ import { Algebra } from 'sparqlalgebrajs';
  * A comunica Path Seq Query Operation Actor.
  */
 export class ActorQueryOperationPathSeq extends ActorAbstractPath {
-  public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResult>;
+  public readonly mediatorJoin: MediatorRdfJoin;
 
   public constructor(args: IActorQueryOperationPathSeq) {
     super(args, Algebra.types.SEQ);
@@ -71,5 +69,5 @@ export interface IActorQueryOperationPathSeq extends IActorQueryOperationTypedMe
   /**
    * A mediator for joining Bindings streams
    */
-  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResult>;
+  mediatorJoin: MediatorRdfJoin;
 }

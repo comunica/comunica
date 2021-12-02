@@ -1,21 +1,13 @@
 import { Readable } from 'stream';
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import type { IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
-import type {
-  IActionRdfResolveHypermediaLinks,
-  IActorRdfResolveHypermediaLinksOutput,
-  ILink,
-} from '@comunica/bus-rdf-resolve-hypermedia-links';
-import type {
-  ILinkQueue,
-  IActionRdfResolveHypermediaLinksQueue,
-  IActorRdfResolveHypermediaLinksQueueOutput,
-} from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IActorRdfDereferenceOutput, MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { ILink,
+  MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { ILinkQueue,
+  MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import type { ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
@@ -27,26 +19,12 @@ import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIter
  * @see LinkedRdfSourcesAsyncRdfIterator
  */
 export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAsyncRdfIterator {
-  private readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-
-  private readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-
-  private readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-
-  private readonly mediatorRdfResolveHypermedia: Mediator<Actor<IActionRdfResolveHypermedia, IActorTest,
-  IActorRdfResolveHypermediaOutput>, IActionRdfResolveHypermedia, IActorTest, IActorRdfResolveHypermediaOutput>;
-
-  private readonly mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>;
-
-  private readonly mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
-  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
-  IActorRdfResolveHypermediaLinksQueueOutput>;
-
+  private readonly mediatorRdfDereference: MediatorRdfDereference;
+  private readonly mediatorMetadata: MediatorRdfMetadata;
+  private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  private readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
+  private readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
+  private readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
   private readonly context: ActionContext;
   private readonly forceSourceType?: string;
   private readonly handledUrls: Record<string, boolean>;
@@ -160,18 +138,10 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 }
 
 export interface IMediatorArgs {
-  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-  mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-  mediatorRdfResolveHypermedia: Mediator<Actor<IActionRdfResolveHypermedia, IActorTest,
-  IActorRdfResolveHypermediaOutput>, IActionRdfResolveHypermedia, IActorTest, IActorRdfResolveHypermediaOutput>;
-  mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>;
-  mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
-  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
-  IActorRdfResolveHypermediaLinksQueueOutput>;
+  mediatorRdfDereference: MediatorRdfDereference;
+  mediatorMetadata: MediatorRdfMetadata;
+  mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
+  mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
+  mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
 }

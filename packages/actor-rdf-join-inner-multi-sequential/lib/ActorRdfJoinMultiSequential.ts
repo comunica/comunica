@@ -1,11 +1,16 @@
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IJoinEntry,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  MediatorRdfJoin,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IQueryableResult, IQueryableResultBindings, IMetadata } from '@comunica/types';
+import type { IMetadata } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -13,8 +18,7 @@ import { Factory } from 'sparqlalgebrajs';
  * It accepts 3 or more streams, joins the first two, and joins the result with the remaining streams.
  */
 export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
-  public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResult>;
+  public readonly mediatorJoin: MediatorRdfJoin;
 
   public static readonly FACTORY = new Factory();
 
@@ -38,7 +42,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
     const remainingEntries: IJoinEntry[] = action.entries.slice(1);
     remainingEntries[0] = firstEntry;
     return {
-      result: <IQueryableResultBindings> await this.mediatorJoin.mediate({
+      result: await this.mediatorJoin.mediate({
         type: action.type,
         entries: remainingEntries,
         context: action.context,
@@ -69,6 +73,5 @@ export interface IActorRdfJoinMultiSequentialArgs extends IActorRdfJoinArgs {
   /**
    * A mediator for joining Bindings streams
    */
-  mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>;
+  mediatorJoin: MediatorRdfJoin;
 }

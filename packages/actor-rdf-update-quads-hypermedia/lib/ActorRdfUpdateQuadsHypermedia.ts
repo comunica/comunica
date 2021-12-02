@@ -1,34 +1,22 @@
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import type { IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput } from '@comunica/bus-rdf-update-hypermedia';
-import {
-  ActorRdfUpdateQuadsDestination,
-  getDataDestinationType,
-} from '@comunica/bus-rdf-update-quads';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput, IDataDestination,
-  IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import type { Actor, IActorArgs, IActorTest, Mediator, ActionContext } from '@comunica/core';
+import type { IActorRdfDereferenceOutput, MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
+import { ActorRdfUpdateQuadsDestination, getDataDestinationType } from '@comunica/bus-rdf-update-quads';
+import type { IActionRdfUpdateQuads, IDataDestination,
+  IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
+import type { IActorTest, ActionContext } from '@comunica/core';
 import LRUCache = require('lru-cache');
 
 /**
  * A comunica Hypermedia RDF Update Quads Actor.
  */
 export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestination {
-  // Mediators
-  public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-
-  public readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-
-  public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-
-  public readonly mediatorRdfUpdateHypermedia: Mediator<Actor<IActionRdfUpdateHypermedia, IActorTest,
-  IActorRdfUpdateHypermediaOutput>, IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>;
-
+  public readonly mediatorRdfDereference: MediatorRdfDereference;
+  public readonly mediatorMetadata: MediatorRdfMetadata;
+  public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  public readonly mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
   public readonly cacheSize: number;
   public readonly cache?: LRUCache<string, Promise<IQuadDestination>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
@@ -105,8 +93,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   }
 }
 
-export interface IActorRdfUpdateQuadsHypermediaArgs
-  extends IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput> {
+export interface IActorRdfUpdateQuadsHypermediaArgs extends IActorRdfUpdateQuadsArgs {
   /**
    * The maximum number of entries in the LRU cache, set to 0 to disable.
    * @range {integer}
@@ -123,21 +110,17 @@ export interface IActorRdfUpdateQuadsHypermediaArgs
   /**
    * The RDF dereference mediator
    */
-  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  mediatorRdfDereference: MediatorRdfDereference;
   /**
    * The metadata mediator
    */
-  mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+  mediatorMetadata: MediatorRdfMetadata;
   /**
    * The metadata extract mediator
    */
-  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  mediatorMetadataExtract: MediatorRdfMetadataExtract;
   /**
    * The hypermedia resolver
    */
-  mediatorRdfUpdateHypermedia: Mediator<Actor<IActionRdfUpdateHypermedia, IActorTest,
-  IActorRdfUpdateHypermediaOutput>, IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>;
+  mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
 }

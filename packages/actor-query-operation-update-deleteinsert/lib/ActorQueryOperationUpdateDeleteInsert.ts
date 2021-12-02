@@ -4,8 +4,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type { IQueryableResult, BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -17,8 +17,7 @@ const BF = new BindingsFactory();
  * A comunica Update DeleteInsert Query Operation Actor.
  */
 export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTypedMediated<Algebra.DeleteInsert> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   protected blankNodeCounter = 0;
 
@@ -79,6 +78,5 @@ export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorQueryO
   /**
    * The RDF Update Quads mediator
    */
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }

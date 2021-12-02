@@ -1,7 +1,15 @@
 import type { IActionAbstractMediaTyped, IActorArgsMediaTyped,
-  IActorTestAbstractMediaTyped, IActorOutputAbstractMediaTypedHandle } from '@comunica/actor-abstract-mediatyped';
-import { ActorAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
+  IActorTestAbstractMediaTyped, IActorOutputAbstractMediaTypedHandle,
+  IActionAbstractMediaTypedHandle,
+  IActionAbstractMediaTypedMediaTypeFormats,
+  IActionAbstractMediaTypedMediaTypes, IActorOutputAbstractMediaTypedMediaTypeFormats,
+  IActorOutputAbstractMediaTypedMediaTypes,
+  IActorTestAbstractMediaTypedHandle, IActorTestAbstractMediaTypedMediaTypeFormats,
+  IActorTestAbstractMediaTypedMediaTypes } from '@comunica/actor-abstract-mediatyped';
+import {
+  ActorAbstractMediaTyped,
+} from '@comunica/actor-abstract-mediatyped';
+import type { IAction, IActorOutput, IActorTest, Actor, Mediator } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -20,7 +28,7 @@ export abstract class ActorRdfSerialize extends
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgsMediaTyped<IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>) {
+  public constructor(args: IActorRdfSerializeArgs) {
     super(args);
   }
 }
@@ -28,6 +36,18 @@ export abstract class ActorRdfSerialize extends
 export type IActionRootRdfSerialize = IActionAbstractMediaTyped<IActionRdfSerialize>;
 export type IActorTestRootRdfSerialize = IActorTestAbstractMediaTyped<IActorTest>;
 export type IActorOutputRootRdfSerialize = IActorOutputAbstractMediaTypedHandle<IActorRdfSerializeOutput>;
+
+export type IActionRdfSerializeHandle = IActionAbstractMediaTypedHandle<IActionRdfSerialize>;
+export type IActorTestRdfSerializeHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
+export type IActorOutputRdfSerializeHandle = IActorOutputAbstractMediaTypedHandle<IActorRdfSerializeOutput>;
+
+export type IActionRdfSerializeMediaTypes = IActionAbstractMediaTypedMediaTypes;
+export type IActorTestRdfSerializeMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
+export type IActorOutputRdfSerializeMediaTypes = IActorOutputAbstractMediaTypedMediaTypes;
+
+export type IActionRdfSerializeMediaTypeFormats = IActionAbstractMediaTypedMediaTypeFormats;
+export type IActorTestRdfSerializeMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
+export type IActorOutputRdfSerializeMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
 export interface IActionRdfSerialize extends IAction {
   /**
@@ -48,3 +68,18 @@ export interface IActorRdfSerializeOutput extends IActorOutput {
    */
   triples?: boolean;
 }
+
+export type IActorRdfSerializeArgs = IActorArgsMediaTyped<IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>;
+
+export type MediatorRdfSerializeHandle = Mediator<
+Actor<IActionRdfSerializeHandle, IActorTestRdfSerializeHandle, IActorOutputRdfSerializeHandle>,
+IActionRdfSerializeHandle, IActorTestRdfSerializeHandle, IActorOutputRdfSerializeHandle>;
+
+export type MediatorRdfSerializeMediaTypes = Mediator<
+Actor<IActionRdfSerializeMediaTypes, IActorTestRdfSerializeMediaTypes, IActorOutputRdfSerializeMediaTypes>,
+IActionRdfSerializeMediaTypes, IActorTestRdfSerializeMediaTypes, IActorOutputRdfSerializeMediaTypes>;
+
+export type MediatorRdfSerializeMediaTypeFormats = Mediator<
+Actor<IActionRdfSerializeMediaTypeFormats, IActorTestRdfSerializeMediaTypeFormats,
+IActorOutputRdfSerializeMediaTypeFormats>, IActionRdfSerializeMediaTypeFormats, IActorTestRdfSerializeMediaTypeFormats,
+IActorOutputRdfSerializeMediaTypeFormats>;

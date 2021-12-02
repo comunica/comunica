@@ -14,7 +14,7 @@ import type { IActionAbstractMediaTyped,
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, Actor, Mediator } from '@comunica/core';
 import type { IQueryableResultBase } from '@comunica/types';
 
 /**
@@ -33,7 +33,7 @@ export abstract class ActorSparqlSerialize
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgsMediaTyped<IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>) {
+  public constructor(args: IActorSparqlSerializeArgs) {
     super(args);
   }
 }
@@ -63,3 +63,19 @@ export interface IActorSparqlSerializeOutput extends IActorOutput {
    */
   data: NodeJS.ReadableStream;
 }
+
+export type IActorSparqlSerializeArgs = IActorArgsMediaTyped<
+IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>;
+
+export type MediatorSparqlSerializeHandle = Mediator<
+Actor<IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>,
+IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
+
+export type MediatorSparqlSerializeMediaTypes = Mediator<
+Actor<IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>,
+IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
+
+export type MediatorSparqlSerializeMediaTypeFormats = Mediator<
+Actor<IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
+IActorOutputSparqlSerializeMediaTypeFormats>, IActionSparqlSerializeMediaTypeFormats,
+IActorTestSparqlSerializeMediaTypeFormats, IActorOutputSparqlSerializeMediaTypeFormats>;

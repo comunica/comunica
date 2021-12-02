@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadata, IActorRdfMetadataArgs, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -98,8 +98,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
   }
 }
 
-export interface IActorRdfMetadataPrimaryTopicArgs
-  extends IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
+export interface IActorRdfMetadataPrimaryTopicArgs extends IActorRdfMetadataArgs {
   /**
    * If detected metadata triples should also be emitted as data triples
    * @default {false}

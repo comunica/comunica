@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IActionRdfDereference,
   IActorRdfDereferenceMediaMappingsArgs,
@@ -8,16 +8,9 @@ import {
   ActorRdfDereferenceMediaMappings,
 } from '@comunica/bus-rdf-dereference';
 import type {
-  IActionHandleRdfParse,
-  IActionMediaTypesRdfParse,
-  IActionRdfParse,
-  IActorOutputHandleRdfParse,
-  IActorOutputMediaTypesRdfParse,
-  IActorRdfParseOutput,
-  IActorTestHandleRdfParse,
-  IActorTestMediaTypesRdfParse,
+  IActionRdfParse, IActorRdfParseOutput, MediatorRdfParseMediaTypes, MediatorRdfParseHandle,
 } from '@comunica/bus-rdf-parse';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 import * as stringifyStream from 'stream-to-string';
@@ -33,17 +26,9 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
   implements IActorRdfDereferenceHttpArgs {
   public static readonly REGEX_MEDIATYPE: RegExp = /^[^ ;]*/u;
 
-  public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
-
-  public readonly mediatorRdfParseMediatypes: Mediator<
-  Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
-  IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
-
-  public readonly mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
-
+  public readonly mediatorHttp: MediatorHttp;
+  public readonly mediatorRdfParseMediatypes: MediatorRdfParseMediaTypes;
+  public readonly mediatorRdfParseHandle: MediatorRdfParseHandle;
   public readonly maxAcceptHeaderLength: number;
   public readonly maxAcceptHeaderLengthBrowser: number;
 
@@ -165,8 +150,7 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
         return right.priority - left.priority;
       });
     // Take into account the ',' characters joining each type
-    const separatorLength = sortedMediaTypes.length - 1;
-    let partsLength = separatorLength;
+    let partsLength = sortedMediaTypes.length - 1;
     for (const entry of sortedMediaTypes) {
       const part = entry.mediaType + (entry.priority !== 1 ?
         `;q=${entry.priority.toFixed(3).replace(/0*$/u, '')}` :
@@ -197,20 +181,15 @@ export interface IActorRdfDereferenceHttpArgs extends
   /**
    * The HTTP mediator.
    */
-  mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  mediatorHttp: MediatorHttp;
   /**
    * The RDF Parse mediator for collecting media types.
    */
-  mediatorRdfParseMediatypes: Mediator<
-  Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
-  IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  mediatorRdfParseMediatypes: MediatorRdfParseMediaTypes;
   /**
    * The RDF Parse mediator for handling parsing.
    */
-  mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  mediatorRdfParseHandle: MediatorRdfParseHandle;
   /**
    * The maximum allowed accept header value length for non-browser environments.
    * @range {integer}

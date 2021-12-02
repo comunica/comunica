@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
@@ -21,7 +21,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>) {
+  public constructor(args: IActorHttpArgs) {
     super(args);
   }
 
@@ -73,3 +73,9 @@ export interface IActionHttp extends IAction {
 export interface IActorHttpOutput extends IActorOutput, Response {
 
 }
+
+export type IActorHttpArgs = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>;
+
+export type MediatorHttp = Mediator<
+Actor<IActionHttp, IActorTest, IActorHttpOutput>,
+IActionHttp, IActorTest, IActorHttpOutput>;

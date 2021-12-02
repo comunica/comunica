@@ -1,7 +1,7 @@
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import 'cross-fetch/polyfill';
 import * as parseLink from 'parse-link-header';
 
@@ -9,8 +9,7 @@ import * as parseLink from 'parse-link-header';
  * A comunica Memento Http Actor.
  */
 export class ActorHttpMemento extends ActorHttp {
-  public readonly mediatorHttp: Mediator<ActorHttp,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  public readonly mediatorHttp: MediatorHttp;
 
   public constructor(args: IActorHttpMementoArgs) {
     super(args);
@@ -59,11 +58,9 @@ export class ActorHttpMemento extends ActorHttp {
   }
 }
 
-export interface IActorHttpMementoArgs
-  extends IActorArgs<IActionHttp, IActorTest, IActorHttpOutput> {
+export interface IActorHttpMementoArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator
    */
-  mediatorHttp: Mediator<ActorHttp,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  mediatorHttp: MediatorHttp;
 }

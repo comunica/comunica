@@ -1,12 +1,16 @@
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type {
+  IActionRdfDereference,
+  IActorRdfDereferenceArgs,
+  IActorRdfDereferenceOutput,
+} from '@comunica/bus-rdf-dereference';
 import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 
 /**
  * A comunica Fallback RDF Dereference Actor.
  */
 export class ActorRdfDereferenceFallback extends ActorRdfDereference {
-  public constructor(args: IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>) {
+  public constructor(args: IActorRdfDereferenceArgs) {
     super(args);
   }
 

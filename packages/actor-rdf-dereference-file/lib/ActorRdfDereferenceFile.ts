@@ -4,24 +4,15 @@ import { promisify } from 'util';
 import type { IActionRdfDereference,
   IActorRdfDereferenceMediaMappingsArgs,
   IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import {
-  ActorRdfDereferenceMediaMappings,
-} from '@comunica/bus-rdf-dereference';
-import type {
-  IActionHandleRdfParse,
-  IActorOutputHandleRdfParse,
-  IActorRdfParseOutput,
-  IActorTestHandleRdfParse,
-} from '@comunica/bus-rdf-parse';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
+import { ActorRdfDereferenceMediaMappings } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfParseHandle, IActorRdfParseOutput, MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
+import type { IActorTest } from '@comunica/core';
 
 /**
  * A comunica File RDF Dereference Actor.
  */
 export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
-  public readonly mediatorRdfParse: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  public readonly mediatorRdfParse: MediatorRdfParseHandle;
 
   public constructor(args: IActorRdfDereferenceFileArgs) {
     super(args);
@@ -49,7 +40,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     }
 
     const requestTimeStart = Date.now();
-    const parseAction: IActionHandleRdfParse = {
+    const parseAction: IActionRdfParseHandle = {
       context: action.context,
       handle: {
         baseIRI: action.url,
@@ -83,7 +74,5 @@ export interface IActorRdfDereferenceFileArgs extends IActorRdfDereferenceMediaM
   /**
    * Mediator used for parsing the file contents.
    */
-  mediatorRdfParse: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  mediatorRdfParse: MediatorRdfParseHandle;
 }

@@ -1,7 +1,9 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
+import type {
+  MediatorRdfUpdateQuads,
+} from '@comunica/bus-rdf-update-quads';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type { IQueryableResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,8 +16,7 @@ const DF = new DataFactory();
  * that handles SPARQL clear operations.
  */
 export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<Algebra.Clear> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   public constructor(args: IActorQueryOperationClearArgs) {
     super(args, 'clear');
@@ -57,6 +58,5 @@ export interface IActorQueryOperationClearArgs extends IActorQueryOperationTyped
   /**
    * The RDF Update Quads mediator
    */
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }

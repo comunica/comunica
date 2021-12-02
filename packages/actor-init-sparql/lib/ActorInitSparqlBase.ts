@@ -1,28 +1,16 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
-import type { IActionHttpInvalidate, IActorHttpInvalidateOutput } from '@comunica/bus-http-invalidate';
-import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
+import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
+import type { IActionInit, IActorInitArgs, IActorOutputInit } from '@comunica/bus-init';
 import { ActorInit } from '@comunica/bus-init';
-import type {
-  IActionOptimizeQueryOperation,
-  IActorOptimizeQueryOperationOutput,
-} from '@comunica/bus-optimize-query-operation';
-import type { IActionQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { materializeOperation } from '@comunica/bus-query-operation';
-import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
-import type {
-  IActionSparqlSerialize,
-  IActionSparqlSerializeHandle,
-  IActionSparqlSerializeMediaTypeFormats,
-  IActionSparqlSerializeMediaTypes,
-  IActorOutputSparqlSerializeHandle, IActorOutputSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypes,
-  IActorSparqlSerializeOutput,
-  IActorTestSparqlSerializeHandle, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorTestSparqlSerializeMediaTypes,
-} from '@comunica/bus-sparql-serialize';
+import type { MediatorSparqlParse } from '@comunica/bus-sparql-parse';
+import type { IActionSparqlSerialize, IActorSparqlSerializeOutput, MediatorSparqlSerializeHandle,
+  MediatorSparqlSerializeMediaTypes, MediatorSparqlSerializeMediaTypeFormats } from '@comunica/bus-sparql-serialize';
 import { KeysInitSparql, KeysCore } from '@comunica/context-entries';
-import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
+import type { IActorTest, Logger } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type {
   IQueryableResult,
@@ -47,34 +35,14 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
   private static readonly ALGEBRA_TYPES: Record<string, boolean> = Object.fromEntries(Object.keys(Algebra.types)
     .map(key => [ (<any> Algebra.types)[key], true ]));
 
-  public readonly mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
-  IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
-
-  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
-  IActionQueryOperation, IActorTest, IQueryableResult>;
-
-  public readonly mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
-  IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
-
-  public readonly mediatorSparqlSerialize: Mediator<
-  Actor<IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>,
-  IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
-
-  public readonly mediatorSparqlSerializeMediaTypeCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>,
-  IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
-
-  public readonly mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>,
-  IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>;
-
-  public readonly mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest,
-  IActorContextPreprocessOutput>, IAction, IActorTest, IActorContextPreprocessOutput>;
-
-  public readonly mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
-  IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
+  public readonly mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
+  public readonly mediatorQueryOperation: MediatorQueryOperation;
+  public readonly mediatorSparqlParse: MediatorSparqlParse;
+  public readonly mediatorSparqlSerialize: MediatorSparqlSerializeHandle;
+  public readonly mediatorSparqlSerializeMediaTypeCombiner: MediatorSparqlSerializeMediaTypes;
+  public readonly mediatorSparqlSerializeMediaTypeFormatCombiner: MediatorSparqlSerializeMediaTypeFormats;
+  public readonly mediatorContextPreprocess: MediatorContextPreprocess;
+  public readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
 
   public readonly logger: Logger;
   public readonly queryString?: string;
@@ -338,52 +306,39 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
   }
 }
 
-export interface IActorInitSparqlBaseArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
+export interface IActorInitSparqlBaseArgs extends IActorInitArgs {
   /**
    * The query operation optimize mediator
    */
-  mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
-  IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
+  mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
   /**
    * The query operation mediator
    */
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
-  IActionQueryOperation, IActorTest, IQueryableResult>;
+  mediatorQueryOperation: MediatorQueryOperation;
   /**
    * The query parse mediator
    */
-  mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
-  IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
+  mediatorSparqlParse: MediatorSparqlParse;
   /**
    * The query serialize mediator
    */
-  mediatorSparqlSerialize: Mediator<
-  Actor<IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>,
-  IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
+  mediatorSparqlSerialize: MediatorSparqlSerializeHandle;
   /**
    * The query serialize media type combinator
    */
-  mediatorSparqlSerializeMediaTypeCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>,
-  IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
+  mediatorSparqlSerializeMediaTypeCombiner: MediatorSparqlSerializeMediaTypes;
   /**
    * The query serialize media type format combinator
    */
-  mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>,
-  IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>;
+  mediatorSparqlSerializeMediaTypeFormatCombiner: MediatorSparqlSerializeMediaTypeFormats;
   /**
    * The context processing combinator
    */
-  mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
-  IAction, IActorTest, IActorContextPreprocessOutput>;
+  mediatorContextPreprocess: MediatorContextPreprocess;
   /**
    * The HTTP cache invalidation mediator
    */
-  mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
-  IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
+  mediatorHttpInvalidate: MediatorHttpInvalidate;
   /**
    * The logger of this actor
    * @default {a <npmd:@comunica/logger-void/^2.0.0/components/LoggerVoid.jsonld#LoggerVoid>}

@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { ActionContext } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -19,7 +19,7 @@ export abstract class ActorOptimizeQueryOperation
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>) {
+  public constructor(args: IActorOptimizeQueryOperationArgs) {
     super(args);
   }
 }
@@ -32,3 +32,10 @@ export interface IActorOptimizeQueryOperationOutput extends IActorOutput {
   operation: Algebra.Operation;
   context?: ActionContext;
 }
+
+export type IActorOptimizeQueryOperationArgs = IActorArgs<
+IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
+
+export type MediatorOptimizeQueryOperation = Mediator<
+Actor<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>,
+IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;

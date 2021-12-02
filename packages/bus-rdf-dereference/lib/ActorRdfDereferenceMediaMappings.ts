@@ -1,5 +1,4 @@
-import type { IActorArgs, IActorTest } from '@comunica/core';
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from './ActorRdfDereference';
+import type { IActorRdfDereferenceArgs } from './ActorRdfDereference';
 import { ActorRdfDereference } from './ActorRdfDereference';
 
 /**
@@ -37,8 +36,7 @@ export abstract class ActorRdfDereferenceMediaMappings extends ActorRdfDereferen
   }
 }
 
-export interface IActorRdfDereferenceMediaMappingsArgs
-  extends IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput> {
+export interface IActorRdfDereferenceMediaMappingsArgs extends IActorRdfDereferenceArgs {
   /**
    * A collection of mappings, mapping file extensions to their corresponding media type.
    * @range {json}

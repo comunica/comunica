@@ -1,12 +1,10 @@
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput } from './ActorRdfResolveQuadPattern';
-import {
-  ActorRdfResolveQuadPattern,
-} from './ActorRdfResolveQuadPattern';
+  IActorRdfResolveQuadPatternOutput, IActorRdfResolveQuadPatternArgs } from './ActorRdfResolveQuadPattern';
+import { ActorRdfResolveQuadPattern } from './ActorRdfResolveQuadPattern';
 
 /**
  * A base implementation for rdf-resolve-quad-pattern events
@@ -15,7 +13,7 @@ import {
  * @see IQuadSource
  */
 export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQuadPattern {
-  public constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
+  public constructor(args: IActorRdfResolveQuadPatternArgs) {
     super(args);
   }
 

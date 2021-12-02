@@ -1,9 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActorRdfJoin, IActionRdfJoin, IJoinEntry } from '@comunica/bus-rdf-join';
-import type { ActionContext, IActorTest, Mediator } from '@comunica/core';
-import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IQueryableResult, Bindings, IQueryableResultBindings } from '@comunica/types';
+import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IQueryableResult, Bindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -11,8 +10,7 @@ import { AsyncEvaluator, isExpressionError } from 'sparqlee';
  * A comunica LeftJoin Query Operation Actor.
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
-  public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>;
+  public readonly mediatorJoin: MediatorRdfJoin;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
@@ -76,6 +74,5 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
   /**
    * A mediator for joining Bindings streams
    */
-  mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>;
+  mediatorJoin: MediatorRdfJoin;
 }

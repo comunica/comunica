@@ -1,14 +1,8 @@
-import type {
-  IActionHandleRdfParse,
-  IActionMediaTypesRdfParse,
-  IActorOutputHandleRdfParse,
-  IActorOutputMediaTypesRdfParse,
-  IActorTestHandleRdfParse,
-  IActorTestMediaTypesRdfParse,
-} from '@comunica/bus-rdf-parse';
-import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import type { MediatorRdfParseHandle, MediatorRdfParseMediaTypes } from '@comunica/bus-rdf-parse';
+import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput,
+  IActorRdfParseHtmlArgs } from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
-import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { HtmlScriptListener } from './HtmlScriptListener';
 
 /**
@@ -18,13 +12,8 @@ import { HtmlScriptListener } from './HtmlScriptListener';
  * and announce the presence of them by media type.
  */
 export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
-  private readonly mediatorRdfParseMediatypes: Mediator<
-  Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
-  IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
-
-  private readonly mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  private readonly mediatorRdfParseMediatypes: MediatorRdfParseMediaTypes;
+  private readonly mediatorRdfParseHandle: MediatorRdfParseHandle;
 
   public constructor(args: IActorRdfParseHtmlScriptArgs) {
     super(args);
@@ -51,18 +40,13 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
   }
 }
 
-export interface IActorRdfParseHtmlScriptArgs
-  extends IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
+export interface IActorRdfParseHtmlScriptArgs extends IActorRdfParseHtmlArgs {
   /**
    * The RDF Parse mediator for collecting media types
    */
-  mediatorRdfParseMediatypes: Mediator<
-  Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
-  IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  mediatorRdfParseMediatypes: MediatorRdfParseMediaTypes;
   /**
    * The RDF Parse mediator for handling parsing
    */
-  mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  mediatorRdfParseHandle: MediatorRdfParseHandle;
 }

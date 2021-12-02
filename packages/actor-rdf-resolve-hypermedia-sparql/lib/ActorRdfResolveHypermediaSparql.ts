@@ -1,18 +1,14 @@
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import type { IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaOutput, IActorRdfResolveHypermediaTest } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { MediatorHttp } from '@comunica/bus-http';
+import type { IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput,
+  IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
-import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-
 import { RdfSourceSparql } from './RdfSourceSparql';
 
 /**
  * A comunica SPARQL RDF Resolve Hypermedia Actor.
  */
 export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
-  public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
-
+  public readonly mediatorHttp: MediatorHttp;
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
 
@@ -40,13 +36,11 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   }
 }
 
-export interface IActorRdfResolveHypermediaSparqlArgs
-  extends IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
+export interface IActorRdfResolveHypermediaSparqlArgs extends IActorRdfResolveHypermediaArgs {
   /**
    * The HTTP mediator
    */
-  mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  mediatorHttp: MediatorHttp;
   /**
    * If URLs ending with '/sparql' should also be considered SPARQL endpoints.
    * @default {true}

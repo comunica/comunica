@@ -1,24 +1,14 @@
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import type { IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
-import type {
-  IActionRdfResolveHypermediaLinks,
-  IActorRdfResolveHypermediaLinksOutput,
-} from '@comunica/bus-rdf-resolve-hypermedia-links';
-import type {
-  IActionRdfResolveHypermediaLinksQueue,
-  IActorRdfResolveHypermediaLinksQueueOutput,
-} from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput,
-  IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import {
-  ActorRdfResolveQuadPatternSource, getDataSourceType,
-} from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+  IQuadSource, IActorRdfResolveQuadPatternArgs } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActorRdfResolveQuadPatternSource, getDataSourceType } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import LRUCache = require('lru-cache');
 import type { Algebra } from 'sparqlalgebrajs';
 import { MediatedQuadSource } from './MediatedQuadSource';
@@ -28,27 +18,12 @@ import { MediatedQuadSource } from './MediatedQuadSource';
  */
 export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPatternSource
   implements IActorRdfResolveQuadPatternHypermediaArgs {
-  // Mediators
-  public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-
-  public readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-
-  public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-
-  public readonly mediatorRdfResolveHypermedia: Mediator<Actor<IActionRdfResolveHypermedia, IActorTest,
-  IActorRdfResolveHypermediaOutput>, IActionRdfResolveHypermedia, IActorTest, IActorRdfResolveHypermediaOutput>;
-
-  public readonly mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>;
-
-  public readonly mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
-  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
-  IActorRdfResolveHypermediaLinksQueueOutput>;
-
+  public readonly mediatorRdfDereference: MediatorRdfDereference;
+  public readonly mediatorMetadata: MediatorRdfMetadata;
+  public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  public readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
+  public readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
+  public readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
   public readonly cacheSize: number;
   public readonly cache?: LRUCache<string, MediatedQuadSource>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
@@ -101,8 +76,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 }
 
-export interface IActorRdfResolveQuadPatternHypermediaArgs extends
-  IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput> {
+export interface IActorRdfResolveQuadPatternHypermediaArgs extends IActorRdfResolveQuadPatternArgs {
   /**
    * The maximum number of entries in the LRU cache, set to 0 to disable.
    * @range {integer}
@@ -119,33 +93,25 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends
   /**
    * The RDF dereference mediator
    */
-  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  mediatorRdfDereference: MediatorRdfDereference;
   /**
    * The metadata mediator
    */
-  mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+  mediatorMetadata: MediatorRdfMetadata;
   /**
    * The metadata extract mediator
    */
-  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  mediatorMetadataExtract: MediatorRdfMetadataExtract;
   /**
    * The hypermedia resolve mediator
    */
-  mediatorRdfResolveHypermedia: Mediator<Actor<IActionRdfResolveHypermedia, IActorTest,
-  IActorRdfResolveHypermediaOutput>, IActionRdfResolveHypermedia, IActorTest, IActorRdfResolveHypermediaOutput>;
+  mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   /**
    * The hypermedia links resolve mediator
    */
-  mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
-  IActorRdfResolveHypermediaLinksOutput>;
+  mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   /**
    * The hypermedia links queue resolve mediator
    */
-  mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
-  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
-  IActorRdfResolveHypermediaLinksQueueOutput>;
+  mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
 }

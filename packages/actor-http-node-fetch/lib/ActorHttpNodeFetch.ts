@@ -1,8 +1,7 @@
 import type { Readable } from 'stream';
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
-import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
@@ -75,7 +74,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
   }
 }
 
-export interface IActorHttpNodeFetchArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
+export interface IActorHttpNodeFetchArgs extends IActorHttpArgs {
   /**
    * The agent options for the HTTP agent
    * @range {json}

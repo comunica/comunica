@@ -1,8 +1,8 @@
 import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type { IQueryableResult, IQueryableResultStream, IPhysicalQueryPlanLogger } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IActionQueryOperation } from './ActorQueryOperation';
+import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
 
 /**
@@ -11,8 +11,7 @@ import { ActorQueryOperation } from './ActorQueryOperation';
 export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> extends ActorQueryOperation {
   public readonly operationName: string;
 
-  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult>,
-    operationName: string) {
+  protected constructor(args: IActorQueryOperationArgs, operationName: string) {
     super(<any> { ...args, operationName });
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');

@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -17,7 +17,7 @@ export abstract class ActorSparqlParse extends Actor<IActionSparqlParse, IActorT
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
+  public constructor(args: IActorSparqlParseArgs) {
     super(args);
   }
 }
@@ -47,3 +47,9 @@ export interface IActorSparqlParseOutput extends IActorOutput {
    */
   baseIRI?: string;
 }
+
+export type IActorSparqlParseArgs = IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
+
+export type MediatorSparqlParse = Mediator<
+Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
+IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;

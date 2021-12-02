@@ -1,16 +1,8 @@
-import type { IActorArgsMediaTyped } from '@comunica/actor-abstract-mediatyped';
-
-import type { IActionSparqlSerialize, IActionSparqlSerializeHandle, IActionSparqlSerializeMediaTypeFormats,
-  IActionSparqlSerializeMediaTypes, IActorOutputSparqlSerializeHandle,
-  IActorOutputSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypes,
-  IActorSparqlSerializeOutput, IActorTestSparqlSerializeHandle,
-  IActorTestSparqlSerializeMediaTypeFormats,
-  IActorTestSparqlSerializeMediaTypes } from '@comunica/bus-sparql-serialize';
-import {
-  ActorSparqlSerialize,
-} from '@comunica/bus-sparql-serialize';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { MediatorRdfSerializeHandle, MediatorRdfSerializeMediaTypeFormats,
+  MediatorRdfSerializeMediaTypes } from '@comunica/bus-rdf-serialize';
+import type { IActorSparqlSerializeArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
+import { ActorSparqlSerialize } from '@comunica/bus-sparql-serialize';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type { IQueryableResult, IQueryableResultQuads } from '@comunica/types';
 
 /**
@@ -20,19 +12,9 @@ import type { IQueryableResult, IQueryableResultQuads } from '@comunica/types';
  * to an RDF syntax.
  */
 export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IActorSparqlSerializeRdfArgs {
-  public readonly mediatorRdfSerialize: Mediator<
-  Actor<IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>,
-  IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
-
-  public readonly mediatorMediaTypeCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>,
-  IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
-
-  public readonly mediatorMediaTypeFormatCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>,
-  IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>;
+  public readonly mediatorRdfSerialize: MediatorRdfSerializeHandle;
+  public readonly mediatorMediaTypeCombiner: MediatorRdfSerializeMediaTypes;
+  public readonly mediatorMediaTypeFormatCombiner: MediatorRdfSerializeMediaTypeFormats;
 
   public constructor(args: IActorSparqlSerializeRdfArgs) {
     super(args);
@@ -83,17 +65,8 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
   }
 }
 
-export interface IActorSparqlSerializeRdfArgs
-  extends IActorArgsMediaTyped<IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput> {
-  mediatorRdfSerialize: Mediator<
-  Actor<IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>,
-  IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
-  mediatorMediaTypeCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>,
-  IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
-  mediatorMediaTypeFormatCombiner: Mediator<
-  Actor<IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>,
-  IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
-  IActorOutputSparqlSerializeMediaTypeFormats>;
+export interface IActorSparqlSerializeRdfArgs extends IActorSparqlSerializeArgs {
+  mediatorRdfSerialize: MediatorRdfSerializeHandle;
+  mediatorMediaTypeCombiner: MediatorRdfSerializeMediaTypes;
+  mediatorMediaTypeFormatCombiner: MediatorRdfSerializeMediaTypeFormats;
 }

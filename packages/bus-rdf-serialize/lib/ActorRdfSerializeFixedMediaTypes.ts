@@ -32,5 +32,5 @@ IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>
   }
 }
 
-export interface IActorRdfSerializeFixedMediaTypesArgs
-  extends IActorArgsMediaTypedFixed<IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput> {}
+export type IActorRdfSerializeFixedMediaTypesArgs = IActorArgsMediaTypedFixed<
+IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>;

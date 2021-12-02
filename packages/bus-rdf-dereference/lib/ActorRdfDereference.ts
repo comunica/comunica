@@ -1,6 +1,6 @@
 import { PassThrough, Readable } from 'stream';
 import { KeysInitSparql } from '@comunica/context-entries';
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -19,7 +19,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>) {
+  public constructor(args: IActorRdfDereferenceArgs) {
     super(args);
   }
 
@@ -138,3 +138,9 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
    */
   headers?: Record<string, string>;
 }
+
+export type IActorRdfDereferenceArgs = IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+
+export type MediatorRdfDereference = Mediator<
+Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
+IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;

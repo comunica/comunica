@@ -1,11 +1,16 @@
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IJoinEntry, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IJoinEntry,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  MediatorRdfJoin,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IQueryableResultBindings, IMetadata } from '@comunica/types';
+import type { IMetadata } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -13,8 +18,7 @@ import { Factory } from 'sparqlalgebrajs';
  * It accepts 3 or more streams, joins the smallest two, and joins the result with the remaining streams.
  */
 export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
-  public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>;
+  public readonly mediatorJoin: MediatorRdfJoin;
 
   public static readonly FACTORY = new Factory();
 
@@ -94,6 +98,5 @@ export interface IActorRdfJoinMultiSmallestArgs extends IActorRdfJoinArgs {
   /**
    * A mediator for joining Bindings streams
    */
-  mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>;
+  mediatorJoin: MediatorRdfJoin;
 }

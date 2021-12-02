@@ -1,12 +1,12 @@
 import type { EventEmitter } from 'events';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { MediatorHttp } from '@comunica/bus-http';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataDestinationType, getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import { KeysInitSparql } from '@comunica/context-entries';
-import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
 import type {
   IQueryableResult,
@@ -31,8 +31,7 @@ const BF = new BindingsFactory();
 export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   protected static readonly FACTORY: Factory = new Factory();
 
-  public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  public readonly mediatorHttp: MediatorHttp;
 
   public readonly checkUrlSuffixSparql: boolean;
   public readonly checkUrlSuffixUpdate: boolean;
@@ -187,8 +186,7 @@ export interface IActorQueryOperationSparqlEndpointArgs
   /**
    * The HTTP mediator
    */
-  mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  mediatorHttp: MediatorHttp;
   /**
    * If URLs ending with '/sparql' should also be considered SPARQL endpoints.
    * @default {true}

@@ -1,15 +1,18 @@
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import type { IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput } from '@comunica/bus-rdf-update-hypermedia';
+import type { MediatorHttp } from '@comunica/bus-http';
+import type {
+  IActionRdfUpdateHypermedia,
+  IActorRdfUpdateHypermediaArgs,
+  IActorRdfUpdateHypermediaOutput,
+} from '@comunica/bus-rdf-update-hypermedia';
 import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
-import type { IActorArgs, IActorTest, Actor, Mediator } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { QuadDestinationPatchSparqlUpdate } from './QuadDestinationPatchSparqlUpdate';
 
 /**
  * A comunica Patch SPARQL Update RDF Update Hypermedia Actor.
  */
 export class ActorRdfUpdateHypermediaPatchSparqlUpdate extends ActorRdfUpdateHypermedia {
-  public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  public readonly mediatorHttp: MediatorHttp;
 
   public constructor(args: IActorRdfUpdateHypermediaPatchSparqlUpdateArgs) {
     super(args, 'patchSparqlUpdate');
@@ -37,11 +40,9 @@ export class ActorRdfUpdateHypermediaPatchSparqlUpdate extends ActorRdfUpdateHyp
   }
 }
 
-export interface IActorRdfUpdateHypermediaPatchSparqlUpdateArgs
-  extends IActorArgs<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
+export interface IActorRdfUpdateHypermediaPatchSparqlUpdateArgs extends IActorRdfUpdateHypermediaArgs {
   /**
    * The HTTP mediator
    */
-  mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  mediatorHttp: MediatorHttp;
 }

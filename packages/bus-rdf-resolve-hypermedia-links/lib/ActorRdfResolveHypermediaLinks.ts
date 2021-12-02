@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -18,9 +18,7 @@ export abstract class ActorRdfResolveHypermediaLinks
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(
-    args: IActorArgs<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>,
-  ) {
+  public constructor(args: IActorRdfResolveHypermediaLinksArgs) {
     super(args);
   }
 }
@@ -66,3 +64,10 @@ export interface ILink {
    */
   metadata?: Record<string, any>;
 }
+
+export type IActorRdfResolveHypermediaLinksArgs = IActorArgs<
+IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>;
+
+export type MediatorRdfResolveHypermediaLinks = Mediator<
+Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>,
+IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>;

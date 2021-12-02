@@ -1,5 +1,5 @@
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -40,7 +40,7 @@ IActorRdfResolveQuadPatternOutput> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
+  public constructor(args: IActorRdfResolveQuadPatternArgs) {
     super(args);
   }
 
@@ -130,3 +130,10 @@ export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
    */
   data: AsyncIterator<RDF.Quad>;
 }
+
+export type IActorRdfResolveQuadPatternArgs = IActorArgs<
+IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
+
+export type MediatorRdfResolveQuadPattern = Mediator<
+Actor<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
+IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;

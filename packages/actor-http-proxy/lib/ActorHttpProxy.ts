@@ -1,7 +1,6 @@
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpOutput, MediatorHttp, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpProxy } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { IProxyHandler } from './IProxyHandler';
 
@@ -9,7 +8,7 @@ import type { IProxyHandler } from './IProxyHandler';
  * A comunica Proxy Http Actor.
  */
 export class ActorHttpProxy extends ActorHttp {
-  public readonly mediatorHttp: Mediator<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
+  public readonly mediatorHttp: MediatorHttp;
 
   public constructor(args: IActorHttpProxyArgs) {
     super(args);
@@ -53,9 +52,9 @@ export class ActorHttpProxy extends ActorHttp {
   }
 }
 
-export interface IActorHttpProxyArgs extends IActorArgs<IActionHttp, IActorTest, IActorHttpOutput> {
+export interface IActorHttpProxyArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator
    */
-  mediatorHttp: Mediator<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
+  mediatorHttp: MediatorHttp;
 }

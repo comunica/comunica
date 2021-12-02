@@ -38,7 +38,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult>) {
+  protected constructor(args: IActorQueryOperationArgs) {
     super(args);
   }
 
@@ -215,6 +215,12 @@ export interface IActionQueryOperation extends IAction {
    */
   operation: Algebra.Operation;
 }
+
+export type IActorQueryOperationArgs = IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult>;
+
+export type MediatorQueryOperation = Mediator<
+Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
+IActionQueryOperation, IActorTest, IQueryableResult>;
 
 export interface IBaseExpressionContext {
   now?: Date;

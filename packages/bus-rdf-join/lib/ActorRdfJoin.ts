@@ -1,7 +1,9 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import type {
+  MediatorRdfJoinSelectivity,
+} from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitSparql } from '@comunica/context-entries';
-import type { IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
@@ -25,9 +27,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export abstract class ActorRdfJoin
   extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
-  public readonly mediatorJoinSelectivity: Mediator<
-  Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-  IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+  public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
    * If this actor will be logged in the debugger and physical query plan logger
@@ -53,6 +53,7 @@ export abstract class ActorRdfJoin
 
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param options - Actor-specific join options.
    */
   public constructor(args: IActorRdfJoinArgs, options: IActorRdfJoinInternalOptions) {
     super(args);
@@ -311,9 +312,7 @@ export abstract class ActorRdfJoin
 
 export interface IActorRdfJoinArgs
   extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
-  mediatorJoinSelectivity: Mediator<
-  Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-  IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+  mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 }
 
 export interface IActorRdfJoinInternalOptions {
@@ -385,3 +384,7 @@ export interface IActorRdfJoinOutputInner {
    */
   physicalPlanMetadata?: any;
 }
+
+export type MediatorRdfJoin = Mediator<
+Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>,
+IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>;

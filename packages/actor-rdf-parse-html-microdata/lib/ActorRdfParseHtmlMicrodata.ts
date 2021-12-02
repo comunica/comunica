@@ -1,13 +1,17 @@
-import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import type {
+  IActionRdfParseHtml,
+  IActorRdfParseHtmlArgs,
+  IActorRdfParseHtmlOutput,
+} from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { MicrodataRdfParser } from 'microdata-rdf-streaming-parser';
 
 /**
  * A comunica Microdata RDF Parse Html Actor.
  */
 export class ActorRdfParseHtmlMicrodata extends ActorRdfParseHtml {
-  public constructor(args: IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>) {
+  public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
   }
 

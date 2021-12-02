@@ -1,5 +1,5 @@
 import type { IJoinEntry } from '@comunica/bus-rdf-join';
-import type { IAction, IActorArgs, IActorOutput } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '../../mediatortype-accuracy/lib/MediatorTypeAccuracy';
 
@@ -20,9 +20,7 @@ export abstract class ActorRdfJoinSelectivity
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(
-    args: IActorArgs<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>,
-  ) {
+  public constructor(args: IActorRdfJoinSelectivityArgs) {
     super(args);
   }
 }
@@ -44,3 +42,10 @@ export interface IActorRdfJoinSelectivityOutput extends IActorOutput {
    */
   selectivity: number;
 }
+
+export type IActorRdfJoinSelectivityArgs = IActorArgs<
+IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>;
+
+export type MediatorRdfJoinSelectivity = Mediator<
+Actor<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>,
+IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>;

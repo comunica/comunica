@@ -1,13 +1,13 @@
-import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
+import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, IAction } from '@comunica/core';
+import type { IActorTest, IAction } from '@comunica/core';
 
 /**
  * A comunica Source To Destination Context Preprocess Actor.
  */
 export class ActorContextPreprocessSourceToDestination extends ActorContextPreprocess {
-  public constructor(args: IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>) {
+  public constructor(args: IActorContextPreprocessArgs) {
     super(args);
   }
 

@@ -1,13 +1,11 @@
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput,
-  IActorRdfResolveHypermediaTest } from '@comunica/bus-rdf-resolve-hypermedia';
-import {
-  ActorRdfResolveHypermedia,
-} from '@comunica/bus-rdf-resolve-hypermedia';
-import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+  IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
+import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { RdfSourceQpf } from './RdfSourceQpf';
 
@@ -16,15 +14,9 @@ import { RdfSourceQpf } from './RdfSourceQpf';
  */
 export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
   implements IActorRdfResolveHypermediaQpfArgs {
-  public readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-
-  public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-
-  public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-
+  public readonly mediatorMetadata: MediatorRdfMetadata;
+  public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  public readonly mediatorRdfDereference: MediatorRdfDereference;
   public readonly subjectUri: string;
   public readonly predicateUri: string;
   public readonly objectUri: string;
@@ -44,7 +36,7 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
 
   /**
    * Look for the search form
-   * @param {IActionRdfResolveHypermedia} the metadata to look for the form.
+   * @param {IActionRdfResolveHypermedia} action the metadata to look for the form.
    * @return {Promise<IActorRdfResolveHypermediaOutput>} A promise resolving to a hypermedia form.
    */
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
@@ -69,23 +61,19 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
   }
 }
 
-export interface IActorRdfResolveHypermediaQpfArgs extends
-  IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
+export interface IActorRdfResolveHypermediaQpfArgs extends IActorRdfResolveHypermediaArgs {
   /**
    * The metadata mediator
    */
-  mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+  mediatorMetadata: MediatorRdfMetadata;
   /**
    * The metadata extract mediator
    */
-  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  mediatorMetadataExtract: MediatorRdfMetadataExtract;
   /**
    * The RDF dereference mediator
    */
-  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  mediatorRdfDereference: MediatorRdfDereference;
   /**
    * The URI that should be interpreted as subject URI
    * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#subject}

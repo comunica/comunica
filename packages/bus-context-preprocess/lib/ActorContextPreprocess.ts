@@ -1,4 +1,4 @@
-import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
 /**
@@ -17,7 +17,7 @@ export abstract class ActorContextPreprocess
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>) {
+  public constructor(args: IActorContextPreprocessArgs) {
     super(args);
   }
 }
@@ -29,3 +29,9 @@ export interface IActorContextPreprocessOutput extends IActorOutput {
    */
   context?: ActionContext;
 }
+
+export type IActorContextPreprocessArgs = IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>;
+
+export type MediatorContextPreprocess = Mediator<
+Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
+IAction, IActorTest, IActorContextPreprocessOutput>;

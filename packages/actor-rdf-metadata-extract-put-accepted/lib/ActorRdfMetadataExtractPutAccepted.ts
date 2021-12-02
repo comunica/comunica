@@ -1,12 +1,13 @@
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
+  IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 
 /**
  * A comunica PUT Accepted RDF Metadata Extract Actor.
  */
 export class ActorRdfMetadataExtractPutAccepted extends ActorRdfMetadataExtract {
-  public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
 

@@ -1,7 +1,7 @@
 import type { IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+  IActorRdfMetadataExtractOutput, IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { UriTemplate } from 'uritemplate';
 import { parse as parseUriTemplate } from 'uritemplate';
@@ -14,7 +14,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
   public static readonly LINK_TYPES: string[] = [ 'first', 'next', 'previous', 'last' ];
   protected readonly parsedUriTemplateCache: Record<string, UriTemplate> = {};
 
-  public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
 

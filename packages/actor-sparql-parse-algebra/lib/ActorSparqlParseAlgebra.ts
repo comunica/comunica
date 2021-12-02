@@ -1,6 +1,6 @@
-import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
+import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
 import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { translate } from 'sparqlalgebrajs';
 import { Parser as SparqlParser } from 'sparqljs';
 
@@ -34,8 +34,7 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
   }
 }
 
-export interface IActorSparqlParseAlgebraArgs
-  extends IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput> {
+export interface IActorSparqlParseAlgebraArgs extends IActorSparqlParseArgs {
   /**
    * Default prefixes to use
    * @range {json}

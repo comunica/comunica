@@ -1,17 +1,12 @@
 import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
-import type { IActionQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin,
-  IActorRdfJoinOutputInner,
-  IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
-import {
-  ActorRdfJoin,
-} from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IMetadata, IQueryableResultBindings } from '@comunica/types';
+import type { Bindings, BindingsStream, IMetadata } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -20,9 +15,7 @@ import { Algebra } from 'sparqlalgebrajs';
 export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
-  public readonly mediatorQueryOperation: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
-  IActionQueryOperation, IActorTest, IQueryableResultBindings>;
+  public readonly mediatorQueryOperation: MediatorQueryOperation;
 
   public constructor(args: IActorRdfJoinOptionalBindArgs) {
     super(args, {
@@ -117,6 +110,5 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   /**
    * The query operation mediator
    */
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
-  IActionQueryOperation, IActorTest, IQueryableResultBindings>;
+  mediatorQueryOperation: MediatorQueryOperation;
 }

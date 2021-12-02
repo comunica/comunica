@@ -1,9 +1,11 @@
-import type { IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type {
+  IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs, IDataSource,
+  IQuadSource, MediatorRdfResolveQuadPattern,
+} from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
   ActorRdfResolveQuadPatternSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { FederatedQuadSource } from './FederatedQuadSource';
 
@@ -12,9 +14,7 @@ import { FederatedQuadSource } from './FederatedQuadSource';
  */
 export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatternSource
   implements IActorRdfResolveQuadPatternFederatedArgs {
-  public readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
-
+  public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
   public readonly skipEmptyPatterns: boolean;
 
   protected readonly emptyPatterns: Map<IDataSource, RDF.Quad[]> = new Map();
@@ -41,13 +41,11 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
   }
 }
 
-export interface IActorRdfResolveQuadPatternFederatedArgs
-  extends IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput> {
+export interface IActorRdfResolveQuadPatternFederatedArgs extends IActorRdfResolveQuadPatternArgs {
   /**
    * The quad pattern resolve mediator.
    */
-  mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
+  mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
   /**
    * If quad patterns that are sub-patterns of empty quad patterns should be skipped.
    * This assumes that sources remain static during query evaluation.
