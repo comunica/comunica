@@ -1,6 +1,3 @@
-# Build for Node
-node >=10
-
 # Build for most browsers
 >2%
 last 2 Chrome versions
