@@ -6,6 +6,7 @@ import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bu
 import type { Actor, IActorTest } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
 
 const arrayifyStream = require('arrayify-stream');
@@ -54,7 +55,7 @@ describe('ActorRdfParseHtml', () => {
     let inputScriptError: Readable;
     let inputScriptRdfa: Readable;
     let inputSimple: Readable;
-    let context: ActionContext;
+    let context: IActionContext;
 
     beforeEach(() => {
       busRdfParseHtml = new Bus({ name: 'busRdfParseHtml' });
@@ -92,7 +93,7 @@ describe('ActorRdfParseHtml', () => {
       inputSimple = stringToStream(
         `<strong>Hi!</strong>`,
       );
-      context = ActionContext({});
+      context = new ActionContext({});
     });
 
     describe('test', () => {

@@ -3,8 +3,9 @@ import type { MediatorHttp } from '@comunica/bus-http';
 import type { IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
-import { KeysRdfParseJsonLd } from '@comunica/context-entries';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { JsonLdParser } from 'jsonld-streaming-parser';
 import { DocumentLoaderMediated } from './DocumentLoaderMediated';
 
@@ -31,9 +32,9 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async testHandle(action: IActionRdfParse, mediaType: string, context: ActionContext): Promise<IActorTest> {
+  public async testHandle(action: IActionRdfParse, mediaType: string, context: IActionContext): Promise<IActorTest> {
     if (context &&
-      context.has('@comunica/actor-rdf-parse-html-script:processing-html-script') &&
+      context.has(KeysRdfParseHtmlScript.processingHtmlScript) &&
       mediaType !== 'application/ld+json') {
       throw new Error(`JSON-LD in script tags can only have media type 'application/ld+json'`);
     }
@@ -43,7 +44,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     return await this.testHandleChecked(action);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: ActionContext):
+  public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: IActionContext):
   Promise<IActorRdfParseOutput> {
     const parser = JsonLdParser.fromHttpResponse(action.baseIRI, mediaType, action.headers, {
       documentLoader: actionContext && actionContext.get(KeysRdfParseJsonLd.documentLoader) ||

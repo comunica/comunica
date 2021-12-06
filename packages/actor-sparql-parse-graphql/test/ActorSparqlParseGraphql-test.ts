@@ -45,7 +45,7 @@ describe('ActorSparqlParseGraphql', () => {
 
     it('should run', () => {
       const query = '{ label }';
-      const context = ActionContext({
+      const context = new ActionContext({
         '@context': {
           label: { '@id': 'http://www.w3.org/2000/01/rdf-schema#label' },
         },
@@ -75,7 +75,7 @@ describe('ActorSparqlParseGraphql', () => {
 
     it('should run with empty @context that has a required URI', () => {
       const query = '{ label }';
-      const context = ActionContext({});
+      const context = new ActionContext({});
       return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves.toMatchObject({
         operation: {
           input: { patterns: [

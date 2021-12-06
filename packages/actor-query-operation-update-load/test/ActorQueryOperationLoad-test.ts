@@ -45,7 +45,7 @@ describe('ActorQueryOperationLoad', () => {
     it('should not test on readOnly', () => {
       const op: any = {
         operation: { type: 'load' },
-        context: ActionContext({ [KeysQueryOperation.readOnly]: true }),
+        context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
@@ -71,8 +71,8 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
-        context: ActionContext({
-          [KeysRdfResolveQuadPattern.sources]: [ 'URL' ],
+        context: new ActionContext({
+          [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
         }),
       });
     });
@@ -83,8 +83,8 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
-        context: ActionContext({
-          [KeysRdfResolveQuadPattern.sources]: [ 'SOMETHINGELSE' ],
+        context: new ActionContext({
+          [KeysRdfResolveQuadPattern.sources.name]: [ 'SOMETHINGELSE' ],
         }),
       };
       const output = <IQueryableResultVoid> await actor.run(op);
@@ -96,8 +96,8 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
-        context: ActionContext({
-          [KeysRdfResolveQuadPattern.sources]: [ 'URL' ],
+        context: new ActionContext({
+          [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
           '@comunica/bus-query-operation:operation': expect.anything(),
         }),
       });
@@ -172,9 +172,9 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
-        context: ActionContext({
-          [KeysRdfResolveQuadPattern.sources]: [ 'URL' ],
-          [KeysInitSparql.lenient]: true,
+        context: new ActionContext({
+          [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
+          [KeysInitSparql.lenient.name]: true,
         }),
       });
     });

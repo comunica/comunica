@@ -4,7 +4,7 @@ import type { IActionRdfSerialize,
 import {
   ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
-import type { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { JsonLdSerializer } from 'jsonld-streaming-serializer';
 
 /**
@@ -29,7 +29,7 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfSerialize, mediaType: string, context: ActionContext):
+  public async runHandle(action: IActionRdfSerialize, mediaType: string, context: IActionContext):
   Promise<IActorRdfSerializeOutput> {
     const data: NodeJS.ReadableStream = <any> new JsonLdSerializer(
       { space: ' '.repeat(this.jsonStringifyIndentSpaces) },

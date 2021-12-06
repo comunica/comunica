@@ -2,8 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { ActionContext } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings } from '@comunica/types';
+import type { Bindings, IQueryableResult, IActionContext } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 
 import { termToString } from 'rdf-string';
@@ -19,16 +18,19 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     super(args, Algebra.types.ZERO_OR_ONE_PATH);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IQueryableResultBindings> {
-    const predicate = <Algebra.ZeroOrOnePath> path.predicate;
+  public async runOperation(
+    operation: Algebra.Path,
+    context: IActionContext | undefined,
+  ): Promise<IQueryableResult> {
+    const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
-    const sVar = path.subject.termType === 'Variable';
-    const oVar = path.object.termType === 'Variable';
+    const sVar = operation.subject.termType === 'Variable';
+    const oVar = operation.object.termType === 'Variable';
 
     const extra: Bindings[] = [];
 
     // Both subject and object non-variables
-    if (!sVar && !oVar && path.subject.equals(path.object)) {
+    if (!sVar && !oVar && operation.subject.equals(operation.object)) {
       return {
         type: 'bindings',
         bindingsStream: new SingletonIterator(BF.bindings({})),
@@ -41,7 +43,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       throw new Error('ZeroOrOne path expressions with 2 variables not supported yet');
     }
 
-    const distinct = await this.isPathArbitraryLengthDistinct(context, path);
+    const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
     }
@@ -49,16 +51,17 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     context = distinct.context;
 
     if (sVar) {
-      extra.push(BF.bindings({ [termToString(path.subject)]: path.object }));
+      extra.push(BF.bindings({ [termToString(operation.subject)]: operation.object }));
     }
 
     if (oVar) {
-      extra.push(BF.bindings({ [termToString(path.object)]: path.subject }));
+      extra.push(BF.bindings({ [termToString(operation.object)]: operation.subject }));
     }
 
     const single = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
-      operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.path, path.object, path.graph),
+      operation: ActorAbstractPath.FACTORY
+        .createPath(operation.subject, predicate.path, operation.object, operation.graph),
     }));
 
     const bindingsStream = single.bindingsStream.prepend(extra);

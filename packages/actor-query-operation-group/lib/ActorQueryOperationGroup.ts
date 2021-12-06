@@ -3,8 +3,8 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryableResult } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -20,18 +20,18 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     super(args, 'group');
   }
 
-  public async testOperation(pattern: Algebra.Group, context: ActionContext): Promise<IActorTest> {
-    for (const aggregate of pattern.aggregates) {
+  public async testOperation(operation: Algebra.Group, context: IActionContext | undefined): Promise<IActorTest> {
+    for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = new AsyncEvaluator(aggregate.expression, ActorQueryOperation.getAsyncExpressionContext(context));
     }
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Group, context: ActionContext):
-  Promise<IQueryableResultBindings> {
+  public async runOperation(operation: Algebra.Group, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
     // Get result stream for the input query
-    const { input, aggregates } = pattern;
+    const { input, aggregates } = operation;
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
@@ -39,7 +39,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     // For 'GROUP BY ?x, ?z', this is [?x, ?z], for 'GROUP by expr(?x) as ?e' this is [?e].
     // But also in scope are the variables defined by the aggregations, since GROUP has to handle this.
     const variables = [
-      ...pattern.variables.map(x => termToString(x)),
+      ...operation.variables.map(x => termToString(x)),
       ...aggregates.map(agg => termToString(agg.variable)),
     ];
 
@@ -48,7 +48,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     // Return a new promise that completes when the stream has ended or when
     // an error occurs
     return new Promise((resolve, reject) => {
-      const groups = new GroupsState(pattern, sparqleeConfig);
+      const groups = new GroupsState(operation, sparqleeConfig);
 
       // Phase 2: Collect aggregator results
       // We can only return when the binding stream ends, when that happens

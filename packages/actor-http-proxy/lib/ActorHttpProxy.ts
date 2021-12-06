@@ -18,7 +18,7 @@ export class ActorHttpProxy extends ActorHttp {
     if (!action.context) {
       throw new Error(`Actor ${this.name} could not find a context.`);
     }
-    const proxyHandler: IProxyHandler = action.context.get(KeysHttpProxy.httpProxyHandler);
+    const proxyHandler: IProxyHandler | undefined = action.context.get(KeysHttpProxy.httpProxyHandler);
     if (!proxyHandler) {
       throw new Error(`Actor ${this.name} could not find a proxy handler in the context.`);
     }
@@ -33,7 +33,7 @@ export class ActorHttpProxy extends ActorHttp {
     if (!action.context) {
       throw new Error('Illegal state: missing context');
     }
-    const proxyHandler: IProxyHandler = action.context.get(KeysHttpProxy.httpProxyHandler);
+    const proxyHandler: IProxyHandler = action.context.get(KeysHttpProxy.httpProxyHandler)!;
 
     // Send a request for the modified request
     const output = await this.mediatorHttp.mediate({

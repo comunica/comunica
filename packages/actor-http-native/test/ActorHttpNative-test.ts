@@ -192,8 +192,8 @@ describe('ActorHttpNative', () => {
       mockSetup({ statusCode: 404 });
       const results: any = await actor.run({
         input: new Request('http://example.com'),
-        context: ActionContext({
-          [KeysHttp.includeCredentials]: true,
+        context: new ActionContext({
+          [KeysHttp.includeCredentials.name]: true,
         }),
       });
       expect(results.body).toMatchObject({ withCredentials: true });
@@ -203,8 +203,8 @@ describe('ActorHttpNative', () => {
       mockSetup({ statusCode: 404 });
       const results: any = await actor.run({
         input: new Request('http://example.com'),
-        context: ActionContext({
-          [KeysHttp.auth]: 'user:pass',
+        context: new ActionContext({
+          [KeysHttp.auth.name]: 'user:pass',
         }),
       });
       expect(results.body.input.auth).toEqual('user:pass');
@@ -216,7 +216,7 @@ describe('ActorHttpNative', () => {
       mockSetup({ statusCode: 200 });
       await actor.run({
         input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }),
-        context: ActionContext({ [KeysCore.log]: logger }),
+        context: new ActionContext({ [KeysCore.log.name]: logger }),
       });
       expect(spy).toHaveBeenCalledWith('Requesting http://example.com/', {
         actor: 'actor',

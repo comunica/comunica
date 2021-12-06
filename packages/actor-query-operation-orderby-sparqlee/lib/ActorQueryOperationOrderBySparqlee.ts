@@ -2,8 +2,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { Bindings, IQueryableResultBindings } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
@@ -21,18 +21,18 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     this.window = args.window ?? Number.POSITIVE_INFINITY;
   }
 
-  public async testOperation(pattern: Algebra.OrderBy, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.OrderBy, context: IActionContext | undefined): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    for (let expr of pattern.expressions) {
+    for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
       const _ = new AsyncEvaluator(expr, ActorQueryOperation.getAsyncExpressionContext(context));
     }
     return true;
   }
 
-  public async runOperation(pattern: Algebra.OrderBy, context: ActionContext):
-  Promise<IQueryableResultBindings> {
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.input, context });
+  public async runOperation(operation: Algebra.OrderBy, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
@@ -40,8 +40,8 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.
-    for (let i = pattern.expressions.length - 1; i >= 0; i--) {
-      let expr = pattern.expressions[i];
+    for (let i = operation.expressions.length - 1; i >= 0; i--) {
+      let expr = operation.expressions[i];
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
       // Transform the stream by annotating it with the expr result

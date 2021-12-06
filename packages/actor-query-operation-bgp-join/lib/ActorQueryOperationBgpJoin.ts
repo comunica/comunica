@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryableResult } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -16,14 +16,14 @@ export class ActorQueryOperationBgpJoin extends ActorQueryOperationTypedMediated
     super(args, 'bgp');
   }
 
-  public async testOperation(pattern: Algebra.Bgp, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Bgp, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Bgp, context: ActionContext):
+  public async runOperation(operation: Algebra.Bgp, context: IActionContext | undefined):
   Promise<IQueryableResult> {
     return this.mediatorQueryOperation.mediate({
-      operation: ActorQueryOperationBgpJoin.FACTORY.createJoin(pattern.patterns),
+      operation: ActorQueryOperationBgpJoin.FACTORY.createJoin(operation.patterns),
       context,
     });
   }

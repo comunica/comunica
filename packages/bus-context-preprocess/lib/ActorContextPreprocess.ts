@@ -1,5 +1,6 @@
-import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 
 /**
  * A comunica actor for context-preprocess events.
@@ -27,7 +28,7 @@ export interface IActorContextPreprocessOutput extends IActorOutput {
    * A context object.
    * Can be null.
    */
-  context?: ActionContext;
+  context?: IActionContext;
 }
 
 export type IActorContextPreprocessArgs = IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>;

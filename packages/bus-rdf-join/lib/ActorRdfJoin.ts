@@ -267,9 +267,9 @@ export abstract class ActorRdfJoin
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
     // Log to physical plan
-    if (this.includeInLogs && action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
-      const physicalQueryPlanLogger: IPhysicalQueryPlanLogger = action.context
-        .get(KeysInitSparql.physicalQueryPlanLogger);
+    const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context?.get(KeysInitSparql
+      .physicalQueryPlanLogger);
+    if (this.includeInLogs && physicalQueryPlanLogger) {
       physicalQueryPlanLogger.logOperation(
         `join-${this.logicalType}`,
         this.physicalName,

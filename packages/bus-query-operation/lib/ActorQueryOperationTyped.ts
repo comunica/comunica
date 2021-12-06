@@ -1,6 +1,11 @@
 import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult, IQueryableResultStream, IPhysicalQueryPlanLogger } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type {
+  IQueryableResult,
+  IQueryableResultStream,
+  IPhysicalQueryPlanLogger,
+  IActionContext,
+} from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
@@ -32,18 +37,20 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
   public async run(action: IActionQueryOperation): Promise<IQueryableResult> {
     // Log to physical plan
-    if (action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
-      const physicalQueryPlanLogger: IPhysicalQueryPlanLogger = action.context
+    if (action.context) {
+      const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action?.context
         .get(KeysInitSparql.physicalQueryPlanLogger);
-      physicalQueryPlanLogger.logOperation(
-        action.operation.type,
-        undefined,
-        action.operation,
-        action.context.get(KeysInitSparql.physicalQueryPlanNode),
-        this.name,
-        {},
-      );
-      action.context = action.context.set(KeysInitSparql.physicalQueryPlanNode, action.operation);
+      if (physicalQueryPlanLogger) {
+        physicalQueryPlanLogger.logOperation(
+          action.operation.type,
+          undefined,
+          action.operation,
+          action.context.get(KeysInitSparql.physicalQueryPlanNode),
+          this.name,
+          {},
+        );
+        action.context = action.context.set(KeysInitSparql.physicalQueryPlanNode, action.operation);
+      }
     }
 
     const operation: O = <O> action.operation;
@@ -56,8 +63,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return output;
   }
 
-  protected abstract testOperation(operation: O, context: ActionContext | undefined): Promise<IActorTest>;
+  protected abstract testOperation(operation: O, context: IActionContext | undefined): Promise<IActorTest>;
 
-  protected abstract runOperation(operation: O, context: ActionContext | undefined):
+  protected abstract runOperation(operation: O, context: IActionContext | undefined):
   Promise<IQueryableResult>;
 }

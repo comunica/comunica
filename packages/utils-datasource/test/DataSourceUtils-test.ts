@@ -1,23 +1,24 @@
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { DataSourceUtils } from '..';
 
 describe('DataSourceUtils', () => {
   const contextUndefined = undefined;
-  const contextWithSource: ActionContext = ActionContext(
+  const contextWithSource: IActionContext = new ActionContext(
     { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'a-type', value: 'a-value' }},
   );
-  const contextWithSingleMultipleSources: ActionContext = ActionContext({
+  const contextWithSingleMultipleSources: IActionContext = new ActionContext({
     '@comunica/bus-rdf-resolve-quad-pattern:sources': [
       { type: 'a-type', value: 'a-value' },
     ],
   });
-  const contextWithMultipleSources: ActionContext = ActionContext({
+  const contextWithMultipleSources: IActionContext = new ActionContext({
     '@comunica/bus-rdf-resolve-quad-pattern:sources': [
       { type: 'a-type', value: 'a-value' },
       { type: 'a-type', value: 'a-value' },
     ],
   });
-  const contextNotEnded: ActionContext = ActionContext({
+  const contextNotEnded: IActionContext = new ActionContext({
     '@comunica/bus-rdf-resolve-quad-pattern:sources': [],
   });
 

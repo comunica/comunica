@@ -1,5 +1,6 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfUpdateQuadsHypermedia } from '../lib/ActorRdfUpdateQuadsHypermedia';
 
 describe('ActorRdfUpdateQuadsHypermedia', () => {
@@ -59,15 +60,15 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
     describe('test', () => {
       it('should test', () => {
-        return expect(actor.test({ context: ActionContext(
-          { [KeysRdfUpdateQuads.destination]: { value: 'abc' }},
+        return expect(actor.test({ context: new ActionContext(
+          { [KeysRdfUpdateQuads.destination.name]: { value: 'abc' }},
         ) }))
           .resolves.toBeTruthy();
       });
 
       it('should test on raw destination form', () => {
-        return expect(actor.test({ context: ActionContext(
-          { [KeysRdfUpdateQuads.destination]: 'abc' },
+        return expect(actor.test({ context: new ActionContext(
+          { [KeysRdfUpdateQuads.destination.name]: 'abc' },
         ) }))
           .resolves.toBeTruthy();
       });
@@ -77,11 +78,11 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should not test without a destination', () => {
-        return expect(actor.test({ context: ActionContext({}) })).rejects.toBeTruthy();
+        return expect(actor.test({ context: new ActionContext({}) })).rejects.toBeTruthy();
       });
 
       it('should not test on an invalid destination value', () => {
-        return expect(actor.test({ context: ActionContext(
+        return expect(actor.test({ context: new ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: null }},
         ) }))
           .rejects.toBeTruthy();
@@ -89,9 +90,9 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
     });
 
     describe('getDestination', () => {
-      let context: ActionContext;
+      let context: IActionContext;
       beforeEach(() => {
-        context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+        context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       });
 
       it('should return a mediated destination', async() => {
@@ -125,7 +126,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should return a mediated destination with a forced type', async() => {
-        context = ActionContext({ [KeysRdfUpdateQuads.destination]: { type: 'x', value: 'abc' }});
+        context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: { type: 'x', value: 'abc' }});
         const destination = await actor.getDestination(context);
         expect(destination).toEqual('DEST0');
 
@@ -139,8 +140,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should cache the destination', async() => {
-        const context1 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest1' });
-        const context2 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest2' });
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1' });
+        const context2 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest2' });
         const destination1 = await actor.getDestination(context1);
         const destination2 = await actor.getDestination(context2);
         expect(await actor.getDestination(context1)).toEqual(destination1);
@@ -148,8 +149,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should cache the destination and allow invalidation for a specific url', async() => {
-        const context1 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest1' });
-        const context2 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest2' });
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1' });
+        const context2 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest2' });
         const destination1 = await actor.getDestination(context1);
         const destination2 = await actor.getDestination(context2);
 
@@ -160,8 +161,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should cache the destination and allow invalidation for no specific url', async() => {
-        const context1 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest1' });
-        const context2 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest2' });
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1' });
+        const context2 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest2' });
         const destination1 = await actor.getDestination(context1);
         const destination2 = await actor.getDestination(context2);
 
@@ -183,8 +184,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
           mediatorRdfUpdateHypermedia,
         });
 
-        const context1 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest1' });
-        const context2 = ActionContext({ [KeysRdfUpdateQuads.destination]: 'dest2' });
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1' });
+        const context2 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest2' });
         const destination1 = await actor.getDestination(context1);
         const destination2 = await actor.getDestination(context2);
 

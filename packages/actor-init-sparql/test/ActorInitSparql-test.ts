@@ -256,7 +256,7 @@ describe('ActorInitSparql', () => {
       });
 
       it('should allow KeysInitSparql.queryTimestamp to be set', () => {
-        const ctx = { [KeysInitSparql.queryTimestamp]: new Date() };
+        const ctx = { [KeysInitSparql.queryTimestamp.name]: new Date() };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
@@ -285,19 +285,19 @@ describe('ActorInitSparql', () => {
         };
         const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', { 'the-answer': 42 });
         expect(result).toHaveProperty('context');
-        expect(result.context!.get('the-answer')).toEqual(42);
+        expect((<ActionContext> result.context).getRaw('the-answer')).toEqual(42);
       });
 
       it('should allow optimize actors to modify the context', async() => {
         mediatorOptimizeQueryOperation.mediate = (action: any) => {
           return Promise.resolve({
             ...action,
-            context: action.context.set('the-answer', 42),
+            context: action.context.setRaw('the-answer', 42),
           });
         };
         const result = await actor.query('SELECT * WHERE { ?s ?p ?o }');
         expect(result).toHaveProperty('context');
-        expect(result.context!.get('the-answer')).toEqual(42);
+        expect((<ActionContext> result.context).getRaw('the-answer')).toEqual(42);
       });
 
       it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
@@ -330,7 +330,7 @@ describe('ActorInitSparql', () => {
       });
 
       it('should return a rejected promise on an explain', () => {
-        const ctx = { sources: [], [KeysInitSparql.explain]: 'parsed' };
+        const ctx = { sources: [], [KeysInitSparql.explain.name]: 'parsed' };
         return expect(actor.query('BLA', ctx)).rejects
           .toThrowError('Tried to explain a query when in query-only mode');
       });
@@ -458,9 +458,9 @@ describe('ActorInitSparql', () => {
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith('Q', {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysCore.log.name]: expect.any(LoggerPretty),
           bla: true,
         });
       });
@@ -474,10 +474,10 @@ describe('ActorInitSparql', () => {
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -508,10 +508,10 @@ describe('ActorInitSparql', () => {
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -538,10 +538,10 @@ describe('ActorInitSparql', () => {
 }
 LIMIT 100
 `, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -570,10 +570,10 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ type: 'sparql', value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'sparql', value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -586,15 +586,15 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{
             value: sourceHypermedia,
-            context: ActionContext({
-              [KeysHttp.auth]: 'username:passwd',
+            context: new ActionContext({
+              [KeysHttp.auth.name]: 'username:passwd',
             }),
           }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -607,16 +607,16 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{
             type: 'sparql',
             value: sourceHypermedia,
-            context: ActionContext({
-              [KeysHttp.auth]: 'username:passwd',
+            context: new ActionContext({
+              [KeysHttp.auth.name]: 'username:passwd',
             }),
           }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -629,10 +629,10 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ type: 'other', value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'other', value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -645,10 +645,10 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -661,13 +661,13 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [
             { type: 'sparql', value: sourceHypermedia },
             { type: 'sparql', value: sourceHypermedia },
           ],
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -680,10 +680,10 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
           entrypoint: 'http://example.org/',
-          [KeysCore.log]: expect.any(LoggerPretty),
+          [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });
 
@@ -697,11 +697,11 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
-          [KeysHttpMemento.datetime]: dt,
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysHttpMemento.datetime.name]: dt,
         });
       });
 
@@ -714,10 +714,10 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: new LoggerPretty({ level: 'warn' }),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
         });
       });
 
@@ -727,16 +727,16 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
           env: {},
           stdin: new PassThrough(),
-          context: ActionContext({
+          context: new ActionContext({
             log: 'LOGGER',
           }),
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: 'LOGGER',
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: 'LOGGER',
         });
       });
 
@@ -750,11 +750,11 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
-          [KeysInitSparql.baseIRI]: baseIRI,
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysInitSparql.baseIRI.name]: baseIRI,
         });
       });
 
@@ -768,11 +768,11 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
-          [KeysHttpProxy.httpProxyHandler]: new ProxyHandlerStatic(proxy),
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysHttpProxy.httpProxyHandler.name]: new ProxyHandlerStatic(proxy),
         });
       });
 
@@ -785,11 +785,11 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
-          [KeysInitSparql.lenient]: true,
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysInitSparql.lenient.name]: true,
         });
       });
 
@@ -802,11 +802,11 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
-          [KeysRdfUpdateQuads.destination]: 'http://target.com/',
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysRdfUpdateQuads.destination.name]: 'http://target.com/',
         });
       });
 
@@ -828,17 +828,17 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '--bla', 'BLA' ],
           env: {},
           stdin: new PassThrough(),
-          context: ActionContext({
-            [KeysInitSparql.cliArgsHandlers]: [ cliArgsHandler ],
+          context: new ActionContext({
+            [KeysInitSparql.cliArgsHandlers.name]: [ cliArgsHandler ],
           }),
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
-          [KeysInitSparql.queryFormat]: 'sparql',
-          [KeysInitSparql.queryTimestamp]: expect.any(Date),
-          [KeysRdfResolveQuadPattern.sources]: [{ value: sourceHypermedia }],
-          [KeysCore.log]: expect.any(LoggerPretty),
-          [KeysInitSparql.cliArgsHandlers]: [ cliArgsHandler ],
+          [KeysInitSparql.queryFormat.name]: 'sparql',
+          [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysInitSparql.cliArgsHandlers.name]: [ cliArgsHandler ],
           bla: 'BLA',
         });
       });
@@ -933,10 +933,10 @@ LIMIT 100
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spy).toHaveBeenCalledWith(queryString, {
-            [KeysInitSparql.queryFormat]: 'sparql',
-            [KeysInitSparql.queryTimestamp]: expect.any(Date),
-            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
-            [KeysCore.log]: expect.any(LoggerPretty),
+            [KeysInitSparql.queryFormat.name]: 'sparql',
+            [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
+            [KeysCore.log.name]: expect.any(LoggerPretty),
           });
         });
 
@@ -949,10 +949,10 @@ LIMIT 100
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spy).toHaveBeenCalledWith(queryString, {
-            [KeysInitSparql.queryFormat]: 'graphql',
-            [KeysInitSparql.queryTimestamp]: expect.any(Date),
-            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
-            [KeysCore.log]: expect.any(LoggerPretty),
+            [KeysInitSparql.queryFormat.name]: 'graphql',
+            [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
+            [KeysCore.log.name]: expect.any(LoggerPretty),
           });
         });
 
@@ -1003,9 +1003,9 @@ LIMIT 100
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spy).toHaveBeenCalledWith(queryString, {
-            [KeysInitSparql.queryFormat]: 'sparql',
-            [KeysInitSparql.queryTimestamp]: expect.any(Date),
-            [KeysCore.log]: expect.any(LoggerPretty),
+            [KeysInitSparql.queryFormat.name]: 'sparql',
+            [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+            [KeysCore.log.name]: expect.any(LoggerPretty),
             hypermedia: 'http://example.org/',
           });
         });
@@ -1075,11 +1075,11 @@ LIMIT 100
   ]
 }`);
           expect(spy).toHaveBeenCalledWith(queryString, {
-            [KeysInitSparql.explain]: 'parsed',
-            [KeysInitSparql.queryFormat]: 'sparql',
-            [KeysInitSparql.queryTimestamp]: expect.any(Date),
-            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
-            [KeysCore.log]: expect.any(LoggerPretty),
+            [KeysInitSparql.explain.name]: 'parsed',
+            [KeysInitSparql.queryFormat.name]: 'sparql',
+            [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
+            [KeysCore.log.name]: expect.any(LoggerPretty),
           });
         });
 
@@ -1134,11 +1134,11 @@ LIMIT 100
   ]
 }`);
           expect(spy).toHaveBeenCalledWith(queryString, {
-            [KeysInitSparql.explain]: 'logical',
-            [KeysInitSparql.queryFormat]: 'sparql',
-            [KeysInitSparql.queryTimestamp]: expect.any(Date),
-            [KeysRdfResolveQuadPattern.sources]: [{ value: 'SOURCE' }],
-            [KeysCore.log]: expect.any(LoggerPretty),
+            [KeysInitSparql.explain.name]: 'logical',
+            [KeysInitSparql.queryFormat.name]: 'sparql',
+            [KeysInitSparql.queryTimestamp.name]: expect.any(Date),
+            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
+            [KeysCore.log.name]: expect.any(LoggerPretty),
           });
         });
 

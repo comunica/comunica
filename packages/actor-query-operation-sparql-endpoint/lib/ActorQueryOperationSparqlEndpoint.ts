@@ -6,15 +6,14 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataDestinationType, getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import { KeysInitSparql } from '@comunica/context-entries';
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
-import type {
-  IQueryableResult,
+import type { IQueryableResult,
   IQueryableResultBindings,
   IQueryableResultBoolean,
   IQueryableResultQuads,
   IMetadata,
-} from '@comunica/types';
+  IActionContext } from '@comunica/types';
 import { DataSourceUtils } from '@comunica/utils-datasource';
 import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
@@ -38,7 +37,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
   public readonly endpointFetcher: SparqlEndpointFetcher;
 
-  protected lastContext?: ActionContext;
+  protected lastContext?: IActionContext;
 
   public constructor(args: IActorQueryOperationSparqlEndpointArgs) {
     super(args);

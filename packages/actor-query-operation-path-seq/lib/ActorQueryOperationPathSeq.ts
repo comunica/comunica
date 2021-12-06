@@ -4,8 +4,7 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { ActionContext } from '@comunica/core';
-import type { Bindings, IQueryableResultBindings } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -20,15 +19,19 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     super(args, Algebra.types.SEQ);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IQueryableResultBindings> {
-    const predicate = <Algebra.Seq> path.predicate;
+  public async runOperation(
+    operationOriginal: Algebra.Path,
+    context: IActionContext | undefined,
+  ): Promise<IQueryableResult> {
+    const predicate = <Algebra.Seq> operationOriginal.predicate;
 
-    let joiner: RDF.Term = path.subject;
+    let joiner: RDF.Term = operationOriginal.subject;
     const generatedVariableNames: string[] = [];
     const entries: IJoinEntry[] = await Promise.all(predicate.input
       .map((subPredicate, i) => {
-        const nextJoiner = i === predicate.input.length - 1 ? path.object : this.generateVariable(path, `b${i}`);
-        const operation = ActorAbstractPath.FACTORY.createPath(joiner, subPredicate, nextJoiner, path.graph);
+        const nextJoiner = i === predicate.input.length - 1 ? operationOriginal.object : this.generateVariable(operationOriginal, `b${i}`);
+        const operation = ActorAbstractPath.FACTORY
+          .createPath(joiner, subPredicate, nextJoiner, operationOriginal.graph);
         const output = this.mediatorQueryOperation.mediate({
           context,
           operation,

@@ -122,7 +122,7 @@ export class HttpServiceSparqlEndpoint {
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
-    context[KeysQueryOperation.readOnly] = !args.u;
+    context[KeysQueryOperation.readOnly.name] = !args.u;
 
     const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
 
@@ -305,7 +305,7 @@ export class HttpServiceSparqlEndpoint {
     // Determine context
     let context = this.context;
     if (readOnly) {
-      context = { ...context, [KeysQueryOperation.readOnly]: readOnly };
+      context = { ...context, [KeysQueryOperation.readOnly.name]: readOnly };
     }
 
     let result: IQueryableResult;
@@ -418,7 +418,7 @@ export class HttpServiceSparqlEndpoint {
     let eventEmitter: EventEmitter;
     try {
       // Append result formats
-      const formats = await engine.getResultMediaTypeFormats(ActionContext(this.context));
+      const formats = await engine.getResultMediaTypeFormats(new ActionContext(this.context));
       for (const format in formats) {
         quads.push(quad(s, `${sd}resultFormat`, formats[format]));
       }

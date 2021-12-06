@@ -76,7 +76,7 @@ describe('RdfSourceQpf', () => {
       'o',
       'g',
       metadata,
-      ActionContext({}),
+      new ActionContext(),
       streamifyArray([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
@@ -104,7 +104,7 @@ describe('RdfSourceQpf', () => {
         's',
         'g',
         metadata,
-        ActionContext({}),
+        new ActionContext(),
         undefined,
       );
       expect(s).toBeInstanceOf(RdfSourceQpf);
@@ -121,7 +121,7 @@ describe('RdfSourceQpf', () => {
         's',
         'g',
         metadata,
-        ActionContext({}),
+        new ActionContext(),
         streamifyArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
@@ -415,7 +415,7 @@ describe('RdfSourceQpf with a custom default graph', () => {
       'o',
       'g',
       metadata,
-      ActionContext({}),
+      new ActionContext(),
       streamifyArray([
         quad('s1', 'p1', 'o1', 'DEFAULT_GRAPH'),
         quad('s2', 'p2', 'o2', 'DEFAULT_GRAPH'),

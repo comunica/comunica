@@ -12,7 +12,7 @@ const streamifyString = require('streamify-string');
 const DF = new DataFactory();
 
 describe('RdfSourceSparql', () => {
-  const context = ActionContext({});
+  const context = new ActionContext({});
   const mediatorHttp: any = {
     mediate(action: any) {
       const query = action.init.body.toString();

@@ -34,8 +34,8 @@ describe('MediatorJoinCoefficientsFixed', () => {
             operation: <any> {},
           },
         ],
-        context: ActionContext({
-          [KeysCore.log]: {
+        context: new ActionContext({
+          [KeysCore.log.name]: {
             debug: debugLog,
           },
         }),

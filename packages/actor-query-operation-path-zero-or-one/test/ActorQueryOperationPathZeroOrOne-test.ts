@@ -1,6 +1,6 @@
-import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -113,7 +113,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
       ),
-      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: false }) };
+      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
@@ -128,7 +128,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
       ),
-      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
+      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
@@ -146,7 +146,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('o'),
       ),
-      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
+      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
@@ -164,7 +164,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
       ),
-      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
+      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
@@ -179,7 +179,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('s'),
       ),
-      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
+      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([]);
       expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });

@@ -8,7 +8,8 @@ import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-r
 import type { IActionRdfResolveQuadPattern,
   IQuadSource, IActorRdfResolveQuadPatternArgs } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActorRdfResolveQuadPatternSource, getDataSourceType } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import LRUCache = require('lru-cache');
 import type { Algebra } from 'sparqlalgebrajs';
 import { MediatedQuadSource } from './MediatedQuadSource';
@@ -47,7 +48,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     return true;
   }
 
-  protected getSource(context: ActionContext, operation: Algebra.Pattern): Promise<IQuadSource> {
+  protected getSource(context: IActionContext, operation: Algebra.Pattern): Promise<IQuadSource> {
     const contextSource = this.getContextSource(context)!;
     const url = this.getContextSourceUrl(contextSource)!;
     let source: MediatedQuadSource;

@@ -3,8 +3,8 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -16,16 +16,19 @@ export class ActorQueryOperationUpdateCompositeUpdate
     super(args, 'compositeupdate');
   }
 
-  public async testOperation(pattern: Algebra.CompositeUpdate, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(
+    operation: Algebra.CompositeUpdate,
+    context: IActionContext | undefined,
+  ): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.CompositeUpdate, context: ActionContext):
+  public async runOperation(operationOriginal: Algebra.CompositeUpdate, context: IActionContext | undefined):
   Promise<IQueryableResult> {
     const updateResult = (async(): Promise<void> => {
       // Execute update operations in sequence
-      for (const operation of pattern.updates) {
+      for (const operation of operationOriginal.updates) {
         const subResult = ActorQueryOperation
           .getSafeUpdate(await this.mediatorQueryOperation.mediate({ operation, context }));
         await subResult.updateResult;

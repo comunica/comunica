@@ -118,14 +118,14 @@ describe('ActorRdfResolveHypermediaQpf', () => {
   describe('#test', () => {
     it('should test with a single source', () => {
       return expect(actor.test({ metadata,
-        context: ActionContext({
+        context: new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }) })).resolves.toEqual({ filterFactor: 1 });
     });
 
     it('should test with a single source and empty handledDatasets', () => {
       return expect(actor.test({ metadata,
-        context: ActionContext({
+        context: new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         handledDatasets: {}})).resolves.toEqual({ filterFactor: 1 });
@@ -133,7 +133,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
 
     it('should test with a single source forced to qpf', () => {
       return expect(actor.test({ metadata,
-        context: ActionContext({
+        context: new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         forceSourceType: 'qpf' })).resolves.toEqual({ filterFactor: 1 });
@@ -141,7 +141,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
 
     it('should not test with a single source forced to non-qpf', () => {
       return expect(actor.test({ metadata,
-        context: ActionContext({
+        context: new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         forceSourceType: 'non-qpf' })).rejects
@@ -151,14 +151,14 @@ describe('ActorRdfResolveHypermediaQpf', () => {
     it('should not test without a search form', () => {
       metadata = {};
       return expect(actor.test({ metadata,
-        context: ActionContext({
+        context: new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }) })).rejects.toThrow(new Error('Illegal state: found no TPF/QPF search form anymore in metadata.'));
     });
 
     it('should when the dataset has already been handled', () => {
       return expect(actor.test({ metadata,
-        context: ActionContext({
+        context: new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         handledDatasets: { DATASET: true }})).rejects.toThrow(
@@ -171,7 +171,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
     it('should return a source and dataset', async() => {
       const output = await actor.run({
         metadata,
-        context: ActionContext({
+        context: new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         url: '',

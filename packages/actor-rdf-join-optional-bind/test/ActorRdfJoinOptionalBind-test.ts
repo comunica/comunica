@@ -284,7 +284,7 @@ describe('ActorRdfJoinOptionalBind', () => {
       });
 
       it('should handle two entries with a context', async() => {
-        const context = ActionContext({ a: 'b' });
+        const context = new ActionContext({ a: 'b' });
         const action: IActionRdfJoin = {
           context,
           type: 'optional',
@@ -335,29 +335,29 @@ describe('ActorRdfJoinOptionalBind', () => {
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(3);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
           operation: FACTORY.createPattern(DF.literal('1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-          context: ActionContext({
+          context: new ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3, canContainUndefs: false },
-            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
-            [KeysQueryOperation.joinBindings]: BF.bindings({ '?a': DF.literal('1') }),
+            [KeysQueryOperation.joinLeftMetadata.name]: { cardinality: 3, canContainUndefs: false },
+            [KeysQueryOperation.joinRightMetadatas.name]: [{ cardinality: 3, canContainUndefs: false }],
+            [KeysQueryOperation.joinBindings.name]: BF.bindings({ '?a': DF.literal('1') }),
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
           operation: FACTORY.createPattern(DF.literal('2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-          context: ActionContext({
+          context: new ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3, canContainUndefs: false },
-            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
-            [KeysQueryOperation.joinBindings]: BF.bindings({ '?a': DF.literal('2') }),
+            [KeysQueryOperation.joinLeftMetadata.name]: { cardinality: 3, canContainUndefs: false },
+            [KeysQueryOperation.joinRightMetadatas.name]: [{ cardinality: 3, canContainUndefs: false }],
+            [KeysQueryOperation.joinBindings.name]: BF.bindings({ '?a': DF.literal('2') }),
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(3, {
           operation: FACTORY.createPattern(DF.literal('3'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-          context: ActionContext({
+          context: new ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata]: { cardinality: 3, canContainUndefs: false },
-            [KeysQueryOperation.joinRightMetadatas]: [{ cardinality: 3, canContainUndefs: false }],
-            [KeysQueryOperation.joinBindings]: BF.bindings({ '?a': DF.literal('3') }),
+            [KeysQueryOperation.joinLeftMetadata.name]: { cardinality: 3, canContainUndefs: false },
+            [KeysQueryOperation.joinRightMetadatas.name]: [{ cardinality: 3, canContainUndefs: false }],
+            [KeysQueryOperation.joinBindings.name]: BF.bindings({ '?a': DF.literal('3') }),
           }),
         });
       });

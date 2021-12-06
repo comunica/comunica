@@ -29,7 +29,8 @@ export class ActorInitSparql extends ActorInitSparqlBase {
         this.queryString,
         this.context,
       ),
-      ...action.context?.get(KeysInitSparql.cliArgsHandlers) || [],
+      // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
+      ...(<ICliArgsHandler[]> action.context?.get(KeysInitSparql.cliArgsHandlers)) || [],
     ];
 
     // Populate yargs arguments object

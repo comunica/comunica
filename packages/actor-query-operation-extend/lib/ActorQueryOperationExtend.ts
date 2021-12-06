@@ -2,8 +2,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { Bindings, IQueryableResultBindings } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { Bindings, IActionContext, IQueryableResult, IQueryableResultBindings } from '@comunica/types';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
@@ -18,16 +18,16 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     super(args, 'extend');
   }
 
-  public async testOperation(pattern: Algebra.Extend, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Extend, context: IActionContext | undefined): Promise<IActorTest> {
     // Will throw error for unsupported opperations
-    const _ = Boolean(new AsyncEvaluator(pattern.expression,
+    const _ = Boolean(new AsyncEvaluator(operation.expression,
       ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation)));
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Extend, context: ActionContext):
-  Promise<IQueryableResultBindings> {
-    const { expression, input, variable } = pattern;
+  public async runOperation(operation: Algebra.Extend, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
+    const { expression, input, variable } = operation;
 
     const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),

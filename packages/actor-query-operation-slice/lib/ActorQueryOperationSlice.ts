@@ -2,11 +2,13 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult,
+import type { IActorTest } from '@comunica/core';
+import type {
+  IQueryableResult,
   IQueryableResultBindings,
   IQueryableResultQuads,
-  IQueryableResultStream, IMetadata } from '@comunica/types';
+  IQueryableResultStream, IMetadata, IActionContext,
+} from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -18,32 +20,32 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     super(args, 'slice');
   }
 
-  public async testOperation(pattern: Algebra.Slice, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Slice, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Slice, context: ActionContext):
-  Promise<IQueryableResultBindings | IQueryableResultQuads> {
+  public async runOperation(operation: Algebra.Slice, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
     // Resolve the input
     const output: IQueryableResult = await this.mediatorQueryOperation
-      .mediate({ operation: pattern.input, context });
+      .mediate({ operation: operation.input, context });
 
     if (output.type === 'bindings') {
-      const bindingsStream = this.sliceStream(output.bindingsStream, pattern);
+      const bindingsStream = this.sliceStream(output.bindingsStream, operation);
       return <IQueryableResultBindings> {
         type: 'bindings',
         bindingsStream,
-        metadata: this.sliceMetadata(output, pattern),
+        metadata: this.sliceMetadata(output, operation),
         variables: output.variables,
       };
     }
 
     if (output.type === 'quads') {
-      const quadStream = this.sliceStream(output.quadStream, pattern);
+      const quadStream = this.sliceStream(output.quadStream, operation);
       return <IQueryableResultQuads> {
         type: 'quads',
         quadStream,
-        metadata: this.sliceMetadata(output, pattern),
+        metadata: this.sliceMetadata(output, operation),
       };
     }
 

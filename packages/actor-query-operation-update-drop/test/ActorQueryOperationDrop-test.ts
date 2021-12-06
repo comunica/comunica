@@ -3,7 +3,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryableResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDrop } from '../lib/ActorQueryOperationDrop';
-const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
 
 describe('ActorQueryOperationDrop', () => {
@@ -33,7 +32,10 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should not test on readOnly', () => {
-      const op: any = { operation: { type: 'drop' }, context: ActionContext({ [KeysQueryOperation.readOnly]: true }) };
+      const op: any = {
+        operation: { type: 'drop' },
+        context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
+      };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 

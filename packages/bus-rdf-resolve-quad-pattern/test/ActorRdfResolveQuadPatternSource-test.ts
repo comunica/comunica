@@ -124,7 +124,7 @@ describe('ActorRdfResolveQuadPatternSource', () => {
   });
 
   describe('getDataSourceContext', () => {
-    const context = ActionContext({ key: 'value' });
+    const context = new ActionContext({ key: 'value' });
 
     it('should return on a string source', () => {
       return expect(getDataSourceContext('abc', context)).toEqual(context);
@@ -135,7 +135,7 @@ describe('ActorRdfResolveQuadPatternSource', () => {
     });
 
     it('should return on an object source', () => {
-      const sourceContext = ActionContext({ auth: 'username:passwd' });
+      const sourceContext = new ActionContext({ auth: 'username:passwd' });
       return expect(getDataSourceContext({ value: 'http://google.com', context: sourceContext }, context))
         .toEqual(context.merge(sourceContext));
     });

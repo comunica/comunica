@@ -78,7 +78,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
 
     it('should run without variable terms', () => {
       const op: any = {
-        context: ActionContext({ name: 'context' }),
+        context: new ActionContext({ name: 'context' }),
         operation: {
           type: 'describe',
           terms: [ DF.namedNode('a'), DF.namedNode('b') ],
@@ -97,7 +97,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
 
     it('should run with variable terms and an input', () => {
       const op: any = {
-        context: ActionContext({ name: 'context' }),
+        context: new ActionContext({ name: 'context' }),
         operation: {
           input: { type: 'bgp', patterns: [ DF.quad(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},
           terms: [ DF.variable('a'), DF.variable('b') ],
@@ -117,7 +117,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
 
     it('should run with and without variable terms and an input', () => {
       const op: any = {
-        context: ActionContext({ name: 'context' }),
+        context: new ActionContext({ name: 'context' }),
         operation: {
           input: { type: 'bgp', patterns: [ DF.quad(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},
           terms: [ DF.variable('a'), DF.variable('b'), DF.namedNode('c') ],

@@ -4,9 +4,10 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IQueryableResultBindings, IMetadata, Bindings } from '@comunica/types';
+import type { IQueryableResultBindings, IMetadata, Bindings, IActionContext } from '@comunica/types';
 import type { Term, Variable } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
@@ -29,15 +30,13 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
   protected readonly predicateType: string;
 
-  public static isPathArbitraryLengthDistinctKey = 'isPathArbitraryLengthDistinct';
-
   protected constructor(args: IActorQueryOperationTypedMediatedArgs, predicateType: string) {
     super(args, 'path');
     this.predicateType = predicateType;
   }
 
-  public async testOperation(pattern: Algebra.Path, context: ActionContext): Promise<IActorTest> {
-    if (pattern.predicate.type !== this.predicateType) {
+  public async testOperation(operation: Algebra.Path, context: IActionContext | undefined): Promise<IActorTest> {
+    if (operation.predicate.type !== this.predicateType) {
       throw new Error(`This Actor only supports ${this.predicateType} Path operations.`);
     }
 
@@ -61,12 +60,11 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
   // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
   // https://www.w3.org/TR/sparql11-query/#propertypaths
-  public async isPathArbitraryLengthDistinct(context: ActionContext, path: Algebra.Path):
-  Promise<{ context: ActionContext; operation: IQueryableResultBindings | undefined }> {
-    if (!context || !context.get(ActorAbstractPath.isPathArbitraryLengthDistinctKey)) {
-      context = context ?
-        context.set(ActorAbstractPath.isPathArbitraryLengthDistinctKey, true) :
-        ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true });
+  public async isPathArbitraryLengthDistinct(context: IActionContext | undefined, path: Algebra.Path):
+  Promise<{ context: IActionContext; operation: IQueryableResultBindings | undefined }> {
+    if (!context || !context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
+      context = (context || new ActionContext())
+        .set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, true);
       return { context,
         operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
           operation: ActorAbstractPath.FACTORY.createDistinct(path),
@@ -74,12 +72,12 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
         })) };
     }
 
-    context = context.set(ActorAbstractPath.isPathArbitraryLengthDistinctKey, false);
+    context = context.set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, false);
     return { context, operation: undefined };
   }
 
   private async predicateStarGraphVariable(subject: Term, object: Variable, predicate: Algebra.PropertyPathSymbol,
-    graph: Term, context: ActionContext): Promise<IPathResultStream> {
+    graph: Term, context: IActionContext): Promise<IPathResultStream> {
     // Construct path to obtain all graphs where subject exists
     const predVar = this.generateVariable(ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph));
     const findGraphs = ActorAbstractPath.FACTORY.createUnion([
@@ -138,7 +136,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
      * @return {Promise<AsyncIterator<Bindings>} Iterator to where all bindings of query should have been pushed.
      */
   public async getObjectsPredicateStarEval(subject: Term, object: Variable, predicate: Algebra.PropertyPathSymbol,
-    graph: Term, context: ActionContext): Promise<IPathResultStream> {
+    graph: Term, context: IActionContext): Promise<IPathResultStream> {
     if (graph.termType === 'Variable') {
       return this.predicateStarGraphVariable(subject, object, predicate, graph, context);
     }
@@ -177,7 +175,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     object: Term,
     predicate: Algebra.PropertyPathSymbol,
     graph: Term,
-    context: ActionContext,
+    context: IActionContext | undefined,
     termHashes: Record<string, Term>,
     it: BufferedIterator<Term>,
     counter: any,
@@ -230,7 +228,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // Let the iterator `it` emit all bindings of size 2, with subjectStringVariable as value subjectVal
   // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
   public async getSubjectAndObjectBindingsPredicateStar(subjectString: string, objectString: string, subjectVal: Term,
-    objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
+    objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: IActionContext | undefined,
     termHashesGlobal: Record<string, Promise<Term[]>>, termHashesCurrentSubject: Record<string, boolean>,
     it: BufferedIterator<Bindings>, counter: any): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);

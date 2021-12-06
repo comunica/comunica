@@ -2,9 +2,9 @@ import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
-import type { ActionContext } from '@comunica/core';
-import { ensureActionContext } from '@comunica/core';
-import type { IQueryableResultBindings, BindingsStream } from '@comunica/types';
+import { KeysInitSparql } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import type { IQueryableResultBindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IConverterSettings, ISchema } from 'sparqljson-to-tree';
 import { Converter } from 'sparqljson-to-tree';
@@ -31,15 +31,15 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
    * @return {Promise<string>}
    */
   public static bindingsStreamToGraphQl(bindingsStream: BindingsStream,
-    context: ActionContext | Record<string, any> | undefined,
+    context: IActionContext | Record<string, any> | undefined,
     converterSettings?: IConverterSettings): Promise<string> {
-    const actionContext: ActionContext = ensureActionContext(context);
+    const actionContext: IActionContext = ActionContext.ensureActionContext(context);
     return new Promise((resolve, reject) => {
       const bindingsArray: Record<string, RDF.Term>[] = [];
       const converter: Converter = new Converter(converterSettings);
 
       const schema: ISchema = {
-        singularizeVariables: actionContext.get('@comunica/actor-init-sparql:singularizeVariables') || {},
+        singularizeVariables: actionContext.get(KeysInitSparql.graphqlSingularizeVariables) || {},
       };
 
       bindingsStream.on('error', reject);

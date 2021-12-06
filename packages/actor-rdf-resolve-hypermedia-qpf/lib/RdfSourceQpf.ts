@@ -3,7 +3,8 @@ import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunic
 import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -32,7 +33,7 @@ export class RdfSourceQpf implements IQuadSource {
   private readonly objectUri: string;
   private readonly graphUri?: string;
   private readonly defaultGraph?: RDF.NamedNode;
-  private readonly context?: ActionContext;
+  private readonly context?: IActionContext;
   private readonly cachedQuads: Record<string, AsyncIterator<RDF.Quad>>;
 
   public constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -42,7 +43,7 @@ export class RdfSourceQpf implements IQuadSource {
   mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
   IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
   subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
-  metadata: Record<string, any>, context: ActionContext | undefined, initialQuads?: RDF.Stream) {
+  metadata: Record<string, any>, context: IActionContext | undefined, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
     this.mediatorRdfDereference = mediatorRdfDereference;

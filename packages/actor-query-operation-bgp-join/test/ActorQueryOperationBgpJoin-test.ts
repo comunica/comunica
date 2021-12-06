@@ -52,7 +52,7 @@ describe('ActorQueryOperationBgpJoin', () => {
 
     it('should run', async() => {
       const patterns: any[] = [ 'a', 'b' ];
-      const context = ActionContext({ a: 'b' });
+      const context = new ActionContext({ a: 'b' });
       const op = <any> { operation: { type: 'bgp', patterns }, context };
 
       const output: IQueryableResultBindings = <any> await actor.run(op);

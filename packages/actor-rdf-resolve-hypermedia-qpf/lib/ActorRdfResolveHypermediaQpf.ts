@@ -5,7 +5,7 @@ import type { IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput,
   IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
-import type { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { RdfSourceQpf } from './RdfSourceQpf';
 
@@ -45,7 +45,7 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
     return { source, dataset: source.searchForm.dataset };
   }
 
-  protected createSource(metadata: Record<string, any>, context?: ActionContext, quads?: RDF.Stream): RdfSourceQpf {
+  protected createSource(metadata: Record<string, any>, context?: IActionContext, quads?: RDF.Stream): RdfSourceQpf {
     return new RdfSourceQpf(
       this.mediatorMetadata,
       this.mediatorMetadataExtract,

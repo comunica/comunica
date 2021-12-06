@@ -1,5 +1,6 @@
 import { KeysCore } from '@comunica/context-entries';
 import { LoggerVoid } from '@comunica/logger-void';
+import type { IActionContext } from '@comunica/types';
 import { ActionContext, Actor, Bus } from '..';
 
 describe('Actor', () => {
@@ -64,7 +65,7 @@ describe('Actor', () => {
     });
 
     describe('logger proxy methods without logger', () => {
-      const context = ActionContext({});
+      const context = new ActionContext({});
 
       it('should void on trace', () => {
         return actor.logTrace(context, 'bla');
@@ -93,7 +94,7 @@ describe('Actor', () => {
 
     describe('logger proxy methods with logger', () => {
       let logger: LoggerVoid;
-      let context: ActionContext;
+      let context: IActionContext;
 
       beforeEach(() => {
         logger = new LoggerVoid();
@@ -103,7 +104,7 @@ describe('Actor', () => {
         jest.spyOn(logger, 'warn');
         jest.spyOn(logger, 'error');
         jest.spyOn(logger, 'fatal');
-        context = ActionContext({ [KeysCore.log]: logger });
+        context = new ActionContext({ [KeysCore.log.name]: logger });
       });
 
       it('should call the logger on trace', () => {
@@ -149,12 +150,12 @@ describe('Actor', () => {
     });
 
     it('for a context without logger should return a falsy value', () => {
-      return expect(Actor.getContextLogger(ActionContext({}))).toBeFalsy();
+      return expect(Actor.getContextLogger(new ActionContext({}))).toBeFalsy();
     });
 
     it('for a context with logger should return the logger', () => {
       const logger = 'blabla';
-      return expect(Actor.getContextLogger(ActionContext({ [KeysCore.log]: logger }))).toBe(logger);
+      return expect(Actor.getContextLogger(new ActionContext({ [KeysCore.log.name]: logger }))).toBe(logger);
     });
   });
 });

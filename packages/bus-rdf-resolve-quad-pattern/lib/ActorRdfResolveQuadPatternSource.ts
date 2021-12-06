@@ -1,4 +1,5 @@
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -34,7 +35,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream.
    */
-  protected async getOutput(source: IQuadSource, pattern: RDF.BaseQuad, context?: ActionContext):
+  protected async getOutput(source: IQuadSource, pattern: RDF.BaseQuad, context?: IActionContext):
   Promise<IActorRdfResolveQuadPatternOutput> {
     // Create data stream
     const data = source.match(pattern.subject, pattern.predicate, pattern.object, pattern.graph);
@@ -47,7 +48,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * @param {Algebra.Pattern} operation The operation to apply.
    * @return {Promise<RDF.Source>} A promise that resolves to a source.
    */
-  protected abstract getSource(context: ActionContext | undefined, operation: Algebra.Pattern): Promise<IQuadSource>;
+  protected abstract getSource(context: IActionContext | undefined, operation: Algebra.Pattern): Promise<IQuadSource>;
 }
 
 /**

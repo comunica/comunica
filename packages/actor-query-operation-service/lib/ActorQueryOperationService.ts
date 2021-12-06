@@ -4,7 +4,7 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import { KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IActionContext, IQueryableResult, IQueryableResultBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -21,20 +21,20 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     super(args, 'service');
   }
 
-  public async testOperation(pattern: Algebra.Service, context: ActionContext): Promise<IActorTest> {
-    if (pattern.name.termType !== 'NamedNode') {
-      throw new Error(`${this.name} can only query services by IRI, while a ${pattern.name.termType} was given.`);
+  public async testOperation(operation: Algebra.Service, context: IActionContext | undefined): Promise<IActorTest> {
+    if (operation.name.termType !== 'NamedNode') {
+      throw new Error(`${this.name} can only query services by IRI, while a ${operation.name.termType} was given.`);
     }
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Service, context: ActionContext):
-  Promise<IQueryableResultBindings> {
-    const endpoint: string = pattern.name.value;
+  public async runOperation(operation: Algebra.Service, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
+    const endpoint: string = operation.name.value;
 
     // Adjust our context to only have the endpoint as source
-    context = context || ActionContext({});
-    let subContext: ActionContext = context
+    context = context || new ActionContext({});
+    let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
       .delete(KeysRdfResolveQuadPattern.sources)
       .delete(KeysInitSparql.queryString);
@@ -44,10 +44,10 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     let output: IQueryableResultBindings;
     try {
       output = ActorQueryOperation.getSafeBindings(
-        await this.mediatorQueryOperation.mediate({ operation: pattern.input, context: subContext }),
+        await this.mediatorQueryOperation.mediate({ operation: operation.input, context: subContext }),
       );
     } catch (error: unknown) {
-      if (pattern.silent) {
+      if (operation.silent) {
         // Emit a single empty binding
         output = {
           bindingsStream: new SingletonIterator(BF.bindings({})),

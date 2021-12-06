@@ -1,8 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -16,18 +16,18 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
     super(args, 'create');
   }
 
-  public async testOperation(pattern: Algebra.Create, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Create, context: IActionContext | undefined): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Create, context: ActionContext):
+  public async runOperation(operation: Algebra.Create, context: IActionContext | undefined):
   Promise<IQueryableResult> {
     // Delegate to update-quads bus
     const { updateResult } = await this.mediatorUpdateQuads.mediate({
       createGraphs: {
-        graphs: [ pattern.source ],
-        requireNonExistence: !pattern.silent,
+        graphs: [ operation.source ],
+        requireNonExistence: !operation.silent,
       },
       context,
     });

@@ -1,5 +1,6 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -56,7 +57,7 @@ export interface ILink {
    * Optional context to apply onto mediators when handling this link as source.
    * All entries of this context will be added (or overwritten) into the existing context.
    */
-  context?: ActionContext;
+  context?: IActionContext;
   /**
    * An optional link-specific metadata object.
    * This may be used to keep track of data that is relevant to links,

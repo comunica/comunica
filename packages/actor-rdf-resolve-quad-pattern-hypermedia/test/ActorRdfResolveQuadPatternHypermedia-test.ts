@@ -1,6 +1,8 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { MediatedQuadSource } from '..';
 import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
@@ -101,7 +103,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
 
   describe('An ActorRdfResolveQuadPatternHypermedia instance', () => {
     let actor: any;
-    let context: ActionContext;
+    let context: IActionContext;
     let pattern: any;
     let httpInvalidator: any;
     let listener: any;
@@ -122,23 +124,23 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         mediatorRdfResolveHypermediaLinksQueue,
         name: 'actor',
       });
-      context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'firstUrl' }});
+      context = new ActionContext({ [KeysRdfResolveQuadPattern.source.name]: { value: 'firstUrl' }});
       pattern = quad('?s', 'p1', '?o');
     });
 
     describe('test', () => {
       it('should test', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'abc' }},
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: { value: 'abc' }},
           ) }))
           .resolves.toBeTruthy();
       });
 
       it('should test on raw source form', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': 'abc' },
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: 'abc' },
           ) }))
           .resolves.toBeTruthy();
       });
@@ -148,20 +150,20 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       });
 
       it('should not test without a file', () => {
-        return expect(actor.test({ pattern: null, context: ActionContext({}) })).rejects.toBeTruthy();
+        return expect(actor.test({ pattern: null, context: new ActionContext({}) })).rejects.toBeTruthy();
       });
 
       it('should not test on an invalid value', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: null }},
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: { value: null }},
           ) }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on no sources', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
+          context: new ActionContext(
             { '@comunica/bus-rdf-resolve-quad-pattern:sources': []},
           ) }))
           .rejects.toBeTruthy();
@@ -170,7 +172,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       it('should not test on multiple sources', () => {
         return expect(actor.test(
           { pattern: null,
-            context: ActionContext(
+            context: new ActionContext(
               { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ value: 'a' }, { value: 'b' }]},
             ) },
         ))
@@ -184,65 +186,65 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       });
 
       it('should cache the source', async() => {
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
       });
 
       it('should cache the source and allow invalidation for a specific url', async() => {
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
 
         listener({ url: 'source1' });
 
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).not.toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
       });
 
       it('should cache the source and allow invalidation for all urls', async() => {
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
 
         listener({});
 
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).not.toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).not.toBe(source2);
       });
 
@@ -260,17 +262,17 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           name: 'actor',
         });
 
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).not.toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).not.toBe(source2);
       });
     });

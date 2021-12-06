@@ -4,8 +4,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -18,12 +18,15 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
     super(args, 'minus');
   }
 
-  public async testOperation(operation: Algebra.Minus, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Minus, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Minus, context: ActionContext): Promise<IQueryableResult> {
-    const entries: IJoinEntry[] = (await Promise.all(pattern.input
+  public async runOperation(
+    operationOriginal: Algebra.Minus,
+    context: IActionContext | undefined,
+  ): Promise<IQueryableResult> {
+    const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({
         output: await this.mediatorQueryOperation.mediate({ operation: subOperation, context }),
         operation: subOperation,

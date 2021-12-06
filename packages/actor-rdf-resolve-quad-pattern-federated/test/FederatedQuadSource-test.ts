@@ -1,10 +1,11 @@
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
-
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';
 
@@ -17,12 +18,12 @@ const v = DF.variable('v');
 
 describe('FederatedQuadSource', () => {
   let mediator: any;
-  let context: ActionContext;
+  let context: IActionContext;
 
   beforeEach(() => {
     mediator = {
       mediate(action: any) {
-        const type = action.context.get('@comunica/bus-rdf-resolve-quad-pattern:source').type;
+        const type = action.context.get(KeysRdfResolveQuadPattern.source).type;
         if (type === 'emptySource') {
           const data = new ArrayIterator([], { autoStart: false });
           data.setProperty('metadata', { cardinality: 0, canContainUndefs: false });
@@ -103,8 +104,8 @@ describe('FederatedQuadSource', () => {
         return Promise.resolve({ data });
       },
     };
-    context = ActionContext({
-      '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'myType', value: 'myValue' }],
+    context = new ActionContext({
+      [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'myType', value: 'myValue' }],
     });
   });
 
@@ -454,7 +455,7 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': []});
+      contextEmpty = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: []});
       source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true);
     });
 
@@ -478,7 +479,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
+      contextSingleEmpty = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
@@ -518,7 +519,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
-      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
+      contextSingle = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
@@ -568,7 +569,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'graphs', value: 'I will contain named graphs' };
       emptyPatterns = new Map();
-      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
+      contextSingle = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
@@ -612,8 +613,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'emptySource', value: 'I will be empty' };
       subSource2 = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]: [
           subSource1,
           subSource2,
         ],
@@ -669,8 +670,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'emptySource', value: 'I will be empty' };
       subSource2 = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]: [
           subSource1,
           subSource2,
         ],
@@ -724,8 +725,8 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource,
             subSource,
@@ -774,8 +775,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'emptySource', value: 'I will be empty' },
             { type: 'emptySource', value: 'I will be empty' },
@@ -823,8 +824,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'nonEmptySource', value: 'I will not be empty' };
       subSource2 = { type: 'nonEmptySource2', value: 'I will also not be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
             subSource2,
@@ -876,8 +877,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
@@ -920,8 +921,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySourceNoMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
@@ -959,8 +960,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
@@ -1003,8 +1004,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySourceInfMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
@@ -1046,8 +1047,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'blankNodeSource', value: 'I will contain blank nodes' };
       subSource2 = { type: 'blankNodeSource', value: 'I will also contain blank nodes' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
             subSource2,
@@ -1292,8 +1293,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'nonEmptySourceUndefs', value: 'I will not be empty' };
       subSource2 = { type: 'nonEmptySource', value: 'I will also not be empty, and contain undefs' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
             subSource2,
@@ -1320,8 +1321,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'nonEmptySource', value: 'I will not be empty' };
       subSource2 = { type: 'nonEmptySourceUndefs', value: 'I will also not be empty, and contain undefs' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
             subSource2,
@@ -1348,8 +1349,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'nonEmptySourceUndefs', value: 'I will not be empty' };
       subSource2 = { type: 'nonEmptySourceUndefs', value: 'I will also not be empty, and contain undefs' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
             subSource2,
@@ -1374,8 +1375,8 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource1 = { type: 'errorSource', value: 'I will emit a data error' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
           ],

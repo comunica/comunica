@@ -2,9 +2,9 @@ import type { DataSources, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { IMetadata } from '@comunica/types';
+import type { IActionContext, IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
@@ -26,7 +26,7 @@ export class FederatedQuadSource implements IQuadSource {
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 
   protected readonly sources: DataSources;
-  protected readonly contextDefault: ActionContext;
+  protected readonly contextDefault: IActionContext;
   protected readonly emptyPatterns: Map<IDataSource, RDF.BaseQuad[]>;
   protected readonly sourceIds: Map<IDataSource, string>;
   protected readonly skipEmptyPatterns: boolean;
@@ -34,10 +34,10 @@ export class FederatedQuadSource implements IQuadSource {
 
   public constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
-  context: ActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
+  context: IActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
   skipEmptyPatterns: boolean) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
-    this.sources = context.get(KeysRdfResolveQuadPattern.sources);
+    this.sources = context.get(KeysRdfResolveQuadPattern.sources)!;
     this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
     this.emptyPatterns = emptyPatterns;
     this.sourceIds = new Map();
@@ -204,7 +204,7 @@ export class FederatedQuadSource implements IQuadSource {
       let pattern: Algebra.Pattern | undefined;
 
       // Prepare the context for this specific source
-      let context: ActionContext = getDataSourceContext(source, this.contextDefault);
+      let context: IActionContext = getDataSourceContext(source, this.contextDefault);
       context = context.set(KeysRdfResolveQuadPattern.source,
         { type: getDataSourceType(source), value: getDataSourceValue(source) });
 

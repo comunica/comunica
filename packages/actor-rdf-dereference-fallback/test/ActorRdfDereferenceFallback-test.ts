@@ -26,7 +26,7 @@ describe('ActorRdfDereferenceFallback', () => {
     });
 
     it('should run and log on lenient mode', async() => {
-      const context = ActionContext({ [KeysInitSparql.lenient]: true });
+      const context = new ActionContext({ [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'URL', context });
       expect(output.url).toEqual('URL');

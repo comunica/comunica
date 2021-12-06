@@ -3,8 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { ActionContext } from '@comunica/core';
-import type { Bindings, IQueryableResultBindings } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -16,12 +15,13 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     super(args, Algebra.types.NPS);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IQueryableResultBindings> {
-    const predicate = <Algebra.Nps> path.predicate;
-    const blank = this.generateVariable(path);
+  public async runOperation(operation: Algebra.Path, context: IActionContext | undefined): Promise<IQueryableResult> {
+    const predicate = <Algebra.Nps> operation.predicate;
+    const blank = this.generateVariable(operation);
     const blankName = termToString(blank);
 
-    const pattern = ActorAbstractPath.FACTORY.createPattern(path.subject, blank, path.object, path.graph);
+    const pattern = ActorAbstractPath.FACTORY
+      .createPattern(operation.subject, blank, operation.object, operation.graph);
     const output = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern, context }),
     );

@@ -2,9 +2,10 @@ import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
-import type { ActionContext } from '@comunica/core';
-import type { Bindings, IQueryableResultBindings,
-  IQueryableResultBoolean } from '@comunica/types';
+import type {
+  Bindings, IActionContext, IQueryableResultBindings,
+  IQueryableResultBoolean,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as xml from 'xml';
 
@@ -51,14 +52,14 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
     return { binding: [{ _attr: { name: key.slice(1) }}, xmlValue ]};
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext): Promise<boolean> {
+  public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
     if (![ 'bindings', 'boolean' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams or booleans.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext):
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
   Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {

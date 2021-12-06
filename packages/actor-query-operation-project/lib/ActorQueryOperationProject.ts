@@ -1,8 +1,14 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { Bindings, BindingsStream, IQueryableResultBindings } from '@comunica/types';
+import type {
+  Bindings,
+  BindingsStream,
+  IActionContext,
+  IQueryableResult,
+  IQueryableResultBindings,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
@@ -17,19 +23,19 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     super(args, 'project');
   }
 
-  public async testOperation(pattern: Algebra.Project, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Project, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Project, context: ActionContext):
-  Promise<IQueryableResultBindings> {
+  public async runOperation(operation: Algebra.Project, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
     // Resolve the input
     const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
-      await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }),
+      await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
 
     // Find all variables that should be deleted from the input stream.
-    const variables: string[] = pattern.variables.map(termToString);
+    const variables: string[] = operation.variables.map(termToString);
     const deleteVariables = output.variables.filter(variable => !variables.includes(variable));
 
     // Error if there are variables that are not bound in the input stream.

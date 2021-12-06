@@ -1,6 +1,7 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { ActionContext } from '@comunica/core';
 import 'jest-rdf';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
 import { DataFactory } from 'rdf-data-factory';
@@ -14,7 +15,7 @@ const quad = require('rdf-quad');
 const v = DF.variable('v');
 
 describe('MediatedQuadSource', () => {
-  let context: ActionContext;
+  let context: IActionContext;
   let mediatorRdfDereference;
   let mediatorMetadata;
   let mediatorMetadataExtract;
@@ -24,7 +25,7 @@ describe('MediatedQuadSource', () => {
   let mediators: any;
 
   beforeEach(() => {
-    context = ActionContext({});
+    context = new ActionContext({});
     mediatorRdfDereference = {
       async mediate({ url }: any) {
         const data = {

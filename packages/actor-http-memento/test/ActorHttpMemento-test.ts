@@ -114,7 +114,7 @@ describe('ActorHttpMemento', () => {
 
     it('should test', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         input: new Request('https://www.google.com/'),
       };
       return expect(actor.test(action)).resolves.toEqual(true);
@@ -122,7 +122,7 @@ describe('ActorHttpMemento', () => {
 
     it('should test with empty headers', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         init: { headers: new Headers() },
         input: new Request('https://www.google.com/'),
       };
@@ -136,7 +136,7 @@ describe('ActorHttpMemento', () => {
 
     it('should test without init', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         init: {},
         input: new Request('https://www.google.com/'),
       };
@@ -145,7 +145,7 @@ describe('ActorHttpMemento', () => {
 
     it('should not test with Accept-Datetime header', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() }) },
         input: new Request('https://www.google.com/'),
       };
@@ -154,7 +154,7 @@ describe('ActorHttpMemento', () => {
 
     it('should run with new memento', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         input: new Request('http://example.com/or'),
       };
       const result = await actor.run(action);
@@ -166,7 +166,7 @@ describe('ActorHttpMemento', () => {
 
     it('should run with new memento without timegate body', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         input: new Request('http://example.com/nobody'),
       };
       const result = await actor.run(action);
@@ -178,7 +178,7 @@ describe('ActorHttpMemento', () => {
 
     it('should run with old memento', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date(2_018, 1) }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date(2_018, 1) }),
         input: new Request('http://example.com/or'),
       };
 
@@ -191,7 +191,7 @@ describe('ActorHttpMemento', () => {
 
     it('should not follow other link header', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KeysHttpMemento.datetime]: new Date(2_018, 1) }),
+        context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date(2_018, 1) }),
         input: new Request('http://example.com/or2'),
       };
 

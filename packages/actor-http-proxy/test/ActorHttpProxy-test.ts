@@ -39,8 +39,8 @@ describe('ActorHttpProxy', () => {
 
     beforeEach(() => {
       actor = new ActorHttpProxy({ name: 'actor', bus, mediatorHttp });
-      context = ActionContext({
-        [KeysHttpProxy.httpProxyHandler]: new ProxyHandlerStatic('http://proxy.org/'),
+      context = new ActionContext({
+        [KeysHttpProxy.httpProxyHandler.name]: new ProxyHandlerStatic('http://proxy.org/'),
       });
     });
 
@@ -57,14 +57,14 @@ describe('ActorHttpProxy', () => {
 
     it('should not test on a no proxy handler', () => {
       const input = 'http://example.org';
-      return expect(actor.test({ input, context: ActionContext({}) })).rejects
+      return expect(actor.test({ input, context: new ActionContext({}) })).rejects
         .toThrow(new Error('Actor actor could not find a proxy handler in the context.'));
     });
 
     it('should not test on an invalid proxy handler', () => {
       const input = 'http://example.org';
-      context = ActionContext({
-        [KeysHttpProxy.httpProxyHandler]: { getProxy: () => null },
+      context = new ActionContext({
+        [KeysHttpProxy.httpProxyHandler.name]: { getProxy: () => null },
       });
       return expect(actor.test({ input, context })).rejects
         .toThrow(new Error('Actor actor could not determine a proxy for the given request.'));
@@ -80,7 +80,7 @@ describe('ActorHttpProxy', () => {
       expect(await actor.run({ input, context }))
         .toEqual({ url: 'http://example.org/', output: 'ABC', headers: new Headers({}) });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(
-        { input: 'http://proxy.org/http://example.org/', context: ActionContext({}) },
+        { input: 'http://proxy.org/http://example.org/', context: new ActionContext({}) },
       );
     });
 
@@ -93,7 +93,7 @@ describe('ActorHttpProxy', () => {
       expect(await actor.run({ input, context }))
         .toEqual({ url: 'http://example.org/redirected/', output: 'ABC', headers });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(
-        { input: 'http://proxy.org/http://example.org/', context: ActionContext({}) },
+        { input: 'http://proxy.org/http://example.org/', context: new ActionContext({}) },
       );
     });
 
@@ -102,7 +102,7 @@ describe('ActorHttpProxy', () => {
       expect(await actor.run({ input, context }))
         .toEqual({ url: 'http://example.org/', output: 'ABC', headers: new Headers({}) });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(
-        { input: new Request('http://proxy.org/http://example.org/'), context: ActionContext({}) },
+        { input: new Request('http://proxy.org/http://example.org/'), context: new ActionContext({}) },
       );
     });
   });

@@ -31,6 +31,7 @@
   ],
   "dependencies": {
     "@comunica/bus-sparql-parse": "^2.0.0",
+    "@comunica/context-entries": "^2.0.0",
     "@comunica/core": "^2.0.0",
     "graphql-to-sparql": "^3.0.0"
   },

@@ -1,5 +1,6 @@
 import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
+import type { DataSources } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest, IAction } from '@comunica/core';
 
@@ -18,7 +19,7 @@ export class ActorContextPreprocessSourceToDestination extends ActorContextPrepr
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
     if (action.context && action.context.get(KeysRdfResolveQuadPattern.sources) &&
       !action.context.get(KeysRdfUpdateQuads.destination)) {
-      const sources = action.context.get(KeysRdfResolveQuadPattern.sources);
+      const sources: DataSources = action.context.get(KeysRdfResolveQuadPattern.sources)!;
       if (sources.length === 1) {
         return { context: action.context.set(KeysRdfUpdateQuads.destination, sources[0]) };
       }

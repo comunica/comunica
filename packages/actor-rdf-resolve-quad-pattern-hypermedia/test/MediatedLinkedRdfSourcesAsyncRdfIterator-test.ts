@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 const DF = new DataFactory();
@@ -8,7 +9,7 @@ const arrayifyStream = require('arrayify-stream');
 
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
-    let context: ActionContext;
+    let context: IActionContext;
     let source: any;
     let s;
     let p;
@@ -22,7 +23,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let mediatorRdfResolveHypermediaLinksQueue: any;
 
     beforeEach(() => {
-      context = ActionContext({});
+      context = new ActionContext({});
       s = DF.namedNode('s');
       p = DF.namedNode('p');
       o = DF.namedNode('o');
@@ -163,26 +164,26 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should apply the link context', async() => {
-        expect(await source.getSource({ url: 'startUrl', context: ActionContext({ a: 'b' }) }, {})).toEqual({
-          link: { url: 'startUrl', context: ActionContext({ a: 'b' }) },
+        expect(await source.getSource({ url: 'startUrl', context: new ActionContext({ a: 'b' }) }, {})).toEqual({
+          link: { url: 'startUrl', context: new ActionContext({ a: 'b' }) },
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
         });
         expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
         });
         expect(mediatorMetadata.mediate).toHaveBeenCalledWith({
           quads: 'QUADS(startUrl)+METADATA',
           triples: true,
           url: 'startUrl',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
         });
         expect(mediatorMetadataExtract.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
           metadata: 'METADATA',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
           headers: 'HEADERS',
         });
         expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledWith({
@@ -191,7 +192,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           quads: 'QUADS(startUrl)',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
         });
       });
 

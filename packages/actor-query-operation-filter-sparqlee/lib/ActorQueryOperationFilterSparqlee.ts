@@ -3,8 +3,8 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { Bindings, IQueryableResultBindings } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -16,22 +16,22 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     super(args, 'filter');
   }
 
-  public async testOperation(pattern: Algebra.Filter, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Filter, context: IActionContext | undefined): Promise<IActorTest> {
     // Will throw error for unsupported operators
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
-    const _ = new AsyncEvaluator(pattern.expression, config);
+    const _ = new AsyncEvaluator(operation.expression, config);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Filter, context: ActionContext):
-  Promise<IQueryableResultBindings> {
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.input, context });
+  public async runOperation(operation: Algebra.Filter, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
     const { variables, metadata } = output;
 
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
-    const evaluator = new AsyncEvaluator(pattern.expression, config);
+    const evaluator = new AsyncEvaluator(operation.expression, config);
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {

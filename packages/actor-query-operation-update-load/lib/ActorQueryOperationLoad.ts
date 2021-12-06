@@ -4,7 +4,7 @@ import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryableResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -30,19 +30,19 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     );
   }
 
-  public async testOperation(pattern: Algebra.Load, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Load, context: IActionContext | undefined): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Load, context: ActionContext):
+  public async runOperation(operation: Algebra.Load, context: IActionContext | undefined):
   Promise<IQueryableResult> {
     // Create CONSTRUCT query on the given source
     if (!context) {
-      context = ActionContext({});
+      context = new ActionContext({});
     }
-    let subContext = context.set(KeysRdfResolveQuadPattern.sources, [ pattern.source.value ]);
-    if (pattern.silent) {
+    let subContext = context.set(KeysRdfResolveQuadPattern.sources, [ operation.source.value ]);
+    if (operation.silent) {
       subContext = subContext.set(KeysInitSparql.lenient, true);
     }
     const output = ActorQueryOperationLoad.getSafeQuads(await this.mediatorQueryOperation.mediate({
@@ -52,8 +52,8 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
 
     // Determine quad stream to insert
     let quadStream = output.quadStream;
-    if (pattern.destination) {
-      quadStream = quadStream.map(quad => DF.quad(quad.subject, quad.predicate, quad.object, pattern.destination));
+    if (operation.destination) {
+      quadStream = quadStream.map(quad => DF.quad(quad.subject, quad.predicate, quad.object, operation.destination));
     }
 
     // Insert quad stream

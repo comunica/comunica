@@ -2,8 +2,13 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import type { BindingsStream, IQueryableResult, IQueryableResultBindings, IMetadata } from '@comunica/types';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import type {
+  BindingsStream,
+  IQueryableResult,
+  IMetadata,
+  IActionContext,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
@@ -125,12 +130,12 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     });
   }
 
-  public async testOperation(operation: Algebra.Pattern, context?: Record<string, any>): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Pattern, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Pattern, context: ActionContext):
-  Promise<IQueryableResultBindings> {
+  public async runOperation(pattern: Algebra.Pattern, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
     // Apply the (optional) pattern-specific context
     if (pattern.context) {
       context = context ? context.merge(pattern.context) : pattern.context;

@@ -122,7 +122,7 @@ describe('ActorHttpNodeFetch', () => {
       const spy = jest.spyOn(global, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
-        context: ActionContext({}),
+        context: new ActionContext({}),
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
         { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything() });
@@ -132,8 +132,8 @@ describe('ActorHttpNodeFetch', () => {
       const spy = jest.spyOn(global, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
-        context: ActionContext({
-          [KeysHttp.includeCredentials]: true,
+        context: new ActionContext({
+          [KeysHttp.includeCredentials.name]: true,
         }),
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, {
@@ -147,8 +147,8 @@ describe('ActorHttpNodeFetch', () => {
       const spy = jest.spyOn(global, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
-        context: ActionContext({
-          [KeysHttp.auth]: 'user:password',
+        context: new ActionContext({
+          [KeysHttp.auth.name]: 'user:password',
         }),
       });
       expect(spy).toHaveBeenCalledWith(
@@ -168,8 +168,8 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: {},
-        context: ActionContext({
-          [KeysHttp.auth]: 'user:password',
+        context: new ActionContext({
+          [KeysHttp.auth.name]: 'user:password',
         }),
       });
       expect(spy).toHaveBeenCalledWith(
@@ -190,8 +190,8 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ 'Content-Type': 'image/jpeg' }) },
-        context: ActionContext({
-          [KeysHttp.auth]: 'user:password',
+        context: new ActionContext({
+          [KeysHttp.auth.name]: 'user:password',
         }),
       });
       expect(spy).toHaveBeenCalledWith(
@@ -213,7 +213,7 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ a: 'b' }) },
-        context: ActionContext({ [KeysCore.log]: logger }),
+        context: new ActionContext({ [KeysCore.log.name]: logger }),
       });
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
@@ -227,7 +227,7 @@ describe('ActorHttpNodeFetch', () => {
       const spy = jest.spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
-        context: ActionContext({ [KeysCore.log]: logger }),
+        context: new ActionContext({ [KeysCore.log.name]: logger }),
       });
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
@@ -242,7 +242,7 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ a: 'b' }), method: 'POST' },
-        context: ActionContext({ [KeysCore.log]: logger }),
+        context: new ActionContext({ [KeysCore.log.name]: logger }),
       });
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
@@ -316,7 +316,7 @@ describe('ActorHttpNodeFetch', () => {
       const customFetch = jest.fn(async() => ({}));
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
-        context: ActionContext({ [KeysHttp.fetch]: customFetch }),
+        context: new ActionContext({ [KeysHttp.fetch.name]: customFetch }),
       });
 
       expect(fetch).not.toHaveBeenCalled();
@@ -327,7 +327,7 @@ describe('ActorHttpNodeFetch', () => {
       const customFetch = jest.fn(async() => ({}));
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
-        context: ActionContext({ [KeysHttp.fetch]: customFetch }),
+        context: new ActionContext({ [KeysHttp.fetch.name]: customFetch }),
       });
 
       expect(fetch).not.toHaveBeenCalled();

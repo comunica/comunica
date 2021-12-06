@@ -483,9 +483,9 @@ describe('ActorRdfJoin', () => {
         logOperation: jest.fn(),
         toJson: jest.fn(),
       };
-      action.context = ActionContext({
-        [KeysInitSparql.physicalQueryPlanLogger]: logger,
-        [KeysInitSparql.physicalQueryPlanNode]: parentNode,
+      action.context = new ActionContext({
+        [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
+        [KeysInitSparql.physicalQueryPlanNode.name]: parentNode,
       });
       jest.spyOn(instance, 'getOutput');
 
@@ -513,9 +513,9 @@ describe('ActorRdfJoin', () => {
       );
       expect(instance.getOutput).toHaveBeenCalledWith({
         ...action,
-        context: ActionContext({
-          [KeysInitSparql.physicalQueryPlanLogger]: logger,
-          [KeysInitSparql.physicalQueryPlanNode]: action,
+        context: new ActionContext({
+          [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
+          [KeysInitSparql.physicalQueryPlanNode.name]: action,
         }),
       });
     });

@@ -4,8 +4,7 @@ import type { IActionSparqlSerialize, IActorSparqlSerializeFixedMediaTypesArgs,
 import {
   ActorSparqlSerializeFixedMediaTypes,
 } from '@comunica/bus-sparql-serialize';
-import type { ActionContext } from '@comunica/core';
-import type { Bindings, IQueryableResultBindings } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryableResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -55,14 +54,14 @@ export class ActorSparqlSerializeSparqlCsv extends ActorSparqlSerializeFixedMedi
     return stringValue;
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext): Promise<boolean> {
+  public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
     if (action.type !== 'bindings') {
       throw new Error('This actor can only handle bindings streams.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType?: string, context?: ActionContext):
+  public async runHandle(action: IActionSparqlSerialize, mediaType?: string, context?: IActionContext):
   Promise<IActorSparqlSerializeOutput> {
     const bindingsAction = <IQueryableResultBindings> action;
 

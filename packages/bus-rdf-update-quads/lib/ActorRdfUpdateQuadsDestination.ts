@@ -1,4 +1,5 @@
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorRdfUpdateQuads';
 import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads';
 import type { IQuadDestination } from './IQuadDestination';
@@ -28,7 +29,7 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
   protected async getOutput(
     destination: IQuadDestination,
     action: IActionRdfUpdateQuads,
-    context?: ActionContext,
+    context?: IActionContext,
   ): Promise<IActorRdfUpdateQuadsOutput> {
     const updateResult = Promise.all([
       action.quadStreamInsert ? destination.insert(action.quadStreamInsert) : Promise.resolve(),
@@ -54,5 +55,5 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
    * @param {ActionContext} context Optional context data.
    * @return {Promise<IQuadSource>} A promise that resolves to a destination.
    */
-  protected abstract getDestination(context: ActionContext | undefined): Promise<IQuadDestination>;
+  protected abstract getDestination(context: IActionContext | undefined): Promise<IQuadDestination>;
 }

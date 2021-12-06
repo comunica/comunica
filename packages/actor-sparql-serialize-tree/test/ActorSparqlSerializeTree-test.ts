@@ -112,7 +112,7 @@ describe('ActorSparqlSerializeTree', () => {
       });
 
       it('should run on a bindings stream with a context', async() => {
-        const context = ActionContext({
+        const context = new ActionContext({
           '@comunica/actor-init-sparql:singularizeVariables': { k1: true, k2: false },
         });
         expect(await stringifyStream((<any> (await actor.run(

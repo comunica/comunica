@@ -3,10 +3,9 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type {
-  IQueryableResultBindings,
-  IQueryableResultQuads, IMetadata,
+  IQueryableResultBindings, IMetadata, IActionContext, IQueryableResult,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -32,15 +31,15 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       .apply([], patterns.map(pattern => getVariables(getTerms(pattern)))));
   }
 
-  public async testOperation(pattern: Algebra.Construct, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Construct, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Construct, context: ActionContext):
-  Promise<IQueryableResultQuads> {
+  public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
-    const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
-    const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: pattern.input, variables };
+    const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(operationOriginal.template);
+    const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: operationOriginal.input, variables };
 
     // Evaluate the input query
     const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
@@ -48,12 +47,15 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     );
 
     // Construct triples using the result based on the pattern.
-    const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
+    const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(
+      operationOriginal.template,
+      output.bindingsStream,
+    );
 
     // Let the final metadata contain the estimated number of triples
     const metadata: (() => Promise<IMetadata>) = () => output.metadata().then(meta => ({
       ...meta,
-      cardinality: meta.cardinality * pattern.template.length,
+      cardinality: meta.cardinality * operationOriginal.template.length,
       canContainUndefs: false,
     }));
 

@@ -1,6 +1,7 @@
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -17,7 +18,7 @@ export function getDataSourceType(dataSource: IDataSource): string | undefined {
 export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
   return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
 }
-export function getDataSourceContext(dataSource: IDataSource, context: ActionContext): ActionContext {
+export function getDataSourceContext(dataSource: IDataSource, context: IActionContext): IActionContext {
   if (typeof dataSource === 'string' || 'match' in dataSource || !dataSource.context) {
     return context;
   }
@@ -49,7 +50,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {IDataSource[]} The array of sources or undefined.
    */
-  protected getContextSources(context?: ActionContext): DataSources | undefined {
+  protected getContextSources(context?: IActionContext): DataSources | undefined {
     return context ? context.get(KeysRdfResolveQuadPattern.sources) : undefined;
   }
 
@@ -58,7 +59,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {IDataSource} The source or undefined.
    */
-  protected getContextSource(context?: ActionContext): IDataSource | undefined {
+  protected getContextSource(context?: IActionContext): IDataSource | undefined {
     return context ? context.get(KeysRdfResolveQuadPattern.source) : undefined;
   }
 
@@ -87,7 +88,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSource(context?: ActionContext): boolean {
+  protected hasContextSingleSource(context?: IActionContext): boolean {
     const source = this.getContextSource(context);
     return Boolean(source && (isDataSourceRawType(source) || source.value));
   }
@@ -98,7 +99,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSourceOfType(requiredType: string, context?: ActionContext): boolean {
+  protected hasContextSingleSourceOfType(requiredType: string, context?: IActionContext): boolean {
     const source = this.getContextSource(context);
     return Boolean(source && getDataSourceType(source) === requiredType && getDataSourceValue(source));
   }
@@ -107,7 +108,7 @@ IActorRdfResolveQuadPatternOutput> {
 export type IDataSource = string | RDF.Source | {
   type?: string;
   value: string | RDF.Source;
-  context?: ActionContext;
+  context?: IActionContext;
 };
 export type DataSources = IDataSource[];
 

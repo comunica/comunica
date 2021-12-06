@@ -409,7 +409,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           stderr,
           exit,
           []))
-        .context[KeysQueryOperation.readOnly]).toBe(true);
+        .context[KeysQueryOperation.readOnly.name]).toBe(true);
 
       testCommandlineArguments.push('-u');
       expect((await HttpServiceSparqlEndpoint
@@ -420,7 +420,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           stderr,
           exit,
           []))
-        .context[KeysQueryOperation.readOnly]).toBe(false);
+        .context[KeysQueryOperation.readOnly.name]).toBe(false);
     });
   });
 
@@ -1316,7 +1316,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           true);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { [KeysQueryOperation.readOnly]: true });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { [KeysQueryOperation.readOnly.name]: true });
       });
 
       it('should set not readOnly in the context if called with readOnly false', async() => {

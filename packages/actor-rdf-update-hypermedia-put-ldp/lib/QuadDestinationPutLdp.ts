@@ -13,7 +13,7 @@ import type {
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import { validateHttpResponse } from '@comunica/bus-rdf-update-quads';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import type { ActionContext } from '@comunica/types';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
@@ -23,7 +23,7 @@ import { Headers } from 'cross-fetch';
  */
 export class QuadDestinationPutLdp implements IQuadDestination {
   private readonly url: string;
-  private readonly context: ActionContext | undefined;
+  private readonly context: IActionContext | undefined;
   private readonly mediaTypes: string[];
 
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
@@ -41,7 +41,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
 
   public constructor(
     url: string,
-    context: ActionContext | undefined,
+    context: IActionContext | undefined,
     mediaTypes: string[],
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>,

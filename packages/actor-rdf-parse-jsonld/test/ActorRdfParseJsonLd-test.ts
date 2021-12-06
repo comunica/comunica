@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import { KeysRdfParseJsonLd } from '@comunica/context-entries';
+import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
@@ -182,7 +182,7 @@ describe('ActorRdfParseJsonLd', () => {
         return expect(actor.test({
           handle: { input, baseIRI: '' },
           handleMediaType: 'bla+json',
-          context: ActionContext({ '@comunica/actor-rdf-parse-html-script:processing-html-script': true }),
+          context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
         })).rejects.toBeTruthy();
       });
 
@@ -190,7 +190,7 @@ describe('ActorRdfParseJsonLd', () => {
         return expect(actor.test({
           handle: { input, baseIRI: '' },
           handleMediaType: 'application/ld+json',
-          context: ActionContext({ '@comunica/actor-rdf-parse-html-script:processing-html-script': true }),
+          context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
         })).resolves.toBeTruthy();
       });
 
@@ -305,7 +305,7 @@ describe('ActorRdfParseJsonLd', () => {
         return actor.run({
           handle: { input: inputRemoteContext, baseIRI: '' },
           handleMediaType: 'application/ld+json',
-          context: ActionContext({ [KeysRdfParseJsonLd.documentLoader]: documentLoader }),
+          context: new ActionContext({ [KeysRdfParseJsonLd.documentLoader.name]: documentLoader }),
         })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://custom.org/b', '"http://example.org/c"'),
@@ -325,7 +325,7 @@ describe('ActorRdfParseJsonLd', () => {
         return actor.run({
           handle: { input: inputSkipped, baseIRI: '' },
           handleMediaType: 'application/ld+json',
-          context: ActionContext({ [KeysRdfParseJsonLd.strictValues]: true }),
+          context: new ActionContext({ [KeysRdfParseJsonLd.strictValues.name]: true }),
         })
           .then(async(output: any) => expect(arrayifyStream(output.handle.quads)).rejects
             .toThrow(new Error('Invalid predicate IRI: skipped')));

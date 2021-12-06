@@ -1,6 +1,7 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
@@ -16,7 +17,7 @@ export function getDataDestinationType(dataDestination: IDataDestination): strin
 export function getDataDestinationValue(dataDestination: IDataDestination): string | RDF.Store {
   return isDataDestinationRawType(dataDestination) ? dataDestination : dataDestination.value;
 }
-export function getDataDestinationContext(dataDestination: IDataDestination, context: ActionContext): ActionContext {
+export function getDataDestinationContext(dataDestination: IDataDestination, context: IActionContext): IActionContext {
   if (typeof dataDestination === 'string' || 'remove' in dataDestination || !dataDestination.context) {
     return context;
   }
@@ -47,7 +48,7 @@ export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, I
    * @param {ActionContext} context An optional context.
    * @return {IDataDestination} The destination or undefined.
    */
-  protected getContextDestination(context?: ActionContext): IDataDestination | undefined {
+  protected getContextDestination(context?: IActionContext): IDataDestination | undefined {
     return context ? context.get(KeysRdfUpdateQuads.destination) : undefined;
   }
 
@@ -75,7 +76,7 @@ export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, I
 export type IDataDestination = string | RDF.Store | {
   type?: string;
   value: string | RDF.Store;
-  context?: ActionContext;
+  context?: IActionContext;
 };
 
 export interface IActionRdfUpdateQuads extends IAction {

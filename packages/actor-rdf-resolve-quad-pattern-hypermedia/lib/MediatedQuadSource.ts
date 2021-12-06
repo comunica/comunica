@@ -1,5 +1,5 @@
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext } from '@comunica/types';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { ISourcesState } from './LinkedRdfSourcesAsyncRdfIterator';
@@ -12,7 +12,7 @@ import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSou
  * @see MediatedLinkedRdfSourcesAsyncRdfIterator
  */
 export class MediatedQuadSource implements IQuadSource {
-  public readonly context: ActionContext;
+  public readonly context: IActionContext;
   public readonly firstUrl: string;
   public readonly forceSourceType?: string;
   public readonly mediators: IMediatorArgs;
@@ -21,7 +21,7 @@ export class MediatedQuadSource implements IQuadSource {
 
   private readonly cacheSize: number;
 
-  public constructor(cacheSize: number, context: ActionContext, firstUrl: string,
+  public constructor(cacheSize: number, context: IActionContext, firstUrl: string,
     forceSourceType: string | undefined, mediators: IMediatorArgs) {
     this.cacheSize = cacheSize;
     this.context = context;

@@ -7,7 +7,7 @@ import type { ILink,
   MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
@@ -25,12 +25,12 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   private readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   private readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
-  private readonly context: ActionContext;
+  private readonly context: IActionContext;
   private readonly forceSourceType?: string;
   private readonly handledUrls: Record<string, boolean>;
   private linkQueue: Promise<ILinkQueue> | undefined;
 
-  public constructor(cacheSize: number, context: ActionContext, forceSourceType: string | undefined,
+  public constructor(cacheSize: number, context: IActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string, mediators: IMediatorArgs) {
     super(cacheSize, subject, predicate, object, graph, firstUrl);

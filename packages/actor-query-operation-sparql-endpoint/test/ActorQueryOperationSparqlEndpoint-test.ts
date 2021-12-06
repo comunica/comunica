@@ -95,7 +95,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a single sparql source', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql' },
       });
       const op: any = { operation: 'bla', context };
@@ -103,7 +103,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a single sparql source and equal destination', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'a' },
         '@comunica/bus-rdf-update-quads:destination': { type: 'sparql', value: 'a' },
       });
@@ -112,7 +112,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a URL ending with /sparql', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/sparql' },
       });
       const op: any = { operation: 'bla', context };
@@ -120,7 +120,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a URL ending with /update', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/update' },
       });
       const op: any = { operation: 'bla', context };
@@ -128,7 +128,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on equal source and destination URL ending with /sparql', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/sparql' },
         '@comunica/bus-rdf-update-quads:destination': { value: '/sparql' },
       });
@@ -137,7 +137,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on equal source and destination URL ending with /update', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/update' },
         '@comunica/bus-rdf-update-quads:destination': { value: '/update' },
       });
@@ -146,13 +146,13 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on no source', () => {
-      const context = ActionContext({});
+      const context = new ActionContext({});
       const op: any = { operation: 'bla', context };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on a single non-sparql source', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'nosparql' },
       });
       const op: any = { operation: 'bla', context };
@@ -160,7 +160,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on a missing operation', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql' },
       });
       const op: any = { operation: null, context };
@@ -168,7 +168,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on a differing source and destination', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'a' },
         '@comunica/bus-rdf-update-quads:destination': { type: 'sparql', value: 'b' },
       });
@@ -177,7 +177,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on a differing source and destination when both end with /sparql', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'a/sparql' },
         '@comunica/bus-rdf-update-quads:destination': { value: 'b/sparql' },
       });
@@ -186,14 +186,14 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should fail to run for a missing source', async() => {
-      const context = ActionContext({});
+      const context = new ActionContext({});
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       await expect(actor.run(op)).rejects.toThrow(new Error('Illegal state: undefined sparql endpoint source.'));
     });
 
     it('should run for a sub-query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
@@ -210,7 +210,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should run for a SELECT query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
@@ -238,7 +238,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
       });
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
@@ -263,7 +263,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
       });
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
@@ -283,7 +283,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should run for an ASK query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-ask' },
       });
       const op: any = { context,
@@ -296,7 +296,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should run for a CONSTRUCT query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': {
           type: 'sparql',
           value: 'http://example.org/sparql-construct',
@@ -318,7 +318,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should run for an update query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-update' },
       });
       const op: any = { context,
@@ -348,7 +348,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           };
         },
       };
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
       const op: any = { context,
@@ -368,7 +368,7 @@ this is a body`));
     });
 
     it('should run and error for a fetching error', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
       const op: any = { context,
@@ -380,7 +380,7 @@ this is a body`));
     });
 
     it('should run using the original query string in the context if one exists', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
         '@comunica/actor-init-sparql:queryString': 'SELECT ?myP WHERE { <http://s> ?p <http://o>. }',
       });

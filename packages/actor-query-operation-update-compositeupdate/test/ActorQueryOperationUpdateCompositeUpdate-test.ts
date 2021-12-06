@@ -54,7 +54,8 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
 
     it('should not test on readOnly', () => {
       const op: any = {
-        operation: { type: 'compositeupdate' }, context: ActionContext({ [KeysQueryOperation.readOnly]: true }),
+        operation: { type: 'compositeupdate' },
+        context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });

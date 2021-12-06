@@ -6,7 +6,8 @@ import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hyper
 import { ActorRdfUpdateQuadsDestination, getDataDestinationType } from '@comunica/bus-rdf-update-quads';
 import type { IActionRdfUpdateQuads, IDataDestination,
   IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
-import type { IActorTest, ActionContext } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import LRUCache = require('lru-cache');
 
 /**
@@ -40,7 +41,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     return true;
   }
 
-  public getDestination(context: ActionContext): Promise<IQuadDestination> {
+  public getDestination(context: IActionContext): Promise<IQuadDestination> {
     const dataDestination: IDataDestination = this.getContextDestination(context)!;
     let url: string = this.getContextDestinationUrl(dataDestination)!;
 

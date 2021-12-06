@@ -32,7 +32,10 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should not test on readOnly', () => {
-      const op: any = { operation: { type: 'clear' }, context: ActionContext({ [KeysQueryOperation.readOnly]: true }) };
+      const op: any = {
+        operation: { type: 'clear' },
+        context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
+      };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 

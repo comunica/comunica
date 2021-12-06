@@ -4,6 +4,7 @@ import * as OS from 'os';
 import { KeysHttp, KeysInitSparql, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
+import type { IActionContext } from '@comunica/types';
 import type { Argv } from 'yargs';
 import type { ICliArgsHandler } from './ICliArgsHandler';
 
@@ -11,9 +12,9 @@ import type { ICliArgsHandler } from './ICliArgsHandler';
  * Basic CLI arguments handler that handles common options.
  */
 export class CliArgsHandlerBase implements ICliArgsHandler {
-  private readonly initialContext?: ActionContext;
+  private readonly initialContext?: IActionContext;
 
-  public constructor(initialContext?: ActionContext) {
+  public constructor(initialContext?: IActionContext) {
     this.initialContext = initialContext;
   }
 
@@ -49,8 +50,8 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     const authMatches = authRegex.exec(sourceString);
     if (authMatches) {
       const credentials = authMatches[1];
-      source.context = ActionContext({
-        [KeysHttp.auth]: decodeURIComponent(credentials),
+      source.context = new ActionContext({
+        [KeysHttp.auth.name]: decodeURIComponent(credentials),
       });
       sourceString = sourceString.slice(0, authMatches.index + 2) +
         sourceString.slice(authMatches.index + credentials.length + 3);
@@ -167,7 +168,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
 
     // Add destination to context
     if (args.to) {
-      context[KeysRdfUpdateQuads.destination] = args.to;
+      context[KeysRdfUpdateQuads.destination.name] = args.to;
     }
 
     // Set the logger
@@ -177,12 +178,12 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
 
     // Define the base IRI
     if (args.baseIRI) {
-      context[KeysInitSparql.baseIRI] = args.baseIRI;
+      context[KeysInitSparql.baseIRI.name] = args.baseIRI;
     }
 
     // Define lenient-mode
     if (args.lenient) {
-      context[KeysInitSparql.lenient] = true;
+      context[KeysInitSparql.lenient.name] = true;
     }
   }
 }

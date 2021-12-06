@@ -10,7 +10,8 @@ import type {
   IActorRdfParseHtmlOutput,
   IHtmlParseListener,
 } from '@comunica/bus-rdf-parse-html';
-import type { ActionContext, Actor, Bus, IActorTest } from '@comunica/core';
+import type { Actor, Bus, IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { WritableStream as HtmlParser } from 'htmlparser2/lib/WritableStream';
 
@@ -37,7 +38,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
+  public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
     const quads = new Readable({ objectMode: true });
     quads._read = async() => {

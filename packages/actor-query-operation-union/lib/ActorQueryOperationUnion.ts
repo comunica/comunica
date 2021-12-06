@@ -3,8 +3,14 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { BindingsStream, IQueryableResultBindings, IMetadata } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type {
+  BindingsStream,
+  IQueryableResultBindings,
+  IMetadata,
+  IActionContext,
+  IQueryableResult,
+} from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -48,13 +54,13 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     };
   }
 
-  public async testOperation(pattern: Algebra.Union, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Union, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Union, context: ActionContext):
-  Promise<IQueryableResultBindings> {
-    const outputs: IQueryableResultBindings[] = (await Promise.all(pattern.input
+  public async runOperation(operation: Algebra.Union, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
+    const outputs: IQueryableResultBindings[] = (await Promise.all(operation.input
       .map(subOperation => this.mediatorQueryOperation.mediate({ operation: subOperation, context }))))
       .map(ActorQueryOperation.getSafeBindings);
 

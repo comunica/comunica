@@ -50,12 +50,12 @@ describe('ActorRdfDereferenceFile', () => {
       mediatorRdfParse = {
         async mediate(action: any) {
           const quads = new Readable();
-          if (action.context && action.context.has('emitParseError')) {
+          if (action.context && action.context.hasRaw('emitParseError')) {
             quads._read = () => {
               quads.emit('error', new Error('Parse error'));
             };
             return { handle: { quads, triples: true }};
-          } if (action.context && action.context.has('parseReject')) {
+          } if (action.context && action.context.hasRaw('parseReject')) {
             return Promise.reject(new Error('Parse reject error'));
           }
           const data = await arrayifyStream(action.handle.input);
@@ -165,7 +165,7 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should run and receive parse errors', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = ActionContext({ emitParseError: true });
+      const context = new ActionContext({ emitParseError: true });
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);
       await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Parse error'));
@@ -173,7 +173,7 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should run and ignore parse errors in lenient mode', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = ActionContext({ emitParseError: true, [KeysInitSparql.lenient]: true });
+      const context = new ActionContext({ emitParseError: true, [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);
@@ -183,14 +183,14 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should not run on parse rejects', () => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = ActionContext({ parseReject: true });
+      const context = new ActionContext({ parseReject: true });
       return expect(actor.run({ url: p, context }))
         .rejects.toThrow(new Error('Parse reject error'));
     });
 
     it('should run and ignore parse rejects in lenient mode', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = ActionContext({ parseReject: true, [KeysInitSparql.lenient]: true });
+      const context = new ActionContext({ parseReject: true, [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);

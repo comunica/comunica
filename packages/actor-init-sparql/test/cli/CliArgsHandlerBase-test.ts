@@ -26,7 +26,10 @@ describe('CliArgsHandlerBase', () => {
     it('should work with authorization in url', () => {
       const hypermedia = 'http://username:passwd@example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', context: ActionContext({ [KeysHttp.auth]: 'username:passwd' }) });
+        .toEqual({
+          value: 'http://example.org/',
+          context: new ActionContext({ [KeysHttp.auth.name]: 'username:passwd' }),
+        });
     });
 
     it('should work with type annotation and authorization in url', () => {
@@ -34,21 +37,21 @@ describe('CliArgsHandlerBase', () => {
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
         .toEqual({ value: 'http://example.org/',
           type: 'hypermedia',
-          context: ActionContext({ [KeysHttp.auth]: 'username:passwd' }) });
+          context: new ActionContext({ [KeysHttp.auth.name]: 'username:passwd' }) });
     });
 
     it('should work with empty username in authorization in url', () => {
       const hypermedia = 'http://:passwd@example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
         .toEqual({ value: 'http://example.org/',
-          context: ActionContext({ [KeysHttp.auth]: ':passwd' }) });
+          context: new ActionContext({ [KeysHttp.auth.name]: ':passwd' }) });
     });
 
     it('should work with empty password in authorization in url', () => {
       const hypermedia = 'http://username:@example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
         .toEqual({ value: 'http://example.org/',
-          context: ActionContext({ [KeysHttp.auth]: 'username:' }) });
+          context: new ActionContext({ [KeysHttp.auth.name]: 'username:' }) });
     });
   });
 });

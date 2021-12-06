@@ -2,8 +2,10 @@ import { Readable } from 'stream';
 import type { IActionRdfParseHandle, IActorOutputRdfParseHandle,
   IActorTestRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
+import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import type { Actor, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
 
@@ -20,7 +22,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private readonly cbError: (error: Error) => void;
   private readonly cbEnd: () => void;
   private readonly supportedTypes: Record<string, number>;
-  private readonly context: ActionContext;
+  private readonly context: IActionContext;
   private baseIRI: string;
   private readonly headers?: Headers;
   private readonly onlyFirstScript: boolean;
@@ -37,18 +39,18 @@ export class HtmlScriptListener implements IHtmlParseListener {
   Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
   IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
   cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-  supportedTypes: Record<string, number>, context: ActionContext | undefined, baseIRI: string,
+  supportedTypes: Record<string, number>, context: IActionContext | undefined, baseIRI: string,
   headers: Headers | undefined) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
     this.cbError = cbError;
     this.cbEnd = cbEnd;
     this.supportedTypes = supportedTypes;
-    this.context = (context || ActionContext({}))
-      .set('@comunica/actor-rdf-parse-html-script:processing-html-script', true);
+    this.context = (context || new ActionContext())
+      .set(KeysRdfParseHtmlScript.processingHtmlScript, true);
     this.baseIRI = baseIRI;
     this.headers = headers;
-    this.onlyFirstScript = (context && context.get('extractAllScripts') === false) ?? false;
+    this.onlyFirstScript = (context && context.get(KeysRdfParseHtmlScript.extractAllScripts) === false) ?? false;
     const fragmentPos = this.baseIRI.indexOf('#');
     this.targetScriptId = fragmentPos > 0 ? this.baseIRI.slice(fragmentPos + 1, this.baseIRI.length) : null;
   }

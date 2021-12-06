@@ -1,5 +1,5 @@
 import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
-import type { ActionContext, IActorArgs, IActorTest, Mediator, IAction } from '@comunica/core';
+import type { IActorArgs, IActorTest, Mediator, IAction } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
@@ -9,7 +9,7 @@ import type {
   IQueryableResultQuads,
   IQueryableResultVoid,
   Bindings,
-  IMetadata,
+  IMetadata, IActionContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -108,19 +108,20 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
   }
 
-  protected static getBaseExpressionContext(context: ActionContext): IBaseExpressionContext {
+  protected static getBaseExpressionContext(context?: IActionContext): IBaseExpressionContext {
     if (context) {
-      const now: Date = context.get(KeysInitSparql.queryTimestamp);
-      const baseIRI: string = context.get(KeysInitSparql.baseIRI);
+      const now: Date | undefined = context.get(KeysInitSparql.queryTimestamp);
+      const baseIRI: string | undefined = context.get(KeysInitSparql.baseIRI);
 
       // Handle two variants of providing extension functions
       if (context.has(KeysInitSparql.extensionFunctionCreator) && context.has(KeysInitSparql.extensionFunctions)) {
         throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
       }
-      let extensionFunctionCreator: (functionNamedNode: RDF.NamedNode) =>
-      ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined = context.get(KeysInitSparql.extensionFunctionCreator);
+      let extensionFunctionCreator: ((functionNamedNode: RDF.NamedNode) =>
+      ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined) | undefined = context
+        .get(KeysInitSparql.extensionFunctionCreator);
       // Convert dictionary-based variant to callback
-      const extensionFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>> = context
+      const extensionFunctions: (Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>) | undefined = context
         .get(KeysInitSparql.extensionFunctions);
       if (extensionFunctions) {
         extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
@@ -137,7 +138,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
+  public static getExpressionContext(context: IActionContext, mediatorQueryOperation?: Mediator<
   Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
   IActionQueryOperation, IActorTest, IQueryableResult>): ISyncExpressionContext {
     return {
@@ -152,7 +153,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getAsyncExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
+  public static getAsyncExpressionContext(context?: IActionContext, mediatorQueryOperation?: Mediator<
   Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
   IActionQueryOperation, IActorTest, IQueryableResult>): IAsyncExpressionContext {
     const expressionContext: IAsyncExpressionContext = {
@@ -170,7 +171,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param context An action context.
    * @param mediatorQueryOperation A query operation mediator.
    */
-  public static createExistenceResolver(context: ActionContext, mediatorQueryOperation: Mediator<
+  public static createExistenceResolver(context: IActionContext, mediatorQueryOperation: Mediator<
   Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
   IActionQueryOperation, IActorTest, IQueryableResult>):
     (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
@@ -202,7 +203,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * Throw an error if the context contains the readOnly flag.
    * @param context An action context.
    */
-  public static throwOnReadOnly(context?: ActionContext): void {
+  public static throwOnReadOnly(context?: IActionContext): void {
     if (context && context.get(KeysQueryOperation.readOnly)) {
       throw new Error(`Attempted a write operation in read-only mode`);
     }

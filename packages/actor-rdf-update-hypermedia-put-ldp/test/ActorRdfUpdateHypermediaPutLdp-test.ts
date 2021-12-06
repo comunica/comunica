@@ -42,7 +42,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
     });
 
     it('should test', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { allowHttpMethods: [ 'OTHER', 'PUT' ]};
       const exists = false;
@@ -50,7 +50,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
     });
 
     it('should not test on missing allowHttpMethods PUT in metadata', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { allowHttpMethods: [ 'OTHER' ]};
       const exists = false;
@@ -59,7 +59,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
     });
 
     it('should not test on an existing destination', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { allowHttpMethods: [ 'PUT' ]};
       const exists = true;
@@ -68,7 +68,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
     });
 
     it('should test on invalid metadata with forced destination type', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = false;
@@ -77,7 +77,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
     });
 
     it('should test on invalid metadata with forced destination type on an existing destination', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -86,7 +86,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
     });
 
     it('should not test on invalid metadata with forced destination type for different destination type', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -95,7 +95,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
     });
 
     it('should run', async() => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { putLdp: true };
       const exists = true;

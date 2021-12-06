@@ -1,5 +1,6 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor, Bus, Mediator, ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { MediatorCombinePipeline } from '../lib/MediatorCombinePipeline';
 
 describe('MediatorCombinePipeline', () => {
@@ -41,18 +42,18 @@ describe('MediatorCombinePipeline', () => {
     });
 
     it('should mediate without changing the context', async() => {
-      const context = ActionContext({});
+      const context = new ActionContext({});
       const result = await mediator.mediate({ field: 1, context });
       expect(result).toEqual({ field: 2_101, context });
     });
 
     it('should mediate changing the context', async() => {
       new DummyActorContextOutput(1_000, bus);
-      const context = ActionContext({});
+      const context = new ActionContext({});
       const result = await mediator.mediate({ field: 1, context });
       expect(result).toHaveProperty('context');
       expect(result.context).not.toEqual(context);
-      expect(result.context!.get('id')).toEqual(1_000);
+      expect(result.context!.toJS().id).toEqual(1_000);
     });
   });
 
@@ -90,7 +91,7 @@ class DummyActorContextOutput extends DummyActor {
   public async run(action: IDummyAction): Promise<IDummyOutput> {
     return {
       ...super.run(action),
-      context: (action.context || ActionContext({})).set('id', this.id),
+      context: (<ActionContext> (action.context || new ActionContext())).setRaw('id', this.id),
     };
   }
 }
@@ -101,5 +102,5 @@ interface IDummyAction extends IAction {
 
 interface IDummyOutput extends IActorOutput {
   field: number;
-  context?: ActionContext;
+  context?: IActionContext;
 }

@@ -1,73 +1,84 @@
-export enum KeysCore {
-  /**
-   * @range {Logger} A logger instance.
-   */
-  log = '@comunica/core:log',
-}
+import type { IProxyHandler } from '@comunica/actor-http-proxy';
+import type { ICliArgsHandler } from '@comunica/actor-init-sparql';
+import type { DataSources, IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { IDataDestination } from '@comunica/bus-rdf-update-quads';
+import { ActionContextKey } from '@comunica/core';
+import type { Logger } from '@comunica/core';
+import type { Bindings, IMetadata, IPhysicalQueryPlanLogger, QueryExplainMode } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import type { IDocumentLoader } from 'jsonld-context-parser';
+import type { Algebra } from 'sparqlalgebrajs';
 
-export enum KeysHttp {
+export const KeysCore = {
   /**
-   * @range {boolean} Include credentials flags.
+   * A logger instance.
    */
-  includeCredentials = '@comunica/bus-http:include-credentials',
-  /**
-   * @range {string} Authentication for a source as a "username:password"-pair.
-   */
-  auth = '@comunica/bus-http:auth',
-  /**
-   * @range {(input: RequestInfo, init?: RequestInit) => Promise<Response>} Fetch function implementation.
-   */
-  fetch = '@comunica/bus-http:fetch',
-}
+  log: new ActionContextKey<Logger>('@comunica/core:log'),
+};
 
-export enum KeysHttpMemento {
+export const KeysHttp = {
   /**
-   * @range {string} The desired datetime for Memento datetime-negotiation.
+   * Include credentials flags.
    */
-  datetime = '@comunica/actor-http-memento:datetime',
-}
+  includeCredentials: new ActionContextKey<boolean>('@comunica/bus-http:include-credentials'),
+  /**
+   * Authentication for a source as a "username:password"-pair.
+   */
+  auth: new ActionContextKey<string>('@comunica/bus-http:auth'),
+  /**
+   * Fetch function implementation.
+   */
+  fetch: new ActionContextKey<typeof fetch>('@comunica/bus-http:fetch'),
+};
 
-export enum KeysHttpProxy {
+export const KeysHttpMemento = {
   /**
-   * @range {IProxyHandler} A handler implementing the {@link IProxyHandler} interface.
+   * The desired datetime for Memento datetime-negotiation.
    */
-  httpProxyHandler = '@comunica/actor-http-proxy:httpProxyHandler',
-}
+  datetime: new ActionContextKey<Date>('@comunica/actor-http-memento:datetime'),
+};
 
-export enum KeysInitSparql {
+export const KeysHttpProxy = {
   /**
-   * @range {Bindings} Variables that have to be pre-bound to values in the query.
+   * Interface.
    */
-  initialBindings = '@comunica/actor-init-sparql:initialBindings',
+  httpProxyHandler: new ActionContextKey<IProxyHandler>('@comunica/actor-http-proxy:httpProxyHandler'),
+};
+
+export const KeysInitSparql = {
   /**
-   * @range {string} Name of the provided query's format.
+   * Variables that have to be pre-bound to values in the query.
    */
-  queryFormat = '@comunica/actor-init-sparql:queryFormat',
+  initialBindings: new ActionContextKey<Bindings>('@comunica/actor-init-sparql:initialBindings'),
   /**
-   * @range {any} Which GraphQL bindings should be singularized.
+   * Name of the provided query's format.
    */
-  graphqlSingularizeVariables = '@comunica/actor-init-sparql:singularizeVariables',
+  queryFormat: new ActionContextKey<string>('@comunica/actor-init-sparql:queryFormat'),
   /**
-   * @range {boolean} If HTTP and parsing failures are ignored.
+   * Which GraphQL bindings should be singularized.
    */
-  lenient = '@comunica/actor-init-sparql:lenient',
+  graphqlSingularizeVariables: new ActionContextKey<any>('@comunica/actor-init-sparql:singularizeVariables'),
   /**
-   * @range {string} The original query string.
+   * If HTTP and parsing failures are ignored.
    */
-  queryString = '@comunica/actor-init-sparql:queryString',
+  lenient: new ActionContextKey<boolean>('@comunica/actor-init-sparql:lenient'),
   /**
-   * @range {Algebra.Operation} The original parsed query.
+   * The original query string.
    */
-  query = '@comunica/actor-init-sparql:query',
+  queryString: new ActionContextKey<string>('@comunica/actor-init-sparql:queryString'),
   /**
-   * @range {string} The query's base IRI.
+   * The original parsed query.
    */
-  baseIRI = '@comunica/actor-init-sparql:baseIRI',
+  query: new ActionContextKey<Algebra.Operation>('@comunica/actor-init-sparql:query'),
   /**
-   * @range {Date} A timestamp representing the current time.
+   * The query's base IRI.
+   */
+  baseIRI: new ActionContextKey<string>('@comunica/actor-init-sparql:baseIRI'),
+  /**
+   * A timestamp representing the current time.
    *                 This is required for certain SPARQL operations such as NOW().
    */
-  queryTimestamp = '@comunica/actor-init-sparql:queryTimestamp',
+  queryTimestamp: new ActionContextKey<Date>('@comunica/actor-init-sparql:queryTimestamp'),
   /**
    * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined}
    * Extension function creator for a given function IRI.
@@ -76,85 +87,114 @@ export enum KeysInitSparql {
    *
    * The dictionary-based extensionFunctions context entry may be used instead, but not simultaneously.
    */
-  extensionFunctionCreator = '@comunica/actor-init-sparql:extensionFunctionCreator',
+  extensionFunctionCreator: new ActionContextKey<
+  (functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined
+  // eslint-disable-next-line @typescript-eslint/no-extra-parens
+  >('@comunica/actor-init-sparql:extensionFunctionCreator'),
   /**
-   * @range {Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>} Dictionary of extension functions.
+   * Dictionary of extension functions.
    * Key is the IRI of the function, and value is the async function implementation.
    *
    * The callback-based extensionFunctionCreator context entry may be used instead, but not simultaneously.
    */
-  extensionFunctions = '@comunica/actor-init-sparql:extensionFunctions',
+  extensionFunctions: new ActionContextKey<
+  Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
+  // eslint-disable-next-line @typescript-eslint/no-extra-parens
+  >('@comunica/actor-init-sparql:extensionFunctions'),
   /**
-   * @range {ICliArgsHandler[]} Enables manipulation of the CLI arguments and their processing.
+   * Enables manipulation of the CLI arguments and their processing.
    */
-  cliArgsHandlers = '@comunica/actor-init-sparql:cliArgsHandlers',
+  cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-sparql:cliArgsHandlers'),
   /**
-   * @range {string} Explain mode of the query. Can be 'parsed', 'logical', or 'physical'.
+   * Explain mode of the query. Can be 'parsed', 'logical', or 'physical'.
    */
-  explain = '@comunica/actor-init-sparql:explain',
+  explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-sparql:explain'),
   /**
-   * @range {IPhysicalQueryPlanLogger} Logs the used physical operators
+   * Logs the used physical operators
    */
-  physicalQueryPlanLogger = '@comunica/actor-init-sparql:physicalQueryPlanLogger',
+  physicalQueryPlanLogger: new ActionContextKey<IPhysicalQueryPlanLogger>(
+    '@comunica/actor-init-sparql:physicalQueryPlanLogger',
+  ),
   /**
-   * @range {any} The current physical operator within the query plan.
+   * The current physical operator within the query plan.
    *              This is used to pass parent-child relationships for invoking the query plan logger.
    */
-  physicalQueryPlanNode = '@comunica/actor-init-sparql:physicalQueryPlanNode',
-}
-
-export enum KeysQueryOperation {
+  physicalQueryPlanNode: new ActionContextKey<any>('@comunica/actor-init-sparql:physicalQueryPlanNode'),
   /**
-   * @range {string} Context entry for the current query operation.
+   * A JSON-LD context
    */
-  operation = '@comunica/bus-query-operation:operation',
+  jsonLdContext: new ActionContextKey<any>('@context'),
+};
+
+export const KeysQueryOperation = {
+  /**
+   * Context entry for the current query operation.
+   */
+  operation: new ActionContextKey<string>('@comunica/bus-query-operation:operation'),
   /**
    * @type {any} The metadata from the left streams within a join operation.
    */
-  joinLeftMetadata = '@comunica/bus-query-operation:joinLeftMetadata',
+  joinLeftMetadata: new ActionContextKey<IMetadata>('@comunica/bus-query-operation:joinLeftMetadata'),
   /**
-   * @range {any[]} An array of metadata from the right streams within a join operation.
+   * An array of metadata from the right streams within a join operation.
    */
-  joinRightMetadatas = '@comunica/bus-query-operation:joinRightMetadatas',
+  joinRightMetadatas: new ActionContextKey<IMetadata[]>('@comunica/bus-query-operation:joinRightMetadatas'),
   /**
-   * @range {Bindings} Indicates the bindings that were used to bind the operation.
+   * Indicates the bindings that were used to bind the operation.
    */
-  joinBindings = '@comunica/bus-query-operation:joinBindings',
+  joinBindings: new ActionContextKey<Bindings>('@comunica/bus-query-operation:joinBindings'),
   /**
-   * @range {boolean} Flag for indicating that only read operations are allowed, defaults to false.
+   * Flag for indicating that only read operations are allowed, defaults to false.
    */
-  readOnly = '@comunica/bus-query-operation:readOnly',
-}
+  readOnly: new ActionContextKey<boolean>('@comunica/bus-query-operation:readOnly'),
+  /**
+   * An internal context entry to mark that a property path with arbitrary length and a distinct key is being processed.
+   */
+  isPathArbitraryLengthDistinctKey: new ActionContextKey<boolean>(
+    '@comunica/bus-query-operation:isPathArbitraryLengthDistinct',
+  ),
+};
 
-export enum KeysRdfParseJsonLd {
+export const KeysRdfParseJsonLd = {
   /**
    * @range {IDocumentLoader}
    */
-  documentLoader = '@comunica/actor-rdf-parse-jsonld:documentLoader',
+  documentLoader: new ActionContextKey<IDocumentLoader>('@comunica/actor-rdf-parse-jsonld:documentLoader'),
   /**
    * @range {boolean}
    */
-  strictValues = '@comunica/actor-rdf-parse-jsonld:strictValues',
+  strictValues: new ActionContextKey<boolean>('@comunica/actor-rdf-parse-jsonld:strictValues'),
   /**
    * @range {Record<string, any>}
    */
-  parserOptions = '@comunica/actor-rdf-parse-jsonld:parserOptions',
-}
+  parserOptions: new ActionContextKey<Record<string, any>>('@comunica/actor-rdf-parse-jsonld:parserOptions'),
+};
 
-export enum KeysRdfResolveQuadPattern {
+export const KeysRdfParseHtmlScript = {
   /**
-   * @range {DataSources} Data sources.
+   * An internal context flag to determine if the engine is already processing an HTML script tag.
    */
-  sources = '@comunica/bus-rdf-resolve-quad-pattern:sources',
+  processingHtmlScript: new ActionContextKey<boolean>('@comunica/actor-rdf-parse-html-script:processingHtmlScript'),
   /**
-   * @range {IDataSource} A data source.
+   * If all HTML script tags must be considered.
    */
-  source = '@comunica/bus-rdf-resolve-quad-pattern:source',
-}
+  extractAllScripts: new ActionContextKey<boolean>('extractAllScripts'),
+};
 
-export enum KeysRdfUpdateQuads {
+export const KeysRdfResolveQuadPattern = {
   /**
-   * @range {IDataDestination} A data destination.
+   * Data sources.
    */
-  destination = '@comunica/bus-rdf-update-quads:destination',
-}
+  sources: new ActionContextKey<DataSources>('@comunica/bus-rdf-resolve-quad-pattern:sources'),
+  /**
+   * A data source.
+   */
+  source: new ActionContextKey<IDataSource>('@comunica/bus-rdf-resolve-quad-pattern:source'),
+};
+
+export const KeysRdfUpdateQuads = {
+  /**
+   * A data destination.
+   */
+  destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
+};

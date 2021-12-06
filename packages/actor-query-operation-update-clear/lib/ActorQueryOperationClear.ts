@@ -3,8 +3,8 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type {
   MediatorRdfUpdateQuads,
 } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryableResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -22,26 +22,26 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
     super(args, 'clear');
   }
 
-  public async testOperation(pattern: Algebra.Clear, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Clear, context: IActionContext | undefined): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Clear, context: ActionContext):
+  public async runOperation(operation: Algebra.Clear, context: IActionContext | undefined):
   Promise<IQueryableResult> {
     // Delegate to update-quads bus
     let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];
-    if (pattern.source === 'DEFAULT') {
+    if (operation.source === 'DEFAULT') {
       graphs = DF.defaultGraph();
-    } else if (typeof pattern.source === 'string') {
-      graphs = pattern.source;
+    } else if (typeof operation.source === 'string') {
+      graphs = operation.source;
     } else {
-      graphs = [ pattern.source ];
+      graphs = [ operation.source ];
     }
     const { updateResult } = await this.mediatorUpdateQuads.mediate({
       deleteGraphs: {
         graphs,
-        requireExistence: !pattern.silent,
+        requireExistence: !operation.silent,
         dropGraphs: false,
       },
       context,

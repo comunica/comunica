@@ -5,7 +5,8 @@ import type {
 import {
   ActorRdfResolveQuadPatternSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { FederatedQuadSource } from './FederatedQuadSource';
 
@@ -31,7 +32,7 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
     return true;
   }
 
-  protected async getSource(context: ActionContext): Promise<IQuadSource> {
+  protected async getSource(context: IActionContext): Promise<IQuadSource> {
     return new FederatedQuadSource(
       this.mediatorResolveQuadPattern,
       context,

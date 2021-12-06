@@ -3,8 +3,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResultQuads, IMetadata } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IQueryableResultQuads, IMetadata, IActionContext, IQueryableResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -19,14 +19,14 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     super(args, 'describe');
   }
 
-  public async testOperation(pattern: Algebra.Describe, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Describe, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Describe, context: ActionContext):
-  Promise<IQueryableResultQuads> {
+  public async runOperation(operationOriginal: Algebra.Describe, context: IActionContext | undefined):
+  Promise<IQueryableResult> {
     // Create separate construct queries for all non-variable terms
-    const operations: Algebra.Construct[] = pattern.terms
+    const operations: Algebra.Construct[] = operationOriginal.terms
       .filter(term => term.termType !== 'Variable')
       .map((term: RDF.Term) => {
         // Transform each term to a separate construct operation with S ?p ?o patterns (BGP) for all terms
@@ -50,9 +50,9 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
 
     // If we have variables in the term list,
     // create one separate construct operation to determine these variables using the input pattern.
-    if (operations.length !== pattern.terms.length) {
+    if (operations.length !== operationOriginal.terms.length) {
       let variablePatterns: Algebra.Pattern[] = [];
-      pattern.terms
+      operationOriginal.terms
         .filter(term => term.termType === 'Variable')
         .forEach((term: RDF.Term, i: number) => {
           // Transform each term to an S ?p ?o pattern in a non-conflicting way
@@ -70,7 +70,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
         input: {
           type: Algebra.types.JOIN,
           input: [
-            pattern.input,
+            operationOriginal.input,
             { type: Algebra.types.BGP, patterns: variablePatterns },
           ],
         },

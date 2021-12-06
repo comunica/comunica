@@ -1,6 +1,7 @@
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfParseHtmlScript } from '../lib/ActorRdfParseHtmlScript';
 import { HtmlScriptListener } from '../lib/HtmlScriptListener';
 
@@ -9,7 +10,7 @@ const quad = require('rdf-quad');
 describe('ActorRdfParseHtml', () => {
   let bus: any;
   let mediator: any;
-  let context: ActionContext;
+  let context: IActionContext;
 
   let jsonldParser: ActorRdfParseJsonLd;
 
@@ -49,7 +50,7 @@ describe('ActorRdfParseHtml', () => {
       },
     };
 
-    context = ActionContext({});
+    context = new ActionContext({});
   });
 
   describe('The ActorRdfParseHtmlScript module', () => {
@@ -561,7 +562,7 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: ActionContext({ extractAllScripts: false }) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({ extractAllScripts: false }) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -628,7 +629,7 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: ActionContext({ extractAllScripts: false }) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({ extractAllScripts: false }) };
       });
 
       it('should return an HtmlScriptListener', async() => {

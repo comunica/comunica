@@ -40,8 +40,9 @@ export class ActorHttpNodeFetch extends ActorHttp {
     if (!action.init.headers.has('user-agent')) {
       action.init.headers.append('user-agent', this.userAgent);
     }
-    if (action.context && action.context.get(KeysHttp.auth)) {
-      action.init.headers.append('Authorization', `Basic ${Buffer.from(action.context.get(KeysHttp.auth)).toString('base64')}`);
+    const authString: string | undefined = action.context?.get(KeysHttp.auth);
+    if (authString) {
+      action.init.headers.append('Authorization', `Basic ${Buffer.from(authString).toString('base64')}`);
     }
 
     // Log request
@@ -58,7 +59,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
     }
 
     // Perform request
-    const customFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response> = action
+    const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
       .context?.get(KeysHttp.fetch);
     return (customFetch || fetch)(action.input, this.fetchInitPreprocessor.handle({
       ...action.init,

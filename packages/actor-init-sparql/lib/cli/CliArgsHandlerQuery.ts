@@ -96,21 +96,21 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
 
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
     // Define the query format
-    context[KeysInitSparql.queryFormat] = args.inputType;
+    context[KeysInitSparql.queryFormat.name] = args.inputType;
 
     // Define the datetime
     if (args.dateTime) {
-      context[KeysHttpMemento.datetime] = new Date(args.dateTime);
+      context[KeysHttpMemento.datetime.name] = new Date(args.dateTime);
     }
 
     // Set the proxy
     if (args.proxy) {
-      context[KeysHttpProxy.httpProxyHandler] = new ProxyHandlerStatic(args.proxy);
+      context[KeysHttpProxy.httpProxyHandler.name] = new ProxyHandlerStatic(args.proxy);
     }
 
     // Mark explain output
     if (args.explain) {
-      context[KeysInitSparql.explain] = args.explain;
+      context[KeysInitSparql.explain.name] = args.explain;
     }
   }
 }

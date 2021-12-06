@@ -1,4 +1,4 @@
-import type { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type { IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
 import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped';
 
@@ -19,7 +19,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
   }
 
-  public async testHandle(action: HI, mediaType: string, context: ActionContext): Promise<HT> {
+  public async testHandle(action: HI, mediaType: string, context: IActionContext): Promise<HT> {
     if (!(mediaType in this.mediaTypePriorities)) {
       throw new Error(`Unrecognized media type: ${mediaType}`);
     }
@@ -33,21 +33,21 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    * @param {ActionContext} context An optional context.
    * @param {HI} action The action to test.
    */
-  public abstract testHandleChecked(action: HI, context: ActionContext): Promise<HT>;
+  public abstract testHandleChecked(action: HI, context: IActionContext): Promise<HT>;
 
-  public async testMediaType(context: ActionContext): Promise<boolean> {
+  public async testMediaType(context: IActionContext): Promise<boolean> {
     return true;
   }
 
-  public async getMediaTypes(context: ActionContext): Promise<Record<string, number>> {
+  public async getMediaTypes(context: IActionContext): Promise<Record<string, number>> {
     return this.mediaTypePriorities;
   }
 
-  public async testMediaTypeFormats(context: ActionContext): Promise<boolean> {
+  public async testMediaTypeFormats(context: IActionContext): Promise<boolean> {
     return true;
   }
 
-  public async getMediaTypeFormats(context: ActionContext): Promise<Record<string, string>> {
+  public async getMediaTypeFormats(context: IActionContext): Promise<Record<string, string>> {
     return this.mediaTypeFormats;
   }
 }

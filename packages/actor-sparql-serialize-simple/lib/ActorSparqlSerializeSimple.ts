@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
-import type { ActionContext, IQueryableResultBindings, IQueryableResultBoolean,
+import type { IActionContext, IQueryableResultBindings, IQueryableResultBoolean,
   IQueryableResultQuads, IQueryableResultVoid } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
@@ -19,14 +19,14 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
     super(args);
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext): Promise<boolean> {
+  public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
     if (![ 'bindings', 'quads', 'boolean', 'update' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams, quad streams, booleans, or updates.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext):
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
   Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {

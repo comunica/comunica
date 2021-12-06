@@ -1,10 +1,9 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitSparql } from '@comunica/context-entries';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryableResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
@@ -167,8 +166,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should use and respect the baseIRI from the expression context', async() => {
       const expression = parse('str(IRI(?a)) = concat("http://example.com/", ?a)');
-      const context = Map({
-        [KeysInitSparql.baseIRI]: 'http://example.com',
+      const context = new ActionContext({
+        [KeysInitSparql.baseIRI.name]: 'http://example.com',
       });
       const op: any = { operation: { type: 'filter', input: {}, expression }, context };
       const output: IQueryableResultBindings = <any> await actor.run(op);
@@ -184,7 +183,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     describe('should be able to handle EXIST filters', () => {
       it('like a simple EXIST that is true', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
+        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,
           factory.createBgp([]),
@@ -194,7 +193,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       });
 
       it('like a simple EXIST that is false', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
+        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
@@ -211,7 +210,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       });
 
       it('like a NOT EXISTS', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
+        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
@@ -228,7 +227,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       });
 
       it('like an EXIST that errors', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
+        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
         const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
           autoStart: false,
           transform(item, done, push) {

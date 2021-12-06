@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type { Bindings, BindingsStream } from '@comunica/types';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
+import type { Bindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
@@ -18,13 +18,13 @@ export class RdfSourceSparql implements IQuadSource {
   protected static readonly FACTORY: Factory = new Factory();
 
   private readonly url: string;
-  private readonly context: ActionContext | undefined;
+  private readonly context: IActionContext | undefined;
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
 
-  public constructor(url: string, context: ActionContext | undefined,
+  public constructor(url: string, context: IActionContext | undefined,
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>, forceHttpGet: boolean) {
     this.url = url;

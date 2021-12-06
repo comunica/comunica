@@ -2,7 +2,7 @@ import type { DataSources, IDataSource } from '@comunica/bus-rdf-resolve-quad-pa
 import { getDataSourceType } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IDataDestination } from '@comunica/bus-rdf-update-quads';
 import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 
 /**
  * Comunica datasource utilities
@@ -10,18 +10,18 @@ import type { ActionContext } from '@comunica/core';
 export const DataSourceUtils = {
   /**
    * Get the single source if the context contains just a single source.
-   * @param {ActionContext} context A context, can be null.
+   * @param {IActionContext} context A context, can be null.
    * @return {Promise<IDataSource>} A promise resolving to the single datasource or undefined.
    */
-  async getSingleSource(context?: ActionContext): Promise<IDataSource | undefined> {
+  async getSingleSource(context?: IActionContext): Promise<IDataSource | undefined> {
     if (context && context.has(KeysRdfResolveQuadPattern.source)) {
       // If the single source is set
       return context.get(KeysRdfResolveQuadPattern.source);
     }
-    if (context && context.has(KeysRdfResolveQuadPattern.sources)) {
+    if (context) {
       // If multiple sources are set
-      const datasources: DataSources = context.get(KeysRdfResolveQuadPattern.sources);
-      if (datasources.length === 1) {
+      const datasources: DataSources | undefined = context.get(KeysRdfResolveQuadPattern.sources);
+      if (datasources && datasources.length === 1) {
         return datasources[0];
       }
     }
@@ -32,7 +32,7 @@ export const DataSourceUtils = {
    * @param {ActionContext} context A context, can be undefined.
    * @return {Promise<string>} A promise resolving to the type of the source, can be undefined if source is undefined.
    */
-  async getSingleSourceType(context?: ActionContext): Promise<string | undefined> {
+  async getSingleSourceType(context?: IActionContext): Promise<string | undefined> {
     const source = await this.getSingleSource(context);
     return source ? getDataSourceType(source) : undefined;
   },
@@ -43,7 +43,7 @@ export const DataSourceUtils = {
    * @param {string} requiredType The required source type name.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  async singleSourceHasType(context: ActionContext | undefined, requiredType: string): Promise<boolean> {
+  async singleSourceHasType(context: IActionContext | undefined, requiredType: string): Promise<boolean> {
     const actualType = await this.getSingleSourceType(context);
     return actualType ? actualType === requiredType : false;
   },
@@ -53,7 +53,7 @@ export const DataSourceUtils = {
    * @param {ActionContext} context A context, can be null.
    * @return {Promise<IDataDestination>} A promise resolving to the single datadestination or undefined.
    */
-  async getSingleDestination(context?: ActionContext): Promise<IDataDestination | undefined> {
+  async getSingleDestination(context?: IActionContext): Promise<IDataDestination | undefined> {
     if (context && context.has(KeysRdfUpdateQuads.destination)) {
       // If the single destination is set
       return context.get(KeysRdfUpdateQuads.destination);

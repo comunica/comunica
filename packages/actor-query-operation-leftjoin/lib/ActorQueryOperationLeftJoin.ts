@@ -1,8 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IQueryableResult, Bindings } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IQueryableResult, Bindings, IActionContext } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -16,14 +16,14 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     super(args, 'leftjoin');
   }
 
-  public async testOperation(pattern: Algebra.LeftJoin, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.LeftJoin, context: IActionContext | undefined): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.LeftJoin, context: ActionContext):
+  public async runOperation(operationOriginal: Algebra.LeftJoin, context: IActionContext | undefined):
   Promise<IQueryableResult> {
     // Delegate to join bus
-    const entries: IJoinEntry[] = (await Promise.all(pattern.input
+    const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({
         output: await this.mediatorQueryOperation.mediate({ operation: subOperation, context }),
         operation: subOperation,
@@ -35,9 +35,9 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
 
     // If the pattern contains an expression, filter the resulting stream
-    if (pattern.expression) {
+    if (operationOriginal.expression) {
       const config = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
-      const evaluator = new AsyncEvaluator(pattern.expression, config);
+      const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,

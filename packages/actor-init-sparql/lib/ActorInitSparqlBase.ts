@@ -12,8 +12,7 @@ import type { IActionSparqlSerialize, IActorSparqlSerializeOutput, MediatorSparq
 import { KeysInitSparql, KeysCore } from '@comunica/context-entries';
 import type { IActorTest, Logger } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type {
-  IQueryableResult,
+import type { IQueryableResult,
   Bindings,
   IQueryEngine,
   IQueryExplained,
@@ -21,7 +20,7 @@ import type {
   IQueryableResultEnhanced,
   IQueryableResultBindingsEnhanced,
   IQueryableResultQuadsEnhanced,
-} from '@comunica/types';
+  IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
@@ -127,16 +126,16 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
     }
 
     // Set the default logger if none is provided
-    if (!context[KeysCore.log]) {
-      context[KeysCore.log] = this.logger;
+    if (!context[KeysCore.log.name]) {
+      context[KeysCore.log.name] = this.logger;
     }
 
-    if (!context[KeysInitSparql.queryTimestamp]) {
-      context[KeysInitSparql.queryTimestamp] = new Date();
+    if (!context[KeysInitSparql.queryTimestamp.name]) {
+      context[KeysInitSparql.queryTimestamp.name] = new Date();
     }
 
     // Prepare context
-    context = ActionContext(context);
+    context = new ActionContext(context);
     let queryFormat = 'sparql';
     if (context && context.has(KeysInitSparql.queryFormat)) {
       queryFormat = context.get(KeysInitSparql.queryFormat);
@@ -249,7 +248,7 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
    */
-  public async getResultMediaTypes(context?: ActionContext): Promise<Record<string, number>> {
+  public async getResultMediaTypes(context?: IActionContext): Promise<Record<string, number>> {
     return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
@@ -257,7 +256,7 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL result media type formats.
    */
-  public async getResultMediaTypeFormats(context?: ActionContext): Promise<Record<string, string>> {
+  public async getResultMediaTypeFormats(context?: IActionContext): Promise<Record<string, string>> {
     return (await this.mediatorSparqlSerializeMediaTypeFormatCombiner.mediate({ context, mediaTypeFormats: true }))
       .mediaTypeFormats;
   }
@@ -271,7 +270,7 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    */
   public async resultToString(queryResult: IQueryableResult, mediaType?: string, context?: any):
   Promise<IActorSparqlSerializeOutput> {
-    context = ActionContext(context);
+    context = new ActionContext(context);
 
     if (!mediaType) {
       switch (queryResult.type) {

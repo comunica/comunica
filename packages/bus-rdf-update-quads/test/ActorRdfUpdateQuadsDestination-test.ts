@@ -131,7 +131,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
   });
 
   describe('getDataDestinationContext', () => {
-    const context = ActionContext({ key: 'value' });
+    const context = new ActionContext({ key: 'value' });
 
     it('should return on a string source', () => {
       return expect(getDataDestinationContext('abc', context)).toEqual(context);
@@ -142,7 +142,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
 
     it('should return on an object source', () => {
-      const sourceContext = ActionContext({ auth: 'username:passwd' });
+      const sourceContext = new ActionContext({ auth: 'username:passwd' });
       return expect(getDataDestinationContext({ value: 'http://google.com', context: sourceContext }, context))
         .toEqual(context.merge(sourceContext));
     });

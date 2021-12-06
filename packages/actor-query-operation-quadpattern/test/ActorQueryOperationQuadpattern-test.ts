@@ -283,7 +283,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      const context = ActionContext({});
+      const context = new ActionContext({});
       return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await output.metadata()).toBe(metadataContent);
@@ -331,7 +331,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should accept a quad-pattern-level context without an operation context', async() => {
       const operation: any = {
-        context: ActionContext({ a: 'overridden' }),
+        context: new ActionContext({ a: 'overridden' }),
         graph: DF.namedNode('g'),
         object: DF.variable('v'),
         predicate: DF.variable('v'),
@@ -346,7 +346,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should accept a quad-pattern-level context with an operation context', async() => {
       const operation: any = {
-        context: ActionContext({ a: 'overridden' }),
+        context: new ActionContext({ a: 'overridden' }),
         graph: DF.namedNode('g'),
         object: DF.variable('v'),
         predicate: DF.variable('v'),
@@ -354,10 +354,10 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
 
-      await actor.run({ operation, context: ActionContext({ a: 'a', b: 'b' }) });
+      await actor.run({ operation, context: new ActionContext({ a: 'a', b: 'b' }) });
       expect(mediatorResolveQuadPattern.mediate)
         .toHaveBeenCalledWith({
-          context: ActionContext({
+          context: new ActionContext({
             '@comunica/bus-query-operation:operation': operation,
             a: 'overridden',
             b: 'b',

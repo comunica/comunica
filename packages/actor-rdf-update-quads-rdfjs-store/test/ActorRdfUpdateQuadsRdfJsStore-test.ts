@@ -1,3 +1,4 @@
+import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -33,7 +34,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       return expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'rdfjsStore', value: store }},
         ),
       })).resolves.toBeTruthy();
@@ -43,7 +44,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       return expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': store },
         ),
       })).resolves.toBeTruthy();
@@ -61,7 +62,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       return expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
-        context: ActionContext({}),
+        context: new ActionContext({}),
       })).rejects.toBeTruthy();
     });
 
@@ -69,7 +70,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       return expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'rdfjsStore', value: undefined }},
         ),
       })).rejects.toBeTruthy();
@@ -79,7 +80,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       return expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'rdfjsStore', value: {}}},
         ),
       })).rejects.toBeTruthy();
@@ -89,28 +90,28 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       return expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'entrypoint', value: null }},
         ),
       })).rejects.toBeTruthy();
     });
 
     it('should get the destination', () => {
-      return expect((<any> actor).getDestination(ActionContext({
-        '@comunica/bus-rdf-update-quads:destination': { type: 'rdfjsStore', value: store },
+      return expect((<any> actor).getDestination(new ActionContext({
+        [KeysRdfUpdateQuads.destination.name]: { type: 'rdfjsStore', value: store },
       })))
         .resolves.toMatchObject(new RdfJsQuadDestination(store));
     });
 
     it('should get the destination on raw destination form', () => {
-      return expect((<any> actor).getDestination(ActionContext({
-        '@comunica/bus-rdf-update-quads:destination': store,
+      return expect((<any> actor).getDestination(new ActionContext({
+        [KeysRdfUpdateQuads.destination.name]: store,
       })))
         .resolves.toMatchObject(new RdfJsQuadDestination(store));
     });
 
     it('should run without streams', async() => {
-      const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+      const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
       const quadStreamInsert = undefined;
       const quadStreamDelete = undefined;
       const { updateResult } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
@@ -122,7 +123,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
 
     describe('for insert and delete', () => {
       it('should run with insert and delete streams', async() => {
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         const quadStreamInsert = new ArrayIterator([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         ]);
@@ -139,7 +140,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
 
     describe('for graph deletion', () => {
       it('should run for default graph', async() => {
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         const deleteGraphs = <any> {
           graphs: DF.defaultGraph(),
         };
@@ -155,7 +156,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
         ]);
 
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         const deleteGraphs = <any> {
           graphs: [ DF.namedNode('g1') ],
         };
@@ -174,7 +175,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
         ]);
 
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         const deleteGraphs = <any> {
           graphs: 'NAMED',
         };
@@ -192,7 +193,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
         ]);
 
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         const deleteGraphs = <any> {
           graphs: 'ALL',
         };
@@ -204,7 +205,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
 
     describe('for graph creation', () => {
       it('should run for a non-existing graph with requireNonExistence', async() => {
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         const createGraphs = {
           graphs: [ DF.namedNode('g1') ],
           requireNonExistence: true,
@@ -214,7 +215,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       });
 
       it('should run for a non-existing graph without requireNonExistence', async() => {
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         const createGraphs = {
           graphs: [ DF.namedNode('g1') ],
           requireNonExistence: false,
@@ -224,7 +225,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       });
 
       it('should not run for an existing graph with requireNonExistence', async() => {
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         (<Store> store).addQuads([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
         ]);
@@ -237,7 +238,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       });
 
       it('should run for an existing graph without requireNonExistence', async() => {
-        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
         (<Store> store).addQuads([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
         ]);

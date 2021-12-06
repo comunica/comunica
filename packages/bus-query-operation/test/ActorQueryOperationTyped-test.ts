@@ -52,9 +52,9 @@ describe('ActorQueryOperationTyped', () => {
         logOperation: jest.fn(),
         toJson: jest.fn(),
       };
-      const context = ActionContext({
-        [KeysInitSparql.physicalQueryPlanLogger]: logger,
-        [KeysInitSparql.physicalQueryPlanNode]: parentNode,
+      const context = new ActionContext({
+        [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
+        [KeysInitSparql.physicalQueryPlanNode.name]: parentNode,
       });
       jest.spyOn(actor, 'runOperation');
 
@@ -70,10 +70,10 @@ describe('ActorQueryOperationTyped', () => {
         'actor',
         {},
       );
-      expect(actor.runOperation).toHaveBeenCalledWith(operation, ActionContext({
-        [KeysInitSparql.physicalQueryPlanLogger]: logger,
-        [KeysInitSparql.physicalQueryPlanNode]: operation,
-        [KeysQueryOperation.operation]: operation,
+      expect(actor.runOperation).toHaveBeenCalledWith(operation, new ActionContext({
+        [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
+        [KeysInitSparql.physicalQueryPlanNode.name]: operation,
+        [KeysQueryOperation.operation.name]: operation,
       }));
     });
   });
