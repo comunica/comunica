@@ -29,7 +29,7 @@ pushd ../../..
 cp --parents $(find packages -name 'comunica-browser.js*') $targetDir
 
 # If we're a release, update the major version folder
-if [ ! -z "$TRAVIS_TAG" ]; then
+if [ ! -z "$TRAVIS_TAG" ] || [[ "$GITHUB_REF" =~ refs/tags/* ]]; then
     MAJORVERSION=$(echo $VERSION | sed "s/^\([^\.]*\)\..*$/\1/")
 
     targetDir="rdfjs-comunica-browser/versions/${MAJORVERSION}"
