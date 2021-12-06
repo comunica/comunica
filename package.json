@@ -29,7 +29,7 @@
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^3.2.0",
     "babel-loader": "^8.1.0",
-    "eslint": "^7.9.0",
+    "eslint": "^8.0.0",
     "eslint-config-es": "3.28.30",
     "eslint-plugin-tsdoc": "^0.2.7",
     "eslint-plugin-import": "^2.22.0",
