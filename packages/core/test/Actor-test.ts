@@ -145,10 +145,6 @@ describe('Actor', () => {
   });
 
   describe('#getContextLogger', () => {
-    it('for a falsy context should return a falsy value', () => {
-      return expect(Actor.getContextLogger()).toBeFalsy();
-    });
-
     it('for a context without logger should return a falsy value', () => {
       return expect(Actor.getContextLogger(new ActionContext({}))).toBeFalsy();
     });

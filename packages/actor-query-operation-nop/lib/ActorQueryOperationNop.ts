@@ -16,11 +16,11 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
     super(args, 'nop');
   }
 
-  public async testOperation(operation: Algebra.Nop, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Nop, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operation: Algebra.Nop, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Nop, context: IActionContext): Promise<IQueryableResult> {
     return {
       bindingsStream: new SingletonIterator(BF.bindings({})),
       metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),

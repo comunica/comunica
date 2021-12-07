@@ -1,4 +1,5 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationJoinConnected } from '../lib/ActorOptimizeQueryOperationJoinConnected';
@@ -7,9 +8,11 @@ const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationJoinConnected', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('An ActorOptimizeQueryOperationJoinConnected instance', () => {
@@ -20,7 +23,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ operation: <any> undefined })).resolves.toBeTruthy();
+      return expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
@@ -31,7 +34,8 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
         factory.createPattern(DF.variable('s1x'), DF.namedNode('p1'), DF.variable('s2x')),
         factory.createPattern(DF.variable('s2x'), DF.namedNode('p2'), DF.variable('s3x')),
       ]);
-      return expect(actor.run({ operation })).resolves.toEqual({
+      return expect(actor.run({ operation, context })).resolves.toEqual({
+        context,
         operation: factory.createJoin([
           factory.createJoin([
             factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.variable('s2')),

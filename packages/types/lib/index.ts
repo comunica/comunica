@@ -310,12 +310,12 @@ export interface IQueryEngine {
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
    */
-  getResultMediaTypes: (context?: IActionContext) => Promise<Record<string, number>>;
+  getResultMediaTypes: (context: IActionContext) => Promise<Record<string, number>>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL result media type formats.
    */
-  getResultMediaTypeFormats: (context?: IActionContext) => Promise<Record<string, string>>;
+  getResultMediaTypeFormats: (context: IActionContext) => Promise<Record<string, string>>;
   /**
    * Convert a query result to a string stream based on a certain media type.
    * @param {IQueryableResult} queryResult A query result.

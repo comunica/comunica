@@ -22,11 +22,11 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     super(args, 'values');
   }
 
-  public async testOperation(operation: Algebra.Values, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Values, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operation: Algebra.Values, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryableResult> {
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings.map(x => BF.bindings(x)));
     const metadata = (): Promise<IMetadata> => Promise.resolve({

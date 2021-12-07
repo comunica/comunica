@@ -1,4 +1,4 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import { ActorRdfMetadataExtractRequestTime } from '../lib/ActorRdfMetadataExtractRequestTime';
 
 describe('ActorRdfMetadataExtractRequestTime', () => {
@@ -16,12 +16,13 @@ describe('ActorRdfMetadataExtractRequestTime', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: '', metadata: <any> undefined, requestTime: 0 })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: <any> undefined, requestTime: 0, context: new ActionContext() }))
+        .resolves.toBeTruthy();
     });
 
     it('should run and return the requestTime', () => {
-      return expect(actor.run({ url: '', metadata: <any> undefined, requestTime: 123 })).resolves
-        .toEqual({ metadata: { requestTime: 123 }});
+      return expect(actor.run({ url: '', metadata: <any> undefined, requestTime: 123, context: new ActionContext() }))
+        .resolves.toEqual({ metadata: { requestTime: 123 }});
     });
   });
 });

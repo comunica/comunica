@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import { ActionContext, Bus } from '@comunica/core';
+import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -15,9 +15,11 @@ const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeSimple', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorSparqlSerializeSimple module', () => {
@@ -61,11 +63,11 @@ describe('ActorSparqlSerializeSimple', () => {
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           simple: 1,
         }});
       });
@@ -73,44 +75,56 @@ describe('ActorSparqlSerializeSimple', () => {
 
     describe('for serializing', () => {
       it('should test on simple quads', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads', quadStream }, handleMediaType: 'simple' }))
+        return expect(actor.test({
+          handle: <any> { type: 'quads', quadStream, context },
+          handleMediaType: 'simple',
+          context,
+        }))
           .resolves.toBeTruthy();
       });
 
       it('should test on simple bindings', () => {
-        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'simple' }))
+        return expect(actor.test({
+          handle: <any> { type: 'bindings', bindingsStream, context },
+          handleMediaType: 'simple',
+          context,
+        }))
           .resolves.toBeTruthy();
       });
 
       it('should test on simple booleans', () => {
-        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
-          handleMediaType: 'simple' }))
+        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+          handleMediaType: 'simple',
+          context }))
           .resolves.toBeTruthy();
       });
 
       it('should test on simple update', () => {
-        return expect(actor.test({ handle: <any> { type: 'update', updateResult: Promise.resolve(true) },
-          handleMediaType: 'simple' }))
+        return expect(actor.test({ handle: <any> { type: 'update', updateResult: Promise.resolve(true), context },
+          handleMediaType: 'simple',
+          context }))
           .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test(
-          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/n-triples' },
-        ))
+        return expect(actor.test({
+          handle: <any> { type: 'quads', quadStream, context },
+          handleMediaType: 'application/n-triples',
+          context,
+        }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on unknown types', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'unknown' }, handleMediaType: 'simple' },
+          { handle: <any> { type: 'unknown', context }, handleMediaType: 'simple', context },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'simple' },
+          { handle: <any> { type: 'bindings', bindingsStream, context }, handleMediaType: 'simple', context },
         ))).handle.data)).toEqual(
           `k1: v1
 
@@ -122,7 +136,7 @@ k2: v2
 
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'simple' },
+          { handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'simple', context },
         ))).handle.data)).toEqual(
           `subject: http://example.org/a
 predicate: http://example.org/b
@@ -139,9 +153,11 @@ graph:
       });
 
       it('should run on a boolean result that resolves to true', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) }, handleMediaType: 'simple' },
-        )))
+        expect(await stringifyStream((<any> (await actor.run({
+          handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+          handleMediaType: 'simple',
+          context,
+        })))
           .handle.data)).toEqual(
           `true
 `,
@@ -149,9 +165,11 @@ graph:
       });
 
       it('should run on a boolean result that resolves to false', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false) }, handleMediaType: 'simple' },
-        )))
+        expect(await stringifyStream((<any> (await actor.run({
+          handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), context },
+          handleMediaType: 'simple',
+          context,
+        })))
           .handle.data)).toEqual(
           `false
 `,
@@ -159,9 +177,11 @@ graph:
       });
 
       it('should run on an update result that resolves to false', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'update', updateResult: Promise.resolve() }, handleMediaType: 'simple' },
-        )))
+        expect(await stringifyStream((<any> (await actor.run({
+          handle: <any> { type: 'update', updateResult: Promise.resolve(), context },
+          handleMediaType: 'simple',
+          context,
+        })))
           .handle.data)).toEqual(
           `ok
 `,
@@ -170,29 +190,33 @@ graph:
 
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: streamError },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'bindings', bindingsStream: streamError, context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: streamError },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'quads', quadStream: streamError, context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlSimple')) },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlSimple')), context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when the update is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'update', updateResult: Promise.reject(new Error('SparqlSimple')) },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'update', updateResult: Promise.reject(new Error('SparqlSimple')), context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
     });

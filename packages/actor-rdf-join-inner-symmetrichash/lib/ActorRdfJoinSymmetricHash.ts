@@ -43,6 +43,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
         metadata: async() => await this.constructResultMetadata(
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),
+          action.context,
         ),
       },
     };

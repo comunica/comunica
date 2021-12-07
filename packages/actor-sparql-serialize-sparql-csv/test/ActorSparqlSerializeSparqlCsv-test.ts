@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import { ActionContext, Bus } from '@comunica/core';
+import type { BindingsStream, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorSparqlSerializeSparqlCsv } from '..';
@@ -12,9 +12,11 @@ const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeSparqlCsv', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorSparqlSerializeSparqlCsv module', () => {
@@ -128,11 +130,11 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ context, mediaTypes: true })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ context, mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'text/csv': 1,
         }});
       });
@@ -140,32 +142,37 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
     describe('for serializing', () => {
       it('should not test on quad streams', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads' },
+        return expect(actor.test({ context,
+          handle: <any> { type: 'quads' },
           handleMediaType: 'text/csv' }))
           .rejects.toBeTruthy();
       });
 
       it('should test on text/csv bindings', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream, type: 'bindings' },
+        return expect(actor.test({ context,
+          handle: <any> { bindingsStream, type: 'bindings' },
           handleMediaType: 'text/csv' }))
           .resolves.toBeTruthy();
       });
 
       it('should not test on sparql-results+csv booleans', () => {
-        return expect(actor.test({ handle: <any> { booleanResult: Promise.resolve(true), type: 'boolean' },
+        return expect(actor.test({ context,
+          handle: <any> { booleanResult: Promise.resolve(true), type: 'boolean' },
           handleMediaType: 'text/csv' }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream, type: 'bindings' },
+        return expect(actor.test({ context,
+          handle: <any> { bindingsStream, type: 'bindings' },
           handleMediaType: 'application/n-triples' }))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream, type: 'bindings', variables },
+          { context,
+            handle: <any> { bindingsStream, type: 'bindings', variables },
             handleMediaType: 'text/csv' },
         ))).handle.data)).toEqual(
           `k1,k2\r
@@ -177,7 +184,8 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream, type: 'bindings', variables: []},
+          { context,
+            handle: <any> { bindingsStream, type: 'bindings', variables: []},
             handleMediaType: 'text/csv' },
         ))).handle.data)).toEqual(
           `\r
@@ -189,7 +197,8 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
       it('should run on a bindings stream with unbound variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: [ '?k3' ]},
+          { context,
+            handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: [ '?k3' ]},
             handleMediaType: 'text/csv' },
         ))).handle.data)).toEqual(
           `k3\r
@@ -203,7 +212,8 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
     it('should run on a bindings stream containing values with special characters', async() => {
       expect(await stringifyStream((<any> (await actor.run(
-        { handle: <any> { bindingsStream: bindingsStreamMixed, type: 'bindings', variables },
+        { context,
+          handle: <any> { bindingsStream: bindingsStreamMixed, type: 'bindings', variables },
           handleMediaType: 'text/csv' },
       ))).handle.data)).toEqual(
         `k1,k2\r
@@ -216,7 +226,8 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
     it('should run on an empty bindings stream', async() => {
       expect(await stringifyStream((<any> (await actor.run(
-        { handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables },
+        { context,
+          handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables },
           handleMediaType: 'text/csv' },
       ))).handle.data)).toEqual(
         `k1,k2\r
@@ -226,7 +237,8 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
     it('should emit an error on an errorring bindings stream', async() => {
       await expect(stringifyStream((<any> (await actor.run(
-        { handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+        { context,
+          handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
           handleMediaType: 'text/csv' },
       ))).handle.data)).rejects.toBeTruthy();
     });

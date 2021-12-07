@@ -1,5 +1,6 @@
 import { ActorSparqlSerialize } from '@comunica/bus-sparql-serialize';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorSparqlSerializeRdf } from '../lib/ActorSparqlSerializeRdf';
 
 describe('ActorSparqlSerializeRdf', () => {
@@ -29,6 +30,7 @@ describe('ActorSparqlSerializeRdf', () => {
     let mediatorRdfSerialize: any;
     let mediatorMediaTypeCombiner: any;
     let mediatorMediaTypeFormatCombiner: any;
+    let context: IActionContext;
 
     beforeEach(() => {
       mediatorRdfSerialize = {
@@ -53,39 +55,40 @@ describe('ActorSparqlSerializeRdf', () => {
       actor = new ActorSparqlSerializeRdf(
         { mediatorRdfSerialize, mediatorMediaTypeCombiner, mediatorMediaTypeFormatCombiner, name: 'actor', bus },
       );
+      context = new ActionContext();
     });
 
     describe('for serializing', () => {
       it('should not test for an invalid media type and a quad stream', () => {
         const handle: any = { quadStream: true, type: 'quads' };
-        return expect(actor.test({ handle, handleMediaType: 'abc' })).rejects.toBeTruthy();
+        return expect(actor.test({ handle, handleMediaType: 'abc', context })).rejects.toBeTruthy();
       });
 
       it('should not test for a valid media type and a bindings stream', () => {
         const handle: any = { bindingsStream: true, type: 'bindings' };
-        return expect(actor.test({ handle, handleMediaType: 'text/turtle' })).rejects.toBeTruthy();
+        return expect(actor.test({ handle, handleMediaType: 'text/turtle', context })).rejects.toBeTruthy();
       });
 
       it('should test for a valid media type and a quad stream', () => {
         const handle: any = { quadStream: true, type: 'quads' };
-        return expect(actor.test({ handle, handleMediaType: 'text/turtle' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle, handleMediaType: 'text/turtle', context })).resolves.toBeTruthy();
       });
 
       it('should run for a valid media type and a quad stream', () => {
         const handle: any = { quadStream: true, type: 'quads' };
-        return expect(actor.run({ handle, handleMediaType: 'text/turtle' })).resolves.toEqual(
-          { handle: { quadStream: true, type: 'quads' }},
+        return expect(actor.run({ handle, handleMediaType: 'text/turtle', context })).resolves.toEqual(
+          { handle: { quadStream: true, context }},
         );
       });
     });
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/ld+json': 1,
           'text/turtle': 1,
         }});
@@ -94,11 +97,11 @@ describe('ActorSparqlSerializeRdf', () => {
 
     describe('for getting media type formats', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypeFormats: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypeFormats: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypeFormats: true })).resolves.toEqual({ mediaTypeFormats: {
+        return expect(actor.run({ mediaTypeFormats: true, context })).resolves.toEqual({ mediaTypeFormats: {
           'application/ld+json': 'JSON-LD',
           'text/turtle': 'TURTLE',
         }});

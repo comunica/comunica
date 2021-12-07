@@ -3,17 +3,20 @@ import { KeysCore } from '@comunica/context-entries';
 import type { IAction, IActorOutput } from '@comunica/core';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
+import type { IActionContext } from '@comunica/types';
 import { MediatorJoinCoefficientsFixed } from '../lib/MediatorJoinCoefficientsFixed';
 
 describe('MediatorJoinCoefficientsFixed', () => {
   describe('An MediatorJoinCoefficientsFixed instance', () => {
     let bus: any;
+    let context: IActionContext;
     let mediator: MediatorJoinCoefficientsFixed;
     let debugLog: any;
     let action: IActionRdfJoin;
 
     beforeEach(() => {
       bus = new Bus({ name: 'bus' });
+      context = new ActionContext();
       mediator = new MediatorJoinCoefficientsFixed({
         name: 'mediator',
         bus,
@@ -101,19 +104,6 @@ Actor 3 rejects`);
       expect(await mediator.mediate(action)).toEqual({ id: 1 });
 
       expect(debugLog).not.toHaveBeenCalled();
-    });
-
-    it('should handle a single actor without context', async() => {
-      new DummyActor(1, {
-        iterations: 10,
-        persistedItems: 20,
-        blockingItems: 30,
-        requestTime: 50,
-      }, bus);
-
-      action.context = undefined;
-
-      expect(await mediator.mediate(action)).toEqual({ id: 1 });
     });
 
     it('should handle multiple single actors', async() => {

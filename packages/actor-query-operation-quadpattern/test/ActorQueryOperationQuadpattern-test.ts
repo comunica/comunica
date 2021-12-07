@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IQueryableResultBindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -15,9 +15,11 @@ const BF = new BindingsFactory();
 
 describe('ActorQueryOperationQuadpattern', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorQueryOperationQuadpattern module', () => {
@@ -166,7 +168,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       metadataContent = { cardinality: 3 };
       mediatorResolveQuadPattern = {
         mediate: jest.fn(
-          ({ context }) => {
+          () => {
             const data = new ArrayIterator([
               quad('s1', 'p1', 'o1', 'g1'),
               quad('s2', 'p2', 'o2', 'g2'),
@@ -181,7 +183,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should test on quad pattern operations', () => {
-      return expect(actor.test({ operation: <any>{ type: 'pattern' }})).resolves.toBeTruthy();
+      return expect(actor.test({ operation: <any>{ type: 'pattern' }, context })).resolves.toBeTruthy();
     });
 
     it('should not test on dummy operations', () => {
@@ -189,7 +191,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should not test on invalid operations', () => {
-      return expect(actor.test({ operation: <Algebra.Operation> {}})).rejects.toBeTruthy();
+      return expect(actor.test({ operation: <Algebra.Operation> {}, context })).rejects.toBeTruthy();
     });
 
     it('should get variables ?s, ?p, ?o, ?g from pattern ?s ?p ?o ?g', () => {
@@ -236,7 +238,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation }).then(async(output: IQueryableResultBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
@@ -260,7 +262,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation }).then(async(output: IQueryableResultBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
@@ -283,7 +285,6 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      const context = new ActionContext({});
       return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await output.metadata()).toBe(metadataContent);
@@ -307,7 +308,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
       mediatorResolveQuadPattern = {
         mediate: jest.fn(
-          ({ context }) => {
+          () => {
             const data = new ArrayIterator([
               quad('s1', 'p1', 'o1', 'g1'),
               quad('s2', 'p2', 'o2', 'g2'),
@@ -320,28 +321,13 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
 
-      return actor.run({ operation }).then(async(output: IQueryableResultBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
         expect(output.variables).toEqual([ '?v' ]);
         expect(await output.metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           BF.bindings({ '?v': DF.namedNode('w') }),
         ]);
       });
-    });
-
-    it('should accept a quad-pattern-level context without an operation context', async() => {
-      const operation: any = {
-        context: new ActionContext({ a: 'overridden' }),
-        graph: DF.namedNode('g'),
-        object: DF.variable('v'),
-        predicate: DF.variable('v'),
-        subject: DF.namedNode('s'),
-        type: 'pattern',
-      };
-
-      await actor.run({ operation });
-      expect(mediatorResolveQuadPattern.mediate)
-        .toHaveBeenCalledWith({ pattern: operation, context: operation.context });
     });
 
     it('should accept a quad-pattern-level context with an operation context', async() => {

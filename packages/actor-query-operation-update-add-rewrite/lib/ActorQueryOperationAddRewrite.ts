@@ -20,12 +20,12 @@ export class ActorQueryOperationAddRewrite extends ActorQueryOperationTypedMedia
     this.factory = new Factory();
   }
 
-  public async testOperation(operation: Algebra.Add, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Add, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public runOperation(operationOriginal: Algebra.Add, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public runOperation(operationOriginal: Algebra.Add, context: IActionContext): Promise<IQueryableResult> {
     // CONSTRUCT all quads from the source, and INSERT them into the destination
     const destination = operationOriginal.destination === 'DEFAULT' ? DF.defaultGraph() : operationOriginal.destination;
     const source = operationOriginal.source === 'DEFAULT' ? DF.defaultGraph() : operationOriginal.source;

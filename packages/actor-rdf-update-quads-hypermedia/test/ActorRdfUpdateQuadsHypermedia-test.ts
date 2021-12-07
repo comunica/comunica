@@ -5,6 +5,7 @@ import { ActorRdfUpdateQuadsHypermedia } from '../lib/ActorRdfUpdateQuadsHyperme
 
 describe('ActorRdfUpdateQuadsHypermedia', () => {
   let bus: any;
+  let context: IActionContext;
   let mediatorRdfDereference: any;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
@@ -15,6 +16,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('An ActorRdfUpdateQuadsHypermedia instance', () => {
@@ -73,10 +75,6 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should not test without a context', () => {
-        return expect(actor.test({})).rejects.toBeTruthy();
-      });
-
       it('should not test without a destination', () => {
         return expect(actor.test({ context: new ActionContext({}) })).rejects.toBeTruthy();
       });
@@ -90,7 +88,6 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
     });
 
     describe('getDestination', () => {
-      let context: IActionContext;
       beforeEach(() => {
         context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       });

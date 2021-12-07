@@ -1,7 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
 const arrayifyStream = require('arrayify-stream');
 
@@ -19,12 +20,14 @@ describe('ActorRdfJoinNone', () => {
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinNone;
+    let context: IActionContext;
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinNone({ name: 'actor', bus, mediatorJoinSelectivity });
+      context = new ActionContext();
     });
 
     describe('test', () => {
@@ -40,6 +43,7 @@ describe('ActorRdfJoinNone', () => {
               operation: <any> {},
             },
           ],
+          context,
         })).rejects.toThrowError('Actor actor can only join zero entries');
       });
 
@@ -47,6 +51,7 @@ describe('ActorRdfJoinNone', () => {
         expect(await actor.test({
           type: 'inner',
           entries: [],
+          context,
         })).toEqual({
           iterations: 0,
           persistedItems: 0,
@@ -60,6 +65,7 @@ describe('ActorRdfJoinNone', () => {
       it('should return a stream with one empty bindings', async() => {
         const output = await actor.run(<any> {
           entries: [],
+          context,
         });
         expect(output.variables).toEqual([]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ BF.bindings({}) ]);

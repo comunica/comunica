@@ -21,7 +21,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     this.window = args.window ?? Number.POSITIVE_INFINITY;
   }
 
-  public async testOperation(operation: Algebra.OrderBy, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
@@ -30,7 +30,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     return true;
   }
 
-  public async runOperation(operation: Algebra.OrderBy, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.OrderBy, context: IActionContext):
   Promise<IQueryableResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);

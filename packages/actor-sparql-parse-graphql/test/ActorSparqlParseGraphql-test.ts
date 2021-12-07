@@ -1,5 +1,6 @@
 import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorSparqlParseGraphql } from '..';
 
 describe('ActorSparqlParseGraphql', () => {
@@ -26,26 +27,28 @@ describe('ActorSparqlParseGraphql', () => {
 
   describe('An ActorSparqlParseGraphql instance', () => {
     let actor: ActorSparqlParseGraphql;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorSparqlParseGraphql({ name: 'actor', bus });
+      context = new ActionContext();
     });
 
     it('should not test on the sparql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'sparql' })).rejects.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: 'sparql', context })).rejects.toBeTruthy();
     });
 
     it('should not test on no format', () => {
-      return expect(actor.test({ query: 'a' })).rejects.toBeTruthy();
+      return expect(actor.test({ query: 'a', context })).rejects.toBeTruthy();
     });
 
     it('should test on the graphql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'graphql' })).resolves.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: 'graphql', context })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
       const query = '{ label }';
-      const context = new ActionContext({
+      context = new ActionContext({
         '@context': {
           label: { '@id': 'http://www.w3.org/2000/01/rdf-schema#label' },
         },
@@ -75,32 +78,7 @@ describe('ActorSparqlParseGraphql', () => {
 
     it('should run with empty @context that has a required URI', () => {
       const query = '{ label }';
-      const context = new ActionContext({});
-      return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves.toMatchObject({
-        operation: {
-          input: { patterns: [
-            {
-              graph: { value: '' },
-              object: { value: 'label' },
-              predicate: { value: 'label' },
-              subject: { termType: 'Variable' },
-              type: 'pattern',
-            },
-          ],
-          type: 'bgp' },
-          type: 'project',
-          variables: [
-            {
-              value: 'label',
-            },
-          ],
-        },
-      });
-    });
-
-    it('should run without context that has a required URI', () => {
-      const query = '{ label }';
-      const context = undefined;
+      context = new ActionContext({});
       return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves.toMatchObject({
         operation: {
           input: { patterns: [

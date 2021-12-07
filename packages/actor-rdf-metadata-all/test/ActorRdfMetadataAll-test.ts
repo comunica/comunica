@@ -1,6 +1,7 @@
 import type { Readable } from 'stream';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ActorRdfMetadataAll } from '../lib/ActorRdfMetadataAll';
 const arrayifyStream = require('arrayify-stream');
@@ -9,9 +10,11 @@ const stream = require('streamify-array');
 
 describe('ActorRdfMetadataAll', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfMetadataAll module', () => {
@@ -55,15 +58,15 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should test on a triple stream', () => {
-      return expect(actor.test({ url: '', quads: input, triples: true })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', quads: input, triples: true, context })).resolves.toBeTruthy();
     });
 
     it('should test on a quad stream', () => {
-      return expect(actor.test({ url: '', quads: input })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', quads: input, context })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return actor.run({ url: 'o1?param', quads: input })
+      return actor.run({ url: 'o1?param', quads: input, context })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -85,7 +88,7 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should run and delegate errors', () => {
-      return actor.run({ url: '', quads: input })
+      return actor.run({ url: '', quads: input, context })
         .then(output => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
           output.data.on('data', () => {
@@ -102,7 +105,7 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should run and not re-attach listeners after calling .read again', () => {
-      return actor.run({ url: 'o1?param', quads: inputDifferent })
+      return actor.run({ url: 'o1?param', quads: inputDifferent, context })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           expect(data).toEqual([

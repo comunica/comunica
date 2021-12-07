@@ -16,12 +16,12 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
     super(args, 'create');
   }
 
-  public async testOperation(operation: Algebra.Create, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Create, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(operation: Algebra.Create, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Create, context: IActionContext):
   Promise<IQueryableResult> {
     // Delegate to update-quads bus
     const { updateResult } = await this.mediatorUpdateQuads.mediate({

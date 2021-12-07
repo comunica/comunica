@@ -3,7 +3,6 @@ import type { IActionContext } from '@comunica/types';
 import { DataSourceUtils } from '..';
 
 describe('DataSourceUtils', () => {
-  const contextUndefined = undefined;
   const contextWithSource: IActionContext = new ActionContext(
     { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'a-type', value: 'a-value' }},
   );
@@ -26,11 +25,6 @@ describe('DataSourceUtils', () => {
     it('should extract single source when source is set', () => {
       const source = DataSourceUtils.getSingleSource(contextWithSource);
       return expect(source).resolves.toEqual({ type: 'a-type', value: 'a-value' });
-    });
-
-    it('should return undefined when context undefined', () => {
-      const source = DataSourceUtils.getSingleSource(contextUndefined);
-      return expect(source).resolves.toEqual(undefined);
     });
 
     it('should return the first source when one sources is defined in the list of sources', () => {
@@ -60,11 +54,6 @@ describe('DataSourceUtils', () => {
       return expect(sourceType).resolves.toEqual(undefined);
     });
 
-    it('should return undefined when no source', () => {
-      const sourceType = DataSourceUtils.getSingleSourceType(contextUndefined);
-      return expect(sourceType).resolves.toEqual(undefined);
-    });
-
     it('should return type when only one source in the list of sources', () => {
       const sourceType = DataSourceUtils.getSingleSourceType(contextWithSingleMultipleSources);
       return expect(sourceType).resolves.toEqual('a-type');
@@ -89,11 +78,6 @@ describe('DataSourceUtils', () => {
 
     it('should return false when non singular source', () => {
       const sourceType = DataSourceUtils.singleSourceHasType(contextWithMultipleSources, 'a-type');
-      return expect(sourceType).resolves.toEqual(false);
-    });
-
-    it('should return false when no source', () => {
-      const sourceType = DataSourceUtils.singleSourceHasType(contextUndefined, 'a-type');
       return expect(sourceType).resolves.toEqual(false);
     });
   });

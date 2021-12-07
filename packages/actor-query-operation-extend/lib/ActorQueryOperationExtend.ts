@@ -18,14 +18,14 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     super(args, 'extend');
   }
 
-  public async testOperation(operation: Algebra.Extend, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported opperations
     const _ = Boolean(new AsyncEvaluator(operation.expression,
       ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation)));
     return true;
   }
 
-  public async runOperation(operation: Algebra.Extend, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Extend, context: IActionContext):
   Promise<IQueryableResult> {
     const { expression, input, variable } = operation;
 

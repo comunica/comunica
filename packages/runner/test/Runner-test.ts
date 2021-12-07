@@ -1,13 +1,15 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus } from '@comunica/core';
-
+import { ActionContext, Actor, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { Runner } from '../lib/Runner';
 
 describe('Runner', () => {
   let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The Runner module', () => {
@@ -84,15 +86,15 @@ describe('Runner', () => {
     });
 
     it('should delegate \'init\' actions to actors on the bus', async() => {
-      await runner.run({ argv: [ 'a', 'b' ], env: { c: 'd' }, stdin: <any> undefined });
+      await runner.run({ argv: [ 'a', 'b' ], env: { c: 'd' }, stdin: <any> undefined, context });
 
       expect(actor1.test).toHaveBeenCalledTimes(1);
       expect(actor2.test).toHaveBeenCalledTimes(1);
       expect(actor1.run).toHaveBeenCalledTimes(1);
       expect(actor2.run).toHaveBeenCalledTimes(1);
 
-      expect(actor1.run).toHaveBeenCalledWith({ argv: [ 'a', 'b' ], env: { c: 'd' }});
-      expect(actor2.run).toHaveBeenCalledWith({ argv: [ 'a', 'b' ], env: { c: 'd' }});
+      expect(actor1.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }});
+      expect(actor2.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }});
     });
 
     it('should be initializable', () => {

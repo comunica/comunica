@@ -1,12 +1,15 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus } from '@comunica/core';
+import { ActionContext, Actor, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { MediatorRace } from '..';
 
 describe('MediatorRace', () => {
   let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The MediatorRace module', () => {
@@ -33,7 +36,7 @@ describe('MediatorRace', () => {
       });
 
       it('should mediate to the earliest resolver', () => {
-        return expect(mediator.mediate({})).resolves.toEqual({ field: 100 });
+        return expect(mediator.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
@@ -50,7 +53,7 @@ describe('MediatorRace', () => {
       });
 
       it('should reject when mediated', () => {
-        return expect(mediator.mediate({})).rejects.toBeTruthy();
+        return expect(mediator.mediate({ context })).rejects.toBeTruthy();
       });
     });
 
@@ -70,7 +73,7 @@ describe('MediatorRace', () => {
       });
 
       it('should mediate to the earliest non-rejecting resolver', () => {
-        return expect(mediator.mediate({})).resolves.toEqual({ field: 10 });
+        return expect(mediator.mediate({ context })).resolves.toEqual({ field: 10 });
       });
     });
   });

@@ -54,11 +54,11 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     };
   }
 
-  public async testOperation(operation: Algebra.Union, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Union, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operation: Algebra.Union, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Union, context: IActionContext):
   Promise<IQueryableResult> {
     const outputs: IQueryableResultBindings[] = (await Promise.all(operation.input
       .map(subOperation => this.mediatorQueryOperation.mediate({ operation: subOperation, context }))))

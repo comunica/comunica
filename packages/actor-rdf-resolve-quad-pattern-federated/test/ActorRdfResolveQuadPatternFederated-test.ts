@@ -1,5 +1,6 @@
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfResolveQuadPatternFederated } from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
@@ -8,11 +9,13 @@ const squad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternFederated', () => {
   let bus: any;
+  let context: IActionContext;
   let mediatorResolveQuadPattern: any;
   let skipEmptyPatterns: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
     mediatorResolveQuadPattern = {
       mediate() {
         const data = new ArrayIterator([
@@ -77,13 +80,9 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         ) })).rejects.toBeTruthy();
     });
 
-    it('should not test without context', () => {
-      return expect(actor.test({ pattern: <any> null, context: undefined })).rejects.toBeTruthy();
-    });
-
     it('should run for default graph', () => {
       const pattern = squad('?s', 'p', 'o');
-      const context = new ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -105,7 +104,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
 
     it('should run for variable graph', () => {
       const pattern = squad('?s', 'p', 'o', '?g');
-      const context = new ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -122,7 +121,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
 
     it('should run when only metadata is called', () => {
       const pattern = squad('?s', 'p', 'o', '?g');
-      const context = new ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -136,7 +135,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
 
     it('should run when only data is called', () => {
       const pattern = squad('?s', 'p', 'o');
-      const context = new ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },

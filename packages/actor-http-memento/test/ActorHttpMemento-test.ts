@@ -2,14 +2,17 @@ import type { IActionHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorHttpMemento } from '../lib/ActorHttpMemento';
 import 'cross-fetch/polyfill';
 
 describe('ActorHttpMemento', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorHttpMemento module', () => {
@@ -130,7 +133,7 @@ describe('ActorHttpMemento', () => {
     });
 
     it('should not test without datetime', () => {
-      const action: IActionHttp = { input: new Request('https://www.google.com/') };
+      const action: IActionHttp = { input: new Request('https://www.google.com/'), context };
       return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
@@ -204,6 +207,7 @@ describe('ActorHttpMemento', () => {
 
     it('should proxy request when memento', async() => {
       const action: IActionHttp = {
+        context,
         init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() }) },
         input: new Request('http://example.com/m1/http%3A%2F%2Fexample.com%2For'),
       };

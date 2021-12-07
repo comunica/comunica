@@ -11,7 +11,7 @@ export class ActorQueryOperationPathInv extends ActorAbstractPath {
     super(args, Algebra.types.INV);
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
     const predicate = <Algebra.Inv> operation.predicate;
     const invPath = ActorAbstractPath.FACTORY
       .createPath(operation.object, predicate.path, operation.subject, operation.graph);

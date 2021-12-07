@@ -39,7 +39,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
   Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
   IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
   cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-  supportedTypes: Record<string, number>, context: IActionContext | undefined, baseIRI: string,
+  supportedTypes: Record<string, number>, context: IActionContext, baseIRI: string,
   headers: Headers | undefined) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
@@ -107,7 +107,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
         // Send all collected text to parser
         const parseAction = {
           context: this.context,
-          handle: { baseIRI: this.baseIRI, input: textStream, headers: this.headers },
+          handle: { baseIRI: this.baseIRI, input: textStream, headers: this.headers, context: this.context },
           handleMediaType: this.handleMediaType,
         };
         this.mediatorRdfParseHandle.mediate(parseAction)

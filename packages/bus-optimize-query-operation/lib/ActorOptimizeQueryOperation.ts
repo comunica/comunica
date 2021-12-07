@@ -30,7 +30,7 @@ export interface IActionOptimizeQueryOperation extends IAction {
 
 export interface IActorOptimizeQueryOperationOutput extends IActorOutput {
   operation: Algebra.Operation;
-  context?: IActionContext;
+  context: IActionContext;
 }
 
 export type IActorOptimizeQueryOperationArgs = IActorArgs<

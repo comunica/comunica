@@ -1,4 +1,5 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationBgpToJoin } from '../lib/ActorOptimizeQueryOperationBgpToJoin';
@@ -15,13 +16,15 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
 
   describe('An ActorOptimizeQueryOperationBgpToJoin instance', () => {
     let actor: ActorOptimizeQueryOperationBgpToJoin;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorOptimizeQueryOperationBgpToJoin({ name: 'actor', bus });
+      context = new ActionContext();
     });
 
     it('should test', () => {
-      return expect(actor.test({ operation: <any> undefined })).resolves.toBeTruthy();
+      return expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
     });
 
     it('should run for a bgp', () => {
@@ -33,7 +36,7 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
-      return expect(actor.run({ operation })).resolves.toMatchObject({ operation: operationOut });
+      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation: operationOut });
     });
 
     it('should run for an inner bgp', () => {
@@ -51,7 +54,7 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
         ]),
         [],
       );
-      return expect(actor.run({ operation })).resolves.toMatchObject({ operation: operationOut });
+      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation: operationOut });
     });
   });
 });

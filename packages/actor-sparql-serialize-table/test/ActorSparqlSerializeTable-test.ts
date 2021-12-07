@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import { ActionContext, Bus } from '@comunica/core';
+import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,9 +14,11 @@ const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeTable', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorSparqlSerializeTable module', () => {
@@ -64,11 +66,11 @@ describe('ActorSparqlSerializeTable', () => {
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           table: 1,
         }});
       });
@@ -77,18 +79,20 @@ describe('ActorSparqlSerializeTable', () => {
     describe('for serializing', () => {
       it('should test on table', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
-          handleMediaType: 'table' })).resolves.toBeTruthy();
+          handleMediaType: 'table',
+          context })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
-          handleMediaType: 'application/n-triples' }))
+          handleMediaType: 'application/n-triples',
+          context }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on unknown types', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'unknown' }, handleMediaType: 'table' },
+          { handle: <any> { type: 'unknown' }, handleMediaType: 'table', context },
         ))
           .rejects.toBeTruthy();
       });
@@ -96,7 +100,8 @@ describe('ActorSparqlSerializeTable', () => {
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream, variables },
-            handleMediaType: 'table' },
+            handleMediaType: 'table',
+            context },
         ))).handle.data)).toEqual(
           `k1         k2        
 ---------------------
@@ -109,7 +114,8 @@ v1
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream },
-            handleMediaType: 'table' },
+            handleMediaType: 'table',
+            context },
         ))).handle.data)).toEqual(
           `subject    predicate  object     graph     
 -------------------------------------------
@@ -122,14 +128,16 @@ http://ex… http://ex… http://ex…
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream: streamError, variables },
-            handleMediaType: 'application/json' },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream: streamError, variables },
-            handleMediaType: 'application/json' },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
     });

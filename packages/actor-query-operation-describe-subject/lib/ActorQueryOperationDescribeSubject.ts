@@ -19,11 +19,11 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     super(args, 'describe');
   }
 
-  public async testOperation(operation: Algebra.Describe, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Describe, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operationOriginal: Algebra.Describe, context: IActionContext | undefined):
+  public async runOperation(operationOriginal: Algebra.Describe, context: IActionContext):
   Promise<IQueryableResult> {
     // Create separate construct queries for all non-variable terms
     const operations: Algebra.Construct[] = operationOriginal.terms

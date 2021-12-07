@@ -1,12 +1,15 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus, Mediator } from '@comunica/core';
+import { ActionContext, Actor, Bus, Mediator } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { MediatorNumber } from '..';
 
 describe('MediatorNumber', () => {
   let bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The MediatorNumber module', () => {
@@ -59,11 +62,11 @@ describe('MediatorNumber', () => {
       });
 
       it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
       it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 100 });
+        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
@@ -73,22 +76,22 @@ describe('MediatorNumber', () => {
       });
 
       it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: undefined });
+        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: undefined });
       });
 
       it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: undefined });
+        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: undefined });
       });
     });
 
     describe('without actors', () => {
       it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).rejects
+        return expect(mediatorMin.mediate({ context })).rejects
           .toThrow(new Error('No actors are able to reply to a message in the bus bus'));
       });
 
       it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).rejects
+        return expect(mediatorMax.mediate({ context })).rejects
           .toThrow(new Error('No actors are able to reply to a message in the bus bus'));
       });
     });
@@ -105,11 +108,11 @@ describe('MediatorNumber', () => {
       });
 
       it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
       it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 100 });
+        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
@@ -122,11 +125,11 @@ describe('MediatorNumber', () => {
       });
 
       it('should mediate to the first value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
       it('should mediate to the first value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 1 });
+        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 1 });
       });
     });
 
@@ -148,11 +151,11 @@ describe('MediatorNumber', () => {
       });
 
       it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
       it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 100 });
+        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
@@ -172,7 +175,7 @@ describe('MediatorNumber', () => {
       });
 
       it('should not mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).rejects.toThrow(new Error(
+        return expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error(
           'All actors rejected their test in mediatorMin\n' +
           'abc\n' +
           'abc',
@@ -180,7 +183,7 @@ describe('MediatorNumber', () => {
       });
 
       it('should not mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).rejects.toThrow(new Error(
+        return expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error(
           'All actors rejected their test in mediatorMax\n' +
           'abc\n' +
           'abc',
@@ -204,11 +207,11 @@ describe('MediatorNumber', () => {
       });
 
       it('should not mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).rejects.toThrow(new Error('abc'));
+        return expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error('abc'));
       });
 
       it('should not mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).rejects.toThrow(new Error('abc'));
+        return expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error('abc'));
       });
     });
   });

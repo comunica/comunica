@@ -2,6 +2,7 @@ import type { Readable } from 'stream';
 import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
@@ -11,6 +12,7 @@ const streamifyString = require('streamify-string');
 describe('ActorRdfParseJsonLd', () => {
   let bus: any;
   let mediatorHttp: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -38,6 +40,7 @@ describe('ActorRdfParseJsonLd', () => {
         });
       },
     };
+    context = new ActionContext();
   });
 
   describe('The ActorRdfParseJsonLd module', () => {
@@ -164,23 +167,25 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should test on application/json', () => {
-        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/json' }))
+        return expect(actor
+          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/json', context }))
           .resolves.toBeTruthy();
       });
 
       it('should test on application/ld+json', () => {
-        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' }))
+        return expect(actor
+          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/ld+json', context }))
           .resolves.toBeTruthy();
       });
 
       it('should test on bla+json', () => {
-        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'bla+json' }))
+        return expect(actor.test({ handle: { input, baseIRI: '', context }, handleMediaType: 'bla+json', context }))
           .resolves.toBeTruthy();
       });
 
       it('should not test on bla+json when processing html', () => {
         return expect(actor.test({
-          handle: { input, baseIRI: '' },
+          handle: { input, baseIRI: '', context },
           handleMediaType: 'bla+json',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
         })).rejects.toBeTruthy();
@@ -188,19 +193,20 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should test on application/ld+json when processing html', () => {
         return expect(actor.test({
-          handle: { input, baseIRI: '' },
+          handle: { input, baseIRI: '', context },
           handleMediaType: 'application/ld+json',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
         })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/n-triples' }))
+        return expect(actor
+          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/n-triples', context }))
           .rejects.toBeTruthy();
       });
 
       it('should run', () => {
-        return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' })
+        return actor.run({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/ld+json', context })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
@@ -208,7 +214,11 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should run for graphs', () => {
-        return actor.run({ handle: { input: inputGraphs, baseIRI: '' }, handleMediaType: 'application/ld+json' })
+        return actor.run({
+          handle: { input: inputGraphs, baseIRI: '', context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', 'http://example.org/g0'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"@nl', 'http://example.org/g0'),
@@ -218,7 +228,11 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should run for a remote context', () => {
-        return actor.run({ handle: { input: inputRemoteContext, baseIRI: '' }, handleMediaType: 'application/ld+json' })
+        return actor.run({
+          handle: { input: inputRemoteContext, baseIRI: '', context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
@@ -226,9 +240,11 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should error for an invalid remote context', () => {
-        return actor.run(
-          { handle: { input: inputRemoteContextErr, baseIRI: '' }, handleMediaType: 'application/ld+json' },
-        )
+        return actor.run({
+          handle: { input: inputRemoteContextErr, baseIRI: '', context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
           .then(async(output: any) => expect(arrayifyStream(output.handle.quads)).rejects
             .toThrow(new Error('Failed to load remote context http://myschema.org/error: some error')));
       });
@@ -237,9 +253,11 @@ describe('ActorRdfParseJsonLd', () => {
         const headers = new Headers({
           Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"',
         });
-        return actor.run(
-          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'application/json' },
-        )
+        return actor.run({
+          handle: { input: inputLinkHeader, baseIRI: '', headers, context },
+          handleMediaType: 'application/json',
+          context,
+        })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://www.example.org/', 'http://example.org/term', '"value"'),
           ]));
@@ -250,7 +268,7 @@ describe('ActorRdfParseJsonLd', () => {
           Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"',
         });
         return actor.run(
-          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' },
+          { handle: { input: inputLinkHeader, baseIRI: '', headers, context }, handleMediaType: 'bla+json', context },
         )
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://www.example.org/', 'http://example.org/term', '"value"'),
@@ -260,7 +278,7 @@ describe('ActorRdfParseJsonLd', () => {
       it('should error on a JSON doc with a context link header without type', () => {
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"' });
         return actor.run(
-          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' },
+          { handle: { input: inputLinkHeader, baseIRI: '', headers, context }, handleMediaType: 'bla+json', context },
         )
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://www.example.org/', 'http://example.org/term', '"value"'),
@@ -269,9 +287,11 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should error on a JSON doc without a context link header', () => {
         const headers = new Headers({});
-        return expect(actor.run(
-          { handle: { input: inputLinkHeader, baseIRI: 'IRI', headers }, handleMediaType: 'application/json' },
-        )).rejects
+        return expect(actor.run({
+          handle: { input: inputLinkHeader, baseIRI: 'IRI', headers, context },
+          handleMediaType: 'application/json',
+          context,
+        })).rejects
           .toThrow(new Error('Missing context link header for media type application/json on IRI'));
       });
 
@@ -280,7 +300,7 @@ describe('ActorRdfParseJsonLd', () => {
           Link: '<http://example.org/error>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"',
         });
         return actor.run(
-          { handle: { input, baseIRI: '', headers }, handleMediaType: 'application/ld+json' },
+          { handle: { input, baseIRI: '', headers, context }, handleMediaType: 'application/ld+json', context },
         )
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
@@ -292,9 +312,11 @@ describe('ActorRdfParseJsonLd', () => {
         const headers = new Headers({ Link:
           '<http://example.org/valid1>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json",' +
           '<http://example.org/valid2>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
-        return expect(actor.run(
-          { handle: { input: inputLinkHeader, baseIRI: 'mult', headers }, handleMediaType: 'application/json' },
-        ))
+        return expect(actor.run({
+          handle: { input: inputLinkHeader, baseIRI: 'mult', headers, context },
+          handleMediaType: 'application/json',
+          context,
+        }))
           .rejects.toThrow(new Error('Multiple JSON-LD context link headers were found on mult'));
       });
 
@@ -303,7 +325,7 @@ describe('ActorRdfParseJsonLd', () => {
           load: jest.fn(() => ({ '@context': { '@vocab': 'http://custom.org/' }})),
         };
         return actor.run({
-          handle: { input: inputRemoteContext, baseIRI: '' },
+          handle: { input: inputRemoteContext, baseIRI: '', context },
           handleMediaType: 'application/ld+json',
           context: new ActionContext({ [KeysRdfParseJsonLd.documentLoader.name]: documentLoader }),
         })
@@ -315,15 +337,16 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run with skipped properties', () => {
         return actor.run({
-          handle: { input: inputSkipped, baseIRI: '' },
+          handle: { input: inputSkipped, baseIRI: '', context },
           handleMediaType: 'application/ld+json',
+          context,
         })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([]));
       });
 
       it('should error on skipped properties with strict values', () => {
         return actor.run({
-          handle: { input: inputSkipped, baseIRI: '' },
+          handle: { input: inputSkipped, baseIRI: '', context },
           handleMediaType: 'application/ld+json',
           context: new ActionContext({ [KeysRdfParseJsonLd.strictValues.name]: true }),
         })
@@ -334,11 +357,11 @@ describe('ActorRdfParseJsonLd', () => {
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/json': 1,
           'application/ld+json': 1,
         }});
@@ -354,7 +377,7 @@ describe('ActorRdfParseJsonLd', () => {
           mediatorHttp,
           name: 'actor',
           priorityScale: 0.5 });
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/json': 0.5,
           'application/ld+json': 0.5,
         }});
@@ -370,14 +393,18 @@ describe('ActorRdfParseJsonLd', () => {
           mediatorHttp,
           name: 'actor',
           priorityScale: 0 });
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/json': 0,
           'application/ld+json': 0,
         }});
       });
 
       it('should not have duplicate results on multiple _read calls', () => {
-        return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' })
+        return actor.run({
+          handle: { input, baseIRI: '', context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
           .then(async(output: any) => {
             output.handle.quads._read();
             output.handle.quads._read();

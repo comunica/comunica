@@ -18,13 +18,13 @@ export class RdfSourceSparql implements IQuadSource {
   protected static readonly FACTORY: Factory = new Factory();
 
   private readonly url: string;
-  private readonly context: IActionContext | undefined;
+  private readonly context: IActionContext;
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
 
-  public constructor(url: string, context: IActionContext | undefined,
+  public constructor(url: string, context: IActionContext,
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>, forceHttpGet: boolean) {
     this.url = url;

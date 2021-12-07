@@ -15,14 +15,14 @@ import { termToString } from 'rdf-string-ttl';
  */
 export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   private readonly url: string;
-  private readonly context: IActionContext | undefined;
+  private readonly context: IActionContext;
 
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 
   public constructor(
     url: string,
-    context: IActionContext | undefined,
+    context: IActionContext,
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>,
   ) {

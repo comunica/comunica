@@ -50,8 +50,8 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {IDataSource[]} The array of sources or undefined.
    */
-  protected getContextSources(context?: IActionContext): DataSources | undefined {
-    return context ? context.get(KeysRdfResolveQuadPattern.sources) : undefined;
+  protected getContextSources(context: IActionContext): DataSources | undefined {
+    return context.get(KeysRdfResolveQuadPattern.sources);
   }
 
   /**
@@ -59,7 +59,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {IDataSource} The source or undefined.
    */
-  protected getContextSource(context?: IActionContext): IDataSource | undefined {
+  protected getContextSource(context: IActionContext): IDataSource | undefined {
     return context ? context.get(KeysRdfResolveQuadPattern.source) : undefined;
   }
 
@@ -88,7 +88,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSource(context?: IActionContext): boolean {
+  protected hasContextSingleSource(context: IActionContext): boolean {
     const source = this.getContextSource(context);
     return Boolean(source && (isDataSourceRawType(source) || source.value));
   }
@@ -99,7 +99,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSourceOfType(requiredType: string, context?: IActionContext): boolean {
+  protected hasContextSingleSourceOfType(requiredType: string, context: IActionContext): boolean {
     const source = this.getContextSource(context);
     return Boolean(source && getDataSourceType(source) === requiredType && getDataSourceValue(source));
   }

@@ -40,7 +40,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
     if (!action.init.headers.has('user-agent')) {
       action.init.headers.append('user-agent', this.userAgent);
     }
-    const authString: string | undefined = action.context?.get(KeysHttp.auth);
+    const authString: string | undefined = action.context.get(KeysHttp.auth);
     if (authString) {
       action.init.headers.append('Authorization', `Basic ${Buffer.from(authString).toString('base64')}`);
     }
@@ -54,7 +54,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
     }));
 
     // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
-    if (action.init && action.init.headers && 'append' in action.init.headers && action.context?.has(KeysHttp.fetch)) {
+    if (action.init && action.init.headers && 'append' in action.init.headers && action.context.has(KeysHttp.fetch)) {
       action.init.headers = ActorHttp.headersToHash(action.init.headers);
     }
 

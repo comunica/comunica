@@ -108,7 +108,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
   }
 
-  protected static getBaseExpressionContext(context?: IActionContext): IBaseExpressionContext {
+  protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
     if (context) {
       const now: Date | undefined = context.get(KeysInitSparql.queryTimestamp);
       const baseIRI: string | undefined = context.get(KeysInitSparql.baseIRI);
@@ -153,7 +153,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getAsyncExpressionContext(context?: IActionContext, mediatorQueryOperation?: Mediator<
+  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation?: Mediator<
   Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
   IActionQueryOperation, IActorTest, IQueryableResult>): IAsyncExpressionContext {
     const expressionContext: IAsyncExpressionContext = {
@@ -203,7 +203,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * Throw an error if the context contains the readOnly flag.
    * @param context An action context.
    */
-  public static throwOnReadOnly(context?: IActionContext): void {
+  public static throwOnReadOnly(context: IActionContext): void {
     if (context && context.get(KeysQueryOperation.readOnly)) {
       throw new Error(`Attempted a write operation in read-only mode`);
     }

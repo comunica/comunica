@@ -39,7 +39,11 @@ class Dummy extends ActorRdfJoin {
   public async getOutput(action: IActionRdfJoin) {
     const result = <any> { dummy: 'dummy' };
 
-    result.metadata = async() => this.constructResultMetadata(action.entries, await Dummy.getMetadatas(action.entries));
+    result.metadata = async() => this.constructResultMetadata(
+      action.entries,
+      await Dummy.getMetadatas(action.entries),
+      action.context,
+    );
 
     return { result, physicalPlanMetadata: { meta: true }};
   }
@@ -89,6 +93,7 @@ describe('ActorRdfJoin', () => {
           operation: <any>{},
         },
       ],
+      context: new ActionContext(),
     };
   });
 
@@ -314,7 +319,7 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should return partial metadata if it is fully valid', async() => {
-      expect(await instance.constructResultMetadata([], [], {
+      expect(await instance.constructResultMetadata([], [], action.context, {
         cardinality: 10,
         canContainUndefs: true,
         pageSize: 100,
@@ -329,21 +334,21 @@ describe('ActorRdfJoin', () => {
       expect(await instance.constructResultMetadata([], [
         { cardinality: 10, canContainUndefs: false },
         { cardinality: 2, canContainUndefs: true },
-      ], {})).toEqual({
+      ], action.context, {})).toEqual({
         cardinality: 20 * 0.8,
         canContainUndefs: true,
       });
       expect(await instance.constructResultMetadata([], [
         { cardinality: 10, canContainUndefs: true },
         { cardinality: 2, canContainUndefs: true },
-      ], {})).toEqual({
+      ], action.context, {})).toEqual({
         cardinality: 20 * 0.8,
         canContainUndefs: true,
       });
       expect(await instance.constructResultMetadata([], [
         { cardinality: 10, canContainUndefs: false },
         { cardinality: 2, canContainUndefs: false },
-      ], {})).toEqual({
+      ], action.context, {})).toEqual({
         cardinality: 20 * 0.8,
         canContainUndefs: false,
       });

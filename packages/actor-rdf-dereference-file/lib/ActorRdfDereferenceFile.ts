@@ -43,6 +43,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     const parseAction: IActionRdfParseHandle = {
       context: action.context,
       handle: {
+        context: action.context,
         baseIRI: action.url,
         input: fs.createReadStream(action.url.startsWith('file://') ? new URL(action.url) : action.url),
       },

@@ -1,6 +1,7 @@
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinSingle } from '../lib/ActorRdfJoinSingle';
 
 describe('ActorRdfJoinSingle', () => {
@@ -15,12 +16,14 @@ describe('ActorRdfJoinSingle', () => {
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinSingle;
+    let context: IActionContext;
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinSingle({ name: 'actor', bus, mediatorJoinSelectivity });
+      context = new ActionContext();
     });
 
     describe('test', () => {
@@ -28,6 +31,7 @@ describe('ActorRdfJoinSingle', () => {
         await expect(actor.test({
           type: 'inner',
           entries: [],
+          context,
         })).rejects.toThrowError('Actor actor can only join a single entry');
       });
 
@@ -50,6 +54,7 @@ describe('ActorRdfJoinSingle', () => {
               operation: <any> {},
             },
           ],
+          context,
         })).rejects.toThrowError('Actor actor can only join a single entry');
       });
 
@@ -65,6 +70,7 @@ describe('ActorRdfJoinSingle', () => {
               operation: <any> {},
             },
           ],
+          context,
         })).toEqual({
           iterations: 0,
           persistedItems: 0,
@@ -88,6 +94,7 @@ describe('ActorRdfJoinSingle', () => {
               operation: <any> {},
             },
           ],
+          context,
         });
         expect(output).toBe(entryOutput);
         expect(await output.metadata()).toEqual({ cardinality: 10 });

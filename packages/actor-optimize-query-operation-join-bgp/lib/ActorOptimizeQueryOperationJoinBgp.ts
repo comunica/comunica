@@ -28,6 +28,6 @@ export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperat
         };
       },
     });
-    return { operation };
+    return { operation, context: action.context };
   }
 }

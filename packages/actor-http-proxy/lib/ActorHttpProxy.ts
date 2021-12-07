@@ -15,9 +15,6 @@ export class ActorHttpProxy extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
-    if (!action.context) {
-      throw new Error(`Actor ${this.name} could not find a context.`);
-    }
     const proxyHandler: IProxyHandler | undefined = action.context.get(KeysHttpProxy.httpProxyHandler);
     if (!proxyHandler) {
       throw new Error(`Actor ${this.name} could not find a proxy handler in the context.`);
@@ -30,9 +27,6 @@ export class ActorHttpProxy extends ActorHttp {
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     const requestedUrl = typeof action.input === 'string' ? action.input : action.input.url;
-    if (!action.context) {
-      throw new Error('Illegal state: missing context');
-    }
     const proxyHandler: IProxyHandler = action.context.get(KeysHttpProxy.httpProxyHandler)!;
 
     // Send a request for the modified request

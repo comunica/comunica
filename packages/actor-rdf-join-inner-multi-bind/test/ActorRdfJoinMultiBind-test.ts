@@ -89,6 +89,7 @@ describe('ActorRdfJoinMultiBind', () => {
                 operation: <any>{},
               },
             ],
+            context: new ActionContext(),
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -127,6 +128,7 @@ describe('ActorRdfJoinMultiBind', () => {
                 operation: <any>{},
               },
             ],
+            context: new ActionContext(),
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -161,6 +163,7 @@ describe('ActorRdfJoinMultiBind', () => {
                 operation: <any>{},
               },
             ],
+            context: new ActionContext(),
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -189,6 +192,7 @@ describe('ActorRdfJoinMultiBind', () => {
                 operation: <any> {},
               },
             ],
+            context: new ActionContext(),
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -217,6 +221,7 @@ describe('ActorRdfJoinMultiBind', () => {
                 operation: <any> { type: Algebra.types.GROUP },
               },
             ],
+            context: new ActionContext(),
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -576,6 +581,7 @@ describe('ActorRdfJoinMultiBind', () => {
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
           ],
+          context,
         };
         const { result } = await actor.getOutput(action);
 

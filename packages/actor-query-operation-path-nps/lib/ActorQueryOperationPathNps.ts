@@ -15,7 +15,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     super(args, Algebra.types.NPS);
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
     const predicate = <Algebra.Nps> operation.predicate;
     const blank = this.generateVariable(operation);
     const blankName = termToString(blank);

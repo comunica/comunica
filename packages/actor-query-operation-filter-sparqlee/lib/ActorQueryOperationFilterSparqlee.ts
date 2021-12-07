@@ -16,14 +16,14 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     super(args, 'filter');
   }
 
-  public async testOperation(operation: Algebra.Filter, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     const _ = new AsyncEvaluator(operation.expression, config);
     return true;
   }
 
-  public async runOperation(operation: Algebra.Filter, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Filter, context: IActionContext):
   Promise<IQueryableResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);

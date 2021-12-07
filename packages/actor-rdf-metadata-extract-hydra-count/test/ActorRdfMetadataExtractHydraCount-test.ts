@@ -1,6 +1,7 @@
 import type { Readable } from 'stream';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractHydraCount } from '../lib/ActorRdfMetadataExtractHydraCount';
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -33,6 +34,7 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     let actor: ActorRdfMetadataExtractHydraCount;
     let input: Readable;
     let inputNone: Readable;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractHydraCount({ name: 'actor', bus, predicates: [ 'px', 'py' ]});
@@ -45,19 +47,20 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
       inputNone = stream([
         quad('s1', 'p1', 'o1', ''),
       ]);
+      context = new ActionContext();
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: '', metadata: input, requestTime: 0 })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
     });
 
     it('should run on a stream where count is given', () => {
-      return expect(actor.run({ url: '', metadata: input, requestTime: 0 })).resolves
+      return expect(actor.run({ url: '', metadata: input, requestTime: 0, context })).resolves
         .toEqual({ metadata: { cardinality: 12_345 }});
     });
 
     it('should run on a stream where count is not given', () => {
-      return expect(actor.run({ url: '', metadata: inputNone, requestTime: 0 })).resolves
+      return expect(actor.run({ url: '', metadata: inputNone, requestTime: 0, context })).resolves
         .toEqual({ metadata: { cardinality: Number.POSITIVE_INFINITY }});
     });
   });

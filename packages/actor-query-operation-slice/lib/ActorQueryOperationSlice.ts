@@ -20,11 +20,11 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     super(args, 'slice');
   }
 
-  public async testOperation(operation: Algebra.Slice, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Slice, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operation: Algebra.Slice, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Slice, context: IActionContext):
   Promise<IQueryableResult> {
     // Resolve the input
     const output: IQueryableResult = await this.mediatorQueryOperation

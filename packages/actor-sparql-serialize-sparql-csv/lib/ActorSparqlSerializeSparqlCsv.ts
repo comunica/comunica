@@ -61,7 +61,7 @@ export class ActorSparqlSerializeSparqlCsv extends ActorSparqlSerializeFixedMedi
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType?: string, context?: IActionContext):
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string | undefined, context: IActionContext):
   Promise<IActorSparqlSerializeOutput> {
     const bindingsAction = <IQueryableResultBindings> action;
 

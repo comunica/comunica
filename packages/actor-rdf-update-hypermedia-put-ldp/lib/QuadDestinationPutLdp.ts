@@ -23,7 +23,7 @@ import { Headers } from 'cross-fetch';
  */
 export class QuadDestinationPutLdp implements IQuadDestination {
   private readonly url: string;
-  private readonly context: IActionContext | undefined;
+  private readonly context: IActionContext;
   private readonly mediaTypes: string[];
 
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
@@ -41,7 +41,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
 
   public constructor(
     url: string,
-    context: IActionContext | undefined,
+    context: IActionContext,
     mediaTypes: string[],
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>,
@@ -84,7 +84,8 @@ export class QuadDestinationPutLdp implements IQuadDestination {
 
     // Serialize quads
     const { handle: { data }} = await this.mediatorRdfSerialize.mediate({
-      handle: { quadStream: quads },
+      context: this.context,
+      handle: { quadStream: quads, context: this.context },
       handleMediaType: mediaType,
     });
 

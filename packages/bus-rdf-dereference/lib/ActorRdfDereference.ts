@@ -29,7 +29,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @return {boolean} If hard errors are enabled.
    */
   protected isHardError(action: IActionRdfDereference): boolean {
-    return !action.context || !action.context.get(KeysInitSparql.lenient);
+    return !action.context.get(KeysInitSparql.lenient);
   }
 
   /**

@@ -5,6 +5,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
+import type { IActionContext } from '@comunica/types';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 import { mocked } from 'ts-jest/utils';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
@@ -20,9 +21,11 @@ const streamifyString = require('streamify-string');
 
 describe('ActorHttpNodeFetch', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
     jest.clearAllMocks();
   });
 
@@ -63,17 +66,17 @@ describe('ActorHttpNodeFetch', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }})).resolves
+      return expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
         .toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should run on an existing URI', () => {
-      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/' }})).resolves
+      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
         .toMatchObject({ status: 200 });
     });
 
     it('should run and pass a custom agent to node-fetch', async() => {
-      await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
 
       expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
 
@@ -86,7 +89,7 @@ describe('ActorHttpNodeFetch', () => {
     it('for custom agent options should run and pass a custom agent to node-fetch', async() => {
       actor = new ActorHttpNodeFetch({ name: 'actor', bus, agentOptions: { keepAlive: true, maxSockets: 5 }});
 
-      await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
 
       expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
 
@@ -97,25 +100,25 @@ describe('ActorHttpNodeFetch', () => {
     });
 
     it('should run without body response', () => {
-      return expect(actor.run({ input: <Request> { url: 'NOBODY' }})).resolves
+      return expect(actor.run({ input: <Request> { url: 'NOBODY' }, context })).resolves
         .toMatchObject({ status: 404 });
     });
 
     it('should run on an non-existing URI', () => {
-      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/notfound' }})).resolves
+      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/notfound' }, context })).resolves
         .toMatchObject({ status: 404 });
     });
 
     it('should run for an input object and log', async() => {
       const spy = jest.spyOn(actor, <any> 'logInfo');
-      await actor.run({ input: 'https://www.google.com/' });
-      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/', expect.anything());
+      await actor.run({ input: 'https://www.google.com/', context });
+      expect(spy).toHaveBeenCalledWith(context, 'Requesting https://www.google.com/', expect.anything());
     });
 
     it('should run for an input string and log', async() => {
       const spy = jest.spyOn(actor, <any> 'logInfo');
-      await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
-      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/', expect.anything());
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
+      expect(spy).toHaveBeenCalledWith(context, 'Requesting https://www.google.com/', expect.anything());
     });
 
     it('should run without KeysHttp.includeCredentials', async() => {
@@ -256,6 +259,7 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ 'user-agent': 'b' }) },
+        context,
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
         { headers: new Headers({ 'user-agent': 'b' }), agent: expect.anything() });
@@ -266,13 +270,14 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({}) },
+        context,
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
         { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything() });
     });
 
     it('should run and expose body.cancel', async() => {
-      const response = await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
+      const response = await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
       expect((<any> response.body).destroy).not.toHaveBeenCalled();
       expect(response.body!.cancel).toBeTruthy();
 
@@ -285,7 +290,7 @@ describe('ActorHttpNodeFetch', () => {
     it('should run with a Node.js body', async() => {
       const spy = jest.spyOn(global, 'fetch');
       const body = <any> new Readable();
-      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }});
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }, context });
 
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },
@@ -300,7 +305,7 @@ describe('ActorHttpNodeFetch', () => {
     it('should run with a Web stream body', async() => {
       const spy = jest.spyOn(global, 'fetch');
       const body = ActorHttp.toWebReadableStream(streamifyString('a'));
-      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }});
+      await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }, context });
 
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },

@@ -1,4 +1,5 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -8,9 +9,11 @@ const DF = new DataFactory();
 
 describe('ActorRdfJoinSelectivityVariableCounting', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('An ActorRdfJoinSelectivityVariableCounting instance', () => {
@@ -619,6 +622,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
       it('should handle zero entries', async() => {
         expect(await actor.run({
           entries: [],
+          context,
         })).toEqual({ selectivity: 1 });
       });
 
@@ -635,6 +639,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
               ),
             },
           ],
+          context,
         })).toEqual({ selectivity: 1 });
       });
 
@@ -690,6 +695,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
           output: <any> {},
           operation,
         })),
+        context,
       });
       return selectivity.toFixed(3);
     }

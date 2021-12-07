@@ -3,8 +3,8 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings } from '@comunica/types';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryableResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinSymmetricHash } from '../lib/ActorRdfJoinSymmetricHash';
@@ -21,9 +21,11 @@ function bindingsToString(b: Bindings): string {
 
 describe('ActorRdfJoinSymmetricHash', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfJoinSymmetricHash module', () => {
@@ -75,6 +77,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             operation: <any> {},
           },
         ],
+        context,
       };
     });
 
@@ -106,6 +109,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             operation: <any> {},
           },
         ],
+        context,
       };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
@@ -134,6 +138,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             operation: <any> {},
           },
         ],
+        context,
       };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
@@ -162,6 +167,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             operation: <any> {},
           },
         ],
+        context,
       };
       return expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));

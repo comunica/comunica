@@ -33,7 +33,7 @@ export class RdfSourceQpf implements IQuadSource {
   private readonly objectUri: string;
   private readonly graphUri?: string;
   private readonly defaultGraph?: RDF.NamedNode;
-  private readonly context?: IActionContext;
+  private readonly context: IActionContext;
   private readonly cachedQuads: Record<string, AsyncIterator<RDF.Quad>>;
 
   public constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -43,7 +43,7 @@ export class RdfSourceQpf implements IQuadSource {
   mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
   IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
   subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
-  metadata: Record<string, any>, context: IActionContext | undefined, initialQuads?: RDF.Stream) {
+  metadata: Record<string, any>, context: IActionContext, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
     this.mediatorRdfDereference = mediatorRdfDereference;

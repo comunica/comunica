@@ -1,5 +1,5 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus, Mediator } from '@comunica/core';
+import { ActionContext, Actor, Bus, Mediator } from '@comunica/core';
 import { MediatorCombineUnion } from '..';
 
 describe('MediatorCombineUnion', () => {
@@ -35,7 +35,7 @@ describe('MediatorCombineUnion', () => {
 
     describe('without actors', () => {
       it('should mediate', () => {
-        return expect(mediator.mediate({})).resolves.toEqual({ field: {}});
+        return expect(mediator.mediate({ context: new ActionContext() })).resolves.toEqual({ field: {}});
       });
     });
 
@@ -49,7 +49,7 @@ describe('MediatorCombineUnion', () => {
       });
 
       it('should mediate', () => {
-        return expect(mediator.mediate({})).resolves
+        return expect(mediator.mediate({ context: new ActionContext() })).resolves
           .toEqual({ field: { a: '10', b: { a: '1' }, c: [ 3, 2, 1 ], d: '123', e: { b: '1' }}});
       });
     });

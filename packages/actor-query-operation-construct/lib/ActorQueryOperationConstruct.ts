@@ -31,11 +31,11 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       .apply([], patterns.map(pattern => getVariables(getTerms(pattern)))));
   }
 
-  public async testOperation(operation: Algebra.Construct, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Construct, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext | undefined):
+  public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext):
   Promise<IQueryableResult> {
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(operationOriginal.template);

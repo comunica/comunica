@@ -49,7 +49,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {ActionContext} context An optional context.
    * @return {Logger} The logger or undefined.
    */
-  public static getContextLogger(context?: IActionContext): Logger | undefined {
+  public static getContextLogger(context: IActionContext): Logger | undefined {
     return context && context.get(KeysCore.log);
   }
 
@@ -110,48 +110,48 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 
   /* Proxy methods for the (optional) logger that is defined in the context */
 
-  protected getDefaultLogData(context: IActionContext | undefined, data?: (() => any)): any {
+  protected getDefaultLogData(context: IActionContext, data?: (() => any)): any {
     const dataActual = data ? data() : {};
     dataActual.actor = this.name;
     return dataActual;
   }
 
-  protected logTrace(context: IActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logTrace(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.trace(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logDebug(context: IActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logDebug(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.debug(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logInfo(context: IActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logInfo(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.info(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logWarn(context: IActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logWarn(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.warn(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logError(context: IActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logError(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.error(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logFatal(context: IActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logFatal(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.fatal(message, this.getDefaultLogData(context, data));
@@ -179,11 +179,10 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
  * Data interface for the type of action.
  */
 export interface IAction {
-
   /**
-   * The optional input context that is passed through by actors.
+   * The input context that is passed through by actors.
    */
-  context?: IActionContext;
+  context: IActionContext;
 }
 
 /**

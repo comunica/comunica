@@ -20,7 +20,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     super(args, 'group');
   }
 
-  public async testOperation(operation: Algebra.Group, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = new AsyncEvaluator(aggregate.expression, ActorQueryOperation.getAsyncExpressionContext(context));
@@ -28,7 +28,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     return true;
   }
 
-  public async runOperation(operation: Algebra.Group, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Group, context: IActionContext):
   Promise<IQueryableResult> {
     // Get result stream for the input query
     const { input, aggregates } = operation;

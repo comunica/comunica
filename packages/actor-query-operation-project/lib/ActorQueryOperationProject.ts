@@ -23,11 +23,11 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     super(args, 'project');
   }
 
-  public async testOperation(operation: Algebra.Project, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Project, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operation: Algebra.Project, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Project, context: IActionContext):
   Promise<IQueryableResult> {
     // Resolve the input
     const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(

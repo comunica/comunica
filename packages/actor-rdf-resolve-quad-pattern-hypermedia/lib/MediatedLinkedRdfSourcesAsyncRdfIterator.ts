@@ -48,7 +48,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   public getLinkQueue(): Promise<ILinkQueue> {
     if (!this.linkQueue) {
       this.linkQueue = this.mediatorRdfResolveHypermediaLinksQueue
-        .mediate({ firstUrl: this.firstUrl })
+        .mediate({ firstUrl: this.firstUrl, context: this.context })
         .then(result => result.linkQueue);
     }
     return this.linkQueue;

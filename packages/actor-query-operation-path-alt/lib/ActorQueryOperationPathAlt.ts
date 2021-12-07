@@ -37,7 +37,7 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     };
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
     const predicate = <Algebra.Alt> operation.predicate;
 
     const subOperations: IQueryableResultBindings[] = (await Promise.all(predicate.input

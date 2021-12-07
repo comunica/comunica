@@ -58,6 +58,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         metadata: async() => await this.constructResultMetadata(
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),
+          action.context,
           { canContainUndefs: true },
         ),
       },
@@ -78,8 +79,10 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     }
 
     // Determine selectivity of join
-    const selectivity = (await this.mediatorJoinSelectivity.mediate({ entries: action.entries })).selectivity *
-      this.selectivityModifier;
+    const selectivity = (await this.mediatorJoinSelectivity.mediate({
+      entries: action.entries,
+      context: action.context,
+    })).selectivity * this.selectivityModifier;
 
     return {
       iterations: metadatas[0].cardinality * metadatas[1].cardinality * selectivity,

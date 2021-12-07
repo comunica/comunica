@@ -37,7 +37,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
   public readonly endpointFetcher: SparqlEndpointFetcher;
 
-  protected lastContext?: IActionContext;
+  protected lastContext: IActionContext;
 
   public constructor(args: IActorQueryOperationSparqlEndpointArgs) {
     super(args);
@@ -74,7 +74,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
   public async run(action: IActionQueryOperation): Promise<IQueryableResult> {
     const source = await DataSourceUtils.getSingleSource(action.context);
-    if (!action.context || !source) {
+    if (!source) {
       throw new Error('Illegal state: undefined sparql endpoint source.');
     }
     const endpoint: string = <string> getDataSourceValue(source);

@@ -1,5 +1,6 @@
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractHydraControls } from '../lib/ActorRdfMetadataExtractHydraControls';
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -8,9 +9,11 @@ const HYDRA = 'http://www.w3.org/ns/hydra/core#';
 
 describe('ActorRdfMetadataExtractHydraControls', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfMetadataExtractHydraControls module', () => {
@@ -380,7 +383,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: '', metadata: stream([]), requestTime: 0 })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: stream([]), requestTime: 0, context })).resolves.toBeTruthy();
     });
 
     it('should run on valid controls', () => {
@@ -400,7 +403,8 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         quad('mypage', 'somethingelse', 'somevalue'),
       ]),
       url: 'mypage',
-      requestTime: 0 })).resolves.toMatchObject({ metadata: {
+      requestTime: 0,
+      context })).resolves.toMatchObject({ metadata: {
         first: 'first',
         last: 'last',
         next: 'next',

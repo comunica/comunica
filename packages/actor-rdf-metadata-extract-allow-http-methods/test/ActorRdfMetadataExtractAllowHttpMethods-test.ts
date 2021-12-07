@@ -1,5 +1,6 @@
 import type { Readable } from 'stream';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractAllowHttpMethods } from '../lib/ActorRdfMetadataExtractAllowHttpMethods';
 
 describe('ActorRdfMetadataExtractAllowHttpMethods', () => {
@@ -12,36 +13,39 @@ describe('ActorRdfMetadataExtractAllowHttpMethods', () => {
   describe('An ActorRdfMetadataExtractAllowHttpMethods instance', () => {
     let actor: ActorRdfMetadataExtractAllowHttpMethods;
     let input: Readable;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractAllowHttpMethods({ name: 'actor', bus });
       input = <any> {};
+      context = new ActionContext();
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0 })).resolves.toBeTruthy();
+      return expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
+        .resolves.toBeTruthy();
     });
 
     it('should run without empty headers', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0 }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with empty headers', () => {
       const headers = {};
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0 }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with allow header with one value', () => {
       const headers = { allow: 'abc' };
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0 }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { allowHttpMethods: [ 'abc' ]}});
     });
 
     it('should run with allow header with multiple values', () => {
       const headers = { allow: 'abc, def,ghi' };
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0 }))
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { allowHttpMethods: [ 'abc', 'def', 'ghi' ]}});
     });
   });

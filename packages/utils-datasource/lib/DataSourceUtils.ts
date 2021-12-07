@@ -13,17 +13,16 @@ export const DataSourceUtils = {
    * @param {IActionContext} context A context, can be null.
    * @return {Promise<IDataSource>} A promise resolving to the single datasource or undefined.
    */
-  async getSingleSource(context?: IActionContext): Promise<IDataSource | undefined> {
-    if (context && context.has(KeysRdfResolveQuadPattern.source)) {
+  async getSingleSource(context: IActionContext): Promise<IDataSource | undefined> {
+    if (context.has(KeysRdfResolveQuadPattern.source)) {
       // If the single source is set
       return context.get(KeysRdfResolveQuadPattern.source);
     }
-    if (context) {
-      // If multiple sources are set
-      const datasources: DataSources | undefined = context.get(KeysRdfResolveQuadPattern.sources);
-      if (datasources && datasources.length === 1) {
-        return datasources[0];
-      }
+
+    // If multiple sources are set
+    const datasources: DataSources | undefined = context.get(KeysRdfResolveQuadPattern.sources);
+    if (datasources && datasources.length === 1) {
+      return datasources[0];
     }
   },
 
@@ -32,7 +31,7 @@ export const DataSourceUtils = {
    * @param {ActionContext} context A context, can be undefined.
    * @return {Promise<string>} A promise resolving to the type of the source, can be undefined if source is undefined.
    */
-  async getSingleSourceType(context?: IActionContext): Promise<string | undefined> {
+  async getSingleSourceType(context: IActionContext): Promise<string | undefined> {
     const source = await this.getSingleSource(context);
     return source ? getDataSourceType(source) : undefined;
   },
@@ -43,7 +42,7 @@ export const DataSourceUtils = {
    * @param {string} requiredType The required source type name.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  async singleSourceHasType(context: IActionContext | undefined, requiredType: string): Promise<boolean> {
+  async singleSourceHasType(context: IActionContext, requiredType: string): Promise<boolean> {
     const actualType = await this.getSingleSourceType(context);
     return actualType ? actualType === requiredType : false;
   },
@@ -53,7 +52,7 @@ export const DataSourceUtils = {
    * @param {ActionContext} context A context, can be null.
    * @return {Promise<IDataDestination>} A promise resolving to the single datadestination or undefined.
    */
-  async getSingleDestination(context?: IActionContext): Promise<IDataDestination | undefined> {
+  async getSingleDestination(context: IActionContext): Promise<IDataDestination | undefined> {
     if (context && context.has(KeysRdfUpdateQuads.destination)) {
       // If the single destination is set
       return context.get(KeysRdfUpdateQuads.destination);

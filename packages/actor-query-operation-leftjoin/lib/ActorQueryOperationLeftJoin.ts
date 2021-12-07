@@ -16,11 +16,11 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     super(args, 'leftjoin');
   }
 
-  public async testOperation(operation: Algebra.LeftJoin, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.LeftJoin, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operationOriginal: Algebra.LeftJoin, context: IActionContext | undefined):
+  public async runOperation(operationOriginal: Algebra.LeftJoin, context: IActionContext):
   Promise<IQueryableResult> {
     // Delegate to join bus
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input

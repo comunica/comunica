@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import { ActionContext, Bus } from '@comunica/core';
+import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -15,9 +15,11 @@ const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeSparqlXml', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorSparqlSerializeSparqlXml module', () => {
@@ -103,11 +105,11 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ context, mediaTypes: true })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ context, mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'sparql-results+xml': 1,
         }});
       });
@@ -116,21 +118,22 @@ describe('ActorSparqlSerializeSparqlXml', () => {
     describe('for serializing', () => {
       it('should not test on quad streams', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'sparql-results+xml' },
+          { context, handle: <any> { type: 'quads', quadStream }, handleMediaType: 'sparql-results+xml' },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should test on sparql-results+xml bindings', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'sparql-results+xml' },
+          { context, handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'sparql-results+xml' },
         ))
           .resolves.toBeTruthy();
       });
 
       it('should test on sparql-results+xml booleans', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
+          { context,
+            handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
             handleMediaType: 'sparql-results+xml' },
         ))
           .resolves.toBeTruthy();
@@ -138,14 +141,14 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should not test on N-Triples', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/n-triples' },
+          { context, handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/n-triples' },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream, variables }, handleMediaType: 'xml' },
+          { context, handle: <any> { type: 'bindings', bindingsStream, variables }, handleMediaType: 'xml' },
         )))
           .handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
@@ -173,7 +176,7 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream, variables: []}, handleMediaType: 'xml' },
+          { context, handle: <any> { type: 'bindings', bindingsStream, variables: []}, handleMediaType: 'xml' },
         )))
           .handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
@@ -197,7 +200,8 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should run on a bindings stream with unbound variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamPartial, variables: []},
+          { context,
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStreamPartial, variables: []},
             handleMediaType: 'xml' },
         )))
           .handle.data)).toEqual(
@@ -224,14 +228,16 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should emit an error on an errorring bindings stream', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+          { context,
+            handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
             handleMediaType: 'json' },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should run on a boolean result that resolves to true', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: []},
+          { context,
+            handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: []},
             handleMediaType: 'simple' },
         ))).handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
@@ -244,7 +250,8 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should run on a boolean result that resolves to false', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: []},
+          { context,
+            handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: []},
             handleMediaType: 'simple' },
         ))).handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
@@ -257,7 +264,8 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should emit an error on a boolean result that rejects', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: []},
+          { context,
+            handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: []},
             handleMediaType: 'simple' },
         ))).handle.data)).rejects.toBeTruthy();
       });

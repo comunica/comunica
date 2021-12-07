@@ -48,8 +48,8 @@ export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, I
    * @param {ActionContext} context An optional context.
    * @return {IDataDestination} The destination or undefined.
    */
-  protected getContextDestination(context?: IActionContext): IDataDestination | undefined {
-    return context ? context.get(KeysRdfUpdateQuads.destination) : undefined;
+  protected getContextDestination(context: IActionContext): IDataDestination | undefined {
+    return context.get(KeysRdfUpdateQuads.destination);
   }
 
   /**

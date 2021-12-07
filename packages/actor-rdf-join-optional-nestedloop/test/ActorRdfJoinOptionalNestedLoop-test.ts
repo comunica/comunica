@@ -2,7 +2,8 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNestedLoop';
@@ -13,9 +14,11 @@ const BF = new BindingsFactory();
 
 describe('ActorRdfJoinOptionalNestedLoop', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('An ActorRdfJoinOptionalNestedLoop instance', () => {
@@ -36,6 +39,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         await expect(actor.test({
           type: 'optional',
           entries: [],
+          context,
         })).rejects.toThrow('actor requires at least two join entries.');
       });
 
@@ -43,6 +47,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         await expect(actor.test({
           type: 'optional',
           entries: <any> [{}],
+          context,
         })).rejects.toThrow('actor requires at least two join entries.');
       });
 
@@ -50,6 +55,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         await expect(actor.test({
           type: 'optional',
           entries: <any> [{}, {}, {}],
+          context,
         })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
       });
 
@@ -57,6 +63,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         await expect(actor.test({
           type: 'inner',
           entries: <any> [{}, {}],
+          context,
         })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
@@ -77,6 +84,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
               },
             },
           ],
+          context,
         })).toEqual({
           iterations: 16,
           blockingItems: 0,
@@ -118,6 +126,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
               operation: <any> {},
             },
           ],
+          context,
         };
         const result = await actor.run(action);
 

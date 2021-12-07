@@ -17,12 +17,12 @@ export class ActorQueryOperationMoveRewrite extends ActorQueryOperationTypedMedi
     this.factory = new Factory();
   }
 
-  public async testOperation(operation: Algebra.Move, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Move, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public runOperation(operationOriginal: Algebra.Move, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public runOperation(operationOriginal: Algebra.Move, context: IActionContext): Promise<IQueryableResult> {
     // No-op if source === destination
     if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
         operationOriginal.destination === operationOriginal.source) ||

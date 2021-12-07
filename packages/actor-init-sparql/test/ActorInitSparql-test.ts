@@ -11,11 +11,10 @@ import {
 } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type {
-  IPhysicalQueryPlanLogger,
+import type { IPhysicalQueryPlanLogger,
   IQueryableResultBindingsEnhanced,
   IQueryableResultQuadsEnhanced,
-} from '@comunica/types';
+  IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
@@ -43,6 +42,7 @@ describe('ActorInitSparql', () => {
   let mediatorSparqlParse: any;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
+  let context: IActionContext;
 
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-sparql:initialBindings',
@@ -76,6 +76,7 @@ describe('ActorInitSparql', () => {
     mediatorHttpInvalidate = {
       mediate: (arg: any) => Promise.resolve(true),
     };
+    context = new ActionContext();
   });
 
   describe('The ActorInitSparql module', () => {
@@ -106,7 +107,7 @@ describe('ActorInitSparql', () => {
     const sourceSparqlTaggedAuth = 'sparql@http://username:passwd@example.org/';
     const sourceOther = 'other@http://example.org/';
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
-    const context: any = JSON.stringify({ hypermedia: sourceHypermedia });
+    const contextString: any = JSON.stringify({ hypermedia: sourceHypermedia });
     let input: Readable;
     let actor: ActorInitSparql;
     let actorFixedQuery: ActorInitSparql;
@@ -202,7 +203,7 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
-          context },
+          context: contextString },
       );
       actorFixedQueryAndContext = new ActorInitSparql(
         { bus,
@@ -219,7 +220,7 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
           queryString,
-          context },
+          context: contextString },
       );
     });
 
@@ -227,7 +228,7 @@ describe('ActorInitSparql', () => {
       it('should call the HTTP invalidate mediator', async() => {
         jest.spyOn(mediatorHttpInvalidate, 'mediate');
         await actor.invalidateHttpCache('a');
-        expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ url: 'a' });
+        expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ context, url: 'a' });
       });
     });
 
@@ -363,7 +364,7 @@ describe('ActorInitSparql', () => {
 
     describe('test', () => {
       it('should test', () => {
-        return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBeTruthy();
+        return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough(), context })).resolves.toBeTruthy();
       });
     });
 
@@ -373,6 +374,7 @@ describe('ActorInitSparql', () => {
           argv: [],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
         expect(stderr).toContain('At least one source and query must be provided');
@@ -383,6 +385,7 @@ describe('ActorInitSparql', () => {
           argv: [ '-v' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('Comunica Init Actor');
         expect(stderr).toContain('dev');
@@ -393,6 +396,7 @@ describe('ActorInitSparql', () => {
           argv: [ '--version' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('Comunica Init Actor');
         expect(stderr).toContain('dev');
@@ -404,6 +408,7 @@ describe('ActorInitSparql', () => {
           argv: [ '-v' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('Comunica Init Actor');
         expect(stderr).not.toContain('dev');
@@ -414,6 +419,7 @@ describe('ActorInitSparql', () => {
           argv: [ '-h' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
         expect(stderr).toContain('At least one source and query must be provided');
@@ -424,6 +430,7 @@ describe('ActorInitSparql', () => {
           argv: [ '--help' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
         expect(stderr).toContain('At least one source and query must be provided');
@@ -434,6 +441,7 @@ describe('ActorInitSparql', () => {
           argv: [ '--listformats' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain('mediaTypes');
       });
@@ -444,6 +452,7 @@ describe('ActorInitSparql', () => {
           argv: [ sourceHypermedia, queryString, '-t', 'testtype' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(expect.anything(), 'testtype', expect.anything());
@@ -455,6 +464,7 @@ describe('ActorInitSparql', () => {
           argv: [ `{ "bla": true }`, 'Q' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith('Q', {
@@ -471,6 +481,7 @@ describe('ActorInitSparql', () => {
           argv: [ sourceHypermedia, queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -486,6 +497,7 @@ describe('ActorInitSparql', () => {
           argv: [ sourceHypermedia ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
         expect(stderr).toContain('At least one source and query must be provided');
@@ -496,6 +508,7 @@ describe('ActorInitSparql', () => {
           argv: [ sourceHypermedia, 'INVALID' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).rejects.toThrowError('Invalid query');
       });
 
@@ -505,6 +518,7 @@ describe('ActorInitSparql', () => {
           argv: [ sourceHypermedia, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -520,6 +534,7 @@ describe('ActorInitSparql', () => {
           argv: [ sourceHypermedia, '-q' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
         expect(stderr).toContain('At least one source and query must be provided');
@@ -531,6 +546,7 @@ describe('ActorInitSparql', () => {
           argv: [ sourceHypermedia, '-f', `${__dirname}/assets/all-100.sparql` ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(`SELECT * WHERE {
@@ -550,15 +566,19 @@ LIMIT 100
           argv: [ sourceHypermedia, '-f' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
         expect(stderr).toContain('At least one source and query must be provided');
       });
 
       it('rejects with a hypermedia source and a query file option to an invalid path', async() => {
-        await expect(actor.run({ argv: [ sourceHypermedia, '-f', `${__dirname}filedoesnotexist.sparql` ],
+        await expect(actor.run({
+          argv: [ sourceHypermedia, '-f', `${__dirname}filedoesnotexist.sparql` ],
           env: {},
-          stdin: new PassThrough() })).rejects.toThrowError('no such file or directory');
+          stdin: new PassThrough(),
+          context,
+        })).rejects.toThrowError('no such file or directory');
       });
 
       it('handles a tagged sparql source and query option', async() => {
@@ -567,6 +587,7 @@ LIMIT 100
           argv: [ sourceSparqlTagged, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -583,6 +604,7 @@ LIMIT 100
           argv: [ sourceAuth, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -604,6 +626,7 @@ LIMIT 100
           argv: [ sourceSparqlTaggedAuth, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -626,6 +649,7 @@ LIMIT 100
           argv: [ sourceOther, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -642,6 +666,7 @@ LIMIT 100
           argv: [ sourceHypermedia, sourceHypermedia, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -658,6 +683,7 @@ LIMIT 100
           argv: [ sourceSparqlTagged, sourceSparqlTagged, '-q', queryString ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -677,6 +703,7 @@ LIMIT 100
           argv: [ queryString, '-c', `${__dirname}/assets/config.json` ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -694,6 +721,7 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '-d', dt.toISOString() ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -711,6 +739,7 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -747,6 +776,7 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '-b', baseIRI ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -765,6 +795,7 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '-p', proxy ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -782,6 +813,7 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '--lenient' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -799,6 +831,7 @@ LIMIT 100
           argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],
           env: {},
           stdin: new PassThrough(),
+          context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spy).toHaveBeenCalledWith(queryString, {
@@ -866,7 +899,7 @@ LIMIT 100
               name: 'actor',
               queryString },
           );
-          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough() })).stdout)
+          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough(), context })).stdout)
             .toEqual('application/json');
         });
 
@@ -892,7 +925,7 @@ LIMIT 100
               name: 'actor',
               queryString },
           );
-          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough() })).stdout)
+          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough(), context })).stdout)
             .toEqual('application/trig');
         });
 
@@ -918,7 +951,7 @@ LIMIT 100
               name: 'actor',
               queryString },
           );
-          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough() })).stdout)
+          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough(), context })).stdout)
             .toEqual('simple');
         });
       });
@@ -930,6 +963,7 @@ LIMIT 100
             argv: [ 'SOURCE' ],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spy).toHaveBeenCalledWith(queryString, {
@@ -946,6 +980,7 @@ LIMIT 100
             argv: [ 'SOURCE', '-i', 'graphql' ],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spy).toHaveBeenCalledWith(queryString, {
@@ -961,6 +996,7 @@ LIMIT 100
             argv: [],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stderr);
           expect(stderr).toContain('evaluates SPARQL queries');
           expect(stderr).toContain('At least one source and query must be provided');
@@ -987,6 +1023,7 @@ LIMIT 100
             argv: [],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stderr);
           expect(stderr).toContain('evaluates SPARQL queries');
           expect(stderr).toContain('At least one source and query must be provided');
@@ -1000,6 +1037,7 @@ LIMIT 100
             argv: [],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spy).toHaveBeenCalledWith(queryString, {
@@ -1017,6 +1055,7 @@ LIMIT 100
             argv: [],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stderr);
           expect(stderr).toContain('evaluates SPARQL queries');
           expect(stderr).toContain('At least one source and query must be provided');
@@ -1030,6 +1069,7 @@ LIMIT 100
             argv: [ 'SOURCE', '-q', queryString, '--explain', 'parsed' ],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stdout);
           expect(stdout).toContain(`{
   "type": "project",
@@ -1089,6 +1129,7 @@ LIMIT 100
             argv: [ 'SOURCE', '-q', queryString, '--explain', 'logical' ],
             env: {},
             stdin: new PassThrough(),
+            context,
           })).stdout);
           expect(stdout).toContain(`{
   "type": "project",
@@ -1148,6 +1189,7 @@ LIMIT 100
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
               stdin: new PassThrough(),
+              context,
             })).stdout);
             expect(stdout).toContain(`{
   "logical": "logicalOp",
@@ -1178,6 +1220,7 @@ LIMIT 100
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
               stdin: new PassThrough(),
+              context,
             })).stdout);
             expect(stdout).toContain(`{
   "logical": "logicalOp",
@@ -1208,6 +1251,7 @@ LIMIT 100
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
               stdin: new PassThrough(),
+              context,
             })).stdout);
             expect(stdout).toContain(`{
   "logical": "logicalOp",
@@ -1238,6 +1282,7 @@ LIMIT 100
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
               stdin: new PassThrough(),
+              context,
             })).stdout);
             expect(stdout).toContain(`{
   "logical": "logicalOp",

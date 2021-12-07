@@ -1,7 +1,8 @@
 import { Readable } from 'stream';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveHypermediaNone } from '../lib/ActorRdfResolveHypermediaNone';
 
@@ -37,13 +38,15 @@ describe('ActorRdfResolveHypermediaNone', () => {
 
   describe('An ActorRdfResolveHypermediaNone instance', () => {
     let actor: ActorRdfResolveHypermediaNone;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorRdfResolveHypermediaNone({ name: 'actor', bus });
+      context = new ActionContext();
     });
 
     it('should test', () => {
-      return expect(actor.test({ metadata: <any> null, quads: <any> null, url: '' }))
+      return expect(actor.test({ metadata: <any> null, quads: <any> null, url: '', context }))
         .resolves.toEqual({ filterFactor: 0 });
     });
 
@@ -52,7 +55,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
-      const { source } = await actor.run({ metadata: <any> null, quads, url: '' });
+      const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
       expect(source.match).toBeTruthy();
       await expect(new Promise((resolve, reject) => {
         const stream = source.match(v, v, v, v);
@@ -70,7 +73,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
         quad('s2', 'p2', 'o2'),
       ]);
       await expect(new Promise(async(resolve, reject) => {
-        const { source } = await actor.run({ metadata: <any> null, quads, url: '' });
+        const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
         (<any> source).source.match = () => {
           const str = new Readable();
           str._read = () => {

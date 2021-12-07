@@ -37,12 +37,8 @@ describe('MediatorCombinePipeline', () => {
       return expect(() => (<any> mediator).mediateWith({}, [])).toThrow();
     });
 
-    it('should mediate', () => {
-      return expect(mediator.mediate({ field: 1 })).resolves.toEqual({ field: 2_101 });
-    });
-
     it('should mediate without changing the context', async() => {
-      const context = new ActionContext({});
+      const context = new ActionContext();
       const result = await mediator.mediate({ field: 1, context });
       expect(result).toEqual({ field: 2_101, context });
     });
@@ -53,7 +49,7 @@ describe('MediatorCombinePipeline', () => {
       const result = await mediator.mediate({ field: 1, context });
       expect(result).toHaveProperty('context');
       expect(result.context).not.toEqual(context);
-      expect(result.context!.toJS().id).toEqual(1_000);
+      expect(result.context.toJS().id).toEqual(1_000);
     });
   });
 
@@ -65,7 +61,8 @@ describe('MediatorCombinePipeline', () => {
     });
 
     it('should mediate', () => {
-      return expect(mediator.mediate({ field: 1 })).resolves.toEqual({ field: 1 });
+      const context = new ActionContext();
+      return expect(mediator.mediate({ field: 1, context })).resolves.toEqual({ field: 1, context });
     });
   });
 });
@@ -83,7 +80,7 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
   }
 
   public async run(action: IDummyAction): Promise<IDummyOutput> {
-    return { field: action.field * this.id + this.id };
+    return { field: action.field * this.id + this.id, context: action.context };
   }
 }
 
@@ -91,7 +88,7 @@ class DummyActorContextOutput extends DummyActor {
   public async run(action: IDummyAction): Promise<IDummyOutput> {
     return {
       ...super.run(action),
-      context: (<ActionContext> (action.context || new ActionContext())).setRaw('id', this.id),
+      context: (<ActionContext> action.context).setRaw('id', this.id),
     };
   }
 }
@@ -102,5 +99,5 @@ interface IDummyAction extends IAction {
 
 interface IDummyOutput extends IActorOutput {
   field: number;
-  context?: IActionContext;
+  context: IActionContext;
 }

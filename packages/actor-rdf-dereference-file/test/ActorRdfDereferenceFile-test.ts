@@ -4,6 +4,7 @@ import { Readable } from 'stream';
 import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfDereferenceFile } from '../lib/ActorRdfDereferenceFile';
 
 const arrayifyStream = require('arrayify-stream');
@@ -21,9 +22,11 @@ function fileUrl(str: string): string {
 
 describe('ActorRdfDereferenceFile', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfDereferenceFile module', () => {
@@ -72,21 +75,21 @@ describe('ActorRdfDereferenceFile', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: fileUrl(path.join(__dirname, 'dummy.ttl')) })).resolves.toEqual(true);
+      return expect(actor.test({ url: fileUrl(path.join(__dirname, 'dummy.ttl')), context })).resolves.toEqual(true);
     });
 
     it('should test non-file URIs', () => {
-      return expect(actor.test({ url: path.join(__dirname, 'dummy.ttl') })).resolves.toBeTruthy();
+      return expect(actor.test({ url: path.join(__dirname, 'dummy.ttl'), context })).resolves.toBeTruthy();
     });
 
     it('should not test for non-existing files', () => {
-      return expect(actor.test({ url: 'fake.ttl' })).rejects.toBeTruthy();
+      return expect(actor.test({ url: 'fake.ttl', context })).rejects.toBeTruthy();
     });
 
     it('should run', () => {
       const p = path.join(__dirname, 'dummy.ttl');
       const data = fs.readFileSync(p);
-      return expect(actor.run({ url: p })).resolves.toMatchObject(
+      return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
           headers: {},
           quads: {
@@ -103,7 +106,7 @@ describe('ActorRdfDereferenceFile', () => {
     it('should run if a mediatype is provided', () => {
       const p = path.join(__dirname, 'dummy.ttl');
       const data = fs.readFileSync(p);
-      return expect(actor.run({ url: p, mediaType: 'text/turtle' })).resolves.toMatchObject(
+      return expect(actor.run({ url: p, mediaType: 'text/turtle', context })).resolves.toMatchObject(
         {
           headers: {},
           quads: {
@@ -120,7 +123,7 @@ describe('ActorRdfDereferenceFile', () => {
       let p = path.join(__dirname, 'dummy.ttl');
       const data = fs.readFileSync(p);
       p = `file:///${p}`;
-      return expect(actor.run({ url: p, mediaType: 'text/turtle' })).resolves.toMatchObject(
+      return expect(actor.run({ url: p, mediaType: 'text/turtle', context })).resolves.toMatchObject(
         {
           headers: {},
           quads: {
@@ -136,7 +139,7 @@ describe('ActorRdfDereferenceFile', () => {
     it('should not find a mediatype if an unknown extension is provided', () => {
       const p = path.join(__dirname, 'dummy.unknown');
       const data = fs.readFileSync(p);
-      return expect(actor.run({ url: p })).resolves.toMatchObject(
+      return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
           headers: {},
           quads: {
@@ -151,7 +154,7 @@ describe('ActorRdfDereferenceFile', () => {
     it('should not find a mediatype if there is no file extension', () => {
       const p = path.join(__dirname, 'dummy');
       const data = fs.readFileSync(p);
-      return expect(actor.run({ url: p })).resolves.toMatchObject(
+      return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
           headers: {},
           quads: {
@@ -165,7 +168,7 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should run and receive parse errors', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = new ActionContext({ emitParseError: true });
+      context = new ActionContext({ emitParseError: true });
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);
       await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Parse error'));
@@ -173,7 +176,7 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should run and ignore parse errors in lenient mode', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = new ActionContext({ emitParseError: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ emitParseError: true, [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);
@@ -183,14 +186,14 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should not run on parse rejects', () => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = new ActionContext({ parseReject: true });
+      context = new ActionContext({ parseReject: true });
       return expect(actor.run({ url: p, context }))
         .rejects.toThrow(new Error('Parse reject error'));
     });
 
     it('should run and ignore parse rejects in lenient mode', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = new ActionContext({ parseReject: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ parseReject: true, [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);

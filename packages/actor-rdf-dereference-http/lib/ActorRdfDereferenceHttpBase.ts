@@ -117,6 +117,7 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
     }
 
     const parseAction: IActionRdfParse = {
+      context: action.context,
       baseIRI: url,
       headers: httpResponse.headers,
       input: responseStream,

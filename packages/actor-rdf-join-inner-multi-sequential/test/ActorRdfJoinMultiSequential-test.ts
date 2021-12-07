@@ -4,7 +4,8 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiSequential } from '../lib/ActorRdfJoinMultiSequential';
@@ -15,9 +16,11 @@ const BF = new BindingsFactory();
 
 describe('ActorRdfJoinMultiSequential', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfJoinMultiSequential module', () => {
@@ -110,6 +113,7 @@ describe('ActorRdfJoinMultiSequential', () => {
             operation: <any> {},
           },
         ],
+        context,
       };
       action4 = {
         type: 'inner',
@@ -171,21 +175,22 @@ describe('ActorRdfJoinMultiSequential', () => {
             operation: <any> {},
           },
         ],
+        context,
       };
     });
 
     it('should not test on 0 streams', () => {
-      return expect(actor.test({ type: 'inner', entries: []})).rejects
+      return expect(actor.test({ type: 'inner', entries: [], context })).rejects
         .toThrow(new Error('actor requires at least two join entries.'));
     });
 
     it('should not test on 1 stream', () => {
-      return expect(actor.test({ type: 'inner', entries: [ <any> null ]})).rejects
+      return expect(actor.test({ type: 'inner', entries: [ <any> null ], context })).rejects
         .toThrow(new Error('actor requires at least two join entries.'));
     });
 
     it('should not test on 2 streams', () => {
-      return expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ]})).rejects
+      return expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).rejects
         .toThrow(new Error('actor requires 3 join entries at least. The input contained 2.'));
     });
 

@@ -5,6 +5,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import 'cross-fetch/polyfill';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfDereferenceHttp } from '../lib/ActorRdfDereferenceHttp';
 const arrayifyStream = require('arrayify-stream');
 const streamifyString = require('streamify-string');
@@ -14,6 +15,7 @@ describe('ActorRdfDereferenceHttp', () => {
   let mediatorHttp: any;
   let mediatorRdfParse: any;
   let mediaMappings: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -22,6 +24,7 @@ describe('ActorRdfDereferenceHttp', () => {
     mediaMappings = {
       x: 'y',
     };
+    context = new ActionContext();
   });
 
   describe('The ActorRdfDereferenceHttp module', () => {
@@ -136,15 +139,15 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should test on https', () => {
-      return expect(actor.test({ url: 'https://www.google.com/' })).resolves.toBeTruthy();
+      return expect(actor.test({ url: 'https://www.google.com/', context })).resolves.toBeTruthy();
     });
 
     it('should test on http', () => {
-      return expect(actor.test({ url: 'http://www.google.com/' })).resolves.toBeTruthy();
+      return expect(actor.test({ url: 'http://www.google.com/', context })).resolves.toBeTruthy();
     });
 
     it('should not test on ftp', () => {
-      return expect(actor.test({ url: 'ftp://www.google.com/' })).rejects.toBeTruthy();
+      return expect(actor.test({ url: 'ftp://www.google.com/', context })).rejects.toBeTruthy();
     });
 
     it('should stringify empty media types to any', () => {
@@ -209,7 +212,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
-      const output = await actor.run({ url: 'https://www.google.com/' });
+      const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.exists).toEqual(true);
       expect(output.triples).toEqual(true);
@@ -219,7 +222,7 @@ describe('ActorRdfDereferenceHttp', () => {
 
     it('should run with a web stream with a known extension', async() => {
       const headers = {};
-      const output = await actor.run({ url: 'https://www.google.com/abc.x' });
+      const output = await actor.run({ url: 'https://www.google.com/abc.x', context });
       expect(output.url).toEqual('https://www.google.com/abc.x');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
@@ -230,12 +233,13 @@ describe('ActorRdfDereferenceHttp', () => {
       const headers = {
         'content-type': '',
       };
-      const output = await actor.run({ url: 'https://www.google.com/emptycontenttype' });
+      const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
       expect(await arrayifyStream(output.quads)).toEqual([]);
       expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
+        context,
         handle: expect.anything(),
         handleMediaType: '',
       });
@@ -245,12 +249,13 @@ describe('ActorRdfDereferenceHttp', () => {
       const headers = {
         'content-type': '',
       };
-      const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', mediaType: 'CUSTOM' });
+      const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', mediaType: 'CUSTOM', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
       expect(await arrayifyStream(output.quads)).toEqual([]);
       expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
+        context,
         handle: expect.anything(),
         handleMediaType: 'CUSTOM',
       });
@@ -258,7 +263,7 @@ describe('ActorRdfDereferenceHttp', () => {
 
     it('should run with a missing content type', async() => {
       const headers = {};
-      const output = await actor.run({ url: 'https://www.google.com/missingcontenttype' });
+      const output = await actor.run({ url: 'https://www.google.com/missingcontenttype', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
@@ -267,7 +272,7 @@ describe('ActorRdfDereferenceHttp', () => {
 
     it('should run with a web stream with another known extension', async() => {
       const headers = {};
-      const output = await actor.run({ url: 'https://www.google.com/abc.y' });
+      const output = await actor.run({ url: 'https://www.google.com/abc.y', context });
       expect(output.url).toEqual('https://www.google.com/abc.y');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
@@ -276,7 +281,7 @@ describe('ActorRdfDereferenceHttp', () => {
 
     it('should run with a web stream with a relative response URL', async() => {
       const headers = {};
-      const output = await actor.run({ url: 'https://www.google.com/rel.txt' });
+      const output = await actor.run({ url: 'https://www.google.com/rel.txt', context });
       expect(output.url).toEqual('https://www.google.com/relative');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
@@ -287,7 +292,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
-      const output = await actor.run({ url: 'https://www.google.com/noweb' });
+      const output = await actor.run({ url: 'https://www.google.com/noweb', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
@@ -295,17 +300,17 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should not run on a 404', () => {
-      return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects
+      return expect(actor.run({ url: 'https://www.nogoogle.com/notfound', context })).rejects
         .toThrow(new Error('Could not retrieve https://www.nogoogle.com/notfound (HTTP status 400):\nDUMMY BODY'));
     });
 
     it('should not run on a 404 without a body', () => {
-      return expect(actor.run({ url: 'https://www.nogoogle.com/nobody' })).rejects
+      return expect(actor.run({ url: 'https://www.nogoogle.com/nobody', context })).rejects
         .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (HTTP status 400):\nempty response'));
     });
 
     it('should run on a 404 when acceptErrors is true', async() => {
-      const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', acceptErrors: true });
+      const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', acceptErrors: true, context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.exists).toEqual(false);
       expect(output.triples).toEqual(true);
@@ -313,7 +318,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run on a 404 in lenient mode', async() => {
-      const context = new ActionContext({ [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
       expect(output.url).toEqual('https://www.nogoogle.com/notfound');
@@ -325,7 +330,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
-      const output = await actor.run({ url: 'https://www.google.com/', method: 'PUT' });
+      const output = await actor.run({ url: 'https://www.google.com/', method: 'PUT', context });
       expect(output.url).toEqual('https://www.google.com/PUT.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
@@ -336,7 +341,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
-      const output = await actor.run({ url: 'https://www.google.com/', headers: { SomeKey: 'V' }});
+      const output = await actor.run({ url: 'https://www.google.com/', headers: { SomeKey: 'V' }, context });
       expect(output.url).toEqual('https://www.google.com/V.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
@@ -344,13 +349,13 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run and receive stream errors', async() => {
-      const output = await actor.run({ url: 'https://www.google.com/error' });
+      const output = await actor.run({ url: 'https://www.google.com/error', context });
       expect(output.url).toEqual('https://www.google.com/error');
       await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Body stream error'));
     });
 
     it('should run and ignore stream errors in lenient mode', async() => {
-      const context = new ActionContext({ [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/error', context });
       expect(output.url).toEqual('https://www.google.com/error');
@@ -359,14 +364,14 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run and receive parse errors', async() => {
-      const context = new ActionContext({ emitParseError: true });
+      context = new ActionContext({ emitParseError: true });
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Parse error'));
     });
 
     it('should run and ignore parse errors in lenient mode', async() => {
-      const context = new ActionContext({ emitParseError: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ emitParseError: true, [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
@@ -377,7 +382,7 @@ describe('ActorRdfDereferenceHttp', () => {
     it('should run and ignore parse errors in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
       const spy = jest.spyOn(logger, 'error');
-      const context = new ActionContext({
+      context = new ActionContext({
         emitParseError: true,
         [KeysInitSparql.lenient.name]: true,
         [KeysCore.log.name]: logger,
@@ -391,13 +396,13 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should not run on http rejects', () => {
-      const context = new ActionContext({ httpReject: true });
+      context = new ActionContext({ httpReject: true });
       return expect(actor.run({ url: 'https://www.google.com/', context }))
         .rejects.toThrow(new Error('Http reject error'));
     });
 
     it('should run and ignore http rejects in lenient mode', async() => {
-      const context = new ActionContext({ httpReject: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ httpReject: true, [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/');
@@ -408,7 +413,7 @@ describe('ActorRdfDereferenceHttp', () => {
     it('should run and ignore http rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
       const spy = jest.spyOn(logger, 'error');
-      const context = new ActionContext({
+      context = new ActionContext({
         httpReject: true,
         [KeysInitSparql.lenient.name]: true,
         [KeysCore.log.name]: logger,
@@ -420,13 +425,13 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should not run on parse rejects', () => {
-      const context = new ActionContext({ parseReject: true });
+      context = new ActionContext({ parseReject: true });
       return expect(actor.run({ url: 'https://www.google.com/', context }))
         .rejects.toThrow(new Error('Parse reject error'));
     });
 
     it('should run and ignore parse rejects in lenient mode', async() => {
-      const context = new ActionContext({ parseReject: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ parseReject: true, [KeysInitSparql.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/');
@@ -437,7 +442,7 @@ describe('ActorRdfDereferenceHttp', () => {
     it('should run and ignore parse rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
       const spy = jest.spyOn(logger, 'error');
-      const context = new ActionContext({
+      context = new ActionContext({
         parseReject: true,
         [KeysInitSparql.lenient.name]: true,
         [KeysCore.log.name]: logger,

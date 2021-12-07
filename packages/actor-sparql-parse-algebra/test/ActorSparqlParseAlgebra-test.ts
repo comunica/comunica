@@ -1,5 +1,6 @@
 import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorSparqlParseAlgebra } from '..';
 
 describe('ActorSparqlParseAlgebra', () => {
@@ -26,25 +27,27 @@ describe('ActorSparqlParseAlgebra', () => {
 
   describe('An ActorSparqlParseAlgebra instance', () => {
     let actor: ActorSparqlParseAlgebra;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorSparqlParseAlgebra({ name: 'actor', bus });
+      context = new ActionContext();
     });
 
     it('should not test on the graphql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'graphql' })).rejects.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: 'graphql', context })).rejects.toBeTruthy();
     });
 
     it('should test on no format', () => {
-      return expect(actor.test({ query: 'a' })).resolves.toBeTruthy();
+      return expect(actor.test({ query: 'a', context })).resolves.toBeTruthy();
     });
 
     it('should test on the sparql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'sparql' })).resolves.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: 'sparql', context })).resolves.toBeTruthy();
     });
 
     it('should run', async() => {
-      const result = await actor.run({ query: 'SELECT * WHERE { ?a a ?b }' });
+      const result = await actor.run({ query: 'SELECT * WHERE { ?a a ?b }', context });
       expect(result).toMatchObject(
         {
           operation: {
@@ -73,7 +76,10 @@ describe('ActorSparqlParseAlgebra', () => {
     });
 
     it('should run for an update query', async() => {
-      const result = await actor.run({ query: 'INSERT { <http://example/egbook> <http://ex.org/p> "A" } WHERE {}' });
+      const result = await actor.run({
+        query: 'INSERT { <http://example/egbook> <http://ex.org/p> "A" } WHERE {}',
+        context,
+      });
       expect(result).toMatchObject({
         operation: {
           insert: [
@@ -91,7 +97,10 @@ describe('ActorSparqlParseAlgebra', () => {
     });
 
     it('should run with an overridden baseIRI', async() => {
-      const result = await actor.run({ query: 'BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }' });
+      const result = await actor.run({
+        query: 'BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }',
+        context,
+      });
       expect(result).toMatchObject({
         baseIRI: 'http://example.org/book/',
         operation: {

@@ -15,7 +15,7 @@ import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
 import type { IAction, IActorOutput, IActorTest, Actor, Mediator } from '@comunica/core';
-import type { IQueryableResultBase } from '@comunica/types';
+import type { IQueryableResultBase, IActionContext } from '@comunica/types';
 
 /**
  * A comunica actor for sparql-serialize events.
@@ -55,6 +55,7 @@ export type IActorTestSparqlSerializeMediaTypeFormats = IActorTestAbstractMediaT
 export type IActorOutputSparqlSerializeMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
 export interface IActionSparqlSerialize extends IAction, IQueryableResultBase {
+  context: IActionContext;
 }
 
 export interface IActorSparqlSerializeOutput extends IActorOutput {

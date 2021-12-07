@@ -56,7 +56,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle test result.
    */
-  public abstract testHandle(action: HI, mediaType?: string, context?: IActionContext): Promise<HT>;
+  public abstract testHandle(action: HI, mediaType: string | undefined, context: IActionContext): Promise<HT>;
 
   /**
    * Run the given handle action on this actor.
@@ -66,7 +66,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle run result.
    */
-  public abstract runHandle(action: HI, mediaType?: string, context?: IActionContext): Promise<HO>;
+  public abstract runHandle(action: HI, mediaType: string | undefined, context: IActionContext): Promise<HO>;
 
   /**
    * Check if this actor can emit its media types.
@@ -74,7 +74,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<boolean>} A promise that resolves to the media type run result.
    */
-  public abstract testMediaType(context?: IActionContext): Promise<boolean>;
+  public abstract testMediaType(context: IActionContext): Promise<boolean>;
 
   /**
    * Get the media type of this given actor.
@@ -82,7 +82,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<{[id: string]: number}>} A promise that resolves to the media types.
    */
-  public abstract getMediaTypes(context?: IActionContext): Promise<Record<string, number>>;
+  public abstract getMediaTypes(context: IActionContext): Promise<Record<string, number>>;
 
   /**
    * Check if this actor can emit its media type formats.
@@ -90,7 +90,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<boolean>} A promise that resolves to the media type run result.
    */
-  public abstract testMediaTypeFormats(context?: IActionContext): Promise<boolean>;
+  public abstract testMediaTypeFormats(context: IActionContext): Promise<boolean>;
 
   /**
    * Get the media type formats of this given actor.
@@ -98,7 +98,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<{[id: string]: string}>} A promise that resolves to the media types.
    */
-  public abstract getMediaTypeFormats(context?: IActionContext): Promise<Record<string, string>>;
+  public abstract getMediaTypeFormats(context: IActionContext): Promise<Record<string, string>>;
 }
 
 export interface IActorArgsMediaTyped<HI, HT, HO> extends IActorArgs<IActionAbstractMediaTyped<HI>,

@@ -27,13 +27,13 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async testOperation(
     operation: Algebra.DeleteInsert,
-    context: IActionContext | undefined,
+    context: IActionContext,
   ): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryableResult> {
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?

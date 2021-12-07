@@ -23,10 +23,10 @@ export class ActorSparqlParseGraphql extends ActorSparqlParse {
   }
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
-    const context: any = action.context?.get(KeysInitSparql.jsonLdContext) || {};
+    const context: any = action.context.get(KeysInitSparql.jsonLdContext) || {};
     const options = {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      singularizeVariables: <any> action.context?.get(KeysInitSparql.graphqlSingularizeVariables),
+      singularizeVariables: <any> action.context.get(KeysInitSparql.graphqlSingularizeVariables),
     };
     return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };
   }

@@ -20,7 +20,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
 
   public async runOperation(
     operation: Algebra.Path,
-    context: IActionContext | undefined,
+    context: IActionContext,
   ): Promise<IQueryableResult> {
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 

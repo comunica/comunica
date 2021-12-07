@@ -30,7 +30,7 @@ export class ActorInitSparql extends ActorInitSparqlBase {
         this.context,
       ),
       // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
-      ...(<ICliArgsHandler[]> action.context?.get(KeysInitSparql.cliArgsHandlers)) || [],
+      ...(<ICliArgsHandler[]> action.context.get(KeysInitSparql.cliArgsHandlers)) || [],
     ];
 
     // Populate yargs arguments object

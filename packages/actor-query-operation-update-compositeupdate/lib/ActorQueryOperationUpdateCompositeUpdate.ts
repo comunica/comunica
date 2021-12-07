@@ -18,13 +18,13 @@ export class ActorQueryOperationUpdateCompositeUpdate
 
   public async testOperation(
     operation: Algebra.CompositeUpdate,
-    context: IActionContext | undefined,
+    context: IActionContext,
   ): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(operationOriginal: Algebra.CompositeUpdate, context: IActionContext | undefined):
+  public async runOperation(operationOriginal: Algebra.CompositeUpdate, context: IActionContext):
   Promise<IQueryableResult> {
     const updateResult = (async(): Promise<void> => {
       // Execute update operations in sequence

@@ -1,6 +1,7 @@
 import type { Readable } from 'stream';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ActorRdfMetadataPrimaryTopic } from '../lib/ActorRdfMetadataPrimaryTopic';
 const arrayifyStream = require('arrayify-stream');
@@ -9,9 +10,11 @@ const stream = require('streamify-array');
 
 describe('ActorRdfMetadataPrimaryTopic', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfMetadataPrimaryTopic module', () => {
@@ -71,15 +74,15 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should not test on a triple stream', () => {
-      return expect(actor.test({ url: '', quads: input, triples: true })).rejects.toBeTruthy();
+      return expect(actor.test({ context, url: '', quads: input, triples: true })).rejects.toBeTruthy();
     });
 
     it('should test on a quad stream', () => {
-      return expect(actor.test({ url: '', quads: input })).resolves.toBeTruthy();
+      return expect(actor.test({ context, url: '', quads: input })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return actor.run({ url: 'o1?param', quads: input })
+      return actor.run({ context, url: 'o1?param', quads: input })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -99,7 +102,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
       const thisActor = new ActorRdfMetadataPrimaryTopic(
         { name: 'actor', bus, metadataToData: true, dataToMetadataOnInvalidMetadataGraph: false },
       );
-      return thisActor.run({ url: 'o1?param', quads: input })
+      return thisActor.run({ context, url: 'o1?param', quads: input })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -119,7 +122,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should run when the primaryTopic triple comes after the graph', () => {
-      return actor.run({ url: 'o1?param', quads: inputOOO })
+      return actor.run({ context, url: 'o1?param', quads: inputOOO })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -136,7 +139,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should run and make everything data without primaryTopic triple', () => {
-      return actor.run({ url: 'o1?param', quads: inputNone })
+      return actor.run({ context, url: 'o1?param', quads: inputNone })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -150,7 +153,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should run and make everything data with a primaryTopic triple that does not match the url', () => {
-      return actor.run({ url: 'o1?param', quads: inputDifferent })
+      return actor.run({ context, url: 'o1?param', quads: inputDifferent })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -170,7 +173,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
       const thisActor = new ActorRdfMetadataPrimaryTopic(
         { name: 'actor', bus, metadataToData: false, dataToMetadataOnInvalidMetadataGraph: true },
       );
-      return thisActor.run({ url: 'o1?param', quads: inputDifferent })
+      return thisActor.run({ context, url: 'o1?param', quads: inputDifferent })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -192,7 +195,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should run and delegate errors', () => {
-      return actor.run({ url: '', quads: input })
+      return actor.run({ context, url: '', quads: input })
         .then(output => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
           output.data.on('data', () => {
@@ -209,7 +212,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should run and not re-attach listeners after calling .read again', () => {
-      return actor.run({ url: 'o1?param', quads: inputDifferent })
+      return actor.run({ context, url: 'o1?param', quads: inputDifferent })
         .then(async output => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           expect(data).toEqual([

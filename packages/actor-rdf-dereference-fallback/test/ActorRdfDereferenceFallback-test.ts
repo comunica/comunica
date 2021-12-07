@@ -22,7 +22,8 @@ describe('ActorRdfDereferenceFallback', () => {
     });
 
     it('should run and throw', () => {
-      return expect(actor.run({ url: 'URL' })).rejects.toThrowError('Could not dereference \'URL\'');
+      return expect(actor.run({ url: 'URL', context: new ActionContext() }))
+        .rejects.toThrowError('Could not dereference \'URL\'');
     });
 
     it('should run and log on lenient mode', async() => {

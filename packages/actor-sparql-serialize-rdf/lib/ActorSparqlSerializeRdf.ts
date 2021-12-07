@@ -1,9 +1,10 @@
 import type { MediatorRdfSerializeHandle, MediatorRdfSerializeMediaTypeFormats,
   MediatorRdfSerializeMediaTypes } from '@comunica/bus-rdf-serialize';
-import type { IActorSparqlSerializeArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
+import type { IActorSparqlSerializeArgs, IActorSparqlSerializeOutput,
+  IActionSparqlSerialize } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerialize } from '@comunica/bus-sparql-serialize';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResult, IQueryableResultQuads } from '@comunica/types';
+import type { IActionContext, IQueryableResultQuads } from '@comunica/types';
 
 /**
  * A comunica RDF SPARQL Serialize Actor.
@@ -20,7 +21,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     super(args);
   }
 
-  public async testHandle(action: IQueryableResult, mediaType: string, context?: IActionContext):
+  public async testHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
   Promise<IActorTest> {
     // Check if we are provided with a quad stream
     if (action.type !== 'quads') {
@@ -38,12 +39,15 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return true;
   }
 
-  public async runHandle(action: IQueryableResult, mediaType: string, context?: IActionContext):
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
   Promise<IActorSparqlSerializeOutput> {
     // Delegate handling to the mediator
     return (await this.mediatorRdfSerialize.mediate({
       context,
-      handle: <IQueryableResultQuads> action,
+      handle: {
+        context,
+        quadStream: (<IQueryableResultQuads> action).quadStream,
+      },
       handleMediaType: mediaType,
     })).handle;
   }
@@ -52,7 +56,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return true;
   }
 
-  public async getMediaTypes(context?: IActionContext): Promise<Record<string, number>> {
+  public async getMediaTypes(context: IActionContext): Promise<Record<string, number>> {
     return (await this.mediatorMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
@@ -60,7 +64,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return true;
   }
 
-  public async getMediaTypeFormats(context?: IActionContext): Promise<Record<string, string>> {
+  public async getMediaTypeFormats(context: IActionContext): Promise<Record<string, string>> {
     return (await this.mediatorMediaTypeFormatCombiner.mediate({ context, mediaTypeFormats: true })).mediaTypeFormats;
   }
 }

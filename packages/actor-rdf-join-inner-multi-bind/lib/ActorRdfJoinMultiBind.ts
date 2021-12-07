@@ -180,7 +180,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         type: 'bindings',
         bindingsStream,
         variables: ActorRdfJoin.joinVariables(action),
-        metadata: () => this.constructResultMetadata(action.entries, metadatas),
+        metadata: () => this.constructResultMetadata(action.entries, metadatas, action.context),
       },
       physicalPlanMetadata: {
         bindIndex: smallestIndex,
@@ -222,6 +222,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           action.entries[smallestIndex],
           entry,
         ],
+        context: action.context,
       })).selectivity * this.selectivityModifier));
 
     // Determine coefficients for remaining entries

@@ -35,7 +35,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     this.predicateType = predicateType;
   }
 
-  public async testOperation(operation: Algebra.Path, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Path, context: IActionContext): Promise<IActorTest> {
     if (operation.predicate.type !== this.predicateType) {
       throw new Error(`This Actor only supports ${this.predicateType} Path operations.`);
     }
@@ -60,7 +60,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
   // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
   // https://www.w3.org/TR/sparql11-query/#propertypaths
-  public async isPathArbitraryLengthDistinct(context: IActionContext | undefined, path: Algebra.Path):
+  public async isPathArbitraryLengthDistinct(context: IActionContext, path: Algebra.Path):
   Promise<{ context: IActionContext; operation: IQueryableResultBindings | undefined }> {
     if (!context || !context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
       context = (context || new ActionContext())
@@ -175,7 +175,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     object: Term,
     predicate: Algebra.PropertyPathSymbol,
     graph: Term,
-    context: IActionContext | undefined,
+    context: IActionContext,
     termHashes: Record<string, Term>,
     it: BufferedIterator<Term>,
     counter: any,
@@ -228,7 +228,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // Let the iterator `it` emit all bindings of size 2, with subjectStringVariable as value subjectVal
   // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
   public async getSubjectAndObjectBindingsPredicateStar(subjectString: string, objectString: string, subjectVal: Term,
-    objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: IActionContext | undefined,
+    objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: IActionContext,
     termHashesGlobal: Record<string, Promise<Term[]>>, termHashesCurrentSubject: Record<string, boolean>,
     it: BufferedIterator<Bindings>, counter: any): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);

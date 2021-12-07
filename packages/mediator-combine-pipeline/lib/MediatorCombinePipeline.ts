@@ -1,11 +1,13 @@
 import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
 import { Mediator } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 
 /**
  * A comunica mediator that goes over all actors in sequence and forwards I/O.
  * This required the action input and the actor output to be of the same type.
  */
-export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction | IActorOutput, T extends IActorTest>
+export class MediatorCombinePipeline
+<A extends Actor<H, T, H>, H extends IAction | (IActorOutput & { context: IActionContext }), T extends IActorTest>
   extends Mediator<A, H, T, H> {
   public constructor(args: IMediatorArgs<A, H, T, H>) {
     super(args);

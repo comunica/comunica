@@ -30,12 +30,12 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     );
   }
 
-  public async testOperation(operation: Algebra.Load, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(operation: Algebra.Load, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Load, context: IActionContext):
   Promise<IQueryableResult> {
     // Create CONSTRUCT query on the given source
     if (!context) {

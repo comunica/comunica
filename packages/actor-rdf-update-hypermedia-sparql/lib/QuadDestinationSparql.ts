@@ -14,7 +14,7 @@ const stringifyStream = require('stream-to-string');
  */
 export class QuadDestinationSparql implements IQuadDestination {
   private readonly url: string;
-  private readonly context: IActionContext | undefined;
+  private readonly context: IActionContext;
 
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
@@ -23,7 +23,7 @@ export class QuadDestinationSparql implements IQuadDestination {
 
   public constructor(
     url: string,
-    context: IActionContext | undefined,
+    context: IActionContext,
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>,
   ) {

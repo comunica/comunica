@@ -1,8 +1,9 @@
 import { Readable } from 'stream';
 import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfParseXmlRdfa } from '..';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
@@ -10,9 +11,11 @@ const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseXmlRdfa', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfParseXmlRdfa module', () => {
@@ -110,12 +113,14 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
       });
 
       it('should run on application/xml', () => {
-        return actor.run({ handle: { input, baseIRI: 'http://ex.org/' }, handleMediaType: 'application/xml' })
+        return actor
+          .run({ handle: { input, baseIRI: 'http://ex.org/', context }, handleMediaType: 'application/xml', context })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(1));
       });
 
       it('should parse application/xml correctly', () => {
-        return actor.run({ handle: { input, baseIRI: 'http://ex.org/' }, handleMediaType: 'application/xml' })
+        return actor
+          .run({ handle: { input, baseIRI: 'http://ex.org/', context }, handleMediaType: 'application/xml', context })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://ex.org/', 'http://purl.org/dc/terms/description', '"A yellow rectangle with sharp corners."'),
           ]));
@@ -123,7 +128,11 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 
       it('should parse application/xml with a content language header', () => {
         const headers: any = { get: () => 'en-us' };
-        return actor.run({ handle: { input, baseIRI: 'http://ex.org/', headers }, handleMediaType: 'application/xml' })
+        return actor.run({
+          handle: { input, baseIRI: 'http://ex.org/', headers, context },
+          handleMediaType: 'application/xml',
+          context,
+        })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://ex.org/',
               'http://purl.org/dc/terms/description',
@@ -133,7 +142,7 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 
       it('should forward stream errors', async() => {
         await expect(arrayifyStream((<any> (await actor.run(
-          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' },
+          { handle: { input: inputError, baseIRI: '', context }, handleMediaType: 'application/trig', context },
         )))
           .handle.quads)).rejects.toBeTruthy();
       });
@@ -141,11 +150,11 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/xml': 1,
         }});
       });
@@ -154,7 +163,7 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
         actor = new ActorRdfParseXmlRdfa(
           { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0.5 },
         );
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           A: 1,
           B: 0.5,
           C: 0,
@@ -165,7 +174,7 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
         actor = new ActorRdfParseXmlRdfa(
           { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0 },
         );
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           A: 0,
           B: 0,
           C: 0,

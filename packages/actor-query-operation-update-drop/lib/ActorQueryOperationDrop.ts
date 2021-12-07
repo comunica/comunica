@@ -20,12 +20,12 @@ export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Al
     super(args, 'drop');
   }
 
-  public async testOperation(operation: Algebra.Drop, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Drop, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(operation: Algebra.Drop, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Drop, context: IActionContext):
   Promise<IQueryableResult> {
     // Delegate to update-quads bus
     let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];

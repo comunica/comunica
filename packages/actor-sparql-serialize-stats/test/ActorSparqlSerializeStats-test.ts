@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import { ActionContext, Bus } from '@comunica/core';
+import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,9 +14,11 @@ const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeStats', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorSparqlSerializeStats module', () => {
@@ -68,11 +70,11 @@ describe('ActorSparqlSerializeStats', () => {
     });
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           debug: 1,
         }});
       });
@@ -91,25 +93,27 @@ describe('ActorSparqlSerializeStats', () => {
 
       it('should test on table', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
-          handleMediaType: 'debug' })).resolves.toBeTruthy();
+          handleMediaType: 'debug',
+          context })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
-          handleMediaType: 'application/n-triples' }))
+          handleMediaType: 'application/n-triples',
+          context }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on unknown types', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'unknown' }, handleMediaType: 'debug' },
+          { handle: <any> { type: 'unknown' }, handleMediaType: 'debug', context },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug' },
+          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug', context },
         )
         )).handle.data)).toEqual(
           `Result,Delay (ms),HTTP requests
@@ -124,7 +128,7 @@ TOTAL,3.14,0
         (<any> httpObserver).onRun(null, null, null);
         (<any> httpObserver).onRun(null, null, null);
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug' },
+          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug', context },
         )
         )).handle.data)).toEqual(
           `Result,Delay (ms),HTTP requests
@@ -138,7 +142,8 @@ TOTAL,3.14,2
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream },
-            handleMediaType: 'debug' },
+            handleMediaType: 'debug',
+            context },
         ))).handle.data)).toEqual(
           `Result,Delay (ms),HTTP requests
 1,3.14,0
@@ -151,14 +156,16 @@ TOTAL,3.14,0
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream: streamError },
-            handleMediaType: 'application/json' },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream: streamError },
-            handleMediaType: 'application/json' },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
     });

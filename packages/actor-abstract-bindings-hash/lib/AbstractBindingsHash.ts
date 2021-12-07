@@ -25,11 +25,11 @@ export abstract class AbstractBindingsHash<T extends Algebra.Operation> extends 
      */
   public abstract newHashFilter(): (bindings: Bindings) => boolean;
 
-  public async testOperation(operation: T, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: T, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operation: T, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public async runOperation(operation: T, context: IActionContext): Promise<IQueryableResult> {
     const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );

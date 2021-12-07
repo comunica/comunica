@@ -25,7 +25,7 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
       .digest('hex');
   }
 
-  public abstract runOperation(operation: T, context: IActionContext | undefined): Promise<IQueryableResult>;
+  public abstract runOperation(operation: T, context: IActionContext): Promise<IQueryableResult>;
 }
 
 export interface IActorInitRdfDereferencePagedArgs extends IActorQueryOperationTypedMediatedArgs {

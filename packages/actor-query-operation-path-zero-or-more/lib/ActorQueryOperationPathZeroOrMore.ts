@@ -18,7 +18,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     super(args, Algebra.types.ZERO_OR_MORE_PATH);
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext | undefined): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;

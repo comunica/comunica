@@ -13,7 +13,7 @@ export class ActorQueryOperationPathLink extends ActorAbstractPath {
 
   public async runOperation(
     operationOriginal: Algebra.Path,
-    context: IActionContext | undefined,
+    context: IActionContext,
   ): Promise<IQueryableResult> {
     const predicate = <Algebra.Link> operationOriginal.predicate;
     const operation = ActorAbstractPath.FACTORY.createPattern(

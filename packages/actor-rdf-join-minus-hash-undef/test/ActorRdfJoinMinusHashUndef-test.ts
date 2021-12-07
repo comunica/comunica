@@ -2,7 +2,8 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMinusHashUndef } from '../lib/ActorRdfJoinMinusHashUndef';
@@ -16,9 +17,11 @@ describe('ActorRdfJoinMinusHashUndef', () => {
   let left: any;
   let right: any;
   let rightNoCommons: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
     left = {
       metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
       stream: new ArrayIterator([
@@ -67,6 +70,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         await expect(actor.test({
           type: 'minus',
           entries: [],
+          context,
         })).rejects.toThrow('actor requires at least two join entries.');
       });
 
@@ -74,6 +78,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         await expect(actor.test({
           type: 'minus',
           entries: <any> [{}],
+          context,
         })).rejects.toThrow('actor requires at least two join entries.');
       });
 
@@ -81,6 +86,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         await expect(actor.test({
           type: 'minus',
           entries: <any> [{}, {}, {}],
+          context,
         })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
       });
 
@@ -88,6 +94,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
         await expect(actor.test({
           type: 'inner',
           entries: <any> [{}, {}],
+          context,
         })).rejects.toThrow(`actor can only handle logical joins of type 'minus', while 'inner' was given.`);
       });
 
@@ -112,6 +119,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               },
             },
           ],
+          context,
         })).toEqual({
           iterations: 8.08,
           blockingItems: 4,
@@ -152,6 +160,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               operation: <any> {},
             },
           ],
+          context,
         };
         const { result } = await actor.getOutput(action);
 
@@ -194,6 +203,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               operation: <any> {},
             },
           ],
+          context,
         };
         const { result } = await actor.getOutput(action);
 
@@ -251,6 +261,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               operation: <any> {},
             },
           ],
+          context,
         };
         const { result } = await actor.getOutput(action);
 
@@ -309,6 +320,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               operation: <any> {},
             },
           ],
+          context,
         };
         const { result } = await actor.getOutput(action);
 
@@ -365,6 +377,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               operation: <any> {},
             },
           ],
+          context,
         };
         const { result } = await actor.getOutput(action);
 

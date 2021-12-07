@@ -5,7 +5,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings } from '@comunica/types';
+import type { IQueryableResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs/index';
@@ -18,9 +18,11 @@ const FACTORY = new Factory();
 
 describe('ActorRdfJoinOptionalBind', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('An ActorRdfJoinOptionalBind instance', () => {
@@ -89,6 +91,7 @@ describe('ActorRdfJoinOptionalBind', () => {
                 operation: <any>{},
               },
             ],
+            context,
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -120,6 +123,7 @@ describe('ActorRdfJoinOptionalBind', () => {
                 operation: <any>{},
               },
             ],
+            context,
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -153,6 +157,7 @@ describe('ActorRdfJoinOptionalBind', () => {
                 operation: <any>{ type: Algebra.types.EXTEND },
               },
             ],
+            context,
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -181,6 +186,7 @@ describe('ActorRdfJoinOptionalBind', () => {
                 operation: <any> { type: Algebra.types.GROUP },
               },
             ],
+            context,
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -209,6 +215,7 @@ describe('ActorRdfJoinOptionalBind', () => {
                 operation: <any> {},
               },
             ],
+            context,
           },
           [
             { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
@@ -224,67 +231,8 @@ describe('ActorRdfJoinOptionalBind', () => {
     });
 
     describe('run', () => {
-      it('should handle two entries', async() => {
-        const action: IActionRdfJoin = {
-          type: 'optional',
-          entries: [
-            {
-              output: <any> {
-                bindingsStream: new ArrayIterator([
-                  BF.bindings({ '?a': DF.literal('1') }),
-                  BF.bindings({ '?a': DF.literal('2') }),
-                  BF.bindings({ '?a': DF.literal('3') }),
-                ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
-                type: 'bindings',
-                variables: [ 'a' ],
-              },
-              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
-            },
-            {
-              output: <any> {
-                bindingsStream: new ArrayIterator([
-                  // This stream will be unused!!!
-                  BF.bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
-                  BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
-                  BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
-                ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
-                type: 'bindings',
-                variables: [ 'a', 'b' ],
-              },
-              operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-            },
-          ],
-        };
-        const result = await actor.run(action);
-
-        // Validate output
-        expect(result.type).toEqual('bindings');
-        expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          BF.bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
-          BF.bindings({ '?a': DF.literal('2') }),
-          BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
-          BF.bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
-        ]);
-        expect(result.variables).toEqual([ 'a', 'b' ]);
-        expect(await result.metadata()).toEqual({ cardinality: 7.2, canContainUndefs: true });
-
-        // Validate mock calls
-        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(3);
-        expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
-          operation: FACTORY.createPattern(DF.literal('1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-        });
-        expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
-          operation: FACTORY.createPattern(DF.literal('2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-        });
-        expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(3, {
-          operation: FACTORY.createPattern(DF.literal('3'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-        });
-      });
-
       it('should handle two entries with a context', async() => {
-        const context = new ActionContext({ a: 'b' });
+        context = new ActionContext({ a: 'b' });
         const action: IActionRdfJoin = {
           context,
           type: 'optional',

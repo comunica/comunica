@@ -19,8 +19,7 @@ import type { IQueryableResult,
   IPhysicalQueryPlanLogger,
   IQueryableResultEnhanced,
   IQueryableResultBindingsEnhanced,
-  IQueryableResultQuadsEnhanced,
-  IActionContext } from '@comunica/types';
+  IQueryableResultQuadsEnhanced } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
@@ -248,7 +247,8 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
    */
-  public async getResultMediaTypes(context?: IActionContext): Promise<Record<string, number>> {
+  public async getResultMediaTypes(context?: any): Promise<Record<string, number>> {
+    context = ActionContext.ensureActionContext(context);
     return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
@@ -256,7 +256,8 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL result media type formats.
    */
-  public async getResultMediaTypeFormats(context?: IActionContext): Promise<Record<string, string>> {
+  public async getResultMediaTypeFormats(context?: any): Promise<Record<string, string>> {
+    context = ActionContext.ensureActionContext(context);
     return (await this.mediatorSparqlSerializeMediaTypeFormatCombiner.mediate({ context, mediaTypeFormats: true }))
       .mediaTypeFormats;
   }
@@ -270,8 +271,7 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    */
   public async resultToString(queryResult: IQueryableResult, mediaType?: string, context?: any):
   Promise<IActorSparqlSerializeOutput> {
-    context = new ActionContext(context);
-
+    context = ActionContext.ensureActionContext(context);
     if (!mediaType) {
       switch (queryResult.type) {
         case 'bindings':
@@ -285,8 +285,7 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
           break;
       }
     }
-    const handle: IActionSparqlSerialize = queryResult;
-    handle.context = context;
+    const handle: IActionSparqlSerialize = { ...queryResult, context };
     return (await this.mediatorSparqlSerialize.mediate({ context, handle, handleMediaType: mediaType })).handle;
   }
 
@@ -294,10 +293,12 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * Invalidate all internal caches related to the given page URL.
    * If no page URL is given, then all pages will be invalidated.
    * @param {string} url The page URL to invalidate.
+   * @param context An optional ActionContext to pass to the actors.
    * @return {Promise<any>} A promise resolving when the caches have been invalidated.
    */
-  public invalidateHttpCache(url?: string): Promise<any> {
-    return this.mediatorHttpInvalidate.mediate({ url });
+  public invalidateHttpCache(url?: string, context?: any): Promise<any> {
+    context = ActionContext.ensureActionContext(context);
+    return this.mediatorHttpInvalidate.mediate({ url, context });
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {

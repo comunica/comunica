@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
-import type { BindingsStream } from '@comunica/types';
+import { ActionContext, Bus } from '@comunica/core';
+import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,9 +14,11 @@ const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeJson', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorSparqlSerializeJson module', () => {
@@ -62,11 +64,11 @@ describe('ActorSparqlSerializeJson', () => {
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/json': 1,
         }});
       });
@@ -74,39 +76,42 @@ describe('ActorSparqlSerializeJson', () => {
 
     describe('for serializing', () => {
       it('should test on application/json quads', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' }))
+        return expect(actor
+          .test({ handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'application/json', context }))
           .resolves.toBeTruthy();
       });
 
       it('should test on application/json bindings', () => {
-        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream },
-          handleMediaType: 'application/json' }))
+        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream, context },
+          handleMediaType: 'application/json',
+          context }))
           .resolves.toBeTruthy();
       });
 
       it('should test on application/json booleans', () => {
-        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
-          handleMediaType: 'application/json' }))
+        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+          handleMediaType: 'application/json',
+          context }))
           .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/n-triples' },
+          { handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'application/n-triples', context },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should not test on unknown types', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'unknown' }, handleMediaType: 'application/json' },
+          { handle: <any> { type: 'unknown', context }, handleMediaType: 'application/json', context },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/json' },
+          { handle: <any> { type: 'bindings', bindingsStream, context }, handleMediaType: 'application/json', context },
         ))).handle.data))
           .toEqual(
             `[
@@ -119,7 +124,7 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' },
+          { handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'application/json', context },
         ))).handle.data)).toEqual(
           `[
 {"subject":"http://example.org/a","predicate":"http://example.org/b","object":"http://example.org/c","graph":""},
@@ -131,8 +136,9 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should run on an empty bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamEmpty },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamEmpty, context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data))
           .toEqual(`[]
 `);
@@ -140,8 +146,9 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should run on an empty quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: bindingsStreamEmpty },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'quads', quadStream: bindingsStreamEmpty, context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data))
           .toEqual(`[]
 `);
@@ -149,8 +156,9 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should run on a boolean result resolving to true', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data))
           .toEqual(`true
 `);
@@ -158,8 +166,9 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should run on a boolean result resolving to false', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false) },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data))
           .toEqual(`false
 `);
@@ -167,22 +176,25 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: streamError },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'bindings', bindingsStream: streamError, context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: streamError },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'quads', quadStream: streamError, context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlJson')) },
-            handleMediaType: 'application/json' },
+          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlJson')), context },
+            handleMediaType: 'application/json',
+            context },
         ))).handle.data)).rejects.toBeTruthy();
       });
     });

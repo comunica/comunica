@@ -22,12 +22,12 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
     super(args, 'clear');
   }
 
-  public async testOperation(operation: Algebra.Clear, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Clear, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(operation: Algebra.Clear, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Clear, context: IActionContext):
   Promise<IQueryableResult> {
     // Delegate to update-quads bus
     let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];

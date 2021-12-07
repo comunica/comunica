@@ -1,4 +1,4 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IInvalidateListener } from '..';
 import { ActorHttpInvalidateListenable } from '..';
 
@@ -27,11 +27,11 @@ describe('ActorHttpInvalidateListenable', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({})).resolves.toBeTruthy();
+      return expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return expect(actor.run({})).resolves.toBeTruthy();
+      return expect(actor.run({ context: new ActionContext() })).resolves.toBeTruthy();
     });
   });
 
@@ -48,21 +48,21 @@ describe('ActorHttpInvalidateListenable', () => {
     });
 
     it('should test', async() => {
-      expect(await actor.test({})).toBeTruthy();
+      expect(await actor.test({ context: new ActionContext() })).toBeTruthy();
       expect(l0).not.toHaveBeenCalled();
       expect(l1).not.toHaveBeenCalled();
     });
 
     it('should run without URL', async() => {
-      expect(await actor.run({})).toBeTruthy();
-      expect(l0).toHaveBeenCalledWith({});
-      expect(l1).toHaveBeenCalledWith({});
+      expect(await actor.run({ context: new ActionContext() })).toBeTruthy();
+      expect(l0).toHaveBeenCalledWith({ context: new ActionContext() });
+      expect(l1).toHaveBeenCalledWith({ context: new ActionContext() });
     });
 
     it('should run with URL', async() => {
-      expect(await actor.run({ url: 'abc' })).toBeTruthy();
-      expect(l0).toHaveBeenCalledWith({ url: 'abc' });
-      expect(l1).toHaveBeenCalledWith({ url: 'abc' });
+      expect(await actor.run({ url: 'abc', context: new ActionContext() })).toBeTruthy();
+      expect(l0).toHaveBeenCalledWith({ url: 'abc', context: new ActionContext() });
+      expect(l1).toHaveBeenCalledWith({ url: 'abc', context: new ActionContext() });
     });
   });
 });

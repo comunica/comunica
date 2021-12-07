@@ -17,15 +17,15 @@ describe('ActorContextPreprocessSourceToDestination', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({})).resolves.toEqual(true);
+      return expect(actor.test({ context: new ActionContext() })).resolves.toEqual(true);
     });
 
     it('should run on no context', async() => {
-      expect(await actor.run({})).toEqual({});
+      expect(await actor.run({ context: new ActionContext() })).toEqual({ context: new ActionContext() });
     });
 
     it('should run on empty context', async() => {
-      expect(await actor.run({ context: new ActionContext({}) })).toEqual({
+      expect(await actor.run({ context: new ActionContext() })).toEqual({
         context: new ActionContext({}),
       });
     });

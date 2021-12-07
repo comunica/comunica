@@ -28,7 +28,7 @@ export interface IActorContextPreprocessOutput extends IActorOutput {
    * A context object.
    * Can be null.
    */
-  context?: IActionContext;
+  context: IActionContext;
 }
 
 export type IActorContextPreprocessArgs = IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>;

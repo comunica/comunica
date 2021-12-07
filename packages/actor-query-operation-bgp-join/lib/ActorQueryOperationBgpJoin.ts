@@ -16,11 +16,11 @@ export class ActorQueryOperationBgpJoin extends ActorQueryOperationTypedMediated
     super(args, 'bgp');
   }
 
-  public async testOperation(operation: Algebra.Bgp, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Bgp, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(operation: Algebra.Bgp, context: IActionContext | undefined):
+  public async runOperation(operation: Algebra.Bgp, context: IActionContext):
   Promise<IQueryableResult> {
     return this.mediatorQueryOperation.mediate({
       operation: ActorQueryOperationBgpJoin.FACTORY.createJoin(operation.patterns),

@@ -130,15 +130,15 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     });
   }
 
-  public async testOperation(operation: Algebra.Pattern, context: IActionContext | undefined): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Pattern, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Pattern, context: IActionContext | undefined):
+  public async runOperation(pattern: Algebra.Pattern, context: IActionContext):
   Promise<IQueryableResult> {
     // Apply the (optional) pattern-specific context
     if (pattern.context) {
-      context = context ? context.merge(pattern.context) : pattern.context;
+      context = context.merge(pattern.context);
     }
 
     // Resolve the quad pattern

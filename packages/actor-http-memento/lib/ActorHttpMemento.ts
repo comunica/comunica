@@ -31,7 +31,7 @@ export class ActorHttpMemento extends ActorHttp {
     const init: RequestInit = action.init ? { ...action.init } : {};
     const headers: Headers = init.headers = new Headers(init.headers ?? {});
 
-    const dateTime: Date | undefined = action.context?.get(KeysHttpMemento.datetime);
+    const dateTime: Date | undefined = action.context.get(KeysHttpMemento.datetime);
     if (dateTime) {
       headers.append('accept-datetime', dateTime.toUTCString());
     }

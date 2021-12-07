@@ -64,7 +64,8 @@ describe('QuadDestinationPutLdp', () => {
       });
 
       expect(mediatorRdfSerialize.mediate).toHaveBeenCalledWith({
-        handle: { quadStream: 'QUADS' },
+        context,
+        handle: { context, quadStream: 'QUADS' },
         handleMediaType: 'text/turtle',
       });
 
@@ -100,7 +101,8 @@ describe('QuadDestinationPutLdp', () => {
       });
 
       expect(mediatorRdfSerialize.mediate).toHaveBeenCalledWith({
-        handle: { quadStream: 'QUADS' },
+        context,
+        handle: { context, quadStream: 'QUADS' },
         handleMediaType: 'application/trig',
       });
 

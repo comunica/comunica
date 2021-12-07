@@ -8,7 +8,7 @@ import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IQueryableResultBindings, IMetadata,
-  IPhysicalQueryPlanLogger, Bindings,
+  IPhysicalQueryPlanLogger, Bindings, IActionContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
@@ -187,18 +187,20 @@ export abstract class ActorRdfJoin
    * For required metadata entries that are not provided, sane defaults are calculated.
    * @param entries Join entries.
    * @param metadatas Metadata of the join entries.
+   * @param context The action context.
    * @param partialMetadata Partial metadata entries.
    */
   public async constructResultMetadata(
     entries: IJoinEntry[],
     metadatas: IMetadata[],
+    context: IActionContext,
     partialMetadata: Partial<IMetadata> = {},
   ): Promise<IMetadata> {
     return {
       ...partialMetadata,
       cardinality: partialMetadata.cardinality ?? metadatas
         .reduce((acc, metadata) => acc * ActorRdfJoin.getCardinality(metadata), 1) *
-        (await this.mediatorJoinSelectivity.mediate({ entries })).selectivity,
+        (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity,
       canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
     };
   }
@@ -267,7 +269,7 @@ export abstract class ActorRdfJoin
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
     // Log to physical plan
-    const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context?.get(KeysInitSparql
+    const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context.get(KeysInitSparql
       .physicalQueryPlanLogger);
     if (this.includeInLogs && physicalQueryPlanLogger) {
       physicalQueryPlanLogger.logOperation(
