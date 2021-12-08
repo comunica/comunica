@@ -3,8 +3,12 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { getDataDestinationType, getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
+import { getContextSourceFirst, getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
+import {
+  getContextDestinationFirst,
+  getDataDestinationType,
+  getDataDestinationValue,
+} from '@comunica/bus-rdf-update-quads';
 import { KeysInitSparql } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
@@ -14,7 +18,6 @@ import type { IQueryableResult,
   IQueryableResultQuads,
   IMetadata,
   IActionContext } from '@comunica/types';
-import { DataSourceUtils } from '@comunica/utils-datasource';
 import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
@@ -54,8 +57,8 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (!action.operation) {
       throw new Error('Missing field \'operation\' in a query operation action.');
     }
-    const source = await DataSourceUtils.getSingleSource(action.context);
-    const destination = await DataSourceUtils.getSingleDestination(action.context);
+    const source = getContextSourceFirst(action.context);
+    const destination = getContextDestinationFirst(action.context);
     const sourceType = source ? getDataSourceType(source) : undefined;
     const destinationType = destination ? getDataDestinationType(destination) : undefined;
     const sourceValue = source ? getDataSourceValue(source) : undefined;
@@ -73,7 +76,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   }
 
   public async run(action: IActionQueryOperation): Promise<IQueryableResult> {
-    const source = await DataSourceUtils.getSingleSource(action.context);
+    const source = getContextSourceFirst(action.context);
     if (!source) {
       throw new Error('Illegal state: undefined sparql endpoint source.');
     }

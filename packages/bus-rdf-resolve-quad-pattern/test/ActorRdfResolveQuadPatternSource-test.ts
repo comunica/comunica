@@ -1,14 +1,11 @@
-import { Bus, ActionContext } from '@comunica/core';
-import type * as RDF from '@rdfjs/types';
+import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
-import { ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue,
-  getDataSourceContext, isDataSourceRawType } from '..';
+import { ActorRdfResolveQuadPatternSource, getContextSourceUrl } from '..';
 
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfResolveQuadPatternSource', () => {
   const bus = new Bus({ name: 'bus' });
-  const rdfjsSource: RDF.Source = <any> { match: true };
 
   describe('The ActorRdfResolveQuadPatternSource module', () => {
     it('should be a function', () => {
@@ -33,24 +30,25 @@ describe('ActorRdfResolveQuadPatternSource', () => {
 
     describe('getContextSourceUrl', () => {
       it('should return null when no source is available', () => {
-        return expect(actor.getContextSourceUrl(null)).toEqual(undefined);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        return expect(getContextSourceUrl(undefined)).toEqual(undefined);
       });
 
       it('should return when a source is available', () => {
-        return expect(actor.getContextSourceUrl({ value: 'abc' })).toEqual('abc');
+        return expect(getContextSourceUrl({ value: 'abc' })).toEqual('abc');
       });
 
       it('should return undefined when a source is available with an object value', () => {
         const src = {};
-        return expect(actor.getContextSourceUrl({ value: src })).toBeUndefined();
+        return expect(getContextSourceUrl({ value: <any> src })).toBeUndefined();
       });
 
       it('should return when a source is available and is a string', () => {
-        return expect(actor.getContextSourceUrl('abc')).toEqual('abc');
+        return expect(getContextSourceUrl('abc')).toEqual('abc');
       });
 
       it('should strip away everything after the hash', () => {
-        return expect(actor.getContextSourceUrl({ value: 'http://ex.org/#abcdef#xyz' })).toEqual('http://ex.org/');
+        return expect(getContextSourceUrl({ value: 'http://ex.org/#abcdef#xyz' })).toEqual('http://ex.org/');
       });
     });
 
@@ -62,82 +60,6 @@ describe('ActorRdfResolveQuadPatternSource', () => {
       return actor.run({ pattern: {}}).then(async(output: any) => {
         expect(await arrayifyStream(output.data)).toEqual([ 'a', 'b' ]);
       });
-    });
-  });
-
-  describe('isDataSourceRawType', () => {
-    it('should return on a string source', () => {
-      return expect(isDataSourceRawType('abc')).toEqual(true);
-    });
-
-    it('should return on an rdfjs source', () => {
-      return expect(isDataSourceRawType(rdfjsSource)).toEqual(true);
-    });
-
-    it('should return on an object source', () => {
-      return expect(isDataSourceRawType({ type: 'T', value: 'abc' })).toEqual(false);
-    });
-  });
-
-  describe('getDataSourceType', () => {
-    it('should return on a string source', () => {
-      return expect(getDataSourceType('abc')).toEqual('');
-    });
-
-    it('should return on an rdfjs source', () => {
-      return expect(getDataSourceType(rdfjsSource)).toEqual('rdfjsSource');
-    });
-
-    it('should return on an object source', () => {
-      return expect(getDataSourceType({ type: 'T', value: 'abc' })).toEqual('T');
-    });
-
-    it('should return on an object source with implicit rdfjs source', () => {
-      return expect(getDataSourceType({ value: rdfjsSource })).toEqual(undefined);
-    });
-
-    it('should return on an object source with explicit rdfjs source', () => {
-      return expect(getDataSourceType({ type: 'rdfjsSource', value: rdfjsSource })).toEqual('rdfjsSource');
-    });
-  });
-
-  describe('getDataSourceValue', () => {
-    it('should return on a string source', () => {
-      return expect(getDataSourceValue('abc')).toEqual('abc');
-    });
-
-    it('should return on a rdfjs source source', () => {
-      return expect(getDataSourceValue(rdfjsSource)).toEqual(rdfjsSource);
-    });
-
-    it('should return on an object source', () => {
-      return expect(getDataSourceValue({ type: 'T', value: 'abc' })).toEqual('abc');
-    });
-
-    it('should return on an object source with implicit rdfjs source', () => {
-      return expect(getDataSourceValue({ value: rdfjsSource })).toEqual(rdfjsSource);
-    });
-
-    it('should return on an object source with explicit rdfjs source', () => {
-      return expect(getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource })).toEqual(rdfjsSource);
-    });
-  });
-
-  describe('getDataSourceContext', () => {
-    const context = new ActionContext({ key: 'value' });
-
-    it('should return on a string source', () => {
-      return expect(getDataSourceContext('abc', context)).toEqual(context);
-    });
-
-    it('should return on a rdfjs source source', () => {
-      return expect(getDataSourceContext(rdfjsSource, context)).toEqual(context);
-    });
-
-    it('should return on an object source', () => {
-      const sourceContext = new ActionContext({ auth: 'username:passwd' });
-      return expect(getDataSourceContext({ value: 'http://google.com', context: sourceContext }, context))
-        .toEqual(context.merge(sourceContext));
     });
   });
 });

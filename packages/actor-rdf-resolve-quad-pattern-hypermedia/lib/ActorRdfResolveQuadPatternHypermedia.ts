@@ -7,7 +7,11 @@ import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolv
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IActionRdfResolveQuadPattern,
   IQuadSource, IActorRdfResolveQuadPatternArgs } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActorRdfResolveQuadPatternSource, getDataSourceType } from '@comunica/bus-rdf-resolve-quad-pattern';
+import {
+  ActorRdfResolveQuadPatternSource, getContextSource,
+  getContextSourceUrl,
+  getDataSourceType, hasContextSingleSource,
+} from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import LRUCache = require('lru-cache');
@@ -41,7 +45,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    const sources = this.hasContextSingleSource(action.context);
+    const sources = hasContextSingleSource(action.context);
     if (!sources) {
       throw new Error(`Actor ${this.name} can only resolve quad pattern queries against a single source.`);
     }
@@ -49,8 +53,8 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 
   protected getSource(context: IActionContext, operation: Algebra.Pattern): Promise<IQuadSource> {
-    const contextSource = this.getContextSource(context)!;
-    const url = this.getContextSourceUrl(contextSource)!;
+    const contextSource = getContextSource(context)!;
+    const url = getContextSourceUrl(contextSource)!;
     let source: MediatedQuadSource;
 
     // Try to read from cache

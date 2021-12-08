@@ -3,7 +3,11 @@ import type { IActorRdfDereferenceOutput, MediatorRdfDereference } from '@comuni
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
-import { ActorRdfUpdateQuadsDestination, getDataDestinationType } from '@comunica/bus-rdf-update-quads';
+import {
+  ActorRdfUpdateQuadsDestination, getContextDestination,
+  getContextDestinationUrl,
+  getDataDestinationType,
+} from '@comunica/bus-rdf-update-quads';
 import type { IActionRdfUpdateQuads, IDataDestination,
   IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
@@ -34,7 +38,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   }
 
   public async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
-    const url = this.getContextDestinationUrl(this.getContextDestination(action.context));
+    const url = getContextDestinationUrl(getContextDestination(action.context));
     if (!url) {
       throw new Error(`Actor ${this.name} can only update quads against a single destination URL.`);
     }
@@ -42,8 +46,8 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   }
 
   public getDestination(context: IActionContext): Promise<IQuadDestination> {
-    const dataDestination: IDataDestination = this.getContextDestination(context)!;
-    let url: string = this.getContextDestinationUrl(dataDestination)!;
+    const dataDestination: IDataDestination = getContextDestination(context)!;
+    let url: string = getContextDestinationUrl(dataDestination)!;
 
     // Try to read from cache
     if (this.cache && this.cache.has(url)) {

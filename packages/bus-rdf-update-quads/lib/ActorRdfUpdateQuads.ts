@@ -1,28 +1,7 @@
-import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-
-export function isDataDestinationRawType(dataDestination: IDataDestination): dataDestination is string | RDF.Store {
-  return typeof dataDestination === 'string' || 'remove' in dataDestination;
-}
-export function getDataDestinationType(dataDestination: IDataDestination): string | undefined {
-  if (typeof dataDestination === 'string') {
-    return '';
-  }
-  return 'remove' in dataDestination ? 'rdfjsStore' : dataDestination.type;
-}
-export function getDataDestinationValue(dataDestination: IDataDestination): string | RDF.Store {
-  return isDataDestinationRawType(dataDestination) ? dataDestination : dataDestination.value;
-}
-export function getDataDestinationContext(dataDestination: IDataDestination, context: IActionContext): IActionContext {
-  if (typeof dataDestination === 'string' || 'remove' in dataDestination || !dataDestination.context) {
-    return context;
-  }
-  return context.merge(dataDestination.context);
-}
 
 /**
  * A comunica actor for rdf-update-quads events.
@@ -42,42 +21,7 @@ export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, I
   public constructor(args: IActorRdfUpdateQuadsArgs) {
     super(args);
   }
-
-  /**
-   * Get the destination from the given context.
-   * @param {ActionContext} context An optional context.
-   * @return {IDataDestination} The destination or undefined.
-   */
-  protected getContextDestination(context: IActionContext): IDataDestination | undefined {
-    return context.get(KeysRdfUpdateQuads.destination);
-  }
-
-  /**
-   * Get the destination's raw URL value from the given context.
-   * @param {IDataDestination} destination A destination.
-   * @return {string} The URL or undefined.
-   */
-  protected getContextDestinationUrl(destination?: IDataDestination): string | undefined {
-    if (destination) {
-      let fileUrl = getDataDestinationValue(destination);
-      if (typeof fileUrl === 'string') {
-        // Remove hashes from source
-        const hashPosition = fileUrl.indexOf('#');
-        if (hashPosition >= 0) {
-          fileUrl = fileUrl.slice(0, hashPosition);
-        }
-
-        return fileUrl;
-      }
-    }
-  }
 }
-
-export type IDataDestination = string | RDF.Store | {
-  type?: string;
-  value: string | RDF.Store;
-  context?: IActionContext;
-};
 
 export interface IActionRdfUpdateQuads extends IAction {
   /**

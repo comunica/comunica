@@ -39,7 +39,6 @@
     "@comunica/core": "^2.0.0",
     "@comunica/mediatortype-httprequests": "^2.0.0",
     "@comunica/types": "^2.0.0",
-    "@comunica/utils-datasource": "^2.0.0",
     "@rdfjs/types": "*",
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^3.2.1",
