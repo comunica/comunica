@@ -1,7 +1,7 @@
 import type { IJoinEntry } from '@comunica/bus-rdf-join';
 import type { IAction, IActorArgs, IActorOutput, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IMediatorTypeAccuracy } from '../../mediatortype-accuracy/lib/MediatorTypeAccuracy';
+import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
 
 /**
  * A comunica actor for rdf-join-selectivity events.
