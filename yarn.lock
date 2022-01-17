@@ -4317,10 +4317,10 @@ compare-func@^2.0.0:
     array-ify "^1.0.0"
     dot-prop "^5.1.0"
 
-componentsjs-generator@3.0.0-beta.1:
-  version "3.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-3.0.0-beta.1.tgz#0699daed965e03a0ab7f2b824fcaeca671361099"
-  integrity sha512-NCsyyGPHiZi91ff861mTLuVzMyDQUTXTM5T7Fa2w8AbahE0wee0+b6wJc40pEP13qOj5j41YvwraLaxRwqV4Zg==
+componentsjs-generator@3.0.0-beta.5:
+  version "3.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-3.0.0-beta.5.tgz#d80a06aab21a3f6e83c190f5521ba8c7c86ef02d"
+  integrity sha512-Zk/6ROTQ2vWi6bX3A6i11M8hD4LDI2Nrccj/h+A6z4twH11nufV8kiRjcfqvu1sNhj5Do3jypV4A7sZVj+9Fwg==
   dependencies:
     "@types/lru-cache" "^5.1.0"
     "@types/semver" "^7.3.4"
@@ -4330,7 +4330,7 @@ componentsjs-generator@3.0.0-beta.1:
     jsonld-context-parser "^2.1.5"
     lru-cache "^6.0.0"
     minimist "^1.2.5"
-    rdf-object "^1.12.0"
+    rdf-object "^1.13.0"
     semver "^7.3.2"
 
 componentsjs@5.0.0-beta.0:
@@ -4346,6 +4346,25 @@ componentsjs@5.0.0-beta.0:
     minimist "^1.2.0"
     rdf-data-factory "^1.1.0"
     rdf-object "^1.12.0"
+    rdf-parse "^1.9.1"
+    rdf-quad "^1.5.0"
+    rdf-terms "^1.7.0"
+    semver "^7.3.2"
+    winston "^3.3.3"
+
+componentsjs@5.0.0-beta.3:
+  version "5.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-5.0.0-beta.3.tgz#e03abbfc4f8d630ff8c9a8345ec92308d905ccc8"
+  integrity sha512-qAhUa4vJ4FsVCQGSg29OOeG00IP80uNzlyHd5eo03lA5qJZJrewzDQ9m6feAx1ljoj3oOr4nEsfxBtZ2ax/G7w==
+  dependencies:
+    "@rdfjs/types" "*"
+    "@types/minimist" "^1.2.0"
+    "@types/node" "^14.14.7"
+    "@types/semver" "^7.3.4"
+    jsonld-context-parser "^2.1.1"
+    minimist "^1.2.0"
+    rdf-data-factory "^1.1.0"
+    rdf-object "^1.13.0"
     rdf-parse "^1.9.1"
     rdf-quad "^1.5.0"
     rdf-terms "^1.7.0"
@@ -9504,6 +9523,17 @@ rdf-object@^1.12.0:
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.12.0.tgz#76f786f333a5bd4eb9f11b10af8879950123249e"
   integrity sha512-LF4LjYCneh2RJcUSPWbTfGgsYqRMcElmHDR3lPkMrJQ6azrCqY9DLdVWaqK7xRn1ujeHWiOkS34ThTZgzzvuUQ==
+  dependencies:
+    "@rdfjs/types" "*"
+    jsonld-context-parser "^2.0.2"
+    rdf-data-factory "^1.1.0"
+    rdf-string "^1.6.0"
+    streamify-array "^1.0.1"
+
+rdf-object@^1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.13.0.tgz#8914d09de1430fcc76a197f2ee1ecab8c341e852"
+  integrity sha512-a32scuLEGWfes8Da2fg3ArpT5iJZABEtpQ3OS1ZbPAAMKiwMTNtJxbsK1XZeXYaVAxNTcxLAwDnOrcmy8vtImA==
   dependencies:
     "@rdfjs/types" "*"
     jsonld-context-parser "^2.0.2"

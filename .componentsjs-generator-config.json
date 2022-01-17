@@ -6,17 +6,14 @@
     "packages/bindings-factory",
     "packages/context-entries",
     "packages/data-factory",
-    "packages/mediatortype-accuracy",
-    "packages/mediatortype-httprequests",
-    "packages/mediatortype-join-coefficients",
-    "packages/mediatortype-priority",
-    "packages/mediatortype-time",
     "packages/packager",
     "packages/runner-cli",
     "packages/utils-datasource"
   ],
   "ignoreComponents": [
     "Error",
+    "NodeJS.ReadableStream",
+    "Headers",
     "IQueryEngine",
     "ActionContext",
     "Map",
@@ -32,7 +29,17 @@
     "KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES",
     "KEY_CONTEXT_LENIENT",
     "KEY_CONTEXT_QUERY",
-    "IQueryOptions"
+    "IQueryOptions",
+    "Response",
+    "RequestInfo",
+    "RequestInit",
+
+
+    "IQueryableResultStream",
+    "IQueryableResultBindings",
+    "IQueryableResultQuads",
+    "IQueryableResultBoolean",
+    "IQueryableResultVoid"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqose",
