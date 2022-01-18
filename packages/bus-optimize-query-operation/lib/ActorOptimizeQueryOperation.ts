@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -36,5 +36,5 @@ export interface IActorOptimizeQueryOperationOutput extends IActorOutput {
 export type IActorOptimizeQueryOperationArgs = IActorArgs<
 IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
 
-export type MediatorOptimizeQueryOperation = Mediated<
+export type MediatorOptimizeQueryOperation = Mediate<
 IActionOptimizeQueryOperation, IActorOptimizeQueryOperationOutput>;

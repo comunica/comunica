@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -53,4 +53,4 @@ export interface IActorRdfMetadataExtractOutput extends IActorOutput {
 export type IActorRdfMetadataExtractArgs = IActorArgs<
 IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
 
-export type MediatorRdfMetadataExtract = Mediated<IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput>;
+export type MediatorRdfMetadataExtract = Mediate<IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput>;

@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { ILinkQueue } from './ILinkQueue';
 
@@ -34,5 +34,5 @@ export interface IActorRdfResolveHypermediaLinksQueueOutput extends IActorOutput
 export type IActorRdfResolveHypermediaLinksQueueArgs = IActorArgs<
 IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>;
 
-export type MediatorRdfResolveHypermediaLinksQueue = Mediated<
+export type MediatorRdfResolveHypermediaLinksQueue = Mediate<
 IActionRdfResolveHypermediaLinksQueue, IActorRdfResolveHypermediaLinksQueueOutput>;

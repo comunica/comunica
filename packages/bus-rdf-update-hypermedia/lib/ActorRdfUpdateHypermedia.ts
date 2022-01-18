@@ -1,5 +1,5 @@
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
 /**
@@ -66,4 +66,4 @@ export interface IActorRdfUpdateHypermediaOutput extends IActorOutput {
 export type IActorRdfUpdateHypermediaArgs = IActorArgs<
 IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>;
 
-export type MediatorRdfUpdateHypermedia = Mediated<IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput>;
+export type MediatorRdfUpdateHypermedia = Mediate<IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput>;

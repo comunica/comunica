@@ -14,7 +14,7 @@ import type { IActionAbstractMediaTyped,
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import type { IQueryableResultBase, IActionContext } from '@comunica/types';
 
 /**
@@ -68,11 +68,11 @@ export interface IActorSparqlSerializeOutput extends IActorOutput {
 export type IActorSparqlSerializeArgs = IActorArgsMediaTyped<
 IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>;
 
-export type MediatorSparqlSerializeHandle = Mediated<
+export type MediatorSparqlSerializeHandle = Mediate<
 IActionSparqlSerializeHandle, IActorOutputSparqlSerializeHandle, IActorTestSparqlSerializeHandle>;
 
-export type MediatorSparqlSerializeMediaTypes = Mediated<
+export type MediatorSparqlSerializeMediaTypes = Mediate<
 IActionSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes>;
 
-export type MediatorSparqlSerializeMediaTypeFormats = Mediated<IActionSparqlSerializeMediaTypeFormats,
+export type MediatorSparqlSerializeMediaTypeFormats = Mediate<IActionSparqlSerializeMediaTypeFormats,
 IActorOutputSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats>;

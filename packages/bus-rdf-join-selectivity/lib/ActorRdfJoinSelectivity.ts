@@ -1,5 +1,5 @@
 import type { IJoinEntry } from '@comunica/bus-rdf-join';
-import type { IAction, IActorArgs, IActorOutput, Mediated } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
 
@@ -46,5 +46,5 @@ export interface IActorRdfJoinSelectivityOutput extends IActorOutput {
 export type IActorRdfJoinSelectivityArgs = IActorArgs<
 IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>;
 
-export type MediatorRdfJoinSelectivity = Mediated<
+export type MediatorRdfJoinSelectivity = Mediate<
 IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput, IMediatorTypeAccuracy>;

@@ -1,6 +1,6 @@
 import { PassThrough, Readable } from 'stream';
 import { KeysInitSparql } from '@comunica/context-entries';
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -141,4 +141,4 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
 
 export type IActorRdfDereferenceArgs = IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
 
-export type MediatorRdfDereference = Mediated<IActionRdfDereference, IActorRdfDereferenceOutput>;
+export type MediatorRdfDereference = Mediate<IActionRdfDereference, IActorRdfDereferenceOutput>;

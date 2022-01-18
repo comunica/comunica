@@ -13,7 +13,7 @@ import type { IActionAbstractMediaTyped,
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -86,11 +86,11 @@ export interface IActorRdfParseOutput extends IActorOutput {
 
 export type IActorRdfParseArgs = IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>;
 
-export type MediatorRdfParseHandle = Mediated<
+export type MediatorRdfParseHandle = Mediate<
 IActionRdfParseHandle, IActorOutputRdfParseHandle, IActorTestRdfParseHandle>;
 
-export type MediatorRdfParseMediaTypes = Mediated<
+export type MediatorRdfParseMediaTypes = Mediate<
 IActionRdfParseMediaTypes, IActorOutputRdfParseMediaTypes, IActorTestRdfParseMediaTypes>;
 
-export type MediatorRdfParseMediaTypeFormats = Mediated<
+export type MediatorRdfParseMediaTypeFormats = Mediate<
 IActionRdfParseMediaTypeFormats, IActorOutputRdfParseMediaTypeFormats, IActorTestRdfParseMediaTypeFormats>;

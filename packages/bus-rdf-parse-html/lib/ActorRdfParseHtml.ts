@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -89,4 +89,4 @@ export interface IHtmlParseListener {
 
 export type IActorRdfParseHtmlArgs = IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
 
-export type MediatorRdfParseHtml = Mediated<IActionRdfParseHtml, IActorRdfParseHtmlOutput>;
+export type MediatorRdfParseHtml = Mediate<IActionRdfParseHtml, IActorRdfParseHtmlOutput>;

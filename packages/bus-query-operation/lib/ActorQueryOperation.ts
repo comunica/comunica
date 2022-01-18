@@ -1,5 +1,5 @@
 import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, IAction, Mediated } from '@comunica/core';
+import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
@@ -215,7 +215,7 @@ export interface IActionQueryOperation extends IAction {
 
 export type IActorQueryOperationArgs = IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult>;
 
-export type MediatorQueryOperation = Mediated<IActionQueryOperation, IQueryableResult>;
+export type MediatorQueryOperation = Mediate<IActionQueryOperation, IQueryableResult>;
 
 export interface IBaseExpressionContext {
   now?: Date;
