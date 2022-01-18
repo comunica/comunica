@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
 /**
@@ -35,6 +35,4 @@ export interface IActorHttpInvalidateOutput extends IActorOutput {
 
 export type IActorHttpInvalidateArgs = IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
 
-export type MediatorHttpInvalidate = Mediator<
-Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
-IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
+export type MediatorHttpInvalidate = Mediated<IActionHttpInvalidate, IActorHttpInvalidateOutput>;

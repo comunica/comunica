@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import type { IAction, IActorOutput, IActorTest, IActorArgs, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, IActorArgs, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
 /**
@@ -54,6 +54,4 @@ export interface IActorOutputInit extends IActorOutput {
 
 export type IActorInitArgs = IActorArgs<IActionInit, IActorTest, IActorOutputInit>;
 
-export type MediatorInit = Mediator<
-Actor<IActionInit, IActorTest, IActorOutputInit>,
-IActionInit, IActorTest, IActorOutputInit>;
+export type MediatorInit = Mediated<IActionInit, IActorOutputInit>;

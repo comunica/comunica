@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -69,6 +69,5 @@ export interface ILink {
 export type IActorRdfResolveHypermediaLinksArgs = IActorArgs<
 IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>;
 
-export type MediatorRdfResolveHypermediaLinks = Mediator<
-Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>,
-IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>;
+export type MediatorRdfResolveHypermediaLinks = Mediated<
+IActionRdfResolveHypermediaLinks, IActorRdfResolveHypermediaLinksOutput>;

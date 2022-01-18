@@ -13,7 +13,7 @@ import type { IActionAbstractMediaTyped,
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest, Actor, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, Mediated } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -86,14 +86,11 @@ export interface IActorRdfParseOutput extends IActorOutput {
 
 export type IActorRdfParseArgs = IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>;
 
-export type MediatorRdfParseHandle = Mediator<
-Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
-IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>;
+export type MediatorRdfParseHandle = Mediated<
+IActionRdfParseHandle, IActorOutputRdfParseHandle, IActorTestRdfParseHandle>;
 
-export type MediatorRdfParseMediaTypes = Mediator<
-Actor<IActionRdfParseMediaTypes, IActorTestRdfParseMediaTypes, IActorOutputRdfParseMediaTypes>,
-IActionRdfParseMediaTypes, IActorTestRdfParseMediaTypes, IActorOutputRdfParseMediaTypes>;
+export type MediatorRdfParseMediaTypes = Mediated<
+IActionRdfParseMediaTypes, IActorOutputRdfParseMediaTypes, IActorTestRdfParseMediaTypes>;
 
-export type MediatorRdfParseMediaTypeFormats = Mediator<
-Actor<IActionRdfParseMediaTypeFormats, IActorTestRdfParseMediaTypeFormats, IActorOutputRdfParseMediaTypeFormats>,
-IActionRdfParseMediaTypeFormats, IActorTestRdfParseMediaTypeFormats, IActorOutputRdfParseMediaTypeFormats>;
+export type MediatorRdfParseMediaTypeFormats = Mediated<
+IActionRdfParseMediaTypeFormats, IActorOutputRdfParseMediaTypeFormats, IActorTestRdfParseMediaTypeFormats>;

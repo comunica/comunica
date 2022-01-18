@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -81,6 +81,4 @@ export interface IActorRdfUpdateQuadsOutput extends IActorOutput {
 
 export type IActorRdfUpdateQuadsArgs = IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
 
-export type MediatorRdfUpdateQuads = Mediator<
-Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+export type MediatorRdfUpdateQuads = Mediated<IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput>;

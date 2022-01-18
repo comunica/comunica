@@ -1,5 +1,5 @@
 import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, Mediator, IAction } from '@comunica/core';
+import type { IActorArgs, IActorTest, IAction, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
@@ -138,9 +138,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getExpressionContext(context: IActionContext, mediatorQueryOperation?: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
-  IActionQueryOperation, IActorTest, IQueryableResult>): ISyncExpressionContext {
+  public static getExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  ISyncExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`),
@@ -153,9 +152,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation?: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
-  IActionQueryOperation, IActorTest, IQueryableResult>): IAsyncExpressionContext {
+  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  IAsyncExpressionContext {
     const expressionContext: IAsyncExpressionContext = {
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
@@ -171,10 +169,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param context An action context.
    * @param mediatorQueryOperation A query operation mediator.
    */
-  public static createExistenceResolver(context: IActionContext, mediatorQueryOperation: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
-  IActionQueryOperation, IActorTest, IQueryableResult>):
-    (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
+  public static createExistenceResolver(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
+  (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async(expr, bindings) => {
       const operation = materializeOperation(expr.input, bindings);
 
@@ -219,9 +215,7 @@ export interface IActionQueryOperation extends IAction {
 
 export type IActorQueryOperationArgs = IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult>;
 
-export type MediatorQueryOperation = Mediator<
-Actor<IActionQueryOperation, IActorTest, IQueryableResult>,
-IActionQueryOperation, IActorTest, IQueryableResult>;
+export type MediatorQueryOperation = Mediated<IActionQueryOperation, IQueryableResult>;
 
 export interface IBaseExpressionContext {
   now?: Date;

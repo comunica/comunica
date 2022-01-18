@@ -1,18 +1,8 @@
-import type {
-  IActionAbstractMediaTypedMediaTypes,
-  IActorOutputAbstractMediaTypedMediaTypes,
-  IActorTestAbstractMediaTypedMediaTypes,
-} from '@comunica/actor-abstract-mediatyped';
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
-import type {
-  IActionRootRdfSerialize,
-  IActorTestRootRdfSerialize,
-  IActorOutputRootRdfSerialize,
-} from '@comunica/bus-rdf-serialize';
+import type { MediatorRdfSerialize, MediatorRdfSerializeMediaTypes } from '@comunica/bus-rdf-serialize';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import { validateHttpResponse } from '@comunica/bus-rdf-update-quads';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -26,33 +16,19 @@ export class QuadDestinationPutLdp implements IQuadDestination {
   private readonly context: IActionContext;
   private readonly mediaTypes: string[];
 
-  private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  private readonly mediatorHttp: MediatorHttp;
 
-  public readonly mediatorRdfSerializeMediatypes: Mediator<Actor<
-  IActionAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes,
-  IActorOutputAbstractMediaTypedMediaTypes>,
-  IActionAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes,
-  IActorOutputAbstractMediaTypedMediaTypes>;
+  public readonly mediatorRdfSerializeMediatypes: MediatorRdfSerializeMediaTypes;
 
-  private readonly mediatorRdfSerialize: Mediator<
-  Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
-  IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
+  private readonly mediatorRdfSerialize: MediatorRdfSerialize;
 
   public constructor(
     url: string,
     context: IActionContext,
     mediaTypes: string[],
-    mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-    IActionHttp, IActorTest, IActorHttpOutput>,
-    mediatorRdfSerializeMediatypes: Mediator<Actor<
-    IActionAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes,
-    IActorOutputAbstractMediaTypedMediaTypes>,
-    IActionAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes,
-    IActorOutputAbstractMediaTypedMediaTypes>,
-    mediatorRdfSerialize: Mediator<
-    Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
-    IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
+    mediatorHttp: MediatorHttp,
+    mediatorRdfSerializeMediatypes: MediatorRdfSerializeMediaTypes,
+    mediatorRdfSerialize: MediatorRdfSerialize,
   ) {
     this.url = url;
     this.context = context;

@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 
@@ -33,6 +33,4 @@ export interface IActorContextPreprocessOutput extends IActorOutput {
 
 export type IActorContextPreprocessArgs = IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>;
 
-export type MediatorContextPreprocess = Mediator<
-Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
-IAction, IActorTest, IActorContextPreprocessOutput>;
+export type MediatorContextPreprocess = Mediated<IAction, IActorContextPreprocessOutput>;

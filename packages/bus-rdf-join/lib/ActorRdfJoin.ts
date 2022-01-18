@@ -3,7 +3,7 @@ import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitSparql } from '@comunica/context-entries';
-import type { IAction, IActorArgs, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
@@ -387,6 +387,4 @@ export interface IActorRdfJoinOutputInner {
   physicalPlanMetadata?: any;
 }
 
-export type MediatorRdfJoin = Mediator<
-Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>,
-IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings>;
+export type MediatorRdfJoin = Mediated<IActionRdfJoin, IQueryableResultBindings, IMediatorTypeJoinCoefficients>;

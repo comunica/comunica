@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediated } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
@@ -76,6 +76,4 @@ export interface IActorHttpOutput extends IActorOutput, Response {
 
 export type IActorHttpArgs = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>;
 
-export type MediatorHttp = Mediator<
-Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-IActionHttp, IActorTest, IActorHttpOutput>;
+export type MediatorHttp = Mediated<IActionHttp, IActorHttpOutput>;
