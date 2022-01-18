@@ -69,10 +69,10 @@ export type IActorSparqlSerializeArgs = IActorArgsMediaTyped<
 IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>;
 
 export type MediatorSparqlSerializeHandle = Mediated<
-IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
+IActionSparqlSerializeHandle, IActorOutputSparqlSerializeHandle, IActorTestSparqlSerializeHandle>;
 
 export type MediatorSparqlSerializeMediaTypes = Mediated<
-IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
+IActionSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes>;
 
 export type MediatorSparqlSerializeMediaTypeFormats = Mediated<IActionSparqlSerializeMediaTypeFormats,
-IActorTestSparqlSerializeMediaTypeFormats, IActorOutputSparqlSerializeMediaTypeFormats>;
+IActorOutputSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats>;
