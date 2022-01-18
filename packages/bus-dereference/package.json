@@ -1,0 +1,43 @@
+{
+  "name": "@comunica/bus-dereference",
+  "version": "1.0.0",
+  "description": "A bus for dereferencing a path or URL into a (generic) stream.",
+  "lsd:module": true,
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/bus-dereference"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "dereference"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^2.0.0"
+  },
+  "devDependencies": {
+    "@comunica/core": "^2.0.0"
+  },
+  "scripts": {
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls"
+  }
+}
