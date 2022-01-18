@@ -257,7 +257,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
   /**
    * Multiplier for selectivity values
    * @range {double}
-   * @default {0.1}
+   * @default {0.0001}
    */
   selectivityModifier: number;
   /**
