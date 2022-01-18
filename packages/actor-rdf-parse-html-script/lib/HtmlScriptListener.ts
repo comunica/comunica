@@ -1,9 +1,7 @@
 import { Readable } from 'stream';
-import type { IActionRdfParseHandle, IActorOutputRdfParseHandle,
-  IActorTestRdfParseHandle } from '@comunica/bus-rdf-parse';
+import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
 import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
-import type { Actor, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -14,9 +12,7 @@ import { resolve as resolveIri } from 'relative-to-absolute-iri';
  * parses them, and outputs the resulting quads.
  */
 export class HtmlScriptListener implements IHtmlParseListener {
-  private readonly mediatorRdfParseHandle: Mediator<
-  Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
-  IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>;
+  private readonly mediatorRdfParseHandle: MediatorRdfParseHandle;
 
   private readonly cbQuad: (quad: RDF.Quad) => void;
   private readonly cbError: (error: Error) => void;
@@ -35,12 +31,10 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private passedScripts = 0;
   private isFinalJsonLdProcessing = false;
 
-  public constructor(mediatorRdfParseHandle: Mediator<
-  Actor<IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
-  IActionRdfParseHandle, IActorTestRdfParseHandle, IActorOutputRdfParseHandle>,
-  cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-  supportedTypes: Record<string, number>, context: IActionContext, baseIRI: string,
-  headers: Headers | undefined) {
+  public constructor(mediatorRdfParseHandle: MediatorRdfParseHandle,
+    cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
+    supportedTypes: Record<string, number>, context: IActionContext, baseIRI: string,
+    headers: Headers | undefined) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
     this.cbError = cbError;

@@ -112,3 +112,6 @@ export interface IMediatorArgs<A extends Actor<I, T, O>,
    */
   bus: Bus<A, I, T, O>;
 }
+
+export type Mediate<I extends IAction, O extends IActorOutput, T extends IActorTest = IActorTest> =
+Mediator<Actor<I, T, O>, I, T, O>;

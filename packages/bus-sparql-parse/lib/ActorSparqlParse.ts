@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -50,6 +50,4 @@ export interface IActorSparqlParseOutput extends IActorOutput {
 
 export type IActorSparqlParseArgs = IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
 
-export type MediatorSparqlParse = Mediator<
-Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
-IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
+export type MediatorSparqlParse = Mediate<IActionSparqlParse, IActorSparqlParseOutput>;

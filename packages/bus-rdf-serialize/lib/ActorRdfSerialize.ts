@@ -9,7 +9,7 @@ import type { IActionAbstractMediaTyped, IActorArgsMediaTyped,
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest, Actor, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -71,15 +71,14 @@ export interface IActorRdfSerializeOutput extends IActorOutput {
 
 export type IActorRdfSerializeArgs = IActorArgsMediaTyped<IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>;
 
-export type MediatorRdfSerializeHandle = Mediator<
-Actor<IActionRdfSerializeHandle, IActorTestRdfSerializeHandle, IActorOutputRdfSerializeHandle>,
-IActionRdfSerializeHandle, IActorTestRdfSerializeHandle, IActorOutputRdfSerializeHandle>;
+export type MediatorRdfSerializeHandle = Mediate<
+IActionRdfSerializeHandle, IActorOutputRdfSerializeHandle, IActorTestRdfSerializeHandle>;
 
-export type MediatorRdfSerializeMediaTypes = Mediator<
-Actor<IActionRdfSerializeMediaTypes, IActorTestRdfSerializeMediaTypes, IActorOutputRdfSerializeMediaTypes>,
-IActionRdfSerializeMediaTypes, IActorTestRdfSerializeMediaTypes, IActorOutputRdfSerializeMediaTypes>;
+export type MediatorRdfSerialize = Mediate<
+IActionRootRdfSerialize, IActorOutputRootRdfSerialize, IActorTestRootRdfSerialize>;
 
-export type MediatorRdfSerializeMediaTypeFormats = Mediator<
-Actor<IActionRdfSerializeMediaTypeFormats, IActorTestRdfSerializeMediaTypeFormats,
-IActorOutputRdfSerializeMediaTypeFormats>, IActionRdfSerializeMediaTypeFormats, IActorTestRdfSerializeMediaTypeFormats,
-IActorOutputRdfSerializeMediaTypeFormats>;
+export type MediatorRdfSerializeMediaTypes = Mediate<
+IActionRdfSerializeMediaTypes, IActorOutputRdfSerializeMediaTypes, IActorTestRdfSerializeMediaTypes>;
+
+export type MediatorRdfSerializeMediaTypeFormats = Mediate<
+IActionRdfSerializeMediaTypeFormats, IActorOutputRdfSerializeMediaTypeFormats, IActorTestRdfSerializeMediaTypeFormats>;

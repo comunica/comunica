@@ -1,5 +1,5 @@
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -85,6 +85,5 @@ export interface IActorRdfResolveHypermediaOutput extends IActorOutput {
 export type IActorRdfResolveHypermediaArgs = IActorArgs<
 IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>;
 
-export type MediatorRdfResolveHypermedia = Mediator<
-Actor<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>,
-IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>;
+export type MediatorRdfResolveHypermedia = Mediate<
+IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput, IActorRdfResolveHypermediaTest>;

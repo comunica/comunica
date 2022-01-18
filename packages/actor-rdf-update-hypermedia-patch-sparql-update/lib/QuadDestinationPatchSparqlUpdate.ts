@@ -1,9 +1,8 @@
 import { Readable } from 'stream';
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import { validateHttpResponse } from '@comunica/bus-rdf-update-quads';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -17,14 +16,12 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   private readonly url: string;
   private readonly context: IActionContext;
 
-  private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  private readonly mediatorHttp: MediatorHttp;
 
   public constructor(
     url: string,
     context: IActionContext,
-    mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-    IActionHttp, IActorTest, IActorHttpOutput>,
+    mediatorHttp: MediatorHttp,
   ) {
     this.url = url;
     this.context = context;

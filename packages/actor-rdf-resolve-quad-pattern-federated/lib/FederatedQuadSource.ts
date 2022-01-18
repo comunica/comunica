@@ -1,8 +1,12 @@
-import type { DataSources, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type {
+  DataSources,
+  IActorRdfResolveQuadPatternOutput,
+  IDataSource,
+  IQuadSource,
+  MediatorRdfResolveQuadPattern,
+} from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataSourceContext, getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -22,8 +26,7 @@ const DF = new DataFactory();
 export class FederatedQuadSource implements IQuadSource {
   private static readonly SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
-  protected readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
+  protected readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
 
   protected readonly sources: DataSources;
   protected readonly contextDefault: IActionContext;
@@ -32,10 +35,9 @@ export class FederatedQuadSource implements IQuadSource {
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
-  public constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
-  context: IActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
-  skipEmptyPatterns: boolean) {
+  public constructor(mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern,
+    context: IActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
+    skipEmptyPatterns: boolean) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
     this.sources = context.get(KeysRdfResolveQuadPattern.sources)!;
     this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
