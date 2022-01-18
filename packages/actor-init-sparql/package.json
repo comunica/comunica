@@ -220,7 +220,7 @@
     "spec:graphstore": "yarn run spec:base -s http://www.w3.org/TR/sparql11-http-rdf-update/",
     "spec": "yarn run spec:query && yarn run spec:update",
     "spec-earl": "yarn run spec:query -o earl -p spec/earl-meta.json > earl.ttl",
-    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
+    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/next/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"
