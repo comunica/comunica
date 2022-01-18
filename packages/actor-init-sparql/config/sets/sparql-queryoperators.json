@@ -4,7 +4,6 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-ask/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-join/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-construct/^2.0.0/components/context.jsonld",
@@ -27,6 +26,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-nop/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-values/^2.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-hash-bindings/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^2.0.0/components/context.jsonld",
@@ -85,7 +85,12 @@
     {
       "@id": "#myDistinctQueryOperator",
       "@type": "ActorQueryOperationDistinctHash",
-      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "mediatorHashBindings": {
+        "@id": "#mediatorHashBindings",
+        "@type": "MediatorRace",
+        "bus": { "@id": "ActorHashBindings:_default_bus" }
+      }
     },
 
     {
@@ -97,7 +102,8 @@
     {
       "@id": "#myReducedQueryOperator",
       "@type": "ActorQueryOperationReducedHash",
-      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "mediatorHashBindings": { "@id": "#mediatorHashBindings" }
     },
 
     {
@@ -115,7 +121,8 @@
     {
       "@id": "#myGroupQueryOperator",
       "@type": "ActorQueryOperationGroup",
-      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "mediatorHashBindings": { "@id": "#mediatorHashBindings" }
     },
 
     {

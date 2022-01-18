@@ -1,24 +1,22 @@
 {
-  "name": "@comunica/actor-abstract-bindings-hash",
+  "name": "@comunica/bus-hash-bindings",
   "version": "2.0.0",
-  "description": "An abstract actor for handling binding query operators",
+  "description": "A comunica bus for hash-bindings events.",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-abstract-bindings-hash"
+    "directory": "packages/bus-hash-bindings"
   },
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
     "comunica",
-    "actor",
-    "abstract",
-    "binding",
-    "hash"
+    "bus",
+    "hash-bindings"
   ],
   "license": "MIT",
   "bugs": {
@@ -31,13 +29,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.0.0",
-    "@comunica/core": "^2.0.0",
-    "@comunica/types": "^2.0.0",
-    "canonicalize": "^1.0.1",
-    "hash.js": "^1.1.7",
-    "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^4.0.0"
+    "@comunica/core": "^2.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

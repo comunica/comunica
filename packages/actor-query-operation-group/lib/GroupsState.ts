@@ -1,5 +1,5 @@
-import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { Bindings } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { termToString } from 'rdf-string';
@@ -39,7 +39,11 @@ export class GroupsState {
   private waitResolver: (bindings: Bindings[]) => void;
   private resultHasBeenCalled: boolean;
 
-  public constructor(private readonly pattern: Algebra.Group, private readonly sparqleeConfig: AsyncEvaluatorConfig) {
+  public constructor(
+    private readonly hashFunction: HashFunction,
+    private readonly pattern: Algebra.Group,
+    private readonly sparqleeConfig: AsyncEvaluatorConfig,
+  ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
     this.groupVariables = new Set(this.pattern.variables.map(x => termToString(x)));
@@ -191,6 +195,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return AbstractFilterHash.hash(bindings);
+    return this.hashFunction(bindings);
   }
 }

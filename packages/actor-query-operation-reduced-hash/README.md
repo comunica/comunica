@@ -30,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "#myReducedQueryOperator",
       "@type": "ActorQueryOperationReducedHash",
-      "mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
+      "mediatorHashBindings": { "@id": "#mediatorHashBindings" }
     }
   ]
 }
@@ -39,4 +40,5 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `mediatorHashBindings`: A mediator over the [Hash Bindings bus](https://github.com/comunica/comunica/tree/master/packages/bus-hash-bindings).
 * `cacheSize`: An optional cache size, defaults to `100`.

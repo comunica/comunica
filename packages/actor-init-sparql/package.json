@@ -46,9 +46,9 @@
     "engine-default.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-bindings-hash": "^2.0.0",
     "@comunica/actor-abstract-mediatyped": "^2.0.0",
     "@comunica/actor-context-preprocess-source-to-destination": "^2.0.0",
+    "@comunica/actor-hash-bindings-sha1": "^2.0.0",
     "@comunica/actor-http-memento": "^2.0.0",
     "@comunica/actor-http-native": "^2.0.0",
     "@comunica/actor-http-node-fetch": "^2.0.0",
@@ -157,6 +157,7 @@
     "@comunica/actor-sparql-serialize-tree": "^2.0.0",
     "@comunica/bindings-factory": "^2.0.0",
     "@comunica/bus-context-preprocess": "^2.0.0",
+    "@comunica/bus-hash-bindings": "^2.0.0",
     "@comunica/bus-http": "^2.0.0",
     "@comunica/bus-http-invalidate": "^2.0.0",
     "@comunica/bus-init": "^2.0.0",

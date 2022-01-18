@@ -9,6 +9,7 @@
   "@id": "urn:comunica:my",
   "@type": "Runner",
   "import": [
+    "cais:config/sets/hash-bindings.json",
     "cais:config/sets/http.json",
     "cais:config/sets/join.json",
     "caisf:config/sets/rdf-dereference.json",

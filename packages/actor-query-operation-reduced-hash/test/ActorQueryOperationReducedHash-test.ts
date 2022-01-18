@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -12,6 +12,7 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationReducedHash', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorHashBindings: any;
   let cacheSize: any;
 
   beforeEach(() => {
@@ -31,6 +32,9 @@ describe('ActorQueryOperationReducedHash', () => {
         variables: [ 'a' ],
       }),
     };
+    mediatorHashBindings = {
+      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
+    };
     cacheSize = 20;
   });
 
@@ -39,21 +43,20 @@ describe('ActorQueryOperationReducedHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationReducedHash(
-        { name: 'actor', bus, mediatorQueryOperation, cacheSize },
+        { name: 'actor', bus, mediatorQueryOperation, cacheSize, mediatorHashBindings },
       );
     });
-    it('should create a filter', () => {
-      return expect(actor.newHashFilter())
-        .toBeInstanceOf(Function);
+    it('should create a filter', async() => {
+      expect(await actor.newHashFilter(new ActionContext())).toBeInstanceOf(Function);
     });
 
-    it('should create a filter that is a predicate', () => {
-      const filter = actor.newHashFilter();
-      return expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(true);
+    it('should create a filter that is a predicate', async() => {
+      const filter = await actor.newHashFilter(new ActionContext());
+      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(true);
     });
 
-    it('should create a filter that only returns true once for equal objects', () => {
-      const filter = actor.newHashFilter();
+    it('should create a filter that only returns true once for equal objects', async() => {
+      const filter = await actor.newHashFilter(new ActionContext());
       expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(true);
       expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
       expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
@@ -65,10 +68,10 @@ describe('ActorQueryOperationReducedHash', () => {
       expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(false);
     });
 
-    it('should create a filters that are independent', () => {
-      const filter1 = actor.newHashFilter();
-      const filter2 = actor.newHashFilter();
-      const filter3 = actor.newHashFilter();
+    it('should create a filters that are independent', async() => {
+      const filter1 = await actor.newHashFilter(new ActionContext());
+      const filter2 = await actor.newHashFilter(new ActionContext());
+      const filter3 = await actor.newHashFilter(new ActionContext());
       expect(filter1(BF.bindings({ a: DF.literal('b') }))).toBe(true);
       expect(filter1(BF.bindings({ a: DF.literal('b') }))).toBe(false);
 
@@ -85,7 +88,7 @@ describe('ActorQueryOperationReducedHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationReducedHash(
-        { name: 'actor', bus, mediatorQueryOperation, cacheSize },
+        { name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings, cacheSize },
       );
     });
 
@@ -120,6 +123,7 @@ describe('Smaller cache than number of queries', () => {
   let actor: ActorQueryOperationReducedHash;
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorHashBindings: any;
   let cacheSize: any;
 
   beforeEach(() => {
@@ -142,8 +146,11 @@ describe('Smaller cache than number of queries', () => {
         variables: [ 'a' ],
       }),
     };
+    mediatorHashBindings = {
+      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
+    };
     actor = new ActorQueryOperationReducedHash(
-      { name: 'actor', bus, mediatorQueryOperation, cacheSize },
+      { name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings, cacheSize },
     );
   });
   it('should run', () => {
