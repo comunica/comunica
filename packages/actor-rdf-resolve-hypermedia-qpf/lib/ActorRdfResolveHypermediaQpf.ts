@@ -1,6 +1,7 @@
-import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { MediatorDereference } from '@comunica/bus-dereference';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import { MediatorRdfParseHandle, MediatorRdfParseMediaTypes } from '@comunica/bus-rdf-parse';
 import type { IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput,
   IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
@@ -12,11 +13,12 @@ import { RdfSourceQpf } from './RdfSourceQpf';
 /**
  * A comunica QPF RDF Resolve Quad Pattern Actor.
  */
-export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
-  implements IActorRdfResolveHypermediaQpfArgs {
+export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia implements IActorRdfResolveHypermediaQpfArgs {
   public readonly mediatorMetadata: MediatorRdfMetadata;
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
-  public readonly mediatorRdfDereference: MediatorRdfDereference;
+  public readonly mediatorDereference: MediatorDereference;
+  public readonly mediatorRdfParseHandle: MediatorRdfParseHandle;
+  public readonly mediatorRdfParseMediatypes: MediatorRdfParseMediaTypes;
   public readonly subjectUri: string;
   public readonly predicateUri: string;
   public readonly objectUri: string;
@@ -49,7 +51,7 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
     return new RdfSourceQpf(
       this.mediatorMetadata,
       this.mediatorMetadataExtract,
-      this.mediatorRdfDereference,
+      this.mediatorDereference,
       this.subjectUri,
       this.predicateUri,
       this.objectUri,
@@ -71,9 +73,9 @@ export interface IActorRdfResolveHypermediaQpfArgs extends IActorRdfResolveHyper
    */
   mediatorMetadataExtract: MediatorRdfMetadataExtract;
   /**
-   * The RDF dereference mediator
+   * The dereference mediator
    */
-  mediatorRdfDereference: MediatorRdfDereference;
+  mediatorDereference: MediatorDereference;
   /**
    * The URI that should be interpreted as subject URI
    * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#subject}

@@ -1,5 +1,5 @@
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import type { IActorRdfDereferenceOutput, MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
@@ -18,7 +18,7 @@ import LRUCache = require('lru-cache');
  * A comunica Hypermedia RDF Update Quads Actor.
  */
 export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestination {
-  public readonly mediatorRdfDereference: MediatorRdfDereference;
+  public readonly mediatorDereference: MediatorDereference;
   public readonly mediatorMetadata: MediatorRdfMetadata;
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
@@ -60,7 +60,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
       let exists: boolean;
       try {
         // Dereference destination URL
-        const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
+        const rdfDereferenceOutput: IActorDereferenceOutput = await this.mediatorDereference
           .mediate({ context, url, acceptErrors: true });
         exists = rdfDereferenceOutput.exists;
         url = rdfDereferenceOutput.url;
@@ -113,9 +113,9 @@ export interface IActorRdfUpdateQuadsHypermediaArgs extends IActorRdfUpdateQuads
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */
   /**
-   * The RDF dereference mediator
+   * The dereference mediator
    */
-  mediatorRdfDereference: MediatorRdfDereference;
+  mediatorDereference: MediatorDereference;
   /**
    * The metadata mediator
    */

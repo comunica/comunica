@@ -117,15 +117,7 @@ export interface IActionDereference extends IAction {
   /**
    * An optional callback to retrieve the mediaType mappings
    */
-  mediaTypes?: () => Record<string, number>;
-  // /**
-  //  * A collection of mappings, mapping file extensions to their corresponding media type.
-  //  */
-  // mediaMappings?: Record<string, string>;
-  // /**
-  //  * The mediatype of the source (if it can't be inferred from the source)
-  //  */
-  // mediaType?: string;
+  mediaTypes?: () => Promise<Record<string, number>>;
 }
 
 export interface IActorDereferenceOutput extends IActorOutput {
@@ -153,10 +145,10 @@ export interface IActorDereferenceOutput extends IActorOutput {
    * The returned headers of the final URL.
    */
   headers?: Record<string, string>;
-  // /**
-  //  * The mediatype of the source
-  //  */
-  //  mediaType: string;
+  /**
+   * The mediatype of the source
+   */
+  mediaType?: string;
 }
 
 export type IActorDereferenceArgs = IActorArgs<IActionDereference, IActorTest, IActorDereferenceOutput>;

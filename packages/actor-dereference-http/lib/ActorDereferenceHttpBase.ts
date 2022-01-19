@@ -6,6 +6,8 @@ import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 import * as stringifyStream from 'stream-to-string';
 
+const REGEX_MEDIATYPE: RegExp = /^[^ ;]*/u;
+
 function mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {
   const wildcard = '*/*;q=0.1';
   const parts: string[] = [];
@@ -65,7 +67,7 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
   public async run(action: IActionDereference): Promise<IActorDereferenceOutput> {
     let exists = true;
 
-    const acceptHeader: string = mediaTypesToAcceptString(action.mediaTypes?.() ?? {}, this.getMaxAcceptHeaderLength());
+    const acceptHeader: string = mediaTypesToAcceptString(await action.mediaTypes?.() ?? {}, this.getMaxAcceptHeaderLength());
 
     // Resolve HTTP URL using appropriate accept header
     const headers: Headers = new Headers({ Accept: acceptHeader });
@@ -107,8 +109,20 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       }
     }
 
+    let mediaType = REGEX_MEDIATYPE.exec(outputHeaders['content-type'] ?? '')?.[0];
+    if (mediaType === 'text/plain') {
+      mediaType = undefined;
+    }
+
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url, data: exists ? ActorHttp.toNodeReadable(httpResponse.body) : emptyReadable(), exists, requestTime, headers: outputHeaders };
+    return {
+      url,
+      data: exists ? ActorHttp.toNodeReadable(httpResponse.body) : emptyReadable(),
+      exists,
+      requestTime,
+      headers: outputHeaders,
+      mediaType,
+    };
   }
 
   protected abstract getMaxAcceptHeaderLength(): number;

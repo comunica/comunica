@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import type { IActorRdfDereferenceOutput, MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
@@ -19,7 +19,7 @@ import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIter
  * @see LinkedRdfSourcesAsyncRdfIterator
  */
 export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAsyncRdfIterator {
-  private readonly mediatorRdfDereference: MediatorRdfDereference;
+  private readonly mediatorDereference: MediatorDereference;
   private readonly mediatorMetadata: MediatorRdfMetadata;
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   private readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
@@ -36,7 +36,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     super(cacheSize, subject, predicate, object, graph, firstUrl);
     this.context = context;
     this.forceSourceType = forceSourceType;
-    this.mediatorRdfDereference = mediators.mediatorRdfDereference;
+    this.mediatorDereference = mediators.mediatorDereference;
     this.mediatorMetadata = mediators.mediatorMetadata;
     this.mediatorMetadataExtract = mediators.mediatorMetadataExtract;
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
@@ -84,7 +84,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     let quads: RDF.Stream;
     let metadata: Record<string, any>;
     try {
-      const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
+      const rdfDereferenceOutput: IActorDereferenceOutput = await this.mediatorDereference
         .mediate({ context, url });
       url = rdfDereferenceOutput.url;
 
@@ -138,7 +138,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 }
 
 export interface IMediatorArgs {
-  mediatorRdfDereference: MediatorRdfDereference;
+  mediatorDereference: MediatorDereference;
   mediatorMetadata: MediatorRdfMetadata;
   mediatorMetadataExtract: MediatorRdfMetadataExtract;
   mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;

@@ -1,5 +1,5 @@
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { MediatorDereference } from '@comunica/bus-dereference';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
@@ -23,7 +23,7 @@ import { MediatedQuadSource } from './MediatedQuadSource';
  */
 export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPatternSource
   implements IActorRdfResolveQuadPatternHypermediaArgs {
-  public readonly mediatorRdfDereference: MediatorRdfDereference;
+  public readonly mediatorDereference: MediatorDereference;
   public readonly mediatorMetadata: MediatorRdfMetadata;
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
@@ -65,7 +65,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
       source = new MediatedQuadSource(this.cacheSize, context, url, getDataSourceType(contextSource), {
         mediatorMetadata: this.mediatorMetadata,
         mediatorMetadataExtract: this.mediatorMetadataExtract,
-        mediatorRdfDereference: this.mediatorRdfDereference,
+        mediatorDereference: this.mediatorDereference,
         mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
@@ -96,9 +96,9 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends IActorRdfReso
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */
   /**
-   * The RDF dereference mediator
+   * The dereference mediator
    */
-  mediatorRdfDereference: MediatorRdfDereference;
+  mediatorDereference: MediatorDereference;
   /**
    * The metadata mediator
    */
