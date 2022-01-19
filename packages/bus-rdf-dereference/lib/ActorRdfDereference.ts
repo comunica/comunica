@@ -1,5 +1,5 @@
 import { MediatorDereference } from '@comunica/bus-dereference';
-import { MediatorRdfParseHandle, MediatorRdfParseMediaTypes } from '@comunica/bus-rdf-parse';
+import { IActorRdfParseOutput, MediatorRdfParseHandle, MediatorRdfParseMediaTypes } from '@comunica/bus-rdf-parse';
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 
 /**
@@ -27,16 +27,30 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
   }
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
-    const { url, headers, data } = await this.mediatorDereference.mediate({ ...action, mediaTypes: async () => ( await this.mediatorRdfParseMediaTypes?.mediate({ context: action.context, mediaTypes: true }))?.mediaTypes ?? {} });
-    this.mediatorRdfParseHandle.mediate({
+    const { url, headers, data, exists } = await this.mediatorDereference.mediate({ ...action, mediaTypes: async () => ( await this.mediatorRdfParseMediaTypes?.mediate({ context: action.context, mediaTypes: true }))?.mediaTypes ?? {} });
+    
+    let parseOutput: IActorRdfParseOutput;
+    try {
+      parseOutput = (await this.mediatorRdfParseHandle.mediate({
       context: action.context,
       handle: {
+        context: action.context,
         baseIRI: url,
-        headers: headers ?? {},
+        headers: new Headers(headers ?? {}),
         input: data
       },
-    })
+    })).handle
+  } catch (error: unknown) {
+    // Close the body, to avoid process to hang
+    await data.close?.();
+    return this.handleDereferenceError(action, error, headers);
   }
+
+  const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
+
+  // Return the parsed quad stream and whether or not only triples are supported
+  return { url, quads, exists, triples: parseOutput.triples, headers };
+}
 }
 
 export interface IActorRdfDereferenceArgs extends IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput> {
