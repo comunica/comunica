@@ -1,22 +1,23 @@
 {
-  "name": "@comunica/bus-dereference",
+  "name": "@comunica/actor-dereference-fallback",
   "version": "2.0.0",
-  "description": "A bus for dereferencing a path or URL into a (generic) stream.",
+  "description": "A fallback dereference actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/bus-dereference"
+    "directory": "packages/actor-dereference-fallback"
   },
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
     "comunica",
-    "bus",
-    "dereference"
+    "actor",
+    "dereference",
+    "fallback"
   ],
   "license": "MIT",
   "bugs": {
@@ -29,10 +30,12 @@
     "lib/**/*.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^2.0.0"
+    "@comunica/core": "^2.0.0",
+    "@comunica/bus-dereference": "^2.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^2.0.0"
+    "@comunica/core": "^2.0.0",
+    "@comunica/bus-dereference": "^2.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

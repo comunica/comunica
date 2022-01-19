@@ -3,6 +3,20 @@ import { Actor, IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@
 import { PassThrough, Readable } from 'stream';
 
 /**
+  * Get the media type based on the extension of the given path,
+  * which can be an URL or file path.
+  * @param {string} path A path.
+  * @param {Record<string, string>} mediaMappings A collection of mappings,
+  * mapping file extensions to their corresponding media type.
+  * @return {string} A media type or the empty string.
+  */
+export function getMediaTypeFromExtension(path: string, mediaMappings: Record<string, string>): string {
+  const dotIndex = path.lastIndexOf('.');
+  // Get extension after last dot and map to media
+  return (dotIndex >= 0 && mediaMappings[path.slice(dotIndex + 1)]) || '';
+}
+
+/**
  * A base actor for dereferencing URLs to (generic) streams.
  *
  * Actor types:
@@ -26,7 +40,7 @@ export abstract class ActorDereference extends Actor<IActionDereference, IActorT
    * @param {IActionDereference} action A dereference action.
    * @return {boolean} If hard errors are enabled.
    */
-   protected isHardError(action: IActionDereference): boolean {
+  protected isHardError(action: IActionDereference): boolean {
     return !action.context.get(KeysInitSparql.lenient);
   }
 
@@ -53,7 +67,7 @@ export abstract class ActorDereference extends Actor<IActionDereference, IActorT
    * Handle the given error as a rejection or delegate it to the logger,
    * depending on whether or not hard errors are enabled.
    * @param {IActionDereference} action A dereference action.
-   * @param {Error} error An error that has occured.
+   * @param {Error} error An error that has occurred.
    * @param headers Optional HTTP headers to pass.
    * @param {number} requestTime The time it took to request the page in milliseconds.
    * @return {Promise<IActorDereferenceOutput>} A promise that rejects or resolves to an empty output.
@@ -67,7 +81,7 @@ export abstract class ActorDereference extends Actor<IActionDereference, IActorT
     if (this.isHardError(action)) {
       throw error;
     } else {
-      this.logError(action.context, (<Error> error).message);
+      this.logError(action.context, (<Error>error).message);
       const data = new Readable();
       data.push(null);
       return { url: action.url, data, exists: false, headers, requestTime };
@@ -79,26 +93,26 @@ export interface IActionDereference extends IAction {
   /**
    * The URL to dereference
    */
-   url: string;
-   /**
-    * By default, actors will reject upon receiving non-200 HTTP responses.
-    * If this option is true, then all HTTP responses will cause the action to resolve,
-    * but some outputs may therefore contain empty quad streams.
-    */
-   acceptErrors?: boolean;
-   /**
-    * The mediatype of the source (if it can't be inferred from the source)
-    */
-   mediaType?: string;
-   /**
-    * Optional HTTP method to use.
-    * Defaults to GET.
-    */
-   method?: string;
-   /**
-    * Optional HTTP headers to pass.
-    */
-   headers?: Record<string, string>;
+  url: string;
+  /**
+   * By default, actors will reject upon receiving non-200 HTTP responses.
+   * If this option is true, then all HTTP responses will cause the action to resolve,
+   * but some outputs may therefore contain empty quad streams.
+   */
+  acceptErrors?: boolean;
+  /**
+   * The mediatype of the source (if it can't be inferred from the source)
+   */
+  mediaType?: string;
+  /**
+   * Optional HTTP method to use.
+   * Defaults to GET.
+   */
+  method?: string;
+  /**
+   * Optional HTTP headers to pass.
+   */
+  headers?: Record<string, string>;
 }
 
 export interface IActorDereferenceOutput extends IActorOutput {
@@ -108,24 +122,24 @@ export interface IActorDereferenceOutput extends IActorOutput {
    * This is not necessarily the same as the original input url,
    * as this may have changed due to redirects.
    */
-   url: string;
-   /**
-    * The resulting stream.
-    */
-   data: Readable;
-   /**
-    * This will always be true, unless `acceptErrors` was set to true in the action and the dereferencing failed.
-    */
-   exists: boolean;
-   /**
-    * The time it took to request the page in milliseconds.
-    * This is the time until the first byte arrives.
-    */
-   requestTime: number;
-   /**
-    * The returned headers of the final URL.
-    */
-   headers?: Record<string, string>;
+  url: string;
+  /**
+   * The resulting stream.
+   */
+  data: Readable;
+  /**
+   * This will always be true, unless `acceptErrors` was set to true in the action and the dereferencing failed.
+   */
+  exists: boolean;
+  /**
+   * The time it took to request the page in milliseconds.
+   * This is the time until the first byte arrives.
+   */
+  requestTime: number;
+  /**
+   * The returned headers of the final URL.
+   */
+  headers?: Record<string, string>;
 }
 
 export type IActorDereferenceArgs = IActorArgs<IActionDereference, IActorTest, IActorDereferenceOutput>;
