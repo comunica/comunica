@@ -5,6 +5,10 @@ import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 const isStream = require('is-stream');
 const toWebReadableStream = require('web-streams-node').toWebReadableStream;
 
+export interface ClosableReadableStream extends NodeJS.ReadableStream {
+  close?: () => void | Promise<void>;
+}
+
 /**
  * A base actor for listening to HTTP events.
  *
@@ -31,7 +35,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    * @param {ReadableStream} body
    * @returns {NodeJS.ReadableStream}
    */
-  public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
+  public static toNodeReadable(body: ReadableStream | null): ClosableReadableStream {
     return isStream(body) || body === null ?
       <NodeJS.ReadableStream> <any> body :
       <NodeJS.ReadableStream> <any> new ReadableWebToNodeStream(body);

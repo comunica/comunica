@@ -1,3 +1,4 @@
+import { ClosableReadableStream } from '@comunica/bus-http';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { PassThrough, Readable } from 'stream';
@@ -14,6 +15,12 @@ export function getMediaTypeFromExtension(path: string, mediaMappings: Record<st
   const dotIndex = path.lastIndexOf('.');
   // Get extension after last dot and map to media
   return (dotIndex >= 0 && mediaMappings[path.slice(dotIndex + 1)]) || '';
+}
+
+export function emptyReadable() {
+  const data = new Readable();
+  data.push(null);
+  return data;
 }
 
 /**
@@ -82,9 +89,7 @@ export abstract class ActorDereference extends Actor<IActionDereference, IActorT
       throw error;
     } else {
       this.logError(action.context, (<Error>error).message);
-      const data = new Readable();
-      data.push(null);
-      return { url: action.url, data, exists: false, headers, requestTime };
+      return { url: action.url, data: emptyReadable(), exists: false, headers, requestTime };
     }
   }
 }
@@ -101,10 +106,6 @@ export interface IActionDereference extends IAction {
    */
   acceptErrors?: boolean;
   /**
-   * The mediatype of the source (if it can't be inferred from the source)
-   */
-  mediaType?: string;
-  /**
    * Optional HTTP method to use.
    * Defaults to GET.
    */
@@ -113,6 +114,18 @@ export interface IActionDereference extends IAction {
    * Optional HTTP headers to pass.
    */
   headers?: Record<string, string>;
+  /**
+   * An optional callback to retrieve the mediaType mappings
+   */
+  mediaTypes?: () => Record<string, number>;
+  // /**
+  //  * A collection of mappings, mapping file extensions to their corresponding media type.
+  //  */
+  // mediaMappings?: Record<string, string>;
+  // /**
+  //  * The mediatype of the source (if it can't be inferred from the source)
+  //  */
+  // mediaType?: string;
 }
 
 export interface IActorDereferenceOutput extends IActorOutput {
@@ -126,7 +139,7 @@ export interface IActorDereferenceOutput extends IActorOutput {
   /**
    * The resulting stream.
    */
-  data: Readable;
+  data: ClosableReadableStream;
   /**
    * This will always be true, unless `acceptErrors` was set to true in the action and the dereferencing failed.
    */
@@ -140,6 +153,10 @@ export interface IActorDereferenceOutput extends IActorOutput {
    * The returned headers of the final URL.
    */
   headers?: Record<string, string>;
+  // /**
+  //  * The mediatype of the source
+  //  */
+  //  mediaType: string;
 }
 
 export type IActorDereferenceArgs = IActorArgs<IActionDereference, IActorTest, IActorDereferenceOutput>;
