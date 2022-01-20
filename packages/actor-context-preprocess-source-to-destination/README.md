@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myActorContextPreprocessSourceToDestination",
+      "@id": "urn:comunica:default:context-preprocess/actors#source-to-destination",
       "@type": "ActorContextPreprocessSourceToDestination"
     }
   ]

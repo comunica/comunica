@@ -28,10 +28,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHttpProxy",
+      "@id": "urn:comunica:default:http/actors#proxy",
       "@type": "ActorHttpProxy",
-      "mediatorHttp": { "@id": "#mediatorHttp" },
-      "beforeActors": { "@id": "#myHttpFetcher" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "beforeActors": { "@id": "urn:comunica:default:http/actors#fetch" }
     }
   ]
 }

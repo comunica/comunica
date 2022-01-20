@@ -27,9 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfJoinActorOptionalNestedLoop",
+      "@id": "urn:comunica:default:rdf-join/actors#optional-nestedloop",
       "@type": "ActorRdfJoinOptionalNestedLoop",
-      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
     }
   ]
 }

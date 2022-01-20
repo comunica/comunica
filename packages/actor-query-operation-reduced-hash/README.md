@@ -28,10 +28,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myReducedQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#reduced",
       "@type": "ActorQueryOperationReducedHash",
-      "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
-      "mediatorHashBindings": { "@id": "#mediatorHashBindings" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" }
     }
   ]
 }

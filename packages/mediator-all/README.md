@@ -30,7 +30,7 @@ After installing, this mediator can be instantiated as follows:
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "#mediatorHttpInvalidate",
+        "@id": "urn:comunica:default:http/mediators#mainInvalidate",
         "@type": "MediatorAll",
         "bus": { "@id": "ActorHttpInvalidate:_default_bus" }
       }

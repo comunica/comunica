@@ -42,7 +42,7 @@
     "IQueryableResultVoid"
   ],
   "modulePrefix": {
-    "@comunica/actor-query-operation-service": "caqose",
+    "@comunica/actor-query-operation-service": "caqoser",
     "@comunica/actor-query-operation-update-clear": "caqoucl",
     "@comunica/actor-query-operation-update-compositeupdate": "caqoucu",
     "@comunica/actor-query-operation-update-deleteinsert": "caqoudi",

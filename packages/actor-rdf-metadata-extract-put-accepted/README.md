@@ -32,7 +32,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataExtractPutAccepted",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#put-accepted",
       "@type": "ActorRdfMetadataExtractPutAccepted"
     }
   ]

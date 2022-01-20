@@ -28,10 +28,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfJoinMultiActor",
+      "@id": "urn:comunica:default:rdf-join/actors#inner-multi-smallest",
       "@type": "ActorRdfJoinMultiSmallest",
-      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "mediatorJoin": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorRdfJoin" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }
     }
   ]
 }

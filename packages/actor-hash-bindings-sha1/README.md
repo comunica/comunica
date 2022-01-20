@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHashBindings",
+      "@id": "urn:comunica:default:hash-bindings/actors#sha1",
       "@type": "ActorHashBindingsSha1"
     }
   ]

@@ -1,0 +1,9 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main",
+  "@type": "MediatorRace",
+  "bus": { "@id": "ActorRdfResolveQuadPattern:_default_bus" }
+}

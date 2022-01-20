@@ -27,24 +27,11 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfSparqlSerializer",
+      "@id": "urn:comunica:default:sparql-serialize/actors#rdf",
       "@type": "ActorSparqlSerializeRdf",
-      "mediatorRdfSerialize": {
-        "@id": "#mediatorRdfSerialize",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfSerialize:_default_bus" }
-      },
-      "mediatorMediaTypeCombiner": {
-        "@id": "#mediatorRdfSerializeMediatypes",
-        "@type": "MediatorCombineUnion",
-        "bus": { "@id": "ActorRdfSerialize:_default_bus" },
-        "field": "mediaTypes"
-      },
-      "mediatorMediaTypeFormatCombiner": {
-        "@type": "MediatorCombineUnion",
-        "bus": { "@id": "ActorRdfSerialize:_default_bus" },
-        "field": "mediaTypeFormats"
-      }
+      "mediatorRdfSerialize": { "@id": "urn:comunica:default:rdf-serialize/mediators#serialize" },
+      "mediatorMediaTypeCombiner": { "@id": "urn:comunica:default:rdf-serialize/mediators#mediaType" },
+      "mediatorMediaTypeFormatCombiner": { "@id": "urn:comunica:default:rdf-serialize/mediators#mediaTypeFormat" }
     },
   ]
 }

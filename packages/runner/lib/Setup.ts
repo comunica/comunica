@@ -52,7 +52,7 @@ export async function instantiateComponent(configResourceUrl: string, instanceUr
 export async function run(configResourceUrl: string, action: IActionInit, runnerUri?: string,
   properties?: ISetupProperties): Promise<any> {
   if (!runnerUri) {
-    runnerUri = 'urn:comunica:my';
+    runnerUri = 'urn:comunica:default:Runner';
   }
 
   const runner: Runner = await instantiateComponent(configResourceUrl, runnerUri, properties);

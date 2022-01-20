@@ -30,24 +30,11 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHypermediaQpfResolver",
+      "@id": "urn:comunica:default:rdf-resolve-hypermedia/actors#qpf",
       "@type": "ActorRdfResolveHypermediaQpf",
-      "mediatorRdfDereference": {
-        "@id": "#mediatorRdfDereference",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfDereference:_default_bus" }
-      },
-      "mediatorMetadata": {
-        "@id": "#mediatorMetadata",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfMetadata:_default_bus" }
-      },
-      "argsmediatorMetadataExtract": {
-        "@id": "#mediatorMetadataExtract",
-        "@type": "MediatorCombineUnion",
-        "bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
-        "field": "metadata"
-      }
+      "mediatorRdfDereference": { "@id": "urn:comunica:default:rdf-dereference/mediators#main" },
+      "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
+      "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" }
     }
   ]
 }

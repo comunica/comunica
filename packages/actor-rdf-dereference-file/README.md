@@ -24,18 +24,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-file/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "#myRdfFileDereferencer",
+      "@id": "urn:comunica:default:rdf-dereference/actors#file",
       "@type": "ActorRdfDereferenceFile",
-      "mediatorRdfParse": {
-        "@id": "#mediatorRdfParse",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfParse:_default_bus" }
-      }
+      "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#main" }
     }
   ]
 }

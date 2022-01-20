@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfParserHtml",
+      "@id": "urn:comunica:default:rdf-parse/actors#html",
       "@type": "ActorRdfParseHtml",
       "priorityScale": 0.2
     }

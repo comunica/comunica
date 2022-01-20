@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myValuesQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#values",
       "@type": "ActorQueryOperationValues"
     }
   ]

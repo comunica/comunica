@@ -27,10 +27,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfParserJsonLd",
+      "@id": "urn:comunica:default:rdf-parse/actors#jsonld",
       "@type": "ActorRdfParseJsonLd",
       "priorityScale": 0.9,
-      "mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]
 }

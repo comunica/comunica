@@ -12,9 +12,9 @@ if (args.length === 0) {
 }
 
 const mainModulePath: string = process.cwd();
-const configResourceUri = 'urn:comunica:my';
+const configResourceUri = 'urn:comunica:default:Runner';
 const configPath: string = args[0];
-let exportVariableName = 'urn:comunica:sparqlinit';
+let exportVariableName = 'urn:comunica:default:init/actors#sparql';
 if (args.length > 1) {
   exportVariableName = args[1];
 }

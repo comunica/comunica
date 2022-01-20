@@ -1,28 +1,8 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
-    {
-      "caisf": "npmd:@comunica/actor-init-sparql-file/^2.0.0/"
-    }
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^2.0.0/components/context.jsonld"
   ],
-  "@id": "urn:comunica:my",
-  "@type": "Runner",
   "import": [
-    "cais:config/sets/hash-bindings.json",
-    "cais:config/sets/http.json",
-    "cais:config/sets/join.json",
-    "cais:config/sets/rdf-dereference.json",
-    "cais:config/sets/rdf-parsers.json",
-    "cais:config/sets/rdf-serializers.json",
-    "cais:config/sets/rdf-update-rdfjs.json",
-    "cais:config/sets/resolve-federated.json",
-    "caisf:config/sets/resolve-hypermedia.json",
-    "cais:config/sets/sparql-init.json",
-    "cais:config/sets/sparql-parsers.json",
-    "cais:config/sets/sparql-queryoperators.json",
-    "cais:config/sets/sparql-queryoperators-path.json",
-    "cais:config/sets/sparql-queryoperators-update.json",
-    "cais:config/sets/sparql-serializers.json"
+    "cais:config/config-default.json"
   ]
 }

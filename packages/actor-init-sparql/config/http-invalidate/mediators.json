@@ -1,0 +1,9 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:http-invalidate/mediators#main",
+  "@type": "MediatorAll",
+  "bus": { "@id": "ActorHttpInvalidate:_default_bus" }
+}

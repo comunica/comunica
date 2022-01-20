@@ -34,7 +34,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataExtractRequestTime",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#request-time",
       "@type": "ActorRdfMetadataExtractRequestTime"
     }
   ]

@@ -1,0 +1,10 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^2.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "cais:config/rdf-resolve-quad-pattern/actors/federated.json",
+
+    "cais:config/rdf-resolve-quad-pattern/actors/rdfjs-source.json"
+  ]
+}

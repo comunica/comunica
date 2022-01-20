@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataAll",
+      "@id": "urn:comunica:default:rdf-metadata/actors#all",
       "@type": "ActorRdfMetadataAll"
     }
   ]

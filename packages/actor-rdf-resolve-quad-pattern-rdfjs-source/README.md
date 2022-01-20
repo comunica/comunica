@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfRdfJsSourceQuadPatternResolver",
+      "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#rdfjs-source",
       "@type": "ActorRdfResolveQuadPatternRdfJsSource"
     }
   ]

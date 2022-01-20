@@ -27,11 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfUpdateHypermediaSparql",
+      "@id": "urn:comunica:default:rdf-update-hypermedia/actors#sparql",
       "@type": "ActorRdfUpdateHypermediaSparql",
-      "mediatorHttp": {
-        "@id": "files-cais:config/sets/http.json#mediatorHttp"
-      }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]
 }

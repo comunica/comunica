@@ -1,0 +1,10 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main",
+  "@type": "MediatorCombineUnion",
+  "bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
+  "field": "metadata"
+}

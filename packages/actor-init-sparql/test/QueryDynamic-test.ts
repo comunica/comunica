@@ -31,7 +31,7 @@ describe('newEngineDynamic', () => {
 
   it('with instanceUri option', async() => {
     const opts = {
-      instanceUri: 'urn:comunica:sparqlinit',
+      instanceUri: 'urn:comunica:default:init/actors#sparql',
     };
     expect(await newEngineDynamicArged(opts, `${__dirname}/../`, `${__dirname}/../config/config-default.json`))
       .toBeInstanceOf(ActorInitSparql);
@@ -39,7 +39,7 @@ describe('newEngineDynamic', () => {
 
   it('with runnerInstanceUri option', async() => {
     const opts = {
-      runnerInstanceUri: 'urn:comunica:my',
+      runnerInstanceUri: 'urn:comunica:default:Runner',
     };
     expect(await newEngineDynamicArged(opts, `${__dirname}/../`, `${__dirname}/../config/config-default.json`))
       .toBeInstanceOf(ActorInitSparql);

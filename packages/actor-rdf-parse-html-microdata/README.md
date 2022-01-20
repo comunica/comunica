@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfParserHtmlMicrodata",
+      "@id": "urn:comunica:default:rdf-parse-html/actors#microdata",
       "@type": "ActorRdfParseHtmlMicrodata"
     }
   ]

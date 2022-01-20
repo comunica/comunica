@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myGroupQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#group",
       "@type": "ActorQueryOperationGroup",
       "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
       "mediatorHashBindings": { "@id": "#mediatorHashBindings" }

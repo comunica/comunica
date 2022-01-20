@@ -28,9 +28,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfJoinActorMinusHash",
+      "@id": "urn:comunica:default:rdf-join/actors#minus-hash",
       "@type": "ActorRdfJoinMinusHash",
-      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
     }
   ]
 }

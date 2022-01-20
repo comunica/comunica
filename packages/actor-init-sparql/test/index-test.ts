@@ -4,7 +4,7 @@ jest.mock('../lib/ActorInitSparql', () => {
     ActorInitSparql: function() {
       return {
         mocked: true,
-        name: 'urn:comunica:sparqlinit',
+        name: 'urn:comunica:default:init/actors#sparql',
         query: () => ({ queried: true }),
       };
     },
@@ -14,7 +14,7 @@ jest.mock('../lib/ActorInitSparql', () => {
 jest.mock('../engine-default.js', () => {
   return {
     mocked: true,
-    name: 'urn:comunica:sparqlinit',
+    name: 'urn:comunica:default:init/actors#sparql',
     query: () => ({ queried: true }),
   };
 });

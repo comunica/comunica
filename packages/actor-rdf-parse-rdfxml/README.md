@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfParserRdfXml",
+      "@id": "urn:comunica:default:rdf-parse/actors#rdfxml",
       "@type": "ActorRdfParseRdfXml",
       "priorityScale": 0.5
     }

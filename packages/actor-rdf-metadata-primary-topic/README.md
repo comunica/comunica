@@ -33,7 +33,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataPrimaryTopic",
+      "@id": "urn:comunica:default:rdf-metadata/actors#primary-topic",
       "@type": "ActorRdfMetadataPrimaryTopic"
     }
   ]

@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfParserN3",
+      "@id": "urn:comunica:default:rdf-parse/actors#n3",
       "@type": "ActorRdfParseN3",
       "priorityScale": 1.0
     }

@@ -35,7 +35,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataExtractSparqlService",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#sparql-service",
       "@type": "ActorRdfMetadataExtractSparqlService"
     }
   ]

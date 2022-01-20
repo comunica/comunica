@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfSerializerN3",
+      "@id": "urn:comunica:default:rdf-serialize/actors#n3",
       "@type": "ActorRdfSerializeN3",
       "priorityScale": 1
     }

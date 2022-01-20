@@ -16,11 +16,11 @@ export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: st
     options.mainModulePath = moduleRootPath;
   }
   const configResourceUrl: string = options.configResourceUrl ?? defaultConfigPath;
-  const instanceUri: string = options.instanceUri ?? 'urn:comunica:sparqlinit';
+  const instanceUri: string = options.instanceUri ?? 'urn:comunica:default:init/actors#sparql';
 
   // Instantiate the main runner so that all other actors are instantiated as well,
   // and find the SPARQL init actor with the given name
-  const runnerInstanceUri: string = options.runnerInstanceUri ?? 'urn:comunica:my';
+  const runnerInstanceUri: string = options.runnerInstanceUri ?? 'urn:comunica:default:Runner';
 
   // This needs to happen before any promise gets generated
   return instantiateComponent(configResourceUrl, runnerInstanceUri, options)

@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-patch-sparql-update/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-put-ldp/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-sparql/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:rdf-update-hypermedia/actors#patch-sparql-update",
+      "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
+    },
+
+    {
+      "@id": "urn:comunica:default:rdf-update-hypermedia/actors#put-ldp",
+      "@type": "ActorRdfUpdateHypermediaPutLdp",
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "mediatorRdfSerializeMediatypes": { "@id": "urn:comunica:default:rdf-serialize/mediators#mediaType" },
+      "mediatorRdfSerialize": { "@id": "urn:comunica:default:rdf-serialize/mediators#serialize" }
+    },
+
+    {
+      "@id": "urn:comunica:default:rdf-update-hypermedia/actors#sparql",
+      "@type": "ActorRdfUpdateHypermediaSparql",
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
+    }
+  ]
+}

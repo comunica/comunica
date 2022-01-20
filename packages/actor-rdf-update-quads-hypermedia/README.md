@@ -28,22 +28,12 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfUpdateQuadsHypermedia",
+      "@id": "urn:comunica:default:rdf-update-quads/actors#hypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
-      "mediatorRdfDereference": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorRdfDereference"
-      },
-      "mediatorMetadata": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadata"
-      },
-      "mediatorMetadataExtract": {
-        "@id": "files-cais:config/sets/resolve-hypermedia.json#mediatorMetadataExtract"
-      },
-      "mediatorRdfUpdateHypermedia": {
-        "@id": "#mediatorRdfUpdateHypermedia",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfUpdateHypermedia:_default_bus" }
-      }
+      "mediatorRdfDereference": { "@id": "urn:comunica:default:rdf-dereference/mediators#main" },
+      "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
+      "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },
+      "mediatorRdfUpdateHypermedia": { "@id": "urn:comunica:default:rdf-update-hypermedia/mediators#main" }
     }
   ]
 }

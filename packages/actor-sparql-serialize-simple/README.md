@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#mySimpleSparqlSerializer",
+      "@id": "urn:comunica:default:sparql-serialize/actors#simple",
       "@type": "ActorSparqlSerializeSimple"
     }
   ]

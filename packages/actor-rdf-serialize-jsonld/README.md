@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfSerializeJsonLd",
+      "@id": "urn:comunica:default:rdf-serialize/actors#jsonld",
       "@type": "ActorRdfSerializeJsonLd",
       "jsonStringifyIndentSpaces": 2,
       "priorityScale": 0.9

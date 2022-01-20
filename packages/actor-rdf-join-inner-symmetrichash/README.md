@@ -27,9 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfJoinActorSymmetricHash",
+      "@id": "urn:comunica:default:rdf-join/actors#inner-symmetrichash",
       "@type": "ActorRdfJoinSymmetricHash",
-      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
     }
   ]
 }

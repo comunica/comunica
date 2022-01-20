@@ -36,7 +36,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataExtractPatchSparqlUpdate",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#patch-sparql-update",
       "@type": "ActorRdfMetadataExtractPatchSparqlUpdate"
     }
   ]

@@ -28,9 +28,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#mySparqlEndpointResolver",
+      "@id": "urn:comunica:default:query-operation/actors#sparql-endpoint",
       "@type": "ActorQueryOperationSparqlEndpoint",
-      "mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]
 }

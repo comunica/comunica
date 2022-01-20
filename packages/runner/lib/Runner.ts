@@ -67,7 +67,7 @@ export class Runner {
    *
    * Example:
    * <pre>
-   *   const { engine } = runner.collectActors({ engine: 'urn:comunica:sparqlinit' };
+   *   const { engine } = runner.collectActors({ engine: 'urn:comunica:default:init/actors#sparql' };
    *   // engine is an actor instance
    * </pre>
    *

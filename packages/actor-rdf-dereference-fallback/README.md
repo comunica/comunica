@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myActorRdfDereferenceFallback",
+      "@id": "urn:comunica:default:rdf-dereference/actors#fallback",
       "@type": "ActorRdfDereferenceFallback"
     }
   ]

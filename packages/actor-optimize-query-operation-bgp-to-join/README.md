@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myBgpToJoinOptimizer",
+      "@id": "urn:comunica:default:optimize-query-operation/actors#bgp-to-join",
       "@type": "ActorOptimizeQueryOperationBgpToJoin"
     }
   ]

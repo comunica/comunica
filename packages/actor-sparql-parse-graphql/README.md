@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myGraphqlParser",
+      "@id": "urn:comunica:default:sparql-parse/actors#graphql",
       "@type": "ActorSparqlParseGraphql"
     }
   ]

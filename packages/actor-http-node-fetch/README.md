@@ -31,7 +31,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHttpFetcher",
+      "@id": "urn:comunica:default:http/actors#fetch",
       "@type": "ActorHttpNodeFetch"
     }
   ]

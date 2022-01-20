@@ -27,9 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#mySparqlQuadPatternResolver",
+      "@id": "urn:comunica:default:rdf-resolve-hypermedia/actors#sparql",
       "@type": "ActorRdfResolveHypermediaSparql",
-      "mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]
 }

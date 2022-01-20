@@ -28,9 +28,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfJoinActorNone",
+      "@id": "urn:comunica:default:rdf-join/actors#inner-none",
       "@type": "ActorRdfJoinNone",
-      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
     }
   ]
 }

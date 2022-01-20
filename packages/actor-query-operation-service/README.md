@@ -28,9 +28,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myServiceQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#service",
       "@type": "ActorQueryOperationService",
-      "mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "forceSparqlEndpoint": false
     }
   ]

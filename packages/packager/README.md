@@ -20,7 +20,7 @@ $ yarn add @comunica/packager
 Invoke the packager using a config file as follows:
 
 ```bash
-$ comunica-package urn:comunica:my -c config/config-default.json -e urn:comunica:sparqlinit -o my-sparql-engine 
+$ comunica-package urn:comunica:default:Runner -c config/config-default.json -e urn:comunica:default:init/actors#sparql -o my-sparql-engine 
 ```
 
 This will create a directory `my-sparql-engine` containing new `package.json` and `index.js` files.

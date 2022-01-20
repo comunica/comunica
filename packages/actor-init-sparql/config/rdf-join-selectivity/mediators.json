@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-selectivity/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main",
+  "@type": "MediatorNumber",
+  "type": "max",
+  "field": "accuracy",
+  "ignoreErrors": true,
+  "bus": { "@id": "ActorRdfJoinSelectivity:_default_bus" }
+}

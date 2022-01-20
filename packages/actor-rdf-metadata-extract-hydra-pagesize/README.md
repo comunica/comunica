@@ -34,7 +34,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataExtractHydraPagesize",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-pagesize",
       "@type": "ActorRdfMetadataExtractHydraPagesize",
       "predicates": [
         "http://www.w3.org/ns/hydra/core#itemsPerPage"

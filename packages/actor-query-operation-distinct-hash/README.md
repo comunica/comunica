@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myDistinctQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#distinct",
       "@type": "ActorQueryOperationDistinctHash",
       "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
       "mediatorHashBindings": { "@id": "#mediatorHashBindings" }

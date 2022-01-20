@@ -27,9 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myOneOrMorePathOperator",
+      "@id": "urn:comunica:default:query-operation/actors#path-one-or-more",
       "@type": "ActorQueryOperationPathOneOrMore",
-      "mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
     }
   ]
 }

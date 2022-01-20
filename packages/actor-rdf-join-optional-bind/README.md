@@ -31,10 +31,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfJoinActorOptionalBind",
+      "@id": "urn:comunica:default:rdf-join/actors#optional-bind",
       "@type": "ActorRdfJoinOptionalBind",
-      "mediatorJoinSelectivity": { "@id": "#mediatorJoinSelectivity" },
-      "mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
     }
   ]
 }

@@ -34,7 +34,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataExtractAllowHttpMethods",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#allow-http-methods",
       "@type": "ActorRdfMetadataExtractAllowHttpMethods"
     }
   ]

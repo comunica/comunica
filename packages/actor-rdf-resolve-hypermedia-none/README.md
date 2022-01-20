@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHypermediaNoneResolver",
+      "@id": "urn:comunica:default:rdf-resolve-hypermedia/actors#none",
       "@type": "ActorRdfResolveHypermediaNone"
     }
   ]

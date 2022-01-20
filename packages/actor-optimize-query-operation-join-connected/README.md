@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myJoinConnectedOptimizer",
+      "@id": "urn:comunica:default:optimize-query-operation/actors#join-connected",
       "@type": "ActorOptimizeQueryOperationJoinConnected"
     }
   ]

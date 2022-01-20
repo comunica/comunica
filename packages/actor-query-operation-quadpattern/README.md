@@ -28,9 +28,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myQuadPatternQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#quadpattern",
       "@type": "ActorQueryOperationQuadpattern",
-      "mediatorResolveQuadPattern": { "files-cais:config/sets/sparql-queryoperators.json#mediatorResolveQuadPattern" }
+      "mediatorResolveQuadPattern": { "@id": "urn:comunica:default:query-operation/mediators#main" }
     }
   ]
 }

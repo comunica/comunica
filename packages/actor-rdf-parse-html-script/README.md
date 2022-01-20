@@ -28,19 +28,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfParserHtmlScript",
+      "@id": "urn:comunica:default:rdf-parse-html/actors#script",
       "@type": "ActorRdfParseHtmlScript",
-      "mediatorRdfParseMediatypes": {
-        "@id": "#mediatorRdfParseMediatypes",
-        "@type": "MediatorCombineUnion",
-        "bus": { "@id": "ActorRdfParse:_default_bus" },
-        "field": "mediaTypes"
-      },
-      "mediatorRdfParseHandle": {
-        "@id": "#mediatorRdfParseHandle",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfParse:_default_bus" }
-      }
+      "mediatorRdfParseMediatypes": { "@id": "urn:comunica:default:rdf-parse/mediators#mediaType" },
+      "mediatorRdfParseHandle": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
     }
   ]
 }

@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHypermediaLinksNext",
+      "@id": "urn:comunica:default:rdf-resolve-hypermedia-links/actors#next",
       "@type": "ActorRdfResolveHypermediaLinksNext"
     }
   ]

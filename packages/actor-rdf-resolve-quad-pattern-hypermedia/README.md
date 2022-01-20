@@ -26,34 +26,14 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myQuadPatternHypermediaResolver",
+      "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#hypermedia",
       "@type": "ActorRdfResolveQuadPatternHypermedia",
-      "mediatorRdfDereference": {
-        "@id": "#mediatorRdfDereference"
-      },
-      "mediatorMetadata": {
-        "@id": "#mediatorMetadata"
-      },
-      "mediatorMetadataExtract": {
-        "@id": "#mediatorMetadataExtract"
-      },
-      "mediatorRdfResolveHypermedia": {
-        "@id": "#mediatorRdfResolveHypermedia",
-        "@type": "MediatorNumberMax",
-        "field": "filterFactor",
-        "ignoreErrors": true,
-        "bus": { "@id": "ActorRdfResolveHypermedia:_default_bus" }
-      },
-      "mediatorRdfResolveHypermediaLinks": {
-        "@id": "#mediatorRdfResolveHypermediaLinks",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfResolveHypermediaLinks:_default_bus" }
-      },
-      "mediatorRdfResolveHypermediaLinksQueue": {
-        "@id": "#mediatorRdfResolveHypermediaLinksQueue",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfResolveHypermediaLinksQueue:_default_bus" }
-      }
+      "mediatorRdfDereference": { "@id": "urn:comunica:default:rdf-dereference/mediators#main" },
+      "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
+      "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },
+      "mediatorRdfResolveHypermedia": { "@id": "urn:comunica:default:rdf-resolve-hypermedia/mediators#main" },
+      "mediatorRdfResolveHypermediaLinks": { "@id": "urn:comunica:default:rdf-resolve-hypermedia-links/mediators#main" },
+      "mediatorRdfResolveHypermediaLinksQueue": { "@id": "urn:comunica:default:rdf-resolve-hypermedia-links-queue/mediators#main" }
     }
   ]
 }

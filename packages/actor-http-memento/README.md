@@ -28,10 +28,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHttpFetcher",
+      "@id": "urn:comunica:default:http/actors#memento",
       "@type": "ActorHttpMemento",
-      "mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" },
-      "beforeActors": { "@id": "files-cais:config/sets/http.json#myHttpFetcher" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "beforeActors": { "@id": "urn:comunica:default:http/actors#fetch" }
     }
   ]
 }

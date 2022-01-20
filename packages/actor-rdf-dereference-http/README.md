@@ -31,20 +31,12 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfDereferencer",
+      "@id": "urn:comunica:default:rdf-dereference/actors#http",
       "@type": "ActorRdfDereferenceHttp",
-      "mediatorHttp": { "@id": "files-cais:config/sets/http.json#mediatorHttp" },
-      "mediatorRdfParseMediatypes": {
-        "@id": "#mediatorRdfParseMediatypes",
-        "@type": "MediatorCombineUnion",
-        "bus": { "@id": "ActorRdfParse:_default_bus" },
-        "field": "mediaTypes"
-      },
-      "mediatorRdfParseHandle": {
-        "@id": "#mediatorRdfParseHandle",
-        "@type": "MediatorRace",
-        "bus": { "@id": "ActorRdfParse:_default_bus" }
-      },
+      "beforeActors": { "@id": "urn:comunica:default:rdf-dereference/actors#fallback" },
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "mediatorRdfParseMediatypes": { "@id": "urn:comunica:default:rdf-parse/mediators#mediaType" },
+      "mediatorRdfParseHandle": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
       "maxAcceptHeaderLength": 1024,
       "maxAcceptHeaderLengthBrowser": 128,
     }

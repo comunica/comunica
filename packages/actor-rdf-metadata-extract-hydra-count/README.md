@@ -35,7 +35,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfMetadataExtractHydraCount",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-count",
       "@type": "ActorRdfMetadataExtractHydraCount",
       "predicates": [
         "http://www.w3.org/ns/hydra/core#totalItems",

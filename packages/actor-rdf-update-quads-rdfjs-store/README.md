@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myRdfUpdateQuadsRdfJsStore",
+      "@id": "urn:comunica:default:rdf-update-quads/actors#rdfjs-store",
       "@type": "ActorRdfUpdateQuadsRdfJsStore"
     }
   ]

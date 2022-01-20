@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#mySparqlXmlSparqlSerializer",
+      "@id": "urn:comunica:default:sparql-serialize/actors#sparql-xml",
       "@type": "ActorSparqlSerializeSparqlXml"
     }
   ]

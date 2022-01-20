@@ -1,0 +1,10 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^2.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "cais:config/rdf-join/actors-inner.json",
+    "cais:config/rdf-join/actors-minus.json",
+    "cais:config/rdf-join/actors-optional.json"
+  ]
+}

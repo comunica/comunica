@@ -28,10 +28,10 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myClearQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#update-clear",
       "@type": "ActorQueryOperationClear",
-      "mediatorQueryOperation": { "@id": "files-cais:config/sets/sparql-queryoperators.json#mediatorQueryOperation" },
-      "mediatorUpdateQuads": { "@id": "#mediatorUpdateQuads" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" }
     }
   ]
 }

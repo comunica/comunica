@@ -23,12 +23,12 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-bgp-to-join/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-bgp/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "#myJoinBgpOptimizer",
+      "@id": "urn:comunica:default:optimize-query-operation/actors#join-bgp",
       "@type": "ActorOptimizeQueryOperationJoinBgp"
     }
   ]

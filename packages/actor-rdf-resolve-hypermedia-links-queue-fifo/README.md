@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "#myHypermediaLinksQueue",
+      "@id": "urn:comunica:default:rdf-resolve-hypermedia-links-queue/actors#fifo",
       "@type": "ActorRdfResolveHypermediaLinksQueueFifo"
     }
   ]
