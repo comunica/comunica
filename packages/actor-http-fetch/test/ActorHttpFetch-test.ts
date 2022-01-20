@@ -8,7 +8,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 import { mocked } from 'ts-jest/utils';
-import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
+import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 const streamifyString = require('streamify-string');
 
 // Mock fetch
@@ -19,7 +19,7 @@ const streamifyString = require('streamify-string');
   });
 });
 
-describe('ActorHttpNodeFetch', () => {
+describe('ActorHttpFetch', () => {
   let bus: any;
   let context: IActionContext;
 
@@ -29,40 +29,40 @@ describe('ActorHttpNodeFetch', () => {
     jest.clearAllMocks();
   });
 
-  describe('The ActorHttpNodeFetch module', () => {
+  describe('The ActorHttpFetch module', () => {
     it('should be a function', () => {
-      expect(ActorHttpNodeFetch).toBeInstanceOf(Function);
+      expect(ActorHttpFetch).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorHttpNodeFetch constructor', () => {
-      expect(new (<any> ActorHttpNodeFetch)({ name: 'actor', bus })).toBeInstanceOf(ActorHttpNodeFetch);
-      expect(new (<any> ActorHttpNodeFetch)({ name: 'actor', bus })).toBeInstanceOf(ActorHttp);
+    it('should be a ActorHttpFetch constructor', () => {
+      expect(new (<any> ActorHttpFetch)({ name: 'actor', bus })).toBeInstanceOf(ActorHttpFetch);
+      expect(new (<any> ActorHttpFetch)({ name: 'actor', bus })).toBeInstanceOf(ActorHttp);
     });
 
-    it('should not be able to create new ActorHttpNodeFetch objects without \'new\'', () => {
-      expect(() => { (<any> ActorHttpNodeFetch)(); }).toThrow();
+    it('should not be able to create new ActorHttpFetch objects without \'new\'', () => {
+      expect(() => { (<any> ActorHttpFetch)(); }).toThrow();
     });
   });
 
   describe('#createUserAgent', () => {
     it('should create a user agent in the browser', () => {
       (<any> global).navigator = { userAgent: 'Dummy' };
-      return expect(ActorHttpNodeFetch.createUserAgent())
-        .toEqual(`Comunica/actor-http-node-fetch (Browser-${global.navigator.userAgent})`);
+      return expect(ActorHttpFetch.createUserAgent())
+        .toEqual(`Comunica/actor-http-fetch (Browser-${global.navigator.userAgent})`);
     });
 
     it('should create a user agent in Node.js', () => {
       delete (<any> global).navigator;
-      return expect(ActorHttpNodeFetch.createUserAgent())
-        .toEqual(`Comunica/actor-http-node-fetch (Node.js ${process.version}; ${process.platform})`);
+      return expect(ActorHttpFetch.createUserAgent())
+        .toEqual(`Comunica/actor-http-fetch (Node.js ${process.version}; ${process.platform})`);
     });
   });
 
-  describe('An ActorHttpNodeFetch instance', () => {
-    let actor: ActorHttpNodeFetch;
+  describe('An ActorHttpFetch instance', () => {
+    let actor: ActorHttpFetch;
 
     beforeEach(() => {
-      actor = new ActorHttpNodeFetch({ name: 'actor', bus });
+      actor = new ActorHttpFetch({ name: 'actor', bus });
     });
 
     it('should test', () => {
@@ -87,7 +87,7 @@ describe('ActorHttpNodeFetch', () => {
     });
 
     it('for custom agent options should run and pass a custom agent to node-fetch', async() => {
-      actor = new ActorHttpNodeFetch({ name: 'actor', bus, agentOptions: { keepAlive: true, maxSockets: 5 }});
+      actor = new ActorHttpFetch({ name: 'actor', bus, agentOptions: { keepAlive: true, maxSockets: 5 }});
 
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
 

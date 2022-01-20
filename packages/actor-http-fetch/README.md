@@ -1,6 +1,6 @@
-# Comunica node-fetch HTTP Actor
+# Comunica Fetch HTTP Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-node-fetch.svg)](https://www.npmjs.com/package/@comunica/actor-http-node-fetch)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-fetch.svg)](https://www.npmjs.com/package/@comunica/actor-http-fetch)
 
 An [HTTP](https://github.com/comunica/comunica/tree/master/packages/bus-http) actor that
 uses [cross-fetch](https://www.npmjs.com/package/cross-fetch) to perform HTTP requests.
@@ -16,7 +16,7 @@ If none is provided, the default fallback fetch implementation will be used (`no
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-http-node-fetch
+$ yarn add @comunica/actor-http-fetch
 ```
 
 ## Configure
@@ -26,13 +26,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-node-fetch/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-fetch/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:http/actors#fetch",
-      "@type": "ActorHttpNodeFetch"
+      "@type": "ActorHttpFetch"
     }
   ]
 }

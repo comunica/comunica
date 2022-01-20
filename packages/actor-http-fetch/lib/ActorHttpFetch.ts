@@ -12,18 +12,18 @@ import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
  *
  * It will call `fetch` with either action.input or action.url.
  */
-export class ActorHttpNodeFetch extends ActorHttp {
+export class ActorHttpFetch extends ActorHttp {
   private readonly userAgent: string;
   private readonly fetchInitPreprocessor: IFetchInitPreprocessor;
 
-  public constructor(args: IActorHttpNodeFetchArgs) {
+  public constructor(args: IActorHttpFetchArgs) {
     super(args);
-    this.userAgent = ActorHttpNodeFetch.createUserAgent();
+    this.userAgent = ActorHttpFetch.createUserAgent();
     this.fetchInitPreprocessor = new FetchInitPreprocessor(args.agentOptions);
   }
 
   public static createUserAgent(): string {
-    return `Comunica/actor-http-node-fetch (${typeof global.navigator === 'undefined' ?
+    return `Comunica/actor-http-fetch (${typeof global.navigator === 'undefined' ?
       `Node.js ${process.version}; ${process.platform}` :
       `Browser-${global.navigator.userAgent}`})`;
   }
@@ -75,7 +75,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
   }
 }
 
-export interface IActorHttpNodeFetchArgs extends IActorHttpArgs {
+export interface IActorHttpFetchArgs extends IActorHttpArgs {
   /**
    * The agent options for the HTTP agent
    * @range {json}
