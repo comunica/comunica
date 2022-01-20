@@ -1,6 +1,7 @@
 import type { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { Headers } from 'cross-fetch';
 import { ActorRdfMetadataExtractPatchSparqlUpdate } from '../lib/ActorRdfMetadataExtractPatchSparqlUpdate';
 
 describe('ActorRdfMetadataExtractPatchSparqlUpdate', () => {
@@ -32,25 +33,25 @@ describe('ActorRdfMetadataExtractPatchSparqlUpdate', () => {
     });
 
     it('should run with empty headers', () => {
-      const headers = {};
+      const headers = new Headers({});
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with invalid accept-patch header', () => {
-      const headers = { 'accept-patch': 'abc' };
+      const headers = new Headers({ 'accept-patch': 'abc' });
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with valid accept-patch header', () => {
-      const headers = { 'accept-patch': 'application/sparql-update' };
+      const headers = new Headers({ 'accept-patch': 'application/sparql-update' });
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { patchSparqlUpdate: true }});
     });
 
     it('should run with valid ms-author-via header', () => {
-      const headers = { 'ms-author-via': 'SPARQL' };
+      const headers = new Headers({ 'ms-author-via': 'SPARQL' });
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { patchSparqlUpdate: true }});
     });

@@ -40,7 +40,7 @@ export interface IActionRdfMetadataExtract extends IAction {
   /**
    * The headers of the page.
    */
-  headers?: Record<string, string>;
+  headers?: Headers;
 }
 
 export interface IActorRdfMetadataExtractOutput extends IActorOutput {

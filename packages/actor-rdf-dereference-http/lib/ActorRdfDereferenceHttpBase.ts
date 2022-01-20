@@ -50,15 +50,12 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
     const { mediaTypes } = await this.mediatorRdfParseMediatypes.mediate(
       { context: action.context, mediaTypes: true },
     );
-    const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes, this.getMaxAcceptHeaderLength());
-
-    // Resolve HTTP URL using appropriate accept header
-    const headers: Headers = new Headers({ Accept: acceptHeader });
 
     // Append any custom passed headers
-    for (const key in action.headers) {
-      headers.append(key, action.headers[key]);
-    }
+    const headers: Headers = new Headers(action.headers);
+
+    // Resolve HTTP URL using appropriate accept header
+    headers.append('Accept', this.mediaTypesToAcceptString(mediaTypes, this.getMaxAcceptHeaderLength()));
 
     const httpAction: IActionHttp = {
       context: action.context,
@@ -76,11 +73,6 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
     const url = resolveRelative(httpResponse.url, action.url);
     const requestTime = Date.now() - requestTimeStart;
 
-    // Convert output headers to a hash
-    const outputHeaders: Record<string, string> = {};
-    // eslint-disable-next-line no-return-assign
-    httpResponse.headers.forEach((value, key) => outputHeaders[key] = value);
-
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
       exists = false;
@@ -92,7 +84,7 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
       }
       if (!action.acceptErrors) {
         const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
-        return this.handleDereferenceError(action, error, outputHeaders, requestTime);
+        return this.handleDereferenceError(action, error, httpResponse.headers, requestTime);
       }
     }
 
@@ -130,13 +122,13 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
     } catch (error: unknown) {
       // Close the body, to avoid process to hang
       await httpResponse.body!.cancel();
-      return this.handleDereferenceError(action, error, outputHeaders, requestTime);
+      return this.handleDereferenceError(action, error, httpResponse.headers, requestTime);
     }
 
     const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url, quads, exists, requestTime, triples: parseOutput.triples, headers: outputHeaders };
+    return { url, quads, exists, requestTime, triples: parseOutput.triples, headers: httpResponse.headers };
   }
 
   public mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {

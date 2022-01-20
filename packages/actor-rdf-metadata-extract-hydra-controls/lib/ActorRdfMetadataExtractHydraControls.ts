@@ -124,7 +124,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
-    const metadata: Record<string, any> = {};
+    const metadata: IActorRdfMetadataExtractOutput['metadata'] = {};
     const hydraProperties = await this.getHydraProperties(action.metadata);
     Object.assign(metadata, this.getLinks(action.url, hydraProperties));
     metadata.searchForms = this.getSearchForms(hydraProperties);

@@ -91,7 +91,6 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
-          headers: {},
           quads: {
             data,
             mediaType: 'text/turtle',
@@ -108,7 +107,6 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, mediaType: 'text/turtle', context })).resolves.toMatchObject(
         {
-          headers: {},
           quads: {
             data,
             mediaType: 'text/turtle',
@@ -125,7 +123,6 @@ describe('ActorRdfDereferenceFile', () => {
       p = `file:///${p}`;
       return expect(actor.run({ url: p, mediaType: 'text/turtle', context })).resolves.toMatchObject(
         {
-          headers: {},
           quads: {
             data,
             mediaType: 'text/turtle',
@@ -141,7 +138,6 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
-          headers: {},
           quads: {
             data,
           },
@@ -156,7 +152,6 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
-          headers: {},
           quads: {
             data,
           },

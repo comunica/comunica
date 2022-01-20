@@ -209,9 +209,9 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with a web stream', async() => {
-      const headers = {
+      const headers = new Headers({
         'content-type': 'a; charset=utf-8',
-      };
+      });
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.exists).toEqual(true);
@@ -221,7 +221,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with a web stream with a known extension', async() => {
-      const headers = {};
+      const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/abc.x', context });
       expect(output.url).toEqual('https://www.google.com/abc.x');
       expect(output.triples).toEqual(true);
@@ -230,9 +230,9 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with an empty content type', async() => {
-      const headers = {
+      const headers = new Headers({
         'content-type': '',
-      };
+      });
       const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
@@ -246,9 +246,9 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with an empty content type and default to given content type', async() => {
-      const headers = {
+      const headers = new Headers({
         'content-type': '',
-      };
+      });
       const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', mediaType: 'CUSTOM', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
@@ -262,7 +262,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with a missing content type', async() => {
-      const headers = {};
+      const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/missingcontenttype', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
@@ -271,7 +271,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with a web stream with another known extension', async() => {
-      const headers = {};
+      const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/abc.y', context });
       expect(output.url).toEqual('https://www.google.com/abc.y');
       expect(output.triples).toEqual(true);
@@ -280,7 +280,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with a web stream with a relative response URL', async() => {
-      const headers = {};
+      const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/rel.txt', context });
       expect(output.url).toEqual('https://www.google.com/relative');
       expect(output.triples).toEqual(true);
@@ -289,9 +289,9 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with a Node.JS stream', async() => {
-      const headers = {
+      const headers = new Headers({
         'content-type': 'a; charset=utf-8',
-      };
+      });
       const output = await actor.run({ url: 'https://www.google.com/noweb', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
@@ -327,9 +327,9 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with another method', async() => {
-      const headers = {
+      const headers = new Headers({
         'content-type': 'a; charset=utf-8',
-      };
+      });
       const output = await actor.run({ url: 'https://www.google.com/', method: 'PUT', context });
       expect(output.url).toEqual('https://www.google.com/PUT.html');
       expect(output.triples).toEqual(true);
@@ -338,10 +338,14 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run with custom headers', async() => {
-      const headers = {
+      const headers = new Headers({
         'content-type': 'a; charset=utf-8',
-      };
-      const output = await actor.run({ url: 'https://www.google.com/', headers: { SomeKey: 'V' }, context });
+      });
+      const output = await actor.run({
+        url: 'https://www.google.com/',
+        headers: new Headers({ SomeKey: 'V' }),
+        context,
+      });
       expect(output.url).toEqual('https://www.google.com/V.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);

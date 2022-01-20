@@ -1,6 +1,7 @@
 import type { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { Headers } from 'cross-fetch';
 import { ActorRdfMetadataExtractPutAccepted } from '../lib/ActorRdfMetadataExtractPutAccepted';
 
 describe('ActorRdfMetadataExtractPostAccepted', () => {
@@ -17,7 +18,7 @@ describe('ActorRdfMetadataExtractPostAccepted', () => {
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractPutAccepted({ name: 'actor', bus });
-      input = <any> {};
+      input = <any>{};
       context = new ActionContext();
     });
 
@@ -32,19 +33,19 @@ describe('ActorRdfMetadataExtractPostAccepted', () => {
     });
 
     it('should run with empty headers', () => {
-      const headers = {};
+      const headers = new Headers({});
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
     it('should run with accept-put header with one value', () => {
-      const headers = { 'accept-put': 'abc' };
+      const headers = new Headers({ 'accept-put': 'abc' });
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { putAccepted: [ 'abc' ]}});
     });
 
     it('should run with accept-put header with multiple values', () => {
-      const headers = { 'accept-put': 'abc, def,ghi' };
+      const headers = new Headers({ 'accept-put': 'abc, def,ghi' });
       return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { putAccepted: [ 'abc', 'def', 'ghi' ]}});
     });
