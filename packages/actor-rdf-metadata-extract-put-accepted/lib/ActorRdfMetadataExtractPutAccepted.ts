@@ -16,9 +16,9 @@ export class ActorRdfMetadataExtractPutAccepted extends ActorRdfMetadataExtract 
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
-    const metadata: any = {};
-    if (action.headers && action.headers['accept-put']) {
-      metadata.putAccepted = action.headers['accept-put'].split(/, */u);
+    const metadata: IActorRdfMetadataExtractOutput['metadata'] = {};
+    if (action.headers?.get('accept-put')) {
+      metadata.putAccepted = action.headers.get('accept-put')?.split(/, */u);
     }
     return { metadata };
   }

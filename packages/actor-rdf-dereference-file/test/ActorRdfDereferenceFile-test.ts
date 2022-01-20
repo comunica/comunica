@@ -5,6 +5,7 @@ import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { Headers } from 'cross-fetch';
 import { ActorRdfDereferenceFile } from '../lib/ActorRdfDereferenceFile';
 
 const arrayifyStream = require('arrayify-stream');
@@ -91,7 +92,7 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
-          headers: {},
+          headers: new Headers(),
           quads: {
             data,
             mediaType: 'text/turtle',
@@ -108,7 +109,7 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, mediaType: 'text/turtle', context })).resolves.toMatchObject(
         {
-          headers: {},
+          headers: new Headers(),
           quads: {
             data,
             mediaType: 'text/turtle',
@@ -125,7 +126,7 @@ describe('ActorRdfDereferenceFile', () => {
       p = `file:///${p}`;
       return expect(actor.run({ url: p, mediaType: 'text/turtle', context })).resolves.toMatchObject(
         {
-          headers: {},
+          headers: new Headers(),
           quads: {
             data,
             mediaType: 'text/turtle',
@@ -141,7 +142,7 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
-          headers: {},
+          headers: new Headers(),
           quads: {
             data,
           },
@@ -156,7 +157,7 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, context })).resolves.toMatchObject(
         {
-          headers: {},
+          headers: new Headers(),
           quads: {
             data,
           },

@@ -64,7 +64,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
   protected async handleDereferenceError(
     action: IActionRdfDereference,
     error: unknown,
-    headers: Record<string, string> | undefined,
+    headers: Headers | undefined,
     requestTime: number,
   ): Promise<IActorRdfDereferenceOutput> {
     if (this.isHardError(action)) {
@@ -103,7 +103,7 @@ export interface IActionRdfDereference extends IAction {
   /**
    * Optional HTTP headers to pass.
    */
-  headers?: Record<string, string>;
+  headers?: Headers;
 }
 
 export interface IActorRdfDereferenceOutput extends IActorOutput {
@@ -136,7 +136,7 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
   /**
    * The returned headers of the final URL.
    */
-  headers?: Record<string, string>;
+  headers?: Headers;
 }
 
 export type IActorRdfDereferenceArgs = IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;

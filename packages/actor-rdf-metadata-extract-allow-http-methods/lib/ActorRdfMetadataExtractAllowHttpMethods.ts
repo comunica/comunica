@@ -19,9 +19,9 @@ export class ActorRdfMetadataExtractAllowHttpMethods extends ActorRdfMetadataExt
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
-    const metadata: any = {};
-    if (action.headers && action.headers.allow) {
-      metadata.allowHttpMethods = action.headers.allow.split(/, */u);
+    const metadata: Record<string, any> = {};
+    if (action.headers?.get('allow')) {
+      metadata.allowHttpMethods = action.headers.get('allow')?.split(/, */u);
     }
     return { metadata };
   }
