@@ -6,7 +6,7 @@ import { ActorInit } from '@comunica/bus-init';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { materializeOperation } from '@comunica/bus-query-operation';
-import type { MediatorSparqlParse } from '@comunica/bus-sparql-parse';
+import type { MediatorSparqlParse } from '@comunica/bus-query-parse';
 import type { IActionSparqlSerialize, IActorSparqlSerializeOutput, MediatorSparqlSerializeHandle,
   MediatorSparqlSerializeMediaTypes, MediatorSparqlSerializeMediaTypeFormats } from '@comunica/bus-sparql-serialize';
 import { KeysInitSparql, KeysCore } from '@comunica/context-entries';

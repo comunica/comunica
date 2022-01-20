@@ -1,36 +1,36 @@
-import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
+import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { ActorSparqlParseAlgebra } from '..';
+import { ActorQueryParseSparql } from '..';
 
-describe('ActorSparqlParseAlgebra', () => {
+describe('ActorQueryParseSparql', () => {
   let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
   });
 
-  describe('The ActorSparqlParseAlgebra module', () => {
+  describe('The ActorQueryParseSparql module', () => {
     it('should be a function', () => {
-      expect(ActorSparqlParseAlgebra).toBeInstanceOf(Function);
+      expect(ActorQueryParseSparql).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorSparqlParseAlgebra constructor', () => {
-      expect(new (<any> ActorSparqlParseAlgebra)({ name: 'actor', bus })).toBeInstanceOf(ActorSparqlParseAlgebra);
-      expect(new (<any> ActorSparqlParseAlgebra)({ name: 'actor', bus })).toBeInstanceOf(ActorSparqlParse);
+    it('should be a ActorQueryParseSparql constructor', () => {
+      expect(new (<any> ActorQueryParseSparql)({ name: 'actor', bus })).toBeInstanceOf(ActorQueryParseSparql);
+      expect(new (<any> ActorQueryParseSparql)({ name: 'actor', bus })).toBeInstanceOf(ActorQueryParse);
     });
 
-    it('should not be able to create new ActorSparqlParseAlgebra objects without \'new\'', () => {
-      expect(() => { (<any> ActorSparqlParseAlgebra)(); }).toThrow();
+    it('should not be able to create new ActorQueryParseSparql objects without \'new\'', () => {
+      expect(() => { (<any> ActorQueryParseSparql)(); }).toThrow();
     });
   });
 
-  describe('An ActorSparqlParseAlgebra instance', () => {
-    let actor: ActorSparqlParseAlgebra;
+  describe('An ActorQueryParseSparql instance', () => {
+    let actor: ActorQueryParseSparql;
     let context: IActionContext;
 
     beforeEach(() => {
-      actor = new ActorSparqlParseAlgebra({ name: 'actor', bus });
+      actor = new ActorQueryParseSparql({ name: 'actor', bus });
       context = new ActionContext();
     });
 

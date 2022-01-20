@@ -1,36 +1,36 @@
-import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
+import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { ActorSparqlParseGraphql } from '..';
+import { ActorQueryParseGraphql } from '..';
 
-describe('ActorSparqlParseGraphql', () => {
+describe('ActorQueryParseGraphql', () => {
   let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
   });
 
-  describe('The ActorSparqlParseGraphql module', () => {
+  describe('The ActorQueryParseGraphql module', () => {
     it('should be a function', () => {
-      expect(ActorSparqlParseGraphql).toBeInstanceOf(Function);
+      expect(ActorQueryParseGraphql).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorSparqlParseGraphql constructor', () => {
-      expect(new (<any> ActorSparqlParseGraphql)({ name: 'actor', bus })).toBeInstanceOf(ActorSparqlParseGraphql);
-      expect(new (<any> ActorSparqlParseGraphql)({ name: 'actor', bus })).toBeInstanceOf(ActorSparqlParse);
+    it('should be a ActorQueryParseGraphql constructor', () => {
+      expect(new (<any> ActorQueryParseGraphql)({ name: 'actor', bus })).toBeInstanceOf(ActorQueryParseGraphql);
+      expect(new (<any> ActorQueryParseGraphql)({ name: 'actor', bus })).toBeInstanceOf(ActorQueryParse);
     });
 
-    it('should not be able to create new ActorSparqlParseGraphql objects without \'new\'', () => {
-      expect(() => { (<any> ActorSparqlParseGraphql)(); }).toThrow();
+    it('should not be able to create new ActorQueryParseGraphql objects without \'new\'', () => {
+      expect(() => { (<any> ActorQueryParseGraphql)(); }).toThrow();
     });
   });
 
-  describe('An ActorSparqlParseGraphql instance', () => {
-    let actor: ActorSparqlParseGraphql;
+  describe('An ActorQueryParseGraphql instance', () => {
+    let actor: ActorQueryParseGraphql;
     let context: IActionContext;
 
     beforeEach(() => {
-      actor = new ActorSparqlParseGraphql({ name: 'actor', bus });
+      actor = new ActorQueryParseGraphql({ name: 'actor', bus });
       context = new ActionContext();
     });
 

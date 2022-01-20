@@ -3,7 +3,7 @@ import { Actor } from '@comunica/core';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
- * A comunica actor for sparql-parse events.
+ * A comunica actor for query-parse events.
  *
  * Actor types:
  * * Input:  IActionSparqlParse:      A SPARQL query string.
@@ -13,7 +13,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActionSparqlParse
  * @see IActorSparqlParseOutput
  */
-export abstract class ActorSparqlParse extends Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput> {
+export abstract class ActorQueryParse extends Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */

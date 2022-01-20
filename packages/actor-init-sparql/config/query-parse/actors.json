@@ -1,0 +1,20 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-parse-sparql/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-parse-graphql/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:query-parse/actors#sparql",
+      "@type": "ActorQueryParseSparql"
+    },
+    {
+      "@id": "urn:comunica:default:query-parse/actors#graphql",
+      "@type": "ActorQueryParseGraphql"
+    }
+  ]
+}

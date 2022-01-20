@@ -1,5 +1,5 @@
-import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
-import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
+import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-query-parse';
+import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitSparql } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { Converter } from 'graphql-to-sparql';
@@ -7,7 +7,7 @@ import { Converter } from 'graphql-to-sparql';
 /**
  * A comunica GraphQL SPARQL Parse Actor.
  */
-export class ActorSparqlParseGraphql extends ActorSparqlParse {
+export class ActorQueryParseGraphql extends ActorQueryParse {
   private readonly graphqlToSparql: Converter;
 
   public constructor(args: IActorSparqlParseArgs) {

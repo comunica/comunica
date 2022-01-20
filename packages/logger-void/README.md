@@ -1,6 +1,6 @@
 # Comunica Bus SPARQL Parse
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fbus-sparql-parse.svg)](https://www.npmjs.com/package/@comunica/bus-sparql-parse)
+[![npm version](https://badge.fury.io/js/%40comunica%2Flogger-void.svg)](https://www.npmjs.com/package/@comunica/logger-void)
 
 A logger that voids all log messages.
 

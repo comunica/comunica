@@ -12,7 +12,7 @@
       "@type": "ActorInitSparql",
       "mediatorOptimizeQueryOperation": { "@id": "urn:comunica:default:optimize-query-operation/mediators#main" },
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorSparqlParse": { "@id": "urn:comunica:default:sparql-parse/mediators#main" },
+      "mediatorSparqlParse": { "@id": "urn:comunica:default:query-parse/mediators#main" },
       "mediatorSparqlSerialize": { "@id": "urn:comunica:default:sparql-serialize/mediators#serialize" },
       "mediatorSparqlSerializeMediaTypeCombiner": { "@id": "urn:comunica:default:sparql-serialize/mediators#mediaType" },
       "mediatorSparqlSerializeMediaTypeFormatCombiner": { "@id": "urn:comunica:default:sparql-serialize/mediators#mediaTypeFormat" },

@@ -1,5 +1,5 @@
-import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
-import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
+import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-query-parse';
+import { ActorQueryParse } from '@comunica/bus-query-parse';
 import type { IActorTest } from '@comunica/core';
 import { translate } from 'sparqlalgebrajs';
 import { Parser as SparqlParser } from 'sparqljs';
@@ -7,10 +7,10 @@ import { Parser as SparqlParser } from 'sparqljs';
 /**
  * A comunica Algebra SPARQL Parse Actor.
  */
-export class ActorSparqlParseAlgebra extends ActorSparqlParse {
+export class ActorQueryParseSparql extends ActorQueryParse {
   public readonly prefixes: Record<string, string>;
 
-  public constructor(args: IActorSparqlParseAlgebraArgs) {
+  public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
     this.prefixes = Object.freeze(this.prefixes);
   }
@@ -34,7 +34,7 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
   }
 }
 
-export interface IActorSparqlParseAlgebraArgs extends IActorSparqlParseArgs {
+export interface IActorQueryParseSparqlArgs extends IActorSparqlParseArgs {
   /**
    * Default prefixes to use
    * @range {json}
