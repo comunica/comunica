@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/filename-case */
 /* eslint-enable unicorn/filename-case */
 export * from './ActorInitSparqlBase';
-export { bindingsStreamToGraphQl } from '@comunica/actor-sparql-serialize-tree';
+export { bindingsStreamToGraphQl } from '@comunica/actor-query-result-serialize-tree';
 import type { ActorInitSparql } from './ActorInitSparql-browser';
 export { ActorInitSparql } from './ActorInitSparql-browser';
 

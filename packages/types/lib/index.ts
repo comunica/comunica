@@ -321,7 +321,7 @@ export interface IQueryEngine {
    * @param {IQueryableResult} queryResult A query result.
    * @param {string} mediaType A media type.
    * @param {ActionContext} context An optional context.
-   * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
+   * @return {Promise<IActorQueryResultSerializeOutput>} A text stream.
    */
   resultToString: (queryResult: IQueryableResult, mediaType?: string, context?: any) => any;
   /**

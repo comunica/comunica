@@ -1,0 +1,63 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-json/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-rdf/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-simple/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-sparql-csv/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-sparql-json/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-sparql-tsv/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-sparql-xml/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-stats/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-table/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-tree/^2.0.0/components/context.jsonld",
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#json",
+      "@type": "ActorQueryResultSerializeJson"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#rdf",
+      "@type": "ActorQueryResultSerializeRdf",
+      "mediatorRdfSerialize": { "@id": "urn:comunica:default:rdf-serialize/mediators#serialize" },
+      "mediatorMediaTypeCombiner": { "@id": "urn:comunica:default:rdf-serialize/mediators#mediaType" },
+      "mediatorMediaTypeFormatCombiner": { "@id": "urn:comunica:default:rdf-serialize/mediators#mediaTypeFormat" }
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#simple",
+      "@type": "ActorQueryResultSerializeSimple"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#csv",
+      "@type": "ActorQueryResultSerializeSparqlCsv"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#sparql-json",
+      "@type": "ActorQueryResultSerializeSparqlJson"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#sparql-tsv",
+      "@type": "ActorQueryResultSerializeSparqlTsv"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#sparql-xml",
+      "@type": "ActorQueryResultSerializeSparqlXml"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#stats",
+      "@type": "ActorQueryResultSerializeStats"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#table",
+      "@type": "ActorQueryResultSerializeTable"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/actors#tree",
+      "@type": "ActorQueryResultSerializeTree"
+    }
+  ]
+}

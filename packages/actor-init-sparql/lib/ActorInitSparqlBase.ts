@@ -7,8 +7,9 @@ import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-quer
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { materializeOperation } from '@comunica/bus-query-operation';
 import type { MediatorSparqlParse } from '@comunica/bus-query-parse';
-import type { IActionSparqlSerialize, IActorSparqlSerializeOutput, MediatorSparqlSerializeHandle,
-  MediatorSparqlSerializeMediaTypes, MediatorSparqlSerializeMediaTypeFormats } from '@comunica/bus-sparql-serialize';
+import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput, MediatorSparqlSerializeHandle,
+  MediatorSparqlSerializeMediaTypes,
+  MediatorSparqlSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
 import { KeysInitSparql, KeysCore } from '@comunica/context-entries';
 import type { IActorTest, Logger } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
@@ -267,10 +268,10 @@ export class ActorInitSparqlBase extends ActorInit implements IActorInitSparqlBa
    * @param {IQueryableResult} queryResult A query result.
    * @param {string} mediaType A media type.
    * @param {ActionContext} context An optional context.
-   * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
+   * @return {Promise<IActorQueryResultSerializeOutput>} A text stream.
    */
   public async resultToString(queryResult: IQueryableResult, mediaType?: string, context?: any):
-  Promise<IActorSparqlSerializeOutput> {
+  Promise<IActorQueryResultSerializeOutput> {
     context = ActionContext.ensureActionContext(context);
     if (!mediaType) {
       switch (queryResult.type) {

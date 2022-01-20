@@ -34,8 +34,8 @@ After installing, this package can be added to your engine's configuration as fo
       "@id": "urn:comunica:default:rdf-update-hypermedia/actors#put-ldp",
       "@type": "ActorRdfUpdateHypermediaPutLdp",
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
-      "mediatorRdfSerializeMediatypes": { "@id": "urn:comunica:default:sparql-serialize/mediators#mainMediatypes" },
-      "mediatorRdfSerialize": { "@id": "urn:comunica:default:sparql-serialize/mediators#main" }
+      "mediatorRdfSerializeMediatypes": { "@id": "urn:comunica:default:query-result-serialize/mediators#mainMediatypes" },
+      "mediatorRdfSerialize": { "@id": "urn:comunica:default:query-result-serialize/mediators#main" }
     }
   ]
 }

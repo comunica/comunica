@@ -53,7 +53,7 @@
     "@comunica/actor-rdf-join-inner-single": "carjisi",
     "@comunica/actor-rdf-join-inner-symmetrichash": "carjish",
     "@comunica/actor-rdf-metadata-extract-hydra-count": "carmehco",
-    "@comunica/actor-sparql-serialize-stats": "cassst",
-    "@comunica/actor-sparql-serialize-tree": "casstr"
+    "@comunica/actor-query-result-serialize-stats": "caqrsst",
+    "@comunica/actor-query-result-serialize-tree": "caqrstr"
   }
 }

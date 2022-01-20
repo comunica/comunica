@@ -19,6 +19,10 @@
     "cais:config/optimize-query-operation/mediators.json",
     "cais:config/query-operation/actors.json",
     "cais:config/query-operation/mediators.json",
+    "cais:config/query-parse/actors.json",
+    "cais:config/query-parse/mediators.json",
+    "cais:config/query-result-serialize/actors.json",
+    "cais:config/query-result-serialize/mediators.json",
     "cais:config/rdf-dereference/actors.json",
     "caisf:config/rdf-dereference/actors.json",
     "cais:config/rdf-dereference/mediators.json",
@@ -46,10 +50,6 @@
     "cais:config/rdf-update-hypermedia/actors.json",
     "cais:config/rdf-update-hypermedia/mediators.json",
     "cais:config/rdf-update-quads/actors.json",
-    "cais:config/rdf-update-quads/mediators.json",
-    "cais:config/sparql-parse/actors.json",
-    "cais:config/sparql-parse/mediators.json",
-    "cais:config/sparql-serialize/actors.json",
-    "cais:config/sparql-serialize/mediators.json"
+    "cais:config/rdf-update-quads/mediators.json"
   ]
 }

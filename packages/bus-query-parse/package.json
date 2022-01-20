@@ -1,7 +1,7 @@
 {
   "name": "@comunica/bus-query-parse",
   "version": "2.0.0",
-  "description": "A comunica bus for sparql-parse events.",
+  "description": "A comunica bus for query-parse events.",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
