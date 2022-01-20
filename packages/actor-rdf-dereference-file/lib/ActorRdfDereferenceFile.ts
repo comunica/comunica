@@ -7,7 +7,6 @@ import type { IActionRdfDereference,
 import { ActorRdfDereferenceMediaMappings } from '@comunica/bus-rdf-dereference';
 import type { IActionRdfParseHandle, IActorRdfParseOutput, MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { IActorTest } from '@comunica/core';
-import { Headers } from 'cross-fetch';
 
 /**
  * A comunica File RDF Dereference Actor.
@@ -62,7 +61,6 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     }
 
     return {
-      headers: new Headers(),
       quads: this.handleDereferenceStreamErrors(action, parseOutput.quads),
       exists: true,
       requestTime,
