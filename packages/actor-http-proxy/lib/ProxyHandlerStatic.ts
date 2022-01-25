@@ -1,4 +1,4 @@
-import type { IProxyHandler, IRequest } from './IProxyHandler';
+import type { IProxyHandler, IRequest } from '@comunica/types';
 
 /**
  * A proxy handler that prefixes all URLs with a given string.

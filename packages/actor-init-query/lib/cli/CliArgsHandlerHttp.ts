@@ -1,5 +1,5 @@
+import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
-import type { ICliArgsHandler } from './ICliArgsHandler';
 
 /**
  * CLI arguments handler that handles options for HTTP servers.

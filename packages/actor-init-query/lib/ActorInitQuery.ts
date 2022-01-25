@@ -2,13 +2,12 @@ import { readFileSync } from 'fs';
 import type { Readable } from 'stream';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IQueryableResult, IQueryExplained } from '@comunica/types';
+import type { IQueryableResult, IQueryExplained, ICliArgsHandler } from '@comunica/types';
 import yargs from 'yargs';
 import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
 import { ActorInitQueryBase } from './ActorInitQueryBase';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
-import type { ICliArgsHandler } from './cli/ICliArgsHandler';
 import { QueryEngineBase } from './QueryEngineBase';
 const streamifyString = require('streamify-string');
 

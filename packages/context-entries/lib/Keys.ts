@@ -1,10 +1,16 @@
-import type { IProxyHandler } from '@comunica/actor-http-proxy';
-import type { ICliArgsHandler } from '@comunica/actor-init-query';
-import type { DataSources, IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { IDataDestination } from '@comunica/bus-rdf-update-quads';
 import { ActionContextKey } from '@comunica/core';
 import type { Logger } from '@comunica/core';
-import type { Bindings, IMetadata, IPhysicalQueryPlanLogger, QueryExplainMode } from '@comunica/types';
+import type {
+  Bindings,
+  IMetadata,
+  IPhysicalQueryPlanLogger,
+  QueryExplainMode,
+  IProxyHandler,
+  ICliArgsHandler,
+  DataSources,
+  IDataSource,
+  IDataDestination,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';

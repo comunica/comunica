@@ -4,9 +4,8 @@ import * as OS from 'os';
 import { KeysHttp, KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
-import type { ICliArgsHandler } from './ICliArgsHandler';
 
 /**
  * Basic CLI arguments handler that handles common options.

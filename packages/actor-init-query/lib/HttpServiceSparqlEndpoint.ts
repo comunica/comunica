@@ -6,13 +6,12 @@ import type { Writable } from 'stream';
 import * as url from 'url';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { IQueryableResult,
-  IQueryableResultQuads } from '@comunica/types';
+import type { ICliArgsHandler, IQueryableResult, IQueryableResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import yargs from 'yargs';
 import { QueryEngineBase, QueryEngineFactoryBase } from '..';
-import type { ICliArgsHandler, IDynamicQueryEngineOptions } from '..';
+import type { IDynamicQueryEngineOptions } from '..';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
 

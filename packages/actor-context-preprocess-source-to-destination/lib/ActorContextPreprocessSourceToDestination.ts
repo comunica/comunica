@@ -1,8 +1,8 @@
 import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import type { DataSources } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest, IAction } from '@comunica/core';
+import type { DataSources } from '@comunica/types';
 
 /**
  * A comunica Source To Destination Context Preprocess Actor.

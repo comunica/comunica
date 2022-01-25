@@ -1,6 +1,6 @@
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IActionContext } from './ActionContext';
-import type { IQueryableResult, IQueryExplained } from './QueryableResult';
+import type { IActionContext } from './IActionContext';
+import type { IQueryableResult, IQueryExplained } from './IQueryableResult';
 
 export interface IQueryEngine {
   /**

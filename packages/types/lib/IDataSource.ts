@@ -6,3 +6,5 @@ export type IDataSource = string | RDF.Source | {
   value: string | RDF.Source;
   context?: IActionContext;
 };
+
+export type DataSources = IDataSource[];

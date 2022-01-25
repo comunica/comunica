@@ -8,10 +8,10 @@ import {
   getContextDestinationUrl,
   getDataDestinationType,
 } from '@comunica/bus-rdf-update-quads';
-import type { IActionRdfUpdateQuads, IDataDestination,
+import type { IActionRdfUpdateQuads,
   IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IDataDestination } from '@comunica/types';
 import LRUCache = require('lru-cache');
 
 /**

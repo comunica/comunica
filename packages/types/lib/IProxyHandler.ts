@@ -1,5 +1,5 @@
 /**
- * A proxy handler can override a request.
+ * A proxy handler can override an HTTP request.
  */
 export interface IProxyHandler {
   /**

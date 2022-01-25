@@ -1,7 +1,6 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IDataDestination } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { IDataDestination } from './IDataDestination';
 
 /**
  * Check if the given data destination is a string or RDF store.

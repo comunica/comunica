@@ -1,7 +1,7 @@
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import { KeysHttpMemento, KeysHttpProxy, KeysInitQuery } from '@comunica/context-entries';
+import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
-import type { ICliArgsHandler } from './ICliArgsHandler';
 
 /**
  * CLI arguments handler that handles options for query execution.

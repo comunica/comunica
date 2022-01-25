@@ -30,7 +30,8 @@
   ],
   "dependencies": {
     "@comunica/core": "^2.0.0",
-    "@comunica/types": "^2.0.0"
+    "@comunica/types": "^2.0.0",
+    "jsonld-context-parser": "^2.1.5"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

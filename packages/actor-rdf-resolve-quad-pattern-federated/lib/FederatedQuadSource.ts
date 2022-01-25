@@ -1,14 +1,12 @@
 import type {
-  DataSources,
   IActorRdfResolveQuadPatternOutput,
-  IDataSource,
   IQuadSource,
   MediatorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataSourceContext, getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { IActionContext, IMetadata } from '@comunica/types';
+import type { IActionContext, IMetadata, DataSources, IDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';

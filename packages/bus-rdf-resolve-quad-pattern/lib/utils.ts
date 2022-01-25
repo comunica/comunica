@@ -1,8 +1,6 @@
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, DataSources, IDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { DataSources } from './DataSources';
-import type { IDataSource } from './IDataSource';
 
 /**
  * Check if the given data source is a string or RDF store.

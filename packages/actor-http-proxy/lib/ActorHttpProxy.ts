@@ -2,7 +2,7 @@ import type { IActionHttp, IActorHttpOutput, MediatorHttp, IActorHttpArgs } from
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpProxy } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
-import type { IProxyHandler } from './IProxyHandler';
+import type { IProxyHandler } from '@comunica/types';
 
 /**
  * A comunica Proxy Http Actor.
