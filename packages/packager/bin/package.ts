@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import * as fs from 'fs';
 import * as Path from 'path';
 import { compileConfig } from 'componentsjs';
@@ -7,15 +6,15 @@ import type { ParsedArgs } from 'minimist';
 import minimist = require('minimist');
 
 const args: ParsedArgs = minimist(process.argv.slice(2));
-if (args._.length !== 1 || !args.o || args.h || args.help) {
+if (args._.length > 0 || args.h || args.help) {
   process.stderr.write(`comunica-package packages a Comunica config file into a new NPM package
 
 Usage:
-  comunica-package http://example.org/myInstance -c config.jsonld -o my-engine
-  cat config.jsonld | compile-config http://example.org/myInstance -o my-engine
+  comunica-package -c config.jsonld -o my-engine
+  cat config.jsonld | comunica-package -o my-engine
 
 Options:
-  -o      [Required] The package name to generate
+  -o      The package name to generate, if not provided, the list of dependencies is printed to stdout.
   -c      Path to a Comunica config file, if not provided, the config must be provided via stdin
   -p      The main module path, if not provided, this defaults to the directory of the packager
   -e      The instance by config URI that will be exported, by default this is the provided instance URI.
@@ -24,25 +23,26 @@ Options:
   process.exit(1);
 }
 
-const configResourceUri: string = args._[0];
-
 // Check if the package name is valid
 const packageName = args.o;
-if (!/^[\dA-Za-z-]*$/u.test(packageName)) {
-  throw new Error(`Invalid package name: ${packageName}`);
-}
+let packageJson: any | undefined;
+if (packageName) {
+  if (!/^[\dA-Za-z-]*$/u.test(packageName)) {
+    throw new Error(`Invalid package name: ${packageName}`);
+  }
 
-/* eslint-disable no-sync */
+  /* eslint-disable no-sync */
 
-// Make the target package directory if it does not exist yet.
-let packageJson: any = {};
-if (!fs.existsSync(packageName)) {
-  fs.mkdirSync(packageName);
-} else if (!fs.statSync(packageName).isDirectory()) {
-  throw new Error('The target package already exists, but it is not a directory!');
-} else if (fs.existsSync(`${packageName}/package.json`)) {
-  // Reuse contents if a package.json file already exists
-  packageJson = require(`${process.cwd()}/${packageName}/package.json`);
+  // Make the target package directory if it does not exist yet.
+  packageJson = {};
+  if (!fs.existsSync(packageName)) {
+    fs.mkdirSync(packageName);
+  } else if (!fs.statSync(packageName).isDirectory()) {
+    throw new Error('The target package already exists, but it is not a directory!');
+  } else if (fs.existsSync(`${packageName}/package.json`)) {
+    // Reuse contents if a package.json file already exists
+    packageJson = require(`${process.cwd()}/${packageName}/package.json`);
+  }
 }
 
 const configPath: string = args.c ? args.c : '.';
@@ -57,25 +57,35 @@ if (args.e) {
 const dependencyRegex = /require\('([^']*)'\)/ug;
 
 const referencePackageJson = require(`${__dirname}/../package.json`);
-compileConfig(mainModulePath, configPath, configResourceUri, exportVariableName)
+compileConfig(mainModulePath, configPath, 'urn:comunica:default:Runner', exportVariableName, false, true)
   .then((document: string) => {
     // Find dependency package names
     const dependencies: Record<string, string> = {};
     let match;
+    const dependencyNames: string[] = [];
     // eslint-disable-next-line no-cond-assign
     while (match = dependencyRegex.exec(document)) {
-      const dependencyName: string = match[1];
-      dependencies[dependencyName] = referencePackageJson.dependencies[dependencyName];
+      dependencyNames.push(match[1]);
+    }
+    // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
+    for (const dependencyName of dependencyNames.sort()) {
+      const packageJsonDependency = require(`${dependencyName}/package.json`);
+      dependencies[dependencyName] = `^${packageJsonDependency.version}`;
     }
 
-    // Build our package.json file
-    packageJson.name = packageName;
-    packageJson.main = 'index.js';
-    packageJson.dependencies = dependencies;
+    if (packageJson) {
+      // Build our package.json file
+      packageJson.name = packageName;
+      packageJson.main = 'index.js';
+      packageJson.dependencies = dependencies;
 
-    // Write output files
-    fs.writeFileSync(`${packageName}/index.js`, document);
-    fs.writeFileSync(`${packageName}/package.json`, JSON.stringify(packageJson, null, '  '));
+      // Write output files
+      fs.writeFileSync(`${packageName}/index.js`, document);
+      fs.writeFileSync(`${packageName}/package.json`, JSON.stringify(packageJson, null, '  '));
+    } else {
+      // If no output package was provided, print the dependency list to stdout
+      process.stdout.write(`${JSON.stringify(dependencies, null, '  ')}\n`);
+    }
   }).catch(error => process.stderr.write(`${error}\n`));
 
 /* eslint-enable no-sync */

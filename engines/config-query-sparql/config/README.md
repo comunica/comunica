@@ -1,6 +1,6 @@
 This directory contains the default configuration files for Comunica SPARQL.
 
-Guides on how to change these configuration files can be found on our [website](https://comunica.dev/docs/modify/).
+Guides on how to change these configuration files and package them into a new engine can be found on our [website](https://comunica.dev/docs/modify/).
 
 ## Directory structure
 
