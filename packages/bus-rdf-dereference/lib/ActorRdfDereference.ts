@@ -1,5 +1,5 @@
 import { PassThrough, Readable } from 'stream';
-import { KeysInitSparql } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
@@ -29,7 +29,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @return {boolean} If hard errors are enabled.
    */
   protected isHardError(action: IActionRdfDereference): boolean {
-    return !action.context.get(KeysInitSparql.lenient);
+    return !action.context.get(KeysInitQuery.lenient);
   }
 
   /**

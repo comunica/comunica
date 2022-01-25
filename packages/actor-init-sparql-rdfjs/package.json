@@ -1,59 +1,15 @@
 {
   "name": "@comunica/actor-init-sparql-rdfjs",
   "version": "2.0.0",
-  "description": "A SPARQL query engine for querying over RDF/JS sources",
-  "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-rdfjs/^2.0.0/config/": "config/"
-  },
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "description": "Deprecated: A SPARQL query engine for querying over RDF/JS sources",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-init-sparql-rdfjs"
+    "directory": "packages/actor-query-sparql-rdfjs"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "comunica",
-    "sparql",
-    "engine",
-    "query",
-    "update",
-    "sparql engine",
-    "sparql query",
-    "sparql update",
-    "sparql 1.1",
-    "actor",
-    "init",
-    "rdfjs",
-    "rdf/js"
-  ],
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
-  },
-  "homepage": "https://comunica.dev/",
-  "files": [
-    "config",
-    "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "engine-default.js"
-  ],
-  "dependencies": {
-    "@comunica/actor-init-sparql": "^2.0.0",
-    "@comunica/runner-cli": "^2.0.0",
-    "sparqlalgebrajs": "^4.0.0"
-  },
-  "scripts": {
-    "build": "npm run build:ts && npm run build:components-actorinit",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
-    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
-    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql-rdfjs/rdfjs-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
-  },
-  "browser": {
-    "./lib/index.js": "./lib/index-browser.js"
-  }
+  "homepage": "https://comunica.dev/"
 }

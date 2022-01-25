@@ -20,7 +20,7 @@ $ yarn add @comunica/logger-void
 ## Usage
 
 ```typescript
-const newEngine = require('@comunica/actor-init-sparql').newEngine;
+const newEngine = require('@comunica/actor-init-query').newEngine;
 import {LoggerVoid} from "@comunica/logger-void";
 
 const result = await myEngine.query('SELECT * WHERE { ?s ?p ?o }', {

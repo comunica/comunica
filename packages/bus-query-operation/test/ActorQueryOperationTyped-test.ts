@@ -1,4 +1,4 @@
-import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
 import { ActorQueryOperationTyped } from '..';
@@ -53,8 +53,8 @@ describe('ActorQueryOperationTyped', () => {
         toJson: jest.fn(),
       };
       const context = new ActionContext({
-        [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
-        [KeysInitSparql.physicalQueryPlanNode.name]: parentNode,
+        [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+        [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
       });
       jest.spyOn(actor, 'runOperation');
 
@@ -71,8 +71,8 @@ describe('ActorQueryOperationTyped', () => {
         {},
       );
       expect(actor.runOperation).toHaveBeenCalledWith(operation, new ActionContext({
-        [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
-        [KeysInitSparql.physicalQueryPlanNode.name]: operation,
+        [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+        [KeysInitQuery.physicalQueryPlanNode.name]: operation,
         [KeysQueryOperation.operation.name]: operation,
       }));
     });

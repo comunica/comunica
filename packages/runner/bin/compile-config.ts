@@ -14,7 +14,7 @@ if (args.length === 0) {
 const mainModulePath: string = process.cwd();
 const configResourceUri = 'urn:comunica:default:Runner';
 const configPath: string = args[0];
-let exportVariableName = 'urn:comunica:default:init/actors#sparql';
+let exportVariableName = 'urn:comunica:default:init/actors#query';
 if (args.length > 1) {
   exportVariableName = args[1];
 }

@@ -1,4 +1,4 @@
-import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
@@ -110,19 +110,19 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
 
   protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
     if (context) {
-      const now: Date | undefined = context.get(KeysInitSparql.queryTimestamp);
-      const baseIRI: string | undefined = context.get(KeysInitSparql.baseIRI);
+      const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
+      const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
 
       // Handle two variants of providing extension functions
-      if (context.has(KeysInitSparql.extensionFunctionCreator) && context.has(KeysInitSparql.extensionFunctions)) {
+      if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
         throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
       }
       let extensionFunctionCreator: ((functionNamedNode: RDF.NamedNode) =>
       ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined) | undefined = context
-        .get(KeysInitSparql.extensionFunctionCreator);
+        .get(KeysInitQuery.extensionFunctionCreator);
       // Convert dictionary-based variant to callback
       const extensionFunctions: (Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>) | undefined = context
-        .get(KeysInitSparql.extensionFunctions);
+        .get(KeysInitQuery.extensionFunctions);
       if (extensionFunctions) {
         extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
       }

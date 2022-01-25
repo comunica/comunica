@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "include": [
+    "engines/**/*.ts",
     "packages/**/*.ts"
   ],
   "exclude": [

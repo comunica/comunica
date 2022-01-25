@@ -2,7 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitSparql } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -260,16 +260,16 @@ export abstract class ActorRdfJoin
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
-    if (action.context && action.context.has(KeysInitSparql.physicalQueryPlanLogger)) {
-      parentPhysicalQueryPlanNode = action.context.get(KeysInitSparql.physicalQueryPlanNode);
-      action.context = action.context && action.context.set(KeysInitSparql.physicalQueryPlanNode, action);
+    if (action.context && action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
+      parentPhysicalQueryPlanNode = action.context.get(KeysInitQuery.physicalQueryPlanNode);
+      action.context = action.context && action.context.set(KeysInitQuery.physicalQueryPlanNode, action);
     }
 
     const { result, physicalPlanMetadata } = await this.getOutput(action);
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
     // Log to physical plan
-    const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context.get(KeysInitSparql
+    const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context.get(KeysInitQuery
       .physicalQueryPlanLogger);
     if (this.includeInLogs && physicalQueryPlanLogger) {
       physicalQueryPlanLogger.logOperation(

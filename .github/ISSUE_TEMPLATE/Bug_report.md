@@ -17,7 +17,7 @@ ____
 #### Environment:
 
 <!--Output of the `comunica-sparql -v` command.-->
-<!--If running in a development environment, this must be the output of `node ./packages/actor-init-sparql/bin/query.js -v`-->
+<!--If running in a development environment, this must be the output of `node ./packages/actor-init-query/bin/query.js -v`-->
 
 #### Crash log:
 

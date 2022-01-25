@@ -1,5 +1,5 @@
 import type { IProxyHandler } from '@comunica/actor-http-proxy';
-import type { ICliArgsHandler } from '@comunica/actor-init-sparql';
+import type { ICliArgsHandler } from '@comunica/actor-init-query';
 import type { DataSources, IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IDataDestination } from '@comunica/bus-rdf-update-quads';
 import { ActionContextKey } from '@comunica/core';
@@ -45,40 +45,40 @@ export const KeysHttpProxy = {
   httpProxyHandler: new ActionContextKey<IProxyHandler>('@comunica/actor-http-proxy:httpProxyHandler'),
 };
 
-export const KeysInitSparql = {
+export const KeysInitQuery = {
   /**
    * Variables that have to be pre-bound to values in the query.
    */
-  initialBindings: new ActionContextKey<Bindings>('@comunica/actor-init-sparql:initialBindings'),
+  initialBindings: new ActionContextKey<Bindings>('@comunica/actor-init-query:initialBindings'),
   /**
    * Name of the provided query's format.
    */
-  queryFormat: new ActionContextKey<string>('@comunica/actor-init-sparql:queryFormat'),
+  queryFormat: new ActionContextKey<string>('@comunica/actor-init-query:queryFormat'),
   /**
    * Which GraphQL bindings should be singularized.
    */
-  graphqlSingularizeVariables: new ActionContextKey<any>('@comunica/actor-init-sparql:singularizeVariables'),
+  graphqlSingularizeVariables: new ActionContextKey<any>('@comunica/actor-init-query:singularizeVariables'),
   /**
    * If HTTP and parsing failures are ignored.
    */
-  lenient: new ActionContextKey<boolean>('@comunica/actor-init-sparql:lenient'),
+  lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
   /**
    * The original query string.
    */
-  queryString: new ActionContextKey<string>('@comunica/actor-init-sparql:queryString'),
+  queryString: new ActionContextKey<string>('@comunica/actor-init-query:queryString'),
   /**
    * The original parsed query.
    */
-  query: new ActionContextKey<Algebra.Operation>('@comunica/actor-init-sparql:query'),
+  query: new ActionContextKey<Algebra.Operation>('@comunica/actor-init-query:query'),
   /**
    * The query's base IRI.
    */
-  baseIRI: new ActionContextKey<string>('@comunica/actor-init-sparql:baseIRI'),
+  baseIRI: new ActionContextKey<string>('@comunica/actor-init-query:baseIRI'),
   /**
    * A timestamp representing the current time.
    *                 This is required for certain SPARQL operations such as NOW().
    */
-  queryTimestamp: new ActionContextKey<Date>('@comunica/actor-init-sparql:queryTimestamp'),
+  queryTimestamp: new ActionContextKey<Date>('@comunica/actor-init-query:queryTimestamp'),
   /**
    * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined}
    * Extension function creator for a given function IRI.
@@ -90,7 +90,7 @@ export const KeysInitSparql = {
   extensionFunctionCreator: new ActionContextKey<
   (functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined
   // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-sparql:extensionFunctionCreator'),
+  >('@comunica/actor-init-query:extensionFunctionCreator'),
   /**
    * Dictionary of extension functions.
    * Key is the IRI of the function, and value is the async function implementation.
@@ -100,26 +100,26 @@ export const KeysInitSparql = {
   extensionFunctions: new ActionContextKey<
   Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
   // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-sparql:extensionFunctions'),
+  >('@comunica/actor-init-query:extensionFunctions'),
   /**
    * Enables manipulation of the CLI arguments and their processing.
    */
-  cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-sparql:cliArgsHandlers'),
+  cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
    * Explain mode of the query. Can be 'parsed', 'logical', or 'physical'.
    */
-  explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-sparql:explain'),
+  explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**
    * Logs the used physical operators
    */
   physicalQueryPlanLogger: new ActionContextKey<IPhysicalQueryPlanLogger>(
-    '@comunica/actor-init-sparql:physicalQueryPlanLogger',
+    '@comunica/actor-init-query:physicalQueryPlanLogger',
   ),
   /**
    * The current physical operator within the query plan.
    *              This is used to pass parent-child relationships for invoking the query plan logger.
    */
-  physicalQueryPlanNode: new ActionContextKey<any>('@comunica/actor-init-sparql:physicalQueryPlanNode'),
+  physicalQueryPlanNode: new ActionContextKey<any>('@comunica/actor-init-query:physicalQueryPlanNode'),
   /**
    * A JSON-LD context
    */

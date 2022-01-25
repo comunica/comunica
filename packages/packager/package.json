@@ -28,7 +28,7 @@
     "bin/package.js"
   ],
   "dependencies": {
-    "@comunica/actor-init-sparql": "^2.0.0",
+    "@comunica/actor-init-query": "^2.0.0",
     "@comunica/runner": "^2.0.0",
     "@comunica/runner-cli": "^2.0.0",
     "@types/minimist": "^1.2.0",

@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { KeysInitSparql } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -113,8 +113,8 @@ describe('ActorQueryOperation', () => {
       it('should create an non-empty object for a filled context', () => {
         const date = new Date();
         expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext({
-          [KeysInitSparql.queryTimestamp.name]: date,
-          [KeysInitSparql.baseIRI.name]: 'http://base.org/',
+          [KeysInitQuery.queryTimestamp.name]: date,
+          [KeysInitQuery.baseIRI.name]: 'http://base.org/',
         }))).toEqual({
           now: date,
           bnode: expect.any(Function),

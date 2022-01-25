@@ -1,4 +1,4 @@
-import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type {
   IQueryableResult,
@@ -39,17 +39,17 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     // Log to physical plan
     if (action.context) {
       const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action?.context
-        .get(KeysInitSparql.physicalQueryPlanLogger);
+        .get(KeysInitQuery.physicalQueryPlanLogger);
       if (physicalQueryPlanLogger) {
         physicalQueryPlanLogger.logOperation(
           action.operation.type,
           undefined,
           action.operation,
-          action.context.get(KeysInitSparql.physicalQueryPlanNode),
+          action.context.get(KeysInitQuery.physicalQueryPlanNode),
           this.name,
           {},
         );
-        action.context = action.context.set(KeysInitSparql.physicalQueryPlanNode, action.operation);
+        action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
       }
     }
 

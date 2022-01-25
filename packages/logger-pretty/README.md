@@ -20,7 +20,7 @@ $ yarn add @comunica/logger-pretty
 ## Usage
 
 ```typescript
-const newEngine = require('@comunica/actor-init-sparql').newEngine;
+const newEngine = require('@comunica/actor-init-query').newEngine;
 import {LoggerPretty} from "@comunica/logger-pretty";
 
 const result = await myEngine.query('SELECT * WHERE { ?s ?p ?o }', {

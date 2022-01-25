@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -119,7 +120,7 @@ describe('ActorQueryResultSerializeTree', () => {
 
       it('should run on a bindings stream with a context', async() => {
         context = new ActionContext({
-          '@comunica/actor-init-sparql:singularizeVariables': { k1: true, k2: false },
+          [KeysInitQuery.graphqlSingularizeVariables.name]: { k1: true, k2: false },
         });
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream, variables, context },

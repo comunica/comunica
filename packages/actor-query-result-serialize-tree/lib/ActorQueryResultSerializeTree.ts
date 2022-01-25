@@ -3,7 +3,7 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
-import { KeysInitSparql } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IQueryableResultBindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -40,7 +40,7 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
       const converter: Converter = new Converter(converterSettings);
 
       const schema: ISchema = {
-        singularizeVariables: actionContext.get(KeysInitSparql.graphqlSingularizeVariables) || {},
+        singularizeVariables: actionContext.get(KeysInitQuery.graphqlSingularizeVariables) || {},
       };
 
       bindingsStream.on('error', reject);

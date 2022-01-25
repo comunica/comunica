@@ -1,6 +1,6 @@
 import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
-import { KeysInitSparql } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { Converter } from 'graphql-to-sparql';
 
@@ -23,10 +23,10 @@ export class ActorQueryParseGraphql extends ActorQueryParse {
   }
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
-    const context: any = action.context.get(KeysInitSparql.jsonLdContext) || {};
+    const context: any = action.context.get(KeysInitQuery.jsonLdContext) || {};
     const options = {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      singularizeVariables: <any> action.context.get(KeysInitSparql.graphqlSingularizeVariables),
+      singularizeVariables: <any> action.context.get(KeysInitQuery.graphqlSingularizeVariables),
     };
     return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };
   }

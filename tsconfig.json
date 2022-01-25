@@ -21,6 +21,8 @@
     "strictPropertyInitialization": false
   },
   "include": [
+    "engines/*/bin/**/*",
+    "engines/*/lib/**/*",
     "packages/*/bin/**/*",
     "packages/*/lib/**/*"
   ],

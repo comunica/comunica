@@ -1,14 +1,17 @@
 {
   "source": "lib",
   "ignorePackagePaths": [
+    "engines/query-sparql",
+    "engines/query-sparql-file",
+    "engines/query-sparql-rdfjs",
+    "packages/actor-init-sparql",
     "packages/actor-init-sparql-file",
     "packages/actor-init-sparql-rdfjs",
     "packages/bindings-factory",
     "packages/context-entries",
     "packages/data-factory",
     "packages/packager",
-    "packages/runner-cli",
-    "packages/utils-datasource"
+    "packages/runner-cli"
   ],
   "ignoreComponents": [
     "Error",
@@ -21,8 +24,10 @@
     "FetchDocumentLoader",
     "BindingsToQuadsIterator",
     "AsyncIteratorJsonBindings",
-    "newEngine",
+    "QueryEngineFactory",
+    "QueryEngineFactoryBase",
     "bindingsStreamToGraphQl",
+    "HttpServiceSparqlEndpoint",
     "IQueryResult",
     "KEY_CONTEXT_INITIALBINDINGS",
     "KEY_CONTEXT_QUERYFORMAT",

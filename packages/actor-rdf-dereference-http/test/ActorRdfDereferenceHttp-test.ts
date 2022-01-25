@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
-import { KeysCore, KeysInitSparql } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
@@ -318,7 +318,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run on a 404 in lenient mode', async() => {
-      context = new ActionContext({ [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
       expect(output.url).toEqual('https://www.nogoogle.com/notfound');
@@ -359,7 +359,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run and ignore stream errors in lenient mode', async() => {
-      context = new ActionContext({ [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/error', context });
       expect(output.url).toEqual('https://www.google.com/error');
@@ -375,7 +375,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run and ignore parse errors in lenient mode', async() => {
-      context = new ActionContext({ emitParseError: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ emitParseError: true, [KeysInitQuery.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
@@ -388,7 +388,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(logger, 'error');
       context = new ActionContext({
         emitParseError: true,
-        [KeysInitSparql.lenient.name]: true,
+        [KeysInitQuery.lenient.name]: true,
         [KeysCore.log.name]: logger,
       });
       const output = await actor.run({ url: 'https://www.google.com/', context });
@@ -406,7 +406,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run and ignore http rejects in lenient mode', async() => {
-      context = new ActionContext({ httpReject: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ httpReject: true, [KeysInitQuery.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/');
@@ -419,7 +419,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(logger, 'error');
       context = new ActionContext({
         httpReject: true,
-        [KeysInitSparql.lenient.name]: true,
+        [KeysInitQuery.lenient.name]: true,
         [KeysCore.log.name]: logger,
       });
       await actor.run({ url: 'https://www.google.com/', context });
@@ -435,7 +435,7 @@ describe('ActorRdfDereferenceHttp', () => {
     });
 
     it('should run and ignore parse rejects in lenient mode', async() => {
-      context = new ActionContext({ parseReject: true, [KeysInitSparql.lenient.name]: true });
+      context = new ActionContext({ parseReject: true, [KeysInitQuery.lenient.name]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/');
@@ -448,7 +448,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(logger, 'error');
       context = new ActionContext({
         parseReject: true,
-        [KeysInitSparql.lenient.name]: true,
+        [KeysInitQuery.lenient.name]: true,
         [KeysCore.log.name]: logger,
       });
       await actor.run({ url: 'https://www.google.com/', context });

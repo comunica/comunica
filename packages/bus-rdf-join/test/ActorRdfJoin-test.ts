@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitSparql } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -489,8 +489,8 @@ describe('ActorRdfJoin', () => {
         toJson: jest.fn(),
       };
       action.context = new ActionContext({
-        [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
-        [KeysInitSparql.physicalQueryPlanNode.name]: parentNode,
+        [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+        [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
       });
       jest.spyOn(instance, 'getOutput');
 
@@ -519,8 +519,8 @@ describe('ActorRdfJoin', () => {
       expect(instance.getOutput).toHaveBeenCalledWith({
         ...action,
         context: new ActionContext({
-          [KeysInitSparql.physicalQueryPlanLogger.name]: logger,
-          [KeysInitSparql.physicalQueryPlanNode.name]: action,
+          [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+          [KeysInitQuery.physicalQueryPlanNode.name]: action,
         }),
       });
     });

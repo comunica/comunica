@@ -2,6 +2,7 @@
   "private": true,
   "repository": "https://github.com/comunica/comunica/",
   "workspaces": [
+    "engines/*",
     "packages/*"
   ],
   "devDependencies": {
@@ -73,10 +74,9 @@
     "test": "jest",
     "test-ci": "jest --ci --maxWorkers=4 --coverage",
     "lint": "eslint . --ext .ts --cache",
-    "clean": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules",
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "tsc",
-    "build:components": "componentsjs-generator packages/*",
+    "build:components": "componentsjs-generator engines/* packages/*",
     "build-watch": "nodemon -e ts --ignore '*.d.ts' --exec yarn run build",
     "build-watch:ts": "tsc --watch",
     "build-watch:components": "nodemon -e d.ts --exec yarn run build:components",

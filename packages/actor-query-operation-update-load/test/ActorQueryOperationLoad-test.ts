@@ -1,4 +1,4 @@
-import { KeysInitSparql, KeysQueryOperation, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryableResultVoid } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -174,7 +174,7 @@ describe('ActorQueryOperationLoad', () => {
         operation: expect.anything(),
         context: new ActionContext({
           [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
-          [KeysInitSparql.lenient.name]: true,
+          [KeysInitQuery.lenient.name]: true,
         }),
       });
     });

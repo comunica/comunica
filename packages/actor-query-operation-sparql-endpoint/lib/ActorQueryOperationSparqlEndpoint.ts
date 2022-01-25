@@ -9,7 +9,7 @@ import {
   getDataDestinationType,
   getDataDestinationValue,
 } from '@comunica/bus-rdf-update-quads';
-import { KeysInitSparql } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
 import type { IQueryableResult,
@@ -90,7 +90,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     let variables: RDF.Variable[] | undefined;
     try {
       // Use the original query string if available
-      query = action.context.get(KeysInitSparql.queryString) ?? toSparql(action.operation);
+      query = action.context.get(KeysInitQuery.queryString) ?? toSparql(action.operation);
       // This will throw an error in case the result is an invalid SPARQL query
       type = this.endpointFetcher.getQueryType(query);
 

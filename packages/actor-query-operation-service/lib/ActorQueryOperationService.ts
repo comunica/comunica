@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import { KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, IQueryableResult, IQueryableResultBindings } from '@comunica/types';
@@ -37,7 +37,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
       .delete(KeysRdfResolveQuadPattern.sources)
-      .delete(KeysInitSparql.queryString);
+      .delete(KeysInitQuery.queryString);
     const sourceType = this.forceSparqlEndpoint ? 'sparql' : undefined;
     subContext = subContext.set(KeysRdfResolveQuadPattern.sources, [{ type: sourceType, value: endpoint }]);
     // Query the source
