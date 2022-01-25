@@ -5,11 +5,8 @@ module.exports = {
   name: 'Comunica',
   out: 'documentation',
   theme: 'default',
-  'external-modulemap': '.*(packages)|(engines)/([^/]+)/.*',
-  entryPoints: [
-      ...getPackagesSync(path.join(__dirname, 'engines')),
-      ...getPackagesSync(path.join(__dirname, 'packages')),
-  ].map(
+  'external-modulemap': __dirname + '/[^/]+/([^/]+)/.*',
+  entryPoints: getPackagesSync(__dirname).map(
     pkg => path.relative(__dirname, pkg.location)
   ),
   excludeExternals: false,
