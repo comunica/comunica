@@ -10,19 +10,19 @@ import type { Algebra } from 'sparqlalgebrajs';
  * * Test:   <none>
  * * Output: IActorSparqlParseOutput: A parsed query in SPARQL query algebra.
  *
- * @see IActionSparqlParse
- * @see IActorSparqlParseOutput
+ * @see IActionQueryParse
+ * @see IActorQueryParseOutput
  */
-export abstract class ActorQueryParse extends Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput> {
+export abstract class ActorQueryParse extends Actor<IActionQueryParse, IActorTest, IActorQueryParseOutput> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorSparqlParseArgs) {
+  public constructor(args: IActorQueryParseArgs) {
     super(args);
   }
 }
 
-export interface IActionSparqlParse extends IAction {
+export interface IActionQueryParse extends IAction {
   /**
    * A query.
    */
@@ -37,7 +37,7 @@ export interface IActionSparqlParse extends IAction {
   baseIRI?: string;
 }
 
-export interface IActorSparqlParseOutput extends IActorOutput {
+export interface IActorQueryParseOutput extends IActorOutput {
   /**
    * A parsed query in SPARQL algebra.
    */
@@ -48,6 +48,6 @@ export interface IActorSparqlParseOutput extends IActorOutput {
   baseIRI?: string;
 }
 
-export type IActorSparqlParseArgs = IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
+export type IActorQueryParseArgs = IActorArgs<IActionQueryParse, IActorTest, IActorQueryParseOutput>;
 
-export type MediatorSparqlParse = Mediate<IActionSparqlParse, IActorSparqlParseOutput>;
+export type MediatorQueryParse = Mediate<IActionQueryParse, IActorQueryParseOutput>;

@@ -64,10 +64,10 @@ describe('ActorInitQuery', () => {
         mediatorHttpInvalidate,
         mediatorOptimizeQueryOperation,
         mediatorQueryOperation,
-        mediatorSparqlParse,
-        mediatorSparqlSerialize,
-        mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-        mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
         name: 'actor',
       });
     });

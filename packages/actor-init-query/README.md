@@ -31,10 +31,10 @@ After installing, this package can be added to your engine's configuration as fo
       "@type": "ActorInitQuery",
       "mediatorOptimizeQueryOperation": { "@id": "urn:comunica:default:optimize-query-operation/mediators#main" },
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorSparqlParse": { "@id": "urn:comunica:default:query-parse/mediators#main" },
-      "mediatorSparqlSerialize": { "@id": "urn:comunica:default:query-result-serialize/mediators#serialize" },
-      "mediatorSparqlSerializeMediaTypeCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaType" },
-      "mediatorSparqlSerializeMediaTypeFormatCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaTypeFormat" },
+      "mediatorQueryParse": { "@id": "urn:comunica:default:query-parse/mediators#main" },
+      "mediatorQueryResultSerialize": { "@id": "urn:comunica:default:query-result-serialize/mediators#serialize" },
+      "mediatorQueryResultSerializeMediaTypeCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaType" },
+      "mediatorQueryResultSerializeMediaTypeFormatCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaTypeFormat" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
       "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" }
     }

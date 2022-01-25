@@ -4,10 +4,10 @@ import type { IActionInit, IActorInitArgs, IActorOutputInit } from '@comunica/bu
 import { ActorInit } from '@comunica/bus-init';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import type { MediatorSparqlParse } from '@comunica/bus-query-parse';
-import type { MediatorSparqlSerializeHandle,
-  MediatorSparqlSerializeMediaTypes,
-  MediatorSparqlSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
+import type { MediatorQueryParse } from '@comunica/bus-query-parse';
+import type { MediatorQueryResultSerializeHandle,
+  MediatorQueryResultSerializeMediaTypes,
+  MediatorQueryResultSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
 import type { IActorTest, Logger } from '@comunica/core';
 
 /**
@@ -16,10 +16,10 @@ import type { IActorTest, Logger } from '@comunica/core';
 export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBaseArgs {
   public readonly mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly mediatorSparqlParse: MediatorSparqlParse;
-  public readonly mediatorSparqlSerialize: MediatorSparqlSerializeHandle;
-  public readonly mediatorSparqlSerializeMediaTypeCombiner: MediatorSparqlSerializeMediaTypes;
-  public readonly mediatorSparqlSerializeMediaTypeFormatCombiner: MediatorSparqlSerializeMediaTypeFormats;
+  public readonly mediatorQueryParse: MediatorQueryParse;
+  public readonly mediatorQueryResultSerialize: MediatorQueryResultSerializeHandle;
+  public readonly mediatorQueryResultSerializeMediaTypeCombiner: MediatorQueryResultSerializeMediaTypes;
+  public readonly mediatorQueryResultSerializeMediaTypeFormatCombiner: MediatorQueryResultSerializeMediaTypeFormats;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
 
@@ -54,19 +54,19 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
   /**
    * The query parse mediator
    */
-  mediatorSparqlParse: MediatorSparqlParse;
+  mediatorQueryParse: MediatorQueryParse;
   /**
    * The query serialize mediator
    */
-  mediatorSparqlSerialize: MediatorSparqlSerializeHandle;
+  mediatorQueryResultSerialize: MediatorQueryResultSerializeHandle;
   /**
    * The query serialize media type combinator
    */
-  mediatorSparqlSerializeMediaTypeCombiner: MediatorSparqlSerializeMediaTypes;
+  mediatorQueryResultSerializeMediaTypeCombiner: MediatorQueryResultSerializeMediaTypes;
   /**
    * The query serialize media type format combinator
    */
-  mediatorSparqlSerializeMediaTypeFormatCombiner: MediatorSparqlSerializeMediaTypeFormats;
+  mediatorQueryResultSerializeMediaTypeFormatCombiner: MediatorQueryResultSerializeMediaTypeFormats;
   /**
    * The context processing combinator
    */

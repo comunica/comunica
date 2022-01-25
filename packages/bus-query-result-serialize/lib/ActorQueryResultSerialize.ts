@@ -38,21 +38,22 @@ export abstract class ActorQueryResultSerialize
   }
 }
 
-export type IActionRootSparqlParse = IActionAbstractMediaTyped<IActionSparqlSerialize>;
-export type IActorTestRootSparqlParse = IActorTestAbstractMediaTyped<IActorTest>;
-export type IActorOutputRootSparqlParse = IActorOutputAbstractMediaTyped<IActorQueryResultSerializeOutput>;
+export type IActionRootQueryResultSerialize = IActionAbstractMediaTyped<IActionSparqlSerialize>;
+export type IActorTestRootQueryResultSerialize = IActorTestAbstractMediaTyped<IActorTest>;
+export type IActorOutputRootQueryResultSerialize = IActorOutputAbstractMediaTyped<IActorQueryResultSerializeOutput>;
 
-export type IActionSparqlSerializeHandle = IActionAbstractMediaTypedHandle<IActionSparqlSerialize>;
-export type IActorTestSparqlSerializeHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
-export type IActorOutputSparqlSerializeHandle = IActorOutputAbstractMediaTypedHandle<IActorQueryResultSerializeOutput>;
+export type IActionQueryResultSerializeHandle = IActionAbstractMediaTypedHandle<IActionSparqlSerialize>;
+export type IActorTestQueryResultSerializeHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
+export type IActorOutputQueryResultSerializeHandle = IActorOutputAbstractMediaTypedHandle<
+IActorQueryResultSerializeOutput>;
 
-export type IActionSparqlSerializeMediaTypes = IActionAbstractMediaTypedMediaTypes;
-export type IActorTestSparqlSerializeMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
-export type IActorOutputSparqlSerializeMediaTypes = IActorOutputAbstractMediaTypedMediaTypes;
+export type IActionQueryResultSerializeMediaTypes = IActionAbstractMediaTypedMediaTypes;
+export type IActorTestQueryResultSerializeMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
+export type IActorOutputQueryResultSerializeMediaTypes = IActorOutputAbstractMediaTypedMediaTypes;
 
-export type IActionSparqlSerializeMediaTypeFormats = IActionAbstractMediaTypedMediaTypeFormats;
-export type IActorTestSparqlSerializeMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
-export type IActorOutputSparqlSerializeMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
+export type IActionQueryResultSerializeMediaTypeFormats = IActionAbstractMediaTypedMediaTypeFormats;
+export type IActorTestQueryResultSerializeMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
+export type IActorOutputQueryResultSerializeMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
 export interface IActionSparqlSerialize extends IAction, IQueryableResultBase {
   context: IActionContext;
@@ -68,11 +69,12 @@ export interface IActorQueryResultSerializeOutput extends IActorOutput {
 export type IActorQueryResultSerializeArgs = IActorArgsMediaTyped<
 IActionSparqlSerialize, IActorTest, IActorQueryResultSerializeOutput>;
 
-export type MediatorSparqlSerializeHandle = Mediate<
-IActionSparqlSerializeHandle, IActorOutputSparqlSerializeHandle, IActorTestSparqlSerializeHandle>;
+export type MediatorQueryResultSerializeHandle = Mediate<
+IActionQueryResultSerializeHandle, IActorOutputQueryResultSerializeHandle, IActorTestQueryResultSerializeHandle>;
 
-export type MediatorSparqlSerializeMediaTypes = Mediate<
-IActionSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes>;
+export type MediatorQueryResultSerializeMediaTypes = Mediate<
+IActionQueryResultSerializeMediaTypes, IActorOutputQueryResultSerializeMediaTypes,
+IActorTestQueryResultSerializeMediaTypes>;
 
-export type MediatorSparqlSerializeMediaTypeFormats = Mediate<IActionSparqlSerializeMediaTypeFormats,
-IActorOutputSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats>;
+export type MediatorQueryResultSerializeMediaTypeFormats = Mediate<IActionQueryResultSerializeMediaTypeFormats,
+IActorOutputQueryResultSerializeMediaTypeFormats, IActorTestQueryResultSerializeMediaTypeFormats>;

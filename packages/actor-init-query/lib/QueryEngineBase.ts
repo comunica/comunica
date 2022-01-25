@@ -130,7 +130,7 @@ export class QueryEngineBase implements IQueryEngine {
     if (typeof query === 'string') {
       // Save the original query string in the context
       context = context.set(KeysInitQuery.queryString, query);
-      const queryParseOutput = await this.actorInitQuery.mediatorSparqlParse
+      const queryParseOutput = await this.actorInitQuery.mediatorQueryParse
         .mediate({ context, query, queryFormat, baseIRI });
       operation = queryParseOutput.operation;
       // Update the baseIRI in the context if the query modified it.
@@ -221,7 +221,7 @@ export class QueryEngineBase implements IQueryEngine {
    */
   public async getResultMediaTypes(context?: any): Promise<Record<string, number>> {
     context = ActionContext.ensureActionContext(context);
-    return (await this.actorInitQuery.mediatorSparqlSerializeMediaTypeCombiner
+    return (await this.actorInitQuery.mediatorQueryResultSerializeMediaTypeCombiner
       .mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
@@ -231,7 +231,7 @@ export class QueryEngineBase implements IQueryEngine {
    */
   public async getResultMediaTypeFormats(context?: any): Promise<Record<string, string>> {
     context = ActionContext.ensureActionContext(context);
-    return (await this.actorInitQuery.mediatorSparqlSerializeMediaTypeFormatCombiner
+    return (await this.actorInitQuery.mediatorQueryResultSerializeMediaTypeFormatCombiner
       .mediate({ context, mediaTypeFormats: true })).mediaTypeFormats;
   }
 
@@ -259,7 +259,7 @@ export class QueryEngineBase implements IQueryEngine {
       }
     }
     const handle: IActionSparqlSerialize = { ...queryResult, context };
-    return (await this.actorInitQuery.mediatorSparqlSerialize
+    return (await this.actorInitQuery.mediatorQueryResultSerialize
       .mediate({ context, handle, handleMediaType: mediaType })).handle;
   }
 

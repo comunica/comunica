@@ -1,4 +1,4 @@
-import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-query-parse';
+import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
@@ -10,19 +10,19 @@ import { Converter } from 'graphql-to-sparql';
 export class ActorQueryParseGraphql extends ActorQueryParse {
   private readonly graphqlToSparql: Converter;
 
-  public constructor(args: IActorSparqlParseArgs) {
+  public constructor(args: IActorQueryParseArgs) {
     super(args);
     this.graphqlToSparql = new Converter({ requireContext: true });
   }
 
-  public async test(action: IActionSparqlParse): Promise<IActorTest> {
+  public async test(action: IActionQueryParse): Promise<IActorTest> {
     if (action.queryFormat !== 'graphql') {
       throw new Error('This actor can only parse GraphQL queries');
     }
     return true;
   }
 
-  public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
+  public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const context: any = action.context.get(KeysInitQuery.jsonLdContext) || {};
     const options = {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion

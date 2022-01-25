@@ -1,4 +1,4 @@
-import type { IActionSparqlParse, IActorSparqlParseArgs, IActorSparqlParseOutput } from '@comunica/bus-query-parse';
+import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import type { IActorTest } from '@comunica/core';
 import { translate } from 'sparqlalgebrajs';
@@ -15,14 +15,14 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     this.prefixes = Object.freeze(this.prefixes);
   }
 
-  public async test(action: IActionSparqlParse): Promise<IActorTest> {
+  public async test(action: IActionQueryParse): Promise<IActorTest> {
     if (action.queryFormat && action.queryFormat !== 'sparql') {
       throw new Error('This actor can only parse SPARQL queries');
     }
     return true;
   }
 
-  public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
+  public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const parser = new SparqlParser({ prefixes: this.prefixes, baseIRI: action.baseIRI });
     const parsedSyntax = parser.parse(action.query);
     const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
@@ -34,7 +34,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
   }
 }
 
-export interface IActorQueryParseSparqlArgs extends IActorSparqlParseArgs {
+export interface IActorQueryParseSparqlArgs extends IActorQueryParseArgs {
   /**
    * Default prefixes to use
    * @range {json}

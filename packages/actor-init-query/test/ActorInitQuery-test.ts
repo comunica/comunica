@@ -9,11 +9,10 @@ import {
 } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { IActionContext, IPhysicalQueryPlanLogger } from '@comunica/types';
+import type { IActionContext, ICliArgsHandler, IPhysicalQueryPlanLogger } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import * as stringifyStream from 'stream-to-string';
-import type { ICliArgsHandler } from '../lib';
 import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
@@ -135,10 +134,10 @@ describe('ActorInitQuery', () => {
         mediatorHttpInvalidate,
         mediatorOptimizeQueryOperation,
         mediatorQueryOperation,
-        mediatorSparqlParse,
-        mediatorSparqlSerialize,
-        mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-        mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
         name: 'actor',
       });
       actorFixedQuery = new ActorInitQuery(
@@ -150,10 +149,10 @@ describe('ActorInitQuery', () => {
           mediatorHttpInvalidate,
           mediatorOptimizeQueryOperation,
           mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          mediatorQueryParse: mediatorSparqlParse,
+          mediatorQueryResultSerialize: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
           queryString },
       );
@@ -166,10 +165,10 @@ describe('ActorInitQuery', () => {
           mediatorHttpInvalidate,
           mediatorOptimizeQueryOperation,
           mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          mediatorQueryParse: mediatorSparqlParse,
+          mediatorQueryResultSerialize: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
           context: contextString },
       );
@@ -182,10 +181,10 @@ describe('ActorInitQuery', () => {
           mediatorHttpInvalidate,
           mediatorOptimizeQueryOperation,
           mediatorQueryOperation,
-          mediatorSparqlParse,
-          mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          mediatorQueryParse: mediatorSparqlParse,
+          mediatorQueryResultSerialize: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
           queryString,
           context: contextString },
@@ -706,10 +705,10 @@ LIMIT 100
               mediatorHttpInvalidate,
               mediatorOptimizeQueryOperation,
               mediatorQueryOperation: m1,
-              mediatorSparqlParse,
-              mediatorSparqlSerialize: m2,
-              mediatorSparqlSerializeMediaTypeCombiner: m2,
-              mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
+              mediatorQueryParse: mediatorSparqlParse,
+              mediatorQueryResultSerialize: m2,
+              mediatorQueryResultSerializeMediaTypeCombiner: m2,
+              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
               queryString },
           );
@@ -732,10 +731,10 @@ LIMIT 100
               mediatorHttpInvalidate,
               mediatorOptimizeQueryOperation,
               mediatorQueryOperation: m1,
-              mediatorSparqlParse,
-              mediatorSparqlSerialize: m2,
-              mediatorSparqlSerializeMediaTypeCombiner: m2,
-              mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
+              mediatorQueryParse: mediatorSparqlParse,
+              mediatorQueryResultSerialize: m2,
+              mediatorQueryResultSerializeMediaTypeCombiner: m2,
+              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
               queryString },
           );
@@ -758,10 +757,10 @@ LIMIT 100
               mediatorHttpInvalidate,
               mediatorOptimizeQueryOperation,
               mediatorQueryOperation: m1,
-              mediatorSparqlParse,
-              mediatorSparqlSerialize: m2,
-              mediatorSparqlSerializeMediaTypeCombiner: m2,
-              mediatorSparqlSerializeMediaTypeFormatCombiner: m2,
+              mediatorQueryParse: mediatorSparqlParse,
+              mediatorQueryResultSerialize: m2,
+              mediatorQueryResultSerializeMediaTypeCombiner: m2,
+              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
               queryString },
           );
@@ -823,10 +822,10 @@ LIMIT 100
               mediatorHttpInvalidate,
               mediatorOptimizeQueryOperation,
               mediatorQueryOperation,
-              mediatorSparqlParse,
-              mediatorSparqlSerialize,
-              mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-              mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+              mediatorQueryParse: mediatorSparqlParse,
+              mediatorQueryResultSerialize: mediatorSparqlSerialize,
+              mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+              mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
               name: 'actor',
               queryString: <any> null },
           );

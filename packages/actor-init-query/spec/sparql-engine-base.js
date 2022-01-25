@@ -5,7 +5,7 @@ const N3Store = require('n3').Store;
 module.exports = function(engine) {
   return {
     parse: function (query, options) {
-      return engine.actorInitQuery.mediatorSparqlParse.mediate({ query: query, baseIRI: options.baseIRI });
+      return engine.actorInitQuery.mediatorQueryParse.mediate({ query: query, baseIRI: options.baseIRI });
     },
     query: function(data, queryString, options) {
       return this.queryLdf([{ type: 'rdfjsSource', value: source(data) }], null, queryString, options);
