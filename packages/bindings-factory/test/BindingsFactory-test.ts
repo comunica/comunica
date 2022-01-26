@@ -1,35 +1,60 @@
-import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
+import { Bindings } from '../lib/Bindings';
 import { BindingsFactory } from '../lib/BindingsFactory';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 
-describe('Bindings', () => {
-  it('should create a map', () => {
-    expect(BF.bindings({ a: DF.namedNode('b') })).toBeInstanceOf(Map);
-  });
-});
+describe('BindingsFactory', () => {
+  let factory: BindingsFactory;
 
-// eslint-disable-next-line mocha/max-top-level-suites
-describe('isBindings', () => {
-  it('should be true for bindings', () => {
-    expect(BF.isBindings(BF.bindings({}))).toBeTruthy();
+  beforeEach(() => {
+    factory = new BindingsFactory(DF);
   });
 
-  it('should be false for other objects', () => {
-    expect(BF.isBindings({})).toBeFalsy();
-  });
-});
-
-describe('ensureBindings', () => {
-  it('should not change things that are already bindings', () => {
-    const b = BF.bindings({});
-    expect(BF.ensureBindings(b)).toBe(b);
+  it('should allow construction without args', () => {
+    factory = new BindingsFactory();
+    expect((<any> factory).dataFactory).toBeInstanceOf(DataFactory);
   });
 
-  it('should create bindings from hashes', () => {
-    expect(BF.ensureBindings({})).toBeInstanceOf(Map);
-    expect(BF.ensureBindings({ a: DF.namedNode('b') }).get('a')).toEqual(DF.namedNode('b'));
+  describe('bindings', () => {
+    it('should create an empty Bindings', () => {
+      const bindings = factory.bindings();
+      expect(bindings).toBeInstanceOf(Bindings);
+
+      expect(bindings.size).toBe(0);
+    });
+
+    it('should create a Bindings object', () => {
+      const bindings = factory.bindings([
+        [ DF.variable('a'), DF.namedNode('ex:a') ],
+        [ DF.variable('b'), DF.namedNode('ex:b') ],
+        [ DF.variable('c'), DF.namedNode('ex:c') ],
+      ]);
+      expect(bindings).toBeInstanceOf(Bindings);
+
+      expect(bindings.size).toBe(3);
+      expect(bindings.has(DF.variable('a'))).toBeTruthy();
+      expect(bindings.has(DF.variable('b'))).toBeTruthy();
+      expect(bindings.has(DF.variable('c'))).toBeTruthy();
+      expect(bindings.has(DF.variable('d'))).toBeFalsy();
+    });
+  });
+
+  describe('fromBindings', () => {
+    it('should create a Bindings object', () => {
+      const bindingsIn = factory.bindings([
+        [ DF.variable('a'), DF.namedNode('ex:a') ],
+        [ DF.variable('b'), DF.namedNode('ex:b') ],
+        [ DF.variable('c'), DF.namedNode('ex:c') ],
+      ]);
+      const bindings = factory.fromBindings(bindingsIn);
+      expect(bindings).toBeInstanceOf(Bindings);
+      expect(bindings).not.toBe(bindingsIn);
+
+      expect(bindings.has(DF.variable('a'))).toBeTruthy();
+      expect(bindings.has(DF.variable('b'))).toBeTruthy();
+      expect(bindings.has(DF.variable('c'))).toBeTruthy();
+      expect(bindings.has(DF.variable('d'))).toBeFalsy();
+    });
   });
 });
