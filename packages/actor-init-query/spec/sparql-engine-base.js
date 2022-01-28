@@ -23,7 +23,8 @@ module.exports = function(engine) {
         return new RdfTestSuite.QueryResultQuads(await require('arrayify-stream')(result.quadStream));
       }
       if (result.type === 'bindings') {
-        return new RdfTestSuite.QueryResultBindings(result.variables, await require('arrayify-stream')(result.bindingsStream.map((binding) => binding.toObject())));
+        return new RdfTestSuite.QueryResultBindings(result.variables.map(variable => `?${variable.value}`), await require('arrayify-stream')(result.bindingsStream
+            .map((binding) => Object.fromEntries([ ...binding ].map(([ key, value ]) => [ `?${key.value}`, value ])))));
       }
     },
     update: async function(data, queryString, options) {

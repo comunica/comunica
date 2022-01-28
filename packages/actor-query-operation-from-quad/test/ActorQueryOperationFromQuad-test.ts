@@ -21,14 +21,14 @@ describe('ActorQueryOperationFromQuad', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -847,13 +847,13 @@ describe('ActorQueryOperationFromQuad', () => {
       const op: any = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input }};
       const output: IQueryableResultBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        BF.bindings({ a: DF.literal('1') }),
-        BF.bindings({ a: DF.literal('2') }),
-        BF.bindings({ a: DF.literal('3') }),
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.variables).toMatchObject([ DF.variable('a') ]);
     });
   });
 });

@@ -21,18 +21,18 @@ describe('ActorQueryOperationConstruct', () => {
       mediate: (arg: any) => arg.operation.input ?
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            BF.bindings({ '?a': DF.literal('1') }),
-            BF.bindings({ '?a': DF.literal('2') }),
-            BF.bindings({ '?a': DF.literal('3') }),
+            BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           ], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
-          variables: [ 'a' ],
+          variables: [ DF.variable('a') ],
         }) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            BF.bindings({}),
+            BF.bindings(),
           ], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
           operated: arg,

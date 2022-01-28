@@ -9,7 +9,7 @@ import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiSmallest } from '../lib/ActorRdfJoinMultiSmallest';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -74,42 +74,60 @@ describe('ActorRdfJoinMultiSmallest', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
+              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-                BF.bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('c'), DF.literal('c1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('c'), DF.literal('c2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'c' ],
+              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
+              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -122,56 +140,80 @@ describe('ActorRdfJoinMultiSmallest', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
+              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-                BF.bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('c'), DF.literal('c1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('c'), DF.literal('c2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'c' ],
+              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
+              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
-                BF.bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('d'), DF.literal('d1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('d'), DF.literal('d2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 2, pageSize: 100, requestTime: 40, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'd' ],
+              variables: [ DF.variable('a'), DF.variable('d') ],
             },
             operation: <any> {},
           },
@@ -184,40 +226,58 @@ describe('ActorRdfJoinMultiSmallest', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
+              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-                BF.bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('c'), DF.literal('c1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('c'), DF.literal('c2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
               type: 'bindings',
-              variables: [ 'a', 'c' ],
+              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
                 { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
+              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -262,11 +322,19 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 3 streams', async() => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ 'a', 'c', 'b' ]);
+      expect(output.variables).toEqual([ DF.variable('a'), DF.variable('c'), DF.variable('b') ]);
       expect(await (<any> output).metadata()).toEqual({ cardinality: 40, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1') }),
-        BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a1') ],
+          [ DF.variable('b'), DF.literal('b1') ],
+          [ DF.variable('c'), DF.literal('c1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a2') ],
+          [ DF.variable('b'), DF.literal('b2') ],
+          [ DF.variable('c'), DF.literal('c2') ],
+        ]),
       ]);
 
       // Check join order
@@ -278,11 +346,21 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 4 streams', async() => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ 'a', 'c', 'b', 'd' ]);
+      expect(output.variables).toEqual([ DF.variable('a'), DF.variable('c'), DF.variable('b'), DF.variable('d') ]);
       expect(await (<any> output).metadata()).toEqual({ cardinality: 80, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1'), d: DF.literal('d1') }),
-        BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2'), d: DF.literal('d2') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a1') ],
+          [ DF.variable('b'), DF.literal('b1') ],
+          [ DF.variable('c'), DF.literal('c1') ],
+          [ DF.variable('d'), DF.literal('d1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a2') ],
+          [ DF.variable('b'), DF.literal('b2') ],
+          [ DF.variable('c'), DF.literal('c2') ],
+          [ DF.variable('d'), DF.literal('d2') ],
+        ]),
       ]);
 
       // Check join order

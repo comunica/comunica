@@ -39,33 +39,35 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
 
   describe('#bindingToXmlBindings', () => {
     it('should convert named nodes', () => {
-      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.namedNode('http://ex.org'), '?k'))
+      return expect(ActorQueryResultSerializeSparqlXml
+        .bindingToXmlBindings(DF.namedNode('http://ex.org'), DF.variable('k')))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { uri: 'http://ex.org' }]});
     });
 
     it('should convert default graphs', () => {
-      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.defaultGraph(), '?k'))
+      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.defaultGraph(), DF.variable('k')))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { uri: '' }]});
     });
 
     it('should convert blank nodes', () => {
-      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.blankNode('b1'), '?k'))
+      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.blankNode('b1'), DF.variable('k')))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { bnode: 'b1' }]});
     });
 
     it('should convert plain literals', () => {
-      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.literal('abc'), '?k'))
+      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.literal('abc'), DF.variable('k')))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { literal: 'abc' }]});
     });
 
     it('should convert literals with a language', () => {
-      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.literal('abc', 'en-us'), '?k'))
+      return expect(ActorQueryResultSerializeSparqlXml
+        .bindingToXmlBindings(DF.literal('abc', 'en-us'), DF.variable('k')))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { literal: [{ _attr: { 'xml:lang': 'en-us' }}, 'abc' ]}]});
     });
 
     it('should convert literals with a datatype', () => {
       return expect(ActorQueryResultSerializeSparqlXml
-        .bindingToXmlBindings(DF.literal('abc', DF.namedNode('http://ex')), '?k'))
+        .bindingToXmlBindings(DF.literal('abc', DF.namedNode('http://ex')), DF.variable('k')))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { literal: [{ _attr: { datatype: 'http://ex' }}, 'abc' ]}]});
     });
   });
@@ -76,7 +78,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
     let bindingsStreamPartial: BindingsStream;
     let bindingsStreamError: BindingsStream;
     let quadStream: RDF.Stream;
-    let variables: string[];
+    let variables: RDF.Variable[];
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeSparqlXml({ bus,
@@ -86,13 +88,21 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        BF.bindings({ '?k1': DF.namedNode('v1') }),
-        BF.bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
       ], { autoStart: false });
       bindingsStreamPartial = new ArrayIterator([
-        BF.bindings({ '?k1': DF.namedNode('v1') }),
-        BF.bindings({ '?k2': DF.namedNode('v2') }),
-        BF.bindings({}),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
+        BF.bindings(),
       ], { autoStart: false });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpXml')); });
@@ -100,7 +110,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
-      variables = [ '?k1', '?k2' ];
+      variables = [ DF.variable('k1'), DF.variable('k2') ];
     });
 
     describe('for getting media types', () => {

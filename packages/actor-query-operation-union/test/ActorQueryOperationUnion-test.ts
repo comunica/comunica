@@ -5,7 +5,7 @@ import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationUnion } from '../lib/ActorQueryOperationUnion';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -31,30 +31,30 @@ describe('ActorQueryOperationUnion', () => {
     op3 = {
       metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
       stream: new ArrayIterator([
-        BF.bindings({ a: DF.literal('1') }),
-        BF.bindings({ a: DF.literal('2') }),
-        BF.bindings({ a: DF.literal('3') }),
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ], { autoStart: false }),
       type: 'bindings',
-      variables: [ 'a' ],
+      variables: [ DF.variable('a') ],
     };
     op2 = {
       metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
       stream: new ArrayIterator([
-        BF.bindings({ b: DF.literal('1') }),
-        BF.bindings({ b: DF.literal('2') }),
+        BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
       ], { autoStart: false }),
       type: 'bindings',
-      variables: [ 'b' ],
+      variables: [ DF.variable('b') ],
     };
     op2Undef = {
       metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: true }),
       stream: new ArrayIterator([
-        BF.bindings({ b: DF.literal('1') }),
-        BF.bindings({ b: DF.literal('2') }),
+        BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
       ]),
       type: 'bindings',
-      variables: [ 'b' ],
+      variables: [ DF.variable('b') ],
     };
   });
 
@@ -85,29 +85,46 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should return a for a single input a', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([[ 'a' ]])).toEqual([ 'a' ]);
+      return expect(ActorQueryOperationUnion.unionVariables([[ DF.variable('a') ]]))
+        .toEqual([ DF.variable('a') ]);
     });
 
     it('should return a for a inputs a and a', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([[ 'a' ], [ 'a' ]])).toEqual([ 'a' ]);
+      return expect(ActorQueryOperationUnion.unionVariables([[ DF.variable('a') ], [ DF.variable('a') ]]))
+        .toEqual([ DF.variable('a') ]);
     });
 
     it('should return a and b for a inputs a, b and a', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a' ]])).toEqual([ 'a', 'b' ]);
+      return expect(ActorQueryOperationUnion.unionVariables([
+        [ DF.variable('a'), DF.variable('b') ],
+        [ DF.variable('a') ],
+      ]))
+        .toEqual([ DF.variable('a'), DF.variable('b') ]);
     });
 
     it('should return a and b for a inputs a, b and a, b', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a', 'b' ]])).toEqual([ 'a', 'b' ]);
+      return expect(ActorQueryOperationUnion.unionVariables([
+        [ DF.variable('a'), DF.variable('b') ],
+        [ DF.variable('a'), DF.variable('b') ],
+      ]))
+        .toEqual([ DF.variable('a'), DF.variable('b') ]);
     });
 
     it('should return a, b and c for a inputs a, b and a, b, c', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a', 'b', 'c' ]]))
-        .toEqual([ 'a', 'b', 'c' ]);
+      return expect(ActorQueryOperationUnion.unionVariables([
+        [ DF.variable('a'), DF.variable('b') ],
+        [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+      ]))
+        .toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
     });
 
     it('should return a, b and c for a inputs a, b and a, b, c and empty', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a', 'b', 'c' ], []]))
-        .toEqual([ 'a', 'b', 'c' ]);
+      return expect(ActorQueryOperationUnion.unionVariables([
+        [ DF.variable('a'), DF.variable('b') ],
+        [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+        [],
+      ]))
+        .toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
     });
   });
 
@@ -188,14 +205,14 @@ describe('ActorQueryOperationUnion', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2 ]}};
       return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 5, canContainUndefs: false });
-        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ b: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ b: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });
@@ -204,16 +221,16 @@ describe('ActorQueryOperationUnion', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2, op2Undef ]}};
       return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 7, canContainUndefs: true });
-        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ b: DF.literal('1') }),
-          BF.bindings({ b: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ b: DF.literal('2') }),
-          BF.bindings({ b: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });
@@ -222,14 +239,14 @@ describe('ActorQueryOperationUnion', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2Undef ]}};
       return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 5, canContainUndefs: true });
-        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ b: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ b: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });

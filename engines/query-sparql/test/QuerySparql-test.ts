@@ -190,7 +190,7 @@ describe('System test: QuerySparql', () => {
             },
           };
           const result = <IQueryableResultBindingsEnhanced> await engine.query(complexQuery, context);
-          expect((await result.bindings()).map(res => res.get('?caps').value)).toEqual(
+          expect((await result.bindings()).map(res => res.get(DF.variable('caps'))!.value)).toEqual(
             quads.map(q => q.object.value.toUpperCase()),
           );
         });
@@ -224,7 +224,7 @@ describe('System test: QuerySparql', () => {
               'http://example.org/functions#count-chars': extensionBuilder(false),
             };
             const result = <IQueryableResultBindingsEnhanced> await engine.query(complexQuery, context);
-            expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
+            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
           });
 
           it('can be truly async', async() => {
@@ -232,7 +232,7 @@ describe('System test: QuerySparql', () => {
               'http://example.org/functions#count-chars': extensionBuilder(true),
             };
             const result = <IQueryableResultBindingsEnhanced> await engine.query(complexQuery, context);
-            expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
+            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
           });
         });
       });

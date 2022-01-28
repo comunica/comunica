@@ -67,7 +67,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
     // Write head
     const head: any = {};
     if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
-      head.vars = (<IQueryableResultBindings> action).variables.map((variable: string) => variable.slice(1));
+      head.vars = (<IQueryableResultBindings> action).variables.map(variable => variable.value);
     }
     data.push(`{"head": ${JSON.stringify(head)},\n`);
     let empty = true;
@@ -87,12 +87,8 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         }
 
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
-        const realBindings: Bindings = <any> bindings
-          .filter((value: RDF.Term, key: string) => Boolean(value) && key.startsWith('?'));
-
-        data.push(JSON.stringify((<any> realBindings.mapEntries(([ key, value ]: [string, RDF.Term]) =>
-          [ key.slice(1), ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]))
-          .toJSON()));
+        data.push(JSON.stringify(Object.fromEntries([ ...bindings ]
+          .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]))));
         empty = false;
       });
 

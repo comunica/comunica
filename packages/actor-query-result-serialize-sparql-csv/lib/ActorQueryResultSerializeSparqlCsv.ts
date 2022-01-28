@@ -71,7 +71,7 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
     };
 
     // Write head
-    data.push(`${bindingsAction.variables.map((variable: string) => variable.slice(1)).join(',')}\r\n`);
+    data.push(`${bindingsAction.variables.map(variable => variable.value).join(',')}\r\n`);
 
     // Write bindings
     bindingsAction.bindingsStream.on('error', (error: Error) => {
@@ -79,8 +79,7 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
     });
     bindingsAction.bindingsStream.on('data', (bindings: Bindings) => {
       data.push(`${bindingsAction.variables
-        .map((key: string) => ActorQueryResultSerializeSparqlCsv
-          .bindingToCsvBindings(bindings.get(key)))
+        .map(key => ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(bindings.get(key)))
         .join(',')}\r\n`);
     });
     bindingsAction.bindingsStream.on('end', () => {

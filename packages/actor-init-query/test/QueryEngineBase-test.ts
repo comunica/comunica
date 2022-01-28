@@ -162,13 +162,21 @@ describe('QueryEngineBase', () => {
 
     describe('query', () => {
       it('should apply bindings when initialBindings are passed via the context', () => {
-        const ctx = { '@comunica/actor-init-query:initialBindings': BF.bindings({ '?s': DF.literal('sl') }) };
+        const ctx = {
+          '@comunica/actor-init-query:initialBindings': BF.bindings([
+            [ DF.variable('s'), DF.literal('sl') ],
+          ]),
+        };
         return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
       it('should apply bindings when initialBindings in the old format are passed via the context', () => {
-        const ctx = { initialBindings: BF.bindings({ '?s': DF.literal('sl') }) };
+        const ctx = {
+          initialBindings: BF.bindings([
+            [ DF.variable('s'), DF.literal('sl') ],
+          ]),
+        };
         return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });

@@ -47,7 +47,7 @@ export interface IQueryableResultBindings extends IQueryableResultStream {
   /**
    * The list of variable names (without '?') for which bindings are provided in the stream.
    */
-  variables: string[];
+  variables: RDF.Variable[];
 }
 
 /**

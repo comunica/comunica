@@ -4,7 +4,6 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IQueryableResult } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from 'sparqlee';
 import { GroupsState } from './GroupsState';
@@ -41,8 +40,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     // For 'GROUP BY ?x, ?z', this is [?x, ?z], for 'GROUP by expr(?x) as ?e' this is [?e].
     // But also in scope are the variables defined by the aggregations, since GROUP has to handle this.
     const variables = [
-      ...operation.variables.map(x => termToString(x)),
-      ...aggregates.map(agg => termToString(agg.variable)),
+      ...operation.variables,
+      ...aggregates.map(agg => agg.variable),
     ];
 
     const sparqleeConfig = ActorQueryOperation.getAsyncExpressionContext(context);

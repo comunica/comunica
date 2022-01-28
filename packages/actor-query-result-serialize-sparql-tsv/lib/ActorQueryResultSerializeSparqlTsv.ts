@@ -59,7 +59,7 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     };
 
     // Write head
-    data.push(`${bindingsAction.variables.map((variable: string) => variable.slice(1)).join('\t')}\n`);
+    data.push(`${bindingsAction.variables.map((variable: RDF.Variable) => variable.value).join('\t')}\n`);
 
     // Write bindings
     bindingsAction.bindingsStream.on('error', (error: Error) => {
@@ -67,7 +67,7 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     });
     bindingsAction.bindingsStream.on('data', (bindings: Bindings) => {
       data.push(`${bindingsAction.variables
-        .map((key: string) => ActorQueryResultSerializeSparqlTsv
+        .map((key: RDF.Variable) => ActorQueryResultSerializeSparqlTsv
           .bindingToTsvBindings(bindings.get(key)))
         .join('\t')}\n`);
     });

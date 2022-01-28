@@ -1,10 +1,10 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IQueryableResultBindings, IMetadata, IQueryableResult, IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
+import { uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -52,13 +52,13 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     const metadata: (() => Promise<IMetadata>) = () =>
       Promise.all(subOperations.map(output => output.metadata()))
         .then(ActorQueryOperationPathAlt.unionMetadata);
-    const variables = (<string[]> []).concat
-      .apply([], subOperations.map(op => op.variables));
+    const variables = uniqTerms((<RDF.Variable[]> []).concat
+      .apply([], subOperations.map(op => op.variables)));
 
     return {
       type: 'bindings',
       bindingsStream,
-      variables: [ ...new Set(variables) ],
+      variables,
       metadata,
     };
   }

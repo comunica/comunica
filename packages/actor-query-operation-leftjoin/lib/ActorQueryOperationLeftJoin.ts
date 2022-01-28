@@ -55,7 +55,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
               if (isExpressionError(<Error>error)) {
                 // In many cases, this is a user error, where the user should manually cast the variable to a string.
                 // In order to help users debug this, we should report these errors via the logger as warnings.
-                this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: bindings.toJS() }));
+                this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings }));
               } else {
                 bindingsStream.emit('error', error);
               }

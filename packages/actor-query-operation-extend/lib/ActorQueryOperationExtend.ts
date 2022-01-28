@@ -4,7 +4,6 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type { Bindings, IActionContext, IQueryableResult, IQueryableResultBindings } from '@comunica/types';
-import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -33,7 +32,6 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
 
-    const extendKey = termToString(variable);
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     const evaluator = new AsyncEvaluator(expression, config);
 
@@ -43,7 +41,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
         const result = await evaluator.evaluate(bindings);
         // Extend operation is undefined when the key already exists
         // We just override it here.
-        const extended = bindings.set(extendKey, result);
+        const extended = bindings.set(variable, result);
         push(extended);
       } catch (error: unknown) {
         if (isExpressionError(<Error> error)) {
@@ -58,7 +56,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
-    const variables = [ ...output.variables, extendKey ];
+    const variables = [ ...output.variables, variable ];
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     const { metadata } = output;
     return { type: 'bindings', bindingsStream, metadata, variables };

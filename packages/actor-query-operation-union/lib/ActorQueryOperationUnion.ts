@@ -11,7 +11,9 @@ import type {
   IActionContext,
   IQueryableResult,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
+import { uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -28,8 +30,8 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @param {string[][]} variables Double array of variables to take the union of.
    * @return {string[]} The union of the given variables.
    */
-  public static unionVariables(variables: string[][]): string[] {
-    return [ ...new Set(variables.flat()) ];
+  public static unionVariables(variables: RDF.Variable[][]): RDF.Variable[] {
+    return uniqTerms(variables.flat());
   }
 
   /**
@@ -70,7 +72,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     const metadata: () => Promise<IMetadata> = () => Promise.all(outputs.map(output => output.metadata()))
       .then(ActorQueryOperationUnion.unionMetadata);
-    const variables: string[] = ActorQueryOperationUnion.unionVariables(
+    const variables = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IQueryableResultBindings) => output.variables),
     );
     return { type: 'bindings', bindingsStream, metadata, variables };

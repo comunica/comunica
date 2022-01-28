@@ -10,9 +10,10 @@ import type {
   IActionContext,
 } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { termToString } from 'rdf-string';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 const BF = new BindingsFactory();
+const DF = new DataFactory();
 
 /**
  * A comunica Values Query Operation Actor.
@@ -28,12 +29,14 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryableResult> {
-    const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings.map(x => BF.bindings(x)));
+    const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
+      .map(x => BF.bindings(Object.entries(x)
+        .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
+    const variables = operation.variables;
     const metadata = (): Promise<IMetadata> => Promise.resolve({
       cardinality: operation.bindings.length,
-      canContainUndefs: operation.bindings.some(bindings => variables.some(variable => !(variable in bindings))),
+      canContainUndefs: operation.bindings.some(bindings => variables.some(variable => !(`?${variable.value}` in bindings))),
     });
-    const variables: string[] = operation.variables.map(x => termToString(x));
     return { type: 'bindings', bindingsStream, metadata, variables };
   }
 }

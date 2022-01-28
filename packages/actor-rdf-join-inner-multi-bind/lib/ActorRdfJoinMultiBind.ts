@@ -56,7 +56,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
       const subOperations = operations
         .map(operation => materializeOperation(operation, bindings, { bindFilter: false }));
-      const bindingsMerger = (subBindings: Bindings): Bindings => subBindings.merge(bindings);
+      const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128 });
     };
@@ -91,11 +91,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     const variableOccurrences: Record<string, number> = {};
     for (const entry of entries) {
       for (const variable of entry.output.variables) {
-        let counter = variableOccurrences[variable];
+        let counter = variableOccurrences[variable.value];
         if (!counter) {
           counter = 0;
         }
-        variableOccurrences[variable] = ++counter;
+        variableOccurrences[variable.value] = ++counter;
       }
     }
 
@@ -118,7 +118,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     for (const [ i, entry ] of entries.entries()) {
       let hasCommon = false;
       for (const variable of entry.output.variables) {
-        if (multiOccurrenceVariables.includes(variable)) {
+        if (multiOccurrenceVariables.includes(variable.value)) {
           hasCommon = true;
           break;
         }

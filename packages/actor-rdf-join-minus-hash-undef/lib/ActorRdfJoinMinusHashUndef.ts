@@ -6,6 +6,7 @@ import {
 } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IMetadata } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { TransformIterator } from 'asynciterator';
 import { BindingsIndex } from './BindingsIndex';
 
@@ -26,7 +27,7 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
     const buffer = action.entries[1].output;
     const output = action.entries[0].output;
 
-    const commonVariables: string[] = ActorRdfJoin.overlappingVariables(action);
+    const commonVariables: RDF.Variable[] = ActorRdfJoin.overlappingVariables(action);
     if (commonVariables.length > 0) {
       /**
        * To assure we've filtered all B (`buffer`) values from A (`output`) we wait until we've fetched all values of B.

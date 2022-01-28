@@ -33,7 +33,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
    * @param {string} key A variable name, '?' must be included as a prefix.
    * @return {any} An object-based XML tag.
    */
-  public static bindingToXmlBindings(value: RDF.Term, key: string): any {
+  public static bindingToXmlBindings(value: RDF.Term, key: RDF.Variable): any {
     let xmlValue: any;
     if (value.termType === 'Literal') {
       const literal: RDF.Literal = value;
@@ -50,7 +50,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     } else {
       xmlValue = { uri: value.value };
     }
-    return { binding: [{ _attr: { name: key.slice(1) }}, xmlValue ]};
+    return { binding: [{ _attr: { name: key.value }}, xmlValue ]};
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
@@ -73,7 +73,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       .on('data', chunk => data.push(`${chunk}\n`));
     if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
       root.push({ head: (<IQueryableResultBindings> action).variables
-        .map(variable => ({ variable: { _attr: { name: variable.slice(1) }}})) });
+        .map(variable => ({ variable: { _attr: { name: variable.value }}})) });
     }
 
     if (action.type === 'bindings') {
@@ -87,8 +87,8 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       });
       resultStream.on('data', (bindings: Bindings) => {
         // XML SPARQL results spec does not allow unbound variables and blank node bindings
-        const realBindings = bindings.filter((value: RDF.Term, key: string) => Boolean(value) && key.startsWith('?'));
-        results.push({ result: realBindings.map(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings) });
+        results.push({ result: [ ...bindings ]
+          .map(([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key)) });
       });
 
       // Close streams

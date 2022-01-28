@@ -22,10 +22,11 @@ import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
-import { termToString } from 'rdf-string';
+import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
 
 const BF = new BindingsFactory();
+const DF = new DataFactory();
 
 /**
  * A comunica SPARQL Endpoint Query Operation Actor.
@@ -146,7 +147,10 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map(rawData => {
         cardinality++;
-        return quads ? rawData : BF.bindings(rawData);
+        return quads ?
+          rawData :
+          BF.bindings(Object.entries(rawData)
+            .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ]));
       });
     inputStream.then(
       subStream => subStream.on('end', () => stream.emit('metadata', {
@@ -178,7 +182,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       type: 'bindings',
       bindingsStream: stream,
       metadata,
-      variables: variables!.map(x => termToString(x)),
+      variables,
     };
   }
 }

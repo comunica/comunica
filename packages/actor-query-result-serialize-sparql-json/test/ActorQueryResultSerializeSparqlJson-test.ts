@@ -76,7 +76,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
     let quadStream: RDF.Stream;
-    let variables: string[];
+    let variables: RDF.Variable[];
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeSparqlJson({ bus,
@@ -86,13 +86,21 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        BF.bindings({ '?k1': DF.namedNode('v1') }),
-        BF.bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
       ]);
       bindingsStreamPartial = new ArrayIterator([
-        BF.bindings({ '?k1': DF.namedNode('v1') }),
-        BF.bindings({ '?k2': DF.namedNode('v2') }),
-        BF.bindings({}),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
+        BF.bindings(),
       ]);
       bindingsStreamEmpty = <any> new PassThrough();
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
@@ -102,7 +110,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
-      variables = [ '?k1', '?k2' ];
+      variables = [ DF.variable('k1'), DF.variable('k2') ];
     });
 
     describe('for getting media types', () => {

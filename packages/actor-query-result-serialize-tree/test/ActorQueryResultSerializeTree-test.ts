@@ -42,15 +42,15 @@ describe('ActorQueryResultSerializeTree', () => {
     let bindingsStream: BindingsStream;
     let quadStream: RDF.Stream;
     let streamError: Readable;
-    let variables: string[];
+    let variables: RDF.Variable[];
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeTree(
         { bus, name: 'actor', mediaTypePriorities: { tree: 1 }, mediaTypeFormats: {}},
       );
       bindingsStream = new ArrayIterator([
-        BF.bindings({ '?k1': DF.namedNode('v1') }),
-        BF.bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings([[ DF.variable('k1'), DF.literal('v1') ]]),
+        BF.bindings([[ DF.variable('k2'), DF.literal('v2') ]]),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -58,7 +58,7 @@ describe('ActorQueryResultSerializeTree', () => {
       ]);
       streamError = new Readable();
       streamError._read = () => streamError.emit('error', new Error('actor sparql serialize tree test error'));
-      variables = [ 'k1', 'k2' ];
+      variables = [ DF.variable('k1'), DF.variable('k2') ];
     });
 
     describe('for getting media types', () => {

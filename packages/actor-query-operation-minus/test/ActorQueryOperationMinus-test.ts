@@ -6,7 +6,7 @@ import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationMinus } from '../lib/ActorQueryOperationMinus';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -21,14 +21,14 @@ describe('ActorQueryOperationMinus', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('x') ],
       }),
     };
     mediatorJoin = {
@@ -37,7 +37,7 @@ describe('ActorQueryOperationMinus', () => {
         metadata: () => Promise.resolve({ cardinality: 100, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a', 'b' ],
+        variables: [ DF.variable('x'), DF.variable('y') ],
       }),
     };
   });
@@ -79,19 +79,19 @@ describe('ActorQueryOperationMinus', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'minus', input: [{}, {}, {}]}};
       return actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.variables).toEqual([ DF.variable('x'), DF.variable('y') ]);
         expect(output.type).toEqual('bindings');
         expect(await output.metadata()).toEqual({ cardinality: 100, canContainUndefs: false });
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
-          BF.bindings({ a: DF.literal('3') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ]);
       });
     });

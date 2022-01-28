@@ -11,7 +11,6 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 const DF = new DataFactory();
 
@@ -35,14 +34,15 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     );
 
     // Find all variables that should be deleted from the input stream.
-    const variables: string[] = operation.variables.map(termToString);
-    const deleteVariables = output.variables.filter(variable => !variables.includes(variable));
+    const variables = operation.variables;
+    const deleteVariables = output.variables
+      .filter(variable => !variables.some(subVariable => variable.value === subVariable.value));
 
     // Error if there are variables that are not bound in the input stream.
-    const missingVariables = variables.filter(variable => !output.variables.includes(variable) &&
-      variable !== '*');
+    const missingVariables = variables
+      .filter(variable => !output.variables.some(subVariable => variable.value === subVariable.value));
     if (missingVariables.length > 0) {
-      throw new Error(`Variables '${missingVariables}' are used in the projection result, but are not assigned.`);
+      throw new Error(`Variables '${missingVariables.map(variable => `?${variable.value}`)}' are used in the projection result, but are not assigned.`);
     }
 
     // Make sure the project variables are the only variables that are present in the bindings.
@@ -66,7 +66,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       map(bindings: Bindings) {
         blankNodeCounter++;
         const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
-        return <Bindings> bindings.map(term => {
+        return bindings.map(term => {
           if (term instanceof BlankNodeBindingsScoped) {
             let scopedBlankNode = scopedBlankNodesCache.get(term.value);
             if (!scopedBlankNode) {

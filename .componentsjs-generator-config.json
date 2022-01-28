@@ -10,11 +10,13 @@
     "packages/bindings-factory",
     "packages/context-entries",
     "packages/data-factory",
+    "packages/jest",
     "packages/packager",
     "packages/runner-cli"
   ],
   "ignoreComponents": [
     "Error",
+    "RegExp",
     "NodeJS.ReadableStream",
     "Headers",
     "IQueryEngine",
@@ -44,7 +46,11 @@
     "IQueryableResultBindings",
     "IQueryableResultQuads",
     "IQueryableResultBoolean",
-    "IQueryableResultVoid"
+    "IQueryableResultVoid",
+    "Factory",
+
+    "UriTemplate",
+    "LRUCache"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

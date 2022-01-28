@@ -50,7 +50,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       if (operation.silent) {
         // Emit a single empty binding
         output = {
-          bindingsStream: new SingletonIterator(BF.bindings({})),
+          bindingsStream: new SingletonIterator(BF.bindings()),
           type: 'bindings',
           variables: [],
           metadata: async() => ({ cardinality: 1, canContainUndefs: false }),

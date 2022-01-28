@@ -11,8 +11,10 @@ import type {
   IPhysicalQueryPlanLogger, Bindings, IActionContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
+const DF = new DataFactory();
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -71,7 +73,7 @@ export abstract class ActorRdfJoin
    * @param {string[]} variables
    * @returns {string}
    */
-  public static hash(bindings: Bindings, variables: string[]): string {
+  public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
     return variables
       .filter(variable => bindings.has(variable))
       .map(variable => termToString(bindings.get(variable)))
@@ -83,11 +85,11 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action
    * @returns {string[]}
    */
-  public static overlappingVariables(action: IActionRdfJoin): string[] {
+  public static overlappingVariables(action: IActionRdfJoin): RDF.Variable[] {
     const variables = action.entries.map(entry => entry.output.variables);
     let baseArray = variables[0];
     for (const array of variables.slice(1)) {
-      baseArray = baseArray.filter(el => array.includes(el));
+      baseArray = baseArray.filter(el => array.some(value => value.value === el.value));
     }
     return baseArray;
   }
@@ -97,7 +99,7 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action The join action.
    * @returns {string[]}
    */
-  public static joinVariables(action: IActionRdfJoin): string[] {
+  public static joinVariables(action: IActionRdfJoin): RDF.Variable[] {
     return ActorRdfJoin.joinVariablesStreams(action.entries.map(entry => entry.output));
   }
 
@@ -106,8 +108,9 @@ export abstract class ActorRdfJoin
    * @param {IQueryableResultBindings[]} streams The streams to consider
    * @returns {string[]}
    */
-  public static joinVariablesStreams(streams: IQueryableResultBindings[]): string[] {
-    return [ ...new Set(streams.flatMap(entry => entry.variables)) ];
+  public static joinVariablesStreams(streams: IQueryableResultBindings[]): RDF.Variable[] {
+    return [ ...new Set(streams.flatMap(entry => entry.variables.map(variable => variable.value))) ]
+      .map(variable => DF.variable(variable));
   }
 
   /**
@@ -116,15 +119,22 @@ export abstract class ActorRdfJoin
    * @returns {Bindings}
    */
   public static joinBindings(...bindings: Bindings[]): Bindings | null {
-    let valid = true;
-    const joined = bindings
-      .reduce((acc: Bindings, val: Bindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
-        if (!left.equals(right)) {
-          valid = false;
-        }
-        return left;
-      }, val));
-    return valid ? joined : null;
+    if (bindings.length === 0) {
+      return null;
+    }
+    if (bindings.length === 1) {
+      return bindings[0];
+    }
+
+    let acc: Bindings = bindings[0];
+    for (const binding of bindings.slice(1)) {
+      const merged = acc.merge(binding);
+      if (!merged) {
+        return null;
+      }
+      acc = merged;
+    }
+    return acc;
   }
 
   /**

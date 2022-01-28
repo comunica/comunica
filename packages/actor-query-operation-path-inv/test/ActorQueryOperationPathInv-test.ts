@@ -5,7 +5,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathInv } from '../lib/ActorQueryOperationPathInv';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
@@ -19,14 +19,14 @@ describe('ActorQueryOperationPathInv', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ '?x': DF.namedNode('1') }),
-          BF.bindings({ '?x': DF.namedNode('2') }),
-          BF.bindings({ '?x': DF.namedNode('3') }),
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ]),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -73,10 +73,10 @@ describe('ActorQueryOperationPathInv', () => {
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
       ]);
       expect((<any> output).operated.operation).toEqual(
         factory.createPath(DF.variable('x'), factory.createLink(DF.namedNode('p')), DF.namedNode('s')),

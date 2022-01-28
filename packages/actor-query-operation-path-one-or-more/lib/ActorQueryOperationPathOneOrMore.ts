@@ -3,10 +3,8 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IQueryableResultBindings, Bindings, IQueryableResult, IActionContext } from '@comunica/types';
-import type { Term } from '@rdfjs/types';
+import type * as RDF from '@rdfjs/types';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
-
-import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
 const BF = new BindingsFactory();
@@ -29,11 +27,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
 
     const predicate = <Algebra.OneOrMorePath> operation.predicate;
 
-    const sVar = operation.subject.termType === 'Variable';
-    const oVar = operation.object.termType === 'Variable';
-    const gVar = operation.graph.termType === 'Variable';
-
-    if (!sVar && oVar) {
+    if (operation.subject.termType !== 'Variable' && operation.object.termType === 'Variable') {
       // Get all the results of applying this once, then do zeroOrMore for those
       const single = ActorAbstractPath.FACTORY.createDistinct(
         ActorAbstractPath.FACTORY.createPath(operation.subject, predicate.path, operation.object, operation.graph),
@@ -42,7 +36,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
 
-      const objectString = termToString(operation.object);
+      const objectVar = operation.object;
 
       // All branches need to share the same termHashes to prevent duplicates
       const termHashes = {};
@@ -51,11 +45,11 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         results.bindingsStream,
         {
           multiTransform: (bindings: Bindings) => {
-            const val = bindings.get(objectString);
-            const graph = gVar ? bindings.get(termToString(operation.graph)) : operation.graph;
+            const val: RDF.Term = bindings.get(objectVar)!;
+            const graph = operation.graph.termType === 'Variable' ? bindings.get(operation.graph) : operation.graph;
             return new TransformIterator<Bindings>(
               async() => {
-                const it = new BufferedIterator<Term>();
+                const it = new BufferedIterator<RDF.Term>();
                 await this.getObjectsPredicateStar(val,
                   predicate.path,
                   operation.graph,
@@ -65,9 +59,9 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   { count: 0 });
                 return it.transform<Bindings>({
                   transform(item, next, push) {
-                    let binding = BF.bindings({ [objectString]: item });
-                    if (gVar) {
-                      binding = binding.set(termToString(operation.graph), graph);
+                    let binding = BF.bindings([[ objectVar, item ]]);
+                    if (operation.graph.termType === 'Variable') {
+                      binding = binding.set(operation.graph, graph!);
                     }
                     push(binding);
                     next();
@@ -79,10 +73,10 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           autoStart: false,
         },
       );
-      const variables = gVar ? [ objectString, termToString(operation.graph) ] : [ objectString ];
+      const variables = operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ];
       return { type: 'bindings', bindingsStream, variables, metadata: results.metadata };
     }
-    if (sVar && oVar) {
+    if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
       const single = ActorAbstractPath.FACTORY.createDistinct(
         ActorAbstractPath.FACTORY
@@ -91,8 +85,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
-      const subjectString = termToString(operation.subject);
-      const objectString = termToString(operation.object);
+      const subjectVar = operation.subject;
+      const objectVar = operation.object;
 
       const termHashes = {};
 
@@ -100,19 +94,19 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         results.bindingsStream,
         {
           multiTransform: (bindings: Bindings) => {
-            const subject = bindings.get(subjectString);
-            const object = bindings.get(objectString);
-            const graph = gVar ? bindings.get(termToString(operation.graph)) : operation.graph;
+            const subject = bindings.get(subjectVar);
+            const object = bindings.get(objectVar);
+            const graph = operation.graph.termType === 'Variable' ? bindings.get(operation.graph) : operation.graph;
             return new TransformIterator<Bindings>(
               async() => {
                 const it = new BufferedIterator<Bindings>();
                 await this.getSubjectAndObjectBindingsPredicateStar(
-                  subjectString,
-                  objectString,
-                  subject,
-                  object,
+                  subjectVar,
+                  objectVar,
+                  subject!,
+                  object!,
                   predicate.path,
-                  graph,
+                  graph!,
                   context,
                   termHashes,
                   {},
@@ -121,8 +115,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                 );
                 return it.transform<Bindings>({
                   transform(item, next, push) {
-                    if (gVar) {
-                      item = item.set(termToString(operation.graph), graph);
+                    if (operation.graph.termType === 'Variable') {
+                      item = item.set(operation.graph, graph!);
                     }
                     push(item);
                     next();
@@ -134,12 +128,12 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           autoStart: false,
         },
       );
-      const variables = gVar ?
-        [ subjectString, objectString, termToString(operation.graph) ] :
-        [ subjectString, objectString ];
+      const variables = operation.graph.termType === 'Variable' ?
+        [ subjectVar, objectVar, operation.graph ] :
+        [ subjectVar, objectVar ];
       return { type: 'bindings', bindingsStream, variables, metadata: results.metadata };
     }
-    if (sVar && !oVar) {
+    if (operation.subject.termType === 'Variable' && operation.object.termType !== 'Variable') {
       return <Promise<IQueryableResultBindings>> this.mediatorQueryOperation.mediate({
         context,
         operation: ActorAbstractPath.FACTORY.createPath(
@@ -154,17 +148,16 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     }
     // If (!sVar && !oVar)
     const variable = this.generateVariable();
-    const vString = termToString(variable);
     const results = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
       operation: ActorAbstractPath.FACTORY.createPath(operation.subject, predicate, variable, operation.graph),
     }));
     const bindingsStream = results.bindingsStream.transform<Bindings>({
-      filter: item => item.get(vString).equals(operation.object),
+      filter: item => operation.object.equals(item.get(variable)),
       transform(item, next, push) {
-        const binding = gVar ?
-          BF.bindings({ [termToString(operation.graph)]: item.get(termToString(operation.graph)) }) :
-          BF.bindings({});
+        const binding = operation.graph.termType === 'Variable' ?
+          BF.bindings([[ operation.graph, item.get(operation.graph)! ]]) :
+          BF.bindings();
         push(binding);
         next();
       },
@@ -172,7 +165,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     return {
       type: 'bindings',
       bindingsStream,
-      variables: gVar ? [ termToString(operation.graph) ] : [],
+      variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
       metadata: results.metadata,
     };
   }

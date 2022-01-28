@@ -16,17 +16,6 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     });
   }
 
-  /**
-   * Creates a hash of the given bindings by concatenating the results of the given variables.
-   * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {Bindings} bindings
-   * @param {string[]} variables
-   * @returns {string}
-   */
-  public static hash(bindings: Bindings, variables: string[]): string {
-    return variables.filter(variable => bindings.has(variable)).map(variable => bindings.get(variable).value).join('');
-  }
-
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const variables = ActorRdfJoin.overlappingVariables(action);
     const join = new SymmetricHashJoin<Bindings, string, Bindings>(

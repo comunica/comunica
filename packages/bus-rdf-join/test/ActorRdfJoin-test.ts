@@ -100,19 +100,19 @@ describe('ActorRdfJoin', () => {
   describe('hash', () => {
     it('should hash to concatenation of values of variables', () => {
       expect(ActorRdfJoin.hash(
-        BF.bindings({
-          '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
-        }), [ '?x', '?y' ],
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
+          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
+        ]), [ DF.variable('x'), DF.variable('y') ],
       )).toEqual('http://www.example.org/instance#a"XYZ"^^ex:abc');
     });
 
     it('should not let hash being influenced by a variable that is not present in bindings', () => {
       expect(ActorRdfJoin.hash(
-        BF.bindings({
-          '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
-        }), [ '?x', '?y', '?z' ],
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
+          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
+        ]), [ DF.variable('x'), DF.variable('y'), DF.variable('z') ],
       )).toEqual('http://www.example.org/instance#a"XYZ"^^ex:abc');
     });
   });
@@ -120,23 +120,23 @@ describe('ActorRdfJoin', () => {
   describe('overlappingVariables', () => {
     it('should return an empty array if there is no overlap', () => {
       expect(ActorRdfJoin.overlappingVariables(action)).toEqual([]);
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'c', 'd' ];
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      action.entries[1].output.variables = [ DF.variable('c'), DF.variable('d') ];
       expect(ActorRdfJoin.overlappingVariables(action)).toEqual([]);
     });
 
     it('should return a correct array if there is overlap', () => {
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'a', 'd' ];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'a' ]);
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('d') ];
+      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ DF.variable('a') ]);
 
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'a', 'b' ];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'a', 'b' ]);
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ DF.variable('a'), DF.variable('b') ]);
 
-      action.entries[0].output.variables = [ 'c', 'b' ];
-      action.entries[1].output.variables = [ 'a', 'b' ];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'b' ]);
+      action.entries[0].output.variables = [ DF.variable('c'), DF.variable('b') ];
+      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ DF.variable('b') ]);
     });
   });
 
@@ -144,53 +144,103 @@ describe('ActorRdfJoin', () => {
     it('should join variables', () => {
       expect(ActorRdfJoin.joinVariables(action)).toEqual([]);
 
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'c', 'd' ];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b', 'c', 'd' ]);
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      action.entries[1].output.variables = [ DF.variable('c'), DF.variable('d') ];
+      expect(ActorRdfJoin.joinVariables(action)).toEqual([
+        DF.variable('a'),
+        DF.variable('b'),
+        DF.variable('c'),
+        DF.variable('d'),
+      ]);
     });
 
     it('should deduplicate the result', () => {
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'b', 'd' ];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b', 'd' ]);
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      action.entries[1].output.variables = [ DF.variable('b'), DF.variable('d') ];
+      expect(ActorRdfJoin.joinVariables(action)).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('d') ]);
 
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'b', 'a' ];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b' ]);
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      action.entries[1].output.variables = [ DF.variable('b'), DF.variable('a') ];
+      expect(ActorRdfJoin.joinVariables(action)).toEqual([ DF.variable('a'), DF.variable('b') ]);
     });
   });
 
   describe('joinBindings', () => {
+    it('should return for no bindings', () => {
+      return expect(ActorRdfJoin.joinBindings()).toBeNull();
+    });
+
+    it('should return for one binding', () => {
+      const single = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      return expect(ActorRdfJoin.joinBindings(single)).toEqual(single);
+    });
+
     it('should return the right binding if the left is empty', () => {
-      const left = BF.bindings({});
-      const right = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const left = BF.bindings();
+      const right = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(right);
     });
 
     it('should return the left binding if the right is empty', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({});
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings();
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(left);
     });
 
     it('should join 2 bindings with no overlapping variables', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({ v: DF.literal('d'), w: DF.literal('e') });
-      const result = BF.bindings({ x: DF.literal('a'), y: DF.literal('b'), v: DF.literal('d'), w: DF.literal('e') });
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings([
+        [ DF.variable('v'), DF.literal('d') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
+      const result = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+        [ DF.variable('v'), DF.literal('d') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
     });
 
     it('should join 2 bindings with overlapping variables', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({ x: DF.literal('a'), w: DF.literal('e') });
-      const result = BF.bindings({ x: DF.literal('a'), y: DF.literal('b'), w: DF.literal('e') });
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
+      const result = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
     });
 
     it('should not join bindings with conflicting mappings', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({ x: DF.literal('b'), w: DF.literal('e') });
-      return expect(ActorRdfJoin.joinBindings(left, right)).toBeFalsy();
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings([
+        [ DF.variable('x'), DF.literal('b') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
+      return expect(ActorRdfJoin.joinBindings(left, right)).toBeNull();
     });
   });
 

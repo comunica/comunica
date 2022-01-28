@@ -1,6 +1,6 @@
 import { DataFactory } from 'rdf-data-factory';
 import { Bindings } from '../lib/Bindings';
-import { BindingsFactory } from '../lib/BindingsFactory';
+import { BindingsFactory, bindingsToString } from '../lib/BindingsFactory';
 
 const DF = new DataFactory();
 
@@ -56,5 +56,24 @@ describe('BindingsFactory', () => {
       expect(bindings.has(DF.variable('c'))).toBeTruthy();
       expect(bindings.has(DF.variable('d'))).toBeFalsy();
     });
+  });
+});
+
+// eslint-disable-next-line mocha/max-top-level-suites
+describe('bindingsToString', () => {
+  it('should stringify empty bindings', () => {
+    expect(bindingsToString(new BindingsFactory().bindings([]))).toEqual(`{}`);
+  });
+
+  it('should stringify non-empty bindings', () => {
+    expect(bindingsToString(new BindingsFactory().bindings([
+      [ DF.variable('a'), DF.namedNode('ex:a') ],
+      [ DF.variable('b'), DF.namedNode('ex:b') ],
+      [ DF.variable('c'), DF.namedNode('ex:c') ],
+    ]))).toEqual(`{
+  "?a": "ex:a",
+  "?b": "ex:b",
+  "?c": "ex:c"
+}`);
   });
 });

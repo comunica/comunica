@@ -8,7 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
 import { isExpressionError } from 'sparqlee';
 import { ActorQueryOperationLeftJoin } from '../lib/ActorQueryOperationLeftJoin';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -23,14 +23,14 @@ describe('ActorQueryOperationLeftJoin', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
     mediatorJoin = {
@@ -39,7 +39,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         metadata: () => Promise.resolve({ cardinality: 100, canContainUndefs: true }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a', 'b' ],
+        variables: [ DF.variable('a'), DF.variable('b') ],
       }),
     };
   });
@@ -81,16 +81,16 @@ describe('ActorQueryOperationLeftJoin', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}};
       return actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');
         expect(await output.metadata()).toEqual({ cardinality: 100, canContainUndefs: true });
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });
@@ -103,17 +103,17 @@ describe('ActorQueryOperationLeftJoin', () => {
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
       await actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
         expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject([ 'a', 'b' ]);
+        expect(output.variables).toMatchObject([ DF.variable('a'), DF.variable('b') ]);
       });
     });
 
@@ -125,10 +125,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
       await actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+        await expect(output.bindingsStream).toEqualBindingsStream([]);
         expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject([ 'a', 'b' ]);
+        expect(output.variables).toMatchObject([ DF.variable('a'), DF.variable('b') ]);
       });
     });
 
@@ -153,19 +153,20 @@ describe('ActorQueryOperationLeftJoin', () => {
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
       await actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+        await expect(output.bindingsStream).toEqualBindingsStream([]);
         expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject([ 'a', 'b' ]);
+        expect(output.variables).toMatchObject([ DF.variable('a'), DF.variable('b') ]);
 
         expect(logWarnSpy).toHaveBeenCalledTimes(6);
         logWarnSpy.mock.calls.forEach((call, index) => {
           const dataCB = <() => { error: any; bindings: Bindings }> call[2];
           const { error, bindings } = dataCB();
           expect(isExpressionError(error)).toBeTruthy();
-          expect(bindings).toEqual({
-            a: DF.literal(String(1 + Math.floor(index / 2)), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
-          });
+          expect(bindings).toEqual(BF.bindings([[
+            DF.variable('a'), DF.literal(String(1 + Math.floor(index / 2)),
+              DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
+          ]]));
         });
       });
     });

@@ -7,8 +7,8 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationQuadpattern } from '../lib/ActorQueryOperationQuadpattern';
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -200,7 +200,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         object: DF.variable('o'),
         predicate: DF.variable('p'),
         subject: DF.variable('s'),
-      })).toEqual([ '?s', '?p', '?o', '?g' ]);
+      })).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g') ]);
     });
 
     it('should not get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
@@ -218,7 +218,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         object: DF.namedNode('o'),
         predicate: DF.namedNode('p'),
         subject: DF.variable('s'),
-      })).toEqual([ '?s' ]);
+      })).toEqual([ DF.variable('s') ]);
     });
 
     it('should get variable ?p from pattern ?p ?p ?p g', () => {
@@ -227,7 +227,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         object: DF.variable('o'),
         predicate: DF.variable('p'),
         subject: DF.variable('s'),
-      })).toEqual([ '?s', '?p', '?o' ]);
+      })).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o') ]);
     });
 
     it('should run s ?p o g', () => {
@@ -239,15 +239,16 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ '?p' ]);
+        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
           canContainUndefs: false,
         });
-        expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ BF.bindings({ '?p': DF.namedNode('p1') }),
-            BF.bindings({ '?p': DF.namedNode('p2') }),
-            BF.bindings({ '?p': DF.namedNode('p3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream(
+          [
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
           ],
         );
       });
@@ -263,15 +264,16 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ '?p' ]);
+        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
           canContainUndefs: true,
         });
-        expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ BF.bindings({ '?p': DF.namedNode('p1') }),
-            BF.bindings({ '?p': DF.namedNode('p2') }),
-            BF.bindings({ '?p': DF.namedNode('p3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream(
+          [
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
           ],
         );
       });
@@ -286,12 +288,13 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ '?p' ]);
+        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toBe(metadataContent);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ BF.bindings({ '?p': DF.namedNode('p1') }),
-            BF.bindings({ '?p': DF.namedNode('p2') }),
-            BF.bindings({ '?p': DF.namedNode('p3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream(
+          [
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
           ],
         );
       });
@@ -322,10 +325,10 @@ describe('ActorQueryOperationQuadpattern', () => {
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
 
       return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ '?v' ]);
+        expect(output.variables).toEqual([ DF.variable('v') ]);
         expect(await output.metadata()).toBe(metadataContent);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ '?v': DF.namedNode('w') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('v'), DF.namedNode('w') ]]),
         ]);
       });
     });

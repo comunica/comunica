@@ -4,7 +4,7 @@ import type { IQueryableResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationReducedHash } from '..';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -20,16 +20,16 @@ describe('ActorQueryOperationReducedHash', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('3') }),
-          BF.bindings({ a: DF.literal('2') }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
         ]),
         metadata: () => Promise.resolve({ cardinality: 5 }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
     mediatorHashBindings = {
@@ -52,34 +52,34 @@ describe('ActorQueryOperationReducedHash', () => {
 
     it('should create a filter that is a predicate', async() => {
       const filter = await actor.newHashFilter(new ActionContext());
-      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(true);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', async() => {
       const filter = await actor.newHashFilter(new ActionContext());
-      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(true);
-      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
-      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
-      expect(filter(BF.bindings({ a: DF.literal('a') }))).toBe(false);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
 
-      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(false);
-      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(false);
-      expect(filter(BF.bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(true);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
+      expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
     });
 
     it('should create a filters that are independent', async() => {
       const filter1 = await actor.newHashFilter(new ActionContext());
       const filter2 = await actor.newHashFilter(new ActionContext());
       const filter3 = await actor.newHashFilter(new ActionContext());
-      expect(filter1(BF.bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter1(BF.bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(true);
+      expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
 
-      expect(filter2(BF.bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter2(BF.bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter2(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(true);
+      expect(filter2(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
 
-      expect(filter3(BF.bindings({ a: DF.literal('b') }))).toBe(true);
-      expect(filter3(BF.bindings({ a: DF.literal('b') }))).toBe(false);
+      expect(filter3(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(true);
+      expect(filter3(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
     });
   });
 
@@ -106,12 +106,12 @@ describe('ActorQueryOperationReducedHash', () => {
       const op: any = { operation: { type: 'reduced' }};
       return actor.run(op).then(async(output: IQueryableResultBindings) => {
         expect(await (<any> output).metadata()).toEqual({ cardinality: 5 });
-        expect(output.variables).toEqual([ 'a' ]);
+        expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });
@@ -132,18 +132,18 @@ describe('Smaller cache than number of queries', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('3') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('1') }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         ]),
         metadata: () => Promise.resolve({ cardinality: 7 }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
     mediatorHashBindings = {
@@ -157,13 +157,13 @@ describe('Smaller cache than number of queries', () => {
     const op: any = { operation: { type: 'reduced' }};
     return actor.run(op).then(async(output: IQueryableResultBindings) => {
       expect(await (<any> output).metadata()).toEqual({ cardinality: 7 });
-      expect(output.variables).toEqual([ 'a' ]);
+      expect(output.variables).toEqual([ DF.variable('a') ]);
       expect(output.type).toEqual('bindings');
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ a: DF.literal('1') }),
-        BF.bindings({ a: DF.literal('3') }),
-        BF.bindings({ a: DF.literal('2') }),
-        BF.bindings({ a: DF.literal('1') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
       ]);
     });
   });

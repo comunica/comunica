@@ -7,7 +7,6 @@ import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
-
 import { SortIterator } from './SortIterator';
 
 /**

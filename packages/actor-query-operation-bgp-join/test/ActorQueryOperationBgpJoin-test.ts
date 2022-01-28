@@ -6,7 +6,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -21,14 +21,14 @@ describe('ActorQueryOperationBgpJoin', () => {
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ '?a': DF.literal('1') }),
-          BF.bindings({ '?a': DF.literal('2') }),
-          BF.bindings({ '?a': DF.literal('3') }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ '?a' ],
+        variables: [ DF.variable('a') ],
       })),
     };
   });
@@ -57,12 +57,12 @@ describe('ActorQueryOperationBgpJoin', () => {
 
       const output: IQueryableResultBindings = <any> await actor.run(op);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toEqual([ '?a' ]);
+      expect(output.variables).toEqual([ DF.variable('a') ]);
       expect(output.type).toEqual('bindings');
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?a': DF.literal('1') }),
-        BF.bindings({ '?a': DF.literal('2') }),
-        BF.bindings({ '?a': DF.literal('3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({

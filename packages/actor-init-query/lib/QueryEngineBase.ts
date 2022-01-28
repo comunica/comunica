@@ -152,8 +152,7 @@ export class QueryEngineBase implements IQueryEngine {
 
     // Apply initial bindings in context
     if (context.has(KeysInitQuery.initialBindings)) {
-      const bindings = context.get(KeysInitQuery.initialBindings);
-      operation = materializeOperation(operation, BF.ensureBindings(bindings));
+      operation = materializeOperation(operation, context.get(KeysInitQuery.initialBindings));
     }
 
     // Optimize the query operation

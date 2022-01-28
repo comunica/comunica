@@ -7,6 +7,7 @@ import type {
   IActionContext, IQueryableResultBindings, IQueryableResultBoolean,
   IQueryableResultQuads,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 
 /**
@@ -45,9 +46,10 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
       const resultStream = (<IQueryableResultBindings> action).bindingsStream;
       data.push('[');
       resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', element => {
+      resultStream.on('data', (element: RDF.Bindings) => {
         data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(element.map(RdfString.termToString)));
+        data.push(JSON.stringify(Object.fromEntries([ ...element ]
+          .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]))));
         empty = false;
       });
       resultStream.on('end', () => {

@@ -12,12 +12,13 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
-import { termToString } from 'rdf-string';
+import { DataFactory } from 'rdf-data-factory';
 import type { QuadTermName } from 'rdf-terms';
 import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 
 const BF = new BindingsFactory();
+const DF = new DataFactory();
 
 /**
  * A comunica actor for handling 'quadpattern' query operations.
@@ -43,12 +44,10 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * Get all variables in the given pattern.
    * No duplicates are returned.
    * @param {RDF.BaseQuad} pattern A quad pattern.
-   * @return {string[]} The variables in this pattern, with '?' prefix.
    */
-  public static getVariables(pattern: RDF.BaseQuad): string[] {
-    return uniqTerms(getTerms(pattern)
-      .filter(ActorQueryOperationQuadpattern.isTermVariable))
-      .map(x => termToString(x));
+  public static getVariables(pattern: RDF.BaseQuad): RDF.Variable[] {
+    return <RDF.Variable[]> uniqTerms(getTerms(pattern)
+      .filter(ActorQueryOperationQuadpattern.isTermVariable));
   }
 
   /**
@@ -75,7 +74,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     let duplicateVariables = false;
     for (const key of QUAD_TERM_NAMES) {
       if (pattern[key].termType === 'Variable') {
-        const val = termToString(pattern[key]);
+        const val = pattern[key].value;
         const length = (variableElements[val] || (variableElements[val] = [])).push(key);
         duplicateVariables = duplicateVariables || length > 1;
       }
@@ -145,7 +144,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
 
     // Collect all variables from the pattern
-    const variables: string[] = ActorQueryOperationQuadpattern.getVariables(pattern);
+    const variables = ActorQueryOperationQuadpattern.getVariables(pattern);
 
     // Create the metadata callback
     const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data);
@@ -153,17 +152,17 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     // Convenience datastructure for mapping quad elements to variables
     const elementVariables: Record<string, string> = reduceTerms(pattern,
       (acc: Record<string, string>, term: RDF.Term, key: QuadTermName) => {
-        if (ActorQueryOperationQuadpattern.isTermVariable(term)) {
-          acc[key] = termToString(term);
+        if (term.termType === 'Variable') {
+          acc[key] = term.value;
         }
         return acc;
       },
       {});
-    const quadBindingsReducer = (acc: Record<string, RDF.Term>, term: RDF.Term, key: QuadTermName):
-    Record<string, RDF.Term> => {
+    const quadBindingsReducer = (acc: [RDF.Variable, RDF.Term][], term: RDF.Term, key: QuadTermName):
+    [RDF.Variable, RDF.Term][] => {
       const variable: string = elementVariables[key];
       if (variable) {
-        acc[variable] = term;
+        acc.push([ DF.variable(variable), term ]);
       }
       return acc;
     };
@@ -193,7 +192,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         });
       }
 
-      return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, {})));
+      return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, [])));
     }, { autoStart: false });
 
     return { type: 'bindings', bindingsStream, variables, metadata };

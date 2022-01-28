@@ -38,8 +38,8 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
     if (action.type === 'bindings') {
       resultStream = (<IQueryableResultBindings> action).bindingsStream;
       resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', bindings => data.push(`${bindings.map(
-        (value: RDF.Term, key: string) => `${key}: ${value.value}`,
+      resultStream.on('data', (bindings: RDF.Bindings) => data.push(`${[ ...bindings ].map(
+        ([ key, value ]) => `?${key.value}: ${value.value}`,
       ).join('\n')}\n\n`));
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'quads') {

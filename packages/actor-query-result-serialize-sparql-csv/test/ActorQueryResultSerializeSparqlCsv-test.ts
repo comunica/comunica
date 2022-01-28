@@ -2,6 +2,7 @@ import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlCsv } from '..';
@@ -99,7 +100,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     let bindingsStreamMixed: BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
-    let variables: string[];
+    let variables: RDF.Variable[];
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeSparqlCsv({ bus,
@@ -109,24 +110,37 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        BF.bindings({ '?k1': DF.namedNode('v1') }),
-        BF.bindings({ '?k2': DF.namedNode('v2') }),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
       ]);
       bindingsStreamPartial = new ArrayIterator([
-        BF.bindings({ '?k1': DF.namedNode('v1') }),
-        BF.bindings({ '?k2': DF.namedNode('v2') }),
-        BF.bindings({}),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
+        BF.bindings(),
       ]);
       bindingsStreamMixed = new ArrayIterator([
-        BF.bindings({ '?k1': DF.literal('v"'), '?k2': DF.defaultGraph() }),
-        BF.bindings({ '?k2': DF.namedNode('v\n\r,') }),
-        BF.bindings({}),
+        BF.bindings([
+          [ DF.variable('k1'), DF.literal('v"') ],
+          [ DF.variable('k2'), DF.defaultGraph() ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v\n\r,') ],
+        ]),
+        BF.bindings(),
       ]);
       bindingsStreamEmpty = <any> new PassThrough();
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpCsv')); });
-      variables = [ '?k1', '?k2' ];
+      variables = [ DF.variable('k1'), DF.variable('k2') ];
     });
 
     describe('for getting media types', () => {
@@ -199,7 +213,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       it('should run on a bindings stream with unbound variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: [ '?k3' ]},
+            handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: [ DF.variable('k3') ]},
             handleMediaType: 'text/csv' },
         ))).handle.data)).toEqual(
           `k3\r

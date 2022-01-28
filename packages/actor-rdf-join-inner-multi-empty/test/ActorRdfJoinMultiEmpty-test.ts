@@ -4,7 +4,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfJoinMultiEmpty } from '../lib/ActorRdfJoinMultiEmpty';
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfJoinMultiEmpty', () => {
   let bus: any;
@@ -107,7 +106,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
           context,
         });
         expect(output.variables).toEqual([]);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+        await expect(output.bindingsStream).toEqualBindingsStream([]);
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
       });
     });

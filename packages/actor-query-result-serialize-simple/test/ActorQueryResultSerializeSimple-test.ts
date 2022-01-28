@@ -51,8 +51,12 @@ describe('ActorQueryResultSerializeSimple', () => {
         mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        BF.bindings({ k1: DF.namedNode('v1') }),
-        BF.bindings({ k2: DF.namedNode('v2') }),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -127,9 +131,9 @@ describe('ActorQueryResultSerializeSimple', () => {
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream, context }, handleMediaType: 'simple', context },
         ))).handle.data)).toEqual(
-          `k1: v1
+          `?k1: v1
 
-k2: v2
+?k2: v2
 
 `,
         );

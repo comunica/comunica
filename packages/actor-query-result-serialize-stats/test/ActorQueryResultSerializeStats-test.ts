@@ -59,8 +59,12 @@ describe('ActorQueryResultSerializeStats', () => {
       });
 
       bindingsStream = new ArrayIterator([
-        BF.bindings({ k1: DF.namedNode('v1') }),
-        BF.bindings({ k2: DF.namedNode('v2') }),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),

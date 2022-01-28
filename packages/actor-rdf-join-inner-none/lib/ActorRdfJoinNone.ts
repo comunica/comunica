@@ -29,7 +29,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     return {
       result: {
-        bindingsStream: new ArrayIterator([ BF.bindings({}) ], { autoStart: false }),
+        bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
         type: 'bindings',
         variables: [],

@@ -5,7 +5,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathAlt } from '../lib/ActorQueryOperationPathAlt';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -20,15 +20,14 @@ describe('ActorQueryOperationPathAlt', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ '?x': DF.literal('1') }),
-          BF.bindings({ '?x': DF.literal('2') }),
-          BF.bindings({ '?x': DF.literal('3') }),
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
-        canContainUndefs: false,
+        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -153,13 +152,13 @@ describe('ActorQueryOperationPathAlt', () => {
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 6, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.literal('1') }),
-        BF.bindings({ '?x': DF.literal('1') }),
-        BF.bindings({ '?x': DF.literal('2') }),
-        BF.bindings({ '?x': DF.literal('2') }),
-        BF.bindings({ '?x': DF.literal('3') }),
-        BF.bindings({ '?x': DF.literal('3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
       ]);
     });
   });

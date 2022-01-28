@@ -44,14 +44,9 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
       };
 
       bindingsStream.on('error', reject);
-      bindingsStream.on('data', bindings => {
-        const rawBindings = bindings.toJS();
-        const reKeyedBindings: Record<string, RDF.Term> = {};
-        // Removes the '?' prefix
-        for (const key in rawBindings) {
-          reKeyedBindings[key.slice(1)] = rawBindings[key];
-        }
-        bindingsArray.push(reKeyedBindings);
+      bindingsStream.on('data', (bindings: RDF.Bindings) => {
+        bindingsArray.push(Object.fromEntries([ ...bindings ]
+          .map(([ key, value ]) => [ key.value, value ])));
       });
       bindingsStream.on('end', () => {
         resolve(converter.bindingsToTree(bindingsArray, schema));

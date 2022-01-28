@@ -4,13 +4,14 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
 const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -25,24 +26,24 @@ describe('ActorQueryOperationPathSeq', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => {
-        const vars: any = [];
+        const vars: RDF.Variable[] = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
-            vars.push(termToString(arg.operation[name]));
+            vars.push(arg.operation[name]);
           }
         }
 
         const bindings = [];
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
-            const bind: any = {};
+            const bind: [RDF.Variable, RDF.Term][] = [];
             for (const [ j, element ] of vars.entries()) {
-              bind[element] = DF.namedNode(`${1 + i + j}`);
+              bind.push([ element, DF.namedNode(`${1 + i + j}`) ]);
             }
             bindings.push(BF.bindings(bind));
           }
         } else {
-          bindings.push(BF.bindings({}));
+          bindings.push(BF.bindings());
         }
 
         return Promise.resolve({
@@ -125,10 +126,10 @@ describe('ActorQueryOperationPathSeq', () => {
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('4') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('4') ]]),
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
@@ -162,10 +163,10 @@ describe('ActorQueryOperationPathSeq', () => {
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('4') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('4') ]]),
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {

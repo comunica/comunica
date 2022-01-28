@@ -10,14 +10,14 @@ import { termToString } from 'rdf-string';
  * as a 'match-all' with other terms.
  */
 export class BindingsIndex {
-  private readonly keys: string[];
+  private readonly keys: RDF.Variable[];
   private readonly data: IDataIndex = {};
 
-  public constructor(keys: string[]) {
+  public constructor(keys: RDF.Variable[]) {
     this.keys = keys;
   }
 
-  protected static hashTerm(term: RDF.Term): string {
+  protected static hashTerm(term: RDF.Term | undefined): string {
     return term && term.termType !== 'Variable' ? termToString(term) : '';
   }
 
@@ -64,12 +64,12 @@ export class BindingsIndex {
     return validKeys;
   }
 
-  protected containsRecursive(bindings: Bindings, keys: string[], dataIndexes: IDataIndex[]): boolean {
+  protected containsRecursive(bindings: Bindings, keys: RDF.Variable[], dataIndexes: IDataIndex[]): boolean {
     if (keys.length === 0) {
       return true;
     }
 
-    let key: string;
+    let key: RDF.Variable;
     // eslint-disable-next-line prefer-const
     [ key, ...keys ] = keys;
     for (const data of dataIndexes) {

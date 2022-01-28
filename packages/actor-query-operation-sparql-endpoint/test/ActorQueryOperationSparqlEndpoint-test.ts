@@ -13,6 +13,7 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 import 'jest-rdf';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -199,13 +200,19 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?p' ]);
+      expect(output.variables).toEqual([ DF.variable('p') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
+        ]),
       ]);
     });
 
@@ -219,13 +226,19 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ DF.variable('myP') ],
         ) };
       const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?myP' ]);
+      expect(output.variables).toEqual([ DF.variable('myP') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
+        ]),
       ]);
     });
 
@@ -244,13 +257,19 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?p' ]);
+      expect(output.variables).toEqual([ DF.variable('p') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3`) }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3`) ],
+        ]),
       ]);
     });
 
@@ -272,13 +291,19 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ DF.variable('myP') ],
         ) };
       const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?myP' ]);
+      expect(output.variables).toEqual([ DF.variable('myP') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3`) }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3`) ],
+        ]),
       ]);
     });
 
@@ -389,10 +414,16 @@ this is a body`));
       const output: IQueryableResultBindings = <any> await actor.run(op);
       expect(await (<any> output).metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) }),
-        BF.bindings({ '?p': DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
+        ]),
       ]);
     });
   });

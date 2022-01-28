@@ -1,3 +1,4 @@
+import { bindingsToString } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -52,7 +53,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
         if (isExpressionError(<Error> error)) {
           // In many cases, this is a user error, where the user should manually cast the variable to a string.
           // In order to help users debug this, we should report these errors via the logger as warnings.
-          this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: item.toJS() }));
+          this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: bindingsToString(item) }));
         } else {
           bindingsStream.emit('error', error);
         }
