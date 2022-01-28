@@ -1,12 +1,14 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { SyncExtensionFunctionCreator } from '../../../lib/evaluators/SyncEvaluator';
-import { Bindings } from '../../../lib/Types';
 import { bool, merge, numeric } from '../../util/Aliases';
 import type { GeneralEvaluationConfig } from '../../util/generalEvaluation';
 import { generalEvaluate } from '../../util/generalEvaluation';
 import { Notation } from '../../util/TestTable';
 import { runTestTable } from '../../util/utils';
+
+const BF = new BindingsFactory();
 
 describe('extension functions:', () => {
   describe('term-equal', () => {
@@ -109,9 +111,9 @@ describe('extension functions:', () => {
         }
         return arg;
       };
-      const bindings = Bindings({
-        '?o': DF.literal('AppLe', stringType),
-      });
+      const bindings = BF.bindings([
+        [ DF.variable('o'), DF.literal('AppLe', stringType) ],
+      ]);
       const generalEvaluationConfig: GeneralEvaluationConfig = {
         type: 'sync',
         config: { extensionFunctionCreator: creator },

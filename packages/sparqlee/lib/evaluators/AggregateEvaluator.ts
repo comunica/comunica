@@ -1,5 +1,5 @@
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { Bindings } from '../Types';
 import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator';
 import type { ISyncEvaluatorContext } from './SyncEvaluator';
 import { SyncEvaluator } from './SyncEvaluator';
@@ -13,11 +13,11 @@ export class AggregateEvaluator extends BaseAggregateEvaluator {
     this.evaluator = new SyncEvaluator(expr.expression, context);
   }
 
-  public put(bindings: Bindings): void {
+  public put(bindings: RDF.Bindings): void {
     this.init(bindings);
   }
 
-  protected __put(bindings: Bindings): void {
+  protected __put(bindings: RDF.Bindings): void {
     try {
       const term = this.evaluator.evaluate(bindings);
       this.state = this.aggregator.put(this.state, term);
@@ -37,7 +37,7 @@ export class AggregateEvaluator extends BaseAggregateEvaluator {
     }
   }
 
-  private init(start: Bindings): void {
+  private init(start: RDF.Bindings): void {
     try {
       const startTerm = this.evaluator.evaluate(start);
       this.state = this.aggregator.init(startTerm);

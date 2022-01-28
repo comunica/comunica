@@ -1,7 +1,8 @@
+import type * as RDF from '@rdfjs/types';
 import type * as E from '../../expressions';
+import { expressionToVar } from '../../functions/Helpers';
 import type { OverLoadCache } from '../../functions/OverloadTree';
 import type { ITermTransformer } from '../../transformers/TermTransformer';
-import type { Bindings } from '../../Types';
 import * as Err from '../../util/Errors';
 import type { SuperTypeCallback, TypeCache, ISuperTypeProvider } from '../../util/TypeHandling';
 
@@ -31,12 +32,12 @@ export interface ICompleteSharedContext {
 export class BaseExpressionEvaluator {
   public constructor(protected readonly termTransformer: ITermTransformer) { }
 
-  protected term(expr: E.Term, mapping: Bindings): E.Term {
+  protected term(expr: E.Term, mapping: RDF.Bindings): E.Term {
     return expr;
   }
 
-  protected variable(expr: E.Variable, mapping: Bindings): E.Term {
-    const term = mapping.get(expr.name);
+  protected variable(expr: E.Variable, mapping: RDF.Bindings): E.Term {
+    const term = mapping.get(expressionToVar(expr));
     if (!term) {
       throw new Err.UnboundVariableError(expr.name, mapping);
     }

@@ -3,7 +3,7 @@ import * as LRUCache from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type * as E from '../expressions/Expressions';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
-import type { Bindings, IExpressionEvaluator } from '../Types';
+import type { IExpressionEvaluator } from '../Types';
 import type { ICompleteAsyncEvaluatorContext } from './evaluatorHelpers/AsyncRecursiveEvaluator';
 import { AsyncRecursiveEvaluator } from './evaluatorHelpers/AsyncRecursiveEvaluator';
 import type { ISharedContext } from './evaluatorHelpers/BaseExpressionEvaluator';
@@ -12,7 +12,7 @@ export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
 export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => AsyncExtensionFunction | undefined;
 
 export interface IAsyncEvaluatorContext extends ISharedContext {
-  exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
+  exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
   bnode?: (input?: string) => Promise<RDF.BlankNode>;
   extensionFunctionCreator?: AsyncExtensionFunctionCreator;
@@ -54,17 +54,17 @@ export class AsyncEvaluator {
     this.evaluator = new AsyncRecursiveEvaluator(baseContext, transformer);
   }
 
-  public async evaluate(mapping: Bindings): Promise<RDF.Term> {
+  public async evaluate(mapping: RDF.Bindings): Promise<RDF.Term> {
     const result = await this.evaluator.evaluate(this.expr, mapping);
     return result.toRDF();
   }
 
-  public async evaluateAsEBV(mapping: Bindings): Promise<boolean> {
+  public async evaluateAsEBV(mapping: RDF.Bindings): Promise<boolean> {
     const result = await this.evaluator.evaluate(this.expr, mapping);
     return result.coerceEBV();
   }
 
-  public async evaluateAsInternal(mapping: Bindings): Promise<E.TermExpression> {
+  public async evaluateAsInternal(mapping: RDF.Bindings): Promise<E.TermExpression> {
     const result = await this.evaluator.evaluate(this.expr, mapping);
     return result;
   }

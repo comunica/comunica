@@ -1,8 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-
 import type * as E from '../expressions';
-import type { Bindings } from '../Types';
 import type * as C from './Consts';
 
 /**
@@ -46,7 +44,7 @@ export class InvalidLexicalForm extends ExpressionError {
  * A variable in the expression was not bound.
  */
 export class UnboundVariableError extends ExpressionError {
-  public constructor(public variable: string, public bindings: Bindings) {
+  public constructor(public variable: string, public bindings: RDF.Bindings) {
     super(`Unbound variable '${pp(variable)}'`);
   }
 }

@@ -1,7 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type * as E from '../expressions';
-import type { Bindings } from '../Types';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
@@ -10,11 +9,11 @@ import type { ImplementationFunction, OverloadTree, OverLoadCache } from './Over
 
 export interface IEvalSharedContext extends ICompleteSharedContext{
   args: E.Expression[];
-  mapping: Bindings;
+  mapping: RDF.Bindings;
 }
 export interface IEvalContext<Term, BNode> extends IEvalSharedContext {
   bnode?: (input?: string) => BNode;
-  evaluate: (expr: E.Expression, mapping: Bindings) => Term;
+  evaluate: (expr: E.Expression, mapping: RDF.Bindings) => Term;
 }
 
 export type EvalContextAsync = IEvalContext<Promise<E.TermExpression>, Promise<RDF.BlankNode>>;

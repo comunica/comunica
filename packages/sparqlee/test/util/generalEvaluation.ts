@@ -1,3 +1,4 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -6,13 +7,14 @@ import type { IAsyncEvaluatorContext, AsyncExtensionFunctionCreator } from '../.
 import { AsyncEvaluator } from '../../lib/evaluators/AsyncEvaluator';
 import type { ISyncEvaluatorContext, SyncExtensionFunctionCreator } from '../../lib/evaluators/SyncEvaluator';
 import { SyncEvaluator } from '../../lib/evaluators/SyncEvaluator';
-import { Bindings } from '../../lib/Types';
+
+const BF = new BindingsFactory();
 
 export type GeneralEvaluationConfig = { type: 'sync'; config: ISyncEvaluatorContext } |
 { type: 'async'; config: IAsyncEvaluatorContext };
 
 export interface IGeneralEvaluationArg {
-  bindings?: Bindings;
+  bindings?: RDF.Bindings;
   expression: string;
   generalEvaluationConfig?: GeneralEvaluationConfig;
   /**
@@ -24,7 +26,7 @@ export interface IGeneralEvaluationArg {
 
 export async function generalEvaluate(arg: IGeneralEvaluationArg):
 Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
-  const bindings: Bindings = arg.bindings ? arg.bindings : Bindings({});
+  const bindings: RDF.Bindings = arg.bindings ? arg.bindings : BF.bindings();
   if (arg.generalEvaluationConfig?.type === 'async') {
     const asyncResultLegacy = await evaluateAsync(arg.expression, bindings, arg.generalEvaluationConfig.config);
     if (!arg.generalEvaluationConfig.config.enableExtendedXsdTypes) {
@@ -62,7 +64,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
 
 export async function generalErrorEvaluation(arg: IGeneralEvaluationArg):
 Promise<{ asyncError: unknown; syncError?: unknown } | undefined > {
-  const bindings: Bindings = arg.bindings ? arg.bindings : Bindings({});
+  const bindings: RDF.Bindings = arg.bindings ? arg.bindings : BF.bindings();
   if (arg.generalEvaluationConfig?.type === 'async') {
     try {
       await evaluateAsync(arg.expression, bindings, arg.generalEvaluationConfig.config);
@@ -100,7 +102,7 @@ function syncConfigToAsyncConfig(config: ISyncEvaluatorContext | undefined): IAs
     return undefined;
   }
   const asyncExists = config.exists ?
-    async(e: Alg.ExistenceExpression, m: Bindings) => config.exists!(e, m) :
+    async(e: Alg.ExistenceExpression, m: RDF.Bindings) => config.exists!(e, m) :
     undefined;
   const asyncAggregate = config.aggregate ?
     async(expression: Alg.AggregateExpression) => config.aggregate!(expression) :
@@ -134,12 +136,12 @@ function parse(query: string) {
   return sparqlQuery.input.expression;
 }
 
-function evaluateAsync(expr: string, bindings: Bindings, config?: IAsyncEvaluatorContext): Promise<RDF.Term> {
+function evaluateAsync(expr: string, bindings: RDF.Bindings, config?: IAsyncEvaluatorContext): Promise<RDF.Term> {
   const evaluator = new AsyncEvaluator(parse(expr), config);
   return evaluator.evaluate(bindings);
 }
 
-function evaluateSync(expr: string, bindings: Bindings, config?: ISyncEvaluatorContext): RDF.Term {
+function evaluateSync(expr: string, bindings: RDF.Bindings, config?: ISyncEvaluatorContext): RDF.Term {
   const evaluator = new SyncEvaluator(parse(expr), config);
   return evaluator.evaluate(bindings);
 }

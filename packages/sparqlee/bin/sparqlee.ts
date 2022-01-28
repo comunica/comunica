@@ -1,10 +1,9 @@
 #! /usr/bin/env node
 
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-
 import { SyncEvaluator } from '../lib/evaluators/SyncEvaluator';
-import { Bindings } from '../lib/Types';
 
 const USAGE = `
 Usage: sparqlee <expression>
@@ -40,7 +39,7 @@ async function main(): Promise<void> {
 
   const evaluator = new SyncEvaluator(expression);
 
-  const result = evaluator.evaluate(Bindings({}));
+  const result = evaluator.evaluate(new BindingsFactory().bindings());
 
   // eslint-disable-next-line no-console
   console.log(result);

@@ -1,5 +1,5 @@
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { Bindings } from '../Types';
 import type { IAsyncEvaluatorContext } from './AsyncEvaluator';
 import { AsyncEvaluator } from './AsyncEvaluator';
 import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator';
@@ -14,11 +14,11 @@ export class AsyncAggregateEvaluator extends BaseAggregateEvaluator {
     this.errorOccurred = false;
   }
 
-  public put(bindings: Bindings): Promise<void> {
+  public put(bindings: RDF.Bindings): Promise<void> {
     return this.init(bindings);
   }
 
-  protected async __put(bindings: Bindings): Promise<void> {
+  protected async __put(bindings: RDF.Bindings): Promise<void> {
     try {
       const term = await this.evaluator.evaluate(bindings);
       this.state = this.aggregator.put(this.state, term);
@@ -39,7 +39,7 @@ export class AsyncAggregateEvaluator extends BaseAggregateEvaluator {
     }
   }
 
-  private async init(start: Bindings): Promise<void> {
+  private async init(start: RDF.Bindings): Promise<void> {
     try {
       const startTerm = await this.evaluator.evaluate(start);
       if (!startTerm || this.errorOccurred) {

@@ -5,7 +5,7 @@ import type { SyncExtension } from '../../expressions';
 import type { EvalContextSync } from '../../functions';
 import type { ITermTransformer } from '../../transformers/TermTransformer';
 import { TermTransformer } from '../../transformers/TermTransformer';
-import type { Bindings, IExpressionEvaluator } from '../../Types';
+import type { IExpressionEvaluator } from '../../Types';
 import * as Err from '../../util/Errors';
 import type { ISuperTypeProvider } from '../../util/TypeHandling';
 import type { SyncExtensionFunctionCreator } from '../SyncEvaluator';
@@ -13,7 +13,7 @@ import type { ICompleteSharedContext } from './BaseExpressionEvaluator';
 import { BaseExpressionEvaluator } from './BaseExpressionEvaluator';
 
 export interface ICompleteSyncEvaluatorContext extends ICompleteSharedContext {
-  exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => boolean;
+  exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => boolean;
   aggregate?: (expression: Alg.AggregateExpression) => RDF.Term;
   bnode?: (input?: string) => RDF.BlankNode;
   extensionFunctionCreator?: SyncExtensionFunctionCreator;
@@ -22,7 +22,7 @@ export interface ICompleteSyncEvaluatorContext extends ICompleteSharedContext {
 export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
   implements IExpressionEvaluator<E.Expression, E.Term> {
   protected openWorldType: ISuperTypeProvider;
-  private readonly subEvaluators: Record<string, (expr: E.Expression, mapping: Bindings) => E.Term> = {
+  private readonly subEvaluators: Record<string, (expr: E.Expression, mapping: RDF.Bindings) => E.Term> = {
     // Shared
     [E.ExpressionType.Term]: this.term.bind(this),
     [E.ExpressionType.Variable]: this.variable.bind(this),
@@ -40,7 +40,7 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
     super(termTransformer || new TermTransformer(context.superTypeProvider, context.enableExtendedXsdTypes));
   }
 
-  public evaluate(expr: E.Expression, mapping: Bindings): E.Term {
+  public evaluate(expr: E.Expression, mapping: RDF.Bindings): E.Term {
     const evaluator = this.subEvaluators[expr.expressionType];
     if (!evaluator) {
       throw new Err.InvalidExpressionType(expr);
@@ -48,12 +48,12 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
     return evaluator.bind(this)(expr, mapping);
   }
 
-  private evalOperator(expr: E.Operator, mapping: Bindings): E.Term {
+  private evalOperator(expr: E.Operator, mapping: RDF.Bindings): E.Term {
     const args = expr.args.map(arg => this.evaluate(arg, mapping));
     return expr.apply(args);
   }
 
-  private evalSpecialOperator(expr: E.SpecialOperator, mapping: Bindings): E.Term {
+  private evalSpecialOperator(expr: E.SpecialOperator, mapping: RDF.Bindings): E.Term {
     const evaluate = this.evaluate.bind(this);
     const context: EvalContextSync = {
       args: expr.args,
@@ -71,17 +71,17 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
     return expr.applySync(context);
   }
 
-  private evalNamed(expr: E.Named, mapping: Bindings): E.Term {
+  private evalNamed(expr: E.Named, mapping: RDF.Bindings): E.Term {
     const args = expr.args.map(arg => this.evaluate(arg, mapping));
     return expr.apply(args);
   }
 
-  private evalSyncExtension(expr: SyncExtension, mapping: Bindings): E.Term {
+  private evalSyncExtension(expr: SyncExtension, mapping: RDF.Bindings): E.Term {
     const args = expr.args.map(arg => this.evaluate(arg, mapping));
     return expr.apply(args);
   }
 
-  private evalExistence(expr: E.Existence, mapping: Bindings): E.Term {
+  private evalExistence(expr: E.Existence, mapping: RDF.Bindings): E.Term {
     if (!this.context.exists) {
       throw new Err.NoExistenceHook();
     }
@@ -89,7 +89,7 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
     return new E.BooleanLiteral(this.context.exists(expr.expression, mapping));
   }
 
-  private evalAggregate(expr: E.Aggregate, mapping: Bindings): E.Term {
+  private evalAggregate(expr: E.Aggregate, mapping: RDF.Bindings): E.Term {
     if (!this.context.aggregate) {
       throw new Err.NoAggregator();
     }

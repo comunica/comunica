@@ -2,6 +2,8 @@
  * These helpers provide a (albeit inflexible) DSL for writing function
  * definitions for the SPARQL functions.
  */
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type { Literal, NumericLiteral } from '../expressions';
 import * as E from '../expressions';
@@ -17,6 +19,8 @@ import type { ImplementationFunction } from './OverloadTree';
 import { OverloadTree } from './OverloadTree';
 
 type Term = E.TermExpression;
+
+const DF = new DataFactory();
 
 export function declare(identifier: string): Builder {
   return new Builder(identifier);
@@ -346,4 +350,8 @@ export function langString(str: string, lang: string): E.LangStringLiteral {
 
 export function dateTime(date: Date, str: string): E.DateTimeLiteral {
   return new E.DateTimeLiteral(date, str);
+}
+
+export function expressionToVar(variableExpression: E.VariableExpression): RDF.Variable {
+  return DF.variable(variableExpression.name.slice(1));
 }

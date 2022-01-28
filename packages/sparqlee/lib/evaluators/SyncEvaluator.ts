@@ -3,13 +3,13 @@ import * as LRUCache from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type * as E from '../expressions/Expressions';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
-import type { Bindings, IExpressionEvaluator } from '../Types';
+import type { IExpressionEvaluator } from '../Types';
 import type { ISharedContext } from './evaluatorHelpers/BaseExpressionEvaluator';
 import type { ICompleteSyncEvaluatorContext } from './evaluatorHelpers/SyncRecursiveEvaluator';
 import { SyncRecursiveEvaluator } from './evaluatorHelpers/SyncRecursiveEvaluator';
 
 export interface ISyncEvaluatorContext extends ISharedContext {
-  exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => boolean;
+  exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => boolean;
   aggregate?: (expression: Alg.AggregateExpression) => RDF.Term;
   bnode?: (input?: string) => RDF.BlankNode;
   extensionFunctionCreator?: SyncExtensionFunctionCreator;
@@ -54,17 +54,17 @@ export class SyncEvaluator {
     this.evaluator = new SyncRecursiveEvaluator(baseContext, transformer);
   }
 
-  public evaluate(mapping: Bindings): RDF.Term {
+  public evaluate(mapping: RDF.Bindings): RDF.Term {
     const result = this.evaluator.evaluate(this.expr, mapping);
     return result.toRDF();
   }
 
-  public evaluateAsEBV(mapping: Bindings): boolean {
+  public evaluateAsEBV(mapping: RDF.Bindings): boolean {
     const result = this.evaluator.evaluate(this.expr, mapping);
     return result.coerceEBV();
   }
 
-  public evaluateAsInternal(mapping: Bindings): E.TermExpression {
+  public evaluateAsInternal(mapping: RDF.Bindings): E.TermExpression {
     const result = this.evaluator.evaluate(this.expr, mapping);
     return result;
   }

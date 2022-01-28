@@ -1,6 +1,7 @@
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-console */
 
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Event } from 'benchmark';
 import { Suite } from 'benchmark';
@@ -9,12 +10,12 @@ import * as LRUCache from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import { SyncEvaluator } from '../lib/evaluators/SyncEvaluator';
-import { Bindings } from '../lib/Types';
 import { TypeURL } from '../lib/util/Consts';
 import { template } from '../test/util/Aliases';
 
 const benchSuite = new Suite();
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 function integerTerm(int: number): RDF.Term {
   return DF.literal(int.toString(), DF.namedNode(TypeURL.XSD_INTEGER));
@@ -33,11 +34,11 @@ const noCache = new Benchmark('bench addition no overloadCache', () => {
   const max = 100;
   for (let fst = 0; fst < max; fst++) {
     for (let snd = 0; snd < max; snd++) {
-      evaluator.evaluate(Bindings({
-        '?a': integerTerm(fst),
-        '?b': integerTerm(snd),
-        '?c': integerTerm(fst + snd),
-      }));
+      evaluator.evaluate(BF.bindings([
+        [ DF.variable('a'), integerTerm(fst) ],
+        [ DF.variable('b'), integerTerm(snd) ],
+        [ DF.variable('c'), integerTerm(fst + snd) ],
+      ]));
     }
   }
 });
@@ -51,11 +52,11 @@ const cache = new Benchmark('bench addition with overloadCache', () => {
   const max = 100;
   for (let fst = 0; fst < max; fst++) {
     for (let snd = 0; snd < max; snd++) {
-      evaluator.evaluate(Bindings({
-        '?a': integerTerm(fst),
-        '?b': integerTerm(snd),
-        '?c': integerTerm(fst + snd),
-      }));
+      evaluator.evaluate(BF.bindings([
+        [ DF.variable('a'), integerTerm(fst) ],
+        [ DF.variable('b'), integerTerm(snd) ],
+        [ DF.variable('c'), integerTerm(fst + snd) ],
+      ]));
     }
   }
 });
@@ -66,11 +67,11 @@ const nonExperimental = new Benchmark('bench addition non experimental', () => {
   const max = 100;
   for (let fst = 0; fst < max; fst++) {
     for (let snd = 0; snd < max; snd++) {
-      evaluator.evaluate(Bindings({
-        '?a': integerTerm(fst),
-        '?b': integerTerm(snd),
-        '?c': integerTerm(fst + snd),
-      }));
+      evaluator.evaluate(BF.bindings([
+        [ DF.variable('a'), integerTerm(fst) ],
+        [ DF.variable('b'), integerTerm(snd) ],
+        [ DF.variable('c'), integerTerm(fst + snd) ],
+      ]));
     }
   }
 });

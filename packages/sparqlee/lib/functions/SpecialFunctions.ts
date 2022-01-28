@@ -1,11 +1,9 @@
+import type * as RDF from '@rdfjs/types';
 import * as uuid from 'uuid';
-
 import * as E from '../expressions';
-import type { Bindings } from '../Types';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
-
-import { bool, declare, langString, string } from './Helpers';
+import { bool, declare, expressionToVar, langString, string } from './Helpers';
 import type { EvalContextAsync, EvalContextSync, OverloadTree } from '.';
 import { regularFunctions, specialFunctions } from '.';
 
@@ -32,12 +30,12 @@ const bound: ISpecialDefinition = {
   },
 };
 
-function bound_({ args, mapping }: { args: E.Expression[]; mapping: Bindings }): E.BooleanLiteral {
+function bound_({ args, mapping }: { args: E.Expression[]; mapping: RDF.Bindings }): E.BooleanLiteral {
   const variable = <E.VariableExpression> args[0];
   if (variable.expressionType !== E.ExpressionType.Variable) {
     throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
   }
-  const val = mapping.has(variable.name) && !!mapping.get(variable.name);
+  const val = mapping.has(expressionToVar(variable));
   return bool(val);
 }
 

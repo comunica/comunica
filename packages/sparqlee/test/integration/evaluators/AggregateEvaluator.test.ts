@@ -1,16 +1,15 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-
 import { Algebra } from 'sparqlalgebrajs';
-
 import { AggregateEvaluator } from '../../../lib/evaluators/AggregateEvaluator';
 import { AsyncAggregateEvaluator } from '../../../lib/evaluators/AsyncAggregateEvaluator';
-import { Bindings } from '../../../lib/Types';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 interface IBaseTestCaseArgs { expr: Algebra.AggregateExpression; throwError?: boolean; evalTogether?: boolean }
-type TestCaseArgs = IBaseTestCaseArgs & { input: Bindings[] };
+type TestCaseArgs = IBaseTestCaseArgs & { input: RDF.Bindings[] };
 
 async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs): Promise<RDF.Term> {
   const results: (RDF.Term | undefined)[] = [];
@@ -100,10 +99,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(int('4'));
@@ -127,10 +126,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(int('10'));
@@ -148,14 +147,12 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({
-            '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')),
-          }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': float('3') }),
-          Bindings({
-            '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')),
-          }),
+          BF.bindings([[ DF.variable('x'),
+            DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), float('3') ]]),
+          BF.bindings([[ DF.variable('x'),
+            DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
         ],
       });
       expect(await result).toEqual(float('10'));
@@ -165,11 +162,11 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         expr: makeAggregate('sum'),
         input: [
-          Bindings({ '?x': decimal('1.0') }),
-          Bindings({ '?x': decimal('2.2') }),
-          Bindings({ '?x': decimal('2.2') }),
-          Bindings({ '?x': decimal('2.2') }),
-          Bindings({ '?x': decimal('3.5') }),
+          BF.bindings([[ DF.variable('x'), decimal('1.0') ]]),
+          BF.bindings([[ DF.variable('x'), decimal('2.2') ]]),
+          BF.bindings([[ DF.variable('x'), decimal('2.2') ]]),
+          BF.bindings([[ DF.variable('x'), decimal('2.2') ]]),
+          BF.bindings([[ DF.variable('x'), decimal('3.5') ]]),
         ],
       });
       expect(await result).toEqual(decimal('11.1'));
@@ -187,10 +184,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': int('4') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('1') }),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
         ],
       });
       expect(await result).toEqual(int('1'));
@@ -200,10 +197,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': string('11') }),
-          Bindings({ '?x': string('2') }),
-          Bindings({ '?x': string('1') }),
-          Bindings({ '?x': string('3') }),
+          BF.bindings([[ DF.variable('x'), string('11') ]]),
+          BF.bindings([[ DF.variable('x'), string('2') ]]),
+          BF.bindings([[ DF.variable('x'), string('1') ]]),
+          BF.bindings([[ DF.variable('x'), string('3') ]]),
         ],
       });
       expect(await result).toEqual(string('1'));
@@ -227,10 +224,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(int('4'));
@@ -240,10 +237,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': string('11') }),
-          Bindings({ '?x': string('2') }),
-          Bindings({ '?x': string('1') }),
-          Bindings({ '?x': string('3') }),
+          BF.bindings([[ DF.variable('x'), string('11') ]]),
+          BF.bindings([[ DF.variable('x'), string('2') ]]),
+          BF.bindings([[ DF.variable('x'), string('1') ]]),
+          BF.bindings([[ DF.variable('x'), string('3') ]]),
         ],
       });
       expect(await result).toEqual(string('3'));
@@ -267,10 +264,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': float('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), float('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(float('2.5'));
@@ -288,14 +285,12 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({
-            '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')),
-          }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': float('3') }),
-          Bindings({
-            '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')),
-          }),
+          BF.bindings([[ DF.variable('x'),
+            DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), float('3') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('4',
+            DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
         ],
       });
       expect(await result).toEqual(float('2.5'));
@@ -305,10 +300,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(decimal('2.5'));
@@ -318,10 +313,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': double('1000') }),
-          Bindings({ '?x': int('2000') }),
-          Bindings({ '?x': float('3000') }),
-          Bindings({ '?x': double('4000') }),
+          BF.bindings([[ DF.variable('x'), double('1000') ]]),
+          BF.bindings([[ DF.variable('x'), int('2000') ]]),
+          BF.bindings([[ DF.variable('x'), float('3000') ]]),
+          BF.bindings([[ DF.variable('x'), double('4000') ]]),
         ],
       });
       expect(await result).toEqual(double('2.5E3'));
@@ -337,10 +332,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(int('1'));
@@ -364,10 +359,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(DF.literal('1 2 3 4'));
@@ -385,10 +380,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         expr: makeAggregate('group_concat', undefined, ';'),
         input: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
       expect(await result).toEqual(DF.literal('1;2;3;4'));
@@ -399,8 +394,8 @@ describe('an aggregate evaluator should be able to', () => {
     const testCaseArg = {
       expr: makeAggregate('sum'),
       input: [
-        Bindings({ '?x': int('1') }),
-        Bindings({ '?x': DF.literal('1') }),
+        BF.bindings([[ DF.variable('x'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
       ],
       evalTogether: true,
     };
@@ -411,9 +406,9 @@ describe('an aggregate evaluator should be able to', () => {
     const result = testCase({
       expr: makeAggregate('min'),
       input: [
-        Bindings({ '?x': double('11.0') }),
-        Bindings({ '?x': int('2') }),
-        Bindings({ '?x': float('3') }),
+        BF.bindings([[ DF.variable('x'), double('11.0') ]]),
+        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), float('3') ]]),
       ],
       evalTogether: true,
     });
@@ -424,9 +419,9 @@ describe('an aggregate evaluator should be able to', () => {
     const result = testCase({
       expr: makeAggregate('max'),
       input: [
-        Bindings({ '?x': double('11.0') }),
-        Bindings({ '?x': int('2') }),
-        Bindings({ '?x': float('3') }),
+        BF.bindings([[ DF.variable('x'), double('11.0') ]]),
+        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), float('3') ]]),
       ],
       evalTogether: true,
     });
@@ -437,9 +432,9 @@ describe('an aggregate evaluator should be able to', () => {
     const result = testCase({
       expr: makeAggregate('max'),
       input: [
-        Bindings({ '?x': nonLiteral() }),
-        Bindings({ '?x': int('2') }),
-        Bindings({ '?x': int('3') }),
+        BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
+        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), int('3') ]]),
       ],
       evalTogether: true,
     });
@@ -450,10 +445,10 @@ describe('an aggregate evaluator should be able to', () => {
     const testCaseArg = {
       expr: makeAggregate('sum'),
       input: [
-        Bindings({ '?x': nonLiteral() }),
-        Bindings({ '?x': int('2') }),
-        Bindings({ '?x': int('3') }),
-        Bindings({ '?x': int('4') }),
+        BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
+        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), int('4') ]]),
       ],
       evalTogether: true,
     };
@@ -475,8 +470,8 @@ describe('an aggregate evaluator should be able to', () => {
       const testCaseArg: TestCaseArgs = {
         expr: makeAggregate('max'),
         input: [
-          Bindings({ '?x': nonLiteral() }),
-          Bindings({ '?x': int('1') }),
+          BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
         ],
         throwError: true,
         evalTogether: true,
@@ -489,8 +484,8 @@ describe('an aggregate evaluator should be able to', () => {
       const testCaseArg: TestCaseArgs = {
         expr: makeAggregate('max'),
         input: [
-          Bindings({ '?x': int('1') }),
-          Bindings({ '?x': nonLiteral() }),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
         ],
         evalTogether: true,
         throwError: true,

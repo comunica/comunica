@@ -75,13 +75,13 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
+    "@comunica/bindings-factory": "^2.0.0",
     "@rdfjs/types": "*",
     "@types/lru-cache": "^5.1.1",
     "@types/spark-md5": "^3.0.2",
     "@types/uuid": "^8.0.0",
     "bignumber.js": "^9.0.1",
     "hash.js": "^1.1.7",
-    "immutable": "^3.8.2",
     "lru-cache": "^6.0.0",
     "rdf-data-factory": "^1.1.0",
     "rdf-string": "^1.6.0",

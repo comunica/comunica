@@ -3,7 +3,6 @@ import type { Algebra } from 'sparqlalgebrajs';
 import type { IAggregatorClass } from '../../aggregators';
 import { aggregators } from '../../aggregators';
 import type { BaseAggregator } from '../../aggregators/BaseAggregator';
-import type { Bindings } from '../../Types';
 import type { SetFunction } from '../../util/Consts';
 import * as Err from '../../util/Errors';
 import type { ICompleteSharedContext } from './BaseExpressionEvaluator';
@@ -49,7 +48,7 @@ export abstract class BaseAggregateEvaluator {
    *
    * @param bindings the bindings to pass to the expression
    */
-  abstract put(bindings: Bindings): void | Promise<void>;
+  abstract put(bindings: RDF.Bindings): void | Promise<void>;
 
   /**
    * The actual result method. When the first binding has been given, and the state
@@ -69,7 +68,7 @@ export abstract class BaseAggregateEvaluator {
    *
    * @param bindings the bindings to pass to the expression
    */
-  protected abstract __put(bindings: Bindings): void | Promise<void>;
+  protected abstract __put(bindings: RDF.Bindings): void | Promise<void>;
 
   protected abstract safeThrow(err: unknown): void;
 }
