@@ -67,7 +67,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
 
         // Determine the metadata
         const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-          { context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
+          { context, url, quads: rdfDereferenceOutput.data, triples: rdfDereferenceOutput.metadata?.triples },
         );
         metadata = (await this.mediatorMetadataExtract.mediate({
           context,

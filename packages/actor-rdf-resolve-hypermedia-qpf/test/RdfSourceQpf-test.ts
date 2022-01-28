@@ -1,8 +1,9 @@
+import 'jest-rdf';
 import { Readable } from 'stream';
+import type { IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import 'jest-rdf';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 
 const arrayifyStream = require('arrayify-stream');
@@ -42,11 +43,11 @@ describe('RdfSourceQpf', () => {
     mediatorRdfDereference = {
       mediate: (args: any) => Promise.resolve({
         url: args.url,
-        quads: streamifyArray([
+        data: streamifyArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
         ]),
-        triples: false,
+        metadata: { triples: false },
       }),
     };
 
@@ -299,8 +300,8 @@ describe('RdfSourceQpf', () => {
       };
       mediatorRdfDereference.mediate = (args: any) => Promise.resolve({
         url: args.url,
-        quads,
-        triples: false,
+        data: quads,
+        metadata: { triples: false },
       });
 
       const error = new Error('a');
@@ -374,9 +375,9 @@ describe('RdfSourceQpf with a custom default graph', () => {
       mediate: () => Promise.resolve({ metadata: { next: 'NEXT' }}),
     };
     mediatorRdfDereference = {
-      mediate: (args: any) => Promise.resolve({
+      mediate: (args: any): Promise<IActorRdfDereferenceOutput> => Promise.resolve({
         url: args.url,
-        quads: streamifyArray([
+        data: streamifyArray([
           quad('s1', 'p1', 'o1', 'DEFAULT_GRAPH'),
           quad('s2', 'p2', 'o2', 'DEFAULT_GRAPH'),
           quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
@@ -384,7 +385,9 @@ describe('RdfSourceQpf with a custom default graph', () => {
           quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', 'DEFAULT_GRAPH'),
           quad('s1-', 'actualDefaultGraph', 'o1'),
         ]),
-        triples: false,
+        metadata: { triples: false },
+        exists: true,
+        requestTime: 0,
       }),
     };
 

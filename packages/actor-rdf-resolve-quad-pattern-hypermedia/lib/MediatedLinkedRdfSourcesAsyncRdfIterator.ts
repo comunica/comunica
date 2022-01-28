@@ -89,17 +89,18 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       url = rdfDereferenceOutput.url;
 
       // Determine the metadata
-      const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-        { context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
+      const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
+        { context, url, quads: rdfDereferenceOutput.data, triples: rdfDereferenceOutput.metadata?.triples },
       );
       metadata = (await this.mediatorMetadataExtract.mediate({
         context,
         url,
-        metadata: rdfMetadataOuput.metadata,
+        // The problem appears to be conflicting metadata keys here
+        metadata: rdfMetadataOutput.metadata,
         headers: rdfDereferenceOutput.headers,
         requestTime: rdfDereferenceOutput.requestTime,
       })).metadata;
-      quads = rdfMetadataOuput.data;
+      quads = rdfMetadataOutput.data;
 
       // Optionally filter the resulting data
       if (link.transform) {

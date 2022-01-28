@@ -141,7 +141,10 @@ export class RdfSourceQpf implements IQuadSource {
 
       // Determine the metadata and emit it
       const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-        { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
+        { context: this.context,
+          url,
+          quads: rdfDereferenceOutput.data,
+          triples: rdfDereferenceOutput.metadata?.triples },
       );
       const metadataExtractPromise = this.mediatorMetadataExtract
         .mediate({

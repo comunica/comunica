@@ -128,7 +128,14 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
     const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url, quads, exists, requestTime, triples: parseOutput.triples, headers: httpResponse.headers };
+    return {
+      url,
+      data: quads,
+      exists,
+      requestTime,
+      metadata: { triples: parseOutput.triples },
+      headers: httpResponse.headers,
+    };
   }
 
   public mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {

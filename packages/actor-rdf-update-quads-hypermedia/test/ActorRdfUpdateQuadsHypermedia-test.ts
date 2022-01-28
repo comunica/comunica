@@ -1,3 +1,6 @@
+import type { IActionRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -26,9 +29,9 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       mediatorRdfDereference = {
         mediate: jest.fn(async({ url }: any) => {
           const data = {
-            quads: 'QUADS',
+            data: 'QUADS',
             exists: true,
-            triples: true,
+            metadata: { triples: true },
             url,
             headers: 'HEADERS',
           };
@@ -36,7 +39,14 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         }),
       };
       mediatorMetadata = {
-        mediate: jest.fn(({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }})),
+        mediate: jest.fn(({ quads }: IActionRdfMetadata): Promise<IActorRdfMetadataOutput> =>
+          Promise.resolve<IActorRdfMetadataOutput>(
+            {
+              quads,
+              // @ts-expect-error
+              metadata: { a: 1 },
+            },
+          )),
       };
       mediatorMetadataExtract = {
         mediate: jest.fn(({ metadata }: any) => Promise.resolve({ metadata })),
@@ -96,21 +106,24 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         const destination = await actor.getDestination(context);
         expect(destination).toEqual('DEST0');
 
-        expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith({
+        expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith<[IActionRdfDereference]>({
           context,
           url: 'abc',
           acceptErrors: true,
         });
-        expect(mediatorMetadata.mediate).toHaveBeenCalledWith({
+        expect(mediatorMetadata.mediate).toHaveBeenCalledWith<[IActionRdfMetadata]>({
           context,
           url: 'abc',
+          // @ts-expect-error
           quads: 'QUADS',
           triples: true,
         });
-        expect(mediatorMetadataExtract.mediate).toHaveBeenCalledWith({
+        expect(mediatorMetadataExtract.mediate).toHaveBeenCalledWith<[IActionRdfMetadataExtract]>({
           context,
           url: 'abc',
+          // @ts-expect-error
           metadata: { a: 1 },
+          // @ts-expect-error
           headers: 'HEADERS',
         });
         expect(mediatorRdfUpdateHypermedia.mediate).toHaveBeenCalledWith({

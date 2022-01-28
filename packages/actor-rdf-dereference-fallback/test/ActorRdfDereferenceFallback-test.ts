@@ -31,7 +31,7 @@ describe('ActorRdfDereferenceFallback', () => {
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'URL', context });
       expect(output.url).toEqual('URL');
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });

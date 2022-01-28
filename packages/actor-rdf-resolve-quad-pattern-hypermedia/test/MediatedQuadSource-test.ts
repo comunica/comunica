@@ -1,13 +1,14 @@
-import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
 import { ActionContext } from '@comunica/core';
-import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
+import 'jest-rdf';
 import LRUCache = require('lru-cache');
 import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { MediatedQuadSource } from '../lib/MediatedQuadSource';
+import { mediators as utilMediators } from './MediatorRdfDereference-util';
 
 const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
@@ -16,7 +17,7 @@ const v = DF.variable('v');
 
 describe('MediatedQuadSource', () => {
   let context: IActionContext;
-  let mediatorRdfDereference;
+  let mediatorRdfDereference: MediatorRdfDereference;
   let mediatorMetadata;
   let mediatorMetadataExtract;
   let mediatorRdfResolveHypermedia: any;
@@ -26,53 +27,13 @@ describe('MediatedQuadSource', () => {
 
   beforeEach(() => {
     context = new ActionContext({});
-    mediatorRdfDereference = {
-      async mediate({ url }: any) {
-        const data = {
-          quads: url === 'firstUrl' ?
-            new ArrayIterator([
-              quad('s1', 'p1', 'o1'),
-              quad('s2', 'p2', 'o2'),
-            ], { autoStart: false }) :
-            new ArrayIterator([
-              quad('s3', 'p3', 'o3'),
-              quad('s4', 'p4', 'o4'),
-            ], { autoStart: false }),
-          triples: true,
-          url,
-        };
-        data.quads.setProperty('metadata', { firstMeta: true });
-        return data;
-      },
-    };
-    mediatorMetadata = {
-      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }}),
-    };
-    mediatorMetadataExtract = {
-      mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
-    };
-    mediatorRdfResolveHypermedia = {
-      mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
-        dataset: 'MYDATASET',
-        source: {
-          match: () => quads.clone(),
-        },
-      }),
-    };
-    mediatorRdfResolveHypermediaLinks = {
-      mediate: () => Promise.resolve({ links: [{ url: 'next' }]}),
-    };
-    mediatorRdfResolveHypermediaLinksQueue = {
-      mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
-    };
-    mediators = {
-      mediatorMetadata,
-      mediatorMetadataExtract,
-      mediatorRdfDereference,
-      mediatorRdfResolveHypermedia,
-      mediatorRdfResolveHypermediaLinks,
-      mediatorRdfResolveHypermediaLinksQueue,
-    };
+    mediatorRdfDereference = utilMediators.mediatorRdfDereference;
+    mediatorMetadata = utilMediators.mediatorMetadata;
+    mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
+    mediatorRdfResolveHypermedia = utilMediators.mediatorRdfResolveHypermedia;
+    mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
+    mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
+    mediators = utilMediators;
   });
 
   describe('The MediatedQuadSource module', () => {

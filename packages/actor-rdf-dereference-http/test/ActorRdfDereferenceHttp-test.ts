@@ -215,18 +215,18 @@ describe('ActorRdfDereferenceHttp', () => {
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.exists).toEqual(true);
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run with a web stream with a known extension', async() => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/abc.x', context });
       expect(output.url).toEqual('https://www.google.com/abc.x');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run with an empty content type', async() => {
@@ -235,9 +235,9 @@ describe('ActorRdfDereferenceHttp', () => {
       });
       const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
         context,
         handle: expect.anything(),
@@ -251,9 +251,9 @@ describe('ActorRdfDereferenceHttp', () => {
       });
       const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', mediaType: 'CUSTOM', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
         context,
         handle: expect.anything(),
@@ -265,27 +265,27 @@ describe('ActorRdfDereferenceHttp', () => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/missingcontenttype', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run with a web stream with another known extension', async() => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/abc.y', context });
       expect(output.url).toEqual('https://www.google.com/abc.y');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run with a web stream with a relative response URL', async() => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/rel.txt', context });
       expect(output.url).toEqual('https://www.google.com/relative');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run with a Node.JS stream', async() => {
@@ -294,9 +294,9 @@ describe('ActorRdfDereferenceHttp', () => {
       });
       const output = await actor.run({ url: 'https://www.google.com/noweb', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should not run on a 404', () => {
@@ -313,8 +313,8 @@ describe('ActorRdfDereferenceHttp', () => {
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', acceptErrors: true, context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.exists).toEqual(false);
-      expect(output.triples).toEqual(true);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(output.metadata?.triples).toEqual(true);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run on a 404 in lenient mode', async() => {
@@ -322,7 +322,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
       expect(output.url).toEqual('https://www.nogoogle.com/notfound');
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -332,9 +332,9 @@ describe('ActorRdfDereferenceHttp', () => {
       });
       const output = await actor.run({ url: 'https://www.google.com/', method: 'PUT', context });
       expect(output.url).toEqual('https://www.google.com/PUT.html');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run with custom headers', async() => {
@@ -347,15 +347,15 @@ describe('ActorRdfDereferenceHttp', () => {
         context,
       });
       expect(output.url).toEqual('https://www.google.com/V.html');
-      expect(output.triples).toEqual(true);
+      expect(output.metadata?.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
     });
 
     it('should run and receive stream errors', async() => {
       const output = await actor.run({ url: 'https://www.google.com/error', context });
       expect(output.url).toEqual('https://www.google.com/error');
-      await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Body stream error'));
+      await expect(arrayifyStream(output.data)).rejects.toThrow(new Error('Body stream error'));
     });
 
     it('should run and ignore stream errors in lenient mode', async() => {
@@ -363,7 +363,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/error', context });
       expect(output.url).toEqual('https://www.google.com/error');
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -371,7 +371,7 @@ describe('ActorRdfDereferenceHttp', () => {
       context = new ActionContext({ emitParseError: true });
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
-      await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Parse error'));
+      await expect(arrayifyStream(output.data)).rejects.toThrow(new Error('Parse error'));
     });
 
     it('should run and ignore parse errors in lenient mode', async() => {
@@ -379,7 +379,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -392,7 +392,7 @@ describe('ActorRdfDereferenceHttp', () => {
         [KeysCore.log.name]: logger,
       });
       const output = await actor.run({ url: 'https://www.google.com/', context });
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(spy).toHaveBeenCalledWith('Parse error', {
         actor: 'actor',
         url: 'https://www.google.com/',
@@ -410,7 +410,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/');
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -439,7 +439,7 @@ describe('ActorRdfDereferenceHttp', () => {
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/');
-      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(await arrayifyStream(output.data)).toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 

@@ -1,5 +1,11 @@
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import type {
+  IActionRdfDereference,
+  IActorRdfDereferenceOutput,
+  MediatorRdfDereference,
+} from '@comunica/bus-rdf-dereference';
+import type { IActionRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -15,7 +21,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let p;
     let o;
     let g;
-    let mediatorRdfDereference: any;
+    let mediatorRdfDereference: MediatorRdfDereference;
     let mediatorMetadata: any;
     let mediatorMetadataExtract: any;
     let mediatorRdfResolveHypermedia: any;
@@ -28,11 +34,13 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       p = DF.namedNode('p');
       o = DF.namedNode('o');
       g = DF.namedNode('g');
+      // @ts-expect-error
       mediatorRdfDereference = {
-        mediate: jest.fn(({ url }: any) => Promise.resolve({
+        // @ts-expect-error
+        mediate: jest.fn(({ url }: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> => Promise.resolve({
           url,
-          quads: `QUADS(${url})+METADATA`,
-          triples: true,
+          data: `QUADS(${url})+METADATA`,
+          metadata: { triples: true },
           headers: 'HEADERS',
         })),
       };
@@ -44,10 +52,11 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediate: jest.fn(({ metadata }: any) => Promise.resolve({ metadata: { myKey: metadata }})),
       };
       mediatorRdfResolveHypermedia = {
-        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
-          dataset: 'MYDATASET',
-          source: { sourceContents: quads },
-        })),
+        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: IActionRdfResolveHypermedia) =>
+          Promise.resolve({
+            dataset: 'MYDATASET',
+            source: { sourceContents: quads },
+          })),
       };
       mediatorRdfResolveHypermediaLinks = {
         mediate: jest.fn(({ metadata }: any) => Promise
@@ -140,7 +149,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should get urls based on mediatorRdfResolveHypermedia without dataset id', async() => {
-        mediatorRdfResolveHypermedia.mediate = ({ forceSourceType, handledDatasets, metadata, quads }: any) =>
+        mediatorRdfResolveHypermedia.mediate = ({
+          forceSourceType, handledDatasets, metadata, quads,
+        }: IActionRdfResolveHypermedia) =>
           Promise.resolve({
             source: { sourceContents: quads },
           });
