@@ -1,11 +1,11 @@
+import type { Readable } from 'stream';
 import type {
-  IActorArgsMediaTyped
+  IActorArgsMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
 import {
-  ActorAbstractMediaTyped
+  ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import type { Readable } from 'stream';
 
 export abstract class ActorParse<
   I extends IActionParse<any>,
@@ -20,7 +20,7 @@ export abstract class ActorParse<
   }
 }
 
-export interface IActionParse<T extends { [key: string]: any } | undefined = undefined> extends IAction {
+export interface IActionParse<T extends Record<string, any> | undefined = undefined> extends IAction {
   /**
    * A readable string stream in a certain serialization that needs to be parsed.
    */
@@ -36,7 +36,7 @@ export interface IActionParse<T extends { [key: string]: any } | undefined = und
   metadata?: T;
 }
 
-export interface IActorParseOutput<T, K extends { [key: string]: any } | undefined = undefined> extends IActorOutput {
+export interface IActorParseOutput<T, K extends Record<string, any> | undefined = undefined> extends IActorOutput {
   /**
    * The resulting data stream.
    */
@@ -44,5 +44,5 @@ export interface IActorParseOutput<T, K extends { [key: string]: any } | undefin
   /**
    * Any metadata produced from Parsing
    */
-  metadata?: K
+  metadata?: K;
 }
