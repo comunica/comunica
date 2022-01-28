@@ -61,16 +61,16 @@ describe('ActorRdfDereferenceHttp', () => {
           quads._read = () => {
             quads.emit('error', new Error('Parse error'));
           };
-          return { handle: { quads, triples: true }};
+          return { handle: { data: quads, metadata: { triples: true }}};
         } if (action.context && action.context.hasRaw('parseReject')) {
           return Promise.reject(new Error('Parse reject error'));
         }
         quads._read = () => {
-          action.handle.input.read(1);
+          action.handle.data.read(1);
           quads.push(null);
         };
-        action.handle.input.on('error', (error: Error) => quads.emit('error', error));
-        return { handle: { quads, triples: true }};
+        action.handle.data.on('error', (error: Error) => quads.emit('error', error));
+        return { handle: { data: quads, metadata: { triples: true }}};
       });
       mediatorHttp.mediate = (action: any) => {
         if (action.context && action.context.hasRaw('httpReject')) {

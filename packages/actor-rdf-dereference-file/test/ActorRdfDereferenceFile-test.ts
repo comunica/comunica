@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Readable } from 'stream';
 import type { IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -52,21 +53,25 @@ describe('ActorRdfDereferenceFile', () => {
 
     beforeEach(() => {
       mediatorRdfParse = {
-        async mediate(action: any) {
+        async mediate(action: any): Promise<{ handle: IActorRdfParseOutput }> {
           const quads = new Readable();
           if (action.context && action.context.hasRaw('emitParseError')) {
             quads._read = () => {
               quads.emit('error', new Error('Parse error'));
             };
-            return { handle: { quads, triples: true }};
+            return { handle: { data: quads, metadata: { triples: true }}};
           } if (action.context && action.context.hasRaw('parseReject')) {
             return Promise.reject(new Error('Parse reject error'));
           }
-          const data = await arrayifyStream(action.handle.input);
+          const data = await arrayifyStream(action.handle.data);
           return {
             handle: {
-              quads: { data: data[0], mediaType: action.handleMediaType },
-              triples: false,
+              data: {
+                // @ts-expect-error
+                data: data[0],
+                mediaType: action.handleMediaType,
+              },
+              metadata: { triples: false },
             },
           };
         },

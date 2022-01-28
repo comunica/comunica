@@ -114,14 +114,22 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 
       it('should run on application/xml', () => {
         return actor
-          .run({ handle: { input, baseIRI: 'http://ex.org/', context }, handleMediaType: 'application/xml', context })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(1));
+          .run({
+            handle: { data: input, metadata: { baseIRI: 'http://ex.org/' }, context },
+            handleMediaType: 'application/xml',
+            context,
+          })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toHaveLength(1));
       });
 
       it('should parse application/xml correctly', () => {
         return actor
-          .run({ handle: { input, baseIRI: 'http://ex.org/', context }, handleMediaType: 'application/xml', context })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .run({
+            handle: { data: input, metadata: { baseIRI: 'http://ex.org/' }, context },
+            handleMediaType: 'application/xml',
+            context,
+          })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
             quad('http://ex.org/', 'http://purl.org/dc/terms/description', '"A yellow rectangle with sharp corners."'),
           ]));
       });
@@ -129,22 +137,24 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
       it('should parse application/xml with a content language header', () => {
         const headers: any = { get: () => 'en-us' };
         return actor.run({
-          handle: { input, baseIRI: 'http://ex.org/', headers, context },
+          handle: { data: input, metadata: { baseIRI: 'http://ex.org/' }, headers, context },
           handleMediaType: 'application/xml',
           context,
         })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
             quad('http://ex.org/',
               'http://purl.org/dc/terms/description',
               '"A yellow rectangle with sharp corners."@en-us'),
           ]));
       });
 
-      it('should forward stream errors', async() => {
-        await expect(arrayifyStream((<any> (await actor.run(
-          { handle: { input: inputError, baseIRI: '', context }, handleMediaType: 'application/trig', context },
-        )))
-          .handle.quads)).rejects.toBeTruthy();
+      it('should forwarinputd stream errors', async() => {
+        await expect(arrayifyStream((<any> (await actor.run({
+          handle: { data: inputError, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/trig',
+          context,
+        })))
+          .handle.data)).rejects.toBeTruthy();
       });
     });
 

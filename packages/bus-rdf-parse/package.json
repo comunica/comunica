@@ -30,6 +30,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^2.0.0",
+    "@comunica/actor-abstract-parse": "^2.0.0",
     "@comunica/core": "^2.0.0",
     "@rdfjs/types": "*"
   },

@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import type { IActionAbstractMediaTyped,
   IActionAbstractMediaTypedHandle, IActionAbstractMediaTypedMediaTypes,
   IActorArgsMediaTyped,
@@ -10,10 +9,11 @@ import type { IActionAbstractMediaTyped,
   IActionAbstractMediaTypedMediaTypeFormats,
   IActorOutputAbstractMediaTypedMediaTypeFormats,
   IActorTestAbstractMediaTypedMediaTypeFormats } from '@comunica/actor-abstract-mediatyped';
+import type { IActionParse, IActorParseOutput } from '@comunica/actor-abstract-parse';
 import {
-  ActorAbstractMediaTyped,
-} from '@comunica/actor-abstract-mediatyped';
-import type { IAction, IActorOutput, IActorTest, Mediate } from '@comunica/core';
+  ActorParse,
+} from '@comunica/actor-abstract-parse';
+import type { IActorTest, Mediate } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -26,8 +26,7 @@ import type * as RDF from '@rdfjs/types';
  *
  * @see IActionInit
  */
-export abstract class ActorRdfParse extends
-  ActorAbstractMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
+export abstract class ActorRdfParse extends ActorParse<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
@@ -52,30 +51,20 @@ export type IActionRdfParseMediaTypeFormats = IActionAbstractMediaTypedMediaType
 export type IActorTestRdfParseMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
 export type IActorOutputRdfParseMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
+export interface IActionRdfParseMetadata {
+  /**
+   * The base IRI for parsed quads.
+   */
+  baseIRI?: string;
+}
+
 /**
  * The RDF parse input, which contains the input stream in the given media type.
  * One of the fields MUST be truthy.
  */
-export interface IActionRdfParse extends IAction {
-  /**
-   * A readable string stream in a certain RDF serialization that needs to be parsed.
-   */
-  input: NodeJS.ReadableStream;
-  /**
-   * The base IRI for parsed quads.
-   */
-  baseIRI: string;
-  /**
-   * The headers with which the RDF document should be parsed.
-   */
-  headers?: Headers;
-}
+export type IActionRdfParse = IActionParse<IActionRdfParseMetadata>;
 
-export interface IActorRdfParseOutput extends IActorOutput {
-  /**
-   * The resulting quad stream.
-   */
-  quads: RDF.Stream & Readable;
+export interface IActorRdfParseOutputMetadata {
   /**
    * An optional field indicating if the given quad stream originates from a triple-based serialization,
    * in which everything is serialized in the default graph.
@@ -84,6 +73,9 @@ export interface IActorRdfParseOutput extends IActorOutput {
   triples?: boolean;
 }
 
+export type IActorRdfParseOutput = IActorParseOutput<RDF.Stream, IActorRdfParseOutputMetadata>;
+
+// TODO: Update these
 export type IActorRdfParseArgs = IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>;
 
 export type MediatorRdfParseHandle = Mediate<

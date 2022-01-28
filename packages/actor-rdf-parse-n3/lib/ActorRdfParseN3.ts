@@ -33,13 +33,15 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
-    action.input.on('error', error => quads.emit('error', error));
-    const quads = action.input.pipe(new StreamParser({ baseIRI: action.baseIRI }));
+    action.data.on('error', error => data.emit('error', error));
+    const data = action.data.pipe(new StreamParser({ baseIRI: action.metadata?.baseIRI }));
     return {
-      quads,
-      triples: mediaType === 'text/turtle' ||
-      mediaType === 'application/n-triples' ||
-      mediaType === 'text/n3',
+      data,
+      metadata: {
+        triples: mediaType === 'text/turtle' ||
+        mediaType === 'application/n-triples' ||
+        mediaType === 'text/n3',
+      },
     };
   }
 }

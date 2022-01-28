@@ -110,9 +110,9 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
 
     const parseAction: IActionRdfParse = {
       context: action.context,
-      baseIRI: url,
+      metadata: { baseIRI: url },
       headers: httpResponse.headers,
-      input: responseStream,
+      data: responseStream,
     };
     let parseOutput: IActorRdfParseOutput;
     try {
@@ -125,7 +125,7 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
       return this.handleDereferenceError(action, error, httpResponse.headers, requestTime);
     }
 
-    const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
+    const quads = this.handleDereferenceStreamErrors(action, parseOutput.data);
 
     // Return the parsed quad stream and whether or not only triples are supported
     return {
@@ -133,7 +133,7 @@ export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMed
       data: quads,
       exists,
       requestTime,
-      metadata: { triples: parseOutput.triples },
+      metadata: parseOutput.metadata,
       headers: httpResponse.headers,
     };
   }

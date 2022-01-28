@@ -46,14 +46,14 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
 
   public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: IActionContext):
   Promise<IActorRdfParseOutput> {
-    const parser = JsonLdParser.fromHttpResponse(action.baseIRI, mediaType, action.headers, {
+    const parser = JsonLdParser.fromHttpResponse(action.metadata?.baseIRI ?? '', mediaType, action.headers, {
       documentLoader: actionContext && actionContext.get(KeysRdfParseJsonLd.documentLoader) ||
         new DocumentLoaderMediated(this.mediatorHttp, actionContext),
       strictValues: actionContext && actionContext.get(KeysRdfParseJsonLd.strictValues),
       ...actionContext && actionContext.get(KeysRdfParseJsonLd.parserOptions),
     });
-    const quads = <Readable> parser.import(action.input);
-    return { quads };
+    const data = <Readable> parser.import(action.data);
+    return { data };
   }
 }
 

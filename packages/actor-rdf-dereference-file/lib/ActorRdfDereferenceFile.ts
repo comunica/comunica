@@ -44,8 +44,8 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
       context: action.context,
       handle: {
         context: action.context,
-        baseIRI: action.url,
-        input: fs.createReadStream(action.url.startsWith('file://') ? new URL(action.url) : action.url),
+        metadata: { baseIRI: action.url },
+        data: fs.createReadStream(action.url.startsWith('file://') ? new URL(action.url) : action.url),
       },
     };
     const requestTime = Date.now() - requestTimeStart;
@@ -61,10 +61,10 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     }
 
     return {
-      data: this.handleDereferenceStreamErrors(action, parseOutput.quads),
+      data: this.handleDereferenceStreamErrors(action, parseOutput.data),
       exists: true,
       requestTime,
-      metadata: { triples: parseOutput.triples },
+      metadata: parseOutput.metadata,
       url: action.url,
     };
   }
