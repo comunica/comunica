@@ -88,7 +88,7 @@ export abstract class AbstractDereferenceParse<
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {
     const dereference = await this.mediatorDereference.mediate({
       ...action,
-      // mediaTypes: this.mediaTypesFactory(action.context),
+      mediaTypes: this.mediaTypesFactory(action.context),
     });
 
     let result: IActorParseOutput<S, M>;

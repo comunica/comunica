@@ -85,7 +85,7 @@ export interface IActionDereference extends IAction {
   /**
    * An optional callback to retrieve the mediaType mappings
    */
-  mediaTypes?: () => Promise<Record<string, number>>;
+  mediaTypes?: () => Promise<Record<string, number> | undefined>;
 }
 
 interface IReadableClose extends NodeJS.ReadableStream {
