@@ -7,7 +7,7 @@ import {
 } from '@comunica/actor-abstract-mediatyped';
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
 
-export abstract class ActorParse<
+export abstract class ActorAbstractParse<
   I extends IActionParse<any>,
   T extends IActorTest,
   O extends IActorParseOutput<any, any>
