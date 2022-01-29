@@ -1,7 +1,6 @@
-import { mediaTypesToAcceptString } from '../lib/ActorDereferenceHttpBase'
+import { mediaTypesToAcceptString } from '../lib/ActorDereferenceHttpBase';
 
 describe('mediaTypesToAcceptString', () => {
-
   it('should stringify empty media types to any', () => {
     return expect(mediaTypesToAcceptString({}, 100)).toEqual('*/*');
   });
@@ -59,4 +58,4 @@ describe('mediaTypesToAcceptString', () => {
     return expect(mediaTypesToAcceptString({ [a]: 1, [b]: 0.8 }, maxHeaderLength))
       .toEqual(`${a},${b};q=0.8`);
   });
-})
+});

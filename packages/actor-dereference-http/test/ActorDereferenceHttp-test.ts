@@ -1,12 +1,12 @@
 import { Readable } from 'stream';
 import { ActorDereference } from '@comunica/bus-dereference';
+import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import 'cross-fetch/polyfill';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
-import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
-import { LoggerVoid } from '@comunica/logger-void';
 
 const streamifyString = require('streamify-string');
 
@@ -259,7 +259,7 @@ describe('ActorRdfDereferenceHttp', () => {
       expect(output.url).toEqual('https://www.google.com/error');
     });
 
-    // it('should run and ignore stream errors in lenient mode', async() => {
+    // It('should run and ignore stream errors in lenient mode', async() => {
     //   context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
     //   const spy = jest.spyOn(actor, <any> 'logError');
     //   const output = await actor.run({ url: 'https://www.google.com/error', context });
