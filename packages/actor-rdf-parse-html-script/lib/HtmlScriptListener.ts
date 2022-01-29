@@ -112,6 +112,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
           .then(({ handle }) => {
             // Initialize text parsing
             handle.data
+            // @ts-ignore
               .on('error', error => this.cbError(HtmlScriptListener
                 .newErrorCoded(error.message, 'invalid script element')))
               .on('data', this.cbQuad)

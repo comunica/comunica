@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 import type {
   IActorArgsMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
@@ -39,8 +39,9 @@ export interface IActionParse<T extends Record<string, any> | undefined = undefi
 export interface IActorParseOutput<T, K extends Record<string, any> | undefined = undefined> extends IActorOutput {
   /**
    * The resulting data stream.
+   * TODO: Make this T & Readable again
    */
-  data: T & Readable;
+  data: T & any;
   /**
    * Any metadata produced from Parsing
    */
