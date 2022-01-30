@@ -67,6 +67,7 @@ describe('ActorRdfDereferenceFile', () => {
           return {
             handle: {
               data: {
+                // @ts-expect-error
                 data: data[0],
                 mediaType: action.handleMediaType,
               },

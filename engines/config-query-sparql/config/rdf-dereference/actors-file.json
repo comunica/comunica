@@ -7,10 +7,6 @@
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
   "actors": [
-    {
-      "@id": "urn:comunica:default:rdf-dereference/actors#file",
-      "@type": "ActorRdfDereferenceFile",
-      "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
-    }
+    
   ]
 }

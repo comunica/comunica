@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { URL } from 'url';
 import { promisify } from 'util';
-import type { IActionRdfDereference,
+import { ActorRdfDereference, IActionRdfDereference,
   IActorRdfDereferenceMediaMappingsArgs,
   IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import { ActorRdfDereferenceMediaMappings } from '@comunica/bus-rdf-dereference';
@@ -11,7 +11,7 @@ import type { IActorTest } from '@comunica/core';
 /**
  * A comunica File RDF Dereference Actor.
  */
-export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
+export class ActorRdfDereferenceFile extends ActorRdfDereference {
   public readonly mediatorRdfParse: MediatorRdfParseHandle;
 
   public constructor(args: IActorRdfDereferenceFileArgs) {

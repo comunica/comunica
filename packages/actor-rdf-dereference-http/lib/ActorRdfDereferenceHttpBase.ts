@@ -6,6 +6,7 @@ import type { IActionRdfDereference,
   IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import {
   ActorRdfDereferenceMediaMappings,
+  ActorRdfDereference
 } from '@comunica/bus-rdf-dereference';
 import type {
   IActionRdfParse, IActorRdfParseOutput, MediatorRdfParseMediaTypes, MediatorRdfParseHandle,
@@ -22,7 +23,7 @@ import * as stringifyStream from 'stream-to-string';
  * After that, it resolves the URL using the HTTP bus using an accept header compiled from the available media types.
  * Finally, the response is parsed using the RDF parse bus.
  */
-export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereferenceMediaMappings
+export abstract class ActorRdfDereferenceHttpBase extends ActorRdfDereference
   implements IActorRdfDereferenceHttpArgs {
   public static readonly REGEX_MEDIATYPE: RegExp = /^[^ ;]*/u;
 
