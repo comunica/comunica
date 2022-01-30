@@ -6,7 +6,6 @@ import type { IActionDereference, IActorDereferenceOutput, MediatorDereference }
 import { isHardError, emptyReadable } from '@comunica/bus-dereference';
 import type { IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
 
 /**
  * Get the media type based on the extension of the given path,
