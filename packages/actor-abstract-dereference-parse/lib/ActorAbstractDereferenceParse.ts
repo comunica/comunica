@@ -1,7 +1,7 @@
 import type { Readable } from 'stream';
 import { PassThrough } from 'stream';
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
-import type { IActionParse, IActorParseOutput } from '@comunica/actor-abstract-parse';
+import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
 import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
 import { isHardError, emptyReadable } from '@comunica/bus-dereference';
 import type { IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
@@ -24,8 +24,8 @@ export function getMediaTypeFromExtension(path: string, mediaMappings?: Record<s
 
 export interface IAbstractDereferenceParseArgs<
   S,
-  K extends Record<string, any> | undefined = undefined,
-  M extends Record<string, any> | undefined = undefined
+  K extends IParseMetadata = IParseMetadata,
+  M extends IParseMetadata = IParseMetadata
 > extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   mediatorDereference: MediatorDereference;
   mediatorParseHandle: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
@@ -35,8 +35,8 @@ export interface IAbstractDereferenceParseArgs<
 
 export abstract class AbstractDereferenceParse<
   S,
-  K extends Record<string, any> | undefined = undefined,
-  M extends Record<string, any> | undefined = undefined> extends
+  K extends IParseMetadata = IParseMetadata,
+  M extends IParseMetadata = IParseMetadata> extends
   Actor<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   public readonly mediatorDereference: MediatorDereference;
   public readonly mediatorParseHandle: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
@@ -111,8 +111,7 @@ export abstract class AbstractDereferenceParse<
   }
 }
 
-export interface IActionDereferenceParse<T extends Record<string, any> | undefined = undefined> extends
-  IActionDereference {
+export interface IActionDereferenceParse<T extends IParseMetadata = IParseMetadata> extends IActionDereference {
   /**
    * The mediatype of the source (if it can't be inferred from the source)
    */
