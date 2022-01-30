@@ -47,10 +47,6 @@ export abstract class AbstractDereferenceParse<
     super(args);
   }
 
-  public mediaTypesFactory(context: IActionContext): (() => Promise<Record<string, number> | undefined>) {
-    return async() => (await this.mediatorParseMediaTypes?.mediate({ context, mediaTypes: true }))?.mediaTypes;
-  }
-
   public async test(action: IActionDereference): Promise<IActorTest> {
     return true;
   }
