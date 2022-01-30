@@ -149,6 +149,6 @@ export interface IActorDereferenceOutputPartial extends IActorOutput {
   mediaType?: string;
 }
 
-export interface IActorDereferenceParseOutput<T, K extends Record<string, any> | undefined = undefined> extends
+export interface IActorDereferenceParseOutput<T, K extends IParseMetadata = IParseMetadata> extends
   IActorDereferenceOutputPartial, IActorParseOutput<T, K> {
 }
