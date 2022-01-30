@@ -20,6 +20,7 @@
     "IQueryEngine",
     "ActionContext",
     "Map",
+    "Readable",
     "EventEmitter",
     "FetchDocumentLoader",
     "BindingsToQuadsIterator",

@@ -28,7 +28,6 @@ export class ActorRdfParseXmlRdfa extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
     const language = (action.headers && action.headers.get('content-language')) ?? undefined;
-    // @ts-ignore
     action.data.on('error', error => data.emit('error', error));
     const data = action.data.pipe(new RdfaParser({ baseIRI: action.metadata?.baseIRI, profile: 'xml', language }));
     return { data, metadata: { triples: true }};

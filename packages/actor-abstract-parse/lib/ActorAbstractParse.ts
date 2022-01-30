@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import type {
   IActorArgsMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
@@ -7,11 +7,10 @@ import {
 } from '@comunica/actor-abstract-mediatyped';
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
 
-export abstract class ActorAbstractParse<
-  I extends IActionParse<any>,
-  T extends IActorTest,
-  O extends IActorParseOutput<any, any>
-> extends ActorAbstractMediaTyped<I, T, O> {
+export type IParseMetadata = Record<string, any> | undefined;
+
+export abstract class ActorAbstractParse<I extends IActionParse, T extends IActorTest, O extends IActorParseOutput<any>>
+  extends ActorAbstractMediaTyped<I, T, O> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
@@ -20,7 +19,7 @@ export abstract class ActorAbstractParse<
   }
 }
 
-export interface IActionParse<T extends Record<string, any> | undefined = undefined> extends IAction {
+export interface IActionParse<T extends IParseMetadata = IParseMetadata> extends IAction {
   /**
    * A readable string stream in a certain serialization that needs to be parsed.
    */
@@ -36,12 +35,12 @@ export interface IActionParse<T extends Record<string, any> | undefined = undefi
   metadata?: T;
 }
 
-export interface IActorParseOutput<T, K extends Record<string, any> | undefined = undefined> extends IActorOutput {
+export interface IActorParseOutput<T, K extends IParseMetadata = IParseMetadata> extends IActorOutput {
   /**
    * The resulting data stream.
    * TODO: Make this T & Readable again
    */
-  data: T & any;
+  data: T & Readable;
   /**
    * Any metadata produced from Parsing
    */

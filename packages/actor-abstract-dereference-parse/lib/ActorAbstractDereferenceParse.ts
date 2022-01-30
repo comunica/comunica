@@ -1,14 +1,12 @@
-import { PassThrough, Readable } from 'stream';
+import type { Readable } from 'stream';
+import { PassThrough } from 'stream';
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput } from '@comunica/actor-abstract-parse';
-import { IActionDereference, IActorDereferenceOutput, isHardError, MediatorDereference, emptyReadable } from '@comunica/bus-dereference';
-// import { emptyReadable, isHardError } from '@comunica/bus-dereference';
+import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
+import { isHardError, emptyReadable } from '@comunica/bus-dereference';
 import type { IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import { IActionContext } from '@comunica/types';
-// import type { IActionContext } from '@comunica/types';
-
-type IReadable = Readable;
+import type { IActionContext } from '@comunica/types';
 
 /**
  * Get the media type based on the extension of the given path,
@@ -30,11 +28,7 @@ export interface IAbstractDereferenceParseArgs<
   M extends Record<string, any> | undefined = undefined
 > extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   mediatorDereference: MediatorDereference;
-  mediatorParseHandle: MediateMediaTyped<
-    IActionParse<K>,
-    IActorTest,
-    IActorParseOutput<S, M>
-  >;
+  mediatorParseHandle: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   mediatorParseMediaTypes?: MediateMediaTypes;
   mediaMappings?: Record<string, string>;
 }
@@ -64,11 +58,11 @@ export abstract class AbstractDereferenceParse<
   /**
    * If hard errors are disabled, modify the given stream so that errors are delegated to the logger.
    * @param {IActionDereference} action A dereference action.
-   * @param {IReadable} data A data stream.
-   * @return {IReadable} The resulting data stream.
+   * @param {Readable} data A data stream.
+   * @return {Readable} The resulting data stream.
    * TODO: FIX THIS TYPE
    */
-  protected handleDereferenceStreamErrors<L, T extends IReadable & { push: (data: any) => void }>(action: IActionDereferenceParse<L>, data: T): T {
+  protected handleDereferenceStreamErrors<L, T extends Readable>(action: IActionDereferenceParse<L>, data: T): T {
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!isHardError(action.context)) {
       data.on('error', error => {
@@ -86,30 +80,30 @@ export abstract class AbstractDereferenceParse<
   }
 
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {
+    const { context } = action;
     const dereference = await this.mediatorDereference.mediate({
       ...action,
-      mediaTypes: this.mediaTypesFactory(action.context),
+      mediaTypes: async() => (await this.mediatorParseMediaTypes?.mediate({ context, mediaTypes: true }))?.mediaTypes,
     });
 
     let result: IActorParseOutput<S, M>;
     try {
       result = (await this.mediatorParseHandle.mediate({
-        context: action.context,
-        handle: { context: action.context, ...dereference, metadata: await this.getMetadata(dereference) },
+        context,
+        handle: { context, ...dereference, metadata: await this.getMetadata(dereference) },
         handleMediaType: dereference.mediaType ??
           getMediaTypeFromExtension(dereference.url, this.mediaMappings) ??
           action.mediaType,
       })).handle;
-      // result.data = this.handleDereferenceStreamErrors(action, result.data);
+      result.data = this.handleDereferenceStreamErrors(action, result.data);
     } catch (error: unknown) {
       // Close the body, to avoid process to hang
       await dereference.data.close?.();
-      if (isHardError(action.context)) {
+      if (isHardError(context)) {
         throw error;
       }
-      this.logError(action.context, (<Error> error).message);
+      this.logError(context, (<Error> error).message);
       result = { data: emptyReadable() };
-      // throw error;
     }
 
     // Return the parsed stream and any metadata
@@ -159,5 +153,3 @@ export interface IActorDereferenceOutputPartial extends IActorOutput {
 export interface IActorDereferenceParseOutput<T, K extends Record<string, any> | undefined = undefined> extends
   IActorDereferenceOutputPartial, IActorParseOutput<T, K> {
 }
-
-// export {};
