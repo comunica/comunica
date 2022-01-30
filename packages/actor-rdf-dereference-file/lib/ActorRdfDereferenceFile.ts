@@ -2,17 +2,19 @@ import * as fs from 'fs';
 import { URL } from 'url';
 import { promisify } from 'util';
 import { ActorRdfDereference, IActionRdfDereference,
+  IActorRdfDereferenceArgs,
   IActorRdfDereferenceMediaMappingsArgs,
   IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import { ActorRdfDereferenceMediaMappings } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfParseHandle, IActorRdfParseOutput, MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
+import type { IActionRdfParseHandle, IActorRdfParseOutput, MediatorRdfParseHandle, MediatorRdfParseMediaTypes } from '@comunica/bus-rdf-parse';
 import type { IActorTest } from '@comunica/core';
 
 /**
  * A comunica File RDF Dereference Actor.
  */
 export class ActorRdfDereferenceFile extends ActorRdfDereference {
-  public readonly mediatorRdfParse: MediatorRdfParseHandle;
+  public readonly mediatorParse: MediatorRdfParseHandle;
+  public readonly mediatorParseMediatypes: MediatorRdfParseMediaTypes;
 
   public constructor(args: IActorRdfDereferenceFileArgs) {
     super(args);
@@ -55,7 +57,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereference {
 
     let parseOutput: IActorRdfParseOutput;
     try {
-      parseOutput = (await this.mediatorRdfParse.mediate(parseAction)).handle;
+      parseOutput = (await this.mediatorParse.mediate(parseAction)).handle;
     } catch (error: unknown) {
       return this.handleDereferenceError(action, error, undefined, requestTime);
     }
@@ -70,9 +72,10 @@ export class ActorRdfDereferenceFile extends ActorRdfDereference {
   }
 }
 
-export interface IActorRdfDereferenceFileArgs extends IActorRdfDereferenceMediaMappingsArgs {
+export interface IActorRdfDereferenceFileArgs extends IActorRdfDereferenceArgs {
   /**
    * Mediator used for parsing the file contents.
    */
-  mediatorRdfParse: MediatorRdfParseHandle;
+  mediatorParse: MediatorRdfParseHandle;
+  mediatorParseMediatypes: MediatorRdfParseMediaTypes;
 }
