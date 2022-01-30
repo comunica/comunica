@@ -45,7 +45,9 @@
     "IQueryableResultBindings",
     "IQueryableResultQuads",
     "IQueryableResultBoolean",
-    "IQueryableResultVoid"
+    "IQueryableResultVoid",
+
+    "RDF.Stream"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

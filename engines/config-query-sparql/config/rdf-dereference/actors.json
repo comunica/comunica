@@ -22,7 +22,8 @@
       "@id": "urn:comunica:default:rdf-dereference/actors#file",
       "@type": "ActorRdfDereferenceFile",
       "mediatorParseMediatypes": { "@id": "urn:comunica:default:rdf-parse/mediators#mediaType" },
-      "mediatorParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
+      "mediatorParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" },
+      "mediatorDereference": { "@id": "urn:comunica:default:dereference/mediators#main" }
     },
 
     {

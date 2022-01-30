@@ -27,9 +27,9 @@ export interface IAbstractDereferenceParseArgs<
   M extends IParseMetadata = IParseMetadata
 > extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   mediatorDereference: MediatorDereference;
-  mediatorParseHandle: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
-  mediatorParseMediaTypes?: MediateMediaTypes;
-  mediaMappings?: Record<string, string>;
+  mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
+  mediatorParseMediatypes: MediateMediaTypes;
+  mediaMappings: Record<string, string>;
 }
 
 export abstract class AbstractDereferenceParse<
@@ -38,9 +38,9 @@ export abstract class AbstractDereferenceParse<
   M extends IParseMetadata = IParseMetadata> extends
   Actor<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   public readonly mediatorDereference: MediatorDereference;
-  public readonly mediatorParseHandle: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
-  public readonly mediatorParseMediaTypes?: MediateMediaTypes;
-  public readonly mediaMappings?: Record<string, string>;
+  public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
+  public readonly mediatorParseMediatypes: MediateMediaTypes;
+  public readonly mediaMappings: Record<string, string>;
 
   public constructor(args: IAbstractDereferenceParseArgs<S, K, M>) {
     super(args);
@@ -78,12 +78,12 @@ export abstract class AbstractDereferenceParse<
     const { context } = action;
     const dereference = await this.mediatorDereference.mediate({
       ...action,
-      mediaTypes: async() => (await this.mediatorParseMediaTypes?.mediate({ context, mediaTypes: true }))?.mediaTypes,
+      mediaTypes: async() => (await this.mediatorParseMediatypes?.mediate({ context, mediaTypes: true }))?.mediaTypes,
     });
 
     let result: IActorParseOutput<S, M>;
     try {
-      result = (await this.mediatorParseHandle.mediate({
+      result = (await this.mediatorParse.mediate({
         context,
         handle: { context, ...dereference, metadata: await this.getMetadata(dereference) },
         handleMediaType: dereference.mediaType ??
