@@ -47,7 +47,8 @@
     "IQueryableResultBoolean",
     "IQueryableResultVoid",
 
-    "RDF.Stream"
+    "RDF.Stream",
+    "MediateMediaTyped"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

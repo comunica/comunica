@@ -35,13 +35,19 @@ export interface IAbstractDereferenceParseArgs<
 export abstract class AbstractDereferenceParse<
   S,
   K extends IParseMetadata = IParseMetadata,
-  M extends IParseMetadata = IParseMetadata> extends
+  M extends IParseMetadata = IParseMetadata
+> extends
   Actor<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   public readonly mediatorDereference: MediatorDereference;
-  public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
+  public readonly mediatorParse: any;
+  // public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   public readonly mediatorParseMediatypes: MediateMediaTypes;
   public readonly mediaMappings: Record<string, string>;
+  // TODO: Add defaultNested
 
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IAbstractDereferenceParseArgs<S, K, M>) {
     super(args);
   }
