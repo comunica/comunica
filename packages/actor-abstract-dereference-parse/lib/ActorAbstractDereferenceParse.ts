@@ -34,7 +34,7 @@ export interface IAbstractDereferenceParseArgs<
 
 /**
  * An abstract actor that handles dereference and parse actions.
- * 
+ *
  * Actor types:
  * Input:  IActionDereferenceParse:      A URL.
  * Test:   <none>
@@ -94,8 +94,8 @@ export abstract class AbstractDereferenceParse<
       result = (await this.mediatorParse.mediate({
         context,
         handle: { context, ...dereference, metadata: await this.getMetadata(dereference) },
-        handleMediaType: dereference.mediaType ??
-          getMediaTypeFromExtension(dereference.url, this.mediaMappings) ??
+        handleMediaType: dereference.mediaType ||
+          getMediaTypeFromExtension(dereference.url, this.mediaMappings) ||
           action.mediaType,
       })).handle;
       result.data = this.handleDereferenceStreamErrors(action, result.data);

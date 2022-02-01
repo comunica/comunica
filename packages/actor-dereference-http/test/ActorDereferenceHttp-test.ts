@@ -259,14 +259,6 @@ describe('ActorRdfDereferenceHttp', () => {
       expect(output.url).toEqual('https://www.google.com/error');
     });
 
-    // It('should run and ignore stream errors in lenient mode', async() => {
-    //   context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-    //   const spy = jest.spyOn(actor, <any> 'logError');
-    //   const output = await actor.run({ url: 'https://www.google.com/error', context });
-    //   expect(output.url).toEqual('https://www.google.com/error');
-    //   expect(spy).toHaveBeenCalledTimes(1);
-    // });
-
     it('should not run on http rejects', () => {
       context = new ActionContext({ httpReject: true });
       return expect(actor.run({ url: 'https://www.google.com/', context }))
