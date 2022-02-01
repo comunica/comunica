@@ -55,7 +55,6 @@
     "@comunica/actor-query-operation-update-clear": "caqoucl",
     "@comunica/actor-query-operation-update-compositeupdate": "caqoucu",
     "@comunica/actor-query-operation-update-deleteinsert": "caqoudi",
-    "@comunica/actor-rdf-dereference-fallback": "cardf",
     "@comunica/actor-rdf-join-inner-multi-sequential": "carjimse",
     "@comunica/actor-rdf-join-inner-multi-smallest": "carjimsm",
     "@comunica/actor-rdf-join-inner-none": "carjino",

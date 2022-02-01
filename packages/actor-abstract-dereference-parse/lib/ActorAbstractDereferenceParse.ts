@@ -1,11 +1,11 @@
-import type { Readable } from 'stream';
-import { PassThrough } from 'stream';
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
 import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
-import { isHardError, emptyReadable } from '@comunica/bus-dereference';
+import { emptyReadable, isHardError } from '@comunica/bus-dereference';
 import type { IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { Readable } from 'stream';
+import { PassThrough } from 'stream';
 
 /**
  * Get the media type based on the extension of the given path,
@@ -25,29 +25,21 @@ export interface IAbstractDereferenceParseArgs<
   S,
   K extends IParseMetadata = IParseMetadata,
   M extends IParseMetadata = IParseMetadata
-> extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
+>extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   mediatorDereference: MediatorDereference;
   mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   mediatorParseMediatypes: MediateMediaTypes;
   mediaMappings: Record<string, string>;
 }
 
-export abstract class AbstractDereferenceParse<
-  S,
-  K extends IParseMetadata = IParseMetadata,
-  M extends IParseMetadata = IParseMetadata
-> extends
+
+export abstract class AbstractDereferenceParse<S, K extends IParseMetadata = IParseMetadata, M extends IParseMetadata = IParseMetadata> extends
   Actor<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   public readonly mediatorDereference: MediatorDereference;
-  public readonly mediatorParse: any;
-  // public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
+  public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   public readonly mediatorParseMediatypes: MediateMediaTypes;
   public readonly mediaMappings: Record<string, string>;
-  // TODO: Add defaultNested
 
-  /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-   */
   public constructor(args: IAbstractDereferenceParseArgs<S, K, M>) {
     super(args);
   }
@@ -58,10 +50,9 @@ export abstract class AbstractDereferenceParse<
 
   /**
    * If hard errors are disabled, modify the given stream so that errors are delegated to the logger.
-   * @param {IActionDereference} action A dereference action.
+   * @param {IActionDereferenceParse} action A dereference action.
    * @param {Readable} data A data stream.
    * @return {Readable} The resulting data stream.
-   * TODO: FIX THIS TYPE
    */
   protected handleDereferenceStreamErrors<L, T extends Readable>(action: IActionDereferenceParse<L>, data: T): T {
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
