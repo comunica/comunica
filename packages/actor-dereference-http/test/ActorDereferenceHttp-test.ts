@@ -10,7 +10,7 @@ import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
 
 const streamifyString = require('streamify-string');
 
-describe('ActorRdfDereferenceHttp', () => {
+describe('ActorDereferenceHttp', () => {
   let bus: any;
   let mediatorHttp: any;
   let mediaMappings: any;
@@ -25,31 +25,31 @@ describe('ActorRdfDereferenceHttp', () => {
     context = new ActionContext();
   });
 
-  describe('The ActorRdfDereferenceHttp module', () => {
+  describe('The ActorDereferenceHttp module', () => {
     it('should be a function', () => {
       expect(ActorDereferenceHttp).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorRdfDereferenceHttp constructor', () => {
+    it('should be a ActorDereferenceHttp constructor', () => {
       expect(new ActorDereferenceHttp(<any> { name: 'actor', bus, mediatorHttp }))
         .toBeInstanceOf(ActorDereferenceHttp);
       expect(new ActorDereferenceHttp(<any> { name: 'actor', bus, mediatorHttp }))
         .toBeInstanceOf(ActorDereference);
     });
 
-    it('should be a ActorRdfDereferenceHttp when media mappings are provided', () => {
+    it('should be a ActorDereferenceHttp when media mappings are provided', () => {
       expect(new ActorDereferenceHttp(<any> { name: 'actor', bus, mediatorHttp, mediaMappings }))
         .toBeInstanceOf(ActorDereferenceHttp);
       expect(new ActorDereferenceHttp(<any> { name: 'actor', bus, mediatorHttp, mediaMappings }))
         .toBeInstanceOf(ActorDereference);
     });
 
-    it('should not be able to create new ActorRdfDereferenceHttp objects without \'new\'', () => {
+    it('should not be able to create new ActorDereferenceHttp objects without \'new\'', () => {
       expect(() => { (<any> ActorDereferenceHttp)(); }).toThrow();
     });
   });
 
-  describe('An ActorRdfDereferenceHttp instance', () => {
+  describe('An ActorDereferenceHttp instance', () => {
     let actor: ActorDereferenceHttp;
 
     beforeEach(() => {

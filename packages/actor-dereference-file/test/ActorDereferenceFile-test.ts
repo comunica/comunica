@@ -17,7 +17,7 @@ function fileUrl(str: string): string {
   return encodeURI(`file://${pathName}`);
 }
 
-describe('ActorRdfDereferenceFile', () => {
+describe('ActorDereferenceFile', () => {
   let bus: any;
   let context: IActionContext;
 
@@ -26,22 +26,22 @@ describe('ActorRdfDereferenceFile', () => {
     context = new ActionContext();
   });
 
-  describe('The ActorRdfDereferenceFile module', () => {
+  describe('The ActorDereferenceFile module', () => {
     it('should be a function', () => {
       expect(ActorDereferenceFile).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorRdfDereferenceFile constructor', () => {
+    it('should be a ActorDereferenceFile constructor', () => {
       expect(new ActorDereferenceFile({ name: 'actor', bus })).toBeInstanceOf(ActorDereferenceFile);
       expect(new ActorDereferenceFile({ name: 'actor', bus })).toBeInstanceOf(ActorDereference);
     });
 
-    it('should not be able to create new ActorRdfDereferenceFile objects without \'new\'', () => {
+    it('should not be able to create new ActorDereferenceFile objects without \'new\'', () => {
       expect(ActorDereferenceFile).toThrow();
     });
   });
 
-  describe('An ActorRdfDereferenceFile instance', () => {
+  describe('An ActorDereferenceFile instance', () => {
     let actor: ActorDereferenceFile;
 
     beforeEach(() => {
