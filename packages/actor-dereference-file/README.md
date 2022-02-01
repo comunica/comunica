@@ -4,8 +4,8 @@
 
 A comunica File Dereference Actor.
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica),
-and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+An [Dereference](https://github.com/comunica/comunica/tree/master/packages/bus-dereference) actor that
+resolves an URL to a local file (optionally starting with `file://`).
 
 [Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 

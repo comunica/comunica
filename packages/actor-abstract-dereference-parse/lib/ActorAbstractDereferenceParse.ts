@@ -1,11 +1,11 @@
+import type { Readable } from 'stream';
+import { PassThrough } from 'stream';
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
 import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
 import { emptyReadable, isHardError } from '@comunica/bus-dereference';
 import type { IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { Readable } from 'stream';
-import { PassThrough } from 'stream';
 
 /**
  * Get the media type based on the extension of the given path,
@@ -25,16 +25,27 @@ export interface IAbstractDereferenceParseArgs<
   S,
   K extends IParseMetadata = IParseMetadata,
   M extends IParseMetadata = IParseMetadata
->extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
+> extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   mediatorDereference: MediatorDereference;
   mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   mediatorParseMediatypes: MediateMediaTypes;
   mediaMappings: Record<string, string>;
 }
 
-
-export abstract class AbstractDereferenceParse<S, K extends IParseMetadata = IParseMetadata, M extends IParseMetadata = IParseMetadata> extends
-  Actor<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
+/**
+ * An abstract actor that handles dereference and parse actions.
+ * 
+ * Actor types:
+ * Input:  IActionDereferenceParse:      A URL.
+ * Test:   <none>
+ * Output: IActorDereferenceParseOutput: A data stream of type output by the Parser.
+ *
+ */
+export abstract class AbstractDereferenceParse<
+  S,
+  K extends IParseMetadata = IParseMetadata,
+  M extends IParseMetadata = IParseMetadata
+> extends Actor<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   public readonly mediatorDereference: MediatorDereference;
   public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   public readonly mediatorParseMediatypes: MediateMediaTypes;

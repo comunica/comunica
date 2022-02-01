@@ -2,7 +2,11 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-dereference-http.svg)](https://www.npmjs.com/package/@comunica/actor-dereference-http)
 
-A comunica Http Dereference Actor.
+An [Dereference](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference) actor that
+resolves the URL using the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+
+An Dereference actor implementation for Comunica that resolves the URL using the HTTP bus.
+
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -27,8 +31,12 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": TODO,
-      "@type": "ActorDereferenceHttp"
+      "@id": "urn:comunica:default:dereference/actors#http",
+      "@type": "ActorDereferenceHttp",
+      "beforeActors": { "@id": "urn:comunica:default:dereference/actors#fallback" },
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "maxAcceptHeaderLength": 1024,
+      "maxAcceptHeaderLengthBrowser": 128,
     }
   ]
 }
@@ -36,4 +44,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-TODO
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `maxAcceptHeaderLength`: The maximum allowed accept header value length for non-browser environments, defaults to `1024`.
+* `maxAcceptHeaderLengthBrowser`: The maximum allowed accept header value length for browser environments, defaults to `128`.

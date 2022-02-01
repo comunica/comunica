@@ -2,14 +2,14 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-file/^2.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^2.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:rdf-dereference/actors#file",
-      "@type": "ActorRdfDereferenceFile",
+      "@id": "urn:comunica:default:rdf-dereference/actors#",
+      "@type": "ActorRdfDereference",
       "mediatorParseMediatypes": { "@id": "urn:comunica:default:rdf-parse/mediators#mediaType" },
       "mediatorParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" },
       "mediatorDereference": { "@id": "urn:comunica:default:dereference/mediators#main" }

@@ -1,6 +1,9 @@
-import { AbstractDereferenceParse, IAbstractDereferenceParseArgs, IActionDereferenceParse, IActorDereferenceParseOutput } from '@comunica/actor-abstract-dereference-parse';
-import { IActorDereferenceOutput } from '@comunica/bus-dereference';
-import { IActionRdfParseMetadata, IActorRdfParseOutputMetadata } from '@comunica/bus-rdf-parse';
+import type { IAbstractDereferenceParseArgs,
+  IActionDereferenceParse,
+  IActorDereferenceParseOutput } from '@comunica/actor-abstract-dereference-parse';
+import { AbstractDereferenceParse } from '@comunica/actor-abstract-dereference-parse';
+import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
+import type { IActionRdfParseMetadata, IActorRdfParseOutputMetadata } from '@comunica/bus-rdf-parse';
 import type { Mediate } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -15,7 +18,8 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionRdfDereference
  * @see IActorRdfDereferenceOutput
  */
-export class ActorRdfDereference extends AbstractDereferenceParse<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
+export class ActorRdfDereference extends
+  AbstractDereferenceParse<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
@@ -23,12 +27,13 @@ export class ActorRdfDereference extends AbstractDereferenceParse<RDF.Stream, IA
     super(args);
   }
 
-  async getMetadata(dereference: IActorDereferenceOutput): Promise<IActionRdfParseMetadata | undefined> {
-    return { baseIRI: dereference.url }
+  public async getMetadata(dereference: IActorDereferenceOutput): Promise<IActionRdfParseMetadata | undefined> {
+    return { baseIRI: dereference.url };
   }
 }
 
-export interface IActorRdfDereferenceArgs extends IAbstractDereferenceParseArgs<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
+export interface IActorRdfDereferenceArgs extends
+  IAbstractDereferenceParseArgs<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
   /**
    * A collection of mappings, mapping file extensions to their corresponding media type.
    * @range {json}
@@ -57,7 +62,6 @@ export interface IActorRdfDereferenceArgs extends IAbstractDereferenceParseArgs<
    */
   mediaMappings: Record<string, string>;
 }
-
 
 export type IActionRdfDereference = IActionDereferenceParse<IActionRdfParseMetadata>;
 
