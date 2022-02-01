@@ -356,7 +356,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeFalsy();
 
-      await output.updateResult;
+      await output.voidResult;
 
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
     });

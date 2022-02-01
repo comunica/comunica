@@ -21,7 +21,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
-    if (![ 'bindings', 'quads', 'boolean', 'update' ].includes(action.type)) {
+    if (![ 'bindings', 'quads', 'boolean', 'void' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams, quad streams, booleans, or updates.');
     }
     return true;
@@ -60,7 +60,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
         setImmediate(() => data.emit('error', error));
       }
     } else {
-      (<IQueryableResultVoid> action).updateResult
+      (<IQueryableResultVoid> action).voidResult
         .then(() => {
           data.push('ok\n');
           data.push(null);

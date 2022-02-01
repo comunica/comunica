@@ -88,11 +88,11 @@ export interface IQueryableResultVoid extends IQueryableResultBase {
   /**
    * The type of output.
    */
-  type: 'update';
+  type: 'void';
   /**
    * A promise resolving when the update has finished.
    */
-  updateResult: Promise<void>;
+  voidResult: Promise<void>;
 }
 
 /**

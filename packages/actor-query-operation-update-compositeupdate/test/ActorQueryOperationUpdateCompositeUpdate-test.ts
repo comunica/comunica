@@ -14,8 +14,8 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
       mediate(arg: any) {
         if (arg.operation === 'RESOLVE') {
           return Promise.resolve({
-            type: 'update',
-            updateResult: Promise.resolve(),
+            type: 'void',
+            voidResult: Promise.resolve(),
           });
         }
         throw new Error(`INVALID OPERATION ${JSON.stringify(arg)}`);
@@ -73,8 +73,8 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
         },
       };
       const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
     });
 
     it('should run with one operation', async() => {
@@ -87,8 +87,8 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
         },
       };
       const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
     });
 
     it('should run with one three operations', async() => {
@@ -103,8 +103,8 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
         },
       };
       const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
     });
   });
 });

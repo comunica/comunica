@@ -199,8 +199,8 @@ export class QueryEngineBase implements IQueryEngine {
         case 'boolean':
           await output.booleanResult;
           break;
-        case 'update':
-          await output.updateResult;
+        case 'void':
+          await output.voidResult;
           break;
       }
 

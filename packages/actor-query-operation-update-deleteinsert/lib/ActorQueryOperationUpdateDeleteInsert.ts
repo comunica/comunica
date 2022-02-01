@@ -64,15 +64,15 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     }
 
     // Evaluate the required modifications
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { voidResult } = await this.mediatorUpdateQuads.mediate({
       quadStreamInsert,
       quadStreamDelete,
       context,
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      voidResult,
     };
   }
 }

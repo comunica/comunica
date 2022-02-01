@@ -36,7 +36,7 @@ export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Al
     } else {
       graphs = [ operation.source ];
     }
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { voidResult } = await this.mediatorUpdateQuads.mediate({
       deleteGraphs: {
         graphs,
         requireExistence: !operation.silent,
@@ -46,8 +46,8 @@ export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Al
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      voidResult,
     };
   }
 }

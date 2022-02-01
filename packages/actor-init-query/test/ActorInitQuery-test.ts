@@ -1081,8 +1081,8 @@ LIMIT 100
                   );
               }
               return Promise.resolve({
-                type: 'update',
-                updateResult: Promise.resolve(true),
+                type: 'void',
+                voidResult: Promise.resolve(true),
               });
             });
 

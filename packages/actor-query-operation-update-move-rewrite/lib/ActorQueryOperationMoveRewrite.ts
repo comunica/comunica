@@ -29,8 +29,8 @@ export class ActorQueryOperationMoveRewrite extends ActorQueryOperationTypedMedi
       (typeof operationOriginal.destination !== 'string' && typeof operationOriginal.source !== 'string' &&
         operationOriginal.destination.equals(operationOriginal.source))) {
       return Promise.resolve({
-        type: 'update',
-        updateResult: Promise.resolve(),
+        type: 'void',
+        voidResult: Promise.resolve(),
       });
     }
 

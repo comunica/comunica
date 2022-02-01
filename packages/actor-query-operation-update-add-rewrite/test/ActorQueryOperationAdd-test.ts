@@ -15,8 +15,8 @@ describe('ActorQueryOperationAdd', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => Promise.resolve({
-        updateResult: Promise.resolve(),
-        type: 'update',
+        voidResult: Promise.resolve(),
+        type: 'void',
       })),
     };
   });
@@ -56,8 +56,8 @@ describe('ActorQueryOperationAdd', () => {
         },
       };
       const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('DEST')),
@@ -75,8 +75,8 @@ describe('ActorQueryOperationAdd', () => {
         },
       };
       const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('DEST')),
@@ -94,8 +94,8 @@ describe('ActorQueryOperationAdd', () => {
         },
       };
       const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph()),
@@ -113,8 +113,8 @@ describe('ActorQueryOperationAdd', () => {
         },
       };
       const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph()),

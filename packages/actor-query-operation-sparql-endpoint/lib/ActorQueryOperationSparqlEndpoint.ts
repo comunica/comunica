@@ -125,8 +125,8 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
         };
       default:
         return {
-          type: 'update',
-          updateResult: this.endpointFetcher.fetchUpdate(endpoint, query!),
+          type: 'void',
+          voidResult: this.endpointFetcher.fetchUpdate(endpoint, query!),
         };
     }
   }

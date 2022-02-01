@@ -335,8 +335,8 @@ export class HttpServiceSparqlEndpoint {
       result = await engine.query(queryBody.value, context);
 
       // For update queries, also await the result
-      if (result.type === 'update') {
-        await result.updateResult;
+      if (result.type === 'void') {
+        await result.voidResult;
       }
     } catch (error: unknown) {
       stdout.write('[400] Bad request\n');
@@ -352,7 +352,7 @@ export class HttpServiceSparqlEndpoint {
         case 'quads':
           mediaType = 'application/trig';
           break;
-        case 'update':
+        case 'void':
           mediaType = 'simple';
           break;
         default:
@@ -514,7 +514,7 @@ export class HttpServiceSparqlEndpoint {
             return resolve({ type: 'query', value: body });
           }
           if (contentType.includes('application/sparql-update')) {
-            return resolve({ type: 'update', value: body });
+            return resolve({ type: 'void', value: body });
           }
           if (contentType.includes('application/x-www-form-urlencoded')) {
             const bodyStructure = querystring.parse(body);
@@ -522,7 +522,7 @@ export class HttpServiceSparqlEndpoint {
               return resolve({ type: 'query', value: <string> bodyStructure.query });
             }
             if (bodyStructure.update) {
-              return resolve({ type: 'update', value: <string> bodyStructure.update });
+              return resolve({ type: 'void', value: <string> bodyStructure.update });
             }
           }
         }
@@ -533,7 +533,7 @@ export class HttpServiceSparqlEndpoint {
 }
 
 export interface IQueryBody {
-  type: 'query' | 'update';
+  type: 'query' | 'void';
   value: string;
 }
 

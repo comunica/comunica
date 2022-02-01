@@ -312,7 +312,7 @@ describe('System test: QuerySparql', () => {
           sources: [],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(1);
@@ -330,7 +330,7 @@ describe('System test: QuerySparql', () => {
     }`, {
           sources: [ store ],
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(1);
@@ -353,7 +353,7 @@ describe('System test: QuerySparql', () => {
           sources: [],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(1);
@@ -382,7 +382,7 @@ describe('System test: QuerySparql', () => {
           sources: [ store ],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(1);
@@ -402,7 +402,7 @@ describe('System test: QuerySparql', () => {
             destination: store,
           },
         );
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size > 0).toBeTruthy();
@@ -424,7 +424,7 @@ describe('System test: QuerySparql', () => {
           sources: [ store ],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(1);
@@ -448,7 +448,7 @@ describe('System test: QuerySparql', () => {
           sources: [ store ],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(3);
@@ -469,19 +469,19 @@ describe('System test: QuerySparql', () => {
         await expect((<IQueryableResultVoid> await engine.query(`CREATE GRAPH <ex:g2>`, {
           sources: [ store ],
           destination: store,
-        })).updateResult).resolves.toBeUndefined();
+        })).voidResult).resolves.toBeUndefined();
 
         // Reject for existing graph
         await expect((<IQueryableResultVoid> await engine.query(`CREATE GRAPH <ex:g1>`, {
           sources: [ store ],
           destination: store,
-        })).updateResult).rejects.toThrowError('Unable to create graph ex:g1 as it already exists');
+        })).voidResult).rejects.toThrowError('Unable to create graph ex:g1 as it already exists');
 
         // Resolve for existing graph in silent mode
         await expect((<IQueryableResultVoid> await engine.query(`CREATE SILENT GRAPH <ex:g1>`, {
           sources: [ store ],
           destination: store,
-        })).updateResult).resolves.toBeUndefined();
+        })).voidResult).resolves.toBeUndefined();
       });
 
       it('with add', async() => {
@@ -498,7 +498,7 @@ describe('System test: QuerySparql', () => {
           sources: [ store ],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(3);
@@ -521,7 +521,7 @@ describe('System test: QuerySparql', () => {
           sources: [ store ],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(1);
@@ -544,7 +544,7 @@ describe('System test: QuerySparql', () => {
           sources: [ store ],
           destination: store,
         });
-        await result.updateResult;
+        await result.voidResult;
 
         // Check store contents
         expect(store.size).toEqual(2);

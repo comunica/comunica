@@ -76,13 +76,13 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   /**
-   * Safely cast a query operation output to an update output.
+   * Safely cast a query operation output to a void output.
    * This will throw a runtime error if the output is of the incorrect type.
    * @param {IQueryableResult} output A query operation output.
-   * @return {IQueryableResultVoid} An update query operation output.
+   * @return {IQueryableResultVoid} A void query operation output.
    */
-  public static getSafeUpdate(output: IQueryableResult): IQueryableResultVoid {
-    ActorQueryOperation.validateQueryOutput(output, 'update');
+  public static getSafeVoid(output: IQueryableResult): IQueryableResultVoid {
+    ActorQueryOperation.validateQueryOutput(output, 'void');
     return <IQueryableResultVoid> output;
   }
 
@@ -102,7 +102,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param {IQueryableResult} output A query operation output.
    * @param {string} expectedType The expected output type.
    */
-  public static validateQueryOutput(output: IQueryableResult, expectedType: string): void {
+  public static validateQueryOutput(output: IQueryableResult, expectedType: IQueryableResult['type']): void {
     if (output.type !== expectedType) {
       throw new Error(`Invalid query output type: Expected '${expectedType}' but got '${output.type}'`);
     }

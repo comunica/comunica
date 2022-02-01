@@ -34,7 +34,7 @@ module.exports = function(engine) {
         source: { type: 'rdfjsSource', value: store },
         destination: store,
       });
-      await result.updateResult;
+      await result.voidResult;
       return store.getQuads();
     },
   };

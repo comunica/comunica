@@ -105,7 +105,7 @@ describe('ActorQueryResultSerializeSimple', () => {
       });
 
       it('should test on simple update', () => {
-        return expect(actor.test({ handle: <any> { type: 'update', updateResult: Promise.resolve(true), context },
+        return expect(actor.test({ handle: <any> { type: 'void', voidResult: Promise.resolve(true), context },
           handleMediaType: 'simple',
           context }))
           .resolves.toBeTruthy();
@@ -183,7 +183,7 @@ graph:
 
       it('should run on an update result that resolves to false', async() => {
         expect(await stringifyStream((<any> (await actor.run({
-          handle: <any> { type: 'update', updateResult: Promise.resolve(), context },
+          handle: <any> { type: 'void', voidResult: Promise.resolve(), context },
           handleMediaType: 'simple',
           context,
         })))
@@ -219,7 +219,7 @@ graph:
 
       it('should emit an error when the update is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'update', updateResult: Promise.reject(new Error('SparqlSimple')), context },
+          { handle: <any> { type: 'void', voidResult: Promise.reject(new Error('SparqlSimple')), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data)).rejects.toBeTruthy();

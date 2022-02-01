@@ -1288,7 +1288,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should fallback to simple for updates if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ type: 'update', updateResult: Promise.resolve() });
+        engine.query = () => ({ type: 'void', voidResult: Promise.resolve() });
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1430,7 +1430,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
-          type: 'update',
+          type: 'void',
           value: querystring.parse(exampleQueryString).update,
         });
       });
@@ -1451,7 +1451,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should return input body if content-type is application/sparql-update', () => {
         httpRequestMock.headers = { 'content-type': 'application/sparql-update' };
         return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
-          type: 'update',
+          type: 'void',
           value: testRequestBody,
         });
       });

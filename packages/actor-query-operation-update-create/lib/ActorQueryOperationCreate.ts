@@ -24,7 +24,7 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
   public async runOperation(operation: Algebra.Create, context: IActionContext):
   Promise<IQueryableResult> {
     // Delegate to update-quads bus
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { voidResult } = await this.mediatorUpdateQuads.mediate({
       createGraphs: {
         graphs: [ operation.source ],
         requireNonExistence: !operation.silent,
@@ -33,8 +33,8 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      voidResult,
     };
   }
 }
