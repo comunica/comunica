@@ -64,11 +64,11 @@ export class QueryEngineBase implements IQueryEngine {
 
     // Prepare context
     let actionContext: IActionContext = new ActionContext(context);
-    let queryFormat = 'sparql';
+    let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };
     if (actionContext.has(KeysInitQuery.queryFormat)) {
       queryFormat = actionContext.get(KeysInitQuery.queryFormat)!;
       actionContext = actionContext.delete(KeysInitQuery.queryFormat);
-      if (queryFormat === 'graphql' && !actionContext.has(KeysInitQuery.graphqlSingularizeVariables)) {
+      if (queryFormat.language === 'graphql' && !actionContext.has(KeysInitQuery.graphqlSingularizeVariables)) {
         actionContext = actionContext.set(KeysInitQuery.graphqlSingularizeVariables, {});
       }
     }

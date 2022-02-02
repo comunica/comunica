@@ -16,7 +16,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
   }
 
   public async test(action: IActionQueryParse): Promise<IActorTest> {
-    if (action.queryFormat && action.queryFormat !== 'sparql') {
+    if (action.queryFormat && action.queryFormat.language !== 'sparql') {
       throw new Error('This actor can only parse SPARQL queries');
     }
     return true;

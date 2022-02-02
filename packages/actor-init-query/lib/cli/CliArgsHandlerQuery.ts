@@ -96,7 +96,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
 
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
     // Define the query format
-    context[KeysInitQuery.queryFormat.name] = args.inputType;
+    context[KeysInitQuery.queryFormat.name] = { language: args.inputType, version: '1.1' };
 
     // Define the datetime
     if (args.dateTime) {

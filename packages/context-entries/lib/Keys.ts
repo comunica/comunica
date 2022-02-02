@@ -63,9 +63,10 @@ export const KeysInitQuery = {
    */
   initialBindings: new ActionContextKey<RDF.Bindings>('@comunica/actor-init-query:initialBindings'),
   /**
-   * Name of the provided query's format.
+   * The provided query's format.
+   * Defaults to { language: 'sparql', version: '1.1' }
    */
-  queryFormat: new ActionContextKey<string>('@comunica/actor-init-query:queryFormat'),
+  queryFormat: new ActionContextKey<RDF.QueryFormat>('@comunica/actor-init-query:queryFormat'),
   /**
    * Which GraphQL bindings should be singularized.
    */

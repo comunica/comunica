@@ -1,5 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -30,7 +31,7 @@ export interface IActionQueryParse extends IAction {
   /**
    * The query format.
    */
-  queryFormat?: string;
+  queryFormat?: RDF.QueryFormat;
   /**
    * The query's default base IRI.
    */
