@@ -1,6 +1,6 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultVoid } from '@comunica/types';
+import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationAddRewrite } from '../lib/ActorQueryOperationAddRewrite';
@@ -55,7 +55,7 @@ describe('ActorQueryOperationAdd', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
@@ -74,7 +74,7 @@ describe('ActorQueryOperationAdd', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
@@ -93,7 +93,7 @@ describe('ActorQueryOperationAdd', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
@@ -112,7 +112,7 @@ describe('ActorQueryOperationAdd', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({

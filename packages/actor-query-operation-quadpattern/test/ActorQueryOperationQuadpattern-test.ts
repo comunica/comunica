@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -238,7 +238,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
@@ -263,7 +263,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: 3,
@@ -287,7 +287,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: DF.namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toBe(metadataContent);
         await expect(output.bindingsStream).toEqualBindingsStream(
@@ -324,7 +324,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
 
-      return actor.run({ operation, context }).then(async(output: IQueryableResultBindings) => {
+      return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('v') ]);
         expect(await output.metadata()).toBe(metadataContent);
         await expect(output.bindingsStream).toEqualBindingsStream([

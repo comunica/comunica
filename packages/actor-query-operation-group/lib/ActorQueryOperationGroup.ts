@@ -2,7 +2,7 @@ import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from 'sparqlee';
@@ -27,7 +27,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 
   public async runOperation(operation: Algebra.Group, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     // Create a hash function
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
 

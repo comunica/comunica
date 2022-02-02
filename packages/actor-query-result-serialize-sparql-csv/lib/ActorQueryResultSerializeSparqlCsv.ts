@@ -4,7 +4,7 @@ import type { IActionSparqlSerialize, IActorQueryResultSerializeFixedMediaTypesA
 import {
   ActorQueryResultSerializeFixedMediaTypes,
 } from '@comunica/bus-query-result-serialize';
-import type { Bindings, IActionContext, IQueryableResultBindings } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -63,7 +63,7 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
 
   public async runHandle(action: IActionSparqlSerialize, mediaType: string | undefined, context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
-    const bindingsAction = <IQueryableResultBindings> action;
+    const bindingsAction = <IQueryOperationResultBindings> action;
 
     const data = new Readable();
     data._read = () => {

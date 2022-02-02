@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IQueryableResultBindings,
-  IQueryableResultQuads } from '@comunica/types';
+import type { IQueryOperationResultBindings,
+  IQueryOperationResultQuads } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSlice } from '../lib/ActorQueryOperationSlice';
@@ -115,7 +115,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 100', () => {
       const op: any = { operation: { type: 'project', start: 0, length: 100 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -129,7 +129,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 100', () => {
       const op: any = { operation: { type: 'project', start: 1, length: 100 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -142,7 +142,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 100', () => {
       const op: any = { operation: { type: 'project', start: 3, length: 100 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -152,7 +152,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 3', () => {
       const op: any = { operation: { type: 'project', start: 0, length: 3 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -166,7 +166,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 2', () => {
       const op: any = { operation: { type: 'project', start: 0, length: 2 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -179,7 +179,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 0', () => {
       const op: any = { operation: { type: 'project', start: 0, length: 0 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -189,7 +189,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 3', () => {
       const op: any = { operation: { type: 'project', start: 1, length: 3 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -202,7 +202,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 1', () => {
       const op: any = { operation: { type: 'project', start: 1, length: 1 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -214,7 +214,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 2 and length 1', () => {
       const op: any = { operation: { type: 'project', start: 2, length: 1 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -226,7 +226,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 2 and length 0', () => {
       const op: any = { operation: { type: 'project', start: 2, length: 0 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -236,7 +236,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 1', () => {
       const op: any = { operation: { type: 'project', start: 3, length: 1 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -245,7 +245,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 0', () => {
       const op: any = { operation: { type: 'project', start: 3, length: 1 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -255,7 +255,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 4 and length 1', () => {
       const op: any = { operation: { type: 'project', start: 4, length: 1 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -265,7 +265,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 4 and length 0', () => {
       const op: any = { operation: { type: 'project', start: 4, length: 1 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -278,7 +278,7 @@ describe('ActorQueryOperationSlice', () => {
         mediatorQueryOperation: mediatorQueryOperationMetaInf,
         name: 'actor' });
       const op: any = { operation: { type: 'project', start: 0, length: 100 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -295,7 +295,7 @@ describe('ActorQueryOperationSlice', () => {
         mediatorQueryOperation: mediatorQueryOperationUndefs,
         name: 'actor' });
       const op: any = { operation: { type: 'project', start: 0, length: 100 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -309,7 +309,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and no length', () => {
       const op: any = { operation: { type: 'project', start: 0 }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(output.type).toEqual('bindings');
@@ -326,7 +326,7 @@ describe('ActorQueryOperationSlice', () => {
         mediatorQueryOperation: mediatorQueryOperationQuads,
         name: 'actor' });
       const op: any = { operation: { type: 'project', start: 0, length: 2 }};
-      return actor.run(op).then(async(output: IQueryableResultQuads) => {
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([

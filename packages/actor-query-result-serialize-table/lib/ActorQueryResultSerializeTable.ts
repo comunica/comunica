@@ -5,8 +5,8 @@ import type { IActionSparqlSerialize,
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
   Bindings, IActionContext,
-  IQueryableResultBindings,
-  IQueryableResultQuads,
+  IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -72,13 +72,13 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
 
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = (<IQueryableResultBindings> action).bindingsStream;
-      const labels = (<IQueryableResultBindings> action).variables;
+      resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
+      const labels = (<IQueryOperationResultBindings> action).variables;
       this.pushHeader(data, labels);
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', bindings => this.pushRow(data, labels, bindings));
     } else {
-      resultStream = (<IQueryableResultQuads> action).quadStream;
+      resultStream = (<IQueryOperationResultQuads> action).quadStream;
       this.pushHeader(data, QUAD_TERM_NAMES_VARS);
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', quad => data.push(

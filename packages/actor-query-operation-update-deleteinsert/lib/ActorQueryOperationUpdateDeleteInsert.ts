@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryableResult, BindingsStream, IActionContext } from '@comunica/types';
+import type { IQueryOperationResult, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -34,7 +34,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
   }
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation

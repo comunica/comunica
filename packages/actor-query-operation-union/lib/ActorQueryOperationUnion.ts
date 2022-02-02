@@ -6,10 +6,10 @@ import {
 import type { IActorTest } from '@comunica/core';
 import type {
   BindingsStream,
-  IQueryableResultBindings,
+  IQueryOperationResultBindings,
   IMetadata,
   IActionContext,
-  IQueryableResult,
+  IQueryOperationResult,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
@@ -61,19 +61,19 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
   }
 
   public async runOperation(operation: Algebra.Union, context: IActionContext):
-  Promise<IQueryableResult> {
-    const outputs: IQueryableResultBindings[] = (await Promise.all(operation.input
+  Promise<IQueryOperationResult> {
+    const outputs: IQueryOperationResultBindings[] = (await Promise.all(operation.input
       .map(subOperation => this.mediatorQueryOperation.mediate({ operation: subOperation, context }))))
       .map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
-      (output: IQueryableResultBindings) => output.bindingsStream,
+      (output: IQueryOperationResultBindings) => output.bindingsStream,
     ), { autoStart: false });
 
     const metadata: () => Promise<IMetadata> = () => Promise.all(outputs.map(output => output.metadata()))
       .then(ActorQueryOperationUnion.unionMetadata);
     const variables = ActorQueryOperationUnion.unionVariables(
-      outputs.map((output: IQueryableResultBindings) => output.variables),
+      outputs.map((output: IQueryOperationResultBindings) => output.variables),
     );
     return { type: 'bindings', bindingsStream, metadata, variables };
   }

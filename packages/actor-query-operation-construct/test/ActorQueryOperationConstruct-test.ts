@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IQueryableResultQuads } from '@comunica/types';
+import type { IQueryOperationResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -105,7 +105,7 @@ describe('ActorQueryOperationConstruct', () => {
 
     it('should run on an empty template', () => {
       const op: any = { operation: { type: 'construct', template: []}};
-      return actor.run(op).then(async(output: IQueryableResultQuads) => {
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await (<any> output).metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([]);
@@ -118,7 +118,7 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ],
       type: 'construct' }};
-      return actor.run(op).then(async(output: IQueryableResultQuads) => {
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await (<any> output).metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
@@ -135,7 +135,7 @@ describe('ActorQueryOperationConstruct', () => {
           DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
         ],
         type: 'construct' }};
-      return actor.run(op).then(async(output: IQueryableResultQuads) => {
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await (<any> output).metadata()).toEqual({ cardinality: 6, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([

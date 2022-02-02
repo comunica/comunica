@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
@@ -81,7 +81,7 @@ describe('ActorQueryOperationService', () => {
         '@comunica/bus-rdf-resolve-quad-pattern:sources': { type: 'bla', value: 'blabla' },
       });
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }, context };
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
@@ -95,7 +95,7 @@ describe('ActorQueryOperationService', () => {
 
     it('should run without context', () => {
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
@@ -109,7 +109,7 @@ describe('ActorQueryOperationService', () => {
 
     it('should run on a silent operation when the endpoint errors', () => {
       const op: any = { operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: 'error' }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([]);
         expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
 
@@ -130,7 +130,7 @@ describe('ActorQueryOperationService', () => {
         { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' },
       );
 
-      return actorThis.run(op).then(async(output: IQueryableResultBindings) => {
+      return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect((<any> output).operated.context.get(KeysRdfResolveQuadPattern.sources)[0].type)
           .toEqual(undefined);
         expect(output.variables).toEqual([ DF.variable('a') ]);
@@ -150,7 +150,7 @@ describe('ActorQueryOperationService', () => {
         { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor' },
       );
 
-      return actorThis.run(op).then(async(output: IQueryableResultBindings) => {
+      return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect((<any> output).operated.context.get(KeysRdfResolveQuadPattern.sources)[0].type)
           .toEqual('sparql');
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });

@@ -4,10 +4,10 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type {
-  IQueryableResult,
-  IQueryableResultBindings,
-  IQueryableResultQuads,
-  IQueryableResultStream, IMetadata, IActionContext,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
+  IQueryOperationResultStream, IMetadata, IActionContext,
 } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -25,14 +25,14 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
   }
 
   public async runOperation(operation: Algebra.Slice, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     // Resolve the input
-    const output: IQueryableResult = await this.mediatorQueryOperation
+    const output: IQueryOperationResult = await this.mediatorQueryOperation
       .mediate({ operation: operation.input, context });
 
     if (output.type === 'bindings') {
       const bindingsStream = this.sliceStream(output.bindingsStream, operation);
-      return <IQueryableResultBindings> {
+      return <IQueryOperationResultBindings> {
         type: 'bindings',
         bindingsStream,
         metadata: this.sliceMetadata(output, operation),
@@ -42,7 +42,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
 
     if (output.type === 'quads') {
       const quadStream = this.sliceStream(output.quadStream, operation);
-      return <IQueryableResultQuads> {
+      return <IQueryOperationResultQuads> {
         type: 'quads',
         quadStream,
         metadata: this.sliceMetadata(output, operation),
@@ -62,7 +62,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
   }
 
   // If we find metadata, apply slicing on the total number of items
-  private sliceMetadata(output: IQueryableResultStream, pattern: Algebra.Slice): () => Promise<IMetadata> {
+  private sliceMetadata(output: IQueryOperationResultStream, pattern: Algebra.Slice): () => Promise<IMetadata> {
     // eslint-disable-next-line unicorn/explicit-length-check
     const hasLength: boolean = Boolean(pattern.length) || pattern.length === 0;
     return () => (<() => Promise<IMetadata>>output.metadata)()

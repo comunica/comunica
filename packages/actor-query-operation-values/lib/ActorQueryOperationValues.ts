@@ -3,7 +3,7 @@ import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type {
-  IQueryableResult,
+  IQueryOperationResult,
   BindingsStream,
   IMetadata,
   Bindings,
@@ -19,7 +19,7 @@ const DF = new DataFactory();
  * A comunica Values Query Operation Actor.
  */
 export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.Values> {
-  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult>) {
+  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult>) {
     super(args, 'values');
   }
 
@@ -28,7 +28,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
   }
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => BF.bindings(Object.entries(x)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));

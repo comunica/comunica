@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IJoinEntry } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
@@ -80,7 +80,7 @@ describe('ActorQueryOperationLeftJoin', () => {
 
     it('should run', () => {
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');
         expect(await output.metadata()).toEqual({ cardinality: 100, canContainUndefs: true });
@@ -102,7 +102,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         type: 'expression',
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
-      await actor.run(op).then(async(output: IQueryableResultBindings) => {
+      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -124,7 +124,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         type: 'expression',
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
-      await actor.run(op).then(async(output: IQueryableResultBindings) => {
+      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.bindingsStream).toEqualBindingsStream([]);
         expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
@@ -152,7 +152,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         ],
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
-      await actor.run(op).then(async(output: IQueryableResultBindings) => {
+      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.bindingsStream).toEqualBindingsStream([]);
         expect(await output.metadata()).toMatchObject({ cardinality: 100, canContainUndefs: true });
         expect(output.type).toEqual('bindings');
@@ -195,7 +195,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         ],
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }};
-      const output: IQueryableResultBindings = <IQueryableResultBindings> await actor.run(op);
+      const output: IQueryOperationResultBindings = <IQueryOperationResultBindings> await actor.run(op);
       await new Promise<void>(resolve => {
         output.bindingsStream.on('error', () => resolve());
         output.bindingsStream.on('data', () => {

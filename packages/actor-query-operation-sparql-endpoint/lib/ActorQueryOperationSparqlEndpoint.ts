@@ -12,10 +12,10 @@ import {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
-import type { IQueryableResult,
-  IQueryableResultBindings,
-  IQueryableResultBoolean,
-  IQueryableResultQuads,
+import type { IQueryOperationResult,
+  IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
+  IQueryOperationResultQuads,
   IMetadata,
   IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -76,7 +76,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     throw new Error(`${this.name} requires a single source with a 'sparql' endpoint to be present in the context or URL ending on /sparql or /update.`);
   }
 
-  public async run(action: IActionQueryOperation): Promise<IQueryableResult> {
+  public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     const source = getContextSourceFirst(action.context);
     if (!source) {
       throw new Error('Illegal state: undefined sparql endpoint source.');
@@ -119,7 +119,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       case 'CONSTRUCT':
         return this.executeQuery(endpoint, query!, true);
       case 'ASK':
-        return <IQueryableResultBoolean>{
+        return <IQueryOperationResultBoolean>{
           type: 'boolean',
           booleanResult: this.endpointFetcher.fetchAsk(endpoint, query!),
         };
@@ -139,7 +139,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
    * @param variables Variables for SELECT queries.
    */
   public executeQuery(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[]):
-  IQueryableResult {
+  IQueryOperationResult {
     const inputStream: Promise<EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
@@ -172,13 +172,13 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     );
 
     if (quads) {
-      return <IQueryableResultQuads> {
+      return <IQueryOperationResultQuads> {
         type: 'quads',
         quadStream: stream,
         metadata,
       };
     }
-    return <IQueryableResultBindings> {
+    return <IQueryOperationResultBindings> {
       type: 'bindings',
       bindingsStream: stream,
       metadata,
@@ -188,7 +188,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 }
 
 export interface IActorQueryOperationSparqlEndpointArgs
-  extends IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult> {
+  extends IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult> {
   /**
    * The HTTP mediator
    */

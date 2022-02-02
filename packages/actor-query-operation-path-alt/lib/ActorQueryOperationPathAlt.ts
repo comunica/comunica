@@ -1,7 +1,7 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IQueryableResultBindings, IMetadata, IQueryableResult, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, IMetadata, IQueryOperationResult, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { uniqTerms } from 'rdf-terms';
@@ -37,10 +37,10 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     };
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const predicate = <Algebra.Alt> operation.predicate;
 
-    const subOperations: IQueryableResultBindings[] = (await Promise.all(predicate.input
+    const subOperations: IQueryOperationResultBindings[] = (await Promise.all(predicate.input
       .map(subPredicate => this.mediatorQueryOperation.mediate({
         context,
         operation: ActorAbstractPath.FACTORY

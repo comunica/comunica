@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationUnion } from '../lib/ActorQueryOperationUnion';
@@ -203,7 +203,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on two streams', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2 ]}};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 5, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');
@@ -219,7 +219,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on three streams', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2, op2Undef ]}};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 7, canContainUndefs: true });
         expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');
@@ -237,7 +237,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run with a right stream with undefs', () => {
       const op: any = { operation: { type: 'union', input: [ op3, op2Undef ]}};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 5, canContainUndefs: true });
         expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(output.type).toEqual('bindings');

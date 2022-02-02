@@ -7,7 +7,7 @@ import type { IAction, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
-  IQueryableResultBindings, IMetadata,
+  IQueryOperationResultBindings, IMetadata,
   IPhysicalQueryPlanLogger, Bindings, IActionContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -28,7 +28,7 @@ const DF = new DataFactory();
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorRdfJoin
-  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
+  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
@@ -105,10 +105,10 @@ export abstract class ActorRdfJoin
 
   /**
    * Returns the variables that will occur in the joined bindings.
-   * @param {IQueryableResultBindings[]} streams The streams to consider
+   * @param {IQueryOperationResultBindings[]} streams The streams to consider
    * @returns {string[]}
    */
-  public static joinVariablesStreams(streams: IQueryableResultBindings[]): RDF.Variable[] {
+  public static joinVariablesStreams(streams: IQueryOperationResultBindings[]): RDF.Variable[] {
     return [ ...new Set(streams.flatMap(entry => entry.variables.map(variable => variable.value))) ]
       .map(variable => DF.variable(variable));
   }
@@ -266,7 +266,7 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action
    * @returns {Promise<IActorQueryOperationOutput>}
    */
-  public async run(action: IActionRdfJoin): Promise<IQueryableResultBindings> {
+  public async run(action: IActionRdfJoin): Promise<IQueryOperationResultBindings> {
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
@@ -323,7 +323,7 @@ export abstract class ActorRdfJoin
 }
 
 export interface IActorRdfJoinArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 }
 
@@ -379,7 +379,7 @@ export interface IJoinEntry {
   /**
    * A (lazy) resolved bindings stream, from which metadata may be obtained.
    */
-  output: IQueryableResultBindings;
+  output: IQueryOperationResultBindings;
   /**
    * The original query operation from which the bindings stream was produced.
    */
@@ -390,11 +390,11 @@ export interface IActorRdfJoinOutputInner {
   /**
    * The join result.
    */
-  result: IQueryableResultBindings;
+  result: IQueryOperationResultBindings;
   /**
    * Optional metadata that will be included as metadata within the physical query plan output.
    */
   physicalPlanMetadata?: any;
 }
 
-export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryableResultBindings, IMediatorTypeJoinCoefficients>;
+export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;

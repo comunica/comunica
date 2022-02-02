@@ -4,8 +4,8 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings, IActionContext, IQueryableResultBindings,
-  IQueryableResultBoolean,
+  Bindings, IActionContext, IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as xml from 'xml';
@@ -71,15 +71,15 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' }});
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
       .on('data', chunk => data.push(`${chunk}\n`));
-    if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
-      root.push({ head: (<IQueryableResultBindings> action).variables
+    if (action.type === 'bindings' && (<IQueryOperationResultBindings> action).variables.length > 0) {
+      root.push({ head: (<IQueryOperationResultBindings> action).variables
         .map(variable => ({ variable: { _attr: { name: variable.value }}})) });
     }
 
     if (action.type === 'bindings') {
       const results = xml.element({});
       root.push({ results });
-      const resultStream: NodeJS.EventEmitter = (<IQueryableResultBindings> action).bindingsStream;
+      const resultStream: NodeJS.EventEmitter = (<IQueryOperationResultBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('error', (error: Error) => {
@@ -99,7 +99,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       });
     } else {
       try {
-        root.push({ boolean: await (<IQueryableResultBoolean> action).booleanResult });
+        root.push({ boolean: await (<IQueryOperationResultBoolean> action).booleanResult });
         root.close();
         setImmediate(() => data.push(null));
       } catch (error: unknown) {

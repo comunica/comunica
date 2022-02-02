@@ -5,8 +5,8 @@ import { Bus, ActionContext } from '@comunica/core';
 import type {
   IPhysicalQueryPlanLogger,
   IActionContext, QueryStringContext, IQueryBindingsEnhanced, IQueryQuadsEnhanced,
-  QueryType, IQueryableResultQuads,
-  IQueryableResultBindings, IQueryableResultBoolean, IQueryableResultVoid,
+  QueryType, IQueryOperationResultQuads,
+  IQueryOperationResultBindings, IQueryOperationResultBoolean, IQueryOperationResultVoid,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -472,7 +472,7 @@ describe('QueryEngineBase', () => {
 
   describe('finalToInternalResult', () => {
     it('converts bindings', async() => {
-      const internal = <IQueryableResultBindings> await QueryEngineBase.finalToInternalResult({
+      const internal = <IQueryOperationResultBindings> await QueryEngineBase.finalToInternalResult({
         resultType: 'bindings',
         execute: async() => new ArrayIterator([
           BF.bindings([
@@ -497,7 +497,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('converts quads', async() => {
-      const internal = <IQueryableResultQuads> await QueryEngineBase.finalToInternalResult({
+      const internal = <IQueryOperationResultQuads> await QueryEngineBase.finalToInternalResult({
         resultType: 'quads',
         execute: async() => new ArrayIterator([
           DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
@@ -516,7 +516,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('converts booleans', async() => {
-      const final = <IQueryableResultBoolean> await QueryEngineBase.finalToInternalResult({
+      const final = <IQueryOperationResultBoolean> await QueryEngineBase.finalToInternalResult({
         resultType: 'boolean',
         execute: async() => true,
       });
@@ -526,7 +526,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('converts voids', async() => {
-      const final = <IQueryableResultVoid> await QueryEngineBase.finalToInternalResult({
+      const final = <IQueryOperationResultVoid> await QueryEngineBase.finalToInternalResult({
         resultType: 'void',
         // eslint-disable-next-line unicorn/no-useless-undefined
         execute: async() => undefined,

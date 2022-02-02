@@ -3,7 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -14,7 +14,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     super(args, Algebra.types.NPS);
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const predicate = <Algebra.Nps> operation.predicate;
     const blank = this.generateVariable(operation);
 

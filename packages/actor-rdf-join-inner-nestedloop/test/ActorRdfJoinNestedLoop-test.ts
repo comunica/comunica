@@ -4,7 +4,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinNestedLoop } from '../lib/ActorRdfJoinNestedLoop';
@@ -132,7 +132,7 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should generate correct metadata', async() => {
-      await actor.run(action).then(async(result: IQueryableResultBindings) => {
+      await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
           (await (<any> action.entries[0].output).metadata()).cardinality *
           (await (<any> action.entries[1].output).metadata()).cardinality);
@@ -140,7 +140,7 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should return an empty stream for empty input', () => {
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([]);
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
@@ -161,7 +161,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         ]),
       ]);
       action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -188,7 +188,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         ]),
       ]);
       action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
@@ -249,7 +249,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         ]),
       ]);
       action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -324,7 +324,7 @@ describe('ActorRdfJoinNestedLoop', () => {
       action.entries[1].output
         .metadata = async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true });
       action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],

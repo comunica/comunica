@@ -5,7 +5,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -25,7 +25,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
   }
 
   public async runOperation(operation: Algebra.Filter, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');

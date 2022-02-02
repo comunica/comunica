@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -109,7 +109,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should return the full stream for a truthy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -122,7 +122,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should return an empty stream for a falsy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.type).toEqual('bindings');
@@ -131,7 +131,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should return an empty stream when the expressions error', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
       expect(output.type).toEqual('bindings');
@@ -142,7 +142,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       // The order is very important. This item requires isExpressionError to still have it's right definition.
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
       expect(logWarnSpy).toHaveBeenCalledTimes(3);
       logWarnSpy.mock.calls.forEach((call, index) => {
@@ -162,7 +162,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
 
@@ -172,7 +172,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         [KeysInitQuery.baseIRI.name]: 'http://example.com',
       });
       const op: any = { operation: { type: 'filter', input: {}, expression }, context };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

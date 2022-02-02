@@ -5,7 +5,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext, IQueryableResultBindings } from '@comunica/types';
+import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, Algebra } from 'sparqlalgebrajs';
@@ -29,8 +29,8 @@ describe('ActorRdfJoinMultiBind', () => {
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let context: IActionContext;
-    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
-    IActionQueryOperation, IActorTest, IQueryableResultBindings>;
+    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryOperationResultBindings>,
+    IActionQueryOperation, IActorTest, IQueryOperationResultBindings>;
     let actor: ActorRdfJoinMultiBind;
     let logSpy: Mock;
 
@@ -40,7 +40,7 @@ describe('ActorRdfJoinMultiBind', () => {
       };
       context = new ActionContext({ a: 'b' });
       mediatorQueryOperation = <any> {
-        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryableResultBindings> => {
+        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
           return {
             bindingsStream: new ArrayIterator([
               BF.bindings([

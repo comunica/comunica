@@ -3,7 +3,7 @@ import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { Bindings, IActionContext, IPhysicalQueryPlanLogger,
-  IQueryableResult,
+  IQueryOperationResult,
   IQueryEngine, IQueryExplained,
   QueryFormatType,
   QueryType, QueryExplainMode, BindingsStream,
@@ -205,7 +205,7 @@ export class QueryEngineBase implements IQueryEngine {
 
   /**
    * Convert a query result to a string stream based on a certain media type.
-   * @param {IQueryableResult} queryResult A query result.
+   * @param {IQueryOperationResult} queryResult A query result.
    * @param {string} mediaType A media type.
    * @param {ActionContext} context An optional context.
    * @return {Promise<IActorQueryResultSerializeOutput>} A text stream.
@@ -247,7 +247,7 @@ export class QueryEngineBase implements IQueryEngine {
    * Convert an internal query result to a final one.
    * @param internalResult An intermediary query result.
    */
-  public static internalToFinalResult(internalResult: IQueryableResult): QueryType {
+  public static internalToFinalResult(internalResult: IQueryOperationResult): QueryType {
     switch (internalResult.type) {
       case 'bindings':
         return {
@@ -297,7 +297,7 @@ export class QueryEngineBase implements IQueryEngine {
    * Convert a final query result to an internal one.
    * @param finalResult A final query result.
    */
-  public static async finalToInternalResult(finalResult: RDF.Query): Promise<IQueryableResult> {
+  public static async finalToInternalResult(finalResult: RDF.Query): Promise<IQueryOperationResult> {
     switch (finalResult.resultType) {
       case 'bindings':
         return {

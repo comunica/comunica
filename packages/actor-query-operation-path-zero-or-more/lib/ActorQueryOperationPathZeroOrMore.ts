@@ -2,7 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { Bindings, IQueryableResult, IActionContext } from '@comunica/types';
+import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -18,7 +18,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     super(args, Algebra.types.ZERO_OR_MORE_PATH);
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;

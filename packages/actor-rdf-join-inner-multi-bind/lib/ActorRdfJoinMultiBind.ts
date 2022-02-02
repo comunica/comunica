@@ -9,7 +9,7 @@ import type {
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IQueryableResultBindings, IMetadata } from '@comunica/types';
+import type { Bindings, BindingsStream, IQueryOperationResultBindings, IMetadata } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra } from 'sparqlalgebrajs';
 
@@ -148,7 +148,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     }
 
     // Take the stream with the lowest cardinality
-    const smallestStream: IQueryableResultBindings = action.entries.slice(smallestIndex)[0].output;
+    const smallestStream: IQueryOperationResultBindings = action.entries.slice(smallestIndex)[0].output;
     const remainingEntries = [ ...action.entries ];
     remainingEntries.splice(smallestIndex, 1);
     const remainingMetadatas: Record<string, any>[] = [ ...metadatas ];

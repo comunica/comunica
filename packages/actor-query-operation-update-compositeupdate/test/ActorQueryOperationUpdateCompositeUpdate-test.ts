@@ -1,7 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultVoid } from '@comunica/types';
+import type { IQueryOperationResultVoid } from '@comunica/types';
 import { ActorQueryOperationUpdateCompositeUpdate } from '../lib/ActorQueryOperationUpdateCompositeUpdate';
 
 describe('ActorQueryOperationUpdateCompositeUpdate', () => {
@@ -72,7 +72,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
           updates: [],
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.voidResult).resolves.toBeUndefined();
     });
@@ -86,7 +86,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
           ],
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.voidResult).resolves.toBeUndefined();
     });
@@ -102,7 +102,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
           ],
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.voidResult).resolves.toBeUndefined();
     });

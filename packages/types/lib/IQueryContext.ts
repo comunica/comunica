@@ -3,8 +3,8 @@ import type * as RDF from '@rdfjs/types';
 import type { IDataDestination } from './IDataDestination';
 import type { IDataSource } from './IDataSource';
 import type { IProxyHandler } from './IProxyHandler';
-import type { QueryExplainMode } from './IQueryableResult';
 import type { SourceType } from './IQueryEngine';
+import type { QueryExplainMode } from './IQueryOperationResult';
 
 /**
  * Query context when a string-based query was passed.

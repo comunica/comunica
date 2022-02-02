@@ -4,7 +4,7 @@ import { ActorQueryResultSerialize } from '@comunica/bus-query-result-serialize'
 import type { MediatorRdfSerializeHandle, MediatorRdfSerializeMediaTypeFormats,
   MediatorRdfSerializeMediaTypes } from '@comunica/bus-rdf-serialize';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResultQuads } from '@comunica/types';
+import type { IActionContext, IQueryOperationResultQuads } from '@comunica/types';
 
 /**
  * A comunica RDF Query Result Serialize Actor.
@@ -47,7 +47,7 @@ export class ActorQueryResultSerializeRdf extends ActorQueryResultSerialize
       context,
       handle: {
         context,
-        quadStream: (<IQueryableResultQuads> action).quadStream,
+        quadStream: (<IQueryOperationResultQuads> action).quadStream,
       },
       handleMediaType: mediaType,
     })).handle;

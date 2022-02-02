@@ -3,7 +3,7 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
@@ -30,7 +30,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
   }
 
   public async runOperation(operation: Algebra.OrderBy, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 

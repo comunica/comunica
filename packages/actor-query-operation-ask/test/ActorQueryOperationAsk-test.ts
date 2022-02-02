@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IQueryableResultBoolean } from '@comunica/types';
+import type { IQueryOperationResultBoolean } from '@comunica/types';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
@@ -100,7 +100,7 @@ describe('ActorQueryOperationAsk', () => {
 
     it('should run on a non-empty stream', () => {
       const op: any = { operation: { type: 'ask' }};
-      return actor.run(op).then(async(output: IQueryableResultBoolean) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.booleanResult).toBeTruthy();
       });
@@ -111,7 +111,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
-      return actorEmpty.run(op).then(async(output: IQueryableResultBoolean) => {
+      return actorEmpty.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.booleanResult).toBeFalsy();
       });
@@ -122,7 +122,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );
-      return actorError.run(op).then(async(output: IQueryableResultBoolean) => {
+      return actorError.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
         return expect(output.booleanResult).rejects.toBeTruthy();
       });

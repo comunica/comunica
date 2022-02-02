@@ -4,8 +4,8 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings, IActionContext, IQueryableResultBindings,
-  IQueryableResultBoolean,
+  Bindings, IActionContext, IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
@@ -66,14 +66,14 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
     // Write head
     const head: any = {};
-    if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
-      head.vars = (<IQueryableResultBindings> action).variables.map(variable => variable.value);
+    if (action.type === 'bindings' && (<IQueryOperationResultBindings> action).variables.length > 0) {
+      head.vars = (<IQueryOperationResultBindings> action).variables.map(variable => variable.value);
     }
     data.push(`{"head": ${JSON.stringify(head)},\n`);
     let empty = true;
 
     if (action.type === 'bindings') {
-      const resultStream: NodeJS.EventEmitter = (<IQueryableResultBindings> action).bindingsStream;
+      const resultStream: NodeJS.EventEmitter = (<IQueryOperationResultBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('error', (error: Error) => {
@@ -103,7 +103,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
       });
     } else {
       try {
-        data.push(`"boolean":${await (<IQueryableResultBoolean> action).booleanResult}\n}\n`);
+        data.push(`"boolean":${await (<IQueryOperationResultBoolean> action).booleanResult}\n}\n`);
         data.push(null);
       } catch (error: unknown) {
         data.once('newListener', () => data.emit('error', error));

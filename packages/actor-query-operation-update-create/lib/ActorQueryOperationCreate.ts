@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -22,7 +22,7 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
   }
 
   public async runOperation(operation: Algebra.Create, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     // Delegate to update-quads bus
     const { voidResult } = await this.mediatorUpdateQuads.mediate({
       createGraphs: {

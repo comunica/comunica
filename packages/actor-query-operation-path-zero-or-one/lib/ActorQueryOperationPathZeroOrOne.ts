@@ -2,7 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { Bindings, IQueryableResult, IActionContext } from '@comunica/types';
+import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -19,7 +19,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
   public async runOperation(
     operation: Algebra.Path,
     context: IActionContext,
-  ): Promise<IQueryableResult> {
+  ): Promise<IQueryOperationResult> {
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
     const sVar = operation.subject.termType === 'Variable';

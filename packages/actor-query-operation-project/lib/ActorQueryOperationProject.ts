@@ -6,8 +6,8 @@ import type {
   Bindings,
   BindingsStream,
   IActionContext,
-  IQueryableResult,
-  IQueryableResultBindings,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -27,9 +27,9 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
   }
 
   public async runOperation(operation: Algebra.Project, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     // Resolve the input
-    const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
 

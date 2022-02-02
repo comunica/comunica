@@ -4,7 +4,7 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -21,7 +21,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
   public async runOperation(
     operationOriginal: Algebra.Path,
     context: IActionContext,
-  ): Promise<IQueryableResult> {
+  ): Promise<IQueryOperationResult> {
     const predicate = <Algebra.Seq> operationOriginal.predicate;
 
     let joiner: RDF.Term = operationOriginal.subject;

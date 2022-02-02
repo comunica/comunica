@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultVoid, IQueryableResultBindings,
-  IQueryableResultBoolean, IQueryableResultQuads } from '@comunica/types';
+import type { IQueryOperationResultVoid, IQueryOperationResultBindings,
+  IQueryOperationResultBoolean, IQueryOperationResultQuads } from '@comunica/types';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';
@@ -199,7 +199,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       });
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ DF.variable('p') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
@@ -225,7 +225,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ DF.variable('myP') ],
         ) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ DF.variable('myP') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
@@ -256,7 +256,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       });
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ DF.variable('p') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
@@ -290,7 +290,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ DF.variable('myP') ],
         ) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ DF.variable('myP') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
@@ -315,7 +315,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         operation: factory.createAsk(
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
         ) };
-      const output: IQueryableResultBoolean = <any> await actor.run(op);
+      const output: IQueryOperationResultBoolean = <any> await actor.run(op);
 
       expect(await output.booleanResult).toEqual(true);
     });
@@ -332,7 +332,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) ],
         ) };
-      const output: IQueryableResultQuads = <any> await actor.run(op);
+      const output: IQueryOperationResultQuads = <any> await actor.run(op);
 
       expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: true });
 
@@ -351,7 +351,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           DF.namedNode('http://s'),
           true,
         ) };
-      const output: IQueryableResultVoid = <any> await actor.run(op);
+      const output: IQueryOperationResultVoid = <any> await actor.run(op);
 
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeFalsy();
@@ -411,7 +411,7 @@ this is a body`));
       });
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await (<any> output).metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
       await expect(output.bindingsStream).toEqualBindingsStream([

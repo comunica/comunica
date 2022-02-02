@@ -5,7 +5,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs/index';
@@ -29,8 +29,8 @@ describe('ActorRdfJoinOptionalBind', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
-    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryableResultBindings>,
-    IActionQueryOperation, IActorTest, IQueryableResultBindings>;
+    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryOperationResultBindings>,
+    IActionQueryOperation, IActorTest, IQueryOperationResultBindings>;
     let actor: ActorRdfJoinOptionalBind;
 
     beforeEach(() => {
@@ -38,7 +38,7 @@ describe('ActorRdfJoinOptionalBind', () => {
         mediate: async() => ({ selectivity: 0.8 }),
       };
       mediatorQueryOperation = <any> {
-        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryableResultBindings> => {
+        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
           let data: Bindings[] = [];
           switch ((<Algebra.Pattern> arg.operation).subject.value) {
             case '1':

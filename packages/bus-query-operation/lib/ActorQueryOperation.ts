@@ -3,11 +3,11 @@ import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
-  IQueryableResult,
-  IQueryableResultBindings,
-  IQueryableResultBoolean,
-  IQueryableResultQuads,
-  IQueryableResultVoid,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
+  IQueryOperationResultQuads,
+  IQueryOperationResultVoid,
   Bindings,
   IMetadata, IActionContext,
 } from '@comunica/types';
@@ -32,9 +32,9 @@ let bnodeCounter = 0;
  * * Output: IActorQueryOperationOutput: A bindings stream.
  *
  * @see IActionQueryOperation
- * @see IQueryableResult
+ * @see IQueryOperationResult
  */
-export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IQueryableResult> {
+export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IQueryOperationResult> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
@@ -45,45 +45,45 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * Safely cast a query operation output to a bindings output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryableResult} output A query operation output.
-   * @return {IQueryableResultBindings} A bindings query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultBindings} A bindings query operation output.
    */
-  public static getSafeBindings(output: IQueryableResult): IQueryableResultBindings {
+  public static getSafeBindings(output: IQueryOperationResult): IQueryOperationResultBindings {
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
-    return <IQueryableResultBindings> output;
+    return <IQueryOperationResultBindings> output;
   }
 
   /**
    * Safely cast a query operation output to a quads output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryableResult} output A query operation output.
-   * @return {IQueryableResultQuads} A quads query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultQuads} A quads query operation output.
    */
-  public static getSafeQuads(output: IQueryableResult): IQueryableResultQuads {
+  public static getSafeQuads(output: IQueryOperationResult): IQueryOperationResultQuads {
     ActorQueryOperation.validateQueryOutput(output, 'quads');
-    return <IQueryableResultQuads> output;
+    return <IQueryOperationResultQuads> output;
   }
 
   /**
    * Safely cast a query operation output to a boolean output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryableResult} output A query operation output.
-   * @return {IQueryableResultBoolean} A boolean query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultBoolean} A boolean query operation output.
    */
-  public static getSafeBoolean(output: IQueryableResult): IQueryableResultBoolean {
+  public static getSafeBoolean(output: IQueryOperationResult): IQueryOperationResultBoolean {
     ActorQueryOperation.validateQueryOutput(output, 'boolean');
-    return <IQueryableResultBoolean> output;
+    return <IQueryOperationResultBoolean> output;
   }
 
   /**
    * Safely cast a query operation output to a void output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryableResult} output A query operation output.
-   * @return {IQueryableResultVoid} A void query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultVoid} A void query operation output.
    */
-  public static getSafeVoid(output: IQueryableResult): IQueryableResultVoid {
+  public static getSafeVoid(output: IQueryOperationResult): IQueryOperationResultVoid {
     ActorQueryOperation.validateQueryOutput(output, 'void');
-    return <IQueryableResultVoid> output;
+    return <IQueryOperationResultVoid> output;
   }
 
   /**
@@ -99,10 +99,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
 
   /**
    * Throw an error if the output type does not match the expected type.
-   * @param {IQueryableResult} output A query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
    * @param {string} expectedType The expected output type.
    */
-  public static validateQueryOutput(output: IQueryableResult, expectedType: IQueryableResult['type']): void {
+  public static validateQueryOutput(output: IQueryOperationResult, expectedType: IQueryOperationResult['type']): void {
     if (output.type !== expectedType) {
       throw new Error(`Invalid query output type: Expected '${expectedType}' but got '${output.type}'`);
     }
@@ -213,9 +213,9 @@ export interface IActionQueryOperation extends IAction {
   operation: Algebra.Operation;
 }
 
-export type IActorQueryOperationArgs = IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult>;
+export type IActorQueryOperationArgs = IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult>;
 
-export type MediatorQueryOperation = Mediate<IActionQueryOperation, IQueryableResult>;
+export type MediatorQueryOperation = Mediate<IActionQueryOperation, IQueryOperationResult>;
 
 export interface IBaseExpressionContext {
   now?: Date;
