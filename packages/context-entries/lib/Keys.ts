@@ -15,6 +15,12 @@ import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
 
+/**
+ * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
+ * ActorIniQueryBase in @comunica/actor-init-query if it makes sense to use this entry externally.
+ * Also, add this shortcut to IQueryContextCommon in @comunica/types.
+ */
+
 export const KeysCore = {
   /**
    * A logger instance.
@@ -55,7 +61,7 @@ export const KeysInitQuery = {
   /**
    * Variables that have to be pre-bound to values in the query.
    */
-  initialBindings: new ActionContextKey<Bindings>('@comunica/actor-init-query:initialBindings'),
+  initialBindings: new ActionContextKey<RDF.Bindings>('@comunica/actor-init-query:initialBindings'),
   /**
    * Name of the provided query's format.
    */

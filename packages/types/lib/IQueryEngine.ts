@@ -3,15 +3,11 @@ import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
 import type { IDataSource } from './IDataSource';
 import type { IQueryExplained, QueryEnhanced } from './IQueryableResult';
+import type { QueryAlgebraContext, QueryStringContext } from './IQueryContext';
 
 export type QueryFormatType = string | Algebra.Operation;
 export type SourceType = IDataSource;
 export type QueryType = QueryEnhanced & { context?: IActionContext };
-export type QueryStringContext = RDF.QueryStringContext<SourceType> & IQueryContextCommon;
-export type QueryAlgebraContext = RDF.QueryAlgebraContext<SourceType> & IQueryContextCommon;
-export interface IQueryContextCommon {
-  // TODO: things like destination etc...
-}
 
 export interface IQueryEngine extends RDF.Queryable<
 QueryFormatType,

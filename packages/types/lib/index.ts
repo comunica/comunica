@@ -7,4 +7,5 @@ export * from './IMetadata';
 export * from './IPhysicalQueryPlanLogger';
 export * from './IProxyHandler';
 export * from './IQueryableResult';
+export * from './IQueryContext';
 export * from './IQueryEngine';
