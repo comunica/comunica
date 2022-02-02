@@ -93,7 +93,7 @@ describe('QueryEngineBase', () => {
 
   describe('An QueryEngineBase instance', () => {
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
-    let input: Readable;
+    let input: any;
     let actor: ActorInitQuery;
     let queryEngine: QueryEngineBase;
     const mediatorContextPreprocess: any = {
@@ -274,6 +274,79 @@ describe('QueryEngineBase', () => {
         const ctx: QueryStringContext = { sources: [ 'abc' ], [KeysInitQuery.explain.name]: 'parsed' };
         return expect(queryEngine.query('BLA', ctx)).rejects
           .toThrowError('Tried to explain a query when in query-only mode');
+      });
+    });
+
+    describe('SparqlQueryable methods', () => {
+      describe('queryBindings', () => {
+        it('handles a valid bindings query', async() => {
+          input = new ArrayIterator([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a') ],
+            ]),
+          ]);
+          await expect(await queryEngine.queryBindings('SELECT ...')).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a') ],
+            ]),
+          ]);
+        });
+
+        it('rejects for an invalid bindings query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'void' }));
+          await expect(queryEngine.queryBindings('INSERT ...')).rejects
+            .toThrowError(`Query result type 'bindings' was expected, while 'void' was found.`);
+        });
+      });
+
+      describe('queryQuads', () => {
+        it('handles a valid bindings query', async() => {
+          input = new ArrayIterator([
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+          ]);
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'quads', quadStream: input }));
+          expect(await arrayifyStream(await queryEngine.queryQuads('CONSTRUCT ...'))).toEqualRdfQuadArray([
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+          ]);
+        });
+
+        it('rejects for an invalid bindings query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'void' }));
+          await expect(queryEngine.queryQuads('INSERT ...')).rejects
+            .toThrowError(`Query result type 'quads' was expected, while 'void' was found.`);
+        });
+      });
+
+      describe('queryBoolean', () => {
+        it('handles a valid boolean query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({
+            type: 'boolean',
+            booleanResult: Promise.resolve(true),
+          }));
+          expect(await queryEngine.queryBoolean('ASK ...')).toEqual(true);
+        });
+
+        it('rejects for an invalid boolean query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'void' }));
+          await expect(queryEngine.queryBoolean('INSERT ...')).rejects
+            .toThrowError(`Query result type 'boolean' was expected, while 'void' was found.`);
+        });
+      });
+
+      describe('queryVoid', () => {
+        it('handles a valid void query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({
+            type: 'void',
+            voidResult: Promise.resolve(true),
+          }));
+          expect(await queryEngine.queryVoid('INSERT ...')).toEqual(true);
+        });
+
+        it('rejects for an invalid void query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'boolean' }));
+          await expect(queryEngine.queryVoid('ASK ...')).rejects
+            .toThrowError(`Query result type 'void' was expected, while 'boolean' was found.`);
+        });
       });
     });
 

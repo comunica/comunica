@@ -1,4 +1,5 @@
 import type * as RDF from '@rdfjs/types';
+import type { QuadTermName, QueryExecuteOptions, ResultStream } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Bindings, BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
@@ -110,6 +111,8 @@ export type IQueryOperationResult =
  * For example: SPARQL SELECT results
  */
 export interface IQueryBindingsEnhanced extends RDF.QueryBindings {
+  // Override with more specific return type
+  execute: (opts?: QueryExecuteOptions<RDF.Variable>) => Promise<BindingsStream>;
   /**
    * The collection of bindings after an 'end' event occured.
    */
@@ -121,6 +124,8 @@ export interface IQueryBindingsEnhanced extends RDF.QueryBindings {
  * For example: SPARQL CONSTRUCT results
  */
 export interface IQueryQuadsEnhanced extends RDF.QueryQuads {
+  // Override with more specific return type
+  execute: (opts?: QueryExecuteOptions<QuadTermName>) => Promise<AsyncIterator<RDF.Quad> & ResultStream<RDF.Quad>>;
   /**
    * The collection of bindings after an 'end' event occured.
    */

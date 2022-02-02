@@ -7,7 +7,8 @@ import type { Bindings, IActionContext, IPhysicalQueryPlanLogger,
   IQueryEngine, IQueryExplained,
   QueryFormatType,
   QueryType, QueryExplainMode, BindingsStream,
-  QueryAlgebraContext, QueryStringContext } from '@comunica/types';
+  QueryAlgebraContext, QueryStringContext, IQueryBindingsEnhanced,
+  IQueryQuadsEnhanced, QueryEnhanced } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -22,6 +23,46 @@ export class QueryEngineBase implements IQueryEngine {
 
   public constructor(actorInitQuery: ActorInitQueryBase) {
     this.actorInitQuery = actorInitQuery;
+  }
+
+  public async queryBindings<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<BindingsStream> {
+    return this.queryOfType<QueryFormatTypeInner, IQueryBindingsEnhanced>(query, context, 'bindings');
+  }
+
+  public async queryQuads<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>> {
+    return this.queryOfType<QueryFormatTypeInner, IQueryQuadsEnhanced>(query, context, 'quads');
+  }
+
+  public async queryBoolean<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<boolean> {
+    return this.queryOfType<QueryFormatTypeInner, RDF.QueryBoolean>(query, context, 'boolean');
+  }
+
+  public async queryVoid<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<void> {
+    return this.queryOfType<QueryFormatTypeInner, RDF.QueryVoid>(query, context, 'void');
+  }
+
+  protected async queryOfType<QueryFormatTypeInner extends QueryFormatType, QueryTypeOut extends QueryEnhanced>(
+    query: QueryFormatTypeInner,
+    context: (QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext) | undefined,
+    expectedType: QueryTypeOut['resultType'],
+  ): Promise<ReturnType<QueryTypeOut['execute']>> {
+    const result = await this.query<QueryFormatTypeInner>(query, context);
+    if (result.resultType === expectedType) {
+      return result.execute();
+    }
+    throw new Error(`Query result type '${expectedType}' was expected, while '${result.resultType}' was found.`);
   }
 
   /**

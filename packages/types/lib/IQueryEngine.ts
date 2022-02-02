@@ -9,13 +9,12 @@ export type QueryFormatType = string | Algebra.Operation;
 export type SourceType = IDataSource;
 export type QueryType = QueryEnhanced & { context?: IActionContext };
 
-export interface IQueryEngine extends RDF.Queryable<
-QueryFormatType,
-SourceType,
-QueryType,
-QueryStringContext,
-QueryAlgebraContext
-> {
+/**
+ * Base interface for a Comunica query engine.
+ */
+export interface IQueryEngine extends
+  RDF.Queryable<QueryFormatType, SourceType, QueryType, QueryStringContext, QueryAlgebraContext>,
+  RDF.SparqlQueryable<QueryFormatType, SourceType, QueryStringContext, QueryAlgebraContext, RDF.SparqlResultSupport> {
   /**
    * Evaluate the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
