@@ -9638,6 +9638,15 @@ rdf-terms@^1.6.2, rdf-terms@^1.7.0:
     lodash.uniqwith "^4.5.0"
     rdf-data-factory "^1.1.0"
 
+rdf-terms@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/rdf-terms/-/rdf-terms-1.7.1.tgz#d53891b208b357ed4b7738134decd537130098e6"
+  integrity sha512-zhYKqTrXTsoybs05Dpu1b+FDnS3+RsU4Fxsqj5aG7frPXDx0MMnIQOKUKpJL7KKYOtq/JE5JsLup6lggnxPqig==
+  dependencies:
+    "@rdfjs/types" "*"
+    rdf-data-factory "^1.1.0"
+    rdf-string "^1.6.0"
+
 rdf-test-suite-ldf@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.4.0.tgz#d670c40520cacfd5c95bc334f1c97795b1372d62"

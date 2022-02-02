@@ -6,7 +6,7 @@ import type { Writable } from 'stream';
 import * as url from 'url';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { ICliArgsHandler, IQueryableResult, IQueryableResultQuads } from '@comunica/types';
+import type { ICliArgsHandler, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import yargs from 'yargs';
@@ -330,13 +330,13 @@ export class HttpServiceSparqlEndpoint {
       context = { ...context, [KeysQueryOperation.readOnly.name]: readOnly };
     }
 
-    let result: IQueryableResult;
+    let result: QueryType;
     try {
       result = await engine.query(queryBody.value, context);
 
       // For update queries, also await the result
-      if (result.type === 'void') {
-        await result.voidResult;
+      if (result.resultType === 'void') {
+        await result.execute();
       }
     } catch (error: unknown) {
       stdout.write('[400] Bad request\n');
@@ -348,7 +348,7 @@ export class HttpServiceSparqlEndpoint {
 
     // Default to SPARQL JSON for bindings and boolean
     if (!mediaType) {
-      switch (result.type) {
+      switch (result.resultType) {
         case 'quads':
           mediaType = 'application/trig';
           break;
@@ -452,10 +452,10 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Flush results
-      const { data } = await engine.resultToString(<IQueryableResultQuads> {
+      const { data } = await engine.resultToString(<RDF.QueryQuads> {
+        resultType: 'quads',
+        execute: async() => new ArrayIterator(quads),
         metadata: <any> undefined,
-        type: 'quads',
-        quadStream: new ArrayIterator(quads),
       }, mediaType);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);

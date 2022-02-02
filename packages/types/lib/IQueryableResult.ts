@@ -62,7 +62,7 @@ export interface IQueryableResultQuads extends IQueryableResultStream {
   /**
    * The stream of quads.
    */
-  quadStream: RDF.Stream & AsyncIterator<RDF.Quad>;
+  quadStream: RDF.Stream & AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>;
 }
 
 /**
@@ -109,7 +109,7 @@ export type IQueryableResult =
  * Enhanced query operation output for a bindings stream.
  * For example: SPARQL SELECT results
  */
-export interface IQueryableResultBindingsEnhanced extends IQueryableResultBindings {
+export interface IQueryBindingsEnhanced extends RDF.QueryBindings {
   /**
    * The collection of bindings after an 'end' event occured.
    */
@@ -120,7 +120,7 @@ export interface IQueryableResultBindingsEnhanced extends IQueryableResultBindin
  * Enhanced query operation output for quads.
  * For example: SPARQL CONSTRUCT results
  */
-export interface IQueryableResultQuadsEnhanced extends IQueryableResultQuads {
+export interface IQueryQuadsEnhanced extends RDF.QueryQuads {
   /**
    * The collection of bindings after an 'end' event occured.
    */
@@ -131,11 +131,11 @@ export interface IQueryableResultQuadsEnhanced extends IQueryableResultQuads {
  * Enhanced query operation output.
  * @see IQueryableResultBindingsEnhanced, IQueryableResultQuadsEnhanced, IQueryableResultBoolean, IQueryableResultVoid
  */
-export type IQueryableResultEnhanced =
-  IQueryableResultBindingsEnhanced |
-  IQueryableResultQuadsEnhanced |
-  IQueryableResultBoolean |
-  IQueryableResultVoid;
+export type QueryEnhanced =
+  IQueryBindingsEnhanced |
+  IQueryQuadsEnhanced |
+  RDF.QueryBoolean |
+  RDF.QueryVoid;
 
 /**
  * Different manners in which a query can be explained.

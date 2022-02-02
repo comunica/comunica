@@ -1,3 +1,4 @@
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Bindings } from '../lib/Bindings';
 import { BindingsFactory, bindingsToString } from '../lib/BindingsFactory';
@@ -5,7 +6,7 @@ import { BindingsFactory, bindingsToString } from '../lib/BindingsFactory';
 const DF = new DataFactory();
 
 describe('BindingsFactory', () => {
-  let factory: BindingsFactory;
+  let factory: RDF.BindingsFactory;
 
   beforeEach(() => {
     factory = new BindingsFactory(DF);

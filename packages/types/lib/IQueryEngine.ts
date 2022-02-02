@@ -1,15 +1,25 @@
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
-import type { IQueryableResult, IQueryExplained } from './IQueryableResult';
+import type { IDataSource } from './IDataSource';
+import type { IQueryExplained, QueryEnhanced } from './IQueryableResult';
 
-export interface IQueryEngine {
-  /**
-   * Evaluate the given query
-   * @param {string | Algebra.Operation} query A query string or algebra.
-   * @param context An optional query context.
-   * @return {Promise<IQueryableResult>} A promise that resolves to the query output.
-   */
-  query: (query: string | Algebra.Operation, context?: any) => Promise<IQueryableResult>;
+export type QueryFormatType = string | Algebra.Operation;
+export type SourceType = IDataSource;
+export type QueryType = QueryEnhanced & { context?: IActionContext };
+export type QueryStringContext = RDF.QueryStringContext<SourceType> & IQueryContextCommon;
+export type QueryAlgebraContext = RDF.QueryAlgebraContext<SourceType> & IQueryContextCommon;
+export interface IQueryContextCommon {
+  // TODO: things like destination etc...
+}
+
+export interface IQueryEngine extends RDF.Queryable<
+QueryFormatType,
+SourceType,
+QueryType,
+QueryStringContext,
+QueryAlgebraContext
+> {
   /**
    * Evaluate the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
@@ -17,10 +27,10 @@ export interface IQueryEngine {
    * @return {Promise<IQueryableResult | IQueryExplained>}
    *  A promise that resolves to the query output.
    */
-  queryOrExplain: (
-    query: string | Algebra.Operation,
-    context?: any,
-  ) => Promise<IQueryableResult | IQueryExplained>;
+  queryOrExplain: <QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ) => Promise<QueryType | IQueryExplained>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
@@ -33,12 +43,12 @@ export interface IQueryEngine {
   getResultMediaTypeFormats: (context: IActionContext) => Promise<Record<string, string>>;
   /**
    * Convert a query result to a string stream based on a certain media type.
-   * @param {IQueryableResult} queryResult A query result.
+   * @param {QueryType} queryResult A query result.
    * @param {string} mediaType A media type.
-   * @param {ActionContext} context An optional context.
+   * @param {IActionContext} context An optional context.
    * @return {Promise<IActorQueryResultSerializeOutput>} A text stream.
    */
-  resultToString: (queryResult: IQueryableResult, mediaType?: string, context?: any) => any;
+  resultToString: (queryResult: QueryType, mediaType?: string, context?: any) => any;
   /**
    * Invalidate all internal caches related to the given page URL.
    * If no page URL is given, then all pages will be invalidated.
