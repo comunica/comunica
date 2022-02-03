@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.0.0-beta.0"></a>
+## [v2.0.0-beta.0](https://github.com/comunica/sparqlee/compare/v1.10.0...v2.0.0-beta.0) - 2022-02-03
+
+### Changed
+* [Migrate to new RDF/JS Bindings interface](https://github.com/comunica/sparqlee/commit/eda1d4cb2bb7c0a0491df6f646f325f6bb19d5cd)
+
 <a name="v1.10.0"></a>
 ## [v1.10.0](https://github.com/comunica/sparqlee/compare/v1.9.0...v1.10.0) - 2021-08-30
 
