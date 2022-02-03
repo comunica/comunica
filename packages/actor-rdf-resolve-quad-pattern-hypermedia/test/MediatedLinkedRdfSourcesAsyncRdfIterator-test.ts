@@ -1,10 +1,10 @@
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type {
-  IActionRdfDereference,
-  IActorRdfDereferenceOutput,
-  MediatorRdfDereference,
-} from '@comunica/bus-rdf-dereference';
+  IActionDereferenceRdf,
+  IActorDereferenceRdfOutput,
+  MediatorDereferenceRdf,
+} from '@comunica/bus-dereference-rdf';
 import type { IActionRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -21,7 +21,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let p;
     let o;
     let g;
-    let mediatorRdfDereference: MediatorRdfDereference;
+    let mediatorDereferenceRdf: MediatorDereferenceRdf;
     let mediatorMetadata: any;
     let mediatorMetadataExtract: any;
     let mediatorRdfResolveHypermedia: any;
@@ -35,9 +35,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       o = DF.namedNode('o');
       g = DF.namedNode('g');
       // @ts-expect-error
-      mediatorRdfDereference = {
+      mediatorDereferenceRdf = {
         // @ts-expect-error
-        mediate: jest.fn(({ url }: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> => Promise.resolve({
+        mediate: jest.fn(({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> => Promise.resolve({
           url,
           data: `QUADS(${url})+METADATA`,
           metadata: { triples: true },
@@ -68,7 +68,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       const mediators: any = {
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
@@ -181,7 +181,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
         });
-        expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith({
+        expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
           context: new ActionContext({ a: 'b' }),
         });
@@ -209,7 +209,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
       it('should delegate dereference errors to the source', async() => {
         const error = new Error('MediatedLinkedRdfSourcesAsyncRdfIterator dereference error');
-        mediatorRdfDereference.mediate = () => Promise.reject(error);
+        mediatorDereferenceRdf.mediate = () => Promise.reject(error);
         const ret = await source.getSource({ url: 'startUrl' }, {});
         expect(ret).toEqual({
           link: { url: 'startUrl' },

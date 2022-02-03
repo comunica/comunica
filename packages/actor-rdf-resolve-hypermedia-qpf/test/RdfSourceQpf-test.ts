@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import { Readable } from 'stream';
-import type { IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { ActionContext, Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -18,7 +18,7 @@ describe('RdfSourceQpf', () => {
   let metadata: any;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
-  let mediatorRdfDereference: any;
+  let mediatorDereferenceRdf: any;
 
   let S: RDF.Term;
   let P: RDF.Term;
@@ -40,7 +40,7 @@ describe('RdfSourceQpf', () => {
         action.metadata.on('end', () => resolve({ metadata: { next: 'NEXT' }}));
       }),
     };
-    mediatorRdfDereference = {
+    mediatorDereferenceRdf = {
       mediate: (args: any) => Promise.resolve({
         url: args.url,
         data: streamifyArray([
@@ -71,7 +71,7 @@ describe('RdfSourceQpf', () => {
     source = new RdfSourceQpf(
       mediatorMetadata,
       mediatorMetadataExtract,
-      mediatorRdfDereference,
+      mediatorDereferenceRdf,
       's',
       'p',
       'o',
@@ -99,7 +99,7 @@ describe('RdfSourceQpf', () => {
       const s = new RdfSourceQpf(
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         'o',
         'p',
         's',
@@ -116,7 +116,7 @@ describe('RdfSourceQpf', () => {
       const s = new RdfSourceQpf(
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         'o',
         'p',
         's',
@@ -276,7 +276,7 @@ describe('RdfSourceQpf', () => {
     // The following test is not applicable anymore.
     // Filtering with shared variables has been moved up into the quad pattern query operation actor
     // it('should handle a pattern with variables that occur multiple times in the pattern', async () => {
-    // mediatorRdfDereference.mediate = (args) => Promise.resolve({
+    // mediatorDereferenceRdf.mediate = (args) => Promise.resolve({
     //     url: args.url,
     //     quads: streamifyArray([
     //       quad('s1', 'p1', 'o1'),
@@ -298,7 +298,7 @@ describe('RdfSourceQpf', () => {
       quads._read = () => {
         quads.emit('error', error);
       };
-      mediatorRdfDereference.mediate = (args: any) => Promise.resolve({
+      mediatorDereferenceRdf.mediate = (args: any) => Promise.resolve({
         url: args.url,
         data: quads,
         metadata: { triples: false },
@@ -355,7 +355,7 @@ describe('RdfSourceQpf with a custom default graph', () => {
   let metadata: any;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
-  let mediatorRdfDereference: any;
+  let mediatorDereferenceRdf: any;
 
   let S: RDF.Term;
   let P: RDF.Term;
@@ -374,8 +374,8 @@ describe('RdfSourceQpf with a custom default graph', () => {
     mediatorMetadataExtract = {
       mediate: () => Promise.resolve({ metadata: { next: 'NEXT' }}),
     };
-    mediatorRdfDereference = {
-      mediate: (args: any): Promise<IActorRdfDereferenceOutput> => Promise.resolve({
+    mediatorDereferenceRdf = {
+      mediate: (args: any): Promise<IActorDereferenceRdfOutput> => Promise.resolve({
         url: args.url,
         data: streamifyArray([
           quad('s1', 'p1', 'o1', 'DEFAULT_GRAPH'),
@@ -412,7 +412,7 @@ describe('RdfSourceQpf with a custom default graph', () => {
     source = new RdfSourceQpf(
       mediatorMetadata,
       mediatorMetadataExtract,
-      mediatorRdfDereference,
+      mediatorDereferenceRdf,
       's',
       'p',
       'o',

@@ -1,5 +1,5 @@
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
-import { ActorAbstractParseFixedMediaTypes } from '@comunica/actor-abstract-parse';
+import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import type { IActorTest } from '@comunica/core';
 import type { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
 
@@ -14,7 +14,7 @@ import type { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
  * @see IActionInit
  */
 export abstract class ActorRdfParseFixedMediaTypes extends
-  ActorAbstractParseFixedMediaTypes<IActionRdfParse, IActorRdfParseOutput> {
+  ActorAbstractMediaTypedFixed<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
   /* eslint-disable max-len */
   /**
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
@@ -24,6 +24,10 @@ export abstract class ActorRdfParseFixedMediaTypes extends
     super(args);
   }
   /* eslint-enable max-len */
+
+  public async testHandleChecked(action: IActionRdfParse): Promise<boolean> {
+    return true;
+  }
 }
 
 export type IActorRdfParseFixedMediaTypesArgs = IActorArgsMediaTypedFixed<

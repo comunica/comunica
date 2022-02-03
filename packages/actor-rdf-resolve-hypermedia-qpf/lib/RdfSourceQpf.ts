@@ -1,5 +1,5 @@
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
-import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
@@ -22,7 +22,7 @@ export class RdfSourceQpf implements IQuadSource {
 
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
 
-  private readonly mediatorRdfDereference: MediatorRdfDereference;
+  private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
 
   private readonly subjectUri: string;
   private readonly predicateUri: string;
@@ -34,12 +34,12 @@ export class RdfSourceQpf implements IQuadSource {
 
   public constructor(mediatorMetadata: MediatorRdfMetadata,
     mediatorMetadataExtract: MediatorRdfMetadataExtract,
-    mediatorRdfDereference: MediatorRdfDereference,
+    mediatorDereferenceRdf: MediatorDereferenceRdf,
     subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
     metadata: Record<string, any>, context: IActionContext, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
-    this.mediatorRdfDereference = mediatorRdfDereference;
+    this.mediatorDereferenceRdf = mediatorDereferenceRdf;
     this.subjectUri = subjectUri;
     this.predicateUri = predicateUri;
     this.objectUri = objectUri;
@@ -136,22 +136,22 @@ export class RdfSourceQpf implements IQuadSource {
 
     const quads = new TransformIterator(async() => {
       let url: string = this.createFragmentUri(this.searchForm, subject, predicate, object, graph);
-      const rdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ context: this.context, url });
-      url = rdfDereferenceOutput.url;
+      const dereferenceRdfOutput = await this.mediatorDereferenceRdf.mediate({ context: this.context, url });
+      url = dereferenceRdfOutput.url;
 
       // Determine the metadata and emit it
       const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
         { context: this.context,
           url,
-          quads: rdfDereferenceOutput.data,
-          triples: rdfDereferenceOutput.metadata?.triples },
+          quads: dereferenceRdfOutput.data,
+          triples: dereferenceRdfOutput.metadata?.triples },
       );
       const metadataExtractPromise = this.mediatorMetadataExtract
         .mediate({
           context: this.context,
           url,
           metadata: rdfMetadataOuput.metadata,
-          requestTime: rdfDereferenceOutput.requestTime,
+          requestTime: dereferenceRdfOutput.requestTime,
         })
         .then(({ metadata }) => quads
           .setProperty('metadata', { ...metadata, canContainUndefs: false }));

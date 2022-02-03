@@ -78,7 +78,7 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
         input: action.url,
       });
     } catch (error: unknown) {
-      return this.handleDereferenceError(action, error, undefined, 0);
+      return this.handleDereferenceErrors(action, error);
     }
     // The response URL can be relative to the given URL
     const url = resolveRelative(httpResponse.url, action.url);
@@ -94,7 +94,7 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
 
       if (!action.acceptErrors) {
         const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
-        return this.handleDereferenceError(action, error, httpResponse.headers, requestTime);
+        return this.handleDereferenceErrors(action, error, httpResponse.headers, requestTime);
       }
     }
 

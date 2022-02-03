@@ -15,6 +15,6 @@ export class ActorDereferenceFallback extends ActorDereference {
   }
 
   public async run(action: IActionDereference): Promise<IActorDereferenceOutput> {
-    return this.handleDereferenceError(action, new Error(`Could not dereference '${action.url}'`), undefined, 0);
+    return this.handleDereferenceErrors(action, new Error(`Could not dereference '${action.url}'`));
   }
 }

@@ -1,4 +1,4 @@
-import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -8,7 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { MediatedQuadSource } from '../lib/MediatedQuadSource';
-import { mediators as utilMediators } from './MediatorRdfDereference-util';
+import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 
 const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
@@ -17,7 +17,7 @@ const v = DF.variable('v');
 
 describe('MediatedQuadSource', () => {
   let context: IActionContext;
-  let mediatorRdfDereference: MediatorRdfDereference;
+  let mediatorDereferenceRdf: MediatorDereferenceRdf;
   let mediatorMetadata;
   let mediatorMetadataExtract;
   let mediatorRdfResolveHypermedia: any;
@@ -27,7 +27,7 @@ describe('MediatedQuadSource', () => {
 
   beforeEach(() => {
     context = new ActionContext({});
-    mediatorRdfDereference = utilMediators.mediatorRdfDereference;
+    mediatorDereferenceRdf = utilMediators.mediatorDereferenceRdf;
     mediatorMetadata = utilMediators.mediatorMetadata;
     mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
     mediatorRdfResolveHypermedia = utilMediators.mediatorRdfResolveHypermedia;

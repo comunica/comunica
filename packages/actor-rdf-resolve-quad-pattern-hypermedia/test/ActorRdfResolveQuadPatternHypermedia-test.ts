@@ -1,4 +1,4 @@
-import type { MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
@@ -10,14 +10,14 @@ import type { IActionContext } from '@comunica/types';
 import 'jest-rdf';
 import { MediatedQuadSource } from '..';
 import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
-import { mediators as utilMediators } from './MediatorRdfDereference-util';
+import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let bus: any;
-  let mediatorRdfDereference: MediatorRdfDereference;
+  let mediatorDereferenceRdf: MediatorDereferenceRdf;
   let mediatorMetadata: MediatorRdfMetadata;
   let mediatorMetadataExtract: MediatorRdfMetadataExtract;
   let mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
@@ -26,7 +26,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    mediatorRdfDereference = utilMediators.mediatorRdfDereference;
+    mediatorDereferenceRdf = utilMediators.mediatorDereferenceRdf;
     mediatorMetadata = utilMediators.mediatorMetadata;
     mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
     mediatorRdfResolveHypermedia = utilMediators.mediatorRdfResolveHypermedia;
@@ -42,7 +42,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
     it('should be a ActorRdfResolveQuadPatternHypermedia constructor', () => {
       expect(new (<any> ActorRdfResolveQuadPatternHypermedia)({
         bus,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfResolveHypermedia,
@@ -59,7 +59,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         bus,
         cacheSize: 10,
         httpInvalidator,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfResolveHypermedia,
@@ -90,7 +90,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
@@ -227,7 +227,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           httpInvalidator,
           mediatorMetadata,
           mediatorMetadataExtract,
-          mediatorRdfDereference,
+          mediatorDereferenceRdf,
           mediatorRdfResolveHypermedia,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,

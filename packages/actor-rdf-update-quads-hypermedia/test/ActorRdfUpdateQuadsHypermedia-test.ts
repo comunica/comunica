@@ -1,4 +1,4 @@
-import type { IActionRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActionDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { IActionRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
@@ -9,7 +9,7 @@ import { ActorRdfUpdateQuadsHypermedia } from '../lib/ActorRdfUpdateQuadsHyperme
 describe('ActorRdfUpdateQuadsHypermedia', () => {
   let bus: any;
   let context: IActionContext;
-  let mediatorRdfDereference: any;
+  let mediatorDereferenceRdf: any;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
   let mediatorRdfUpdateHypermedia: any;
@@ -26,7 +26,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
     let actor: ActorRdfUpdateQuadsHypermedia;
 
     beforeEach(() => {
-      mediatorRdfDereference = {
+      mediatorDereferenceRdf = {
         mediate: jest.fn(async({ url }: any) => {
           const data = {
             data: 'QUADS',
@@ -63,7 +63,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         bus,
         cacheSize: 10,
         httpInvalidator,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfUpdateHypermedia,
@@ -106,7 +106,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         const destination = await actor.getDestination(context);
         expect(destination).toEqual('DEST0');
 
-        expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith<[IActionRdfDereference]>({
+        expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledWith<[IActionDereferenceRdf]>({
           context,
           url: 'abc',
           acceptErrors: true,
@@ -188,7 +188,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
           bus,
           cacheSize: 0,
           httpInvalidator,
-          mediatorRdfDereference,
+          mediatorDereferenceRdf,
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorRdfUpdateHypermedia,
@@ -205,7 +205,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
       it('should delegate dereference errors to the destination', async() => {
         const error = new Error('ActorRdfUpdateQuadsHypermedia dereference error');
-        mediatorRdfDereference.mediate = () => Promise.reject(error);
+        mediatorDereferenceRdf.mediate = () => Promise.reject(error);
         await actor.getDestination(context);
 
         expect(mediatorRdfUpdateHypermedia.mediate).toHaveBeenCalledWith({
@@ -218,7 +218,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should delegate exist-false dereferences to the destination', async() => {
-        mediatorRdfDereference.mediate = jest.fn(async({ url }: any) => {
+        mediatorDereferenceRdf.mediate = jest.fn(async({ url }: any) => {
           const data = {
             quads: 'QUADS',
             exists: false,

@@ -9,10 +9,8 @@ import type { IActionAbstractMediaTyped,
   IActionAbstractMediaTypedMediaTypeFormats,
   IActorOutputAbstractMediaTypedMediaTypeFormats,
   IActorTestAbstractMediaTypedMediaTypeFormats } from '@comunica/actor-abstract-mediatyped';
+import { ActorAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput } from '@comunica/actor-abstract-parse';
-import {
-  ActorAbstractParse,
-} from '@comunica/actor-abstract-parse';
 import type { IActorTest, Mediate } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -26,7 +24,7 @@ import type * as RDF from '@rdfjs/types';
  *
  * @see IActionInit
  */
-export abstract class ActorRdfParse extends ActorAbstractParse<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
+export abstract class ActorRdfParse extends ActorAbstractMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */

@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/bus-rdf-dereference",
+  "name": "@comunica/bus-dereference-rdf",
   "version": "2.0.0",
-  "description": "A comunica bus for 'http' events.",
+  "description": "A comunica bus for dereferencing a path or URL into a stream of quads.",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/bus-rdf-dereference"
+    "directory": "packages/bus-dereference-rdf"
   },
   "publishConfig": {
     "access": "public"
@@ -29,9 +29,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-dereference-parse": "^2.0.0",
     "@comunica/context-entries": "^2.0.0",
     "@comunica/core": "^2.0.0",
+    "@comunica/bus-dereference": "^2.0.0",
     "@rdfjs/types": "*"
   },
   "scripts": {

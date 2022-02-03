@@ -11,18 +11,18 @@ import { emptyReadable } from '@comunica/bus-dereference';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
-import { AbstractDereferenceParse } from '../lib/ActorAbstractDereferenceParse';
+import { ActorDereferenceParse } from '../lib/ActorDereferenceParse';
 
 const arrayifyStream = require('arrayify-stream');
 
-class ActorParseDereference extends AbstractDereferenceParse<any, any, any> {}
+class MyActorParseDereference extends ActorDereferenceParse<any, any, any> {}
 
 describe('ActorAbstractDereferenceParse', () => {
   let context: ActionContext;
-  let actor: ActorParseDereference;
+  let actor: MyActorParseDereference;
 
   beforeEach(() => {
-    actor = new ActorParseDereference({
+    actor = new MyActorParseDereference({
       bus: new Bus({ name: 'bus' }),
       // @ts-expect-error
       mediatorDereference: {

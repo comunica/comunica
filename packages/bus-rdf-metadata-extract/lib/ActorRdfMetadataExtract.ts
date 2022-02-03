@@ -10,8 +10,8 @@ import type * as RDF from '@rdfjs/types';
  * * Test:   <none>
  * * Output: IActorRdfMetadataExtractOutput: A metadata hash.
  *
- * @see IActionRdfDereference
- * @see IActorRdfDereferenceOutput
+ * @see IActionDereferenceRdf
+ * @see IActorDereferenceRdfOutput
  */
 export abstract class ActorRdfMetadataExtract
   extends Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {

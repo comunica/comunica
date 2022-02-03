@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-dereference-http.svg)](https://www.npmjs.com/package/@comunica/actor-dereference-http)
 
-An [Dereference](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference) actor that
+An [Dereference](https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf) actor that
 resolves the URL using the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
 
 An Dereference actor implementation for Comunica that resolves the URL using the HTTP bus.

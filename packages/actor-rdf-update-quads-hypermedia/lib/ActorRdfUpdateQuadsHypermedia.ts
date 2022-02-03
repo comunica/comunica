@@ -1,5 +1,5 @@
+import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import type { IActorRdfDereferenceOutput, MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
@@ -18,7 +18,7 @@ import LRUCache = require('lru-cache');
  * A comunica Hypermedia RDF Update Quads Actor.
  */
 export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestination {
-  public readonly mediatorRdfDereference: MediatorRdfDereference;
+  public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   public readonly mediatorMetadata: MediatorRdfMetadata;
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
@@ -60,21 +60,21 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
       let exists: boolean;
       try {
         // Dereference destination URL
-        const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
+        const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
           .mediate({ context, url, acceptErrors: true });
-        exists = rdfDereferenceOutput.exists;
-        url = rdfDereferenceOutput.url;
+        exists = dereferenceRdfOutput.exists;
+        url = dereferenceRdfOutput.url;
 
         // Determine the metadata
         const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-          { context, url, quads: rdfDereferenceOutput.data, triples: rdfDereferenceOutput.metadata?.triples },
+          { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
         );
         metadata = (await this.mediatorMetadataExtract.mediate({
           context,
           url,
           metadata: rdfMetadataOuput.metadata,
-          headers: rdfDereferenceOutput.headers,
-          requestTime: rdfDereferenceOutput.requestTime,
+          headers: dereferenceRdfOutput.headers,
+          requestTime: dereferenceRdfOutput.requestTime,
         })).metadata;
       } catch {
         metadata = {};
@@ -115,7 +115,7 @@ export interface IActorRdfUpdateQuadsHypermediaArgs extends IActorRdfUpdateQuads
   /**
    * The RDF dereference mediator
    */
-  mediatorRdfDereference: MediatorRdfDereference;
+  mediatorDereferenceRdf: MediatorDereferenceRdf;
   /**
    * The metadata mediator
    */

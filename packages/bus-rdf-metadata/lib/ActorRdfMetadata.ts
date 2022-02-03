@@ -10,8 +10,8 @@ import type * as RDF from '@rdfjs/types';
  * * Test:   <none>
  * * Output: IActorRdfMetadataOutput: An RDF quad data stream and RDF quad metadata stream.
  *
- * @see IActionRdfDereference
- * @see IActorRdfDereferenceOutput
+ * @see IActionDereferenceRdf
+ * @see IActorDereferenceRdfOutput
  */
 export abstract class ActorRdfMetadata extends Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
   /**

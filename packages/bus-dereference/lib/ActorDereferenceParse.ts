@@ -3,9 +3,8 @@ import { PassThrough } from 'stream';
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
 import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
-import { emptyReadable, isHardError } from '@comunica/bus-dereference';
-import type { IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import { ActorDereferenceBase, isHardError } from './ActorDereferenceBase';
 
 /**
  * Get the media type based on the extension of the given path,
@@ -21,7 +20,7 @@ export function getMediaTypeFromExtension(path: string, mediaMappings?: Record<s
   return (dotIndex >= 0 && mediaMappings?.[path.slice(dotIndex + 1)]) || '';
 }
 
-export interface IAbstractDereferenceParseArgs<
+export interface IActorDereferenceParseArgs<
   S,
   K extends IParseMetadata = IParseMetadata,
   M extends IParseMetadata = IParseMetadata
@@ -41,17 +40,17 @@ export interface IAbstractDereferenceParseArgs<
  * Output: IActorDereferenceParseOutput: A data stream of type output by the Parser.
  *
  */
-export abstract class AbstractDereferenceParse<
+export abstract class ActorDereferenceParse<
   S,
   K extends IParseMetadata = IParseMetadata,
   M extends IParseMetadata = IParseMetadata
-> extends Actor<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
+> extends ActorDereferenceBase<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   public readonly mediatorDereference: MediatorDereference;
   public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   public readonly mediatorParseMediatypes: MediateMediaTypes;
   public readonly mediaMappings: Record<string, string>;
 
-  public constructor(args: IAbstractDereferenceParseArgs<S, K, M>) {
+  public constructor(args: IActorDereferenceParseArgs<S, K, M>) {
     super(args);
   }
 
@@ -102,11 +101,7 @@ export abstract class AbstractDereferenceParse<
     } catch (error: unknown) {
       // Close the body, to avoid process to hang
       await dereference.data.close?.();
-      if (isHardError(context)) {
-        throw error;
-      }
-      this.logError(context, (<Error> error).message);
-      result = { data: emptyReadable() };
+      result = await this.dereferenceErrorHandler(action, error, {});
     }
 
     // Return the parsed stream and any metadata
@@ -125,33 +120,5 @@ export interface IActionDereferenceParse<T extends IParseMetadata = IParseMetada
   metadata?: T;
 }
 
-export interface IActorDereferenceOutputPartial extends IActorOutput {
-  /**
-   * The page on which the output was found.
-   *
-   * This is not necessarily the same as the original input url,
-   * as this may have changed due to redirects.
-   */
-  url: string;
-  /**
-   * This will always be true, unless `acceptErrors` was set to true in the action and the dereferencing failed.
-   */
-  exists: boolean;
-  /**
-   * The time it took to request the page in milliseconds.
-   * This is the time until the first byte arrives.
-   */
-  requestTime: number;
-  /**
-   * The returned headers of the final URL.
-   */
-  headers?: Headers;
-  /**
-   * The mediatype of the source
-   */
-  mediaType?: string;
-}
-
-export interface IActorDereferenceParseOutput<T, K extends IParseMetadata = IParseMetadata> extends
-  IActorDereferenceOutputPartial, IActorParseOutput<T, K> {
-}
+export type IActorDereferenceParseOutput<T, K extends IParseMetadata = IParseMetadata>
+  = Omit<IActorDereferenceOutput, 'data'> & IActorParseOutput<T, K>;

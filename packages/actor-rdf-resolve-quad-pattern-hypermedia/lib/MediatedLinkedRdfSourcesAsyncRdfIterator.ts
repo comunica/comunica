@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import type { IActorRdfDereferenceOutput, MediatorRdfDereference } from '@comunica/bus-rdf-dereference';
+import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
@@ -19,7 +19,7 @@ import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIter
  * @see LinkedRdfSourcesAsyncRdfIterator
  */
 export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAsyncRdfIterator {
-  private readonly mediatorRdfDereference: MediatorRdfDereference;
+  private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   private readonly mediatorMetadata: MediatorRdfMetadata;
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   private readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
@@ -36,7 +36,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     super(cacheSize, subject, predicate, object, graph, firstUrl);
     this.context = context;
     this.forceSourceType = forceSourceType;
-    this.mediatorRdfDereference = mediators.mediatorRdfDereference;
+    this.mediatorDereferenceRdf = mediators.mediatorDereferenceRdf;
     this.mediatorMetadata = mediators.mediatorMetadata;
     this.mediatorMetadataExtract = mediators.mediatorMetadataExtract;
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
@@ -84,21 +84,21 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     let quads: RDF.Stream;
     let metadata: Record<string, any>;
     try {
-      const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
+      const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
         .mediate({ context, url });
-      url = rdfDereferenceOutput.url;
+      url = dereferenceRdfOutput.url;
 
       // Determine the metadata
       const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-        { context, url, quads: rdfDereferenceOutput.data, triples: rdfDereferenceOutput.metadata?.triples },
+        { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
       );
       metadata = (await this.mediatorMetadataExtract.mediate({
         context,
         url,
         // The problem appears to be conflicting metadata keys here
         metadata: rdfMetadataOutput.metadata,
-        headers: rdfDereferenceOutput.headers,
-        requestTime: rdfDereferenceOutput.requestTime,
+        headers: dereferenceRdfOutput.headers,
+        requestTime: dereferenceRdfOutput.requestTime,
       })).metadata;
       quads = rdfMetadataOutput.data;
 
@@ -139,7 +139,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 }
 
 export interface IMediatorArgs {
-  mediatorRdfDereference: MediatorRdfDereference;
+  mediatorDereferenceRdf: MediatorDereferenceRdf;
   mediatorMetadata: MediatorRdfMetadata;
   mediatorMetadataExtract: MediatorRdfMetadataExtract;
   mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;

@@ -1,8 +1,12 @@
-import type { IAbstractDereferenceParseArgs,
+import type {
+  IActorDereferenceOutput,
   IActionDereferenceParse,
-  IActorDereferenceParseOutput } from '@comunica/actor-abstract-dereference-parse';
-import { AbstractDereferenceParse } from '@comunica/actor-abstract-dereference-parse';
-import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
+  IActorDereferenceParseArgs,
+  IActorDereferenceParseOutput,
+} from '@comunica/bus-dereference';
+import {
+  ActorDereferenceParse,
+} from '@comunica/bus-dereference';
 import type { IActionRdfParseMetadata, IActorRdfParseOutputMetadata } from '@comunica/bus-rdf-parse';
 import type { Mediate } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
@@ -11,29 +15,29 @@ import type * as RDF from '@rdfjs/types';
  * A base actor for dereferencing URLs to quad streams.
  *
  * Actor types:
- * * Input:  IActionRdfDereference:      A URL.
+ * * Input:  IActionDereferenceRdf:      A URL.
  * * Test:   <none>
- * * Output: IActorRdfDereferenceOutput: A quad stream.
+ * * Output: IActorDereferenceRdfOutput: A quad stream.
  *
- * @see IActionRdfDereference
- * @see IActorRdfDereferenceOutput
+ * @see IActionDereferenceRdf
+ * @see IActorDereferenceRdfOutput
  */
-export class ActorRdfDereference extends
-  AbstractDereferenceParse<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
+export abstract class ActorDereferenceRdf extends
+  ActorDereferenceParse<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorRdfDereferenceArgs) {
+  public constructor(args: IActorDereferenceRdfArgs) {
     super(args);
   }
 
-  public async getMetadata(dereference: IActorDereferenceOutput): Promise<IActionRdfParseMetadata | undefined> {
+  public async getMetadata(dereference: IActorDereferenceOutput): Promise<IActionRdfParseMetadata> {
     return { baseIRI: dereference.url };
   }
 }
 
-export interface IActorRdfDereferenceArgs extends
-  IAbstractDereferenceParseArgs<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
+export interface IActorDereferenceRdfArgs extends
+  IActorDereferenceParseArgs<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
   /**
    * A collection of mappings, mapping file extensions to their corresponding media type.
    * @range {json}
@@ -63,8 +67,8 @@ export interface IActorRdfDereferenceArgs extends
   mediaMappings: Record<string, string>;
 }
 
-export type IActionRdfDereference = IActionDereferenceParse<IActionRdfParseMetadata>;
+export type IActionDereferenceRdf = IActionDereferenceParse<IActionRdfParseMetadata>;
 
-export type IActorRdfDereferenceOutput = IActorDereferenceParseOutput<RDF.Stream, IActorRdfParseOutputMetadata>;
+export type IActorDereferenceRdfOutput = IActorDereferenceParseOutput<RDF.Stream, IActorRdfParseOutputMetadata>;
 
-export type MediatorRdfDereference = Mediate<IActionRdfDereference, IActorRdfDereferenceOutput>;
+export type MediatorDereferenceRdf = Mediate<IActionDereferenceRdf, IActorDereferenceRdfOutput>;

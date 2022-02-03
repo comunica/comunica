@@ -1,23 +1,5 @@
-import { Readable } from 'stream';
-import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
-
-export function emptyReadable<S extends Readable>(): S {
-  const data = new Readable();
-  data.push(null);
-  return <S> data;
-}
-
-/**
- * Check if hard errors should occur on HTTP or parse errors.
- * @param {IActionDereference} action A dereference action.
- * @return {boolean} If hard errors are enabled.
- */
-export function isHardError(context: IActionContext): boolean {
-  return !context.get(KeysInitQuery.lenient);
-}
+import { ActorDereferenceBase } from './ActorDereferenceBase';
 
 /**
  * A base actor for dereferencing URLs to (generic) streams.
@@ -30,7 +12,8 @@ export function isHardError(context: IActionContext): boolean {
  * @see IActionDereference
  * @see IActorDereferenceOutput
  */
-export abstract class ActorDereference extends Actor<IActionDereference, IActorTest, IActorDereferenceOutput> {
+export abstract class ActorDereference extends
+  ActorDereferenceBase<IActionDereference, IActorTest, IActorDereferenceOutput> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
@@ -47,18 +30,13 @@ export abstract class ActorDereference extends Actor<IActionDereference, IActorT
    * @param {number} requestTime The time it took to request the page in milliseconds.
    * @return {Promise<IActorDereferenceOutput>} A promise that rejects or resolves to an empty output.
    */
-  protected async handleDereferenceError(
+  protected async handleDereferenceErrors(
     action: IActionDereference,
     error: unknown,
-    headers: Headers | undefined,
-    requestTime: number,
+    headers?: Headers | undefined,
+    requestTime = 0,
   ): Promise<IActorDereferenceOutput> {
-    if (isHardError(action.context)) {
-      throw error;
-    } else {
-      this.logError(action.context, (<Error> error).message);
-      return { url: action.url, data: emptyReadable(), exists: false, headers, requestTime };
-    }
+    return this.dereferenceErrorHandler(action, error, { url: action.url, exists: false, headers, requestTime });
   }
 }
 

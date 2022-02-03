@@ -1,9 +1,9 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type {
-  IActionRdfDereference,
-  IActorRdfDereferenceOutput,
-  MediatorRdfDereference,
-} from '@comunica/bus-rdf-dereference';
+  IActionDereferenceRdf,
+  IActorDereferenceRdfOutput,
+  MediatorDereferenceRdf,
+} from '@comunica/bus-dereference-rdf';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
@@ -19,9 +19,9 @@ const quad = require('rdf-quad');
 
 export const bus = new Bus({ name: 'bus' });
 // @ts-expect-error
-const mediatorRdfDereference: MediatorRdfDereference = {
-  async mediate({ url }: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
-    const data: IActorRdfDereferenceOutput = {
+const mediatorDereferenceRdf: MediatorDereferenceRdf = {
+  async mediate({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> {
+    const data: IActorDereferenceRdfOutput = {
       // @ts-expect-error
       data: url === 'firstUrl' ?
         new ArrayIterator<RDF.Quad>([
@@ -71,7 +71,7 @@ const mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQ
 export const mediators = {
   mediatorMetadata,
   mediatorMetadataExtract,
-  mediatorRdfDereference,
+  mediatorDereferenceRdf,
   mediatorRdfResolveHypermedia,
   mediatorRdfResolveHypermediaLinks,
   mediatorRdfResolveHypermediaLinksQueue,
