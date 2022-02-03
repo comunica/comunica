@@ -52,6 +52,7 @@
   },
   "homepage": "https://github.com/comunica/sparqlee#readme",
   "devDependencies": {
+    "@rdfjs/types": "1.1.0-next.0",
     "@rubensworks/eslint-config": "^1.0.1",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^27.0.0",

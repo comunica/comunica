@@ -962,6 +962,13 @@
   dependencies:
     "@types/node" "*"
 
+"@rdfjs/types@1.1.0-next.0":
+  version "1.1.0-next.0"
+  resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.1.0-next.0.tgz#88ec81086ea10ef23485b93833bf2488b0cd70a2"
+  integrity sha512-NnCfxUD2y66PXavKESOWKgnGFid965dvTidUdPc+ZotIpxK74dm62PvRK5DpXIW5eETf/P4Ll8VZbUIdqkYVqg==
+  dependencies:
+    "@types/node" "*"
+
 "@rubensworks/eslint-config@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@rubensworks/eslint-config/-/eslint-config-1.0.1.tgz#90698e2222b2cb1b05d03c87c22615e7badcccd7"
@@ -2912,11 +2919,6 @@ ignore@^5.0.5, ignore@^5.1.4:
   version "5.1.8"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
-
-immutable@^3.8.2:
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
-  integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
 
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
