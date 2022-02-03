@@ -27,7 +27,6 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/types": "^2.0.0",
     "@rdfjs/types": "*",
     "immutable": "^3.8.2",
     "rdf-data-factory": "^1.1.0",

@@ -2601,10 +2601,10 @@
     qs "^6.7.0"
     url-parse "^1.4.7"
 
-"@rdfjs/types@*":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.0.1.tgz#92908a13bc88c71b349b332f3db19178282d6f4e"
-  integrity sha512-YxVkH0XrCNG3MWeZxfg596GFe+oorTVusmNxRP6ZHTsGczZ8AGvG3UchRNkg3Fy4MyysI7vBAA5YZbESL+VmHQ==
+"@rdfjs/types@*", "@rdfjs/types@1.1.0-next.0":
+  version "1.1.0-next.0"
+  resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.1.0-next.0.tgz#88ec81086ea10ef23485b93833bf2488b0cd70a2"
+  integrity sha512-NnCfxUD2y66PXavKESOWKgnGFid965dvTidUdPc+ZotIpxK74dm62PvRK5DpXIW5eETf/P4Ll8VZbUIdqkYVqg==
   dependencies:
     "@types/node" "*"
 
@@ -2782,7 +2782,7 @@
   dependencies:
     log-symbols "*"
 
-"@types/lru-cache@^5.1.0":
+"@types/lru-cache@^5.1.0", "@types/lru-cache@^5.1.1":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@types/lru-cache/-/lru-cache-5.1.1.tgz#c48c2e27b65d2a153b19bfc1a317e30872e01eef"
   integrity sha512-ssE3Vlrys7sdIzs5LOxCzTVMsU7i9oa/IaW92wF32JFb3CVczqOkru2xspuKczHEbG3nvmPY7IFqVmGGHdNbYw==
@@ -3707,6 +3707,11 @@ big.js@^5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
+
+bignumber.js@^9.0.1:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.2.tgz#71c6c6bed38de64e24a65ebe16cfcf23ae693673"
+  integrity sha512-GAcQvbpsM0pUb0zw1EI0KhQEZ+lRwR5fYaAp3vPOYuP7aDvGy6cVN6XHLauvF8SOga2y0dcLcjt3iQDTSEliyw==
 
 binary-extensions@^2.0.0:
   version "2.2.0"
@@ -4766,7 +4771,7 @@ decamelize@^1.1.0, decamelize@^1.2.0:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
 
-decimal.js@^10.2.0, decimal.js@^10.2.1:
+decimal.js@^10.2.1:
   version "10.3.1"
   resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.3.1.tgz#d8c3a444a9c6774ba60ca6ad7261c3a94fd5e783"
   integrity sha512-V0pfhfr8suzyPGOx3nmq4aHqabehUZn6Ch9kyFpV79TGDTWFmHqUqXdabR7QHqxzrYolF4+tVmJhUG4OURg5dQ==
@@ -10452,7 +10457,7 @@ spark-md5@^3.0.1:
   resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.1.tgz#83a0e255734f2ab4e5c466e5a2cfc9ba2aa2124d"
   integrity sha512-0tF3AGSD1ppQeuffsLDIOWlKUd3lS92tFxcsrh5Pe3ZphhnoK+oXIBTzOAThZCiuINZLvpiLH/1VS1/ANEJVig==
 
-sparqlalgebrajs@^3.0.0, sparqlalgebrajs@^3.0.1, sparqlalgebrajs@^3.0.2:
+sparqlalgebrajs@^3.0.0, sparqlalgebrajs@^3.0.1:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-3.0.3.tgz#a0b2b2ea2bacf97a74b4e3f3fc90be72b96d94a1"
   integrity sha512-XFNhsO55bprayrM35h/jY0kzzuGc3oZ1On3kc+s7Un0BFQBXa046aLcMZFp4MYSvn7GtMe9eZ08ONFnBH5kEsQ==
@@ -10480,22 +10485,24 @@ sparqlalgebrajs@^4.0.0:
     rdf-string "^1.6.0"
     sparqljs "^3.5.1"
 
-sparqlee@^1.10.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.10.0.tgz#e1551baccd4e9d8f2cd93a0ec41c3da9ba4fef5b"
-  integrity sha512-rKuyXIIyEsRsACZC86yrN0m/rUhKZQl6HfqeIqAC+5WXE08PB/tGQ9RPxiwo+P6u6QEk2Sd/h6Yq1pnT0607JA==
+sparqlee@2.0.0-beta.0:
+  version "2.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-2.0.0-beta.0.tgz#fef7b44d89afbd90cd6ac146f4ca1f50fa12524a"
+  integrity sha512-tvVdX2zr3lllzyewgK38f16SdB5e81kd/yyCg9Ny3L/x2+nLbK5Debl6k7eflEI/be9tnDE6niLw6gxSd3jrRQ==
   dependencies:
-    "@rdfjs/types" "*"
+    "@comunica/bindings-factory" "^2.0.0"
+    "@rdfjs/types" "1.1.0-next.0"
+    "@types/lru-cache" "^5.1.1"
     "@types/spark-md5" "^3.0.2"
     "@types/uuid" "^8.0.0"
-    decimal.js "^10.2.0"
+    bignumber.js "^9.0.1"
     hash.js "^1.1.7"
-    immutable "^3.8.2"
+    lru-cache "^6.0.0"
     rdf-data-factory "^1.1.0"
     rdf-string "^1.6.0"
     relative-to-absolute-iri "^1.0.6"
     spark-md5 "^3.0.1"
-    sparqlalgebrajs "^3.0.2"
+    sparqlalgebrajs "^4.0.0"
     uuid "^8.0.0"
 
 sparqljs@^3.1.2, sparqljs@^3.4.1, sparqljs@^3.4.2:
