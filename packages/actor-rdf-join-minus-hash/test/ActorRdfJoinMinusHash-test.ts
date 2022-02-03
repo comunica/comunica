@@ -99,17 +99,23 @@ describe('ActorRdfJoinMinusHash', () => {
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
-                ),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                }),
               },
             },
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
-                ),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                }),
               },
             },
           ],

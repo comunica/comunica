@@ -7,7 +7,7 @@ import {
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IQueryOperationResultBindings, IMetadata, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
@@ -335,5 +335,5 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
 export interface IPathResultStream {
   bindingsStream: AsyncIterator<Bindings>;
-  metadata: () => Promise<IMetadata>;
+  metadata: () => Promise<MetadataBindings>;
 }

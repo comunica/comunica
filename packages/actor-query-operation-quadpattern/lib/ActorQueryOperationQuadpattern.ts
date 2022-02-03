@@ -3,12 +3,10 @@ import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActorArgs, IActorTest } from '@comunica/core';
-import type {
-  BindingsStream,
+import type { BindingsStream,
   IQueryOperationResult,
-  IMetadata,
-  IActionContext,
-} from '@comunica/types';
+  IActionContext, MetadataBindings,
+  MetadataQuads, TermsOrder } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
@@ -102,22 +100,26 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * Ensure that the given raw metadata object contains all required metadata entries.
    * @param metadataRaw A raw metadata object.
    */
-  public static validateMetadata(metadataRaw: Record<string, any>): IMetadata {
+  public static validateMetadata(metadataRaw: Record<string, any>): MetadataQuads {
     for (const key of [ 'cardinality', 'canContainUndefs' ]) {
       if (!(key in metadataRaw)) {
         throw new Error(`Invalid metadata: missing ${key} in ${JSON.stringify(metadataRaw)}`);
       }
     }
-    return <IMetadata> metadataRaw;
+    return <MetadataQuads> metadataRaw;
   }
 
   /**
    * Get the metadata of the given action on a quad stream.
    *
    * @param {AsyncIterator<Quad>} data The data stream that is guaranteed to emit the metadata property.
+   * @param elementVariables Mapping of quad term name to variable name.
    * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
    */
-  protected static getMetadata(data: AsyncIterator<RDF.Quad>): () => Promise<IMetadata> {
+  protected static getMetadata(
+    data: AsyncIterator<RDF.Quad>,
+    elementVariables: Record<string, string>,
+  ): () => Promise<MetadataBindings> {
     return () => new Promise<Record<string, any>>((resolve, reject) => {
       data.getProperty('metadata', (metadata: Record<string, any>) => resolve(metadata));
       data.on('error', reject);
@@ -125,8 +127,54 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       if (!('canContainUndefs' in metadataRaw)) {
         metadataRaw.canContainUndefs = false;
       }
-      return ActorQueryOperationQuadpattern.validateMetadata(metadataRaw);
+      return ActorQueryOperationQuadpattern.quadsMetadataToBindingsMetadata(
+        ActorQueryOperationQuadpattern.validateMetadata(metadataRaw),
+        elementVariables,
+      );
     });
+  }
+
+  protected static quadsMetadataToBindingsMetadata(
+    metadataQuads: MetadataQuads,
+    elementVariables: Record<string, string>,
+  ): MetadataBindings {
+    return {
+      ...metadataQuads,
+      order: metadataQuads.order ?
+        ActorQueryOperationQuadpattern.quadsOrderToBindingsOrder(metadataQuads.order, elementVariables) :
+        undefined,
+      availableOrders: metadataQuads.availableOrders ?
+        metadataQuads.availableOrders.map(orderDef => ({
+          cost: orderDef.cost,
+          terms: ActorQueryOperationQuadpattern.quadsOrderToBindingsOrder(orderDef.terms, elementVariables),
+        })) :
+        undefined,
+    };
+  }
+
+  protected static quadsOrderToBindingsOrder(
+    quadsOrder: TermsOrder<RDF.QuadTermName>,
+    elementVariables: Record<string, string>,
+  ): TermsOrder<RDF.Variable> {
+    const mappedVariables: Record<string, boolean> = {};
+    return <TermsOrder<RDF.Variable>> quadsOrder.map(entry => {
+      // Omit entries that do not map to a variable
+      const variableName = elementVariables[entry.term];
+      if (!variableName) {
+        return;
+      }
+
+      // Omit entries that have been mapped already
+      if (mappedVariables[variableName]) {
+        return;
+      }
+
+      mappedVariables[variableName] = true;
+      return {
+        term: DF.variable(variableName),
+        direction: entry.direction,
+      };
+    }).filter(entry => Boolean(entry));
   }
 
   public async testOperation(operation: Algebra.Pattern, context: IActionContext): Promise<IActorTest> {
@@ -146,9 +194,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     // Collect all variables from the pattern
     const variables = ActorQueryOperationQuadpattern.getVariables(pattern);
 
-    // Create the metadata callback
-    const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data);
-
     // Convenience datastructure for mapping quad elements to variables
     const elementVariables: Record<string, string> = reduceTerms(pattern,
       (acc: Record<string, string>, term: RDF.Term, key: QuadTermName) => {
@@ -166,6 +211,9 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       }
       return acc;
     };
+
+    // Create the metadata callback
+    const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data, elementVariables);
 
     // Optionally filter, and construct bindings
     const bindingsStream: BindingsStream = new TransformIterator(async() => {

@@ -23,7 +23,7 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
   public async runOperation(operation: Algebra.Nop, context: IActionContext): Promise<IQueryOperationResult> {
     return {
       bindingsStream: new SingletonIterator(BF.bindings()),
-      metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
+      metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false }),
       type: 'bindings',
       variables: [],
     };

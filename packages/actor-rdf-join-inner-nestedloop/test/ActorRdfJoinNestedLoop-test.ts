@@ -62,7 +62,12 @@ describe('ActorRdfJoinNestedLoop', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: async() => ({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false }),
+              metadata: async() => ({
+                cardinality: { type: 'estimate', value: 4 },
+                pageSize: 100,
+                requestTime: 10,
+                canContainUndefs: false,
+              }),
               type: 'bindings',
               variables: [],
             },
@@ -71,7 +76,12 @@ describe('ActorRdfJoinNestedLoop', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false }),
+              metadata: async() => ({
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 20,
+                canContainUndefs: false,
+              }),
               type: 'bindings',
               variables: [],
             },
@@ -88,8 +98,12 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should handle undefs in left stream', () => {
-      action.entries[0].output
-        .metadata = async() => ({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true });
+      action.entries[0].output.metadata = async() => ({
+        cardinality: { type: 'estimate', value: 4 },
+        pageSize: 100,
+        requestTime: 10,
+        canContainUndefs: true,
+      });
       return expect(actor.test(action)).resolves
         .toEqual({
           iterations: 20,
@@ -100,8 +114,12 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should handle undefs in right stream', () => {
-      action.entries[1].output
-        .metadata = async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true });
+      action.entries[1].output.metadata = async() => ({
+        cardinality: { type: 'estimate', value: 5 },
+        pageSize: 100,
+        requestTime: 20,
+        canContainUndefs: true,
+      });
       return expect(actor.test(action)).resolves
         .toEqual({
           iterations: 20,
@@ -112,10 +130,18 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should handle undefs in left and right stream', () => {
-      action.entries[0].output
-        .metadata = async() => ({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true });
-      action.entries[1].output
-        .metadata = async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true });
+      action.entries[0].output.metadata = async() => ({
+        cardinality: { type: 'estimate', value: 4 },
+        pageSize: 100,
+        requestTime: 10,
+        canContainUndefs: true,
+      });
+      action.entries[1].output.metadata = async() => ({
+        cardinality: { type: 'estimate', value: 5 },
+        pageSize: 100,
+        requestTime: 20,
+        canContainUndefs: true,
+      });
       return expect(actor.test(action)).resolves
         .toEqual({
           iterations: 20,
@@ -127,15 +153,16 @@ describe('ActorRdfJoinNestedLoop', () => {
 
     it('should generate correct test metadata', async() => {
       await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0].output).metadata()).cardinality *
-        (await (<any> action.entries[1].output).metadata()).cardinality);
+        (await (<any> action.entries[0].output).metadata()).cardinality.value *
+        (await (<any> action.entries[1].output).metadata()).cardinality.value);
     });
 
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
-          (await (<any> action.entries[0].output).metadata()).cardinality *
-          (await (<any> action.entries[1].output).metadata()).cardinality);
+          { type: 'estimate',
+            value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
+          (await (<any> action.entries[1].output).metadata()).cardinality.value });
       });
     });
 
@@ -321,8 +348,12 @@ describe('ActorRdfJoinNestedLoop', () => {
           [ DF.variable('c'), DF.literal('5') ],
         ]),
       ]);
-      action.entries[1].output
-        .metadata = async() => ({ cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true });
+      action.entries[1].output.metadata = async() => ({
+        cardinality: { type: 'estimate', value: 5 },
+        pageSize: 100,
+        requestTime: 20,
+        canContainUndefs: true,
+      });
       action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [

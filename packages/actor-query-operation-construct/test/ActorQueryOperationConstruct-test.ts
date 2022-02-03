@@ -25,7 +25,7 @@ describe('ActorQueryOperationConstruct', () => {
             BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
             BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: [ DF.variable('a') ],
@@ -34,7 +34,7 @@ describe('ActorQueryOperationConstruct', () => {
           bindingsStream: new ArrayIterator([
             BF.bindings(),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: [],
@@ -106,7 +106,8 @@ describe('ActorQueryOperationConstruct', () => {
     it('should run on an empty template', () => {
       const op: any = { operation: { type: 'construct', template: []}};
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([]);
       });
@@ -119,7 +120,8 @@ describe('ActorQueryOperationConstruct', () => {
       ],
       type: 'construct' }};
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.blankNode('s10'), DF.namedNode('p1'), DF.literal('o1')),
@@ -136,7 +138,8 @@ describe('ActorQueryOperationConstruct', () => {
         ],
         type: 'construct' }};
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 6, canContainUndefs: false });
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.blankNode('s10'), DF.literal('1'), DF.literal('o1')),

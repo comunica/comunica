@@ -2,13 +2,11 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { IActorArgs, IActorTest } from '@comunica/core';
-import type {
-  IQueryOperationResult,
+import type { IQueryOperationResult,
   BindingsStream,
-  IMetadata,
   Bindings,
   IActionContext,
-} from '@comunica/types';
+  MetadataBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -33,8 +31,8 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
       .map(x => BF.bindings(Object.entries(x)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
     const variables = operation.variables;
-    const metadata = (): Promise<IMetadata> => Promise.resolve({
-      cardinality: operation.bindings.length,
+    const metadata = (): Promise<MetadataBindings> => Promise.resolve({
+      cardinality: { type: 'exact', value: operation.bindings.length },
       canContainUndefs: operation.bindings.some(bindings => variables.some(variable => !(`?${variable.value}` in bindings))),
     });
     return { type: 'bindings', bindingsStream, metadata, variables };

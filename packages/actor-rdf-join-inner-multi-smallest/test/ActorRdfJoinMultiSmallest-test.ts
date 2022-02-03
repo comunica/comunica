@@ -84,7 +84,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('b') ],
@@ -104,7 +109,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('c') ],
@@ -124,7 +134,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 2 },
+                  pageSize: 100,
+                  requestTime: 30,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('b') ],
@@ -150,7 +165,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('b') ],
@@ -170,7 +190,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('c') ],
@@ -190,7 +215,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 2 },
+                  pageSize: 100,
+                  requestTime: 30,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('b') ],
@@ -210,7 +240,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 2, pageSize: 100, requestTime: 40, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 2 },
+                  pageSize: 100,
+                  requestTime: 40,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('d') ],
@@ -235,9 +270,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
               ]),
-              metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
-              ),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 4 },
+                pageSize: 100,
+                requestTime: 10,
+                canContainUndefs: false,
+              }),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('b') ],
             },
@@ -255,7 +293,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   [ DF.variable('c'), DF.literal('c2') ],
                 ]),
               ]),
-              metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('c') ],
             },
@@ -273,9 +311,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
               ]),
-              metadata: () => Promise.resolve(
-                { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
-              ),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 30,
+                canContainUndefs: false,
+              }),
               type: 'bindings',
               variables: [ DF.variable('a'), DF.variable('b') ],
             },
@@ -323,7 +364,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual([ DF.variable('a'), DF.variable('c'), DF.variable('b') ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 40, canContainUndefs: false });
+      expect(await (<any> output).metadata())
+        .toEqual({ cardinality: { type: 'estimate', value: 40 }, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],
@@ -347,7 +389,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual([ DF.variable('a'), DF.variable('c'), DF.variable('b'), DF.variable('d') ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 80, canContainUndefs: false });
+      expect(await (<any> output).metadata())
+        .toEqual({ cardinality: { type: 'estimate', value: 80 }, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],

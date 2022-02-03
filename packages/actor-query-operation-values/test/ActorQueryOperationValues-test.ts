@@ -55,7 +55,8 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': DF.namedNode('v1') }];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('v') ]);
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
@@ -71,7 +72,8 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': DF.namedNode('v1') }, { '?v': DF.namedNode('v2') }];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('v') ]);
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
@@ -93,7 +95,8 @@ describe('ActorQueryOperationValues', () => {
       ];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: false });
         expect(output.variables).toEqual([ DF.variable('v'), DF.variable('w') ]);
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
@@ -117,7 +120,8 @@ describe('ActorQueryOperationValues', () => {
       ];
       const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: true });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: true });
         expect(output.variables).toEqual([ DF.variable('v'), DF.variable('w') ]);
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([

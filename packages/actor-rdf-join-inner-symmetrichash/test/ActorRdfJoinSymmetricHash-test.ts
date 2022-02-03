@@ -62,7 +62,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -71,7 +71,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -94,7 +94,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -103,7 +103,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -123,7 +123,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -132,7 +132,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -152,7 +152,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -161,7 +161,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -176,15 +176,18 @@ describe('ActorRdfJoinSymmetricHash', () => {
 
     it('should generate correct test metadata', async() => {
       await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0].output).metadata()).cardinality +
-        (await (<any> action.entries[1].output).metadata()).cardinality);
+        (await (<any> action.entries[0].output).metadata()).cardinality.value +
+        (await (<any> action.entries[1].output).metadata()).cardinality.value);
     });
 
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
-          (await (<any> action.entries[0].output).metadata()).cardinality *
-          (await (<any> action.entries[1].output).metadata()).cardinality);
+          {
+            type: 'estimate',
+            value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
+          (await (<any> action.entries[1].output).metadata()).cardinality.value,
+          });
       });
     });
 

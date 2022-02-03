@@ -1,8 +1,6 @@
 import { ActionContextKey } from '@comunica/core';
 import type { Logger } from '@comunica/core';
-import type {
-  Bindings,
-  IMetadata,
+import type { Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
@@ -10,7 +8,7 @@ import type {
   DataSources,
   IDataSource,
   IDataDestination,
-} from '@comunica/types';
+  MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -147,11 +145,11 @@ export const KeysQueryOperation = {
   /**
    * @type {any} The metadata from the left streams within a join operation.
    */
-  joinLeftMetadata: new ActionContextKey<IMetadata>('@comunica/bus-query-operation:joinLeftMetadata'),
+  joinLeftMetadata: new ActionContextKey<MetadataBindings>('@comunica/bus-query-operation:joinLeftMetadata'),
   /**
    * An array of metadata from the right streams within a join operation.
    */
-  joinRightMetadatas: new ActionContextKey<IMetadata[]>('@comunica/bus-query-operation:joinRightMetadatas'),
+  joinRightMetadatas: new ActionContextKey<MetadataBindings[]>('@comunica/bus-query-operation:joinRightMetadatas'),
   /**
    * Indicates the bindings that were used to bind the operation.
    */

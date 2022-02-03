@@ -1,5 +1,4 @@
 import type * as RDF from '@rdfjs/types';
-import type { QuadTermName, QueryExecuteOptions, ResultStream } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Bindings, BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
@@ -20,7 +19,8 @@ export interface IQueryOperationResultBase {
  * Super interface for query operation results that represent some for of stream.
  * @see IQueryableResultBindings, IQueryableResultQuads
  */
-export interface IQueryOperationResultStream extends IQueryOperationResultBase {
+export interface IQueryOperationResultStream<OrderItemsType extends RDF.Variable | RDF.QuadTermName>
+  extends IQueryOperationResultBase {
   /**
    * Callback that returns a promise that resolves to the metadata about the stream.
    * This can contain things like the estimated number of total stream elements,
@@ -29,14 +29,14 @@ export interface IQueryOperationResultStream extends IQueryOperationResultBase {
    * The actors that return this metadata will make sure that multiple calls properly cache this promise.
    * Metadata will not be collected until this callback is invoked.
    */
-  metadata: () => Promise<IMetadata>;
+  metadata: () => Promise<IMetadata<OrderItemsType>>;
 }
 
 /**
  * Query operation output for a bindings stream.
  * For example: SPARQL SELECT results
  */
-export interface IQueryOperationResultBindings extends IQueryOperationResultStream {
+export interface IQueryOperationResultBindings extends IQueryOperationResultStream<RDF.Variable> {
   /**
    * The type of output.
    */
@@ -55,7 +55,7 @@ export interface IQueryOperationResultBindings extends IQueryOperationResultStre
  * Query operation output for quads.
  * For example: SPARQL CONSTRUCT results
  */
-export interface IQueryOperationResultQuads extends IQueryOperationResultStream {
+export interface IQueryOperationResultQuads extends IQueryOperationResultStream<RDF.QuadTermName> {
   /**
    * The type of output.
    */
@@ -112,7 +112,7 @@ export type IQueryOperationResult =
  */
 export interface IQueryBindingsEnhanced extends RDF.QueryBindings {
   // Override with more specific return type
-  execute: (opts?: QueryExecuteOptions<RDF.Variable>) => Promise<BindingsStream>;
+  execute: (opts?: RDF.QueryExecuteOptions<RDF.Variable>) => Promise<BindingsStream>;
   /**
    * The collection of bindings after an 'end' event occured.
    */
@@ -125,7 +125,8 @@ export interface IQueryBindingsEnhanced extends RDF.QueryBindings {
  */
 export interface IQueryQuadsEnhanced extends RDF.QueryQuads {
   // Override with more specific return type
-  execute: (opts?: QueryExecuteOptions<QuadTermName>) => Promise<AsyncIterator<RDF.Quad> & ResultStream<RDF.Quad>>;
+  execute: (opts?: RDF.QueryExecuteOptions<RDF.QuadTermName>)
+  => Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>>;
   /**
    * The collection of bindings after an 'end' event occured.
    */

@@ -9,7 +9,7 @@ import type {
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IQueryOperationResultBindings, IMetadata } from '@comunica/types';
+import type { Bindings, BindingsStream, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra } from 'sparqlalgebrajs';
 
@@ -80,7 +80,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
    * @param entries Join entries
    * @param metadatas Resolved metadata objects.
    */
-  public static async getLeftEntryIndex(entries: IJoinEntry[], metadatas: IMetadata[]): Promise<number> {
+  public static async getLeftEntryIndex(entries: IJoinEntry[], metadatas: MetadataBindings[]): Promise<number> {
     // If there is a stream that can contain undefs, we don't modify the join order and just pick the first one.
     const canContainUndefs = metadatas.some(metadata => metadata.canContainUndefs);
     if (canContainUndefs) {
@@ -191,7 +191,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
@@ -201,7 +201,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Take the stream with the lowest cardinality
     const remainingEntries: IJoinEntry[] = [ ...action.entries ];
-    const remainingMetadatas: IMetadata[] = [ ...metadatas ];
+    const remainingMetadatas: MetadataBindings[] = [ ...metadatas ];
     const remainingRequestInitialTimes = [ ...requestInitialTimes ];
     const remainingRequestItemTimes = [ ...requestItemTimes ];
     remainingEntries.splice(smallestIndex, 1);
@@ -227,7 +227,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Determine coefficients for remaining entries
     const cardinalityRemaining = remainingMetadatas
-      .map((metadata, i) => metadata.cardinality * selectivities[i])
+      .map((metadata, i) => metadata.cardinality.value * selectivities[i])
       .reduce((sum, element) => sum + element, 0);
     const receiveInitialCostRemaining = remainingRequestInitialTimes
       .reduce((sum, element, i) => sum + (element * selectivities[i]), 0);
@@ -235,11 +235,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       .reduce((sum, element, i) => sum + (element * selectivities[i]), 0);
 
     return {
-      iterations: metadatas[smallestIndex].cardinality * cardinalityRemaining,
+      iterations: metadatas[smallestIndex].cardinality.value * cardinalityRemaining,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[smallestIndex] +
-        metadatas[smallestIndex].cardinality * (
+        metadatas[smallestIndex].cardinality.value * (
           requestItemTimes[smallestIndex] +
           receiveInitialCostRemaining +
           cardinalityRemaining * receiveItemCostRemaining

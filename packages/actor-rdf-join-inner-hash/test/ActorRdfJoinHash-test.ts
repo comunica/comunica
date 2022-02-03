@@ -63,7 +63,12 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [],
@@ -74,7 +79,12 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [],
@@ -99,7 +109,12 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+                {
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: true,
+                },
               ),
               type: 'bindings',
               variables: [],
@@ -110,7 +125,12 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [],
@@ -132,7 +152,12 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                },
               ),
               type: 'bindings',
               variables: [],
@@ -143,7 +168,7 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true },
+                { cardinality: { type: 'estimate', value: 5 }, pageSize: 100, requestTime: 20, canContainUndefs: true },
               ),
               type: 'bindings',
               variables: [],
@@ -165,7 +190,7 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+                { cardinality: { type: 'estimate', value: 4 }, pageSize: 100, requestTime: 10, canContainUndefs: true },
               ),
               type: 'bindings',
               variables: [],
@@ -176,7 +201,7 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: true },
+                { cardinality: { type: 'estimate', value: 5 }, pageSize: 100, requestTime: 20, canContainUndefs: true },
               ),
               type: 'bindings',
               variables: [],
@@ -203,15 +228,19 @@ describe('ActorRdfJoinHash', () => {
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
-          (await (<any> action.entries[0].output).metadata()).cardinality *
-          (await (<any> action.entries[1].output).metadata()).cardinality);
+          {
+            type: 'estimate',
+            value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
+          (await (<any> action.entries[1].output).metadata()).cardinality.value,
+          });
       });
     });
 
     it('should return an empty stream for empty input', () => {
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([]);
-        expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 20 }, canContainUndefs: false });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
@@ -233,7 +262,8 @@ describe('ActorRdfJoinHash', () => {
       action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
-        expect(await output.metadata()).toEqual({ cardinality: 20, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 20 }, canContainUndefs: false });
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('a') ],

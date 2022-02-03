@@ -2,10 +2,10 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type {
   IQueryOperationResult,
-  IQueryOperationResultStream,
   IPhysicalQueryPlanLogger,
   IActionContext,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
@@ -56,9 +56,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     const operation: O = <O> action.operation;
     const subContext = action.context && action.context.set(KeysQueryOperation.operation, operation);
     const output: IQueryOperationResult = await this.runOperation(operation, subContext);
-    if ((<IQueryOperationResultStream> output).metadata) {
-      (<IQueryOperationResultStream> output).metadata =
-        ActorQueryOperation.cachifyMetadata((<IQueryOperationResultStream> output).metadata);
+    if ('metadata' in output) {
+      output.metadata = <any> ActorQueryOperation.cachifyMetadata<RDF.QuadTermName | RDF.Variable>(output.metadata);
     }
     return output;
   }

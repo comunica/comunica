@@ -162,7 +162,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       },
     );
 
-    const metadata: () => Promise<IMetadata> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
+    const metadata: () => Promise<IMetadata<any>> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
       () => new Promise((resolve, reject) => {
         (<any> stream)._fillBuffer();
         stream.on('error', reject);

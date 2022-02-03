@@ -7,7 +7,7 @@ import type { IAction, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
-  IQueryOperationResultBindings, IMetadata,
+  IQueryOperationResultBindings, MetadataBindings,
   IPhysicalQueryPlanLogger, Bindings, IActionContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -142,7 +142,7 @@ export abstract class ActorRdfJoin
    * @param {Record<string, any>} metadata A metadata object.
    * @return {number} The estimated number of items, or `Infinity` if cardinality is falsy.
    */
-  public static getCardinality(metadata: Record<string, any>): number {
+  public static getCardinality(metadata: Record<string, any>): RDF.QueryResultCardinality {
     return metadata.cardinality || metadata.cardinality === 0 ? metadata.cardinality : Number.POSITIVE_INFINITY;
   }
 
@@ -154,11 +154,11 @@ export abstract class ActorRdfJoin
    */
   public static getLowestCardinalityIndex(metadatas: Record<string, any>[], indexBlacklist: number[] = []): number {
     let smallestId = -1;
-    let smallestCount = Number.POSITIVE_INFINITY;
+    let smallestCount: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
     for (const [ i, meta ] of metadatas.entries()) {
       if (!indexBlacklist.includes(i)) {
-        const count: number = ActorRdfJoin.getCardinality(meta);
-        if (count < smallestCount || smallestId === -1) {
+        const count: RDF.QueryResultCardinality = ActorRdfJoin.getCardinality(meta);
+        if (count.value < smallestCount.value || smallestId === -1) {
           smallestCount = count;
           smallestId = i;
         }
@@ -171,7 +171,7 @@ export abstract class ActorRdfJoin
    * Obtain the metadata from all given join entries.
    * @param entries Join entries.
    */
-  public static async getMetadatas(entries: IJoinEntry[]): Promise<IMetadata[]> {
+  public static async getMetadatas(entries: IJoinEntry[]): Promise<MetadataBindings[]> {
     return await Promise.all(entries.map(entry => entry.output.metadata()));
   }
 
@@ -179,7 +179,7 @@ export abstract class ActorRdfJoin
    * Calculate the time to initiate a request for the given metadata entries.
    * @param metadatas An array of checked metadata.
    */
-  public static getRequestInitialTimes(metadatas: IMetadata[]): number[] {
+  public static getRequestInitialTimes(metadatas: MetadataBindings[]): number[] {
     return metadatas.map(metadata => metadata.pageSize ? 0 : metadata.requestTime || 0);
   }
 
@@ -187,7 +187,7 @@ export abstract class ActorRdfJoin
    * Calculate the time to receive a single item for the given metadata entries.
    * @param metadatas An array of checked metadata.
    */
-  public static getRequestItemTimes(metadatas: IMetadata[]): number[] {
+  public static getRequestItemTimes(metadatas: MetadataBindings[]): number[] {
     return metadatas
       .map(metadata => !metadata.pageSize ? 0 : (metadata.requestTime || 0) / metadata.pageSize);
   }
@@ -202,15 +202,31 @@ export abstract class ActorRdfJoin
    */
   public async constructResultMetadata(
     entries: IJoinEntry[],
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
     context: IActionContext,
-    partialMetadata: Partial<IMetadata> = {},
-  ): Promise<IMetadata> {
+    partialMetadata: Partial<MetadataBindings> = {},
+  ): Promise<MetadataBindings> {
+    let cardinalityJoined: RDF.QueryResultCardinality;
+    if (partialMetadata.cardinality) {
+      cardinalityJoined = partialMetadata.cardinality;
+    } else {
+      cardinalityJoined = metadatas
+        .reduce((acc: RDF.QueryResultCardinality, metadata) => {
+          const cardinalityThis = ActorRdfJoin.getCardinality(metadata);
+          return {
+            type: cardinalityThis.type === 'estimate' ? 'estimate' : acc.type,
+            value: acc.value * cardinalityThis.value,
+          };
+        }, { type: 'exact', value: 1 });
+      cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+    }
+
     return {
       ...partialMetadata,
-      cardinality: partialMetadata.cardinality ?? metadatas
-        .reduce((acc, metadata) => acc * ActorRdfJoin.getCardinality(metadata), 1) *
-        (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity,
+      cardinality: {
+        type: cardinalityJoined.type,
+        value: cardinalityJoined.value,
+      },
       canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
     };
   }
@@ -318,7 +334,7 @@ export abstract class ActorRdfJoin
    */
   protected abstract getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients>;
 }
 

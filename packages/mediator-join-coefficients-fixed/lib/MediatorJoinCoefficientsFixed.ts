@@ -67,7 +67,7 @@ export class MediatorJoinCoefficientsFixed
     if (bestActor.includeInLogs) {
       Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
         entries: action.entries.length,
-        variables: action.entries.map(entry => entry.output.variables),
+        variables: action.entries.map(entry => entry.output.variables.map(variable => variable.value)),
         costs: Object.fromEntries(costs.map((coeff, i) => [
           `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
           coeff,

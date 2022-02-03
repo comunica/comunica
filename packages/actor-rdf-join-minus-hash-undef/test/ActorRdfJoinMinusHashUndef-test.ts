@@ -7,7 +7,7 @@ import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMinusHashUndef } from '../lib/ActorRdfJoinMinusHashUndef';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -23,7 +23,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
     left = {
-      metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+      metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
       stream: new ArrayIterator([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -33,7 +33,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
       variables: [ DF.variable('a') ],
     };
     rightNoCommons = {
-      metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
+      metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false }),
       stream: new ArrayIterator([
         BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
@@ -42,7 +42,7 @@ describe('ActorRdfJoinMinusHashUndef', () => {
       variables: [ DF.variable('b') ],
     };
     right = {
-      metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
+      metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false }),
       stream: new ArrayIterator([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -106,7 +106,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               output: {
                 type: 'bindings',
                 metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                  {
+                    cardinality: { type: 'estimate', value: 4 },
+                    pageSize: 100,
+                    requestTime: 10,
+                    canContainUndefs: false,
+                  },
                 ),
               },
             },
@@ -114,7 +119,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
               output: {
                 type: 'bindings',
                 metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                  {
+                    cardinality: { type: 'estimate', value: 4 },
+                    pageSize: 100,
+                    requestTime: 10,
+                    canContainUndefs: false,
+                  },
                 ),
               },
             },

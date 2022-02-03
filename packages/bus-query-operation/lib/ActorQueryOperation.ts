@@ -91,8 +91,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param {() => Promise<IMetadata>} metadata A metadata callback
    * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
    */
-  public static cachifyMetadata(metadata: () => Promise<IMetadata>): () => Promise<IMetadata> {
-    let lastReturn: Promise<IMetadata>;
+  public static cachifyMetadata<T extends RDF.Variable | RDF.QuadTermName>(
+    metadata: () => Promise<IMetadata<T>>,
+  ): () => Promise<IMetadata<T>> {
+    let lastReturn: Promise<IMetadata<T>>;
     // eslint-disable-next-line no-return-assign,@typescript-eslint/no-misused-promises
     return () => (lastReturn || (lastReturn = metadata()));
   }

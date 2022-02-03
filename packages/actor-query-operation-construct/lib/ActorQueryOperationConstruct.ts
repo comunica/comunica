@@ -4,9 +4,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type {
-  IQueryOperationResultBindings, IMetadata, IActionContext, IQueryOperationResult,
-} from '@comunica/types';
+import type { IQueryOperationResultBindings, IActionContext, IQueryOperationResult,
+  MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
@@ -53,10 +52,15 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     );
 
     // Let the final metadata contain the estimated number of triples
-    const metadata: (() => Promise<IMetadata>) = () => output.metadata().then(meta => ({
+    const metadata: (() => Promise<MetadataQuads>) = () => output.metadata().then(meta => ({
       ...meta,
-      cardinality: meta.cardinality * operationOriginal.template.length,
+      order: undefined,
+      cardinality: {
+        type: meta.cardinality.type,
+        value: meta.cardinality.value * operationOriginal.template.length,
+      },
       canContainUndefs: false,
+      availableOrders: undefined,
     }));
 
     return {

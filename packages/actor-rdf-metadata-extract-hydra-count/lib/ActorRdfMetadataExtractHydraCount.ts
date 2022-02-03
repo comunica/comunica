@@ -26,13 +26,13 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
       // Immediately resolve when a value has been found.
       action.metadata.on('data', quad => {
         if (this.predicates.includes(quad.predicate.value)) {
-          resolve({ metadata: { cardinality: Number.parseInt(quad.object.value, 10) }});
+          resolve({ metadata: { cardinality: { type: 'estimate', value: Number.parseInt(quad.object.value, 10) }}});
         }
       });
 
       // If no value has been found, assume infinity.
       action.metadata.on('end', () => {
-        resolve({ metadata: { cardinality: Number.POSITIVE_INFINITY }});
+        resolve({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
       });
     });
   }

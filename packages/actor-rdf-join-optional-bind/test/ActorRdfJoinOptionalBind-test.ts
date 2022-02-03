@@ -60,7 +60,10 @@ describe('ActorRdfJoinOptionalBind', () => {
 
           return {
             bindingsStream: new ArrayIterator(data, { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: data.length, canContainUndefs: false }),
+            metadata: () => Promise.resolve({
+              cardinality: { type: 'estimate', value: data.length },
+              canContainUndefs: false,
+            }),
             type: 'bindings',
             variables: [ DF.variable('bound') ],
           };
@@ -98,8 +101,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             context,
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
           iterations: 0.480_000_000_000_000_1,
@@ -130,8 +133,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             context,
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
           iterations: 0.480_000_000_000_000_1,
@@ -164,8 +167,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             context,
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -193,8 +196,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             context,
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -222,8 +225,8 @@ describe('ActorRdfJoinOptionalBind', () => {
             context,
           },
           [
-            { cardinality: 3, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: 2, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
           ],
         )).toEqual({
           iterations: 0.480_000_000_000_000_1,
@@ -248,7 +251,10 @@ describe('ActorRdfJoinOptionalBind', () => {
                   BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 3 },
+                  canContainUndefs: false,
+                }),
                 type: 'bindings',
                 variables: [ DF.variable('a') ],
               },
@@ -271,7 +277,10 @@ describe('ActorRdfJoinOptionalBind', () => {
                     [ DF.variable('b'), DF.literal('2') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 3 },
+                  canContainUndefs: false,
+                }),
                 type: 'bindings',
                 variables: [ DF.variable('a'), DF.variable('b') ],
               },
@@ -301,7 +310,8 @@ describe('ActorRdfJoinOptionalBind', () => {
           ]),
         ]);
         expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
-        expect(await result.metadata()).toEqual({ cardinality: 7.2, canContainUndefs: true });
+        expect(await result.metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 7.2 }, canContainUndefs: true });
 
         // Validate mock calls
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(3);
@@ -309,8 +319,14 @@ describe('ActorRdfJoinOptionalBind', () => {
           operation: FACTORY.createPattern(DF.literal('1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: new ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata.name]: { cardinality: 3, canContainUndefs: false },
-            [KeysQueryOperation.joinRightMetadatas.name]: [{ cardinality: 3, canContainUndefs: false }],
+            [KeysQueryOperation.joinLeftMetadata.name]: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+            },
+            [KeysQueryOperation.joinRightMetadatas.name]: [{
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+            }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           }),
         });
@@ -318,8 +334,14 @@ describe('ActorRdfJoinOptionalBind', () => {
           operation: FACTORY.createPattern(DF.literal('2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: new ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata.name]: { cardinality: 3, canContainUndefs: false },
-            [KeysQueryOperation.joinRightMetadatas.name]: [{ cardinality: 3, canContainUndefs: false }],
+            [KeysQueryOperation.joinLeftMetadata.name]: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+            },
+            [KeysQueryOperation.joinRightMetadatas.name]: [{
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+            }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           }),
         });
@@ -327,8 +349,14 @@ describe('ActorRdfJoinOptionalBind', () => {
           operation: FACTORY.createPattern(DF.literal('3'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: new ActionContext({
             a: 'b',
-            [KeysQueryOperation.joinLeftMetadata.name]: { cardinality: 3, canContainUndefs: false },
-            [KeysQueryOperation.joinRightMetadatas.name]: [{ cardinality: 3, canContainUndefs: false }],
+            [KeysQueryOperation.joinLeftMetadata.name]: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+            },
+            [KeysQueryOperation.joinRightMetadatas.name]: [{
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+            }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           }),
         });

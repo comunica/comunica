@@ -4,13 +4,11 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type {
-  BindingsStream,
+import type { BindingsStream,
   IQueryOperationResultBindings,
-  IMetadata,
   IActionContext,
   IQueryOperationResult,
-} from '@comunica/types';
+  MetadataBindings, IMetadata } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { uniqTerms } from 'rdf-terms';
@@ -40,13 +38,18 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @param {{[p: string]: any}[]} metadatas Array of metadata.
    * @return {{[p: string]: any}} Union of the metadata.
    */
-  public static unionMetadata(metadatas: IMetadata[]): IMetadata {
-    let cardinality = 0;
+  public static unionMetadata<T extends RDF.Variable | RDF.QuadTermName>(metadatas: IMetadata<T>[]): IMetadata<T> {
+    const cardinality: RDF.QueryResultCardinality = { type: 'exact', value: 0 };
     for (const metadata of metadatas) {
-      if ((metadata.cardinality && Number.isFinite(metadata.cardinality)) || metadata.cardinality === 0) {
-        cardinality += metadata.cardinality;
+      if ((metadata.cardinality.value && Number.isFinite(metadata.cardinality.value)) ||
+        metadata.cardinality.value === 0) {
+        if (metadata.cardinality.type === 'estimate') {
+          cardinality.type = 'estimate';
+        }
+        cardinality.value += metadata.cardinality.value;
       } else {
-        cardinality = Number.POSITIVE_INFINITY;
+        cardinality.type = 'estimate';
+        cardinality.value = Number.POSITIVE_INFINITY;
         break;
       }
     }
@@ -70,7 +73,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       (output: IQueryOperationResultBindings) => output.bindingsStream,
     ), { autoStart: false });
 
-    const metadata: () => Promise<IMetadata> = () => Promise.all(outputs.map(output => output.metadata()))
+    const metadata: () => Promise<MetadataBindings> = () => Promise.all(outputs.map(output => output.metadata()))
       .then(ActorQueryOperationUnion.unionMetadata);
     const variables = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IQueryOperationResultBindings) => output.variables),

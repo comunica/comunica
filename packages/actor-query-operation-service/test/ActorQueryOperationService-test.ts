@@ -111,7 +111,8 @@ describe('ActorQueryOperationService', () => {
       const op: any = { operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: 'error' }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([]);
-        expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
 
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings(),

@@ -21,7 +21,7 @@ $ yarn add @comunica/actor-rdf-metadata-extract-hydra-count
 
 This actor adds the following entries to the metadata object.
 
-* `totalItems`: Value of `http://www.w3.org/ns/hydra/core#totalItems` or `http://rdfs.org/ns/void#triples`.
+* `cardinality`: Value of `http://www.w3.org/ns/hydra/core#totalItems` or `http://rdfs.org/ns/void#triples` represented as `{ type: 'exact' | 'estimate', value: number }`.
 
 ## Configure
 

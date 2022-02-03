@@ -53,7 +53,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
           bindingsStream: new SingletonIterator(BF.bindings()),
           type: 'bindings',
           variables: [],
-          metadata: async() => ({ cardinality: 1, canContainUndefs: false }),
+          metadata: async() => ({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false }),
         };
       } else {
         throw error;

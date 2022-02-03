@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultBindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, IActionContext, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -162,10 +162,18 @@ describe('ActorQueryOperationQuadpattern', () => {
   describe('An ActorQueryOperationQuadpattern instance', () => {
     let actor: ActorQueryOperationQuadpattern;
     let mediatorResolveQuadPattern: any;
-    let metadataContent: any;
+    let metadataContent: Partial<MetadataQuads>;
 
     beforeEach(() => {
-      metadataContent = { cardinality: 3 };
+      metadataContent = {
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: 'subject', direction: 'asc' },
+          { term: 'predicate', direction: 'asc' },
+          { term: 'object', direction: 'asc' },
+          { term: 'graph', direction: 'asc' },
+        ],
+      };
       mediatorResolveQuadPattern = {
         mediate: jest.fn(
           () => {
@@ -241,7 +249,10 @@ describe('ActorQueryOperationQuadpattern', () => {
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
-          cardinality: 3,
+          cardinality: { type: 'estimate', value: 3 },
+          order: [
+            { term: DF.variable('p'), direction: 'asc' },
+          ],
           canContainUndefs: false,
         });
         await expect(output.bindingsStream).toEqualBindingsStream(
@@ -266,8 +277,115 @@ describe('ActorQueryOperationQuadpattern', () => {
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
-          cardinality: 3,
+          cardinality: { type: 'estimate', value: 3 },
+          order: [
+            { term: DF.variable('p'), direction: 'asc' },
+          ],
           canContainUndefs: true,
+        });
+        await expect(output.bindingsStream).toEqualBindingsStream(
+          [
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
+          ],
+        );
+      });
+    });
+
+    it('should run s ?p o g without order metadata', () => {
+      metadataContent.order = undefined;
+      const operation: any = {
+        graph: DF.namedNode('g'),
+        object: DF.namedNode('o'),
+        predicate: DF.variable('p'),
+        subject: DF.namedNode('s'),
+        type: 'pattern',
+      };
+      return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.variables).toEqual([ DF.variable('p') ]);
+        expect(await output.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 3 },
+          canContainUndefs: false,
+        });
+        await expect(output.bindingsStream).toEqualBindingsStream(
+          [
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+            BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
+          ],
+        );
+      });
+    });
+
+    it('should run s ?p o g with custom availableOrders metadata', () => {
+      metadataContent.availableOrders = [
+        {
+          cost: {
+            cardinality: { type: 'exact', value: 123 },
+            iterations: 1,
+            persistedItems: 2,
+            blockingItems: 3,
+            requestTime: 4,
+          },
+          terms: [
+            { term: 'subject', direction: 'asc' },
+            { term: 'predicate', direction: 'asc' },
+          ],
+        },
+        {
+          cost: {
+            cardinality: { type: 'exact', value: 456 },
+            iterations: 1,
+            persistedItems: 2,
+            blockingItems: 3,
+            requestTime: 4,
+          },
+          terms: [
+            { term: 'object', direction: 'desc' },
+            { term: 'graph', direction: 'desc' },
+          ],
+        },
+      ];
+      const operation: any = {
+        graph: DF.namedNode('g'),
+        object: DF.namedNode('o'),
+        predicate: DF.variable('p'),
+        subject: DF.namedNode('s'),
+        type: 'pattern',
+      };
+      return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.variables).toEqual([ DF.variable('p') ]);
+        expect(await output.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 3 },
+          order: [
+            { term: DF.variable('p'), direction: 'asc' },
+          ],
+          canContainUndefs: false,
+          availableOrders: [
+            {
+              cost: {
+                cardinality: { type: 'exact', value: 123 },
+                iterations: 1,
+                persistedItems: 2,
+                blockingItems: 3,
+                requestTime: 4,
+              },
+              terms: [
+                { term: DF.variable('p'), direction: 'asc' },
+              ],
+            },
+            {
+              cost: {
+                cardinality: { type: 'exact', value: 456 },
+                iterations: 1,
+                persistedItems: 2,
+                blockingItems: 3,
+                requestTime: 4,
+              },
+              terms: [],
+            },
+          ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream(
           [
@@ -289,7 +407,13 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('p') ]);
-        expect(await output.metadata()).toBe(metadataContent);
+        expect(await output.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 3 },
+          order: [
+            { term: DF.variable('p'), direction: 'asc' },
+          ],
+          canContainUndefs: false,
+        });
         await expect(output.bindingsStream).toEqualBindingsStream(
           [
             BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
@@ -326,7 +450,13 @@ describe('ActorQueryOperationQuadpattern', () => {
 
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([ DF.variable('v') ]);
-        expect(await output.metadata()).toBe(metadataContent);
+        expect(await output.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 3 },
+          order: [
+            { term: DF.variable('v'), direction: 'asc' },
+          ],
+          canContainUndefs: false,
+        });
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('v'), DF.namedNode('w') ]]),
         ]);

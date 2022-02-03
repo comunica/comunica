@@ -4,7 +4,10 @@ import type { IAction, IActorOutput } from '@comunica/core';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IActionContext } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { MediatorJoinCoefficientsFixed } from '../lib/MediatorJoinCoefficientsFixed';
+
+const DF = new DataFactory();
 
 describe('MediatorJoinCoefficientsFixed', () => {
   describe('An MediatorJoinCoefficientsFixed instance', () => {
@@ -31,8 +34,8 @@ describe('MediatorJoinCoefficientsFixed', () => {
           {
             output: <any> {
               type: 'bindings',
-              variables: [ 'V' ],
-              metadata: () => Promise.resolve({ cardinality: 10 }),
+              variables: [ DF.variable('V') ],
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 10 }}),
             },
             operation: <any> {},
           },

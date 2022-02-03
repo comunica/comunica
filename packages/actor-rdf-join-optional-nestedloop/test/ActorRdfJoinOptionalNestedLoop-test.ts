@@ -74,13 +74,21 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                }),
               },
             },
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 4, pageSize: 100, requestTime: 10 }),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                }),
               },
             },
           ],
@@ -106,7 +114,10 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
                   BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 3 },
+                  canContainUndefs: false,
+                }),
                 type: 'bindings',
                 variables: [ DF.variable('a') ],
               },
@@ -128,7 +139,10 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
                     [ DF.variable('b'), DF.literal('2') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 3 },
+                  canContainUndefs: false,
+                }),
                 type: 'bindings',
                 variables: [ DF.variable('a'), DF.variable('b') ],
               },
@@ -141,7 +155,8 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata()).toEqual({ cardinality: 9, canContainUndefs: true });
+        expect(await result.metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 9 }, canContainUndefs: true });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
