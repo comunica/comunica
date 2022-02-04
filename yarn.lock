@@ -2601,10 +2601,10 @@
     qs "^6.7.0"
     url-parse "^1.4.7"
 
-"@rdfjs/types@*", "@rdfjs/types@1.1.0-next.0":
-  version "1.1.0-next.0"
-  resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.1.0-next.0.tgz#88ec81086ea10ef23485b93833bf2488b0cd70a2"
-  integrity sha512-NnCfxUD2y66PXavKESOWKgnGFid965dvTidUdPc+ZotIpxK74dm62PvRK5DpXIW5eETf/P4Ll8VZbUIdqkYVqg==
+"@rdfjs/types@*", "@rdfjs/types@1.1.0-next.0", "@rdfjs/types@1.1.0-next.1":
+  version "1.1.0-next.1"
+  resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.1.0-next.1.tgz#06d156a5a30cc3456e5f96a4c78d990235c83001"
+  integrity sha512-oqxnCrjoGFF4qIyQpp2HlO2QKnaZvalHsIQbp/O7qU3lytYJCzvpdRcTh1dglbYpfAfTiCQgcIlSRYu0D9os1w==
   dependencies:
     "@types/node" "*"
 

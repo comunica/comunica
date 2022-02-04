@@ -110,7 +110,7 @@ export type IQueryOperationResult =
  * Enhanced query operation output for a bindings stream.
  * For example: SPARQL SELECT results
  */
-export interface IQueryBindingsEnhanced extends RDF.QueryBindings {
+export interface IQueryBindingsEnhanced extends QueryBindings {
   // Override with more specific return type
   execute: (opts?: RDF.QueryExecuteOptions<RDF.Variable>) => Promise<BindingsStream>;
   /**
@@ -123,7 +123,7 @@ export interface IQueryBindingsEnhanced extends RDF.QueryBindings {
  * Enhanced query operation output for quads.
  * For example: SPARQL CONSTRUCT results
  */
-export interface IQueryQuadsEnhanced extends RDF.QueryQuads {
+export interface IQueryQuadsEnhanced extends QueryQuads {
   // Override with more specific return type
   execute: (opts?: RDF.QueryExecuteOptions<RDF.QuadTermName>)
   => Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>>;
@@ -132,6 +132,9 @@ export interface IQueryQuadsEnhanced extends RDF.QueryQuads {
    */
   quads: () => Promise<RDF.Quad[]>;
 }
+
+export type QueryBindings = RDF.QueryBindings<RDF.AllMetadataSupport>;
+export type QueryQuads = RDF.QueryQuads<RDF.AllMetadataSupport>;
 
 /**
  * Enhanced query operation output.

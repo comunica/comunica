@@ -251,7 +251,7 @@ export class QueryEngineBase implements IQueryEngine {
    * @param {ActionContext} context An optional context.
    * @return {Promise<IActorQueryResultSerializeOutput>} A text stream.
    */
-  public async resultToString(queryResult: RDF.Query, mediaType?: string, context?: any):
+  public async resultToString(queryResult: RDF.Query<any>, mediaType?: string, context?: any):
   Promise<IActorQueryResultSerializeOutput> {
     context = ActionContext.ensureActionContext(context);
     if (!mediaType) {
@@ -338,7 +338,7 @@ export class QueryEngineBase implements IQueryEngine {
    * Convert a final query result to an internal one.
    * @param finalResult A final query result.
    */
-  public static async finalToInternalResult(finalResult: RDF.Query): Promise<IQueryOperationResult> {
+  public static async finalToInternalResult(finalResult: RDF.Query<any>): Promise<IQueryOperationResult> {
     switch (finalResult.resultType) {
       case 'bindings':
         return {

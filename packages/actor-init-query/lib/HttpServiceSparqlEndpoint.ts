@@ -6,7 +6,7 @@ import type { Writable } from 'stream';
 import * as url from 'url';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { ICliArgsHandler, QueryType } from '@comunica/types';
+import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import yargs from 'yargs';
@@ -452,7 +452,7 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Flush results
-      const { data } = await engine.resultToString(<RDF.QueryQuads> {
+      const { data } = await engine.resultToString(<QueryQuads> {
         resultType: 'quads',
         execute: async() => new ArrayIterator(quads),
         metadata: <any> undefined,

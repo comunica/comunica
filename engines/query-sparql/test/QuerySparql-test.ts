@@ -6,7 +6,7 @@ jest.unmock('follow-redirects');
 import type {
   QueryStringContext,
   IQueryBindingsEnhanced,
-  IQueryExplained,
+  IQueryExplained, QueryBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Store } from 'n3';
@@ -39,21 +39,21 @@ describe('System test: QuerySparql', () => {
   describe('query', () => {
     describe('simple SPO on a raw RDF document', () => {
       it('with results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT * WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
       });
 
       it('without results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT * WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s <ex:dummy> ?o.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
 
       it('for the single source context entry', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT * WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     }`, { source: 'https://www.rubensworks.net/' });
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
@@ -64,15 +64,15 @@ describe('System test: QuerySparql', () => {
       ?s ?p ?o.
     }`;
         const context: QueryStringContext = { sources: [ 'https://www.rubensworks.net/' ]};
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
       });
 
@@ -81,15 +81,15 @@ describe('System test: QuerySparql', () => {
       ?s <ex:dummy> ?o.
     }`;
         const context: QueryStringContext = { sources: [ 'https://www.rubensworks.net/' ]};
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<RDF.QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
           .toEqual([]);
       });
 
@@ -142,14 +142,14 @@ describe('System test: QuerySparql', () => {
         it('with results and pointless custom filter given by creator', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = baseFunctionCreator;
-          const result = <RDF.QueryBindings> await engine.query(baseQuery(funcAllow), context);
+          const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(store.size);
         });
 
         it('with results and pointless custom filter given by record', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
-          const result = <RDF.QueryBindings> await engine.query(baseQuery(funcAllow), context);
+          const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(4);
         });
 
@@ -157,7 +157,7 @@ describe('System test: QuerySparql', () => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => () =>
             DF.literal('false', booleanType);
-          const result = <RDF.QueryBindings> await engine.query(baseQuery('rejectAll'), context);
+          const result = <QueryBindings> await engine.query(baseQuery('rejectAll'), context);
           expect(await arrayifyStream(await result.execute())).toEqual([]);
         });
 
@@ -237,7 +237,7 @@ describe('System test: QuerySparql', () => {
 
     describe('two-pattern query on a raw RDF document', () => {
       it('with results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT ?name WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
@@ -245,7 +245,7 @@ describe('System test: QuerySparql', () => {
       });
 
       it('without results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT ?name WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <ex:dummy> ?name.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
@@ -253,7 +253,7 @@ describe('System test: QuerySparql', () => {
       });
 
       it('for the single source entry', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT ?name WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
     }`, { source: 'https://www.rubensworks.net/' });
@@ -263,14 +263,14 @@ describe('System test: QuerySparql', () => {
 
     describe('simple SPO on a TPF entrypoint', () => {
       it('with results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT * WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(await result.execute())).length).toEqual(300);
       });
 
       it('with filtered results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT * WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s a ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(await result.execute())).length).toEqual(300);
@@ -279,7 +279,7 @@ describe('System test: QuerySparql', () => {
 
     describe('two-pattern query on a TPF entrypoint', () => {
       it('with results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT * WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/Italy>.
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
@@ -287,7 +287,7 @@ describe('System test: QuerySparql', () => {
       });
 
       it('without results', async() => {
-        const result = <RDF.QueryBindings> await engine.query(`SELECT * WHERE {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/UNKNOWN>.
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});

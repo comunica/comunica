@@ -13,7 +13,8 @@ export type QueryType = QueryEnhanced & { context?: IActionContext };
  * Base interface for a Comunica query engine.
  */
 export interface IQueryEngine extends
-  RDF.Queryable<QueryFormatType, SourceType, QueryType, QueryStringContext, QueryAlgebraContext>,
+  RDF.Queryable<QueryFormatType, SourceType, RDF.AllMetadataSupport, QueryType, QueryStringContext,
+  QueryAlgebraContext>,
   RDF.SparqlQueryable<QueryFormatType, SourceType, QueryStringContext, QueryAlgebraContext, RDF.SparqlResultSupport> {
   /**
    * Evaluate the given query
