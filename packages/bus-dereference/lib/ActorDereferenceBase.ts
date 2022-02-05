@@ -42,9 +42,7 @@ export abstract class ActorDereferenceBase<I extends IAction, T extends IActorTe
    * depending on whether or not hard errors are enabled.
    * @param {I} action An action.
    * @param {Error} error An error that has occurred.
-   * @param headers Optional HTTP headers to pass.
-   * @param {number} requestTime The time it took to request the page in milliseconds.
-   * @return {Promise<IActorDereferenceOutput>} A promise that rejects or resolves to an empty output.
+   * @param {N} output Data to add to the output
    */
   protected async dereferenceErrorHandler<N, M extends Readable>(
     action: I,
