@@ -26,7 +26,7 @@ describe('FederatedQuadSource', () => {
         const type = action.context.get(KeysRdfResolveQuadPattern.source).type;
         if (type === 'emptySource') {
           const data = new ArrayIterator([], { autoStart: false });
-          data.setProperty('metadata', { cardinality: 0, canContainUndefs: false });
+          data.setProperty('metadata', { cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
           return Promise.resolve({ data });
         }
         if (type === 'nonEmptySourceNoMeta') {
@@ -42,7 +42,10 @@ describe('FederatedQuadSource', () => {
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'blankNodeSource') {
@@ -50,7 +53,10 @@ describe('FederatedQuadSource', () => {
             squad('_:s1', '_:p1', '_:o1'),
             squad('_:s2', '_:p2', '_:o2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'errorSource') {
@@ -64,7 +70,10 @@ describe('FederatedQuadSource', () => {
             data.emit('error', new Error('FederatedQuadSource: errorSource'));
             return squad('_:s1', '_:p1', '_:o1');
           };
-          data.setProperty('metadata', { cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'graphs') {
@@ -76,7 +85,10 @@ describe('FederatedQuadSource', () => {
             squad('s3', 'p1', 'o1', 'g2'),
             squad('s3', 'p1', 'o2', 'g2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { cardinality: 6, canContainUndefs: false });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: 6 },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'nonEmptySourceUndefs') {
@@ -85,7 +97,7 @@ describe('FederatedQuadSource', () => {
             squad('s1', 'p1', 'o2'),
           ], { autoStart: false });
           data.setProperty('metadata', {
-            cardinality: 2,
+            cardinality: { type: 'estimate', value: 2 },
             canContainUndefs: true,
           });
           return Promise.resolve({ data });
@@ -95,7 +107,7 @@ describe('FederatedQuadSource', () => {
           squad('s1', 'p1', 'o2'),
         ], { autoStart: false });
         data.setProperty('metadata', {
-          cardinality: 2,
+          cardinality: { type: 'estimate', value: 2 },
           requestTime: 10,
           pageSize: 100,
           canContainUndefs: false,
@@ -466,7 +478,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 0, canContainUndefs: false });
+        .resolves.toEqual({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false });
     });
   });
 
@@ -490,7 +502,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 0, canContainUndefs: false });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -538,7 +550,7 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
-          cardinality: 2,
+          cardinality: { type: 'estimate', value: 2 },
           requestTime: 10,
           pageSize: 100,
           canContainUndefs: false,
@@ -598,7 +610,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 6 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 6, canContainUndefs: false });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
     });
   });
 
@@ -638,7 +650,12 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 2 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 2, requestTime: 10, pageSize: 100, canContainUndefs: false });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 2 },
+          requestTime: 10,
+          pageSize: 100,
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -692,7 +709,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 0, canContainUndefs: false });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -748,7 +765,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 0, canContainUndefs: false });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -798,7 +815,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 0, canContainUndefs: false });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -852,7 +869,12 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 2 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 4, requestTime: 20, pageSize: 200, canContainUndefs: false });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 4 },
+          requestTime: 20,
+          pageSize: 200,
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -906,7 +928,7 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
-          cardinality: Number.POSITIVE_INFINITY,
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           requestTime: 10,
           pageSize: 100,
           canContainUndefs: false,
@@ -949,7 +971,10 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          canContainUndefs: false,
+        });
     });
   });
 
@@ -989,7 +1014,7 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
-          cardinality: Number.POSITIVE_INFINITY,
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           requestTime: 10,
           pageSize: 100,
           canContainUndefs: false,
@@ -1032,7 +1057,10 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: false });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          canContainUndefs: false,
+        });
     });
   });
 
@@ -1306,7 +1334,12 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with canContainUndefs true', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 4 },
+          pageSize: 100,
+          requestTime: 10,
+          canContainUndefs: true,
+        });
     });
   });
 
@@ -1334,7 +1367,12 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with canContainUndefs true', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 4 },
+          pageSize: 100,
+          requestTime: 10,
+          canContainUndefs: true,
+        });
     });
   });
 
@@ -1362,7 +1400,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with canContainUndefs true', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: 4, canContainUndefs: true });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true });
     });
   });
 

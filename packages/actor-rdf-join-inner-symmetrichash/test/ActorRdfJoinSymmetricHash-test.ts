@@ -4,19 +4,20 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinSymmetricHash } from '../lib/ActorRdfJoinSymmetricHash';
 const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
 function bindingsToString(b: Bindings): string {
   // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
-  const keys = b.keySeq().toArray().sort();
-  return keys.map(k => `${k}:${b.get(k).value}`).toString();
+  const keys = [ ...b.keys() ].sort();
+  return keys.map(k => `${k.value}:${b.get(k)!.value}`).toString();
 }
 
 describe('ActorRdfJoinSymmetricHash', () => {
@@ -61,7 +62,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -70,7 +71,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -93,7 +94,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -102,7 +103,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -122,7 +123,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: false }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false }),
               type: 'bindings',
               variables: [],
             },
@@ -131,7 +132,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -151,7 +152,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 4, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -160,7 +161,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: 5, canContainUndefs: true }),
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true }),
               type: 'bindings',
               variables: [],
             },
@@ -175,107 +176,180 @@ describe('ActorRdfJoinSymmetricHash', () => {
 
     it('should generate correct test metadata', async() => {
       await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0].output).metadata()).cardinality +
-        (await (<any> action.entries[1].output).metadata()).cardinality);
+        (await (<any> action.entries[0].output).metadata()).cardinality.value +
+        (await (<any> action.entries[1].output).metadata()).cardinality.value);
     });
 
     it('should generate correct metadata', async() => {
-      await actor.run(action).then(async(result: IQueryableResultBindings) => {
+      await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
-          (await (<any> action.entries[0].output).metadata()).cardinality *
-          (await (<any> action.entries[1].output).metadata()).cardinality);
+          {
+            type: 'estimate',
+            value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
+          (await (<any> action.entries[1].output).metadata()).cardinality.value,
+          });
       });
     });
 
     it('should return an empty stream for empty input', () => {
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([]);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+        await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
 
     it('should join bindings with matching values', () => {
       action.entries[0].output.bindingsStream = new ArrayIterator([
-        BF.bindings({ a: DF.literal('a'), b: DF.literal('b') }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
       ]);
-      action.entries[0].output.variables = [ 'a', 'b' ];
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
-        BF.bindings({ a: DF.literal('a'), c: DF.literal('c') }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a') ],
+          [ DF.variable('c'), DF.literal('c') ],
+        ]),
       ]);
-      action.entries[1].output.variables = [ 'a', 'c' ];
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('a'), b: DF.literal('b'), c: DF.literal('c') }),
+      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('a') ],
+            [ DF.variable('b'), DF.literal('b') ],
+            [ DF.variable('c'), DF.literal('c') ],
+          ]),
         ]);
       });
     });
 
     it('should not join bindings with incompatible values', () => {
       action.entries[0].output.bindingsStream = new ArrayIterator([
-        BF.bindings({ a: DF.literal('a'), b: DF.literal('b') }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
       ]);
-      action.entries[0].output.variables = [ 'a', 'b' ];
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
-        BF.bindings({ a: DF.literal('d'), c: DF.literal('c') }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('d') ],
+          [ DF.variable('c'), DF.literal('c') ],
+        ]),
       ]);
-      action.entries[1].output.variables = [ 'a', 'c' ];
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
 
     it('should join multiple bindings', () => {
       action.entries[0].output.bindingsStream = new ArrayIterator([
-        BF.bindings({ a: DF.literal('1'), b: DF.literal('2') }),
-        BF.bindings({ a: DF.literal('1'), b: DF.literal('3') }),
-        BF.bindings({ a: DF.literal('2'), b: DF.literal('2') }),
-        BF.bindings({ a: DF.literal('2'), b: DF.literal('3') }),
-        BF.bindings({ a: DF.literal('3'), b: DF.literal('3') }),
-        BF.bindings({ a: DF.literal('3'), b: DF.literal('4') }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('1') ],
+          [ DF.variable('b'), DF.literal('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('1') ],
+          [ DF.variable('b'), DF.literal('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('2') ],
+          [ DF.variable('b'), DF.literal('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('2') ],
+          [ DF.variable('b'), DF.literal('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('3') ],
+          [ DF.variable('b'), DF.literal('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('3') ],
+          [ DF.variable('b'), DF.literal('4') ],
+        ]),
       ]);
-      action.entries[0].output.variables = [ 'a', 'b' ];
+      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
-        BF.bindings({ a: DF.literal('1'), c: DF.literal('4') }),
-        BF.bindings({ a: DF.literal('1'), c: DF.literal('5') }),
-        BF.bindings({ a: DF.literal('2'), c: DF.literal('6') }),
-        BF.bindings({ a: DF.literal('3'), c: DF.literal('7') }),
-        BF.bindings({ a: DF.literal('0'), c: DF.literal('4') }),
-        BF.bindings({ a: DF.literal('0'), c: DF.literal('4') }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('1') ],
+          [ DF.variable('c'), DF.literal('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('1') ],
+          [ DF.variable('c'), DF.literal('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('2') ],
+          [ DF.variable('c'), DF.literal('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('3') ],
+          [ DF.variable('c'), DF.literal('7') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('0') ],
+          [ DF.variable('c'), DF.literal('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('0') ],
+          [ DF.variable('c'), DF.literal('4') ],
+        ]),
       ]);
-      action.entries[1].output.variables = [ 'a', 'c' ];
-      return actor.run(action).then(async(output: IQueryableResultBindings) => {
+      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
-          BF.bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('4') }),
-          BF.bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('5') }),
-          BF.bindings({ a: DF.literal('1'), b: DF.literal('3'), c: DF.literal('4') }),
-          BF.bindings({ a: DF.literal('1'), b: DF.literal('3'), c: DF.literal('5') }),
-          BF.bindings({ a: DF.literal('2'), b: DF.literal('2'), c: DF.literal('6') }),
-          BF.bindings({ a: DF.literal('2'), b: DF.literal('3'), c: DF.literal('6') }),
-          BF.bindings({ a: DF.literal('3'), b: DF.literal('3'), c: DF.literal('7') }),
-          BF.bindings({ a: DF.literal('3'), b: DF.literal('4'), c: DF.literal('7') }),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('1') ],
+            [ DF.variable('b'), DF.literal('2') ],
+            [ DF.variable('c'), DF.literal('4') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('1') ],
+            [ DF.variable('b'), DF.literal('2') ],
+            [ DF.variable('c'), DF.literal('5') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('1') ],
+            [ DF.variable('b'), DF.literal('3') ],
+            [ DF.variable('c'), DF.literal('4') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('1') ],
+            [ DF.variable('b'), DF.literal('3') ],
+            [ DF.variable('c'), DF.literal('5') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('2') ],
+            [ DF.variable('b'), DF.literal('2') ],
+            [ DF.variable('c'), DF.literal('6') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('2') ],
+            [ DF.variable('b'), DF.literal('3') ],
+            [ DF.variable('c'), DF.literal('6') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('3') ],
+            [ DF.variable('b'), DF.literal('3') ],
+            [ DF.variable('c'), DF.literal('7') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('3') ],
+            [ DF.variable('b'), DF.literal('4') ],
+            [ DF.variable('c'), DF.literal('7') ],
+          ]),
         ];
-        expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
+        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
           .toEqual(expected.map(bindingsToString).sort());
       });
-    });
-
-    it('should hash to concatenation of values of variables', () => {
-      expect(ActorRdfJoinSymmetricHash.hash(
-        BF.bindings({ '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.namedNode('http://www.example.org/instance#b') }), [ '?x', '?y' ],
-      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
-    });
-
-    it('should not let hash being influenced by a variable that is not present in bindings', () => {
-      expect(ActorRdfJoinSymmetricHash.hash(
-        BF.bindings({ '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.namedNode('http://www.example.org/instance#b') }), [ '?x', '?y', '?z' ],
-      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
     });
   });
 });

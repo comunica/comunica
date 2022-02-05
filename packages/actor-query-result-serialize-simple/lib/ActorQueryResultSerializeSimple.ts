@@ -3,8 +3,8 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
-import type { IActionContext, IQueryableResultBindings, IQueryableResultBoolean,
-  IQueryableResultQuads, IQueryableResultVoid } from '@comunica/types';
+import type { IActionContext, IQueryOperationResultBindings, IQueryOperationResultBoolean,
+  IQueryOperationResultQuads, IQueryOperationResultVoid } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -21,7 +21,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
-    if (![ 'bindings', 'quads', 'boolean', 'update' ].includes(action.type)) {
+    if (![ 'bindings', 'quads', 'boolean', 'void' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams, quad streams, booleans, or updates.');
     }
     return true;
@@ -36,14 +36,14 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
 
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = (<IQueryableResultBindings> action).bindingsStream;
+      resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
       resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', bindings => data.push(`${bindings.map(
-        (value: RDF.Term, key: string) => `${key}: ${value.value}`,
+      resultStream.on('data', (bindings: RDF.Bindings) => data.push(`${[ ...bindings ].map(
+        ([ key, value ]) => `?${key.value}: ${value.value}`,
       ).join('\n')}\n\n`));
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'quads') {
-      resultStream = (<IQueryableResultQuads> action).quadStream;
+      resultStream = (<IQueryOperationResultQuads> action).quadStream;
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', quad => data.push(
         `subject: ${quad.subject.value}\n` +
@@ -54,13 +54,13 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'boolean') {
       try {
-        data.push(`${JSON.stringify(await (<IQueryableResultBoolean> action).booleanResult)}\n`);
+        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).booleanResult)}\n`);
         data.push(null);
       } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));
       }
     } else {
-      (<IQueryableResultVoid> action).updateResult
+      (<IQueryOperationResultVoid> action).voidResult
         .then(() => {
           data.push('ok\n');
           data.push(null);

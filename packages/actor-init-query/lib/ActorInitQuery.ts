@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import type { Readable } from 'stream';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IQueryableResult, IQueryExplained, ICliArgsHandler } from '@comunica/types';
+import type { ICliArgsHandler } from '@comunica/types';
 import yargs from 'yargs';
 import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
 import { ActorInitQueryBase } from './ActorInitQueryBase';
@@ -79,7 +79,7 @@ export class ActorInitQuery extends ActorInitQueryBase {
     }
 
     // Evaluate query
-    const queryResult: IQueryableResult | IQueryExplained = await queryEngine.queryOrExplain(query!, context);
+    const queryResult = await queryEngine.queryOrExplain(query!, context);
 
     // Output query explanations in a different way
     if ('explain' in queryResult) {

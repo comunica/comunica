@@ -2,10 +2,8 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { Bindings, IQueryableResult, IActionContext } from '@comunica/types';
+import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
-
-import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
 const BF = new BindingsFactory();
@@ -21,7 +19,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
   public async runOperation(
     operation: Algebra.Path,
     context: IActionContext,
-  ): Promise<IQueryableResult> {
+  ): Promise<IQueryOperationResult> {
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
     const sVar = operation.subject.termType === 'Variable';
@@ -33,9 +31,9 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     if (!sVar && !oVar && operation.subject.equals(operation.object)) {
       return {
         type: 'bindings',
-        bindingsStream: new SingletonIterator(BF.bindings({})),
+        bindingsStream: new SingletonIterator(BF.bindings()),
         variables: [],
-        metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false }),
       };
     }
 
@@ -50,12 +48,12 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
 
     context = distinct.context;
 
-    if (sVar) {
-      extra.push(BF.bindings({ [termToString(operation.subject)]: operation.object }));
+    if (operation.subject.termType === 'Variable') {
+      extra.push(BF.bindings([[ operation.subject, operation.object ]]));
     }
 
-    if (oVar) {
-      extra.push(BF.bindings({ [termToString(operation.object)]: operation.subject }));
+    if (operation.object.termType === 'Variable') {
+      extra.push(BF.bindings([[ operation.object, operation.subject ]]));
     }
 
     const single = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({

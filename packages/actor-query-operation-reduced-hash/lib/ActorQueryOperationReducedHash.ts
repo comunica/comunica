@@ -3,7 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type {
-  Bindings, BindingsStream, IActionContext, IQueryableResult, IQueryableResultBindings,
+  Bindings, BindingsStream, IActionContext, IQueryOperationResult, IQueryOperationResultBindings,
 } from '@comunica/types';
 import LRU = require('lru-cache');
 import type { Algebra } from 'sparqlalgebrajs';
@@ -22,8 +22,8 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
     return true;
   }
 
-  public async runOperation(operation: Algebra.Reduced, context: IActionContext): Promise<IQueryableResult> {
-    const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
+  public async runOperation(operation: Algebra.Reduced, context: IActionContext): Promise<IQueryOperationResult> {
+    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
     const bindingsStream: BindingsStream = output.bindingsStream.filter(await this.newHashFilter(context));

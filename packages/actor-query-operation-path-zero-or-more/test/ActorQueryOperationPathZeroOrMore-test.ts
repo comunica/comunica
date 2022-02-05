@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import type { Bindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
@@ -10,6 +10,7 @@ import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPathZeroOrMore';
 const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -23,28 +24,28 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate(arg: any) {
-        const vars: any = [];
+        const vars: RDF.Variable[] = [];
         const distinct: boolean = arg.operation.type === 'distinct';
 
         if (arg.operation.type === 'union') {
           for (const name of QUAD_TERM_NAMES) {
             if (arg.operation.input[0][name].termType === 'Variable' ||
             arg.operation.input[0][name].termType === 'BlankNode') {
-              vars.push(termToString(arg.operation.input[0][name]));
+              vars.push(arg.operation.input[0][name]);
             }
             if (arg.operation.input[1][name].termType === 'Variable' ||
             arg.operation.input[1][name].termType === 'BlankNode') {
-              vars.push(termToString(arg.operation.input[1][name]));
+              vars.push(arg.operation.input[1][name]);
             }
           }
         } else {
           for (const name of QUAD_TERM_NAMES) {
             if (arg.operation.input && (arg.operation.input[name].termType === 'Variable' ||
           arg.operation.input[name].termType === 'BlankNode')) {
-              vars.push(termToString(arg.operation.input[name]));
+              vars.push(arg.operation.input[name]);
             } else if (arg.operation[name] && (arg.operation[name].termType === 'Variable' ||
           arg.operation[name].termType === 'BlankNode')) {
-              vars.push(termToString(arg.operation[name]));
+              vars.push(arg.operation[name]);
             }
           }
         }
@@ -52,9 +53,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         const bindings = [];
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
-            const bind: any = {};
+            const bind: [RDF.Variable, RDF.Term][] = [];
             for (const [ j, element ] of vars.entries()) {
-              bind[element] = DF.namedNode(`${1 + i + j}`);
+              bind.push([ element, DF.namedNode(`${1 + i + j}`) ]);
             }
             // Special case for coverage (making sure not every subject gets same objects)
             if (!(arg.operation && termToString(arg.operation.subject) === '5' && i === 2)) {
@@ -65,7 +66,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
             }
           }
         } else {
-          bindings.push(BF.bindings({}));
+          bindings.push(BF.bindings());
         }
 
         return Promise.resolve({
@@ -120,10 +121,10 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
+      expect(output.variables).toEqual([ DF.variable('x') ]);
       expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
       ]);
     });
 
@@ -135,10 +136,10 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
+      expect(output.variables).toEqual([ DF.variable('x') ]);
       expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
       ]);
     });
 
@@ -150,13 +151,13 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
+      expect(output.variables).toEqual([ DF.variable('x') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('s') }),
-        BF.bindings({ '?x': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('s') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),
       ]);
     });
 
@@ -168,13 +169,13 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
+      expect(output.variables).toEqual([ DF.variable('x') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('o') }),
-        BF.bindings({ '?x': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('o') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),
       ]);
     });
 
@@ -188,8 +189,8 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings(),
       ]);
     });
 
@@ -202,12 +203,12 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?g' ]);
+      expect(output.variables).toEqual([ DF.variable('g') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?g': DF.namedNode('6') }),
-        BF.bindings({ '?g': DF.namedNode('7') }),
-        BF.bindings({ '?g': DF.namedNode('8') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('g'), DF.namedNode('6') ]]),
+        BF.bindings([[ DF.variable('g'), DF.namedNode('7') ]]),
+        BF.bindings([[ DF.variable('g'), DF.namedNode('8') ]]),
       ]);
     });
 
@@ -220,21 +221,57 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x', '?g' ]);
+      expect(output.variables).toEqual([ DF.variable('x'), DF.variable('g') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('s'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('s'), '?g': DF.namedNode('7') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?g': DF.namedNode('7') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?g': DF.namedNode('7') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?g': DF.namedNode('7') }),
-        BF.bindings({ '?x': DF.namedNode('s'), '?g': DF.namedNode('8') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?g': DF.namedNode('8') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?g': DF.namedNode('8') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?g': DF.namedNode('8') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('s') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('s') ],
+          [ DF.variable('g'), DF.namedNode('7') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('7') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('7') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('7') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('s') ],
+          [ DF.variable('g'), DF.namedNode('8') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('8') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('8') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('8') ],
+        ]),
       ]);
     });
 
@@ -246,27 +283,77 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x', '?y' ]);
+      expect(output.variables).toEqual([ DF.variable('x'), DF.variable('y') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
-      expect(bindings).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('4') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
       ]);
     });
 
@@ -279,33 +366,110 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x', '?y', '?g' ]);
+      expect(output.variables).toEqual([ DF.variable('x'), DF.variable('y'), DF.variable('g') ]);
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
-      const comparator = ((left: Bindings, right: Bindings) => JSON.stringify(left.toJS())
-        .localeCompare(JSON.stringify(right.toJS())));
-      expect(bindings.sort(comparator)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1'), '?g': DF.namedNode('4') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2'), '?g': DF.namedNode('4') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('3'), '?g': DF.namedNode('4') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('3'), '?g': DF.namedNode('4') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('1'), '?g': DF.namedNode('4') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('2'), '?g': DF.namedNode('4') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('2'), '?g': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('1'), '?g': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('3'), '?g': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('4'), '?g': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('1'), '?g': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('2'), '?g': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('3'), '?g': DF.namedNode('5') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('3'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('5'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('1'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('2'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('1'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('2'), '?g': DF.namedNode('6') }),
-        BF.bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('3'), '?g': DF.namedNode('6') }),
-      ].sort(comparator));
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('4') ],
+          [ DF.variable('g'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('4') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('5') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('5') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('5') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('6') ],
+        ]),
+      ]);
     });
   });
 });

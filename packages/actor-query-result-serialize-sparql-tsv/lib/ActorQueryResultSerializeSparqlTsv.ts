@@ -4,7 +4,7 @@ import type { IActionSparqlSerialize, IActorQueryResultSerializeFixedMediaTypesA
 import {
   ActorQueryResultSerializeFixedMediaTypes,
 } from '@comunica/bus-query-result-serialize';
-import type { Bindings, IActionContext, IQueryableResultBindings } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string-ttl';
 
@@ -51,7 +51,7 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
 
   public async runHandle(action: IActionSparqlSerialize, mediaType: string | undefined, context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
-    const bindingsAction = <IQueryableResultBindings> action;
+    const bindingsAction = <IQueryOperationResultBindings> action;
 
     const data = new Readable();
     data._read = () => {
@@ -59,7 +59,7 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     };
 
     // Write head
-    data.push(`${bindingsAction.variables.map((variable: string) => variable.slice(1)).join('\t')}\n`);
+    data.push(`${bindingsAction.variables.map((variable: RDF.Variable) => variable.value).join('\t')}\n`);
 
     // Write bindings
     bindingsAction.bindingsStream.on('error', (error: Error) => {
@@ -67,7 +67,7 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     });
     bindingsAction.bindingsStream.on('data', (bindings: Bindings) => {
       data.push(`${bindingsAction.variables
-        .map((key: string) => ActorQueryResultSerializeSparqlTsv
+        .map((key: RDF.Variable) => ActorQueryResultSerializeSparqlTsv
           .bindingToTsvBindings(bindings.get(key)))
         .join('\t')}\n`);
     });

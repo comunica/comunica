@@ -3,8 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
-import { termToString } from 'rdf-string';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -15,10 +14,9 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     super(args, Algebra.types.NPS);
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const predicate = <Algebra.Nps> operation.predicate;
     const blank = this.generateVariable(operation);
-    const blankName = termToString(blank);
 
     const pattern = ActorAbstractPath.FACTORY
       .createPattern(operation.subject, blank, operation.object, operation.graph);
@@ -29,10 +27,10 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     // Remove the generated blank nodes from the bindings
     const bindingsStream = output.bindingsStream.transform<Bindings>({
       filter(bindings) {
-        return !predicate.iris.some(iri => iri.equals(bindings.get(blankName)));
+        return !predicate.iris.some(iri => iri.equals(bindings.get(blank)));
       },
       transform(item, next, push) {
-        push(item.delete(blankName));
+        push(item.delete(blank));
         next();
       },
     });

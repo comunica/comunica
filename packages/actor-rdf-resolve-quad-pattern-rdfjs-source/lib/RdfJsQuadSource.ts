@@ -68,6 +68,6 @@ export class RdfJsQuadSource implements IQuadSource {
         matches.on('data', () => i++);
       });
     }
-    it.setProperty('metadata', { cardinality, canContainUndefs: false });
+    it.setProperty('metadata', { cardinality: { type: 'exact', value: cardinality }, canContainUndefs: false });
   }
 }

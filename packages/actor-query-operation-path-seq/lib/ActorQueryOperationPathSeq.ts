@@ -4,9 +4,8 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { Bindings, IActionContext, IQueryableResult } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -22,14 +21,14 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
   public async runOperation(
     operationOriginal: Algebra.Path,
     context: IActionContext,
-  ): Promise<IQueryableResult> {
+  ): Promise<IQueryOperationResult> {
     const predicate = <Algebra.Seq> operationOriginal.predicate;
 
     let joiner: RDF.Term = operationOriginal.subject;
-    const generatedVariableNames: string[] = [];
+    const generatedVariableNames: RDF.Variable[] = [];
     const entries: IJoinEntry[] = await Promise.all(predicate.input
       .map((subPredicate, i) => {
-        const nextJoiner = i === predicate.input.length - 1 ? operationOriginal.object : this.generateVariable(operationOriginal, `b${i}`);
+        const nextJoiner = i === predicate.input.length - 1 ? <RDF.Variable> operationOriginal.object : this.generateVariable(operationOriginal, `b${i}`);
         const operation = ActorAbstractPath.FACTORY
           .createPath(joiner, subPredicate, nextJoiner, operationOriginal.graph);
         const output = this.mediatorQueryOperation.mediate({
@@ -39,7 +38,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
         joiner = nextJoiner;
         if (i < predicate.input.length - 1) {
-          generatedVariableNames.push(termToString(nextJoiner));
+          generatedVariableNames.push(nextJoiner);
         }
 
         return { output, operation };
@@ -63,7 +62,8 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     });
 
     // Remove the generated variable from the list of variables
-    const variables = join.variables.filter(variable => !generatedVariableNames.includes(variable));
+    const variables = join.variables.filter(variable => !generatedVariableNames
+      .some(generatedVariableName => generatedVariableName.value === variable.value));
     return { type: 'bindings', bindingsStream, variables, metadata: join.metadata };
   }
 }

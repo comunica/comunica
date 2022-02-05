@@ -4,7 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfJoinMultiEmpty } from '../lib/ActorRdfJoinMultiEmpty';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 describe('ActorRdfJoinMultiEmpty', () => {
   let bus: any;
@@ -36,14 +36,14 @@ describe('ActorRdfJoinMultiEmpty', () => {
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 10 }),
+                metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 10 }}),
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 15 }),
+                metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 15 }}),
               },
               operation: <any> {},
             },
@@ -59,14 +59,14 @@ describe('ActorRdfJoinMultiEmpty', () => {
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 10 }),
+                metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 10 }}),
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 type: 'bindings',
-                metadata: () => Promise.resolve({ cardinality: 0 }),
+                metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 0 }}),
               },
               operation: <any> {},
             },
@@ -90,7 +90,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
                 type: 'bindings',
                 bindingsStream: new ArrayIterator([], { autoStart: false }),
                 variables: [],
-                metadata: () => Promise.resolve({ cardinality: 10 }),
+                metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 10 }}),
               },
               operation: <any> {},
             },
@@ -99,7 +99,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
                 type: 'bindings',
                 bindingsStream: new ArrayIterator([], { autoStart: false }),
                 variables: [],
-                metadata: () => Promise.resolve({ cardinality: 15 }),
+                metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 15 }}),
               },
               operation: <any> {},
             },
@@ -107,8 +107,9 @@ describe('ActorRdfJoinMultiEmpty', () => {
           context,
         });
         expect(output.variables).toEqual([]);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
-        expect(await output.metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
+        await expect(output.bindingsStream).toEqualBindingsStream([]);
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false });
       });
     });
   });

@@ -2,11 +2,11 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -22,14 +22,14 @@ describe('ActorQueryOperationService', () => {
         Promise.reject(new Error('Endpoint error')) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            BF.bindings({ a: DF.literal('1') }),
-            BF.bindings({ a: DF.literal('2') }),
-            BF.bindings({ a: DF.literal('3') }),
+            BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           ]),
           metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
           operated: arg,
           type: 'bindings',
-          variables: [ '?a' ],
+          variables: [ DF.variable('a') ],
         }),
     };
   });
@@ -81,40 +81,41 @@ describe('ActorQueryOperationService', () => {
         '@comunica/bus-rdf-resolve-quad-pattern:sources': { type: 'bla', value: 'blabla' },
       });
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }, context };
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ '?a' ]);
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });
 
     it('should run without context', () => {
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(output.variables).toEqual([ '?a' ]);
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });
 
     it('should run on a silent operation when the endpoint errors', () => {
       const op: any = { operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: 'error' }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(output.variables).toEqual([]);
-        expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
 
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({}),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings(),
         ]);
       });
     });
@@ -130,16 +131,16 @@ describe('ActorQueryOperationService', () => {
         { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' },
       );
 
-      return actorThis.run(op).then(async(output: IQueryableResultBindings) => {
+      return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect((<any> output).operated.context.get(KeysRdfResolveQuadPattern.sources)[0].type)
           .toEqual(undefined);
-        expect(output.variables).toEqual([ '?a' ]);
+        expect(output.variables).toEqual([ DF.variable('a') ]);
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });
@@ -150,15 +151,15 @@ describe('ActorQueryOperationService', () => {
         { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor' },
       );
 
-      return actorThis.run(op).then(async(output: IQueryableResultBindings) => {
+      return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect((<any> output).operated.context.get(KeysRdfResolveQuadPattern.sources)[0].type)
           .toEqual('sparql');
         expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
 
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });

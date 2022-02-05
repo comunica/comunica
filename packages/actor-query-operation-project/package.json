@@ -35,7 +35,6 @@
     "@comunica/data-factory": "^2.0.0",
     "@comunica/types": "^2.0.0",
     "rdf-data-factory": "^1.0.3",
-    "rdf-string": "^1.5.0",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {

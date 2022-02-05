@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
@@ -22,15 +22,15 @@ export class ActorQueryOperationCopyRewrite extends ActorQueryOperationTypedMedi
     return true;
   }
 
-  public runOperation(operationOriginal: Algebra.Copy, context: IActionContext): Promise<IQueryableResult> {
+  public runOperation(operationOriginal: Algebra.Copy, context: IActionContext): Promise<IQueryOperationResult> {
     // No-op if source === destination
     if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
         operationOriginal.destination === operationOriginal.source) ||
       (typeof operationOriginal.destination !== 'string' && typeof operationOriginal.source !== 'string' &&
         operationOriginal.destination.equals(operationOriginal.source))) {
       return Promise.resolve({
-        type: 'update',
-        updateResult: Promise.resolve(),
+        type: 'void',
+        voidResult: Promise.resolve(),
       });
     }
 

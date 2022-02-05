@@ -4,9 +4,10 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  IActionContext, IQueryableResultBindings, IQueryableResultBoolean,
-  IQueryableResultQuads,
+  IActionContext, IQueryOperationResultBindings, IQueryOperationResultBoolean,
+  IQueryOperationResultQuads,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 
 /**
@@ -42,12 +43,13 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
 
     let empty = true;
     if (action.type === 'bindings') {
-      const resultStream = (<IQueryableResultBindings> action).bindingsStream;
+      const resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
       data.push('[');
       resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', element => {
+      resultStream.on('data', (element: RDF.Bindings) => {
         data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(element.map(RdfString.termToString)));
+        data.push(JSON.stringify(Object.fromEntries([ ...element ]
+          .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]))));
         empty = false;
       });
       resultStream.on('end', () => {
@@ -55,7 +57,7 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
         data.push(null);
       });
     } else if (action.type === 'quads') {
-      const resultStream = (<IQueryableResultQuads> action).quadStream;
+      const resultStream = (<IQueryOperationResultQuads> action).quadStream;
       data.push('[');
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', element => {
@@ -69,7 +71,7 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
       });
     } else {
       try {
-        data.push(`${JSON.stringify(await (<IQueryableResultBoolean> action).booleanResult)}\n`);
+        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).booleanResult)}\n`);
         data.push(null);
       } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));

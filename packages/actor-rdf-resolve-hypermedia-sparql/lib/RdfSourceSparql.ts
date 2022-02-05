@@ -12,6 +12,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
+const VAR_COUNT = DF.variable('count');
 
 export class RdfSourceSparql implements IQuadSource {
   protected static readonly FACTORY: Factory = new Factory();
@@ -131,7 +132,8 @@ export class RdfSourceSparql implements IQuadSource {
   public queryBindings(endpoint: string, query: string): BindingsStream {
     const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map(rawData => BF.bindings(rawData));
+      .map((rawData: Record<string, RDF.Term>) => BF.bindings(Object.entries(rawData)
+        .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
@@ -149,7 +151,7 @@ export class RdfSourceSparql implements IQuadSource {
     new Promise<Record<string, any>>(resolve => {
       const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
       bindingsStream.on('data', (bindings: Bindings) => {
-        const count: RDF.Term = bindings.get('?count');
+        const count = bindings.get(VAR_COUNT);
         if (count) {
           const cardinality: number = Number.parseInt(count.value, 10);
           if (Number.isNaN(cardinality)) {
@@ -168,11 +170,11 @@ export class RdfSourceSparql implements IQuadSource {
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery)
       .map((bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
         if (value.termType === 'Variable') {
-          const boundValue: RDF.Term = bindings.get(`?${value.value}`);
+          const boundValue = bindings.get(value);
           if (!boundValue) {
             quads.destroy(new Error(`The endpoint ${this.url} failed to provide a binding for ${value.value}.`));
           }
-          return boundValue;
+          return boundValue!;
         }
         return value;
       }));

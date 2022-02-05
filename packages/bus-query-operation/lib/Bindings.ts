@@ -21,7 +21,7 @@ const BF = new BindingsFactory();
  */
 export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   if (term.termType === 'Variable') {
-    const value: RDF.Term = bindings.get(termToString(term));
+    const value = bindings.get(term);
     if (value) {
       return value;
     }
@@ -87,7 +87,7 @@ export function materializeOperation(
       // Materialize an extend operation.
       // If strictTargetVariables is true, we throw if the extension target variable is attempted to be bound.
       // Otherwise, we remove the extend operation.
-      if (bindings.has(termToString(op.variable))) {
+      if (bindings.has(op.variable)) {
         if (options.strictTargetVariables) {
           throw new Error(`Tried to bind variable ${termToString(op.variable)} in a BIND operator.`);
         } else {
@@ -108,7 +108,7 @@ export function materializeOperation(
       // Otherwise, we just filter out the bound variables.
       if (options.strictTargetVariables) {
         for (const variable of op.variables) {
-          if (bindings.has(termToString(variable))) {
+          if (bindings.has(variable)) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a GROUP BY operator.`);
           }
         }
@@ -117,7 +117,7 @@ export function materializeOperation(
           result: op,
         };
       }
-      const variables = op.variables.filter(variable => !bindings.has(termToString(variable)));
+      const variables = op.variables.filter(variable => !bindings.has(variable));
       return {
         recurse: true,
         result: factory.createGroup(
@@ -133,7 +133,7 @@ export function materializeOperation(
       // Otherwise, we just filter out the bound variables.
       if (options.strictTargetVariables) {
         for (const variable of op.variables) {
-          if (bindings.has(termToString(variable))) {
+          if (bindings.has(variable)) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
           }
         }
@@ -143,17 +143,18 @@ export function materializeOperation(
         };
       }
 
-      const variables = op.variables.filter(variable => !bindings.has(termToString(variable)));
+      const variables = op.variables.filter(variable => !bindings.has(variable));
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = BF.bindings(Object.fromEntries(op.variables.map(variable => {
-        const binding = bindings.get(termToString(variable));
+      const subBindings = BF.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map(variable => {
+        const binding = bindings.get(variable);
         if (binding) {
-          return [ termToString(variable), binding ];
+          return [ variable, binding ];
         }
-        return [];
-      })));
+        // eslint-disable-next-line no-useless-return
+        return;
+      }).filter(entry => Boolean(entry)));
 
       return {
         recurse: false,
@@ -173,22 +174,23 @@ export function materializeOperation(
       // Otherwise, we just filter out the bound variables and their bindings.
       if (options.strictTargetVariables) {
         for (const variable of op.variables) {
-          if (bindings.has(termToString(variable))) {
+          if (bindings.has(variable)) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a VALUES operator.`);
           }
         }
       } else {
-        const variables = op.variables.filter(variable => !bindings.has(termToString(variable)));
+        const variables = op.variables.filter(variable => !bindings.has(variable));
         const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map(binding => {
           const newBinding = { ...binding };
           let valid = true;
-          bindings.forEach((value: RDF.NamedNode, key: string) => {
-            if (key in newBinding) {
-              if (!value.equals(newBinding[key])) {
+          bindings.forEach((value: RDF.NamedNode, key: RDF.Variable) => {
+            const keyString = termToString(key);
+            if (keyString in newBinding) {
+              if (!value.equals(newBinding[keyString])) {
                 // If the value of the binding is not equal, remove this binding completely from the VALUES clause
                 valid = false;
               }
-              delete newBinding[key];
+              delete newBinding[keyString];
             }
           });
           return valid ? newBinding : undefined;
@@ -223,7 +225,7 @@ export function materializeOperation(
       }
       if (op.expressionType === 'aggregate' &&
         'variable' in op &&
-        bindings.has(termToString(<RDF.Variable> op.variable))) {
+        bindings.has(<RDF.Variable> op.variable)) {
         // Materialize a bound aggregate operation.
         // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
         // Otherwise, we ignore this operation.

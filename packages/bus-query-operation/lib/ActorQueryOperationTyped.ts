@@ -1,11 +1,11 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type {
-  IQueryableResult,
-  IQueryableResultStream,
+  IQueryOperationResult,
   IPhysicalQueryPlanLogger,
   IActionContext,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
@@ -35,7 +35,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return this.testOperation(operation, action.context);
   }
 
-  public async run(action: IActionQueryOperation): Promise<IQueryableResult> {
+  public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Log to physical plan
     if (action.context) {
       const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action?.context
@@ -55,10 +55,9 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
     const operation: O = <O> action.operation;
     const subContext = action.context && action.context.set(KeysQueryOperation.operation, operation);
-    const output: IQueryableResult = await this.runOperation(operation, subContext);
-    if ((<IQueryableResultStream> output).metadata) {
-      (<IQueryableResultStream> output).metadata =
-        ActorQueryOperation.cachifyMetadata((<IQueryableResultStream> output).metadata);
+    const output: IQueryOperationResult = await this.runOperation(operation, subContext);
+    if ('metadata' in output) {
+      output.metadata = <any> ActorQueryOperation.cachifyMetadata<RDF.QuadTermName | RDF.Variable>(output.metadata);
     }
     return output;
   }
@@ -66,5 +65,5 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
   protected abstract testOperation(operation: O, context: IActionContext): Promise<IActorTest>;
 
   protected abstract runOperation(operation: O, context: IActionContext):
-  Promise<IQueryableResult>;
+  Promise<IQueryOperationResult>;
 }

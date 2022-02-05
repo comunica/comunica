@@ -6,7 +6,7 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IMetadata } from '@comunica/types';
+import type { Bindings, BindingsStream, MetadataBindings } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -67,7 +67,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
@@ -85,14 +85,14 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     })).selectivity * this.selectivityModifier;
 
     return {
-      iterations: metadatas[0].cardinality * metadatas[1].cardinality * selectivity,
+      iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value * selectivity,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
-        metadatas[0].cardinality * selectivity * (
+        metadatas[0].cardinality.value * selectivity * (
           requestItemTimes[0] +
           requestInitialTimes[1] +
-          metadatas[1].cardinality * requestItemTimes[1]
+          metadatas[1].cardinality.value * requestItemTimes[1]
         ),
     };
   }

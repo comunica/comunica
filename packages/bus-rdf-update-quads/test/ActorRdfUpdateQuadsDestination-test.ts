@@ -1,13 +1,9 @@
 import { Bus } from '@comunica/core';
-import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '..';
 
-const arrayifyStream = require('arrayify-stream');
-
 describe('ActorRdfUpdateQuadsDestination', () => {
   const bus = new Bus({ name: 'bus' });
-  const rdfjsStore: RDF.Store = <any> { remove: true };
 
   describe('The ActorRdfUpdateQuadsDestination module', () => {
     it('should be a function', () => {
@@ -56,7 +52,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
     it('should run without streams', () => {
       return actor.run({}).then(async(output: any) => {
-        await expect(output.updateResult).resolves.toBeUndefined();
+        await expect(output.voidResult).resolves.toBeUndefined();
       });
     });
 
@@ -65,7 +61,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
         quadStreamInsert: new ArrayIterator([]),
         quadStreamDelete: new ArrayIterator([]),
       }).then(async(output: any) => {
-        await expect(output.updateResult).resolves.toBeUndefined();
+        await expect(output.voidResult).resolves.toBeUndefined();
       });
     });
   });

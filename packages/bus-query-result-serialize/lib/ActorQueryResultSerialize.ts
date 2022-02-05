@@ -15,7 +15,7 @@ import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
 import type { IAction, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import type { IQueryableResultBase, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBase, IActionContext } from '@comunica/types';
 
 /**
  * A comunica actor for query-result-serialize events.
@@ -55,7 +55,7 @@ export type IActionQueryResultSerializeMediaTypeFormats = IActionAbstractMediaTy
 export type IActorTestQueryResultSerializeMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
 export type IActorOutputQueryResultSerializeMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
-export interface IActionSparqlSerialize extends IAction, IQueryableResultBase {
+export interface IActionSparqlSerialize extends IAction, IQueryOperationResultBase {
   context: IActionContext;
 }
 

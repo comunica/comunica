@@ -4,8 +4,8 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  IActionContext, IQueryableResultBindings,
-  IQueryableResultQuads,
+  IActionContext, IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
 } from '@comunica/types';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
@@ -61,8 +61,8 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     };
 
     const resultStream: NodeJS.EventEmitter = action.type === 'bindings' ?
-      (<IQueryableResultBindings> action).bindingsStream :
-      (<IQueryableResultQuads> action).quadStream;
+      (<IQueryOperationResultBindings> action).bindingsStream :
+      (<IQueryOperationResultQuads> action).quadStream;
 
     const startTime = process.hrtime();
     let result = 1;

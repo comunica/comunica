@@ -5,11 +5,15 @@ import type { IActionSparqlSerialize,
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
   Bindings, IActionContext,
-  IQueryableResultBindings,
-  IQueryableResultQuads,
+  IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
 } from '@comunica/types';
-
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { getTerms, QUAD_TERM_NAMES } from 'rdf-terms';
+
+const DF = new DataFactory();
+const QUAD_TERM_NAMES_VARS = QUAD_TERM_NAMES.map(name => DF.variable(name));
 
 /**
  * A comunica Table Sparql Serialize Actor.
@@ -47,14 +51,14 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     return `${str.slice(0, this.columnWidth - 1)}…`;
   }
 
-  public pushHeader(data: Readable, labels: string[]): void {
-    const header: string = labels.map(label => this.pad(label)).join(' ');
+  public pushHeader(data: Readable, labels: RDF.Variable[]): void {
+    const header: string = labels.map(label => this.pad(label.value)).join(' ');
     data.push(`${header}\n${ActorQueryResultSerializeTable.repeat('-', header.length)}\n`);
   }
 
-  public pushRow(data: Readable, labels: string[], bindings: Bindings): void {
+  public pushRow(data: Readable, labels: RDF.Variable[], bindings: Bindings): void {
     data.push(`${labels
-      .map(label => bindings.has(label) ? bindings.get(label).value : '')
+      .map(label => bindings.get(label)?.value || '')
       .map(label => this.pad(label))
       .join(' ')}\n`);
   }
@@ -68,14 +72,14 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
 
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = (<IQueryableResultBindings> action).bindingsStream;
-      const labels = (<IQueryableResultBindings> action).variables;
+      resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
+      const labels = (<IQueryOperationResultBindings> action).variables;
       this.pushHeader(data, labels);
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', bindings => this.pushRow(data, labels, bindings));
     } else {
-      resultStream = (<IQueryableResultQuads> action).quadStream;
-      this.pushHeader(data, QUAD_TERM_NAMES);
+      resultStream = (<IQueryOperationResultQuads> action).quadStream;
+      this.pushHeader(data, QUAD_TERM_NAMES_VARS);
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', quad => data.push(
         `${getTerms(quad).map(term => this.pad(term.value)).join(' ')}\n`,

@@ -33,7 +33,6 @@
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.2",
     "asynciterator": "^3.2.1",
-    "immutable": "^3.8.2",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {

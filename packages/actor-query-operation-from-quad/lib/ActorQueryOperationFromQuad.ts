@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -212,7 +212,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   public async runOperation(
     operationOriginal: Algebra.From,
     context: IActionContext,
-  ): Promise<IQueryableResult> {
+  ): Promise<IQueryOperationResult> {
     const operation: Algebra.Operation = ActorQueryOperationFromQuad.createOperation(operationOriginal);
     return this.mediatorQueryOperation.mediate({ operation, context });
   }

@@ -1,6 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import type { IActionContext, IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -11,7 +11,7 @@ export class ActorQueryOperationPathInv extends ActorAbstractPath {
     super(args, Algebra.types.INV);
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const predicate = <Algebra.Inv> operation.predicate;
     const invPath = ActorAbstractPath.FACTORY
       .createPath(operation.object, predicate.path, operation.subject, operation.graph);

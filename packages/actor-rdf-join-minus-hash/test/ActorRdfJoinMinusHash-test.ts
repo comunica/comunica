@@ -7,7 +7,7 @@ import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMinusHash } from '../lib/ActorRdfJoinMinusHash';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -99,17 +99,23 @@ describe('ActorRdfJoinMinusHash', () => {
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
-                ),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                }),
               },
             },
             {
               output: {
                 type: 'bindings',
-                metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
-                ),
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                }),
               },
             },
           ],
@@ -131,25 +137,25 @@ describe('ActorRdfJoinMinusHash', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  BF.bindings({ a: DF.literal('1') }),
-                  BF.bindings({ a: DF.literal('2') }),
-                  BF.bindings({ a: DF.literal('3') }),
+                  BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
-                variables: [ 'a' ],
+                variables: [ DF.variable('a') ],
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  BF.bindings({ a: DF.literal('1') }),
-                  BF.bindings({ a: DF.literal('2') }),
+                  BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
                 type: 'bindings',
-                variables: [ 'a' ],
+                variables: [ DF.variable('a') ],
               },
               operation: <any> {},
             },
@@ -161,10 +167,10 @@ describe('ActorRdfJoinMinusHash', () => {
         // Validate output
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-        expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(result.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
-        expect(result.variables).toEqual([ 'a' ]);
+        expect(result.variables).toEqual([ DF.variable('a') ]);
       });
 
       it('should handle entries without common variables', async() => {
@@ -174,25 +180,25 @@ describe('ActorRdfJoinMinusHash', () => {
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  BF.bindings({ a: DF.literal('1') }),
-                  BF.bindings({ a: DF.literal('2') }),
-                  BF.bindings({ a: DF.literal('3') }),
+                  BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
                 type: 'bindings',
-                variables: [ 'a' ],
+                variables: [ DF.variable('a') ],
               },
               operation: <any> {},
             },
             {
               output: <any> {
                 bindingsStream: new ArrayIterator([
-                  BF.bindings({ b: DF.literal('1') }),
-                  BF.bindings({ b: DF.literal('2') }),
+                  BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
                 type: 'bindings',
-                variables: [ 'b' ],
+                variables: [ DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -204,12 +210,12 @@ describe('ActorRdfJoinMinusHash', () => {
         // Validate output
         expect(result.type).toEqual('bindings');
         expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-        expect(await arrayifyStream(result.bindingsStream)).toEqual([
-          BF.bindings({ a: DF.literal('1') }),
-          BF.bindings({ a: DF.literal('2') }),
-          BF.bindings({ a: DF.literal('3') }),
+        await expect(result.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
-        expect(result.variables).toEqual([ 'a' ]);
+        expect(result.variables).toEqual([ DF.variable('a') ]);
       });
     });
   });

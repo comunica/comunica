@@ -16,14 +16,19 @@ module.exports = function(engine) {
         sources,
         httpProxyHandler: proxyUrl ? new ProxyHandlerStatic(proxyUrl) : null,
       });
-      if (result.type === 'boolean') {
-        return new RdfTestSuite.QueryResultBoolean(await result.booleanResult);
-      }
-      if (result.type === 'quads') {
-        return new RdfTestSuite.QueryResultQuads(await require('arrayify-stream')(result.quadStream));
-      }
-      if (result.type === 'bindings') {
-        return new RdfTestSuite.QueryResultBindings(result.variables, await require('arrayify-stream')(result.bindingsStream.map((binding) => binding.toObject())));
+      if (result.resultType === 'boolean') {
+        return new RdfTestSuite.QueryResultBoolean(await result.execute());
+      } else if (result.resultType === 'quads') {
+        return new RdfTestSuite.QueryResultQuads(await require('arrayify-stream')(await result.execute()));
+      } else if (result.resultType === 'bindings') {
+        return new RdfTestSuite.QueryResultBindings(
+            (await result.metadata()).variables.map(variable => `?${variable.value}`),
+            (await require('arrayify-stream')(await result.execute()))
+              .map((binding) => Object.fromEntries([ ...binding ]
+                  .map(([ key, value ]) => [ `?${key.value}`, value ]))),
+        );
+      } else {
+        throw new Error('Invalid query result type: ' + result.resultType);
       }
     },
     update: async function(data, queryString, options) {
@@ -33,7 +38,7 @@ module.exports = function(engine) {
         source: { type: 'rdfjsSource', value: store },
         destination: store,
       });
-      await result.updateResult;
+      await result.execute();
       return store.getQuads();
     },
   };

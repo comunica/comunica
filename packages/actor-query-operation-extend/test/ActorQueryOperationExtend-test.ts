@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
@@ -64,9 +64,9 @@ describe('ActorQueryOperationExtend', () => {
   };
 
   const input = [
-    BF.bindings({ '?a': DF.literal('1') }),
-    BF.bindings({ '?a': DF.literal('2') }),
-    BF.bindings({ '?a': DF.literal('3') }),
+    BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+    BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+    BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
   ];
 
   beforeEach(() => {
@@ -77,7 +77,7 @@ describe('ActorQueryOperationExtend', () => {
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ '?a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -118,25 +118,25 @@ describe('ActorQueryOperationExtend', () => {
 
     it('should run', async() => {
       const op: any = { operation: example(defaultExpression) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        BF.bindings({
-          '?a': DF.literal('1'),
-          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
-        }),
-        BF.bindings({
-          '?a': DF.literal('2'),
-          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
-        }),
-        BF.bindings({
-          '?a': DF.literal('3'),
-          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
-        }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('1') ],
+          [ DF.variable('l'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('2') ],
+          [ DF.variable('l'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('3') ],
+          [ DF.variable('l'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+        ]),
       ]);
 
       expect(output.type).toEqual('bindings');
       expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toMatchObject([ '?a', '?l' ]);
+      expect(output.variables).toMatchObject([ DF.variable('a'), DF.variable('l') ]);
     });
 
     it('should not extend bindings on erroring expressions', async() => {
@@ -144,13 +144,13 @@ describe('ActorQueryOperationExtend', () => {
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
       const op: any = { operation: example(faultyExpression) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
 
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
       expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toMatchObject([ '?a', '?l' ]);
+      expect(output.variables).toMatchObject([ DF.variable('a'), DF.variable('l') ]);
     });
 
     it('should emit error when evaluation code returns a hard error', async() => {
@@ -161,7 +161,7 @@ describe('ActorQueryOperationExtend', () => {
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
       const op: any = { operation: example(faultyExpression) };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
       expect(warn).toBeCalledTimes(0);
     });

@@ -1,10 +1,11 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
-import type { IQueryableResultBindings, IMetadata, IQueryableResult, IActionContext } from '@comunica/types';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { IQueryOperationResultBindings, IQueryOperationResult,
+  IActionContext, MetadataBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
+import { uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -21,13 +22,18 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
    * @param {IMetadata[]} metadatas Array of metadata.
    * @return {IMetadata} Union of the metadata.
    */
-  public static unionMetadata(metadatas: IMetadata[]): IMetadata {
-    let cardinality = 0;
+  public static unionMetadata(metadatas: MetadataBindings[]): MetadataBindings {
+    const cardinality: RDF.QueryResultCardinality = { type: 'exact', value: 0 };
     for (const metadata of metadatas) {
-      if (Number.isFinite(metadata.cardinality) || metadata.cardinality === 0) {
-        cardinality += metadata.cardinality;
+      if ((metadata.cardinality.value && Number.isFinite(metadata.cardinality.value)) ||
+        metadata.cardinality.value === 0) {
+        if (metadata.cardinality.type === 'estimate') {
+          cardinality.type = 'estimate';
+        }
+        cardinality.value += metadata.cardinality.value;
       } else {
-        cardinality = Number.POSITIVE_INFINITY;
+        cardinality.type = 'estimate';
+        cardinality.value = Number.POSITIVE_INFINITY;
         break;
       }
     }
@@ -37,10 +43,10 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     };
   }
 
-  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryableResult> {
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const predicate = <Algebra.Alt> operation.predicate;
 
-    const subOperations: IQueryableResultBindings[] = (await Promise.all(predicate.input
+    const subOperations: IQueryOperationResultBindings[] = (await Promise.all(predicate.input
       .map(subPredicate => this.mediatorQueryOperation.mediate({
         context,
         operation: ActorAbstractPath.FACTORY
@@ -49,16 +55,16 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
       .map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
-    const metadata: (() => Promise<IMetadata>) = () =>
+    const metadata: (() => Promise<MetadataBindings>) = () =>
       Promise.all(subOperations.map(output => output.metadata()))
         .then(ActorQueryOperationPathAlt.unionMetadata);
-    const variables = (<string[]> []).concat
-      .apply([], subOperations.map(op => op.variables));
+    const variables = uniqTerms((<RDF.Variable[]> []).concat
+      .apply([], subOperations.map(op => op.variables)));
 
     return {
       type: 'bindings',
       bindingsStream,
-      variables: [ ...new Set(variables) ],
+      variables,
       metadata,
     };
   }

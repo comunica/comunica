@@ -5,7 +5,8 @@ import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IMetadata } from '@comunica/types';
+import type { MetadataBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { TransformIterator } from 'asynciterator';
 
 /**
@@ -24,7 +25,7 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
     const buffer = action.entries[1].output;
     const output = action.entries[0].output;
 
-    const commonVariables: string[] = ActorRdfJoin.overlappingVariables(action);
+    const commonVariables: RDF.Variable[] = ActorRdfJoin.overlappingVariables(action);
     if (commonVariables.length > 0) {
       /**
        * To assure we've filtered all B (`buffer`) values from A (`output`) we wait until we've fetched all values of B.
@@ -56,16 +57,16 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     return {
-      iterations: metadatas[0].cardinality + metadatas[1].cardinality,
-      persistedItems: metadatas[0].cardinality,
-      blockingItems: metadatas[0].cardinality,
-      requestTime: requestInitialTimes[0] + metadatas[0].cardinality * requestItemTimes[0] +
-        requestInitialTimes[1] + metadatas[1].cardinality * requestItemTimes[1],
+      iterations: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
+      persistedItems: metadatas[0].cardinality.value,
+      blockingItems: metadatas[0].cardinality.value,
+      requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
+        requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
     };
   }
 }

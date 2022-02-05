@@ -2,14 +2,14 @@ import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorReply, IMediatorArgs } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IQueryableResult } from '@comunica/types';
+import type { IQueryOperationResult } from '@comunica/types';
 
 /**
  * A mediator that mediates over actors implementing the Join Coefficients mediator type and assigns fixed weights
  * to calculate an overall score and pick the actor with the lowest score.
  */
 export class MediatorJoinCoefficientsFixed
-  extends Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResult> {
+  extends Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult> {
   public readonly cpuWeight: number;
   public readonly memoryWeight: number;
   public readonly timeWeight: number;
@@ -21,7 +21,7 @@ export class MediatorJoinCoefficientsFixed
 
   protected async mediateWith(
     action: IActionRdfJoin,
-    testResults: IActorReply<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResult>[],
+    testResults: IActorReply<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult>[],
   ): Promise<ActorRdfJoin> {
     // Obtain test results
     const errors: Error[] = [];
@@ -67,7 +67,7 @@ export class MediatorJoinCoefficientsFixed
     if (bestActor.includeInLogs) {
       Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
         entries: action.entries.length,
-        variables: action.entries.map(entry => entry.output.variables),
+        variables: action.entries.map(entry => entry.output.variables.map(variable => variable.value)),
         costs: Object.fromEntries(costs.map((coeff, i) => [
           `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
           coeff,
@@ -84,7 +84,7 @@ export class MediatorJoinCoefficientsFixed
 }
 
 export interface IMediatorJoinCoefficientsFixedArgs
-  extends IMediatorArgs<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResult> {
+  extends IMediatorArgs<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult> {
   /**
    * Weight for the CPU cost
    */

@@ -35,7 +35,8 @@ describe('ActorQueryParseSparql', () => {
     });
 
     it('should not test on the graphql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'graphql', context })).rejects.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: { language: 'graphql', version: '1.0' }, context }))
+        .rejects.toBeTruthy();
     });
 
     it('should test on no format', () => {
@@ -43,7 +44,8 @@ describe('ActorQueryParseSparql', () => {
     });
 
     it('should test on the sparql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'sparql', context })).resolves.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: { language: 'sparql', version: '1.1' }, context }))
+        .resolves.toBeTruthy();
     });
 
     it('should run', async() => {

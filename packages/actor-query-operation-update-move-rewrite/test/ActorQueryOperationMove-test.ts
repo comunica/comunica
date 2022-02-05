@@ -1,6 +1,6 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultVoid } from '@comunica/types';
+import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationMoveRewrite } from '../lib/ActorQueryOperationMoveRewrite';
@@ -15,8 +15,8 @@ describe('ActorQueryOperationMove', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => Promise.resolve({
-        updateResult: Promise.resolve(),
-        type: 'update',
+        voidResult: Promise.resolve(),
+        type: 'void',
       })),
     };
   });
@@ -55,9 +55,9 @@ describe('ActorQueryOperationMove', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
@@ -76,9 +76,9 @@ describe('ActorQueryOperationMove', () => {
           silent: true,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
@@ -97,9 +97,9 @@ describe('ActorQueryOperationMove', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).not.toHaveBeenCalled();
     });
 
@@ -112,9 +112,9 @@ describe('ActorQueryOperationMove', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).not.toHaveBeenCalled();
     });
 
@@ -127,9 +127,9 @@ describe('ActorQueryOperationMove', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
@@ -148,9 +148,9 @@ describe('ActorQueryOperationMove', () => {
           silent: false,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop('DEFAULT', true),

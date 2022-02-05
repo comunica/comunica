@@ -2,16 +2,23 @@ import { Readable, Transform } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import type { IPhysicalQueryPlanLogger,
-  IQueryableResultBindingsEnhanced,
-  IQueryableResultQuadsEnhanced,
-  IActionContext } from '@comunica/types';
+import type {
+  IPhysicalQueryPlanLogger,
+  IActionContext, QueryStringContext, IQueryBindingsEnhanced, IQueryQuadsEnhanced,
+  QueryType, IQueryOperationResultQuads,
+  IQueryOperationResultBindings, IQueryOperationResultBoolean, IQueryOperationResultVoid,
+} from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
+import '@comunica/jest';
+import 'jest-rdf';
+const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -86,7 +93,7 @@ describe('QueryEngineBase', () => {
 
   describe('An QueryEngineBase instance', () => {
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
-    let input: Readable;
+    let input: any;
     let actor: ActorInitQuery;
     let queryEngine: QueryEngineBase;
     const mediatorContextPreprocess: any = {
@@ -162,20 +169,27 @@ describe('QueryEngineBase', () => {
 
     describe('query', () => {
       it('should apply bindings when initialBindings are passed via the context', () => {
-        const ctx = { '@comunica/actor-init-query:initialBindings': BF.bindings({ '?s': DF.literal('sl') }) };
+        const ctx: QueryStringContext = {
+          '@comunica/actor-init-query:initialBindings': BF.bindings([
+            [ DF.variable('s'), DF.literal('sl') ],
+          ]),
+        };
         return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
       it('should apply bindings when initialBindings in the old format are passed via the context', () => {
-        const ctx = { initialBindings: BF.bindings({ '?s': DF.literal('sl') }) };
+        const ctx: QueryStringContext = {
+          initialBindings: BF.bindings([
+            [ DF.variable('s'), DF.literal('sl') ],
+          ]),
+        };
         return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
       it('should apply bindings when sources in the old format are passed via the context', () => {
-        const ctx = { sources: []};
-        return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+        return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { sources: [ 'abc' ]}))
           .resolves.toBeTruthy();
       });
 
@@ -185,7 +199,7 @@ describe('QueryEngineBase', () => {
       });
 
       it('should allow KeysInitSparql.queryTimestamp to be set', () => {
-        const ctx = { [KeysInitQuery.queryTimestamp.name]: new Date() };
+        const ctx: QueryStringContext = { [KeysInitQuery.queryTimestamp.name]: new Date() };
         return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
@@ -230,14 +244,12 @@ describe('QueryEngineBase', () => {
       });
 
       it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
-        const ctx = { sources: []};
-        const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx);
-        const array = await (<IQueryableResultBindingsEnhanced> result).bindings();
+        const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { sources: [ 'abc' ]});
+        const array = await (<IQueryBindingsEnhanced> result).bindings();
         expect(array).toEqual([{ a: 'triple' }]);
       });
 
       it('bindings() should return empty list if no solutions', async() => {
-        const ctx = { sources: []};
         // Set input empty
         const inputThis = new Readable({ objectMode: true });
         inputThis._read = () => {
@@ -246,22 +258,95 @@ describe('QueryEngineBase', () => {
         mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
           Promise.resolve({ bindingsStream: inputThis, type: 'bindings' }) :
           Promise.reject(new Error('a'));
-        const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx);
-        const array = await (<IQueryableResultBindingsEnhanced> result).bindings();
+        const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { sources: [ 'abc' ]});
+        const array = await (<IQueryBindingsEnhanced> result).bindings();
         expect(array).toEqual([]);
       });
 
       it('should return a rejected promise on an invalid request', () => {
-        const ctx = { sources: []};
+        const ctx: QueryStringContext = { sources: [ 'abc' ]};
         // Make it reject instead of reading input
         mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
         return expect(queryEngine.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
       });
 
       it('should return a rejected promise on an explain', () => {
-        const ctx = { sources: [], [KeysInitQuery.explain.name]: 'parsed' };
+        const ctx: QueryStringContext = { sources: [ 'abc' ], [KeysInitQuery.explain.name]: 'parsed' };
         return expect(queryEngine.query('BLA', ctx)).rejects
           .toThrowError('Tried to explain a query when in query-only mode');
+      });
+    });
+
+    describe('SparqlQueryable methods', () => {
+      describe('queryBindings', () => {
+        it('handles a valid bindings query', async() => {
+          input = new ArrayIterator([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a') ],
+            ]),
+          ]);
+          await expect(await queryEngine.queryBindings('SELECT ...')).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a') ],
+            ]),
+          ]);
+        });
+
+        it('rejects for an invalid bindings query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'void' }));
+          await expect(queryEngine.queryBindings('INSERT ...')).rejects
+            .toThrowError(`Query result type 'bindings' was expected, while 'void' was found.`);
+        });
+      });
+
+      describe('queryQuads', () => {
+        it('handles a valid bindings query', async() => {
+          input = new ArrayIterator([
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+          ]);
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'quads', quadStream: input }));
+          expect(await arrayifyStream(await queryEngine.queryQuads('CONSTRUCT ...'))).toEqualRdfQuadArray([
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+          ]);
+        });
+
+        it('rejects for an invalid bindings query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'void' }));
+          await expect(queryEngine.queryQuads('INSERT ...')).rejects
+            .toThrowError(`Query result type 'quads' was expected, while 'void' was found.`);
+        });
+      });
+
+      describe('queryBoolean', () => {
+        it('handles a valid boolean query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({
+            type: 'boolean',
+            booleanResult: Promise.resolve(true),
+          }));
+          expect(await queryEngine.queryBoolean('ASK ...')).toEqual(true);
+        });
+
+        it('rejects for an invalid boolean query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'void' }));
+          await expect(queryEngine.queryBoolean('INSERT ...')).rejects
+            .toThrowError(`Query result type 'boolean' was expected, while 'void' was found.`);
+        });
+      });
+
+      describe('queryVoid', () => {
+        it('handles a valid void query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({
+            type: 'void',
+            voidResult: Promise.resolve(true),
+          }));
+          expect(await queryEngine.queryVoid('INSERT ...')).toEqual(true);
+        });
+
+        it('rejects for an invalid void query', async() => {
+          mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({ type: 'boolean' }));
+          await expect(queryEngine.queryVoid('ASK ...')).rejects
+            .toThrowError(`Query result type 'void' was expected, while 'boolean' was found.`);
+        });
       });
     });
 
@@ -349,9 +434,9 @@ describe('QueryEngineBase', () => {
     });
 
     it('quads() should collect all quads until "end" event occurs', async() => {
-      const ctx = { sources: []};
+      const ctx: QueryStringContext = { sources: [ 'abc' ]};
       const result = await queryEngine.query('CONSTRUCT WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryableResultQuadsEnhanced> result).quads();
+      const array = await (<IQueryQuadsEnhanced> result).quads();
       expect(array).toEqual([ DF.quad(
         DF.namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
         DF.namedNode('http://dbpedia.org/ontology/assembly'),
@@ -361,7 +446,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('quads() should return empty list if no solutions', async() => {
-      const ctx = { sources: []};
+      const ctx: QueryStringContext = { sources: [ 'abc' ]};
       // Set input empty
       const input = new Readable({ objectMode: true });
       input._read = () => {
@@ -371,15 +456,157 @@ describe('QueryEngineBase', () => {
         Promise.resolve({ quadStream: input, type: 'quads' }) :
         Promise.reject(new Error('a'));
       const result = await queryEngine.query('CONSTRUCT * WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryableResultQuadsEnhanced> result).quads();
+      const array = await (<IQueryQuadsEnhanced> result).quads();
       expect(array).toEqual([]);
     });
 
     it('should return a rejected promise on an invalid request', () => {
-      const ctx = { sources: []};
       // Make it reject instead of reading input
       mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
-      return expect(queryEngine.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
+      return expect(queryEngine.query('INVALID QUERY', { sources: [ 'abc' ]})).rejects.toBeTruthy();
+    });
+  });
+
+  describe('internalToFinalResult', () => {
+    it('converts bindings', async() => {
+      const final = <QueryType & IQueryBindingsEnhanced> QueryEngineBase.internalToFinalResult({
+        type: 'bindings',
+        bindingsStream: new ArrayIterator([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a') ],
+          ]),
+        ]),
+        variables: [ DF.variable('a') ],
+        metadata: async() => ({ cardinality: 1, canContainUndefs: false }),
+        context: new ActionContext({ c: 'd' }),
+      });
+
+      expect(final.resultType).toEqual('bindings');
+      await expect(await final.execute()).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.namedNode('ex:a') ],
+        ]),
+      ]);
+      expect(await final.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('a') ],
+      });
+      expect(final.context).toEqual(new ActionContext({ c: 'd' }));
+      expect(final.bindings).toBeTruthy();
+    });
+
+    it('converts quads', async() => {
+      const final = <QueryType & IQueryQuadsEnhanced> QueryEngineBase.internalToFinalResult({
+        type: 'quads',
+        quadStream: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+        ]),
+        metadata: async() => ({ cardinality: 1, canContainUndefs: false }),
+        context: new ActionContext({ c: 'd' }),
+      });
+
+      expect(final.resultType).toEqual('quads');
+      expect(await arrayifyStream(await final.execute())).toEqualRdfQuadArray([
+        DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+      ]);
+      expect(await final.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+      });
+      expect(final.context).toEqual(new ActionContext({ c: 'd' }));
+      expect(final.quads).toBeTruthy();
+    });
+
+    it('converts booleans', async() => {
+      const final = <QueryType & RDF.QueryBoolean> QueryEngineBase.internalToFinalResult({
+        type: 'boolean',
+        booleanResult: Promise.resolve(true),
+        context: new ActionContext({ c: 'd' }),
+      });
+
+      expect(final.resultType).toEqual('boolean');
+      expect(await final.execute()).toEqual(true);
+      expect(final.context).toEqual(new ActionContext({ c: 'd' }));
+    });
+
+    it('converts voids', async() => {
+      const final = <QueryType & RDF.QueryVoid> QueryEngineBase.internalToFinalResult({
+        type: 'void',
+        voidResult: Promise.resolve(),
+        context: new ActionContext({ c: 'd' }),
+      });
+
+      expect(final.resultType).toEqual('void');
+      expect(await final.execute()).toBeUndefined();
+      expect(final.context).toEqual(new ActionContext({ c: 'd' }));
+    });
+  });
+
+  describe('finalToInternalResult', () => {
+    it('converts bindings', async() => {
+      const internal = <IQueryOperationResultBindings> await QueryEngineBase.finalToInternalResult({
+        resultType: 'bindings',
+        execute: async() => new ArrayIterator([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a') ],
+          ]),
+        ]),
+        metadata: async() => (<any>{ cardinality: 1, canContainUndefs: false, variables: [ DF.variable('a') ]}),
+      });
+
+      expect(internal.type).toEqual('bindings');
+      await expect(internal.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.namedNode('ex:a') ],
+        ]),
+      ]);
+      expect(await internal.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('a') ],
+      });
+      expect(internal.variables).toEqual([ DF.variable('a') ]);
+    });
+
+    it('converts quads', async() => {
+      const internal = <IQueryOperationResultQuads> await QueryEngineBase.finalToInternalResult({
+        resultType: 'quads',
+        execute: async() => new ArrayIterator([
+          DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+        ]),
+        metadata: async() => (<any>{ cardinality: 1, canContainUndefs: false }),
+      });
+
+      expect(internal.type).toEqual('quads');
+      expect(await arrayifyStream(internal.quadStream)).toEqualRdfQuadArray([
+        DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+      ]);
+      expect(await internal.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+      });
+    });
+
+    it('converts booleans', async() => {
+      const final = <IQueryOperationResultBoolean> await QueryEngineBase.finalToInternalResult({
+        resultType: 'boolean',
+        execute: async() => true,
+      });
+
+      expect(final.type).toEqual('boolean');
+      expect(await final.booleanResult).toEqual(true);
+    });
+
+    it('converts voids', async() => {
+      const final = <IQueryOperationResultVoid> await QueryEngineBase.finalToInternalResult({
+        resultType: 'void',
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        execute: async() => undefined,
+      });
+
+      expect(final.type).toEqual('void');
+      expect(await final.voidResult).toBeUndefined();
     });
   });
 });

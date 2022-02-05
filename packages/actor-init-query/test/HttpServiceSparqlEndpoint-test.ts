@@ -1058,21 +1058,19 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
         const s = 'http://example.org/sparql';
         const sd = 'http://www.w3.org/ns/sparql-service-description#';
-        expect(spyResultToString.mock.calls[0][0]).toEqual({
-          type: 'quads',
-          quadStream: new ArrayIterator([
-            quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
-            quad(s, `${sd}endpoint`, '/sparql'),
-            quad(s, `${sd}url`, '/sparql'),
-            quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
-            quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
-            quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
-            quad(s, `${sd}resultFormat`, 'ONE'),
-            quad(s, `${sd}resultFormat`, 'TWO'),
-            quad(s, `${sd}resultFormat`, 'THREE'),
-            quad(s, `${sd}resultFormat`, 'FOUR'),
-          ]),
-        });
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        expect(await (<any> spyResultToString.mock.calls[0][0]).execute()).toEqual(new ArrayIterator([
+          quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
+          quad(s, `${sd}endpoint`, '/sparql'),
+          quad(s, `${sd}url`, '/sparql'),
+          quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
+          quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
+          quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
+          quad(s, `${sd}resultFormat`, 'ONE'),
+          quad(s, `${sd}resultFormat`, 'TWO'),
+          quad(s, `${sd}resultFormat`, 'THREE'),
+          quad(s, `${sd}resultFormat`, 'FOUR'),
+        ]));
       });
 
       it('should write the service description when no query was defined for HEAD', async() => {
@@ -1147,7 +1145,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should fallback to SPARQL JSON for bindings if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ type: 'bindings' });
+        engine.query = () => ({ resultType: 'bindings' });
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1189,7 +1187,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should fallback to TriG for quads if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ type: 'quads' });
+        engine.query = () => ({ resultType: 'quads' });
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1211,7 +1209,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should emit process start and end events', async() => {
         process.send = jest.fn();
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ type: 'bindings' });
+        engine.query = () => ({ resultType: 'bindings' });
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1239,7 +1237,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           }
         };
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ type: 'bindings' });
+        engine.query = () => ({ resultType: 'bindings' });
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1267,7 +1265,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           }
         };
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ type: 'bindings' });
+        engine.query = () => ({ resultType: 'bindings' });
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1288,7 +1286,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should fallback to simple for updates if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ type: 'update', updateResult: Promise.resolve() });
+        engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1309,7 +1307,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should set readOnly in the context if called with readOnly true', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = jest.fn(() => ({ type: 'bindings' }));
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1327,7 +1325,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should set not readOnly in the context if called with readOnly false', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        engine.query = jest.fn(() => ({ type: 'bindings' }));
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
 
         await instance.writeQueryResult(engine,
           new PassThrough(),
@@ -1430,7 +1428,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
-          type: 'update',
+          type: 'void',
           value: querystring.parse(exampleQueryString).update,
         });
       });
@@ -1451,7 +1449,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should return input body if content-type is application/sparql-update', () => {
         httpRequestMock.headers = { 'content-type': 'application/sparql-update' };
         return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
-          type: 'update',
+          type: 'void',
           value: testRequestBody,
         });
       });
