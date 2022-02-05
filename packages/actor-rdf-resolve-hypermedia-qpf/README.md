@@ -32,7 +32,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:rdf-resolve-hypermedia/actors#qpf",
       "@type": "ActorRdfResolveHypermediaQpf",
-      "mediatorDereferenceRdf": { "@id": "urn:comunica:default:rdf-dereference/mediators#main" },
+      "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
       "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
       "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" }
     }
