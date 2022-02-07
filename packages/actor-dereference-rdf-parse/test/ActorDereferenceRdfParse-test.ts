@@ -149,8 +149,7 @@ describe('ActorAbstractDereferenceParse', () => {
     context = new ActionContext({ parseReject: true, [KeysInitQuery.lenient.name]: true });
     const spy = jest.spyOn(actor, <any> 'logError');
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    // TODO: check if this needs to pass
-    // expect(output.url).toEqual('https://www.google.com/');
+    expect(output.url).toEqual('https://www.google.com/index.html');
     expect(await arrayifyStream(output.data)).toEqual([]);
     expect(spy).toHaveBeenCalledTimes(1);
   });
