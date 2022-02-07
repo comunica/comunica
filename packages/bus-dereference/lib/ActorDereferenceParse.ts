@@ -77,9 +77,7 @@ export abstract class ActorDereferenceParse<
     return data;
   }
 
-  public async getMetadata(dereference: IActorDereferenceOutput): Promise<K | undefined> {
-    return undefined;
-  }
+  public abstract getMetadata(dereference: IActorDereferenceOutput): Promise<K | undefined>;
 
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {
     const { context } = action;
