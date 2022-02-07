@@ -73,7 +73,6 @@ export interface IActorRdfParseOutputMetadata {
 
 export type IActorRdfParseOutput = IActorParseOutput<RDF.Stream, IActorRdfParseOutputMetadata>;
 
-// TODO: Update these
 export type IActorRdfParseArgs = IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>;
 
 export type MediatorRdfParseHandle = Mediate<
