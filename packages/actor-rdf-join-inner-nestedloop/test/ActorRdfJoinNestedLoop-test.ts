@@ -5,6 +5,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinNestedLoop } from '../lib/ActorRdfJoinNestedLoop';
@@ -50,12 +51,16 @@ describe('ActorRdfJoinNestedLoop', () => {
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinNestedLoop;
     let action: IActionRdfJoin;
+    let variables0: RDF.Variable[];
+    let variables1: RDF.Variable[];
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity });
+      variables0 = [];
+      variables1 = [];
       action = {
         type: 'inner',
         entries: [
@@ -67,9 +72,9 @@ describe('ActorRdfJoinNestedLoop', () => {
                 pageSize: 100,
                 requestTime: 10,
                 canContainUndefs: false,
+                variables: variables0,
               }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
@@ -81,9 +86,9 @@ describe('ActorRdfJoinNestedLoop', () => {
                 pageSize: 100,
                 requestTime: 20,
                 canContainUndefs: false,
+                variables: variables1,
               }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
@@ -103,6 +108,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         pageSize: 100,
         requestTime: 10,
         canContainUndefs: true,
+        variables: [],
       });
       return expect(actor.test(action)).resolves
         .toEqual({
@@ -119,6 +125,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         pageSize: 100,
         requestTime: 20,
         canContainUndefs: true,
+        variables: [],
       });
       return expect(actor.test(action)).resolves
         .toEqual({
@@ -135,12 +142,14 @@ describe('ActorRdfJoinNestedLoop', () => {
         pageSize: 100,
         requestTime: 10,
         canContainUndefs: true,
+        variables: [],
       });
       action.entries[1].output.metadata = async() => ({
         cardinality: { type: 'estimate', value: 5 },
         pageSize: 100,
         requestTime: 20,
         canContainUndefs: true,
+        variables: [],
       });
       return expect(actor.test(action)).resolves
         .toEqual({
@@ -168,7 +177,7 @@ describe('ActorRdfJoinNestedLoop', () => {
 
     it('should return an empty stream for empty input', () => {
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([]);
+        expect((await output.metadata()).variables).toEqual([]);
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
@@ -180,16 +189,16 @@ describe('ActorRdfJoinNestedLoop', () => {
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
-      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
       ]);
-      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        expect((await output.metadata()).variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('a') ],
@@ -207,16 +216,16 @@ describe('ActorRdfJoinNestedLoop', () => {
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
-      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('d') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
       ]);
-      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        expect((await output.metadata()).variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
@@ -248,7 +257,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           [ DF.variable('b'), DF.literal('4') ],
         ]),
       ]);
-      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
@@ -275,7 +284,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           [ DF.variable('c'), DF.literal('4') ],
         ]),
       ]);
-      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
@@ -319,7 +328,7 @@ describe('ActorRdfJoinNestedLoop', () => {
             [ DF.variable('c'), DF.literal('7') ],
           ]),
         ];
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        expect((await output.metadata()).variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
@@ -338,7 +347,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           [ DF.variable('b'), DF.literal('3') ],
         ]),
       ]);
-      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
@@ -353,8 +362,9 @@ describe('ActorRdfJoinNestedLoop', () => {
         pageSize: 100,
         requestTime: 20,
         canContainUndefs: true,
+        variables: variables1,
       });
-      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
@@ -373,7 +383,7 @@ describe('ActorRdfJoinNestedLoop', () => {
             [ DF.variable('c'), DF.literal('5') ],
           ]),
         ];
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        expect((await output.metadata()).variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           // eslint-disable-next-line @typescript-eslint/require-array-sort-compare

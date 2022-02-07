@@ -114,11 +114,13 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    *
    * @param {AsyncIterator<Quad>} data The data stream that is guaranteed to emit the metadata property.
    * @param elementVariables Mapping of quad term name to variable name.
+   * @param variables Variables to include in the metadata
    * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
    */
   protected static getMetadata(
     data: AsyncIterator<RDF.Quad>,
     elementVariables: Record<string, string>,
+    variables: RDF.Variable[],
   ): () => Promise<MetadataBindings> {
     return () => new Promise<Record<string, any>>((resolve, reject) => {
       data.getProperty('metadata', (metadata: Record<string, any>) => resolve(metadata));
@@ -130,6 +132,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       return ActorQueryOperationQuadpattern.quadsMetadataToBindingsMetadata(
         ActorQueryOperationQuadpattern.validateMetadata(metadataRaw),
         elementVariables,
+        variables,
       );
     });
   }
@@ -137,6 +140,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   protected static quadsMetadataToBindingsMetadata(
     metadataQuads: MetadataQuads,
     elementVariables: Record<string, string>,
+    variables: RDF.Variable[],
   ): MetadataBindings {
     return {
       ...metadataQuads,
@@ -149,6 +153,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           terms: ActorQueryOperationQuadpattern.quadsOrderToBindingsOrder(orderDef.terms, elementVariables),
         })) :
         undefined,
+      variables,
     };
   }
 
@@ -213,7 +218,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     };
 
     // Create the metadata callback
-    const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data, elementVariables);
+    const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data, elementVariables, variables);
 
     // Optionally filter, and construct bindings
     const bindingsStream: BindingsStream = new TransformIterator(async() => {
@@ -243,7 +248,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, [])));
     }, { autoStart: false });
 
-    return { type: 'bindings', bindingsStream, variables, metadata };
+    return { type: 'bindings', bindingsStream, metadata };
   }
 }
 

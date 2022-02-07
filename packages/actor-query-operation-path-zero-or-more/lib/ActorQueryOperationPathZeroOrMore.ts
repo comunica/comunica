@@ -121,7 +121,11 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ?
         [ subjectVar, operation.object, operation.graph ] :
         [ subjectVar, operation.object ];
-      return { type: 'bindings', bindingsStream, variables, metadata: results.metadata };
+      return {
+        type: 'bindings',
+        bindingsStream,
+        metadata: async() => ({ ...await results.metadata(), variables }),
+      };
     }
     if (!sVar && !oVar) {
       const variable = this.generateVariable();
@@ -146,8 +150,10 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       return {
         type: 'bindings',
         bindingsStream,
-        variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
-        metadata: starEval.metadata,
+        metadata: async() => ({
+          ...await starEval.metadata(),
+          variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
+        }),
       };
     }
     // If (sVar || oVar)
@@ -168,6 +174,10 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       },
     });
     const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];
-    return { type: 'bindings', bindingsStream, variables, metadata: starEval.metadata };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: async() => ({ ...await starEval.metadata(), variables }),
+    };
   }
 }

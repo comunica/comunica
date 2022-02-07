@@ -23,10 +23,9 @@ describe('ActorQueryOperationProject', () => {
           [ DF.variable('a'), DF.literal('A') ],
           [ DF.variable('delet'), DF.literal('deleteMe') ],
         ])),
-        metadata: () => 'M',
+        metadata: async() => ({ variables: [ DF.variable('a'), DF.variable('delet') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a'), DF.variable('delet') ],
       }),
     };
   });
@@ -68,8 +67,8 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('delet') ]},
       };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('delet') ]);
+        expect(await output.metadata())
+          .toEqual({ variables: [ DF.variable('a'), DF.variable('delet') ]});
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -83,8 +82,8 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted', () => {
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ DF.variable('a') ]);
+        expect(await output.metadata())
+          .toEqual({ variables: [ DF.variable('a') ]});
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -118,15 +117,14 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('b'), DF.literal('b') ],
           ]),
         ]),
-        metadata: () => 'M',
+        metadata: async() => ({ variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ DF.variable('a') ]);
+        expect(await output.metadata())
+          .toEqual({ variables: [ DF.variable('a') ]});
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -161,15 +159,14 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('b'), DF.literal('b') ],
           ]),
         ]),
-        metadata: () => 'M',
+        metadata: async() => ({ variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ DF.variable('a') ]);
+        expect(await output.metadata())
+          .toEqual({ variables: [ DF.variable('a') ]});
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -204,16 +201,14 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('b'), DF.literal('b') ],
           ]),
         ]),
-        metadata: () => 'M',
+        metadata: async() => ({ variables: [ DF.variable('a') ], canContainUndefs: true }),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
-        canContainUndefs: true,
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ DF.variable('a') ]);
+        expect(await output.metadata())
+          .toEqual({ variables: [ DF.variable('a') ], canContainUndefs: true });
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -240,15 +235,14 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('b'), new BlankNodeBindingsScoped('a') ],
           ]),
         ]),
-        metadata: () => 'M',
+        metadata: async() => ({ variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       });
       const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ DF.variable('a') ]);
+        expect(await output.metadata())
+          .toEqual({ variables: [ DF.variable('a') ]});
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([

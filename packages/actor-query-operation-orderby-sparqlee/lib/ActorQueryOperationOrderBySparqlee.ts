@@ -80,7 +80,6 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       type: 'bindings',
       bindingsStream,
       metadata: output.metadata,
-      variables: output.variables,
     };
   }
 

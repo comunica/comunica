@@ -48,10 +48,9 @@ describe('ActorQueryOperationPathSeq', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: vars }),
           operated: arg,
           type: 'bindings',
-          variables: vars,
         });
       }),
     };
@@ -72,10 +71,16 @@ describe('ActorQueryOperationPathSeq', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+          metadata: async() => ({
+            cardinality: 3,
+            canContainUndefs: false,
+            variables: [
+              ...(await arg.entries[0].output.metadata()).variables,
+              ...(await arg.entries[1].output.metadata()).variables,
+            ],
+          }),
           operated: arg,
           type: 'bindings',
-          variables: [ ...arg.entries[0].output.variables, ...arg.entries[1].output.variables ],
         });
       },
     };
@@ -125,7 +130,11 @@ describe('ActorQueryOperationPathSeq', () => {
         DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      expect(await output.metadata()).toEqual({
+        cardinality: 3,
+        canContainUndefs: false,
+        variables: [ DF.variable('x') ],
+      });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
         BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),
@@ -162,7 +171,11 @@ describe('ActorQueryOperationPathSeq', () => {
         ),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      expect(await output.metadata()).toEqual({
+        cardinality: 3,
+        canContainUndefs: false,
+        variables: [ DF.variable('x') ],
+      });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
         BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),

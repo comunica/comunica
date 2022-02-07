@@ -91,7 +91,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     // Take union of metadata
     const metadata: () => Promise<MetadataQuads> = () => Promise.all(outputs
       .map(x => x.metadata()))
-      .then(ActorQueryOperationUnion.unionMetadata);
+      .then(metadatas => ActorQueryOperationUnion.unionMetadata(metadatas, false));
 
     return { type: 'quads', quadStream, metadata };
   }

@@ -1,8 +1,7 @@
 import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import type { BindingsStream, IActionContext } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
+import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlCsv } from '..';
@@ -100,7 +99,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     let bindingsStreamMixed: BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
-    let variables: RDF.Variable[];
+    let metadata: MetadataBindings;
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeSparqlCsv({ bus,
@@ -140,7 +139,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpCsv')); });
-      variables = [ DF.variable('k1'), DF.variable('k2') ];
+      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
     });
 
     describe('for getting media types', () => {
@@ -187,7 +186,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', variables },
+            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'text/csv' },
         ))).handle.data)).toEqual(
           `k1,k2\r
@@ -200,7 +199,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', variables: []},
+            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => ({ variables: []}) },
             handleMediaType: 'text/csv' },
         ))).handle.data)).toEqual(
           `\r
@@ -213,7 +212,11 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       it('should run on a bindings stream with unbound variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: [ DF.variable('k3') ]},
+            handle: <any> {
+              bindingsStream: bindingsStreamPartial,
+              type: 'bindings',
+              metadata: async() => ({ variables: [ DF.variable('k3') ]}),
+            },
             handleMediaType: 'text/csv' },
         ))).handle.data)).toEqual(
           `k3\r
@@ -228,7 +231,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     it('should run on a bindings stream containing values with special characters', async() => {
       expect(await stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { bindingsStream: bindingsStreamMixed, type: 'bindings', variables },
+          handle: <any> { bindingsStream: bindingsStreamMixed, type: 'bindings', metadata: async() => metadata },
           handleMediaType: 'text/csv' },
       ))).handle.data)).toEqual(
         `k1,k2\r
@@ -242,7 +245,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     it('should run on an empty bindings stream', async() => {
       expect(await stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables },
+          handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', metadata: async() => metadata },
           handleMediaType: 'text/csv' },
       ))).handle.data)).toEqual(
         `k1,k2\r
@@ -253,7 +256,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     it('should emit an error on an errorring bindings stream', async() => {
       await expect(stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+          handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', metadata: async() => metadata },
           handleMediaType: 'text/csv' },
       ))).handle.data)).rejects.toBeTruthy();
     });

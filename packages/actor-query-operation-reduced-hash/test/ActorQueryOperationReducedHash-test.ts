@@ -26,10 +26,9 @@ describe('ActorQueryOperationReducedHash', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 5 }),
+        metadata: () => Promise.resolve({ cardinality: 5, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       }),
     };
     mediatorHashBindings = {
@@ -105,8 +104,7 @@ describe('ActorQueryOperationReducedHash', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'reduced' }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 5 });
-        expect(output.variables).toEqual([ DF.variable('a') ]);
+        expect(await output.metadata()).toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -140,10 +138,9 @@ describe('Smaller cache than number of queries', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 7 }),
+        metadata: () => Promise.resolve({ cardinality: 7, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       }),
     };
     mediatorHashBindings = {
@@ -156,8 +153,7 @@ describe('Smaller cache than number of queries', () => {
   it('should run', () => {
     const op: any = { operation: { type: 'reduced' }};
     return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 7 });
-      expect(output.variables).toEqual([ DF.variable('a') ]);
+      expect(await output.metadata()).toEqual({ cardinality: 7, variables: [ DF.variable('a') ]});
       expect(output.type).toEqual('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),

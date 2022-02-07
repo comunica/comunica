@@ -31,7 +31,6 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
       type: 'bindings',
       bindingsStream,
       metadata: output.metadata,
-      variables: output.variables,
     };
   }
 

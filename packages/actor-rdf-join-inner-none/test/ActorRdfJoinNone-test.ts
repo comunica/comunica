@@ -67,9 +67,9 @@ describe('ActorRdfJoinNone', () => {
           entries: [],
           context,
         });
-        expect(output.variables).toEqual([]);
         await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
-        expect(await output.metadata()).toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
       });
     });
   });

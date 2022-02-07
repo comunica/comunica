@@ -73,7 +73,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
       resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
-      const labels = (<IQueryOperationResultBindings> action).variables;
+      const labels = (await (<IQueryOperationResultBindings> action).metadata()).variables;
       this.pushHeader(data, labels);
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', bindings => this.pushRow(data, labels, bindings));

@@ -476,8 +476,11 @@ describe('QueryEngineBase', () => {
             [ DF.variable('a'), DF.namedNode('ex:a') ],
           ]),
         ]),
-        variables: [ DF.variable('a') ],
-        metadata: async() => ({ cardinality: 1, canContainUndefs: false }),
+        metadata: async() => ({
+          cardinality: { type: 'estimate', value: 1 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a') ],
+        }),
         context: new ActionContext({ c: 'd' }),
       });
 
@@ -488,7 +491,7 @@ describe('QueryEngineBase', () => {
         ]),
       ]);
       expect(await final.metadata()).toEqual({
-        cardinality: 1,
+        cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('a') ],
       });
@@ -502,7 +505,11 @@ describe('QueryEngineBase', () => {
         quadStream: new ArrayIterator([
           DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
         ]),
-        metadata: async() => ({ cardinality: 1, canContainUndefs: false }),
+        metadata: async() => ({
+          cardinality: { type: 'estimate', value: 1 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a') ],
+        }),
         context: new ActionContext({ c: 'd' }),
       });
 
@@ -511,8 +518,9 @@ describe('QueryEngineBase', () => {
         DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
       ]);
       expect(await final.metadata()).toEqual({
-        cardinality: 1,
+        cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
+        variables: [ DF.variable('a') ],
       });
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
       expect(final.quads).toBeTruthy();
@@ -552,7 +560,11 @@ describe('QueryEngineBase', () => {
             [ DF.variable('a'), DF.namedNode('ex:a') ],
           ]),
         ]),
-        metadata: async() => (<any>{ cardinality: 1, canContainUndefs: false, variables: [ DF.variable('a') ]}),
+        metadata: async() => (<any>{
+          cardinality: { type: 'estimate', value: 1 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a') ],
+        }),
       });
 
       expect(internal.type).toEqual('bindings');
@@ -562,11 +574,10 @@ describe('QueryEngineBase', () => {
         ]),
       ]);
       expect(await internal.metadata()).toEqual({
-        cardinality: 1,
+        cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('a') ],
       });
-      expect(internal.variables).toEqual([ DF.variable('a') ]);
     });
 
     it('converts quads', async() => {

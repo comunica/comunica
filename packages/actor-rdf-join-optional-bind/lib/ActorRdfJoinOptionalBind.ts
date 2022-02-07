@@ -54,7 +54,6 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream,
-        variables: ActorRdfJoin.joinVariables(action),
         metadata: async() => await this.constructResultMetadata(
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),

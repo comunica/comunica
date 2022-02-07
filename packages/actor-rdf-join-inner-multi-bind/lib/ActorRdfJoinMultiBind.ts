@@ -89,8 +89,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Calculate number of occurrences of each variable
     const variableOccurrences: Record<string, number> = {};
-    for (const entry of entries) {
-      for (const variable of entry.output.variables) {
+    for (const metadata of metadatas) {
+      for (const variable of metadata.variables) {
         let counter = variableOccurrences[variable.value];
         if (!counter) {
           counter = 0;
@@ -115,9 +115,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Determine indexes of entries without common variables
     // These will be blacklisted from lowest cardinality determination
     const indexesWithoutCommonVariables: number[] = [];
-    for (const [ i, entry ] of entries.entries()) {
+    for (const [ i, metadata ] of metadatas.entries()) {
       let hasCommon = false;
-      for (const variable of entry.output.variables) {
+      for (const variable of metadata.variables) {
         if (multiOccurrenceVariables.includes(variable.value)) {
           hasCommon = true;
           break;
@@ -179,7 +179,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream,
-        variables: ActorRdfJoin.joinVariables(action),
         metadata: () => this.constructResultMetadata(action.entries, metadatas, action.context),
       },
       physicalPlanMetadata: {

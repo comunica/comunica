@@ -58,10 +58,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -116,26 +115,26 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toMatchObject([ DF.variable('a') ]);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
     });
 
     it('should return an empty stream for a falsy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject([ DF.variable('a') ]);
     });
 
     it('should return an empty stream when the expressions error', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject([ DF.variable('a') ]);
     });
 
     it('Should log warning for an expressionError', async() => {
@@ -179,8 +178,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toMatchObject([ DF.variable('a') ]);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
     });
 
     describe('should be able to handle EXIST filters', () => {

@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import type { BindingsStream, IActionContext } from '@comunica/types';
+import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -78,7 +78,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
     let bindingsStreamPartial: BindingsStream;
     let bindingsStreamError: BindingsStream;
     let quadStream: RDF.Stream;
-    let variables: RDF.Variable[];
+    let metadata: MetadataBindings;
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeSparqlXml({ bus,
@@ -110,7 +110,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
-      variables = [ DF.variable('k1'), DF.variable('k2') ];
+      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
     });
 
     describe('for getting media types', () => {
@@ -157,9 +157,11 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       });
 
       it('should run on a bindings stream', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { context, handle: <any> { type: 'bindings', bindingsStream, variables }, handleMediaType: 'xml' },
-        )))
+        expect(await stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> { type: 'bindings', bindingsStream, metadata: async() => metadata },
+          handleMediaType: 'xml',
+        })))
           .handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">
@@ -185,9 +187,11 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       });
 
       it('should run on a bindings stream without variables', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { context, handle: <any> { type: 'bindings', bindingsStream, variables: []}, handleMediaType: 'xml' },
-        )))
+        expect(await stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> { type: 'bindings', bindingsStream, metadata: async() => ({ variables: []}) },
+          handleMediaType: 'xml',
+        })))
           .handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">
@@ -209,11 +213,15 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       });
 
       it('should run on a bindings stream with unbound variables', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { context,
-            handle: <any> { type: 'bindings', bindingsStream: bindingsStreamPartial, variables: []},
-            handleMediaType: 'xml' },
-        )))
+        expect(await stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> {
+            type: 'bindings',
+            bindingsStream: bindingsStreamPartial,
+            metadata: async() => ({ variables: []}),
+          },
+          handleMediaType: 'xml',
+        })))
           .handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">
@@ -239,17 +247,21 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       it('should emit an error on an errorring bindings stream', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+            handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'json' },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should run on a boolean result that resolves to true', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { context,
-            handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: []},
-            handleMediaType: 'simple' },
-        ))).handle.data)).toEqual(
+        expect(await stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> {
+            type: 'boolean',
+            booleanResult: Promise.resolve(true),
+            metadata: async() => ({ variables: []}),
+          },
+          handleMediaType: 'simple',
+        }))).handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">
   <boolean>true</boolean>
@@ -259,11 +271,15 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       });
 
       it('should run on a boolean result that resolves to false', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { context,
-            handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: []},
-            handleMediaType: 'simple' },
-        ))).handle.data)).toEqual(
+        expect(await stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> {
+            type: 'boolean',
+            booleanResult: Promise.resolve(false),
+            metadata: async() => ({ variables: []}),
+          },
+          handleMediaType: 'simple',
+        }))).handle.data)).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">
   <boolean>false</boolean>
@@ -273,11 +289,15 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       });
 
       it('should emit an error on a boolean result that rejects', async() => {
-        await expect(stringifyStream((<any> (await actor.run(
-          { context,
-            handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: []},
-            handleMediaType: 'simple' },
-        ))).handle.data)).rejects.toBeTruthy();
+        await expect(stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> {
+            type: 'boolean',
+            booleanResult: Promise.reject(new Error('e')),
+            metadata: async() => ({ variables: []}),
+          },
+          handleMediaType: 'simple',
+        }))).handle.data)).rejects.toBeTruthy();
       });
     });
   });

@@ -59,14 +59,15 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     };
 
     // Write head
-    data.push(`${bindingsAction.variables.map((variable: RDF.Variable) => variable.value).join('\t')}\n`);
+    const metadata = await bindingsAction.metadata();
+    data.push(`${metadata.variables.map((variable: RDF.Variable) => variable.value).join('\t')}\n`);
 
     // Write bindings
     bindingsAction.bindingsStream.on('error', (error: Error) => {
       data.emit('error', error);
     });
     bindingsAction.bindingsStream.on('data', (bindings: Bindings) => {
-      data.push(`${bindingsAction.variables
+      data.push(`${metadata.variables
         .map((key: RDF.Variable) => ActorQueryResultSerializeSparqlTsv
           .bindingToTsvBindings(bindings.get(key)))
         .join('\t')}\n`);

@@ -25,7 +25,8 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
     const buffer = action.entries[1].output;
     const output = action.entries[0].output;
 
-    const commonVariables: RDF.Variable[] = ActorRdfJoin.overlappingVariables(action);
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+    const commonVariables: RDF.Variable[] = ActorRdfJoin.overlappingVariables(metadatas);
     if (commonVariables.length > 0) {
       /**
        * To assure we've filtered all B (`buffer`) values from A (`output`) we wait until we've fetched all values of B.
@@ -45,7 +46,6 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
         result: {
           type: 'bindings',
           bindingsStream,
-          variables: output.variables,
           metadata: output.metadata,
         },
       };

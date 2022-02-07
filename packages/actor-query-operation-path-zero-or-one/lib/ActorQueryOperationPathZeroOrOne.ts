@@ -32,8 +32,11 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       return {
         type: 'bindings',
         bindingsStream: new SingletonIterator(BF.bindings()),
-        variables: [],
-        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false }),
+        metadata: () => Promise.resolve({
+          cardinality: { type: 'exact', value: 1 },
+          canContainUndefs: false,
+          variables: [],
+        }),
       };
     }
 
@@ -67,7 +70,6 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     return {
       type: 'bindings',
       bindingsStream,
-      variables: single.variables,
       metadata: single.metadata,
     };
   }

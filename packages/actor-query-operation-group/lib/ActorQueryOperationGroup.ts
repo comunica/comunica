@@ -58,8 +58,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       output.bindingsStream.on('end', async() => {
         try {
           const bindingsStream = new ArrayIterator(await groups.collectResults(), { autoStart: false });
-          const { metadata } = output;
-          resolve({ type: 'bindings', bindingsStream, metadata, variables });
+          resolve({
+            type: 'bindings',
+            bindingsStream,
+            metadata: async() => ({ ...await output.metadata(), variables }),
+          });
         } catch (error: unknown) {
           reject(error);
         }

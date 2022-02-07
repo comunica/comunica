@@ -34,7 +34,8 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     const metadata = (): Promise<MetadataBindings> => Promise.resolve({
       cardinality: { type: 'exact', value: operation.bindings.length },
       canContainUndefs: operation.bindings.some(bindings => variables.some(variable => !(`?${variable.value}` in bindings))),
+      variables,
     });
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata };
   }
 }

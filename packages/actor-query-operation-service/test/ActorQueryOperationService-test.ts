@@ -26,10 +26,13 @@ describe('ActorQueryOperationService', () => {
             BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
             BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           ]),
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
+          metadata: () => Promise.resolve({
+            cardinality: 3,
+            canContainUndefs: true,
+            variables: [ DF.variable('a') ],
+          }),
           operated: arg,
           type: 'bindings',
-          variables: [ DF.variable('a') ],
         }),
     };
   });
@@ -82,9 +85,8 @@ describe('ActorQueryOperationService', () => {
       });
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }, context };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('a') ]);
-        expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
-
+        expect(await output.metadata())
+          .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -96,9 +98,8 @@ describe('ActorQueryOperationService', () => {
     it('should run without context', () => {
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('a') ]);
-        expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
-
+        expect(await output.metadata())
+          .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -110,10 +111,8 @@ describe('ActorQueryOperationService', () => {
     it('should run on a silent operation when the endpoint errors', () => {
       const op: any = { operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: 'error' }};
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([]);
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
-
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings(),
         ]);
@@ -134,9 +133,8 @@ describe('ActorQueryOperationService', () => {
       return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect((<any> output).operated.context.get(KeysRdfResolveQuadPattern.sources)[0].type)
           .toEqual(undefined);
-        expect(output.variables).toEqual([ DF.variable('a') ]);
-        expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
-
+        expect(await output.metadata())
+          .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -154,8 +152,8 @@ describe('ActorQueryOperationService', () => {
       return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect((<any> output).operated.context.get(KeysRdfResolveQuadPattern.sources)[0].type)
           .toEqual('sparql');
-        expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
-
+        expect(await output.metadata())
+          .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

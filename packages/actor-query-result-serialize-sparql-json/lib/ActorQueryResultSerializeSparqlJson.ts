@@ -66,8 +66,11 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
     // Write head
     const head: any = {};
-    if (action.type === 'bindings' && (<IQueryOperationResultBindings> action).variables.length > 0) {
-      head.vars = (<IQueryOperationResultBindings> action).variables.map(variable => variable.value);
+    if (action.type === 'bindings') {
+      const metadata = await (<IQueryOperationResultBindings> action).metadata();
+      if (metadata.variables.length > 0) {
+        head.vars = metadata.variables.map(variable => variable.value);
+      }
     }
     data.push(`{"head": ${JSON.stringify(head)},\n`);
     let empty = true;

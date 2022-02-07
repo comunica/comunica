@@ -5,6 +5,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinSymmetricHash } from '../lib/ActorRdfJoinSymmetricHash';
@@ -50,30 +51,40 @@ describe('ActorRdfJoinSymmetricHash', () => {
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
     let actor: ActorRdfJoinSymmetricHash;
     let action: IActionRdfJoin;
+    let variables0: RDF.Variable[];
+    let variables1: RDF.Variable[];
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus, mediatorJoinSelectivity });
+      variables0 = [];
+      variables1 = [];
       action = {
         type: 'inner',
         entries: [
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 4 },
+                canContainUndefs: false,
+                variables: variables0,
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 5 },
+                canContainUndefs: false,
+                variables: variables1,
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
@@ -94,18 +105,24 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 4 },
+                canContainUndefs: true,
+                variables: [],
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 5 },
+                canContainUndefs: false,
+                variables: [],
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
@@ -123,18 +140,24 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 4 },
+                canContainUndefs: false,
+                variables: [],
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 5 },
+                canContainUndefs: true,
+                variables: [],
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
@@ -152,18 +175,24 @@ describe('ActorRdfJoinSymmetricHash', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 4 },
+                canContainUndefs: true,
+                variables: [],
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 5 },
+                canContainUndefs: true,
+                variables: [],
+              }),
               type: 'bindings',
-              variables: [],
             },
             operation: <any> {},
           },
@@ -193,7 +222,11 @@ describe('ActorRdfJoinSymmetricHash', () => {
 
     it('should return an empty stream for empty input', () => {
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([]);
+        expect(await output.metadata()).toEqual({
+          canContainUndefs: false,
+          cardinality: { type: 'estimate', value: 20 },
+          variables: [],
+        });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
@@ -205,16 +238,20 @@ describe('ActorRdfJoinSymmetricHash', () => {
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
-      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
       ]);
-      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        expect(await output.metadata()).toEqual({
+          canContainUndefs: false,
+          cardinality: { type: 'estimate', value: 20 },
+          variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+        });
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('a') ],
@@ -232,16 +269,20 @@ describe('ActorRdfJoinSymmetricHash', () => {
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
-      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('d') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
       ]);
-      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        expect(await output.metadata()).toEqual({
+          canContainUndefs: false,
+          cardinality: { type: 'estimate', value: 20 },
+          variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+        });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
@@ -273,7 +314,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           [ DF.variable('b'), DF.literal('4') ],
         ]),
       ]);
-      action.entries[0].output.variables = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
@@ -300,7 +341,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           [ DF.variable('c'), DF.literal('4') ],
         ]),
       ]);
-      action.entries[1].output.variables = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
@@ -344,7 +385,11 @@ describe('ActorRdfJoinSymmetricHash', () => {
             [ DF.variable('c'), DF.literal('7') ],
           ]),
         ];
-        expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
+        expect(await output.metadata()).toEqual({
+          canContainUndefs: false,
+          cardinality: { type: 'estimate', value: 20 },
+          variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+        });
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           // eslint-disable-next-line @typescript-eslint/require-array-sort-compare

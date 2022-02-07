@@ -38,7 +38,6 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     return {
       type: 'bindings',
       bindingsStream,
-      variables: output.variables,
       metadata: output.metadata,
     };
   }

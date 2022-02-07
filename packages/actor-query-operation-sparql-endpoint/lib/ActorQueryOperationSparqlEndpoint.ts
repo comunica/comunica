@@ -154,8 +154,9 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       });
     inputStream.then(
       subStream => subStream.on('end', () => stream.emit('metadata', {
-        cardinality,
+        cardinality: { type: 'exact', value: cardinality },
         canContainUndefs: true,
+        variables,
       })),
       () => {
         // Do nothing
@@ -182,7 +183,6 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       type: 'bindings',
       bindingsStream: stream,
       metadata,
-      variables,
     };
   }
 }

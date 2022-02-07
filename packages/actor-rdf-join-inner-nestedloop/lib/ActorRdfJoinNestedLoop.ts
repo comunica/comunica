@@ -28,7 +28,6 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream: join,
-        variables: ActorRdfJoin.joinVariables(action),
         metadata: async() => await this.constructResultMetadata(
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),

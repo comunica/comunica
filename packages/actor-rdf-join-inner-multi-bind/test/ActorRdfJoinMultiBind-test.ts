@@ -53,9 +53,12 @@ describe('ActorRdfJoinMultiBind', () => {
                 [ DF.variable('bound'), DF.namedNode('ex:bound3') ],
               ]),
             ], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
+            metadata: () => Promise.resolve({
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('bound') ],
+            }),
             type: 'bindings',
-            variables: [ DF.variable('bound') ],
           };
         }),
       };
@@ -77,30 +80,42 @@ describe('ActorRdfJoinMultiBind', () => {
             type: 'inner',
             entries: [
               {
-                output: <any>{
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
               {
-                output: <any>{
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
               {
-                output: <any>{
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
             ],
             context: new ActionContext(),
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 5 }, pageSize: 100, requestTime: 30, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 5 },
+              pageSize: 100,
+              requestTime: 30,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).toEqual({
           iterations: 1.280_000_000_000_000_2,
@@ -116,30 +131,42 @@ describe('ActorRdfJoinMultiBind', () => {
             type: 'inner',
             entries: [
               {
-                output: <any>{
-                  variables: [ DF.variable('a'), DF.variable('b') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
               {
-                output: <any>{
-                  variables: [ DF.variable('a'), DF.variable('b') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
               {
-                output: <any>{
-                  variables: [ DF.variable('a'), DF.variable('c') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
             ],
             context: new ActionContext(),
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 5 }, pageSize: 100, requestTime: 30, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 5 },
+              pageSize: 100,
+              requestTime: 30,
+              canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
+            },
           ],
         )).toEqual({
           iterations: 1.280_000_000_000_000_2,
@@ -160,7 +187,7 @@ describe('ActorRdfJoinMultiBind', () => {
                     cardinality: { type: 'estimate', value: 3 },
                     canContainUndefs: false,
                   }),
-                  variables: [ DF.variable('a') ],
+
                 },
                 operation: <any>{ type: Algebra.types.EXTEND },
               },
@@ -170,7 +197,6 @@ describe('ActorRdfJoinMultiBind', () => {
                     cardinality: { type: 'estimate', value: 2 },
                     canContainUndefs: false,
                   }),
-                  variables: [ DF.variable('a') ],
                 },
                 operation: <any>{},
               },
@@ -178,8 +204,20 @@ describe('ActorRdfJoinMultiBind', () => {
             context: new ActionContext(),
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -190,31 +228,29 @@ describe('ActorRdfJoinMultiBind', () => {
             type: 'inner',
             entries: [
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({
-                    cardinality: { type: 'estimate', value: 3 },
-                    canContainUndefs: false,
-                  }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> { type: Algebra.types.GROUP },
               },
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({
-                    cardinality: { type: 'estimate', value: 2 },
-                    canContainUndefs: false,
-                  }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> {},
               },
             ],
             context: new ActionContext(),
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            { cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ]},
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -225,31 +261,31 @@ describe('ActorRdfJoinMultiBind', () => {
             type: 'inner',
             entries: [
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({
-                    cardinality: { type: 'estimate', value: 3 },
-                    canContainUndefs: false,
-                  }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> {},
               },
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({
-                    cardinality: { type: 'estimate', value: 2 },
-                    canContainUndefs: false,
-                  }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> { type: Algebra.types.GROUP },
               },
             ],
             context: new ActionContext(),
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).toEqual({
           iterations: 0.480_000_000_000_000_1,
@@ -272,21 +308,17 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
           [
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
           ],
           [
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
+            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
           ],
         )).toEqual(1);
       });
@@ -295,28 +327,34 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
           [
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
           ],
           [
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 5 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).toEqual(1);
       });
@@ -325,28 +363,34 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
           [
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
           ],
           [
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).toEqual(0);
       });
@@ -355,28 +399,22 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
           [
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
           ],
           [
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true },
+            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
+            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
+            { cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true, variables: [ DF.variable('a') ]},
           ],
         )).toEqual(0);
       });
@@ -385,23 +423,25 @@ describe('ActorRdfJoinMultiBind', () => {
         await expect(ActorRdfJoinMultiBind.getLeftEntryIndex(
           [
             {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 3 }),
-                variables: [ DF.variable('a1'), DF.variable('b1') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                metadata: () => Promise.resolve({ cardinality: 2 }),
-                variables: [ DF.variable('a2'), DF.variable('b2') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
           ],
           [
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a1'), DF.variable('b1') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a2'), DF.variable('b2') ],
+            },
           ],
         )).rejects.toThrow('Bind join can only join entries with at least one common variable');
       });
@@ -410,28 +450,22 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
           [
             {
-              output: <any> {
-                variables: [ DF.variable('b') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
             {
-              output: <any> {
-                variables: [ DF.variable('a') ],
-              },
+              output: <any> {},
               operation: <any> {},
             },
           ],
           [
-            { cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false },
+            { cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false, variables: [ DF.variable('b') ]},
+            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
+            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
           ],
         )).toEqual(2);
       });
@@ -459,9 +493,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
             },
@@ -478,9 +512,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 1 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
@@ -516,10 +550,10 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
         expect(await result.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
           canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
         });
 
         // Validate physicalPlanMetadata
@@ -532,7 +566,11 @@ describe('ActorRdfJoinMultiBind', () => {
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[1].operation,
-          metadata: { cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false },
+          metadata: {
+            cardinality: { type: 'estimate', value: 1 },
+            canContainUndefs: false,
+            variables: [ DF.variable('a') ],
+          },
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
@@ -542,10 +580,12 @@ describe('ActorRdfJoinMultiBind', () => {
             [KeysQueryOperation.joinLeftMetadata.name]: {
               cardinality: { type: 'estimate', value: 1 },
               canContainUndefs: false,
+              variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a1') ],
@@ -559,10 +599,12 @@ describe('ActorRdfJoinMultiBind', () => {
             [KeysQueryOperation.joinLeftMetadata.name]: {
               cardinality: { type: 'estimate', value: 1 },
               canContainUndefs: false,
+              variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a2') ],
@@ -601,9 +643,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
             },
@@ -620,9 +662,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 1 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
@@ -658,9 +700,11 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
-        expect(await result.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 }, canContainUndefs: false });
+        expect(await result.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
       });
 
       it('should handle two entries without context', async() => {
@@ -683,9 +727,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
             },
@@ -702,9 +746,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 1 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
@@ -741,9 +785,11 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
-        expect(await result.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 }, canContainUndefs: false });
+        expect(await result.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
       });
 
       it('should handle three entries (depth-first)', async() => {
@@ -767,9 +813,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
             },
@@ -789,9 +835,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 4 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('c') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.variable('c')),
             },
@@ -808,9 +854,9 @@ describe('ActorRdfJoinMultiBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 1 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
@@ -846,15 +892,21 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
-        expect(await result.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 9.600_000_000_000_001 }, canContainUndefs: false });
+        expect(await result.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+        });
 
         // Validate mock calls
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[2].operation,
-          metadata: { cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false },
+          metadata: {
+            cardinality: { type: 'estimate', value: 1 },
+            canContainUndefs: false,
+            variables: [ DF.variable('a') ],
+          },
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
@@ -867,10 +919,19 @@ describe('ActorRdfJoinMultiBind', () => {
             [KeysQueryOperation.joinLeftMetadata.name]: {
               cardinality: { type: 'estimate', value: 1 },
               canContainUndefs: false,
+              variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [
-              { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-              { cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false },
+              {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a'), DF.variable('b') ],
+              },
+              {
+                cardinality: { type: 'estimate', value: 4 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a'), DF.variable('c') ],
+              },
             ],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a1') ],
@@ -887,10 +948,19 @@ describe('ActorRdfJoinMultiBind', () => {
             [KeysQueryOperation.joinLeftMetadata.name]: {
               cardinality: { type: 'estimate', value: 1 },
               canContainUndefs: false,
+              variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [
-              { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false },
-              { cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false },
+              {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a'), DF.variable('b') ],
+              },
+              {
+                cardinality: { type: 'estimate', value: 4 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a'), DF.variable('c') ],
+              },
             ],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a2') ],

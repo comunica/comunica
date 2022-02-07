@@ -71,9 +71,11 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' }});
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
       .on('data', chunk => data.push(`${chunk}\n`));
-    if (action.type === 'bindings' && (<IQueryOperationResultBindings> action).variables.length > 0) {
-      root.push({ head: (<IQueryOperationResultBindings> action).variables
-        .map(variable => ({ variable: { _attr: { name: variable.value }}})) });
+    if (action.type === 'bindings') {
+      const metadata = await (<IQueryOperationResultBindings> action).metadata();
+      if (metadata.variables.length > 0) {
+        root.push({ head: metadata.variables.map(variable => ({ variable: { _attr: { name: variable.value }}})) });
+      }
     }
 
     if (action.type === 'bindings') {

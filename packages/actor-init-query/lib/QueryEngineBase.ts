@@ -294,10 +294,7 @@ export class QueryEngineBase implements IQueryEngine {
         return {
           resultType: 'bindings',
           execute: async() => internalResult.bindingsStream,
-          metadata: async() => ({
-            variables: internalResult.variables,
-            ...<any> await internalResult.metadata(),
-          }),
+          metadata: async() => <any> await internalResult.metadata(),
           context: internalResult.context,
           bindings: () => new Promise<Bindings[]>((resolve, reject) => {
             const result: Bindings[] = [];
@@ -345,7 +342,6 @@ export class QueryEngineBase implements IQueryEngine {
           type: 'bindings',
           bindingsStream: <BindingsStream> await finalResult.execute(),
           metadata: async() => <any> await finalResult.metadata(),
-          variables: (await finalResult.metadata()).variables,
         };
       case 'quads':
         return {

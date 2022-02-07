@@ -34,13 +34,14 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     );
 
     // Find all variables that should be deleted from the input stream.
+    const outputMetadata = await output.metadata();
     const variables = operation.variables;
-    const deleteVariables = output.variables
+    const deleteVariables = outputMetadata.variables
       .filter(variable => !variables.some(subVariable => variable.value === subVariable.value));
 
     // Error if there are variables that are not bound in the input stream.
     const missingVariables = variables
-      .filter(variable => !output.variables.some(subVariable => variable.value === subVariable.value));
+      .filter(variable => !outputMetadata.variables.some(subVariable => variable.value === subVariable.value));
     if (missingVariables.length > 0) {
       throw new Error(`Variables '${missingVariables.map(variable => `?${variable.value}`)}' are used in the projection result, but are not assigned.`);
     }
@@ -84,8 +85,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: output.metadata,
-      variables,
+      metadata: async() => ({ ...outputMetadata, variables }),
     };
   }
 }

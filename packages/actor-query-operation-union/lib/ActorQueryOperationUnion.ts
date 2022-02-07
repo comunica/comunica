@@ -8,7 +8,7 @@ import type { BindingsStream,
   IQueryOperationResultBindings,
   IActionContext,
   IQueryOperationResult,
-  MetadataBindings, IMetadata } from '@comunica/types';
+  MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { uniqTerms } from 'rdf-terms';
@@ -36,9 +36,14 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * Takes the union of the given metadata array.
    * It will ensure that the cardinality metadata value is properly calculated.
    * @param {{[p: string]: any}[]} metadatas Array of metadata.
+   * @param bindings If the union of the variables field should also be taken.
    * @return {{[p: string]: any}} Union of the metadata.
    */
-  public static unionMetadata<T extends RDF.Variable | RDF.QuadTermName>(metadatas: IMetadata<T>[]): IMetadata<T> {
+  public static unionMetadata<
+    Bindings extends boolean,
+    M extends (Bindings extends true ? MetadataBindings : MetadataQuads)
+  >(metadatas: M[], bindings: Bindings): M {
+    // Union cardinality
     const cardinality: RDF.QueryResultCardinality = { type: 'exact', value: 0 };
     for (const metadata of metadatas) {
       if ((metadata.cardinality.value && Number.isFinite(metadata.cardinality.value)) ||
@@ -53,10 +58,18 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
         break;
       }
     }
-    return {
+
+    const metadataBase: MetadataQuads = {
       cardinality,
       canContainUndefs: metadatas.some(metadata => metadata.canContainUndefs),
     };
+
+    // Union variables
+    if (bindings) {
+      metadataBase.variables = ActorQueryOperationUnion.unionVariables(metadatas.map(metadata => metadata.variables));
+      return <M> metadataBase;
+    }
+    return <M> metadataBase;
   }
 
   public async testOperation(operation: Algebra.Union, context: IActionContext): Promise<IActorTest> {
@@ -74,10 +87,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     ), { autoStart: false });
 
     const metadata: () => Promise<MetadataBindings> = () => Promise.all(outputs.map(output => output.metadata()))
-      .then(ActorQueryOperationUnion.unionMetadata);
-    const variables = ActorQueryOperationUnion.unionVariables(
-      outputs.map((output: IQueryOperationResultBindings) => output.variables),
-    );
-    return { type: 'bindings', bindingsStream, metadata, variables };
+      .then(subMeta => ActorQueryOperationUnion.unionMetadata(subMeta, true));
+    return { type: 'bindings', bindingsStream, metadata };
   }
 }

@@ -1,8 +1,7 @@
 import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import type { BindingsStream, IActionContext } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
+import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlTsv } from '..';
@@ -105,7 +104,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
     let bindingsStreamMixed: BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
-    let variables: RDF.Variable[];
+    let metadata: MetadataBindings;
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeSparqlTsv({ bus,
@@ -145,7 +144,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SparqlTsv')); });
-      variables = [ DF.variable('k1'), DF.variable('k2') ];
+      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
     });
 
     describe('for getting media types', () => {
@@ -191,7 +190,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream, type: 'bindings', variables, context },
+          { handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata, context },
             handleMediaType: 'text/tab-separated-values',
             context },
         ))).handle.data)).toEqual(
@@ -204,7 +203,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
 
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream, type: 'bindings', variables: [], context },
+          { handle: <any> { bindingsStream, type: 'bindings', metadata: async() => ({ variables: []}), context },
             handleMediaType: 'text/tab-separated-values',
             context },
         ))).handle.data)).toEqual(
@@ -220,7 +219,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           { handle: <any> {
             bindingsStream: bindingsStreamPartial,
             type: 'bindings',
-            variables: [ DF.variable('k3') ],
+            metadata: async() => ({ variables: [ DF.variable('k3') ]}),
             context,
           },
           handleMediaType: 'text/tab-separated-values',
@@ -236,11 +235,11 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
     });
 
     it('should run on a bindings stream containing values with special characters', async() => {
-      expect(await stringifyStream((<any> (await actor.run(
-        { handle: <any> { bindingsStream: bindingsStreamMixed, type: 'bindings', variables, context },
-          handleMediaType: 'text/tab-separated-values',
-          context },
-      ))).handle.data)).toEqual(
+      expect(await stringifyStream((<any> (await actor.run({
+        handle: <any> { bindingsStream: bindingsStreamMixed, type: 'bindings', metadata: async() => metadata, context },
+        handleMediaType: 'text/tab-separated-values',
+        context,
+      }))).handle.data)).toEqual(
         `k1\tk2
 "v\\""\t
 \t<v\\n\\r,>
@@ -250,22 +249,22 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
     });
 
     it('should run on an empty bindings stream', async() => {
-      expect(await stringifyStream((<any> (await actor.run(
-        { handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables, context },
-          handleMediaType: 'text/tab-separated-values',
-          context },
-      ))).handle.data)).toEqual(
+      expect(await stringifyStream((<any> (await actor.run({
+        handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', metadata: async() => metadata, context },
+        handleMediaType: 'text/tab-separated-values',
+        context,
+      }))).handle.data)).toEqual(
         `k1\tk2
 `,
       );
     });
 
     it('should emit an error on an errorring bindings stream', async() => {
-      await expect(stringifyStream((<any> (await actor.run(
-        { handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables, context },
-          handleMediaType: 'text/tab-separated-values',
-          context },
-      ))).handle.data)).rejects.toBeTruthy();
+      await expect(stringifyStream((<any> (await actor.run({
+        handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', metadata: async() => metadata, context },
+        handleMediaType: 'text/tab-separated-values',
+        context,
+      }))).handle.data)).rejects.toBeTruthy();
     });
   });
 });

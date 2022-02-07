@@ -63,9 +63,9 @@ describe('ActorRdfJoinOptionalBind', () => {
             metadata: () => Promise.resolve({
               cardinality: { type: 'estimate', value: data.length },
               canContainUndefs: false,
+              variables: [ DF.variable('bound') ],
             }),
             type: 'bindings',
-            variables: [ DF.variable('bound') ],
           };
         }),
       };
@@ -86,23 +86,31 @@ describe('ActorRdfJoinOptionalBind', () => {
             type: 'optional',
             entries: [
               {
-                output: <any>{
-                  variables: [ 'a' ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
               {
-                output: <any>{
-                  variables: [ 'a' ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
             ],
             context,
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).toEqual({
           iterations: 0.480_000_000_000_000_1,
@@ -118,23 +126,31 @@ describe('ActorRdfJoinOptionalBind', () => {
             type: 'optional',
             entries: [
               {
-                output: <any>{
-                  variables: [ DF.variable('a'), DF.variable('b'), DF.variable('d') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
               {
-                output: <any>{
-                  variables: [ DF.variable('a'), DF.variable('c'), DF.variable('e') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
             ],
             context,
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b'), DF.variable('d') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('c'), DF.variable('e') ],
+            },
           ],
         )).toEqual({
           iterations: 0.480_000_000_000_000_1,
@@ -150,25 +166,31 @@ describe('ActorRdfJoinOptionalBind', () => {
             type: 'optional',
             entries: [
               {
-                output: <any>{
-                  metadata: () => Promise.resolve({ cardinality: 3 }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any>{},
                 operation: <any>{},
               },
               {
-                output: <any>{
-                  metadata: () => Promise.resolve({ cardinality: 2 }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any>{},
                 operation: <any>{ type: Algebra.types.EXTEND },
               },
             ],
             context,
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -179,25 +201,31 @@ describe('ActorRdfJoinOptionalBind', () => {
             type: 'optional',
             entries: [
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({ cardinality: 3 }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> {},
               },
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({ cardinality: 2 }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> { type: Algebra.types.GROUP },
               },
             ],
             context,
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
       });
@@ -208,25 +236,31 @@ describe('ActorRdfJoinOptionalBind', () => {
             type: 'optional',
             entries: [
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({ cardinality: 3 }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> { type: Algebra.types.GROUP },
               },
               {
-                output: <any> {
-                  metadata: () => Promise.resolve({ cardinality: 2 }),
-                  variables: [ DF.variable('a') ],
-                },
+                output: <any> {},
                 operation: <any> {},
               },
             ],
             context,
           },
           [
-            { cardinality: { type: 'estimate', value: 3 }, pageSize: 100, requestTime: 10, canContainUndefs: false },
-            { cardinality: { type: 'estimate', value: 2 }, pageSize: 100, requestTime: 20, canContainUndefs: false },
+            {
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
           ],
         )).toEqual({
           iterations: 0.480_000_000_000_000_1,
@@ -254,9 +288,9 @@ describe('ActorRdfJoinOptionalBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
             },
@@ -280,9 +314,9 @@ describe('ActorRdfJoinOptionalBind', () => {
                 metadata: () => Promise.resolve({
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
             },
@@ -309,9 +343,11 @@ describe('ActorRdfJoinOptionalBind', () => {
             [ DF.variable('b'), DF.literal('2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
-        expect(await result.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 7.2 }, canContainUndefs: true });
+        expect(await result.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 7.2 },
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
 
         // Validate mock calls
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(3);
@@ -322,10 +358,12 @@ describe('ActorRdfJoinOptionalBind', () => {
             [KeysQueryOperation.joinLeftMetadata.name]: {
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           }),
@@ -337,10 +375,12 @@ describe('ActorRdfJoinOptionalBind', () => {
             [KeysQueryOperation.joinLeftMetadata.name]: {
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           }),
@@ -352,10 +392,12 @@ describe('ActorRdfJoinOptionalBind', () => {
             [KeysQueryOperation.joinLeftMetadata.name]: {
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           }),

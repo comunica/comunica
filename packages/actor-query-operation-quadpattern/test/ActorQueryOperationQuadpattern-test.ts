@@ -247,13 +247,13 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
           order: [
             { term: DF.variable('p'), direction: 'asc' },
           ],
           canContainUndefs: false,
+          variables: [ DF.variable('p') ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream(
           [
@@ -275,13 +275,13 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
           order: [
             { term: DF.variable('p'), direction: 'asc' },
           ],
           canContainUndefs: true,
+          variables: [ DF.variable('p') ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream(
           [
@@ -303,10 +303,10 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
           canContainUndefs: false,
+          variables: [ DF.variable('p') ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream(
           [
@@ -355,13 +355,13 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
           order: [
             { term: DF.variable('p'), direction: 'asc' },
           ],
           canContainUndefs: false,
+          variables: [ DF.variable('p') ],
           availableOrders: [
             {
               cost: {
@@ -406,13 +406,13 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('p') ]);
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
           order: [
             { term: DF.variable('p'), direction: 'asc' },
           ],
           canContainUndefs: false,
+          variables: [ DF.variable('p') ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream(
           [
@@ -449,13 +449,13 @@ describe('ActorQueryOperationQuadpattern', () => {
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
 
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('v') ]);
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
           order: [
             { term: DF.variable('v'), direction: 'asc' },
           ],
           canContainUndefs: false,
+          variables: [ DF.variable('v') ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('v'), DF.namedNode('w') ]]),

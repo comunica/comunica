@@ -89,10 +89,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -114,10 +114,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   pageSize: 100,
                   requestTime: 20,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
@@ -139,10 +139,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   pageSize: 100,
                   requestTime: 30,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -170,10 +170,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -195,10 +195,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   pageSize: 100,
                   requestTime: 20,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
@@ -220,10 +220,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   pageSize: 100,
                   requestTime: 30,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -245,10 +245,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   pageSize: 100,
                   requestTime: 40,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('d') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('d') ],
             },
             operation: <any> {},
           },
@@ -275,9 +275,9 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 pageSize: 100,
                 requestTime: 10,
                 canContainUndefs: false,
+                variables: [ DF.variable('a'), DF.variable('b') ],
               }),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -293,9 +293,12 @@ describe('ActorRdfJoinMultiSmallest', () => {
                   [ DF.variable('c'), DF.literal('c2') ],
                 ]),
               ]),
-              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false }),
+              metadata: () => Promise.resolve({
+                cardinality: { type: 'estimate', value: 2 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a'), DF.variable('c') ],
+              }),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
@@ -316,9 +319,9 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 pageSize: 100,
                 requestTime: 30,
                 canContainUndefs: false,
+                variables: [ DF.variable('a'), DF.variable('b') ],
               }),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -363,9 +366,11 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 3 streams', async() => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ DF.variable('a'), DF.variable('c'), DF.variable('b') ]);
-      expect(await (<any> output).metadata())
-        .toEqual({ cardinality: { type: 'estimate', value: 40 }, canContainUndefs: false });
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 40 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b') ],
+      });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],
@@ -388,9 +393,11 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 4 streams', async() => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ DF.variable('a'), DF.variable('c'), DF.variable('b'), DF.variable('d') ]);
-      expect(await (<any> output).metadata())
-        .toEqual({ cardinality: { type: 'estimate', value: 80 }, canContainUndefs: false });
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 80 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b'), DF.variable('d') ],
+      });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],

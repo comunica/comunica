@@ -23,32 +23,41 @@ describe('ActorRdfJoinMinusHashUndef', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
     left = {
-      metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
+      metadata: () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 3 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a') ],
+      }),
       stream: new ArrayIterator([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]),
       type: 'bindings',
-      variables: [ DF.variable('a') ],
     };
     rightNoCommons = {
-      metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false }),
+      metadata: () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 2 },
+        canContainUndefs: false,
+        variables: [ DF.variable('b') ],
+      }),
       stream: new ArrayIterator([
         BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
       ]),
       type: 'bindings',
-      variables: [ DF.variable('b') ],
     };
     right = {
-      metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false }),
+      metadata: () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 2 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a') ],
+      }),
       stream: new ArrayIterator([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
       ]),
       type: 'bindings',
-      variables: [ DF.variable('a') ],
     };
   });
 
@@ -151,9 +160,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                   BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: <any> {},
             },
@@ -163,9 +175,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                   BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: <any> {},
             },
@@ -176,11 +191,14 @@ describe('ActorRdfJoinMinusHashUndef', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+        expect(await result.metadata()).toEqual({
+          cardinality: 3,
+          canContainUndefs: false,
+          variables: [ DF.variable('a') ],
+        });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a') ]);
       });
 
       it('should handle entries without common variables', async() => {
@@ -194,9 +212,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                   BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a') ],
               },
               operation: <any> {},
             },
@@ -206,9 +227,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                   BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
                   BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('b') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -219,13 +243,16 @@ describe('ActorRdfJoinMinusHashUndef', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+        expect(await result.metadata()).toEqual({
+          cardinality: 3,
+          canContainUndefs: false,
+          variables: [ DF.variable('a') ],
+        });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a') ]);
       });
 
       it('should handle undef in right entry', async() => {
@@ -248,9 +275,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                     [ DF.variable('b'), DF.literal('3') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -264,9 +294,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                     [ DF.variable('b'), DF.literal('3') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -277,14 +310,17 @@ describe('ActorRdfJoinMinusHashUndef', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+        expect(await result.metadata()).toEqual({
+          cardinality: 3,
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('2') ],
             [ DF.variable('b'), DF.literal('2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
       });
 
       it('should handle undef in left entry', async() => {
@@ -305,9 +341,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                     [ DF.variable('b'), DF.literal('3') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: true,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -323,9 +362,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                     [ DF.variable('b'), DF.literal('3') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -336,14 +378,17 @@ describe('ActorRdfJoinMinusHashUndef', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+        expect(await result.metadata()).toEqual({
+          cardinality: 3,
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('2') ],
             [ DF.variable('b'), DF.literal('2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
       });
 
       it('should handle undef in left and right entry', async() => {
@@ -364,9 +409,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                     [ DF.variable('b'), DF.literal('3') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: true,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -380,9 +428,12 @@ describe('ActorRdfJoinMinusHashUndef', () => {
                     [ DF.variable('a'), DF.literal('3') ],
                   ]),
                 ], { autoStart: false }),
-                metadata: () => Promise.resolve({ cardinality: 2, canContainUndefs: true }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: true,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
                 type: 'bindings',
-                variables: [ DF.variable('a'), DF.variable('b') ],
               },
               operation: <any> {},
             },
@@ -393,14 +444,17 @@ describe('ActorRdfJoinMinusHashUndef', () => {
 
         // Validate output
         expect(result.type).toEqual('bindings');
-        expect(await result.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+        expect(await result.metadata()).toEqual({
+          cardinality: 3,
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('2') ],
             [ DF.variable('b'), DF.literal('2') ],
           ]),
         ]);
-        expect(result.variables).toEqual([ DF.variable('a'), DF.variable('b') ]);
       });
     });
   });

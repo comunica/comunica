@@ -32,9 +32,12 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
     return {
       result: {
         bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false }),
+        metadata: async() => ({
+          cardinality: { type: 'exact', value: 0 },
+          canContainUndefs: false,
+          variables: ActorRdfJoin.joinVariables(await ActorRdfJoin.getMetadatas(action.entries)),
+        }),
         type: 'bindings',
-        variables: ActorRdfJoin.joinVariables(action),
       },
     };
   }

@@ -200,8 +200,11 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ DF.variable('p') ]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('p') ],
+      });
 
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -226,8 +229,11 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ DF.variable('myP') ],
         ) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ DF.variable('myP') ]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('myP') ],
+      });
 
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -257,8 +263,11 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ DF.variable('p') ]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('p') ],
+      });
 
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -291,8 +300,11 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ DF.variable('myP') ],
         ) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ DF.variable('myP') ]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('myP') ],
+      });
 
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -334,7 +346,10 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IQueryOperationResultQuads = <any> await actor.run(op);
 
-      expect(await output.metadata()).toEqual({ cardinality: 2, canContainUndefs: true });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 2 },
+        canContainUndefs: true,
+      });
 
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),
@@ -412,7 +427,11 @@ this is a body`));
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 3, canContainUndefs: true });
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('p') ],
+      });
 
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([

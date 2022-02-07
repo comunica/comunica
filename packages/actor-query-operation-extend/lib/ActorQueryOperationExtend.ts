@@ -56,9 +56,14 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
-    const variables = [ ...output.variables, variable ];
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
-    const { metadata } = output;
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      async metadata() {
+        const outputMetadata = await output.metadata();
+        return { ...outputMetadata, variables: [ ...outputMetadata.variables, variable ]};
+      },
+    };
   }
 }

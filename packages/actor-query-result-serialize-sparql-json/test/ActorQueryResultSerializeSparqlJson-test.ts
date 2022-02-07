@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import type { BindingsStream, IActionContext } from '@comunica/types';
+import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -76,7 +76,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
     let quadStream: RDF.Stream;
-    let variables: RDF.Variable[];
+    let metadata: MetadataBindings;
 
     beforeEach(() => {
       actor = new ActorQueryResultSerializeSparqlJson({ bus,
@@ -110,7 +110,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
-      variables = [ DF.variable('k1'), DF.variable('k2') ];
+      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
     });
 
     describe('for getting media types', () => {
@@ -157,7 +157,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', variables },
+            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {"vars":["k1","k2"]},
@@ -172,7 +172,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', variables: []},
+            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => ({ variables: []}) },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {},
@@ -187,7 +187,11 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       it('should run on a bindings stream with unbound variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: []},
+            handle: <any> {
+              bindingsStream: bindingsStreamPartial,
+              type: 'bindings',
+              metadata: async() => ({ variables: []}),
+            },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {},
@@ -204,7 +208,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     it('should run on an empty bindings stream', async() => {
       expect(await stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables },
+          handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', metadata: async() => metadata },
           handleMediaType: 'json' },
       ))).handle.data)).toEqual(
         `{"head": {"vars":["k1","k2"]},
@@ -216,7 +220,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     it('should emit an error on an errorring bindings stream', async() => {
       await expect(stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+          handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', metadata: async() => metadata },
           handleMediaType: 'json' },
       ))).handle.data)).rejects.toBeTruthy();
     });
@@ -224,7 +228,11 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     it('should run on a boolean result that resolves to true', async() => {
       expect(await stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: []},
+          handle: <any> {
+            type: 'boolean',
+            booleanResult: Promise.resolve(true),
+            metadata: async() => ({ variables: []}),
+          },
           handleMediaType: 'simple' },
       ))).handle.data)).toEqual(
         `{"head": {},

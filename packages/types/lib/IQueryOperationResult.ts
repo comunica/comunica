@@ -2,7 +2,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Bindings, BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
-import type { IMetadata } from './IMetadata';
+import type { IMetadata, MetadataQuads, MetadataBindings } from './IMetadata';
 
 export interface IQueryOperationResultBase {
   /**
@@ -19,8 +19,10 @@ export interface IQueryOperationResultBase {
  * Super interface for query operation results that represent some for of stream.
  * @see IQueryableResultBindings, IQueryableResultQuads
  */
-export interface IQueryOperationResultStream<OrderItemsType extends RDF.Variable | RDF.QuadTermName>
-  extends IQueryOperationResultBase {
+export interface IQueryOperationResultStream<
+  M extends IMetadata<OrderItemsType>,
+  OrderItemsType extends RDF.Variable | RDF.QuadTermName
+> extends IQueryOperationResultBase {
   /**
    * Callback that returns a promise that resolves to the metadata about the stream.
    * This can contain things like the estimated number of total stream elements,
@@ -29,14 +31,14 @@ export interface IQueryOperationResultStream<OrderItemsType extends RDF.Variable
    * The actors that return this metadata will make sure that multiple calls properly cache this promise.
    * Metadata will not be collected until this callback is invoked.
    */
-  metadata: () => Promise<IMetadata<OrderItemsType>>;
+  metadata: () => Promise<M>;
 }
 
 /**
  * Query operation output for a bindings stream.
  * For example: SPARQL SELECT results
  */
-export interface IQueryOperationResultBindings extends IQueryOperationResultStream<RDF.Variable> {
+export interface IQueryOperationResultBindings extends IQueryOperationResultStream<MetadataBindings, RDF.Variable> {
   /**
    * The type of output.
    */
@@ -45,17 +47,13 @@ export interface IQueryOperationResultBindings extends IQueryOperationResultStre
    * The stream of bindings resulting from the given operation.
    */
   bindingsStream: BindingsStream;
-  /**
-   * The list of variable names (without '?') for which bindings are provided in the stream.
-   */
-  variables: RDF.Variable[];
 }
 
 /**
  * Query operation output for quads.
  * For example: SPARQL CONSTRUCT results
  */
-export interface IQueryOperationResultQuads extends IQueryOperationResultStream<RDF.QuadTermName> {
+export interface IQueryOperationResultQuads extends IQueryOperationResultStream<MetadataQuads, RDF.QuadTermName> {
   /**
    * The type of output.
    */

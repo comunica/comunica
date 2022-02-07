@@ -88,10 +88,10 @@ describe('ActorRdfJoinMultiSequential', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -113,10 +113,10 @@ describe('ActorRdfJoinMultiSequential', () => {
                   pageSize: 100,
                   requestTime: 20,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
@@ -138,10 +138,10 @@ describe('ActorRdfJoinMultiSequential', () => {
                   pageSize: 100,
                   requestTime: 30,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -169,10 +169,10 @@ describe('ActorRdfJoinMultiSequential', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -194,10 +194,10 @@ describe('ActorRdfJoinMultiSequential', () => {
                   pageSize: 100,
                   requestTime: 20,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('c') ],
             },
             operation: <any> {},
           },
@@ -219,10 +219,10 @@ describe('ActorRdfJoinMultiSequential', () => {
                   pageSize: 100,
                   requestTime: 30,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('b') ],
             },
             operation: <any> {},
           },
@@ -244,10 +244,10 @@ describe('ActorRdfJoinMultiSequential', () => {
                   pageSize: 100,
                   requestTime: 40,
                   canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('d') ],
                 },
               ),
               type: 'bindings',
-              variables: [ DF.variable('a'), DF.variable('d') ],
             },
             operation: <any> {},
           },
@@ -292,9 +292,11 @@ describe('ActorRdfJoinMultiSequential', () => {
     it('should run on 3 streams', async() => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c') ]);
-      expect(await (<any> output).metadata())
-        .toEqual({ cardinality: { type: 'estimate', value: 40 }, canContainUndefs: false });
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 40 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+      });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],
@@ -317,9 +319,11 @@ describe('ActorRdfJoinMultiSequential', () => {
     it('should run on 4 streams', async() => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c'), DF.variable('d') ]);
-      expect(await (<any> output).metadata())
-        .toEqual({ cardinality: { type: 'estimate', value: 80 }, canContainUndefs: false });
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 80 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c'), DF.variable('d') ],
+      });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],

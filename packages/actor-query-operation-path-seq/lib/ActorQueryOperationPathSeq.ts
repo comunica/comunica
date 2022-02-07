@@ -62,9 +62,16 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     });
 
     // Remove the generated variable from the list of variables
-    const variables = join.variables.filter(variable => !generatedVariableNames
-      .some(generatedVariableName => generatedVariableName.value === variable.value));
-    return { type: 'bindings', bindingsStream, variables, metadata: join.metadata };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      async metadata() {
+        const joinMetadata = await join.metadata();
+        const variables = joinMetadata.variables.filter(variable => !generatedVariableNames
+          .some(generatedVariableName => generatedVariableName.value === variable.value));
+        return { ...joinMetadata, variables };
+      },
+    };
   }
 }
 

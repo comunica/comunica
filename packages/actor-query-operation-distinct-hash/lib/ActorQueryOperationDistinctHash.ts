@@ -32,7 +32,6 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       type: 'bindings',
       bindingsStream,
       metadata: output.metadata,
-      variables: output.variables,
     };
   }
 

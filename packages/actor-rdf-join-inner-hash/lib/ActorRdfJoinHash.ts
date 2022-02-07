@@ -18,7 +18,8 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const variables = ActorRdfJoin.overlappingVariables(action);
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+    const variables = ActorRdfJoin.overlappingVariables(metadatas);
     const join = new HashJoin<Bindings, string, Bindings>(
       action.entries[0].output.bindingsStream,
       action.entries[1].output.bindingsStream,
@@ -29,12 +30,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream: join,
-        variables: ActorRdfJoin.joinVariables(action),
-        metadata: async() => await this.constructResultMetadata(
-          action.entries,
-          await ActorRdfJoin.getMetadatas(action.entries),
-          action.context,
-        ),
+        metadata: async() => await this.constructResultMetadata(action.entries, metadatas, action.context),
       },
     };
   }

@@ -82,11 +82,11 @@ export abstract class ActorRdfJoin
 
   /**
    * Returns an array containing all the variable names that occur in all bindings streams.
-   * @param {IActionRdfJoin} action
+   * @param {MetadataBindings[]} metadatas An array of optional metadata objects for the entries.
    * @returns {string[]}
    */
-  public static overlappingVariables(action: IActionRdfJoin): RDF.Variable[] {
-    const variables = action.entries.map(entry => entry.output.variables);
+  public static overlappingVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
+    const variables = metadatas.map(metadata => metadata.variables);
     let baseArray = variables[0];
     for (const array of variables.slice(1)) {
       baseArray = baseArray.filter(el => array.some(value => value.value === el.value));
@@ -96,20 +96,11 @@ export abstract class ActorRdfJoin
 
   /**
    * Returns the variables that will occur in the joined bindings.
-   * @param {IActionRdfJoin} action The join action.
+   * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
    * @returns {string[]}
    */
-  public static joinVariables(action: IActionRdfJoin): RDF.Variable[] {
-    return ActorRdfJoin.joinVariablesStreams(action.entries.map(entry => entry.output));
-  }
-
-  /**
-   * Returns the variables that will occur in the joined bindings.
-   * @param {IQueryOperationResultBindings[]} streams The streams to consider
-   * @returns {string[]}
-   */
-  public static joinVariablesStreams(streams: IQueryOperationResultBindings[]): RDF.Variable[] {
-    return [ ...new Set(streams.flatMap(entry => entry.variables.map(variable => variable.value))) ]
+  public static joinVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
+    return [ ...new Set(metadatas.flatMap(metadata => metadata.variables.map(variable => variable.value))) ]
       .map(variable => DF.variable(variable));
   }
 
@@ -148,11 +139,11 @@ export abstract class ActorRdfJoin
 
   /**
    * Find the metadata index with the lowest cardinality.
-   * @param {(Record<string, any> | undefined)[]} metadatas An array of optional metadata objects for the entries.
+   * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
    * @param indexBlacklist An optional array of blacklisted indexes that will not be considered.
    * @return {number} The index of the entry with the lowest cardinality.
    */
-  public static getLowestCardinalityIndex(metadatas: Record<string, any>[], indexBlacklist: number[] = []): number {
+  public static getLowestCardinalityIndex(metadatas: MetadataBindings[], indexBlacklist: number[] = []): number {
     let smallestId = -1;
     let smallestCount: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
     for (const [ i, meta ] of metadatas.entries()) {
@@ -228,6 +219,7 @@ export abstract class ActorRdfJoin
         value: cardinalityJoined.value,
       },
       canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
+      variables: ActorRdfJoin.joinVariables(metadatas),
     };
   }
 

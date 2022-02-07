@@ -29,7 +29,6 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
-    const { variables, metadata } = output;
 
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     const evaluator = new AsyncEvaluator(operation.expression, config);
@@ -62,6 +61,6 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     };
 
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata: output.metadata };
   }
 }

@@ -74,7 +74,11 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         },
       );
       const variables = operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ];
-      return { type: 'bindings', bindingsStream, variables, metadata: results.metadata };
+      return {
+        type: 'bindings',
+        bindingsStream,
+        metadata: async() => ({ ...await results.metadata(), variables }),
+      };
     }
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
@@ -131,7 +135,11 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       const variables = operation.graph.termType === 'Variable' ?
         [ subjectVar, objectVar, operation.graph ] :
         [ subjectVar, objectVar ];
-      return { type: 'bindings', bindingsStream, variables, metadata: results.metadata };
+      return {
+        type: 'bindings',
+        bindingsStream,
+        metadata: async() => ({ ...await results.metadata(), variables }),
+      };
     }
     if (operation.subject.termType === 'Variable' && operation.object.termType !== 'Variable') {
       return <Promise<IQueryOperationResultBindings>> this.mediatorQueryOperation.mediate({
@@ -165,8 +173,10 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     return {
       type: 'bindings',
       bindingsStream,
-      variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
-      metadata: results.metadata,
+      metadata: async() => ({
+        ...await results.metadata(),
+        variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
+      }),
     };
   }
 }

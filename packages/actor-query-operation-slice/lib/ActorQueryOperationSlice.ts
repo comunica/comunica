@@ -36,7 +36,6 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
         type: 'bindings',
         bindingsStream,
         metadata: this.sliceMetadata(output, operation),
-        variables: output.variables,
       };
     }
 
@@ -63,7 +62,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
 
   // If we find metadata, apply slicing on the total number of items
   private sliceMetadata(
-    output: IQueryOperationResultStream<any>,
+    output: IQueryOperationResultStream<any, any>,
     pattern: Algebra.Slice,
   ): () => Promise<IMetadata<any>> {
     // eslint-disable-next-line unicorn/explicit-length-check
