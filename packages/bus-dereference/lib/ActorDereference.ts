@@ -80,7 +80,6 @@ export interface IActorDereferenceOutput extends IActorOutput {
   url: string;
   /**
    * The resulting stream.
-   * TODO: Make readable again
    */
   data: IReadableClose;
   /**

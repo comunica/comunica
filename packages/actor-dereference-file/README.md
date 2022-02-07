@@ -27,13 +27,9 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": TODO,
-      "@type": "ActorDereferenceFile"
+      "@id": "urn:comunica:default:dereference/actors#file",
+      "@type": "ActorRdfDereferenceFile"
     }
   ]
 }
 ```
-
-### Config Parameters
-
-TODO

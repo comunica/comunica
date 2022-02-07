@@ -44,7 +44,6 @@ const mediatorDereferenceRdf: MediatorDereferenceRdf = {
 };
 // @ts-expect-error
 const mediatorMetadata: MediatorRdfMetadata = {
-  // TODO: Double check the 'as any' cast here
   mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: <any> { a: 1 }}),
 };
 // @ts-expect-error
