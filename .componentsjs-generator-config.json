@@ -10,11 +10,13 @@
     "packages/bindings-factory",
     "packages/context-entries",
     "packages/data-factory",
+    "packages/jest",
     "packages/packager",
     "packages/runner-cli"
   ],
   "ignoreComponents": [
     "Error",
+    "RegExp",
     "NodeJS.ReadableStream",
     "Headers",
     "IQueryEngine",
@@ -36,6 +38,9 @@
     "KEY_CONTEXT_LENIENT",
     "KEY_CONTEXT_QUERY",
     "IQueryOptions",
+    "IMetadata",
+    "MetadataBindings",
+    "MetadataQuads",
     "Response",
     "RequestInfo",
     "RequestInit",
@@ -50,7 +55,11 @@
     "RDF.Stream",
     "Omit",
     "MediateMediaTyped",
-    "IActorDereferenceOutput"
+    "IActorDereferenceOutput",
+    "Factory",
+
+    "UriTemplate",
+    "LRUCache"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

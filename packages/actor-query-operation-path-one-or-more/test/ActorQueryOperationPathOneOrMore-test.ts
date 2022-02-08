@@ -2,14 +2,13 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import type { Bindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathOneOrMore } from '../lib/ActorQueryOperationPathOneOrMore';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -23,25 +22,25 @@ describe('ActorQueryOperationPathOneOrMore', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate(arg: any) {
-        const vars: any = [];
+        const vars: RDF.Variable[] = [];
         const distinct: boolean = arg.operation.type === 'distinct';
 
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation.input && (arg.operation.input[name].termType === 'Variable' ||
           arg.operation.input[name].termType === 'BlankNode')) {
-            vars.push(termToString(arg.operation.input[name]));
+            vars.push(arg.operation.input[name]);
           } else if (arg.operation[name] && (arg.operation[name].termType === 'Variable' ||
           arg.operation[name].termType === 'BlankNode')) {
-            vars.push(termToString(arg.operation[name]));
+            vars.push(arg.operation[name]);
           }
         }
 
         const bindings = [];
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
-            const bind: any = {};
+            const bind: [RDF.Variable, RDF.Term][] = [];
             for (const [ j, element ] of vars.entries()) {
-              bind[element] = DF.namedNode(`${1 + i + j}`);
+              bind.push([ element, DF.namedNode(`${1 + i + j}`) ]);
             }
             bindings.push(BF.bindings(bind));
             if (arg.operation.predicate && arg.operation.predicate.type === 'seq') {
@@ -49,15 +48,14 @@ describe('ActorQueryOperationPathOneOrMore', () => {
             }
           }
         } else {
-          bindings.push(BF.bindings({}));
+          bindings.push(BF.bindings());
         }
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings, { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: distinct ? 1 : 3, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: distinct ? 1 : 3, canContainUndefs: false, variables: vars }),
           operated: arg,
           type: 'bindings',
-          variables: vars,
         });
       },
     };
@@ -104,10 +102,13 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('x') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
       ]);
     });
 
@@ -119,10 +120,13 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('x') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
       ]);
     });
 
@@ -134,12 +138,15 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('3') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('x') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),
       ]);
     });
 
@@ -151,12 +158,15 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('3') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 3,
+        canContainUndefs: false,
+        variables: [ DF.variable('x') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('3') ]]),
       ]);
     });
 
@@ -168,10 +178,13 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 3,
+        canContainUndefs: false,
+        variables: [],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings(),
       ]);
     });
 
@@ -184,10 +197,13 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?g' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?g': DF.namedNode('2') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 3,
+        canContainUndefs: false,
+        variables: [ DF.variable('g') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('g'), DF.namedNode('2') ]]),
       ]);
     });
 
@@ -200,12 +216,24 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?o', '?g' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ '?o': DF.namedNode('1'), '?g': DF.namedNode('2') }),
-        BF.bindings({ '?o': DF.namedNode('2'), '?g': DF.namedNode('2') }),
-        BF.bindings({ '?o': DF.namedNode('3'), '?g': DF.namedNode('2') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('o'), DF.variable('g') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('o'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('o'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('o'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
+        ]),
       ]);
     });
 
@@ -220,13 +248,24 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x', '?y' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
-      expect(bindings).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('3') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('x'), DF.variable('y') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
       ]);
     });
 
@@ -242,13 +281,27 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual([ '?x', '?y', '?g' ]);
-      expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
-      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
-      expect(bindings).toEqual([
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2'), '?g': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1'), '?g': DF.namedNode('3') }),
-        BF.bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('3'), '?g': DF.namedNode('3') }),
+      expect(await output.metadata()).toEqual({
+        cardinality: 1,
+        canContainUndefs: false,
+        variables: [ DF.variable('x'), DF.variable('y'), DF.variable('g') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
       ]);
     });
   });

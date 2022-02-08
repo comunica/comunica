@@ -76,7 +76,7 @@ export interface IActorRdfUpdateQuadsOutput extends IActorOutput {
   /**
    * Resolves when the update operation is done.
    */
-  updateResult: Promise<void>;
+  voidResult: Promise<void>;
 }
 
 export type IActorRdfUpdateQuadsArgs = IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;

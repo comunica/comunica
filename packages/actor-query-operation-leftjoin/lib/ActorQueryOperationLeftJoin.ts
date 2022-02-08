@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryableResult, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResult, Bindings, IActionContext } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -21,7 +21,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
   }
 
   public async runOperation(operationOriginal: Algebra.LeftJoin, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     // Delegate to join bus
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({
@@ -55,7 +55,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
               if (isExpressionError(<Error>error)) {
                 // In many cases, this is a user error, where the user should manually cast the variable to a string.
                 // In order to help users debug this, we should report these errors via the logger as warnings.
-                this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: bindings.toJS() }));
+                this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings }));
               } else {
                 bindingsStream.emit('error', error);
               }

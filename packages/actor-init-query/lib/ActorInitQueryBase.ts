@@ -86,6 +86,7 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
   queryString?: string;
   /**
    * The default query input format
+   * @default {sparql}
    */
   defaultQueryInputFormat?: string;
   /**

@@ -5,7 +5,7 @@ import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, IMetadata } from '@comunica/types';
+import type { Bindings, MetadataBindings } from '@comunica/types';
 import { NestedLoopJoin } from 'asyncjoin';
 
 /**
@@ -32,7 +32,6 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream: join,
-        variables: ActorRdfJoin.joinVariables(action),
         metadata: async() => await this.constructResultMetadata(
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),
@@ -45,16 +44,16 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     return {
-      iterations: metadatas[0].cardinality * metadatas[1].cardinality,
+      iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value,
       persistedItems: 0,
       blockingItems: 0,
-      requestTime: requestInitialTimes[0] + metadatas[0].cardinality * requestItemTimes[0] +
-        requestInitialTimes[1] + metadatas[1].cardinality * requestItemTimes[1],
+      requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
+        requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
     };
   }
 }

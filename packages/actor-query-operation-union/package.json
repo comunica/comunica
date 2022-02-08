@@ -34,6 +34,7 @@
     "@comunica/core": "^2.0.0",
     "@comunica/types": "^2.0.0",
     "asynciterator": "^3.2.1",
+    "rdf-terms": "^1.7.1",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {

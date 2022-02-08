@@ -107,7 +107,7 @@ describe('ActorInitQuery', () => {
             );
         }
         return action.operation !== 'INVALID' ?
-          Promise.resolve({ type: 'bindings', bindingsStream: input }) :
+          Promise.resolve({ type: 'bindings', bindingsStream: input, metadata: () => ({}) }) :
           Promise.reject(new Error('Invalid query'));
       });
       mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
@@ -299,8 +299,7 @@ describe('ActorInitQuery', () => {
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith('Q', {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysCore.log.name]: expect.any(LoggerPretty),
           bla: true,
         });
@@ -315,8 +314,7 @@ describe('ActorInitQuery', () => {
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
@@ -351,8 +349,7 @@ describe('ActorInitQuery', () => {
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
@@ -382,8 +379,7 @@ describe('ActorInitQuery', () => {
 }
 LIMIT 100
 `, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
@@ -418,8 +414,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'sparql', value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
@@ -434,8 +429,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{
             value: sourceHypermedia,
             context: new ActionContext({
@@ -455,8 +449,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{
             type: 'sparql',
             value: sourceHypermedia,
@@ -477,8 +470,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'other', value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
@@ -493,8 +485,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
@@ -509,8 +500,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [
             { type: 'sparql', value: sourceHypermedia },
             { type: 'sparql', value: sourceHypermedia },
@@ -528,8 +518,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           entrypoint: 'http://example.org/',
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
@@ -545,8 +534,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysHttpMemento.datetime.name]: dt,
@@ -562,8 +550,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
         });
@@ -580,8 +567,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: 'LOGGER',
         });
@@ -597,8 +583,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysInitQuery.baseIRI.name]: baseIRI,
@@ -615,8 +600,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysHttpProxy.httpProxyHandler.name]: new ProxyHandlerStatic(proxy),
@@ -632,8 +616,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysInitQuery.lenient.name]: true,
@@ -649,8 +632,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysRdfUpdateQuads.destination.name]: 'http://target.com/',
@@ -680,8 +662,7 @@ LIMIT 100
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: 'sparql',
-          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysInitQuery.cliArgsHandlers.name]: [ cliArgsHandler ],
@@ -692,7 +673,7 @@ LIMIT 100
       describe('output format', () => {
         it('defaults to application/json for bindingsStream', async() => {
           const m1: any = {
-            mediate: (arg: any) => Promise.resolve({ type: 'bindings', bindingsStream: true }),
+            mediate: (arg: any) => Promise.resolve({ type: 'bindings', bindingsStream: true, metadata: () => ({}) }),
           };
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
@@ -779,8 +760,7 @@ LIMIT 100
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-            [KeysInitQuery.queryFormat.name]: 'sparql',
-            [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
             [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
             [KeysCore.log.name]: expect.any(LoggerPretty),
           });
@@ -795,8 +775,7 @@ LIMIT 100
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-            [KeysInitQuery.queryFormat.name]: 'graphql',
-            [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+            [KeysInitQuery.queryFormat.name]: { language: 'graphql', version: '1.1' },
             [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
             [KeysCore.log.name]: expect.any(LoggerPretty),
           });
@@ -851,8 +830,7 @@ LIMIT 100
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-            [KeysInitQuery.queryFormat.name]: 'sparql',
-            [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
             [KeysCore.log.name]: expect.any(LoggerPretty),
             hypermedia: 'http://example.org/',
           });
@@ -925,8 +903,7 @@ LIMIT 100
 }`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'parsed',
-            [KeysInitQuery.queryFormat.name]: 'sparql',
-            [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
             [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
             [KeysCore.log.name]: expect.any(LoggerPretty),
           });
@@ -984,8 +961,7 @@ LIMIT 100
 }`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'logical',
-            [KeysInitQuery.queryFormat.name]: 'sparql',
-            [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
             [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
             [KeysCore.log.name]: expect.any(LoggerPretty),
           });
@@ -1081,8 +1057,8 @@ LIMIT 100
                   );
               }
               return Promise.resolve({
-                type: 'update',
-                updateResult: Promise.resolve(true),
+                type: 'void',
+                voidResult: Promise.resolve(true),
               });
             });
 

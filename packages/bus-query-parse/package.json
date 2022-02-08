@@ -30,6 +30,7 @@
   ],
   "dependencies": {
     "@comunica/core": "^2.0.0",
+    "@rdfjs/types": "*",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {

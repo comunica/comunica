@@ -9,7 +9,7 @@ import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiSequential } from '../lib/ActorRdfJoinMultiSequential';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -73,42 +73,75 @@ describe('ActorRdfJoinMultiSequential', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-                BF.bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('c'), DF.literal('c1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('c'), DF.literal('c2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
+                },
               ),
               type: 'bindings',
-              variables: [ 'a', 'c' ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 2 },
+                  pageSize: 100,
+                  requestTime: 30,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
             },
             operation: <any> {},
           },
@@ -121,56 +154,100 @@ describe('ActorRdfJoinMultiSequential', () => {
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
-                BF.bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('c'), DF.literal('c1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('c'), DF.literal('c2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 5, pageSize: 100, requestTime: 20, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
+                },
               ),
               type: 'bindings',
-              variables: [ 'a', 'c' ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
-                BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 2, pageSize: 100, requestTime: 30, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 2 },
+                  pageSize: 100,
+                  requestTime: 30,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
               ),
               type: 'bindings',
-              variables: [ 'a', 'b' ],
             },
             operation: <any> {},
           },
           {
             output: {
               bindingsStream: new ArrayIterator([
-                BF.bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
-                BF.bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('d'), DF.literal('d1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('d'), DF.literal('d2') ],
+                ]),
               ]),
               metadata: () => Promise.resolve(
-                { cardinality: 2, pageSize: 100, requestTime: 40, canContainUndefs: false },
+                {
+                  cardinality: { type: 'estimate', value: 2 },
+                  pageSize: 100,
+                  requestTime: 40,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('d') ],
+                },
               ),
               type: 'bindings',
-              variables: [ 'a', 'd' ],
             },
             operation: <any> {},
           },
@@ -215,11 +292,22 @@ describe('ActorRdfJoinMultiSequential', () => {
     it('should run on 3 streams', async() => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 40, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1') }),
-        BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2') }),
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 40 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a1') ],
+          [ DF.variable('b'), DF.literal('b1') ],
+          [ DF.variable('c'), DF.literal('c1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a2') ],
+          [ DF.variable('b'), DF.literal('b2') ],
+          [ DF.variable('c'), DF.literal('c2') ],
+        ]),
       ]);
 
       // Check join order
@@ -231,11 +319,24 @@ describe('ActorRdfJoinMultiSequential', () => {
     it('should run on 4 streams', async() => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual([ 'a', 'b', 'c', 'd' ]);
-      expect(await (<any> output).metadata()).toEqual({ cardinality: 80, canContainUndefs: false });
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        BF.bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1'), d: DF.literal('d1') }),
-        BF.bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2'), d: DF.literal('d2') }),
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 80 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c'), DF.variable('d') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a1') ],
+          [ DF.variable('b'), DF.literal('b1') ],
+          [ DF.variable('c'), DF.literal('c1') ],
+          [ DF.variable('d'), DF.literal('d1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('a2') ],
+          [ DF.variable('b'), DF.literal('b2') ],
+          [ DF.variable('c'), DF.literal('c2') ],
+          [ DF.variable('d'), DF.literal('d2') ],
+        ]),
       ]);
 
       // Check join order

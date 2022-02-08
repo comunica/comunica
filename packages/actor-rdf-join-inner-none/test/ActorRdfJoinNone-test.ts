@@ -4,7 +4,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const BF = new BindingsFactory();
 
@@ -67,9 +67,9 @@ describe('ActorRdfJoinNone', () => {
           entries: [],
           context,
         });
-        expect(output.variables).toEqual([]);
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([ BF.bindings({}) ]);
-        expect(await output.metadata()).toEqual({ cardinality: 1, canContainUndefs: false });
+        await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
+        expect(await output.metadata())
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
       });
     });
   });

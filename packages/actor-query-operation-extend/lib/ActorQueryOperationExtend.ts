@@ -3,8 +3,7 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { Bindings, IActionContext, IQueryableResult, IQueryableResultBindings } from '@comunica/types';
-import { termToString } from 'rdf-string';
+import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -26,14 +25,13 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   }
 
   public async runOperation(operation: Algebra.Extend, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     const { expression, input, variable } = operation;
 
-    const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
 
-    const extendKey = termToString(variable);
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     const evaluator = new AsyncEvaluator(expression, config);
 
@@ -43,7 +41,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
         const result = await evaluator.evaluate(bindings);
         // Extend operation is undefined when the key already exists
         // We just override it here.
-        const extended = bindings.set(extendKey, result);
+        const extended = bindings.set(variable, result);
         push(extended);
       } catch (error: unknown) {
         if (isExpressionError(<Error> error)) {
@@ -58,9 +56,14 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
-    const variables = [ ...output.variables, extendKey ];
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
-    const { metadata } = output;
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      async metadata() {
+        const outputMetadata = await output.metadata();
+        return { ...outputMetadata, variables: [ ...outputMetadata.variables, variable ]};
+      },
+    };
   }
 }

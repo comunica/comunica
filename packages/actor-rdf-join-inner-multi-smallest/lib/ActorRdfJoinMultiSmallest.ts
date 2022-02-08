@@ -10,7 +10,7 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IMetadata } from '@comunica/types';
+import type { MetadataBindings } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -65,7 +65,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     metadatas = [ ...metadatas ];
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -82,14 +82,14 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
     const requestItemTimesSmallest2 = requestItemTimes.splice(smallestIndex2, 1)[0];
 
     return {
-      iterations: metadataSmallest1.cardinality * metadataSmallest2.cardinality *
-        metadatas.reduce((acc, metadata) => acc * metadata.cardinality, 1),
+      iterations: metadataSmallest1.cardinality.value * metadataSmallest2.cardinality.value *
+        metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
       persistedItems: 0,
       blockingItems: 0,
-      requestTime: requestInitialTimeSmallest1 + metadataSmallest1.cardinality * requestItemTimesSmallest1 +
-        requestInitialTimeSmallest2 + metadataSmallest2.cardinality * requestItemTimesSmallest2 +
-        metadatas
-          .reduce((sum, metadata, i) => sum + requestInitialTimes[i] + metadata.cardinality * requestItemTimes[i], 0),
+      requestTime: requestInitialTimeSmallest1 + metadataSmallest1.cardinality.value * requestItemTimesSmallest1 +
+        requestInitialTimeSmallest2 + metadataSmallest2.cardinality.value * requestItemTimesSmallest2 +
+        metadatas.reduce((sum, metadata, i) => sum + requestInitialTimes[i] +
+          metadata.cardinality.value * requestItemTimes[i], 0),
     };
   }
 }

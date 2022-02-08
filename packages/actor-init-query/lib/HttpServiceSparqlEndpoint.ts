@@ -6,7 +6,7 @@ import type { Writable } from 'stream';
 import * as url from 'url';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { ICliArgsHandler, IQueryableResult, IQueryableResultQuads } from '@comunica/types';
+import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import yargs from 'yargs';
@@ -330,13 +330,13 @@ export class HttpServiceSparqlEndpoint {
       context = { ...context, [KeysQueryOperation.readOnly.name]: readOnly };
     }
 
-    let result: IQueryableResult;
+    let result: QueryType;
     try {
       result = await engine.query(queryBody.value, context);
 
       // For update queries, also await the result
-      if (result.type === 'update') {
-        await result.updateResult;
+      if (result.resultType === 'void') {
+        await result.execute();
       }
     } catch (error: unknown) {
       stdout.write('[400] Bad request\n');
@@ -348,11 +348,11 @@ export class HttpServiceSparqlEndpoint {
 
     // Default to SPARQL JSON for bindings and boolean
     if (!mediaType) {
-      switch (result.type) {
+      switch (result.resultType) {
         case 'quads':
           mediaType = 'application/trig';
           break;
-        case 'update':
+        case 'void':
           mediaType = 'simple';
           break;
         default:
@@ -452,10 +452,10 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Flush results
-      const { data } = await engine.resultToString(<IQueryableResultQuads> {
+      const { data } = await engine.resultToString(<QueryQuads> {
+        resultType: 'quads',
+        execute: async() => new ArrayIterator(quads),
         metadata: <any> undefined,
-        type: 'quads',
-        quadStream: new ArrayIterator(quads),
       }, mediaType);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
@@ -514,7 +514,7 @@ export class HttpServiceSparqlEndpoint {
             return resolve({ type: 'query', value: body });
           }
           if (contentType.includes('application/sparql-update')) {
-            return resolve({ type: 'update', value: body });
+            return resolve({ type: 'void', value: body });
           }
           if (contentType.includes('application/x-www-form-urlencoded')) {
             const bodyStructure = querystring.parse(body);
@@ -522,7 +522,7 @@ export class HttpServiceSparqlEndpoint {
               return resolve({ type: 'query', value: <string> bodyStructure.query });
             }
             if (bodyStructure.update) {
-              return resolve({ type: 'update', value: <string> bodyStructure.update });
+              return resolve({ type: 'void', value: <string> bodyStructure.update });
             }
           }
         }
@@ -533,7 +533,7 @@ export class HttpServiceSparqlEndpoint {
 }
 
 export interface IQueryBody {
-  type: 'query' | 'update';
+  type: 'query' | 'void';
   value: string;
 }
 

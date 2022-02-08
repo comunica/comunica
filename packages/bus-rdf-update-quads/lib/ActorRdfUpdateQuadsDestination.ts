@@ -31,7 +31,7 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
     action: IActionRdfUpdateQuads,
     context: IActionContext,
   ): Promise<IActorRdfUpdateQuadsOutput> {
-    const updateResult = Promise.all([
+    const voidResult = Promise.all([
       action.quadStreamInsert ? destination.insert(action.quadStreamInsert) : Promise.resolve(),
       action.quadStreamDelete ? destination.delete(action.quadStreamDelete) : Promise.resolve(),
       action.deleteGraphs ?
@@ -47,7 +47,7 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
     ]).then(() => {
       // Return void
     });
-    return { updateResult };
+    return { voidResult };
   }
 
   /**

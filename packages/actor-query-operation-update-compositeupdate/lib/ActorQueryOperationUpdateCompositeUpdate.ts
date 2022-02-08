@@ -4,7 +4,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -25,19 +25,19 @@ export class ActorQueryOperationUpdateCompositeUpdate
   }
 
   public async runOperation(operationOriginal: Algebra.CompositeUpdate, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     const updateResult = (async(): Promise<void> => {
       // Execute update operations in sequence
       for (const operation of operationOriginal.updates) {
         const subResult = ActorQueryOperation
-          .getSafeUpdate(await this.mediatorQueryOperation.mediate({ operation, context }));
-        await subResult.updateResult;
+          .getSafeVoid(await this.mediatorQueryOperation.mediate({ operation, context }));
+        await subResult.voidResult;
       }
     })();
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      voidResult: updateResult,
     };
   }
 }

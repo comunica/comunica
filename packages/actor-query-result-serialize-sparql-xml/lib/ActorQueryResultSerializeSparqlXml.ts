@@ -4,8 +4,8 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings, IActionContext, IQueryableResultBindings,
-  IQueryableResultBoolean,
+  Bindings, IActionContext, IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as xml from 'xml';
@@ -33,7 +33,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
    * @param {string} key A variable name, '?' must be included as a prefix.
    * @return {any} An object-based XML tag.
    */
-  public static bindingToXmlBindings(value: RDF.Term, key: string): any {
+  public static bindingToXmlBindings(value: RDF.Term, key: RDF.Variable): any {
     let xmlValue: any;
     if (value.termType === 'Literal') {
       const literal: RDF.Literal = value;
@@ -50,7 +50,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     } else {
       xmlValue = { uri: value.value };
     }
-    return { binding: [{ _attr: { name: key.slice(1) }}, xmlValue ]};
+    return { binding: [{ _attr: { name: key.value }}, xmlValue ]};
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
@@ -71,15 +71,17 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' }});
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
       .on('data', chunk => data.push(`${chunk}\n`));
-    if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
-      root.push({ head: (<IQueryableResultBindings> action).variables
-        .map(variable => ({ variable: { _attr: { name: variable.slice(1) }}})) });
+    if (action.type === 'bindings') {
+      const metadata = await (<IQueryOperationResultBindings> action).metadata();
+      if (metadata.variables.length > 0) {
+        root.push({ head: metadata.variables.map(variable => ({ variable: { _attr: { name: variable.value }}})) });
+      }
     }
 
     if (action.type === 'bindings') {
       const results = xml.element({});
       root.push({ results });
-      const resultStream: NodeJS.EventEmitter = (<IQueryableResultBindings> action).bindingsStream;
+      const resultStream: NodeJS.EventEmitter = (<IQueryOperationResultBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('error', (error: Error) => {
@@ -87,8 +89,8 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       });
       resultStream.on('data', (bindings: Bindings) => {
         // XML SPARQL results spec does not allow unbound variables and blank node bindings
-        const realBindings = bindings.filter((value: RDF.Term, key: string) => Boolean(value) && key.startsWith('?'));
-        results.push({ result: realBindings.map(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings) });
+        results.push({ result: [ ...bindings ]
+          .map(([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key)) });
       });
 
       // Close streams
@@ -99,7 +101,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       });
     } else {
       try {
-        root.push({ boolean: await (<IQueryableResultBoolean> action).booleanResult });
+        root.push({ boolean: await (<IQueryOperationResultBoolean> action).booleanResult });
         root.close();
         setImmediate(() => data.push(null));
       } catch (error: unknown) {

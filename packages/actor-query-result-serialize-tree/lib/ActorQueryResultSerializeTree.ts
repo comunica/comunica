@@ -5,7 +5,7 @@ import type { IActionSparqlSerialize,
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { IQueryableResultBindings, BindingsStream, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IConverterSettings, ISchema } from 'sparqljson-to-tree';
 import { Converter } from 'sparqljson-to-tree';
@@ -44,14 +44,9 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
       };
 
       bindingsStream.on('error', reject);
-      bindingsStream.on('data', bindings => {
-        const rawBindings = bindings.toJS();
-        const reKeyedBindings: Record<string, RDF.Term> = {};
-        // Removes the '?' prefix
-        for (const key in rawBindings) {
-          reKeyedBindings[key.slice(1)] = rawBindings[key];
-        }
-        bindingsArray.push(reKeyedBindings);
+      bindingsStream.on('data', (bindings: RDF.Bindings) => {
+        bindingsArray.push(Object.fromEntries([ ...bindings ]
+          .map(([ key, value ]) => [ key.value, value ])));
       });
       bindingsStream.on('end', () => {
         resolve(converter.bindingsToTree(bindingsArray, schema));
@@ -72,7 +67,7 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
       // Do nothing
     };
 
-    const resultStream: BindingsStream = (<IQueryableResultBindings> action).bindingsStream;
+    const resultStream: BindingsStream = (<IQueryOperationResultBindings> action).bindingsStream;
     resultStream.on('error', error => data.emit('error', error));
     ActorQueryResultSerializeTree.bindingsStreamToGraphQl(resultStream, action.context, { materializeRdfJsTerms: true })
       .then((result: any) => {

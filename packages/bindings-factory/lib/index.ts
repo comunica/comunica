@@ -1,1 +1,2 @@
-export { BindingsFactory } from './BindingsFactory';
+export * from './Bindings';
+export * from './BindingsFactory';

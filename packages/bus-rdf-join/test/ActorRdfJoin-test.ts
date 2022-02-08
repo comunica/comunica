@@ -4,14 +4,14 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IMetadata, IPhysicalQueryPlanLogger } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, MetadataBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
-const arrayifyStream = require('arrayify-stream');
 
 // Dummy class to test instance of abstract class
 class Dummy extends ActorRdfJoin {
@@ -50,7 +50,7 @@ class Dummy extends ActorRdfJoin {
 
   protected getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     return Promise.resolve({
       iterations: 5,
@@ -66,29 +66,39 @@ describe('ActorRdfJoin', () => {
   let mediatorJoinSelectivity: Mediator<
   Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
   IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+  let variables0: RDF.Variable[];
+  let variables1: RDF.Variable[];
 
   beforeEach(() => {
     mediatorJoinSelectivity = <any> {
       mediate: async() => ({ selectivity: 0.8 }),
     };
+    variables0 = [];
+    variables1 = [];
     action = {
       type: 'inner',
       entries: [
         {
           output: {
             bindingsStream: <any>null,
-            variables: [],
             type: 'bindings',
-            metadata: async() => ({ cardinality: 10, canContainUndefs: false }),
+            metadata: async() => ({
+              cardinality: { type: 'estimate', value: 10 },
+              canContainUndefs: false,
+              variables: variables0,
+            }),
           },
           operation: <any>{},
         },
         {
           output: {
             bindingsStream: <any>null,
-            variables: [],
             type: 'bindings',
-            metadata: async() => ({ cardinality: 5, canContainUndefs: false }),
+            metadata: async() => ({
+              cardinality: { type: 'estimate', value: 5 },
+              canContainUndefs: false,
+              variables: variables1,
+            }),
           },
           operation: <any>{},
         },
@@ -100,97 +110,224 @@ describe('ActorRdfJoin', () => {
   describe('hash', () => {
     it('should hash to concatenation of values of variables', () => {
       expect(ActorRdfJoin.hash(
-        BF.bindings({
-          '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
-        }), [ '?x', '?y' ],
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
+          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
+        ]), [ DF.variable('x'), DF.variable('y') ],
       )).toEqual('http://www.example.org/instance#a"XYZ"^^ex:abc');
     });
 
     it('should not let hash being influenced by a variable that is not present in bindings', () => {
       expect(ActorRdfJoin.hash(
-        BF.bindings({
-          '?x': DF.namedNode('http://www.example.org/instance#a'),
-          '?y': DF.literal('XYZ', DF.namedNode('ex:abc')),
-        }), [ '?x', '?y', '?z' ],
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
+          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
+        ]), [ DF.variable('x'), DF.variable('y'), DF.variable('z') ],
       )).toEqual('http://www.example.org/instance#a"XYZ"^^ex:abc');
     });
   });
 
   describe('overlappingVariables', () => {
     it('should return an empty array if there is no overlap', () => {
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([]);
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'c', 'd' ];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([]);
+      expect(ActorRdfJoin.overlappingVariables([
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+      ])).toEqual([]);
+      expect(ActorRdfJoin.overlappingVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('c'), DF.variable('d') ],
+        },
+      ])).toEqual([]);
     });
 
     it('should return a correct array if there is overlap', () => {
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'a', 'd' ];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'a' ]);
+      expect(ActorRdfJoin.overlappingVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('d') ],
+        },
+      ])).toEqual([ DF.variable('a') ]);
 
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'a', 'b' ];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'a', 'b' ]);
+      expect(ActorRdfJoin.overlappingVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+      ])).toEqual([ DF.variable('a'), DF.variable('b') ]);
 
-      action.entries[0].output.variables = [ 'c', 'b' ];
-      action.entries[1].output.variables = [ 'a', 'b' ];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'b' ]);
+      expect(ActorRdfJoin.overlappingVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('c'), DF.variable('b') ],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+      ])).toEqual([ DF.variable('b') ]);
     });
   });
 
   describe('joinVariables', () => {
     it('should join variables', () => {
-      expect(ActorRdfJoin.joinVariables(action)).toEqual([]);
+      expect(ActorRdfJoin.joinVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [],
+        },
+      ])).toEqual([]);
 
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'c', 'd' ];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b', 'c', 'd' ]);
+      expect(ActorRdfJoin.joinVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('c'), DF.variable('d') ],
+        },
+      ])).toEqual([
+        DF.variable('a'),
+        DF.variable('b'),
+        DF.variable('c'),
+        DF.variable('d'),
+      ]);
     });
 
     it('should deduplicate the result', () => {
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'b', 'd' ];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b', 'd' ]);
+      expect(ActorRdfJoin.joinVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('b'), DF.variable('d') ],
+        },
+      ])).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('d') ]);
 
-      action.entries[0].output.variables = [ 'a', 'b' ];
-      action.entries[1].output.variables = [ 'b', 'a' ];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b' ]);
+      expect(ActorRdfJoin.joinVariables([
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('b'), DF.variable('a') ],
+        },
+      ])).toEqual([ DF.variable('a'), DF.variable('b') ]);
     });
   });
 
   describe('joinBindings', () => {
+    it('should return for no bindings', () => {
+      return expect(ActorRdfJoin.joinBindings()).toBeNull();
+    });
+
+    it('should return for one binding', () => {
+      const single = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      return expect(ActorRdfJoin.joinBindings(single)).toEqual(single);
+    });
+
     it('should return the right binding if the left is empty', () => {
-      const left = BF.bindings({});
-      const right = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const left = BF.bindings();
+      const right = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(right);
     });
 
     it('should return the left binding if the right is empty', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({});
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings();
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(left);
     });
 
     it('should join 2 bindings with no overlapping variables', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({ v: DF.literal('d'), w: DF.literal('e') });
-      const result = BF.bindings({ x: DF.literal('a'), y: DF.literal('b'), v: DF.literal('d'), w: DF.literal('e') });
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings([
+        [ DF.variable('v'), DF.literal('d') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
+      const result = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+        [ DF.variable('v'), DF.literal('d') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
     });
 
     it('should join 2 bindings with overlapping variables', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({ x: DF.literal('a'), w: DF.literal('e') });
-      const result = BF.bindings({ x: DF.literal('a'), y: DF.literal('b'), w: DF.literal('e') });
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
+      const result = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
       return expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
     });
 
     it('should not join bindings with conflicting mappings', () => {
-      const left = BF.bindings({ x: DF.literal('a'), y: DF.literal('b') });
-      const right = BF.bindings({ x: DF.literal('b'), w: DF.literal('e') });
-      return expect(ActorRdfJoin.joinBindings(left, right)).toBeFalsy();
+      const left = BF.bindings([
+        [ DF.variable('x'), DF.literal('a') ],
+        [ DF.variable('y'), DF.literal('b') ],
+      ]);
+      const right = BF.bindings([
+        [ DF.variable('x'), DF.literal('b') ],
+        [ DF.variable('w'), DF.literal('e') ],
+      ]);
+      return expect(ActorRdfJoin.joinBindings(left, right)).toBeNull();
     });
   });
 
@@ -215,53 +352,53 @@ describe('ActorRdfJoin', () => {
 
     it('should return 0 for 1 empty metadata', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        {},
+        <any> {},
       ])).toEqual(0);
     });
 
     it('should return 0 for 3 empty metadatas', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        {},
-        {},
-        {},
+        <any> {},
+        <any> {},
+        <any> {},
       ])).toEqual(0);
     });
 
     it('should return 0 for 1 metadata', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: 10 },
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
       ])).toEqual(0);
     });
 
     it('should return 1 for 3 metadatas', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: 20 },
-        { cardinality: 10 },
-        { cardinality: 30 },
+        { cardinality: { type: 'estimate', value: 20 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 30 }, canContainUndefs: false, variables: []},
       ])).toEqual(1);
     });
 
     it('should return 0 for 3 infinite metadatas', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: Number.POSITIVE_INFINITY },
-        { cardinality: Number.POSITIVE_INFINITY },
-        { cardinality: Number.POSITIVE_INFINITY },
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
       ])).toEqual(0);
     });
 
     it('should return 1 for 2 infinite metadatas', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: Number.POSITIVE_INFINITY },
-        { cardinality: 1_000 },
-        { cardinality: Number.POSITIVE_INFINITY },
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 1_000 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
       ])).toEqual(1);
     });
 
     it('should allow indexes to be ignored', () => {
       return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: 20 },
-        { cardinality: 10 },
-        { cardinality: 30 },
+        { cardinality: { type: 'estimate', value: 20 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 30 }, canContainUndefs: false, variables: []},
       ], [ 1, 0 ])).toEqual(2);
     });
   });
@@ -273,8 +410,8 @@ describe('ActorRdfJoin', () => {
 
     it('should handle entries', async() => {
       expect(await ActorRdfJoin.getMetadatas(action.entries)).toEqual([
-        { cardinality: 10, canContainUndefs: false },
-        { cardinality: 5, canContainUndefs: false },
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false, variables: []},
       ]);
     });
   });
@@ -282,10 +419,16 @@ describe('ActorRdfJoin', () => {
   describe('getRequestInitialTimes', () => {
     it('should calculate initial request times', async() => {
       expect(ActorRdfJoin.getRequestInitialTimes([
-        { cardinality: 10, pageSize: 10, requestTime: 10, canContainUndefs: false },
-        { cardinality: 10, pageSize: 10, canContainUndefs: false },
-        { cardinality: 10, canContainUndefs: false },
-        { cardinality: 10, requestTime: 10, canContainUndefs: false },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          pageSize: 10,
+          requestTime: 10,
+          canContainUndefs: false,
+          variables: [],
+        },
+        { cardinality: { type: 'estimate', value: 10 }, pageSize: 10, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, requestTime: 10, canContainUndefs: false, variables: []},
       ])).toEqual([
         0,
         0,
@@ -298,10 +441,16 @@ describe('ActorRdfJoin', () => {
   describe('getRequestItemTimes', () => {
     it('should calculate item request times', async() => {
       expect(ActorRdfJoin.getRequestItemTimes([
-        { cardinality: 10, pageSize: 10, requestTime: 10, canContainUndefs: false },
-        { cardinality: 10, pageSize: 10, canContainUndefs: false },
-        { cardinality: 10, canContainUndefs: false },
-        { cardinality: 10, requestTime: 10, canContainUndefs: false },
+        {
+          cardinality: { type: 'estimate', value: 10 },
+          pageSize: 10,
+          requestTime: 10,
+          canContainUndefs: false,
+          variables: [],
+        },
+        { cardinality: { type: 'estimate', value: 10 }, pageSize: 10, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, requestTime: 10, canContainUndefs: false, variables: []},
       ])).toEqual([
         1,
         0,
@@ -320,37 +469,78 @@ describe('ActorRdfJoin', () => {
 
     it('should return partial metadata if it is fully valid', async() => {
       expect(await instance.constructResultMetadata([], [], action.context, {
-        cardinality: 10,
+        cardinality: { type: 'estimate', value: 10 },
         canContainUndefs: true,
         pageSize: 100,
       })).toEqual({
-        cardinality: 10,
+        cardinality: { type: 'estimate', value: 10 },
         canContainUndefs: true,
         pageSize: 100,
+        variables: [],
       });
     });
 
     it('should return not use empty partial metadata', async() => {
       expect(await instance.constructResultMetadata([], [
-        { cardinality: 10, canContainUndefs: false },
-        { cardinality: 2, canContainUndefs: true },
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: true, variables: []},
       ], action.context, {})).toEqual({
-        cardinality: 20 * 0.8,
+        cardinality: { type: 'estimate', value: 20 * 0.8 },
         canContainUndefs: true,
+        variables: [],
       });
       expect(await instance.constructResultMetadata([], [
-        { cardinality: 10, canContainUndefs: true },
-        { cardinality: 2, canContainUndefs: true },
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: true, variables: []},
+        { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: true, variables: []},
       ], action.context, {})).toEqual({
-        cardinality: 20 * 0.8,
+        cardinality: { type: 'estimate', value: 20 * 0.8 },
         canContainUndefs: true,
+        variables: [],
       });
       expect(await instance.constructResultMetadata([], [
-        { cardinality: 10, canContainUndefs: false },
-        { cardinality: 2, canContainUndefs: false },
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: []},
       ], action.context, {})).toEqual({
-        cardinality: 20 * 0.8,
+        cardinality: { type: 'estimate', value: 20 * 0.8 },
         canContainUndefs: false,
+        variables: [],
+      });
+    });
+
+    it('should combine exact cardinalities', async() => {
+      expect(await instance.constructResultMetadata([], [
+        { cardinality: { type: 'exact', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'exact', value: 2 }, canContainUndefs: true, variables: []},
+      ], action.context, {})).toEqual({
+        cardinality: { type: 'exact', value: 20 * 0.8 },
+        canContainUndefs: true,
+        variables: [],
+      });
+    });
+
+    it('should combine exact and estimate cardinalities', async() => {
+      expect(await instance.constructResultMetadata([], [
+        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        { cardinality: { type: 'exact', value: 2 }, canContainUndefs: true, variables: []},
+      ], action.context, {})).toEqual({
+        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        canContainUndefs: true,
+        variables: [],
+      });
+    });
+
+    it('should join variables', async() => {
+      expect(await instance.constructResultMetadata([], [
+        { cardinality: { type: 'exact', value: 10 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
+        {
+          cardinality: { type: 'exact', value: 2 },
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+      ], action.context, {})).toEqual({
+        cardinality: { type: 'exact', value: 20 * 0.8 },
+        canContainUndefs: true,
+        variables: [ DF.variable('a'), DF.variable('b') ],
       });
     });
   });
@@ -397,26 +587,50 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should return a value if both metadata objects are present', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: false });
-      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: false });
+      action.entries[0].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: false,
+        variables: [],
+      });
+      action.entries[1].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: false,
+        variables: [],
+      });
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', 5);
     });
 
     it('should fail on undefs in left stream', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
+      action.entries[0].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
       return expect(instance.test(action)).rejects
         .toThrow(new Error('Actor name can not join streams containing undefs'));
     });
 
     it('should fail on undefs in right stream', () => {
-      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
+      action.entries[1].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
       return expect(instance.test(action)).rejects
         .toThrow(new Error('Actor name can not join streams containing undefs'));
     });
 
     it('should fail on undefs in left and right stream', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
-      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
+      action.entries[0].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
+      action.entries[1].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
       return expect(instance.test(action)).rejects
         .toThrow(new Error('Actor name can not join streams containing undefs'));
     });
@@ -426,7 +640,11 @@ describe('ActorRdfJoin', () => {
     const instance = new Dummy(mediatorJoinSelectivity, undefined, undefined, true);
 
     it('should handle undefs in left stream', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
+      action.entries[0].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
       return expect(instance.test(action)).resolves
         .toEqual({
           iterations: 5,
@@ -437,7 +655,11 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should handle undefs in right stream', () => {
-      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
+      action.entries[1].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
       return expect(instance.test(action)).resolves
         .toEqual({
           iterations: 5,
@@ -448,8 +670,16 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should handle undefs in left and right stream', () => {
-      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
-      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
+      action.entries[0].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
+      action.entries[1].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
       return expect(instance.test(action)).resolves
         .toEqual({
           iterations: 5,
@@ -475,10 +705,22 @@ describe('ActorRdfJoin', () => {
     });
 
     it('calculates cardinality if metadata is supplied', async() => {
-      action.entries[0].output.metadata = () => Promise.resolve({ cardinality: 5, canContainUndefs: true });
-      action.entries[1].output.metadata = () => Promise.resolve({ cardinality: 10, canContainUndefs: true });
+      action.entries[0].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [],
+      });
+      action.entries[1].output.metadata = () => Promise.resolve({
+        cardinality: { type: 'estimate', value: 10 },
+        canContainUndefs: true,
+        variables: [],
+      });
       await instance.run(action).then(async(result: any) => {
-        return expect(await result.metadata()).toEqual({ cardinality: 40, canContainUndefs: true });
+        return expect(await result.metadata()).toEqual({
+          cardinality: { type: 'estimate', value: 40 },
+          canContainUndefs: true,
+          variables: [],
+        });
       });
     });
 
@@ -505,8 +747,8 @@ describe('ActorRdfJoin', () => {
         {
           meta: true,
           cardinalities: [
-            10,
-            5,
+            { type: 'estimate', value: 10 },
+            { type: 'estimate', value: 5 },
           ],
           joinCoefficients: {
             iterations: 5,

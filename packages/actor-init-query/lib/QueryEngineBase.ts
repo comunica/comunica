@@ -1,21 +1,19 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type {
-  Bindings, IPhysicalQueryPlanLogger,
-  IQueryableResult,
-  IQueryableResultBindingsEnhanced,
-  IQueryableResultEnhanced, IQueryableResultQuadsEnhanced,
+import type { Bindings, IActionContext, IPhysicalQueryPlanLogger,
+  IQueryOperationResult,
   IQueryEngine, IQueryExplained,
-} from '@comunica/types';
+  QueryFormatType,
+  QueryType, QueryExplainMode, BindingsStream,
+  QueryAlgebraContext, QueryStringContext, IQueryBindingsEnhanced,
+  IQueryQuadsEnhanced, QueryEnhanced } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { ActorInitQueryBase } from './ActorInitQueryBase';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
-
-const BF = new BindingsFactory();
 
 /**
  * Base implementation of a Comunica query engine.
@@ -27,46 +25,56 @@ export class QueryEngineBase implements IQueryEngine {
     this.actorInitQuery = actorInitQuery;
   }
 
-  /**
-   * Add convenience methods to query results
-   * @param {IQueryableResult} results Basic query results.
-   * @return {IQueryableResultEnhanced} Same query results with added fields.
-   */
-  public static enhanceQueryResults(results: IQueryableResult): IQueryableResultEnhanced {
-    // Set bindings
-    if (results.type === 'bindings') {
-      (<IQueryableResultBindingsEnhanced> results).bindings = () => new Promise((resolve, reject) => {
-        const result: Bindings[] = [];
-        results.bindingsStream.on('data', data => {
-          result.push(data);
-        });
-        results.bindingsStream.on('end', () => {
-          resolve(result);
-        });
-        results.bindingsStream.on('error', reject);
-      });
-    } else if (results.type === 'quads') {
-      (<IQueryableResultQuadsEnhanced>results).quads = () => new Promise((resolve, reject) => {
-        const result: RDF.Quad[] = [];
-        results.quadStream.on('data', data => {
-          result.push(data);
-        });
-        results.quadStream.on('end', () => {
-          resolve(result);
-        });
-        results.quadStream.on('error', reject);
-      });
+  public async queryBindings<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<BindingsStream> {
+    return this.queryOfType<QueryFormatTypeInner, IQueryBindingsEnhanced>(query, context, 'bindings');
+  }
+
+  public async queryQuads<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>> {
+    return this.queryOfType<QueryFormatTypeInner, IQueryQuadsEnhanced>(query, context, 'quads');
+  }
+
+  public async queryBoolean<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<boolean> {
+    return this.queryOfType<QueryFormatTypeInner, RDF.QueryBoolean>(query, context, 'boolean');
+  }
+
+  public async queryVoid<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<void> {
+    return this.queryOfType<QueryFormatTypeInner, RDF.QueryVoid>(query, context, 'void');
+  }
+
+  protected async queryOfType<QueryFormatTypeInner extends QueryFormatType, QueryTypeOut extends QueryEnhanced>(
+    query: QueryFormatTypeInner,
+    context: (QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext) | undefined,
+    expectedType: QueryTypeOut['resultType'],
+  ): Promise<ReturnType<QueryTypeOut['execute']>> {
+    const result = await this.query<QueryFormatTypeInner>(query, context);
+    if (result.resultType === expectedType) {
+      return result.execute();
     }
-    return <IQueryableResultEnhanced> results;
+    throw new Error(`Query result type '${expectedType}' was expected, while '${result.resultType}' was found.`);
   }
 
   /**
    * Evaluate the given query
-   * @param {string | Algebra.Operation} query A query string or algebra.
+   * @param query A query string or algebra.
    * @param context An optional query context.
-   * @return {Promise<IQueryableResultEnhanced>} A promise that resolves to the query output.
+   * @return {Promise<QueryType>} A promise that resolves to the query output.
    */
-  public async query(query: string | Algebra.Operation, context?: any): Promise<IQueryableResultEnhanced> {
+  public async query<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<QueryType> {
     const output = await this.queryOrExplain(query, context);
     if ('explain' in output) {
       throw new Error(`Tried to explain a query when in query-only mode`);
@@ -78,13 +86,13 @@ export class QueryEngineBase implements IQueryEngine {
    * Evaluate or explain the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
    * @param context An optional query context.
-   * @return {Promise<IQueryableResultEnhanced | IQueryExplained>} A promise that resolves to
+   * @return {Promise<QueryType | IQueryExplained>} A promise that resolves to
    *                                                               the query output or explanation.
    */
-  public async queryOrExplain(
-    query: string | Algebra.Operation,
-    context?: any,
-  ): Promise<IQueryableResultEnhanced | IQueryExplained> {
+  public async queryOrExplain<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+  ): Promise<QueryType | IQueryExplained> {
     context = context || {};
 
     // Expand shortcuts
@@ -95,47 +103,46 @@ export class QueryEngineBase implements IQueryEngine {
       }
     }
 
-    // Set the default logger if none is provided
-    if (!context[KeysCore.log.name]) {
-      context[KeysCore.log.name] = this.actorInitQuery.logger;
-    }
-
-    if (!context[KeysInitQuery.queryTimestamp.name]) {
-      context[KeysInitQuery.queryTimestamp.name] = new Date();
-    }
-
     // Prepare context
-    context = new ActionContext(context);
-    let queryFormat = 'sparql';
-    if (context && context.has(KeysInitQuery.queryFormat)) {
-      queryFormat = context.get(KeysInitQuery.queryFormat);
-      context = context.delete(KeysInitQuery.queryFormat);
-      if (queryFormat === 'graphql' && !context.has(KeysInitQuery.graphqlSingularizeVariables)) {
-        context = context.set(KeysInitQuery.graphqlSingularizeVariables, {});
+    let actionContext: IActionContext = new ActionContext(context);
+    let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };
+    if (actionContext.has(KeysInitQuery.queryFormat)) {
+      queryFormat = actionContext.get(KeysInitQuery.queryFormat)!;
+      actionContext = actionContext.delete(KeysInitQuery.queryFormat);
+      if (queryFormat.language === 'graphql' && !actionContext.has(KeysInitQuery.graphqlSingularizeVariables)) {
+        actionContext = actionContext.set(KeysInitQuery.graphqlSingularizeVariables, {});
       }
     }
     let baseIRI: string | undefined;
-    if (context && context.has(KeysInitQuery.baseIRI)) {
-      baseIRI = context.get(KeysInitQuery.baseIRI);
+    if (actionContext.has(KeysInitQuery.baseIRI)) {
+      baseIRI = actionContext.get(KeysInitQuery.baseIRI);
+    }
+    if (!actionContext.has(KeysInitQuery.queryTimestamp)) {
+      actionContext = actionContext.set(KeysInitQuery.queryTimestamp, new Date());
+    }
+
+    // Set the default logger if none is provided
+    if (!actionContext.has(KeysCore.log)) {
+      actionContext = actionContext.set(KeysCore.log, this.actorInitQuery.logger);
     }
 
     // Pre-processing the context
-    context = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context })).context;
+    actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;
 
     // Determine explain mode
-    const explainMode = context.get(KeysInitQuery.explain);
+    const explainMode: QueryExplainMode = actionContext.get(KeysInitQuery.explain)!;
 
     // Parse query
     let operation: Algebra.Operation;
     if (typeof query === 'string') {
       // Save the original query string in the context
-      context = context.set(KeysInitQuery.queryString, query);
+      actionContext = actionContext.set(KeysInitQuery.queryString, query);
       const queryParseOutput = await this.actorInitQuery.mediatorQueryParse
-        .mediate({ context, query, queryFormat, baseIRI });
+        .mediate({ context: actionContext, query, queryFormat, baseIRI });
       operation = queryParseOutput.operation;
       // Update the baseIRI in the context if the query modified it.
       if (queryParseOutput.baseIRI) {
-        context = context.set(KeysInitQuery.baseIRI, queryParseOutput.baseIRI);
+        actionContext = actionContext.set(KeysInitQuery.baseIRI, queryParseOutput.baseIRI);
       }
     } else {
       operation = query;
@@ -151,15 +158,15 @@ export class QueryEngineBase implements IQueryEngine {
     }
 
     // Apply initial bindings in context
-    if (context.has(KeysInitQuery.initialBindings)) {
-      const bindings = context.get(KeysInitQuery.initialBindings);
-      operation = materializeOperation(operation, BF.ensureBindings(bindings));
+    if (actionContext.has(KeysInitQuery.initialBindings)) {
+      operation = materializeOperation(operation, actionContext.get(KeysInitQuery.initialBindings)!);
     }
 
     // Optimize the query operation
-    const mediatorResult = await this.actorInitQuery.mediatorOptimizeQueryOperation.mediate({ context, operation });
+    const mediatorResult = await this.actorInitQuery.mediatorOptimizeQueryOperation
+      .mediate({ context: actionContext, operation });
     operation = mediatorResult.operation;
-    context = mediatorResult.context || context;
+    actionContext = mediatorResult.context || actionContext;
 
     // Print logical query plan
     if (explainMode === 'logical') {
@@ -171,37 +178,39 @@ export class QueryEngineBase implements IQueryEngine {
     }
 
     // Save original query in context
-    context = context.set(KeysInitQuery.query, operation);
+    actionContext = actionContext.set(KeysInitQuery.query, operation);
 
     // If we need a physical query plan, store a physical query plan logger in the context, and collect it after exec
     let physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined;
     if (explainMode === 'physical') {
       physicalQueryPlanLogger = new MemoryPhysicalQueryPlanLogger();
-      context = context.set(KeysInitQuery.physicalQueryPlanLogger, physicalQueryPlanLogger);
+      actionContext = actionContext.set(KeysInitQuery.physicalQueryPlanLogger, physicalQueryPlanLogger);
     }
 
     // Execute query
-    const output = QueryEngineBase.enhanceQueryResults(await this.actorInitQuery.mediatorQueryOperation.mediate({
-      context,
+    const output = await this.actorInitQuery.mediatorQueryOperation.mediate({
+      context: actionContext,
       operation,
-    }));
-    output.context = context;
+    });
+    output.context = actionContext;
+
+    const finalOutput = QueryEngineBase.internalToFinalResult(output);
 
     // Output physical query plan after query exec if needed
     if (physicalQueryPlanLogger) {
       // Make sure the whole result is produced
-      switch (output.type) {
+      switch (finalOutput.resultType) {
         case 'bindings':
-          await output.bindings();
+          await finalOutput.bindings();
           break;
         case 'quads':
-          await output.quads();
+          await finalOutput.quads();
           break;
         case 'boolean':
-          await output.booleanResult;
+          await finalOutput.execute();
           break;
-        case 'update':
-          await output.updateResult;
+        case 'void':
+          await finalOutput.execute();
           break;
       }
 
@@ -212,7 +221,7 @@ export class QueryEngineBase implements IQueryEngine {
       };
     }
 
-    return output;
+    return finalOutput;
   }
 
   /**
@@ -237,16 +246,16 @@ export class QueryEngineBase implements IQueryEngine {
 
   /**
    * Convert a query result to a string stream based on a certain media type.
-   * @param {IQueryableResult} queryResult A query result.
+   * @param {IQueryOperationResult} queryResult A query result.
    * @param {string} mediaType A media type.
    * @param {ActionContext} context An optional context.
    * @return {Promise<IActorQueryResultSerializeOutput>} A text stream.
    */
-  public async resultToString(queryResult: IQueryableResult, mediaType?: string, context?: any):
+  public async resultToString(queryResult: RDF.Query<any>, mediaType?: string, context?: any):
   Promise<IActorQueryResultSerializeOutput> {
     context = ActionContext.ensureActionContext(context);
     if (!mediaType) {
-      switch (queryResult.type) {
+      switch (queryResult.resultType) {
         case 'bindings':
           mediaType = 'application/json';
           break;
@@ -258,7 +267,7 @@ export class QueryEngineBase implements IQueryEngine {
           break;
       }
     }
-    const handle: IActionSparqlSerialize = { ...queryResult, context };
+    const handle: IActionSparqlSerialize = { ...await QueryEngineBase.finalToInternalResult(queryResult), context };
     return (await this.actorInitQuery.mediatorQueryResultSerialize
       .mediate({ context, handle, handleMediaType: mediaType })).handle;
   }
@@ -273,5 +282,83 @@ export class QueryEngineBase implements IQueryEngine {
   public invalidateHttpCache(url?: string, context?: any): Promise<any> {
     context = ActionContext.ensureActionContext(context);
     return this.actorInitQuery.mediatorHttpInvalidate.mediate({ url, context });
+  }
+
+  /**
+   * Convert an internal query result to a final one.
+   * @param internalResult An intermediary query result.
+   */
+  public static internalToFinalResult(internalResult: IQueryOperationResult): QueryType {
+    switch (internalResult.type) {
+      case 'bindings':
+        return {
+          resultType: 'bindings',
+          execute: async() => internalResult.bindingsStream,
+          metadata: async() => <any> await internalResult.metadata(),
+          context: internalResult.context,
+          bindings: () => new Promise<Bindings[]>((resolve, reject) => {
+            const result: Bindings[] = [];
+            internalResult.bindingsStream.on('data', (data: Bindings) => result.push(data));
+            internalResult.bindingsStream.on('end', () => resolve(result));
+            internalResult.bindingsStream.on('error', reject);
+          }),
+        };
+      case 'quads':
+        return {
+          resultType: 'quads',
+          execute: async() => internalResult.quadStream,
+          metadata: async() => <any> await internalResult.metadata(),
+          context: internalResult.context,
+          quads: () => new Promise<RDF.Quad[]>((resolve, reject) => {
+            const result: RDF.Quad[] = [];
+            internalResult.quadStream.on('data', (data: RDF.Quad) => result.push(data));
+            internalResult.quadStream.on('end', () => resolve(result));
+            internalResult.quadStream.on('error', reject);
+          }),
+        };
+      case 'boolean':
+        return {
+          resultType: 'boolean',
+          execute: async() => internalResult.booleanResult,
+          context: internalResult.context,
+        };
+      case 'void':
+        return {
+          resultType: 'void',
+          execute: async() => internalResult.voidResult,
+          context: internalResult.context,
+        };
+    }
+  }
+
+  /**
+   * Convert a final query result to an internal one.
+   * @param finalResult A final query result.
+   */
+  public static async finalToInternalResult(finalResult: RDF.Query<any>): Promise<IQueryOperationResult> {
+    switch (finalResult.resultType) {
+      case 'bindings':
+        return {
+          type: 'bindings',
+          bindingsStream: <BindingsStream> await finalResult.execute(),
+          metadata: async() => <any> await finalResult.metadata(),
+        };
+      case 'quads':
+        return {
+          type: 'quads',
+          quadStream: <AsyncIterator<RDF.Quad>> await finalResult.execute(),
+          metadata: async() => <any> await finalResult.metadata(),
+        };
+      case 'boolean':
+        return {
+          type: 'boolean',
+          booleanResult: finalResult.execute(),
+        };
+      case 'void':
+        return {
+          type: 'void',
+          voidResult: finalResult.execute(),
+        };
+    }
   }
 }

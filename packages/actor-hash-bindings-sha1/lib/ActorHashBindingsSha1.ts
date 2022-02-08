@@ -19,7 +19,8 @@ export class ActorHashBindingsSha1 extends ActorHashBindings {
   public async run(action: IActionHashBindings): Promise<IActorHashBindingsOutput> {
     return {
       hashFunction: bindings => sha1()
-        .update(canonicalize(bindings.map(x => termToString(x))))
+        .update(canonicalize(Object.fromEntries([ ...bindings ]
+          .map(([ key, value ]) => [ termToString(key), termToString(value) ]))))
         .digest('hex'),
       hashCollisions: true,
     };

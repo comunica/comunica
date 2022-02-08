@@ -35,7 +35,8 @@ describe('ActorQueryParseGraphql', () => {
     });
 
     it('should not test on the sparql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'sparql', context })).rejects.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: { language: 'sparql', version: '1.1' }, context }))
+        .rejects.toBeTruthy();
     });
 
     it('should not test on no format', () => {
@@ -43,7 +44,8 @@ describe('ActorQueryParseGraphql', () => {
     });
 
     it('should test on the graphql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: 'graphql', context })).resolves.toBeTruthy();
+      return expect(actor.test({ query: 'a', queryFormat: { language: 'graphql', version: '1.1' }, context }))
+        .resolves.toBeTruthy();
     });
 
     it('should run', () => {
@@ -53,7 +55,7 @@ describe('ActorQueryParseGraphql', () => {
           label: { '@id': 'http://www.w3.org/2000/01/rdf-schema#label' },
         },
       });
-      return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves
+      return expect(actor.run({ query, queryFormat: { language: 'graphql', version: '1.1' }, context })).resolves
         .toMatchObject({
           operation: {
             input: { patterns: [
@@ -79,26 +81,27 @@ describe('ActorQueryParseGraphql', () => {
     it('should run with empty @context that has a required URI', () => {
       const query = '{ label }';
       context = new ActionContext({});
-      return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves.toMatchObject({
-        operation: {
-          input: { patterns: [
-            {
-              graph: { value: '' },
-              object: { value: 'label' },
-              predicate: { value: 'label' },
-              subject: { termType: 'Variable' },
-              type: 'pattern',
-            },
-          ],
-          type: 'bgp' },
-          type: 'project',
-          variables: [
-            {
-              value: 'label',
-            },
-          ],
-        },
-      });
+      return expect(actor.run({ query, queryFormat: { language: 'graphql', version: '1.1' }, context }))
+        .resolves.toMatchObject({
+          operation: {
+            input: { patterns: [
+              {
+                graph: { value: '' },
+                object: { value: 'label' },
+                predicate: { value: 'label' },
+                subject: { termType: 'Variable' },
+                type: 'pattern',
+              },
+            ],
+            type: 'bgp' },
+            type: 'project',
+            variables: [
+              {
+                value: 'label',
+              },
+            ],
+          },
+        });
     });
   });
 });

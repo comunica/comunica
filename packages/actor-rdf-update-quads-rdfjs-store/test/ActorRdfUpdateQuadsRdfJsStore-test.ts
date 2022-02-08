@@ -109,8 +109,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       context = new ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
       const quadStreamInsert = undefined;
       const quadStreamDelete = undefined;
-      const { updateResult } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
-      await expect(updateResult).resolves.toBeUndefined();
+      const { voidResult } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
+      await expect(voidResult).resolves.toBeUndefined();
       expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
         DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
       ]);
@@ -125,8 +125,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         const quadStreamDelete = new ArrayIterator([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
         ]);
-        const { updateResult } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
+        await expect(voidResult).resolves.toBeUndefined();
         expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         ]);
@@ -139,8 +139,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         const deleteGraphs = <any> {
           graphs: DF.defaultGraph(),
         };
-        const { updateResult } = await actor.run({ deleteGraphs, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ deleteGraphs, context });
+        await expect(voidResult).resolves.toBeUndefined();
         expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([]);
       });
 
@@ -155,8 +155,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         const deleteGraphs = <any> {
           graphs: [ DF.namedNode('g1') ],
         };
-        const { updateResult } = await actor.run({ deleteGraphs, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ deleteGraphs, context });
+        await expect(voidResult).resolves.toBeUndefined();
         expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
@@ -174,8 +174,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         const deleteGraphs = <any> {
           graphs: 'NAMED',
         };
-        const { updateResult } = await actor.run({ deleteGraphs, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ deleteGraphs, context });
+        await expect(voidResult).resolves.toBeUndefined();
         expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
         ]);
@@ -192,8 +192,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         const deleteGraphs = <any> {
           graphs: 'ALL',
         };
-        const { updateResult } = await actor.run({ deleteGraphs, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ deleteGraphs, context });
+        await expect(voidResult).resolves.toBeUndefined();
         expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([]);
       });
     });
@@ -205,8 +205,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           graphs: [ DF.namedNode('g1') ],
           requireNonExistence: true,
         };
-        const { updateResult } = await actor.run({ createGraphs, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ createGraphs, context });
+        await expect(voidResult).resolves.toBeUndefined();
       });
 
       it('should run for a non-existing graph without requireNonExistence', async() => {
@@ -215,8 +215,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           graphs: [ DF.namedNode('g1') ],
           requireNonExistence: false,
         };
-        const { updateResult } = await actor.run({ createGraphs, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ createGraphs, context });
+        await expect(voidResult).resolves.toBeUndefined();
       });
 
       it('should not run for an existing graph with requireNonExistence', async() => {
@@ -228,8 +228,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           graphs: [ DF.namedNode('g1') ],
           requireNonExistence: true,
         };
-        const { updateResult } = await actor.run({ createGraphs, context });
-        await expect(updateResult).rejects.toThrowError('Unable to create graph g1 as it already exists');
+        const { voidResult } = await actor.run({ createGraphs, context });
+        await expect(voidResult).rejects.toThrowError('Unable to create graph g1 as it already exists');
       });
 
       it('should run for an existing graph without requireNonExistence', async() => {
@@ -241,8 +241,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           graphs: [ DF.namedNode('g1') ],
           requireNonExistence: false,
         };
-        const { updateResult } = await actor.run({ createGraphs, context });
-        await expect(updateResult).resolves.toBeUndefined();
+        const { voidResult } = await actor.run({ createGraphs, context });
+        await expect(voidResult).resolves.toBeUndefined();
       });
     });
   });

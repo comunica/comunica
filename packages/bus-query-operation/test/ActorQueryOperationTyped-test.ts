@@ -27,8 +27,8 @@ describe('ActorQueryOperationTyped', () => {
 
   describe('An ActorQueryOperationTyped instance', () => {
     const actor = new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, 'op');
-    actor.testOperation = () => Promise.resolve(true);
-    actor.runOperation = () => Promise.resolve(true);
+    actor.testOperation = () => Promise.resolve({ metadata: {}});
+    actor.runOperation = () => Promise.resolve({ metadata: {}});
 
     it('should not test without operation', () => {
       return expect(actor.test({})).rejects.toBeTruthy();

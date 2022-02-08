@@ -7,12 +7,14 @@ import type { IAction, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
-  IQueryableResultBindings, IMetadata,
+  IQueryOperationResultBindings, MetadataBindings,
   IPhysicalQueryPlanLogger, Bindings, IActionContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
+const DF = new DataFactory();
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -26,7 +28,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorRdfJoin
-  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
+  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
@@ -71,7 +73,7 @@ export abstract class ActorRdfJoin
    * @param {string[]} variables
    * @returns {string}
    */
-  public static hash(bindings: Bindings, variables: string[]): string {
+  public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
     return variables
       .filter(variable => bindings.has(variable))
       .map(variable => termToString(bindings.get(variable)))
@@ -80,34 +82,26 @@ export abstract class ActorRdfJoin
 
   /**
    * Returns an array containing all the variable names that occur in all bindings streams.
-   * @param {IActionRdfJoin} action
+   * @param {MetadataBindings[]} metadatas An array of optional metadata objects for the entries.
    * @returns {string[]}
    */
-  public static overlappingVariables(action: IActionRdfJoin): string[] {
-    const variables = action.entries.map(entry => entry.output.variables);
+  public static overlappingVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
+    const variables = metadatas.map(metadata => metadata.variables);
     let baseArray = variables[0];
     for (const array of variables.slice(1)) {
-      baseArray = baseArray.filter(el => array.includes(el));
+      baseArray = baseArray.filter(el => array.some(value => value.value === el.value));
     }
     return baseArray;
   }
 
   /**
    * Returns the variables that will occur in the joined bindings.
-   * @param {IActionRdfJoin} action The join action.
+   * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
    * @returns {string[]}
    */
-  public static joinVariables(action: IActionRdfJoin): string[] {
-    return ActorRdfJoin.joinVariablesStreams(action.entries.map(entry => entry.output));
-  }
-
-  /**
-   * Returns the variables that will occur in the joined bindings.
-   * @param {IQueryableResultBindings[]} streams The streams to consider
-   * @returns {string[]}
-   */
-  public static joinVariablesStreams(streams: IQueryableResultBindings[]): string[] {
-    return [ ...new Set(streams.flatMap(entry => entry.variables)) ];
+  public static joinVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
+    return [ ...new Set(metadatas.flatMap(metadata => metadata.variables.map(variable => variable.value))) ]
+      .map(variable => DF.variable(variable));
   }
 
   /**
@@ -116,15 +110,22 @@ export abstract class ActorRdfJoin
    * @returns {Bindings}
    */
   public static joinBindings(...bindings: Bindings[]): Bindings | null {
-    let valid = true;
-    const joined = bindings
-      .reduce((acc: Bindings, val: Bindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
-        if (!left.equals(right)) {
-          valid = false;
-        }
-        return left;
-      }, val));
-    return valid ? joined : null;
+    if (bindings.length === 0) {
+      return null;
+    }
+    if (bindings.length === 1) {
+      return bindings[0];
+    }
+
+    let acc: Bindings = bindings[0];
+    for (const binding of bindings.slice(1)) {
+      const merged = acc.merge(binding);
+      if (!merged) {
+        return null;
+      }
+      acc = merged;
+    }
+    return acc;
   }
 
   /**
@@ -132,23 +133,23 @@ export abstract class ActorRdfJoin
    * @param {Record<string, any>} metadata A metadata object.
    * @return {number} The estimated number of items, or `Infinity` if cardinality is falsy.
    */
-  public static getCardinality(metadata: Record<string, any>): number {
+  public static getCardinality(metadata: Record<string, any>): RDF.QueryResultCardinality {
     return metadata.cardinality || metadata.cardinality === 0 ? metadata.cardinality : Number.POSITIVE_INFINITY;
   }
 
   /**
    * Find the metadata index with the lowest cardinality.
-   * @param {(Record<string, any> | undefined)[]} metadatas An array of optional metadata objects for the entries.
+   * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
    * @param indexBlacklist An optional array of blacklisted indexes that will not be considered.
    * @return {number} The index of the entry with the lowest cardinality.
    */
-  public static getLowestCardinalityIndex(metadatas: Record<string, any>[], indexBlacklist: number[] = []): number {
+  public static getLowestCardinalityIndex(metadatas: MetadataBindings[], indexBlacklist: number[] = []): number {
     let smallestId = -1;
-    let smallestCount = Number.POSITIVE_INFINITY;
+    let smallestCount: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
     for (const [ i, meta ] of metadatas.entries()) {
       if (!indexBlacklist.includes(i)) {
-        const count: number = ActorRdfJoin.getCardinality(meta);
-        if (count < smallestCount || smallestId === -1) {
+        const count: RDF.QueryResultCardinality = ActorRdfJoin.getCardinality(meta);
+        if (count.value < smallestCount.value || smallestId === -1) {
           smallestCount = count;
           smallestId = i;
         }
@@ -161,7 +162,7 @@ export abstract class ActorRdfJoin
    * Obtain the metadata from all given join entries.
    * @param entries Join entries.
    */
-  public static async getMetadatas(entries: IJoinEntry[]): Promise<IMetadata[]> {
+  public static async getMetadatas(entries: IJoinEntry[]): Promise<MetadataBindings[]> {
     return await Promise.all(entries.map(entry => entry.output.metadata()));
   }
 
@@ -169,7 +170,7 @@ export abstract class ActorRdfJoin
    * Calculate the time to initiate a request for the given metadata entries.
    * @param metadatas An array of checked metadata.
    */
-  public static getRequestInitialTimes(metadatas: IMetadata[]): number[] {
+  public static getRequestInitialTimes(metadatas: MetadataBindings[]): number[] {
     return metadatas.map(metadata => metadata.pageSize ? 0 : metadata.requestTime || 0);
   }
 
@@ -177,7 +178,7 @@ export abstract class ActorRdfJoin
    * Calculate the time to receive a single item for the given metadata entries.
    * @param metadatas An array of checked metadata.
    */
-  public static getRequestItemTimes(metadatas: IMetadata[]): number[] {
+  public static getRequestItemTimes(metadatas: MetadataBindings[]): number[] {
     return metadatas
       .map(metadata => !metadata.pageSize ? 0 : (metadata.requestTime || 0) / metadata.pageSize);
   }
@@ -192,16 +193,33 @@ export abstract class ActorRdfJoin
    */
   public async constructResultMetadata(
     entries: IJoinEntry[],
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
     context: IActionContext,
-    partialMetadata: Partial<IMetadata> = {},
-  ): Promise<IMetadata> {
+    partialMetadata: Partial<MetadataBindings> = {},
+  ): Promise<MetadataBindings> {
+    let cardinalityJoined: RDF.QueryResultCardinality;
+    if (partialMetadata.cardinality) {
+      cardinalityJoined = partialMetadata.cardinality;
+    } else {
+      cardinalityJoined = metadatas
+        .reduce((acc: RDF.QueryResultCardinality, metadata) => {
+          const cardinalityThis = ActorRdfJoin.getCardinality(metadata);
+          return {
+            type: cardinalityThis.type === 'estimate' ? 'estimate' : acc.type,
+            value: acc.value * cardinalityThis.value,
+          };
+        }, { type: 'exact', value: 1 });
+      cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+    }
+
     return {
       ...partialMetadata,
-      cardinality: partialMetadata.cardinality ?? metadatas
-        .reduce((acc, metadata) => acc * ActorRdfJoin.getCardinality(metadata), 1) *
-        (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity,
+      cardinality: {
+        type: cardinalityJoined.type,
+        value: cardinalityJoined.value,
+      },
       canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
+      variables: ActorRdfJoin.joinVariables(metadatas),
     };
   }
 
@@ -256,7 +274,7 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action
    * @returns {Promise<IActorQueryOperationOutput>}
    */
-  public async run(action: IActionRdfJoin): Promise<IQueryableResultBindings> {
+  public async run(action: IActionRdfJoin): Promise<IQueryOperationResultBindings> {
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
@@ -308,12 +326,12 @@ export abstract class ActorRdfJoin
    */
   protected abstract getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients>;
 }
 
 export interface IActorRdfJoinArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryableResultBindings> {
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 }
 
@@ -369,7 +387,7 @@ export interface IJoinEntry {
   /**
    * A (lazy) resolved bindings stream, from which metadata may be obtained.
    */
-  output: IQueryableResultBindings;
+  output: IQueryOperationResultBindings;
   /**
    * The original query operation from which the bindings stream was produced.
    */
@@ -380,11 +398,11 @@ export interface IActorRdfJoinOutputInner {
   /**
    * The join result.
    */
-  result: IQueryableResultBindings;
+  result: IQueryOperationResultBindings;
   /**
    * Optional metadata that will be included as metadata within the physical query plan output.
    */
   physicalPlanMetadata?: any;
 }
 
-export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryableResultBindings, IMediatorTypeJoinCoefficients>;
+export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;

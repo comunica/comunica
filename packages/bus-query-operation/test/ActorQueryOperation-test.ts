@@ -152,7 +152,7 @@ describe('ActorQueryOperation', () => {
           true,
           factory.createBgp([]),
         );
-        const result = resolver(expr, BF.bindings({}));
+        const result = resolver(expr, BF.bindings());
         expect(await result).toBe(true);
       });
     });

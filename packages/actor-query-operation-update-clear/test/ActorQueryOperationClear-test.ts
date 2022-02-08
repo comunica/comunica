@@ -1,6 +1,6 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultVoid } from '@comunica/types';
+import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationClear } from '../lib/ActorQueryOperationClear';
 const DF = new DataFactory();
@@ -14,7 +14,7 @@ describe('ActorQueryOperationClear', () => {
     bus = new Bus({ name: 'bus' });
     mediatorUpdateQuads = {
       mediate: jest.fn(() => Promise.resolve({
-        updateResult: Promise.resolve(),
+        voidResult: Promise.resolve(),
       })),
     };
   });
@@ -51,9 +51,9 @@ describe('ActorQueryOperationClear', () => {
           source: 'DEFAULT',
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: DF.defaultGraph(),
         requireExistence: true,
@@ -69,9 +69,9 @@ describe('ActorQueryOperationClear', () => {
           silent: true,
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: DF.defaultGraph(),
         requireExistence: false,
@@ -86,9 +86,9 @@ describe('ActorQueryOperationClear', () => {
           source: 'ALL',
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: 'ALL',
         requireExistence: true,
@@ -103,9 +103,9 @@ describe('ActorQueryOperationClear', () => {
           source: 'NAMED',
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: 'NAMED',
         requireExistence: true,
@@ -120,9 +120,9 @@ describe('ActorQueryOperationClear', () => {
           source: DF.namedNode('g1'),
         },
       };
-      const output = <IQueryableResultVoid> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.voidResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],
         requireExistence: true,

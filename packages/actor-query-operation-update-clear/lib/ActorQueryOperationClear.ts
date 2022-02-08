@@ -4,7 +4,7 @@ import type {
   MediatorRdfUpdateQuads,
 } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryableResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -28,7 +28,7 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
   }
 
   public async runOperation(operation: Algebra.Clear, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     // Delegate to update-quads bus
     let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];
     if (operation.source === 'DEFAULT') {
@@ -38,7 +38,7 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
     } else {
       graphs = [ operation.source ];
     }
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { voidResult } = await this.mediatorUpdateQuads.mediate({
       deleteGraphs: {
         graphs,
         requireExistence: !operation.silent,
@@ -48,8 +48,8 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      voidResult,
     };
   }
 }

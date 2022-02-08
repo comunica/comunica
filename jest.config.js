@@ -7,6 +7,11 @@ module.exports = {
     'ts',
     'js'
   ],
+  globals: {
+    'ts-jest': {
+      isolatedModules: true
+    },
+  },
   setupFilesAfterEnv: [ './setup-jest.js' ],
   collectCoverage: true,
   coveragePathIgnorePatterns: [

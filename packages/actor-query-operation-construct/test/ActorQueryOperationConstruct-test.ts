@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IQueryableResultQuads } from '@comunica/types';
+import type { IQueryOperationResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -21,20 +21,20 @@ describe('ActorQueryOperationConstruct', () => {
       mediate: (arg: any) => arg.operation.input ?
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            BF.bindings({ '?a': DF.literal('1') }),
-            BF.bindings({ '?a': DF.literal('2') }),
-            BF.bindings({ '?a': DF.literal('3') }),
+            BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
-          variables: [ 'a' ],
+          variables: [ DF.variable('a') ],
         }) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            BF.bindings({}),
+            BF.bindings(),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: [],
@@ -105,8 +105,9 @@ describe('ActorQueryOperationConstruct', () => {
 
     it('should run on an empty template', () => {
       const op: any = { operation: { type: 'construct', template: []}};
-      return actor.run(op).then(async(output: IQueryableResultQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 0, canContainUndefs: false });
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([]);
       });
@@ -118,8 +119,9 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ],
       type: 'construct' }};
-      return actor.run(op).then(async(output: IQueryableResultQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 2, canContainUndefs: false });
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.blankNode('s10'), DF.namedNode('p1'), DF.literal('o1')),
@@ -135,8 +137,9 @@ describe('ActorQueryOperationConstruct', () => {
           DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
         ],
         type: 'construct' }};
-      return actor.run(op).then(async(output: IQueryableResultQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ cardinality: 6, canContainUndefs: false });
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.blankNode('s10'), DF.literal('1'), DF.literal('o1')),

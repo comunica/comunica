@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type { Bindings, BindingsStream, IActionContext,
-  IQueryableResult, IQueryableResultBindings } from '@comunica/types';
+  IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -23,8 +23,8 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     return true;
   }
 
-  public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryableResult> {
-    const output: IQueryableResultBindings = ActorQueryOperation.getSafeBindings(
+  public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryOperationResult> {
+    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
     const bindingsStream: BindingsStream = output.bindingsStream.filter(await this.newHashFilter(context));
@@ -32,7 +32,6 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       type: 'bindings',
       bindingsStream,
       metadata: output.metadata,
-      variables: output.variables,
     };
   }
 

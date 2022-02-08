@@ -1,7 +1,7 @@
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, IMetadata } from '@comunica/types';
+import type { Bindings, MetadataBindings } from '@comunica/types';
 import { SymmetricHashJoin } from 'asyncjoin';
 
 /**
@@ -16,19 +16,9 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     });
   }
 
-  /**
-   * Creates a hash of the given bindings by concatenating the results of the given variables.
-   * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {Bindings} bindings
-   * @param {string[]} variables
-   * @returns {string}
-   */
-  public static hash(bindings: Bindings, variables: string[]): string {
-    return variables.filter(variable => bindings.has(variable)).map(variable => bindings.get(variable).value).join('');
-  }
-
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const variables = ActorRdfJoin.overlappingVariables(action);
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+    const variables = ActorRdfJoin.overlappingVariables(metadatas);
     const join = new SymmetricHashJoin<Bindings, string, Bindings>(
       action.entries[0].output.bindingsStream,
       action.entries[1].output.bindingsStream,
@@ -39,28 +29,23 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream: join,
-        variables: ActorRdfJoin.joinVariables(action),
-        metadata: async() => await this.constructResultMetadata(
-          action.entries,
-          await ActorRdfJoin.getMetadatas(action.entries),
-          action.context,
-        ),
+        metadata: async() => await this.constructResultMetadata(action.entries, metadatas, action.context),
       },
     };
   }
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     return {
-      iterations: metadatas[0].cardinality + metadatas[1].cardinality,
-      persistedItems: metadatas[0].cardinality + metadatas[1].cardinality,
+      iterations: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
+      persistedItems: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
       blockingItems: 0,
-      requestTime: requestInitialTimes[0] + metadatas[0].cardinality * requestItemTimes[0] +
-        requestInitialTimes[1] + metadatas[1].cardinality * requestItemTimes[1],
+      requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
+        requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
     };
   }
 }

@@ -37,9 +37,9 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    *                             If the given term is a variable, then the bound term is returned,
    *                             or a falsy value if it did not exist in the bindings.
    */
-  public static bindTerm(bindings: Bindings, term: RDF.Term): RDF.Term {
+  public static bindTerm(bindings: Bindings, term: RDF.Term): RDF.Term | undefined {
     if (term.termType === 'Variable') {
-      return bindings.get(`?${term.value}`);
+      return bindings.get(term);
     }
     return term;
   }
@@ -55,7 +55,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   public static bindQuad(bindings: Bindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
     try {
       return mapTerms(<RDF.Quad> pattern, term => {
-        const boundTerm: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, term);
+        const boundTerm = BindingsToQuadsIterator.bindTerm(bindings, term);
         if (!boundTerm) {
           throw new Error('Unbound term');
         }

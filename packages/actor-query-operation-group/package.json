@@ -37,9 +37,9 @@
     "@comunica/types": "^2.0.0",
     "@types/json-stable-stringify": "^1.0.32",
     "asynciterator": "^3.2.1",
-    "rdf-string": "^1.5.0",
+    "rdf-data-factory": "^1.1.0",
     "sparqlalgebrajs": "^4.0.0",
-    "sparqlee": "^1.10.0"
+    "sparqlee": "2.0.0-beta.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -1,12 +1,14 @@
+import type * as RDF from '@rdfjs/types';
+
 /**
  * A type-safe metadata object.
  * This interface still allows other non-standard metadata entries to be added.
  */
-export interface IMetadata extends Record<string, any> {
+export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermName> extends Record<string, any> {
   /**
    * An estimate of the number of bindings in the source.
    */
-  cardinality: number;
+  cardinality: RDF.QueryResultCardinality;
   /**
    * If any of the bindings could contain an undefined variable binding.
    * If this is false, then all variables are guaranteed to have a defined bound value in the bindingsStream.
@@ -39,5 +41,19 @@ export interface IMetadata extends Record<string, any> {
    *
    * If order is undefined, then the order is unknown.
    */
-  order?: { variable: string; order: 'asc' | 'desc' }[];
+  order?: TermsOrder<OrderItemsType>;
+
+  /**
+   * All available alternative orders.
+   */
+  availableOrders?: RDF.QueryOperationOrder<OrderItemsType>[];
 }
+
+export type TermsOrder<OrderItemsType> = { term: OrderItemsType; direction: 'asc' | 'desc' }[];
+export type MetadataBindings = IMetadata<RDF.Variable> & {
+  /**
+   * The list of variables for which bindings are provided in the bindings stream.
+   */
+  variables: RDF.Variable[];
+};
+export type MetadataQuads = IMetadata<RDF.QuadTermName>;

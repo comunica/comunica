@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryableResultBindings, Bindings } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -10,7 +10,7 @@ import { Factory, translate } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
 import { isExpressionError } from 'sparqlee';
 import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -54,14 +54,13 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ '?a': DF.literal('1') }),
-          BF.bindings({ '?a': DF.literal('2') }),
-          BF.bindings({ '?a': DF.literal('3') }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
       }),
     };
   });
@@ -109,49 +108,51 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should return the full stream for a truthy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        BF.bindings({ '?a': DF.literal('1') }),
-        BF.bindings({ '?a': DF.literal('2') }),
-        BF.bindings({ '?a': DF.literal('3') }),
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toMatchObject([ 'a' ]);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
     });
 
     it('should return an empty stream for a falsy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject([ 'a' ]);
     });
 
     it('should return an empty stream when the expressions error', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject([ 'a' ]);
     });
 
     it('Should log warning for an expressionError', async() => {
       // The order is very important. This item requires isExpressionError to still have it's right definition.
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
       expect(logWarnSpy).toHaveBeenCalledTimes(3);
       logWarnSpy.mock.calls.forEach((call, index) => {
-        const dataCB = <() => { error: any; bindings: Bindings }> call[2];
-        const { error, bindings } = dataCB();
-        expect(isExpressionError(error)).toBeTruthy();
-        expect(bindings).toEqual({
-          '?a': DF.literal(String(index + 1), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
-        });
+        if (index === 0) {
+          const dataCB = <() => { error: any; bindings: Bindings }>call[2];
+          const { error, bindings } = dataCB();
+          expect(isExpressionError(error)).toBeTruthy();
+          expect(bindings).toEqual(`{
+  "?a": "\\"1\\""
+}`);
+        }
       });
     });
 
@@ -160,7 +161,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
-      const output: IQueryableResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
 
@@ -170,15 +171,15 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         [KeysInitQuery.baseIRI.name]: 'http://example.com',
       });
       const op: any = { operation: { type: 'filter', input: {}, expression }, context };
-      const output: IQueryableResultBindings = <any> await actor.run(op);
-      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        BF.bindings({ '?a': DF.literal('1') }),
-        BF.bindings({ '?a': DF.literal('2') }),
-        BF.bindings({ '?a': DF.literal('3') }),
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toMatchObject([ 'a' ]);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
     });
 
     describe('should be able to handle EXIST filters', () => {
@@ -188,7 +189,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           false,
           factory.createBgp([]),
         );
-        const result = resolver(expr, BF.bindings({}));
+        const result = resolver(expr, BF.bindings());
         expect(await result).toBe(true);
       });
 
@@ -199,13 +200,13 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
-          variables: [ 'a' ],
+          variables: [ DF.variable('a') ],
         });
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,
           factory.createBgp([]),
         );
-        const result = resolver(expr, BF.bindings({}));
+        const result = resolver(expr, BF.bindings());
         expect(await result).toBe(false);
       });
 
@@ -216,13 +217,13 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
-          variables: [ 'a' ],
+          variables: [ DF.variable('a') ],
         });
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           true,
           factory.createBgp([]),
         );
-        const result = resolver(expr, BF.bindings({}));
+        const result = resolver(expr, BF.bindings());
         expect(await result).toBe(true);
       });
 
@@ -241,13 +242,13 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
-          variables: [ 'a' ],
+          variables: [ DF.variable('a') ],
         });
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,
           factory.createBgp([]),
         );
-        await expect(resolver(expr, BF.bindings({}))).rejects.toBeTruthy();
+        await expect(resolver(expr, BF.bindings())).rejects.toBeTruthy();
       });
     });
   });

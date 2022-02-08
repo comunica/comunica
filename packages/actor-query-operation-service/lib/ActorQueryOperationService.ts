@@ -4,7 +4,7 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IActionContext, IQueryableResult, IQueryableResultBindings } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -29,7 +29,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   }
 
   public async runOperation(operation: Algebra.Service, context: IActionContext):
-  Promise<IQueryableResult> {
+  Promise<IQueryOperationResult> {
     const endpoint: string = operation.name.value;
 
     // Adjust our context to only have the endpoint as source
@@ -41,7 +41,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     const sourceType = this.forceSparqlEndpoint ? 'sparql' : undefined;
     subContext = subContext.set(KeysRdfResolveQuadPattern.sources, [{ type: sourceType, value: endpoint }]);
     // Query the source
-    let output: IQueryableResultBindings;
+    let output: IQueryOperationResultBindings;
     try {
       output = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ operation: operation.input, context: subContext }),
@@ -50,10 +50,9 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       if (operation.silent) {
         // Emit a single empty binding
         output = {
-          bindingsStream: new SingletonIterator(BF.bindings({})),
+          bindingsStream: new SingletonIterator(BF.bindings()),
           type: 'bindings',
-          variables: [],
-          metadata: async() => ({ cardinality: 1, canContainUndefs: false }),
+          metadata: async() => ({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []}),
         };
       } else {
         throw error;

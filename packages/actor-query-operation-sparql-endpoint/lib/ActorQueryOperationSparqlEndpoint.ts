@@ -12,20 +12,21 @@ import {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
-import type { IQueryableResult,
-  IQueryableResultBindings,
-  IQueryableResultBoolean,
-  IQueryableResultQuads,
+import type { IQueryOperationResult,
+  IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
+  IQueryOperationResultQuads,
   IMetadata,
   IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
-import { termToString } from 'rdf-string';
+import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
 
 const BF = new BindingsFactory();
+const DF = new DataFactory();
 
 /**
  * A comunica SPARQL Endpoint Query Operation Actor.
@@ -75,7 +76,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     throw new Error(`${this.name} requires a single source with a 'sparql' endpoint to be present in the context or URL ending on /sparql or /update.`);
   }
 
-  public async run(action: IActionQueryOperation): Promise<IQueryableResult> {
+  public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     const source = getContextSourceFirst(action.context);
     if (!source) {
       throw new Error('Illegal state: undefined sparql endpoint source.');
@@ -118,14 +119,14 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       case 'CONSTRUCT':
         return this.executeQuery(endpoint, query!, true);
       case 'ASK':
-        return <IQueryableResultBoolean>{
+        return <IQueryOperationResultBoolean>{
           type: 'boolean',
           booleanResult: this.endpointFetcher.fetchAsk(endpoint, query!),
         };
       default:
         return {
-          type: 'update',
-          updateResult: this.endpointFetcher.fetchUpdate(endpoint, query!),
+          type: 'void',
+          voidResult: this.endpointFetcher.fetchUpdate(endpoint, query!),
         };
     }
   }
@@ -138,7 +139,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
    * @param variables Variables for SELECT queries.
    */
   public executeQuery(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[]):
-  IQueryableResult {
+  IQueryOperationResult {
     const inputStream: Promise<EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
@@ -146,19 +147,23 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map(rawData => {
         cardinality++;
-        return quads ? rawData : BF.bindings(rawData);
+        return quads ?
+          rawData :
+          BF.bindings(Object.entries(rawData)
+            .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ]));
       });
     inputStream.then(
       subStream => subStream.on('end', () => stream.emit('metadata', {
-        cardinality,
+        cardinality: { type: 'exact', value: cardinality },
         canContainUndefs: true,
+        variables,
       })),
       () => {
         // Do nothing
       },
     );
 
-    const metadata: () => Promise<IMetadata> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
+    const metadata: () => Promise<IMetadata<any>> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
       () => new Promise((resolve, reject) => {
         (<any> stream)._fillBuffer();
         stream.on('error', reject);
@@ -168,23 +173,22 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     );
 
     if (quads) {
-      return <IQueryableResultQuads> {
+      return <IQueryOperationResultQuads> {
         type: 'quads',
         quadStream: stream,
         metadata,
       };
     }
-    return <IQueryableResultBindings> {
+    return <IQueryOperationResultBindings> {
       type: 'bindings',
       bindingsStream: stream,
       metadata,
-      variables: variables!.map(x => termToString(x)),
     };
   }
 }
 
 export interface IActorQueryOperationSparqlEndpointArgs
-  extends IActorArgs<IActionQueryOperation, IActorTest, IQueryableResult> {
+  extends IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult> {
   /**
    * The HTTP mediator
    */

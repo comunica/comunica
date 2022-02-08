@@ -20,11 +20,21 @@ const valueA = DF.literal('A');
 const valueB = DF.literal('B');
 const valueC = DF.literal('C');
 
-const bindingsEmpty = BF.bindings({});
-const bindingsA = BF.bindings({ '?a': DF.literal('A') });
-const bindingsC = BF.bindings({ '_:c': DF.literal('C') });
-const bindingsAC = BF.bindings({ '?a': valueA, '_:c': valueC });
-const bindingsAB = BF.bindings({ '?a': valueA, '?b': valueB });
+const bindingsEmpty = BF.bindings();
+const bindingsA = BF.bindings([
+  [ DF.variable('a'), DF.literal('A') ],
+]);
+const bindingsC = BF.bindings([
+  [ DF.variable('c'), DF.literal('C') ],
+]);
+const bindingsAC = BF.bindings([
+  [ DF.variable('a'), valueA ],
+  [ DF.variable('c'), valueC ],
+]);
+const bindingsAB = BF.bindings([
+  [ DF.variable('a'), valueA ],
+  [ DF.variable('b'), valueB ],
+]);
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {

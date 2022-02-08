@@ -1,10 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
-import type { IQueryableResultBindings } from '@comunica/types';
+import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationNop } from '../lib/ActorQueryOperationNop';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -18,14 +18,14 @@ describe('ActorQueryOperationNop', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          BF.bindings({ '?a': DF.literal('1') }),
-          BF.bindings({ '?a': DF.literal('2') }),
-          BF.bindings({ '?a': DF.literal('3') }),
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: [ '?a' ],
+        variables: [ DF.variable('a') ],
         canContainUndefs: false,
       }),
     };
@@ -50,10 +50,10 @@ describe('ActorQueryOperationNop', () => {
 
     it('should run', () => {
       const op: any = { operation: { type: 'nop' }};
-      return actor.run(op).then(async(output: IQueryableResultBindings) => {
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([ BF.bindings({}) ]);
-        expect(output.variables).toEqual([]);
-        expect(await output.metadata()).toMatchObject({ cardinality: 1, canContainUndefs: false });
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
+        expect(await output.metadata())
+          .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
       });
     });
   });

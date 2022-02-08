@@ -16,7 +16,7 @@ export class ActorQueryParseGraphql extends ActorQueryParse {
   }
 
   public async test(action: IActionQueryParse): Promise<IActorTest> {
-    if (action.queryFormat !== 'graphql') {
+    if (action.queryFormat?.language !== 'graphql') {
       throw new Error('This actor can only parse GraphQL queries');
     }
     return true;

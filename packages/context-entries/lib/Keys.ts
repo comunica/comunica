@@ -1,8 +1,6 @@
 import { ActionContextKey } from '@comunica/core';
 import type { Logger } from '@comunica/core';
-import type {
-  Bindings,
-  IMetadata,
+import type { Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
@@ -10,10 +8,16 @@ import type {
   DataSources,
   IDataSource,
   IDataDestination,
-} from '@comunica/types';
+  MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
+
+/**
+ * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
+ * ActorIniQueryBase in @comunica/actor-init-query if it makes sense to use this entry externally.
+ * Also, add this shortcut to IQueryContextCommon in @comunica/types.
+ */
 
 export const KeysCore = {
   /**
@@ -55,11 +59,12 @@ export const KeysInitQuery = {
   /**
    * Variables that have to be pre-bound to values in the query.
    */
-  initialBindings: new ActionContextKey<Bindings>('@comunica/actor-init-query:initialBindings'),
+  initialBindings: new ActionContextKey<RDF.Bindings>('@comunica/actor-init-query:initialBindings'),
   /**
-   * Name of the provided query's format.
+   * The provided query's format.
+   * Defaults to { language: 'sparql', version: '1.1' }
    */
-  queryFormat: new ActionContextKey<string>('@comunica/actor-init-query:queryFormat'),
+  queryFormat: new ActionContextKey<RDF.QueryFormat>('@comunica/actor-init-query:queryFormat'),
   /**
    * Which GraphQL bindings should be singularized.
    */
@@ -140,11 +145,11 @@ export const KeysQueryOperation = {
   /**
    * @type {any} The metadata from the left streams within a join operation.
    */
-  joinLeftMetadata: new ActionContextKey<IMetadata>('@comunica/bus-query-operation:joinLeftMetadata'),
+  joinLeftMetadata: new ActionContextKey<MetadataBindings>('@comunica/bus-query-operation:joinLeftMetadata'),
   /**
    * An array of metadata from the right streams within a join operation.
    */
-  joinRightMetadatas: new ActionContextKey<IMetadata[]>('@comunica/bus-query-operation:joinRightMetadatas'),
+  joinRightMetadatas: new ActionContextKey<MetadataBindings[]>('@comunica/bus-query-operation:joinRightMetadatas'),
   /**
    * Indicates the bindings that were used to bind the operation.
    */

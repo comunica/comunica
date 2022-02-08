@@ -4,8 +4,8 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings, IActionContext, IQueryableResultBindings,
-  IQueryableResultBoolean,
+  Bindings, IActionContext, IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
@@ -66,14 +66,17 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
     // Write head
     const head: any = {};
-    if (action.type === 'bindings' && (<IQueryableResultBindings> action).variables.length > 0) {
-      head.vars = (<IQueryableResultBindings> action).variables.map((variable: string) => variable.slice(1));
+    if (action.type === 'bindings') {
+      const metadata = await (<IQueryOperationResultBindings> action).metadata();
+      if (metadata.variables.length > 0) {
+        head.vars = metadata.variables.map(variable => variable.value);
+      }
     }
     data.push(`{"head": ${JSON.stringify(head)},\n`);
     let empty = true;
 
     if (action.type === 'bindings') {
-      const resultStream: NodeJS.EventEmitter = (<IQueryableResultBindings> action).bindingsStream;
+      const resultStream: NodeJS.EventEmitter = (<IQueryOperationResultBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('error', (error: Error) => {
@@ -87,12 +90,8 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         }
 
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
-        const realBindings: Bindings = <any> bindings
-          .filter((value: RDF.Term, key: string) => Boolean(value) && key.startsWith('?'));
-
-        data.push(JSON.stringify((<any> realBindings.mapEntries(([ key, value ]: [string, RDF.Term]) =>
-          [ key.slice(1), ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]))
-          .toJSON()));
+        data.push(JSON.stringify(Object.fromEntries([ ...bindings ]
+          .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]))));
         empty = false;
       });
 
@@ -107,7 +106,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
       });
     } else {
       try {
-        data.push(`"boolean":${await (<IQueryableResultBoolean> action).booleanResult}\n}\n`);
+        data.push(`"boolean":${await (<IQueryOperationResultBoolean> action).booleanResult}\n}\n`);
         data.push(null);
       } catch (error: unknown) {
         data.once('newListener', () => data.emit('error', error));

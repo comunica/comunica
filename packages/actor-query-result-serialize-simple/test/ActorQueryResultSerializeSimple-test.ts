@@ -51,8 +51,12 @@ describe('ActorQueryResultSerializeSimple', () => {
         mediaTypeFormats: {},
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        BF.bindings({ k1: DF.namedNode('v1') }),
-        BF.bindings({ k2: DF.namedNode('v2') }),
+        BF.bindings([
+          [ DF.variable('k1'), DF.namedNode('v1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.namedNode('v2') ],
+        ]),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -101,7 +105,7 @@ describe('ActorQueryResultSerializeSimple', () => {
       });
 
       it('should test on simple update', () => {
-        return expect(actor.test({ handle: <any> { type: 'update', updateResult: Promise.resolve(true), context },
+        return expect(actor.test({ handle: <any> { type: 'void', voidResult: Promise.resolve(true), context },
           handleMediaType: 'simple',
           context }))
           .resolves.toBeTruthy();
@@ -127,9 +131,9 @@ describe('ActorQueryResultSerializeSimple', () => {
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream, context }, handleMediaType: 'simple', context },
         ))).handle.data)).toEqual(
-          `k1: v1
+          `?k1: v1
 
-k2: v2
+?k2: v2
 
 `,
         );
@@ -179,7 +183,7 @@ graph:
 
       it('should run on an update result that resolves to false', async() => {
         expect(await stringifyStream((<any> (await actor.run({
-          handle: <any> { type: 'update', updateResult: Promise.resolve(), context },
+          handle: <any> { type: 'void', voidResult: Promise.resolve(), context },
           handleMediaType: 'simple',
           context,
         })))
@@ -215,7 +219,7 @@ graph:
 
       it('should emit an error when the update is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'update', updateResult: Promise.reject(new Error('SparqlSimple')), context },
+          { handle: <any> { type: 'void', voidResult: Promise.reject(new Error('SparqlSimple')), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data)).rejects.toBeTruthy();

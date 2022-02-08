@@ -9,7 +9,7 @@ import type {
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IQueryableResultBindings, IMetadata } from '@comunica/types';
+import type { Bindings, BindingsStream, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra } from 'sparqlalgebrajs';
 
@@ -56,7 +56,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
       const subOperations = operations
         .map(operation => materializeOperation(operation, bindings, { bindFilter: false }));
-      const bindingsMerger = (subBindings: Bindings): Bindings => subBindings.merge(bindings);
+      const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128 });
     };
@@ -80,7 +80,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
    * @param entries Join entries
    * @param metadatas Resolved metadata objects.
    */
-  public static async getLeftEntryIndex(entries: IJoinEntry[], metadatas: IMetadata[]): Promise<number> {
+  public static async getLeftEntryIndex(entries: IJoinEntry[], metadatas: MetadataBindings[]): Promise<number> {
     // If there is a stream that can contain undefs, we don't modify the join order and just pick the first one.
     const canContainUndefs = metadatas.some(metadata => metadata.canContainUndefs);
     if (canContainUndefs) {
@@ -89,13 +89,13 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Calculate number of occurrences of each variable
     const variableOccurrences: Record<string, number> = {};
-    for (const entry of entries) {
-      for (const variable of entry.output.variables) {
-        let counter = variableOccurrences[variable];
+    for (const metadata of metadatas) {
+      for (const variable of metadata.variables) {
+        let counter = variableOccurrences[variable.value];
         if (!counter) {
           counter = 0;
         }
-        variableOccurrences[variable] = ++counter;
+        variableOccurrences[variable.value] = ++counter;
       }
     }
 
@@ -115,10 +115,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Determine indexes of entries without common variables
     // These will be blacklisted from lowest cardinality determination
     const indexesWithoutCommonVariables: number[] = [];
-    for (const [ i, entry ] of entries.entries()) {
+    for (const [ i, metadata ] of metadatas.entries()) {
       let hasCommon = false;
-      for (const variable of entry.output.variables) {
-        if (multiOccurrenceVariables.includes(variable)) {
+      for (const variable of metadata.variables) {
+        if (multiOccurrenceVariables.includes(variable.value)) {
           hasCommon = true;
           break;
         }
@@ -148,7 +148,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     }
 
     // Take the stream with the lowest cardinality
-    const smallestStream: IQueryableResultBindings = action.entries.slice(smallestIndex)[0].output;
+    const smallestStream: IQueryOperationResultBindings = action.entries.slice(smallestIndex)[0].output;
     const remainingEntries = [ ...action.entries ];
     remainingEntries.splice(smallestIndex, 1);
     const remainingMetadatas: Record<string, any>[] = [ ...metadatas ];
@@ -179,7 +179,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream,
-        variables: ActorRdfJoin.joinVariables(action),
         metadata: () => this.constructResultMetadata(action.entries, metadatas, action.context),
       },
       physicalPlanMetadata: {
@@ -191,7 +190,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: IMetadata[],
+    metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
@@ -201,7 +200,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Take the stream with the lowest cardinality
     const remainingEntries: IJoinEntry[] = [ ...action.entries ];
-    const remainingMetadatas: IMetadata[] = [ ...metadatas ];
+    const remainingMetadatas: MetadataBindings[] = [ ...metadatas ];
     const remainingRequestInitialTimes = [ ...requestInitialTimes ];
     const remainingRequestItemTimes = [ ...requestItemTimes ];
     remainingEntries.splice(smallestIndex, 1);
@@ -227,7 +226,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Determine coefficients for remaining entries
     const cardinalityRemaining = remainingMetadatas
-      .map((metadata, i) => metadata.cardinality * selectivities[i])
+      .map((metadata, i) => metadata.cardinality.value * selectivities[i])
       .reduce((sum, element) => sum + element, 0);
     const receiveInitialCostRemaining = remainingRequestInitialTimes
       .reduce((sum, element, i) => sum + (element * selectivities[i]), 0);
@@ -235,11 +234,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       .reduce((sum, element, i) => sum + (element * selectivities[i]), 0);
 
     return {
-      iterations: metadatas[smallestIndex].cardinality * cardinalityRemaining,
+      iterations: metadatas[smallestIndex].cardinality.value * cardinalityRemaining,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[smallestIndex] +
-        metadatas[smallestIndex].cardinality * (
+        metadatas[smallestIndex].cardinality.value * (
           requestItemTimes[smallestIndex] +
           receiveInitialCostRemaining +
           cardinalityRemaining * receiveItemCostRemaining
