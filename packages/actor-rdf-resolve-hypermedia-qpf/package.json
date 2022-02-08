@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^2.0.0",
-    "@comunica/bus-rdf-dereference": "^2.0.0",
+    "@comunica/bus-dereference-rdf": "^2.0.0",
     "@comunica/bus-rdf-metadata": "^2.0.0",
     "@comunica/bus-rdf-metadata-extract": "^2.0.0",
     "@comunica/bus-rdf-resolve-hypermedia": "^2.0.0",

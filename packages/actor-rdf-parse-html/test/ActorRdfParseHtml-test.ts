@@ -2,6 +2,7 @@ import type { Readable } from 'stream';
 import { ActorRdfParseHtmlRdfa } from '@comunica/actor-rdf-parse-html-rdfa';
 import { ActorRdfParseHtmlScript } from '@comunica/actor-rdf-parse-html-script';
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
+import type { IActionRdfParse, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
 import type { Actor, IActorTest } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
@@ -99,19 +100,19 @@ describe('ActorRdfParseHtml', () => {
 
     describe('test', () => {
       it('should return true on text/html', () => {
-        return expect(actor.test({ handle: { input, baseIRI: '', context },
+        return expect(actor.test({ handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'text/html',
           context })).resolves.toBeTruthy();
       });
 
       it('should reject on application/json', () => {
-        return expect(actor.test({ handle: { input, baseIRI: '', context },
+        return expect(actor.test({ handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/json',
           context })).rejects.toBeTruthy();
       });
 
       it('should reject on application/ld+json', () => {
-        return expect(actor.test({ handle: { input, baseIRI: '', context },
+        return expect(actor.test({ handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/ld+json',
           context })).rejects.toBeTruthy();
       });
@@ -122,9 +123,9 @@ describe('ActorRdfParseHtml', () => {
         expect(await arrayifyStream((<any> (await actor
           .run({
             context,
-            handle: { input: inputScript, baseIRI: '', context },
+            handle: { data: inputScript, metadata: { baseIRI: '' }, context },
             handleMediaType: 'text/html',
-          }))).handle.quads))
+          }))).handle.data))
           .toEqualRdfQuadArray([]);
       });
     });
@@ -134,24 +135,26 @@ describe('ActorRdfParseHtml', () => {
 
       beforeEach(() => {
         mediator = {
-          async mediate(action: any) {
-            if (action.mediaTypes === true) {
+          async mediate(
+            action: { handle: IActionRdfParse; mediaTypes: boolean; handleMediaType: string } & IActionRdfParse,
+          ) {
+            if (action.mediaTypes) {
               return Promise.resolve({
                 mediaTypes: {
                   'application/ld+json': 1,
                 },
               });
             }
-            action.input = action.handle.input;
-            action.baseIRI = action.handle.baseIRI;
+            action.data = action.handle.data;
+            action.metadata = action.handle.metadata;
 
-            let output: any;
+            let output: IActorRdfParseOutput | undefined;
             switch (action.handleMediaType) {
               case 'application/ld+json':
                 output = await jsonldParser.runHandle(action, action.handleMediaType, context);
                 break;
             }
-            return Promise.resolve({ handle: { quads: output.quads }});
+            return Promise.resolve({ handle: { data: output?.data }});
           },
         };
 
@@ -167,9 +170,22 @@ describe('ActorRdfParseHtml', () => {
         expect(await arrayifyStream((<any> (await actor
           .run({
             context,
-            handle: { input: inputScript, baseIRI: '', context },
+            handle: { data: inputScript, metadata: { baseIRI: '' }, context },
             handleMediaType: 'text/html',
-          }))).handle.quads))
+          }))).handle.data))
+          .toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]);
+      });
+
+      it('should return a quad stream (with no metadata provided in input handle)', async() => {
+        expect(await arrayifyStream((<any> (await actor
+          .run({
+            context,
+            handle: { data: inputScript, context },
+            handleMediaType: 'text/html',
+          }))).handle.data))
           .toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
@@ -180,10 +196,21 @@ describe('ActorRdfParseHtml', () => {
         await expect(arrayifyStream((<any> (await actor
           .run({
             context,
-            handle: { input: inputScriptError, baseIRI: '', context },
+            handle: { data: inputScriptError, metadata: { baseIRI: '' }, context },
             handleMediaType: 'text/html',
           })))
-          .handle.quads))
+          .handle.data))
+          .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
+      });
+
+      it('should delegate error events (with no metadata provided in input handle)', async() => {
+        await expect(arrayifyStream((<any> (await actor
+          .run({
+            context,
+            handle: { data: inputScriptError, context },
+            handleMediaType: 'text/html',
+          })))
+          .handle.data))
           .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
       });
 
@@ -191,10 +218,10 @@ describe('ActorRdfParseHtml', () => {
         const quads = (<any> (await actor.run(
           {
             context,
-            handle: { input: inputScript, baseIRI: '', context },
+            handle: { data: inputScript, metadata: { baseIRI: '' }, context },
             handleMediaType: 'text/html',
           },
-        ))).handle.quads;
+        ))).handle.data;
         quads._read();
         quads._read();
       });
@@ -213,16 +240,16 @@ describe('ActorRdfParseHtml', () => {
                 },
               });
             }
-            action.input = action.handle.input;
-            action.baseIRI = action.handle.baseIRI;
+            action.data = action.handle.data;
+            action.metadata = action.handle.metadata;
 
-            let output: any;
+            let output: IActorRdfParseOutput | undefined;
             switch (action.handleMediaType) {
               case 'application/ld+json':
                 output = await jsonldParser.runHandle(action, action.handleMediaType, context);
                 break;
             }
-            return Promise.resolve({ handle: { quads: output.quads }});
+            return Promise.resolve({ handle: { data: output?.data }});
           },
         };
 
@@ -242,11 +269,11 @@ describe('ActorRdfParseHtml', () => {
         expect(await arrayifyStream((<any> (await actor.run(
           {
             context,
-            handle: { input: inputScriptRdfa, baseIRI: 'http://ex.org/', context },
+            handle: { data: inputScriptRdfa, metadata: { baseIRI: 'http://ex.org/' }, context },
             handleMediaType: 'text/html',
           },
         )))
-          .handle.quads))
+          .handle.data))
           .toEqualRdfQuadArray([
             quad('http://ex.org/', 'http://purl.org/dc/terms/title', '"Title"'),
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
@@ -280,11 +307,11 @@ describe('ActorRdfParseHtml', () => {
         await expect(arrayifyStream((<any> (await actor.run(
           {
             context,
-            handle: { input: inputSimple, baseIRI: 'http://ex.org/', context },
+            handle: { data: inputSimple, metadata: { baseIRI: 'http://ex.org/' }, context },
             handleMediaType: 'text/html',
           },
         )))
-          .handle.quads)).rejects.toThrow(new Error('ERROR END'));
+          .handle.data)).rejects.toThrow(new Error('ERROR END'));
       });
     });
 
@@ -313,11 +340,11 @@ describe('ActorRdfParseHtml', () => {
         await expect(arrayifyStream((<any> (await actor.run(
           {
             context,
-            handle: { input: inputSimple, baseIRI: 'http://ex.org/', context },
+            handle: { data: inputSimple, metadata: { baseIRI: 'http://ex.org/' }, context },
             handleMediaType: 'text/html',
           },
         )))
-          .handle.quads)).rejects.toThrow(new Error('ERROR CLOSE'));
+          .handle.data)).rejects.toThrow(new Error('ERROR CLOSE'));
       });
     });
 
@@ -343,10 +370,12 @@ describe('ActorRdfParseHtml', () => {
       });
 
       it('should emit an error in the quad stream', async() => {
-        await expect(arrayifyStream((<any> (await actor.run(
-          { context, handle: { input: inputSimple, baseIRI: 'http://ex.org/', context }, handleMediaType: 'text/html' },
-        )))
-          .handle.quads)).rejects.toThrow(new Error('ERROR OPEN'));
+        await expect(arrayifyStream((<any> (await actor.run({
+          context,
+          handle: { data: inputSimple, metadata: { baseIRI: 'http://ex.org/' }, context },
+          handleMediaType: 'text/html',
+        })))
+          .handle.data)).rejects.toThrow(new Error('ERROR OPEN'));
       });
     });
 
@@ -372,10 +401,10 @@ describe('ActorRdfParseHtml', () => {
       });
 
       it('should emit an error in the quad stream', async() => {
-        await expect(arrayifyStream((<any> (await actor.run(
-          { context, handle: { input: inputSimple, baseIRI: 'http://ex.org/', context }, handleMediaType: 'text/html' },
-        )))
-          .handle.quads)).rejects.toThrow(new Error('ERROR TEXT'));
+        await expect(arrayifyStream((<any> (await actor.run({ context,
+          handle: { data: inputSimple, metadata: { baseIRI: 'http://ex.org/' }, context },
+          handleMediaType: 'text/html' })))
+          .handle.data)).rejects.toThrow(new Error('ERROR TEXT'));
       });
     });
   });

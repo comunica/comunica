@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 
@@ -182,3 +182,12 @@ export interface IActorOutputAbstractMediaTypedMediaTypeFormats extends IActorOu
    */
   mediaTypeFormats: Record<string, string>;
 }
+
+export type MediateMediaTypes = Mediate<
+IActionAbstractMediaTypedMediaTypes, IActorOutputAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes>;
+
+export type MediateMediaTyped<I extends IAction, T extends IActorTest, O extends IActorOutput> = Mediate<
+IActionAbstractMediaTypedHandle<I>,
+IActorOutputAbstractMediaTypedHandle<O>,
+IActorTestAbstractMediaTypedHandle<T>
+>;

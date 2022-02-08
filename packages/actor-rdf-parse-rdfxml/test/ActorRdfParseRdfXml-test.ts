@@ -111,13 +111,21 @@ describe('ActorRdfParseRdfXml', () => {
       });
 
       it('should run on application/rdf+xml', () => {
-        return actor.run({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/rdf+xml', context })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(4));
+        return actor.run({
+          handle: { data: input, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/rdf+xml',
+          context,
+        })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toHaveLength(4));
       });
 
       it('should parse application/rdf+xml correctly', () => {
-        return actor.run({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/rdf+xml', context })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+        return actor.run({
+          handle: { data: input, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/rdf+xml',
+          context,
+        })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
             quad('http://www.w3.org/TR/rdf-syntax-grammar',
               'http://purl.org/dc/elements/1.1/title',
               '"RDF1.1 XML Syntax"'),
@@ -127,10 +135,12 @@ describe('ActorRdfParseRdfXml', () => {
       });
 
       it('should forward stream errors', async() => {
-        await expect(arrayifyStream((<any> (await actor.run(
-          { handle: { input: inputError, baseIRI: '', context }, handleMediaType: 'application/trig', context },
-        )))
-          .handle.quads)).rejects.toBeTruthy();
+        await expect(arrayifyStream((<any> (await actor.run({
+          handle: { data: inputError, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/trig',
+          context,
+        })))
+          .handle.data)).rejects.toBeTruthy();
       });
     });
 

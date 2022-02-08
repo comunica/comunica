@@ -10,7 +10,7 @@
     {
       "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#hypermedia",
       "@type": "ActorRdfResolveQuadPatternHypermedia",
-      "mediatorRdfDereference": { "@id": "urn:comunica:default:rdf-dereference/mediators#main" },
+      "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
       "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
       "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },
       "mediatorRdfResolveHypermedia": { "@id": "urn:comunica:default:rdf-resolve-hypermedia/mediators#main" },

@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@comunica/bus-http-invalidate": "^2.0.0",
-    "@comunica/bus-rdf-dereference": "^2.0.0",
+    "@comunica/bus-dereference-rdf": "^2.0.0",
     "@comunica/bus-rdf-metadata": "^2.0.0",
     "@comunica/bus-rdf-metadata-extract": "^2.0.0",
     "@comunica/bus-rdf-update-hypermedia": "^2.0.0",

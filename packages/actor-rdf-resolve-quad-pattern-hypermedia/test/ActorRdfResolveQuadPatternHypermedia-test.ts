@@ -1,65 +1,37 @@
-import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
+import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
-import { ArrayIterator } from 'asynciterator';
+import 'jest-rdf';
 import { MediatedQuadSource } from '..';
 import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
+import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let bus: any;
-  let mediatorRdfDereference: any;
-  let mediatorMetadata: any;
-  let mediatorMetadataExtract: any;
-  let mediatorRdfResolveHypermedia: any;
-  let mediatorRdfResolveHypermediaLinks: any;
-  let mediatorRdfResolveHypermediaLinksQueue: any;
+  let mediatorDereferenceRdf: MediatorDereferenceRdf;
+  let mediatorMetadata: MediatorRdfMetadata;
+  let mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  let mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
+  let mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
+  let mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    mediatorRdfDereference = {
-      async mediate({ url }: any) {
-        const data = {
-          quads: url === 'firstUrl' ?
-            new ArrayIterator([
-              quad('s1', 'p1', 'o1'),
-              quad('s2', 'p2', 'o2'),
-            ], { autoStart: false }) :
-            new ArrayIterator([
-              quad('s3', 'p3', 'o3'),
-              quad('s4', 'p4', 'o4'),
-            ], { autoStart: false }),
-          triples: true,
-          url,
-        };
-        data.quads.setProperty('metadata', { firstMeta: true });
-        return data;
-      },
-    };
-    mediatorMetadata = {
-      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }}),
-    };
-    mediatorMetadataExtract = {
-      mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
-    };
-    mediatorRdfResolveHypermedia = {
-      mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
-        dataset: 'MYDATASET',
-        source: {
-          match: () => quads.clone(),
-        },
-      }),
-    };
-    mediatorRdfResolveHypermediaLinks = {
-      mediate: () => Promise.resolve({ links: [{ url: 'next' }]}),
-    };
-    mediatorRdfResolveHypermediaLinksQueue = {
-      mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
-    };
+    mediatorDereferenceRdf = utilMediators.mediatorDereferenceRdf;
+    mediatorMetadata = utilMediators.mediatorMetadata;
+    mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
+    mediatorRdfResolveHypermedia = utilMediators.mediatorRdfResolveHypermedia;
+    mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
+    mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
   });
 
   describe('The ActorRdfResolveQuadPatternHypermedia module', () => {
@@ -70,7 +42,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
     it('should be a ActorRdfResolveQuadPatternHypermedia constructor', () => {
       expect(new (<any> ActorRdfResolveQuadPatternHypermedia)({
         bus,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfResolveHypermedia,
@@ -87,7 +59,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         bus,
         cacheSize: 10,
         httpInvalidator,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfResolveHypermedia,
@@ -118,7 +90,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
@@ -255,7 +227,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           httpInvalidator,
           mediatorMetadata,
           mediatorMetadataExtract,
-          mediatorRdfDereference,
+          mediatorDereferenceRdf,
           mediatorRdfResolveHypermedia,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,

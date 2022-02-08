@@ -1,4 +1,5 @@
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
+import type { IActionRdfParseHtml, IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
@@ -35,8 +36,8 @@ describe('ActorRdfParseHtml', () => {
             fail: 1,
           }});
         }
-        action.input = action.handle.input;
-        action.baseIRI = action.handle.baseIRI;
+        action.data = action.handle.data;
+        action.metadata = action.handle.metadata;
 
         let output: any;
         switch (action.handleMediaType) {
@@ -46,7 +47,9 @@ describe('ActorRdfParseHtml', () => {
           case 'fail':
             return Promise.reject(new Error('Parsing failure'));
         }
-        return Promise.resolve({ handle: { quads: output.quads }});
+        return Promise.resolve({
+          handle: { data: output.data },
+        });
       },
     };
 
@@ -95,7 +98,7 @@ describe('ActorRdfParseHtml', () => {
       let error: any;
       let end: any;
       let onEnd: any;
-      let action: any;
+      let action: IActionRdfParseHtml;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/';
@@ -105,7 +108,7 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({}) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -114,7 +117,7 @@ describe('ActorRdfParseHtml', () => {
       });
 
       describe('the html listener', () => {
-        let listener: any;
+        let listener: IHtmlParseListener;
         beforeEach(async() => {
           listener = (await actor.run(action)).htmlParseListener;
         });
@@ -400,7 +403,7 @@ describe('ActorRdfParseHtml', () => {
       let error: any;
       let end: any;
       let onEnd: any;
-      let action: any;
+      let action: IActionRdfParseHtml;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/#scriptId';
@@ -410,7 +413,7 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({}) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -552,7 +555,7 @@ describe('ActorRdfParseHtml', () => {
       let error: any;
       let end: any;
       let onEnd: any;
-      let action: any;
+      let action: IActionRdfParseHtml;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/';
@@ -619,7 +622,7 @@ describe('ActorRdfParseHtml', () => {
       let error: any;
       let end: any;
       let onEnd: any;
-      let action: any;
+      let action: IActionRdfParseHtml;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/#scriptId';

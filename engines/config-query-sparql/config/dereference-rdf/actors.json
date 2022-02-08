@@ -1,0 +1,18 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-dereference-rdf-parse/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:dereference-rdf/actors#parse",
+      "@type": "ActorDereferenceRdfParse",
+      "mediatorParseMediatypes": { "@id": "urn:comunica:default:rdf-parse/mediators#mediaType" },
+      "mediatorParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" },
+      "mediatorDereference": { "@id": "urn:comunica:default:dereference/mediators#main" }
+    }
+  ]
+}

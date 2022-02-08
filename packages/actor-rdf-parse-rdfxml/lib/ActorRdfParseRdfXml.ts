@@ -23,11 +23,11 @@ export class ActorRdfParseRdfXml extends ActorRdfParseFixedMediaTypes {
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
-    action.input.on('error', error => quads.emit('error', error));
-    const quads = action.input.pipe(new RdfXmlParser({ baseIRI: action.baseIRI }));
+    action.data.on('error', error => data.emit('error', error));
+    const data = action.data.pipe(new RdfXmlParser({ baseIRI: action.metadata?.baseIRI }));
     return {
-      quads,
-      triples: true,
+      data,
+      metadata: { triples: true },
     };
   }
 }

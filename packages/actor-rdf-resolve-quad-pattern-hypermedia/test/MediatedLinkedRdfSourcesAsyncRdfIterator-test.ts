@@ -1,5 +1,11 @@
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import type {
+  IActionDereferenceRdf,
+  IActorDereferenceRdfOutput,
+  MediatorDereferenceRdf,
+} from '@comunica/bus-dereference-rdf';
+import type { IActionRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -15,7 +21,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let p;
     let o;
     let g;
-    let mediatorRdfDereference: any;
+    let mediatorDereferenceRdf: MediatorDereferenceRdf;
     let mediatorMetadata: any;
     let mediatorMetadataExtract: any;
     let mediatorRdfResolveHypermedia: any;
@@ -28,11 +34,13 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       p = DF.namedNode('p');
       o = DF.namedNode('o');
       g = DF.namedNode('g');
-      mediatorRdfDereference = {
-        mediate: jest.fn(({ url }: any) => Promise.resolve({
+      // @ts-expect-error
+      mediatorDereferenceRdf = {
+        // @ts-expect-error
+        mediate: jest.fn(({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> => Promise.resolve({
           url,
-          quads: `QUADS(${url})+METADATA`,
-          triples: true,
+          data: `QUADS(${url})+METADATA`,
+          metadata: { triples: true },
           headers: 'HEADERS',
         })),
       };
@@ -44,10 +52,11 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediate: jest.fn(({ metadata }: any) => Promise.resolve({ metadata: { myKey: metadata }})),
       };
       mediatorRdfResolveHypermedia = {
-        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
-          dataset: 'MYDATASET',
-          source: { sourceContents: quads },
-        })),
+        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: IActionRdfResolveHypermedia) =>
+          Promise.resolve({
+            dataset: 'MYDATASET',
+            source: { sourceContents: quads },
+          })),
       };
       mediatorRdfResolveHypermediaLinks = {
         mediate: jest.fn(({ metadata }: any) => Promise
@@ -59,7 +68,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       const mediators: any = {
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
@@ -140,7 +149,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should get urls based on mediatorRdfResolveHypermedia without dataset id', async() => {
-        mediatorRdfResolveHypermedia.mediate = ({ forceSourceType, handledDatasets, metadata, quads }: any) =>
+        mediatorRdfResolveHypermedia.mediate = ({
+          forceSourceType, handledDatasets, metadata, quads,
+        }: IActionRdfResolveHypermedia) =>
           Promise.resolve({
             source: { sourceContents: quads },
           });
@@ -170,7 +181,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
         });
-        expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith({
+        expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
           context: new ActionContext({ a: 'b' }),
         });
@@ -198,7 +209,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
       it('should delegate dereference errors to the source', async() => {
         const error = new Error('MediatedLinkedRdfSourcesAsyncRdfIterator dereference error');
-        mediatorRdfDereference.mediate = () => Promise.reject(error);
+        mediatorDereferenceRdf.mediate = () => Promise.reject(error);
         const ret = await source.getSource({ url: 'startUrl' }, {});
         expect(ret).toEqual({
           link: { url: 'startUrl' },

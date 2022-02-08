@@ -13,7 +13,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
   let metadata: any;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
-  let mediatorRdfDereference: any;
+  let mediatorDereferenceRdf: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -24,7 +24,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
     mediatorMetadataExtract = {
       mediate: () => Promise.resolve({ next: 'NEXT' }),
     };
-    mediatorRdfDereference = {
+    mediatorDereferenceRdf = {
       mediate: () => Promise.resolve({}),
     };
 
@@ -32,7 +32,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       bus,
       mediatorMetadata,
       mediatorMetadataExtract,
-      mediatorRdfDereference,
+      mediatorDereferenceRdf,
       name: 'actor',
       objectUri: 'o',
       predicateUri: 'p',
@@ -66,7 +66,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       expect(new (<any> ActorRdfResolveHypermediaQpf)({ bus,
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         name: 'actor',
         objectUri: 'o',
         predicateUri: 'p',
@@ -75,7 +75,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       expect(new (<any> ActorRdfResolveHypermediaQpf)({ bus,
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         graphUri: 'g',
         name: 'actor',
         objectUri: 'o',
@@ -105,7 +105,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       expect(source).toBeInstanceOf(RdfSourceQpf);
       expect(source.mediatorMetadata).toBe(mediatorMetadata);
       expect(source.mediatorMetadataExtract).toBe(mediatorMetadataExtract);
-      expect(source.mediatorRdfDereference).toBe(mediatorRdfDereference);
+      expect(source.mediatorDereferenceRdf).toBe(mediatorDereferenceRdf);
       expect(source.subjectUri).toEqual('s');
       expect(source.predicateUri).toEqual('p');
       expect(source.objectUri).toEqual('o');

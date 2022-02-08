@@ -21,20 +21,22 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should be a ActorRdfParseN3 constructor', () => {
-      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypePriorities: {}}))
+      expect(new (<any>ActorRdfParseN3)({ name: 'actor', bus, mediaTypePriorities: {}}))
         .toBeInstanceOf(ActorRdfParseN3);
-      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypePriorities: {}}))
+      expect(new (<any>ActorRdfParseN3)({ name: 'actor', bus, mediaTypePriorities: {}}))
         .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
     });
 
     it('should not be able to create new ActorRdfParseN3 objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfParseN3)(); }).toThrow();
+      expect(() => { (<any>ActorRdfParseN3)(); }).toThrow();
     });
 
     it('should not throw an error when constructed with required arguments', () => {
-      expect(() => { new ActorRdfParseN3(
-        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}},
-      ); }).toBeTruthy();
+      expect(() => {
+        new ActorRdfParseN3(
+          { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}},
+        );
+      }).toBeTruthy();
     });
 
     it('when constructed with optional mediaTypePriorities should set the mediaTypePriorities', () => {
@@ -44,9 +46,11 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
-      expect(() => { new ActorRdfParseN3(
-        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
-      ); }).toBeTruthy();
+      expect(() => {
+        new ActorRdfParseN3(
+          { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
+        );
+      }).toBeTruthy();
     });
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
@@ -68,9 +72,11 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with optional arguments', () => {
-      expect(() => { new ActorRdfParseN3(
-        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
-      ); }).toBeTruthy();
+      expect(() => {
+        new ActorRdfParseN3(
+          { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
+        );
+      }).toBeTruthy();
     });
   });
 
@@ -80,7 +86,8 @@ describe('ActorRdfParseN3', () => {
     let inputError: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfParseN3({ bus,
+      actor = new ActorRdfParseN3({
+        bus,
         mediaTypePriorities: {
           'application/trig': 1,
           'application/n-quads': 0.7,
@@ -89,7 +96,8 @@ describe('ActorRdfParseN3', () => {
           'text/n3': 0.2,
         },
         mediaTypeFormats: {},
-        name: 'actor' });
+        name: 'actor',
+      });
     });
 
     describe('for parsing', () => {
@@ -102,51 +110,107 @@ describe('ActorRdfParseN3', () => {
         inputError._read = () => inputError.emit('error', new Error('ParseN3'));
       });
 
-      it('should test on TriG', () => {
-        return expect(actor
-          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/trig', context }))
+      it('should test on TriG', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'application/trig', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'application/trig',
+            context,
+          }))
           .resolves.toBeTruthy();
       });
 
-      it('should test on N-Quads', () => {
-        return expect(actor
-          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/n-quads', context }))
+      it('should test on N-Quads', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'application/n-quads', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'application/n-quads',
+            context,
+          }))
           .resolves.toBeTruthy();
       });
 
-      it('should test on Turtle', () => {
-        return expect(actor
-          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'text/turtle', context }))
+      it('should test on Turtle', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'text/turtle', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'text/turtle',
+            context,
+          }))
           .resolves.toBeTruthy();
       });
 
-      it('should test on N-Triples', () => {
-        return expect(actor
-          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/n-triples', context }))
+      it('should test on N-Triples', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'application/n-triples', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'application/n-triples',
+            context,
+          }))
           .resolves.toBeTruthy();
       });
 
-      it('should not test on JSON-LD', () => {
-        return expect(actor
-          .test({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/ld+json', context }))
+      it('should not test on JSON-LD', async() => {
+        await expect(actor
+          .test({
+            handle: { data: input, context },
+            handleMediaType: 'application/ld+json',
+            context,
+          }))
+          .rejects.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'application/ld+json',
+            context,
+          }))
           .rejects.toBeTruthy();
       });
 
       it('should run on text/turtle', () => {
-        return actor.run({ handle: { input, baseIRI: '', context }, handleMediaType: 'text/turtle', context })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
+        return actor.run({
+          handle: { data: input, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'text/turtle',
+          context,
+        })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toHaveLength(2));
       });
 
       it('should run on application/trig', () => {
-        return actor.run({ handle: { input, baseIRI: '', context }, handleMediaType: 'application/trig', context })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
+        return actor.run({
+          handle: { data: input, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/trig',
+          context,
+        })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toHaveLength(2));
       });
 
       it('should forward stream errors', async() => {
-        await expect(arrayifyStream((<any> (await actor.run(
-          { handle: { input: inputError, baseIRI: '', context }, handleMediaType: 'application/trig', context },
+        await expect(arrayifyStream((<any>(await actor.run(
+          { handle: { data: inputError, context }, handleMediaType: 'application/trig', context },
         )))
-          .handle.quads)).rejects.toBeTruthy();
+          .handle.data)).rejects.toBeTruthy();
+      });
+
+      it('should forward stream errors (with no metadata in input handle)', async() => {
+        await expect(arrayifyStream((<any>(await actor.run({
+          handle: { data: inputError, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/trig',
+          context,
+        })))
+          .handle.data)).rejects.toBeTruthy();
       });
     });
 
@@ -156,35 +220,41 @@ describe('ActorRdfParseN3', () => {
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
-          'application/trig': 1,
-          'application/n-quads': 0.7,
-          'text/turtle': 0.6,
-          'application/n-triples': 0.3,
-          'text/n3': 0.2,
-        }});
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
+          mediaTypes: {
+            'application/trig': 1,
+            'application/n-quads': 0.7,
+            'text/turtle': 0.6,
+            'application/n-triples': 0.3,
+            'text/n3': 0.2,
+          },
+        });
       });
 
       it('should run with scaled priorities 0.5', () => {
         actor = new ActorRdfParseN3(
           { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0.5 },
         );
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
-          A: 1,
-          B: 0.5,
-          C: 0,
-        }});
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
+          mediaTypes: {
+            A: 1,
+            B: 0.5,
+            C: 0,
+          },
+        });
       });
 
       it('should run with scaled priorities 0', () => {
         actor = new ActorRdfParseN3(
           { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0 },
         );
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
-          A: 0,
-          B: 0,
-          C: 0,
-        }});
+        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
+          mediaTypes: {
+            A: 0,
+            B: 0,
+            C: 0,
+          },
+        });
       });
     });
   });
