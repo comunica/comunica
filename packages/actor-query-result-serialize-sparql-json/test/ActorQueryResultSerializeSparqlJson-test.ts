@@ -258,7 +258,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     it('should emit an error on a boolean result that rejects', async() => {
       await expect(stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: []},
+          handle: <any> { type: 'boolean', execute: () => Promise.reject(new Error('e')), variables: []},
           handleMediaType: 'simple' },
       ))).handle.data)).rejects.toBeTruthy();
     });
