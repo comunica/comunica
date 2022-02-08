@@ -5,6 +5,7 @@ import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
+import * as streamToString from 'stream-to-string';
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replace(/\\/ug, '/');
@@ -60,29 +61,29 @@ describe('ActorDereferenceFile', () => {
       return expect(actor.test({ url: 'fake.ttl', context })).rejects.toBeTruthy();
     });
 
-    it('should run', () => {
+    it('should run', async () => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const data = fs.createReadStream(p);
-      return expect(actor.run({ url: p, context })).resolves.toMatchObject<Partial<IActorDereferenceOutput>>(
+      const result = await actor.run({ url: p, context });
+      expect(await streamToString(result.data)).toEqual(fs.readFileSync(p).toString());
+      await expect(result).toMatchObject<Partial<IActorDereferenceOutput>>(
         {
-          data,
+          data: expect.anything(),
           exists: true,
           url: p,
         },
       );
     });
 
-    it('should run for file:/// paths', () => {
+    it('should run for file:/// paths', async () => {
       let p = path.join(__dirname, 'dummy.ttl');
-      const data = fs.createReadStream(p);
+      const data = fs.readFileSync(p).toString();
+
       p = `file:///${p}`;
-      return expect(actor.run({ url: p, context })).resolves.toMatchObject<Partial<IActorDereferenceOutput>>(
+      const result = await actor.run({ url: p, context })
+      expect(await streamToString(result.data)).toEqual(data);
+      expect(result).toMatchObject<Partial<IActorDereferenceOutput>>(
         {
-          data: {
-            ...data,
-            // @ts-expect-error We need to do this since the path in the buffer has // at the start
-            path: `/${path.join(__dirname, 'dummy.ttl')}`,
-          },
+          data: expect.anything(),
           exists: true,
           url: p,
         },
