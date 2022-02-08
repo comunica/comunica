@@ -28,7 +28,7 @@ export class MediatorCombinePipeline
     // Pass action to first actor,
     // and each actor output as input to the following actor.
     let handle: H = action;
-    for (const actor of testResults.map(result => result.actor)) {
+    for (const { actor } of testResults) {
       handle = { ...handle, ...await actor.runObservable(handle) };
     }
 
