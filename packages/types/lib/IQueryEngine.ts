@@ -3,7 +3,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
 import type { IDataSource } from './IDataSource';
 import type { QueryAlgebraContext, QueryStringContext } from './IQueryContext';
-import type { IQueryExplained, QueryEnhanced } from './IQueryOperationResult';
+import type { IQueryExplained, QueryEnhanced, QueryExplainMode } from './IQueryOperationResult';
 
 export type QueryFormatType = string | Algebra.Operation;
 export type SourceType = IDataSource;
@@ -17,16 +17,18 @@ export interface IQueryEngine extends
   QueryAlgebraContext>,
   RDF.SparqlQueryable<QueryFormatType, SourceType, QueryStringContext, QueryAlgebraContext, RDF.SparqlResultSupport> {
   /**
-   * Evaluate the given query
+   * Explain the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
-   * @param context An optional query context.
-   * @return {Promise<IQueryableResult | IQueryExplained>}
+   * @param context A query context.
+   * @param explainMode The explain mode.
+   * @return {Promise<IQueryExplained>}
    *  A promise that resolves to the query output.
    */
-  queryOrExplain: <QueryFormatTypeInner extends QueryFormatType>(
+  explain: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
-  ) => Promise<QueryType | IQueryExplained>;
+    context: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    explainMode: QueryExplainMode,
+  ) => Promise<IQueryExplained>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.

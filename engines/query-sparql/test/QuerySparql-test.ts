@@ -6,7 +6,7 @@ jest.unmock('follow-redirects');
 import type {
   QueryStringContext,
   IQueryBindingsEnhanced,
-  IQueryExplained, QueryBindings,
+  QueryBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Store } from 'n3';
@@ -549,15 +549,14 @@ describe('System test: QuerySparql', () => {
     });
   });
 
-  describe('queryOrExplain', () => {
+  describe('explain', () => {
     describe('a simple SPO on a raw RDF document', () => {
       it('explaining parsing', async() => {
-        const result = <IQueryExplained> await engine.queryOrExplain(`SELECT * WHERE {
+        const result = await engine.explain(`SELECT * WHERE {
       ?s ?p ?o.
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
-          explain: 'parsed',
-        });
+        }, 'parsed');
         expect(result).toEqual({
           explain: true,
           type: 'parsed',
@@ -583,12 +582,11 @@ describe('System test: QuerySparql', () => {
       });
 
       it('explaining logical plan', async() => {
-        const result = <IQueryExplained> await engine.queryOrExplain(`SELECT * WHERE {
+        const result = await engine.explain(`SELECT * WHERE {
       ?s ?p ?o.
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
-          explain: 'logical',
-        });
+        }, 'logical');
         expect(result).toEqual({
           explain: true,
           type: 'logical',
@@ -614,12 +612,11 @@ describe('System test: QuerySparql', () => {
       });
 
       it('explaining physical plan', async() => {
-        const result = <IQueryExplained> await engine.queryOrExplain(`SELECT * WHERE {
+        const result = await engine.explain(`SELECT * WHERE {
       ?s ?p ?o.
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
-          explain: 'physical',
-        });
+        }, 'physical');
         expect(result).toEqual({
           explain: true,
           type: 'physical',

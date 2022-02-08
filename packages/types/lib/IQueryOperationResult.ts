@@ -151,6 +151,7 @@ export type QueryExplainMode = 'parsed' | 'logical' | 'physical';
 
 /**
  * An interface marking an explained query.
+ * WARNING: this API is experimental, and might be changed inbetween major versions.
  */
 export interface IQueryExplained {
   explain: true;

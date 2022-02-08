@@ -83,6 +83,24 @@ export class QueryEngineBase implements IQueryEngine {
   }
 
   /**
+   * Explain the given query
+   * @param {string | Algebra.Operation} query A query string or algebra.
+   * @param context An optional query context.
+   * @param explainMode The explain mode.
+   * @return {Promise<QueryType | IQueryExplained>} A promise that resolves to
+   *                                                               the query output or explanation.
+   */
+  public async explain<QueryFormatTypeInner extends QueryFormatType>(
+    query: QueryFormatTypeInner,
+    context: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    explainMode: QueryExplainMode,
+  ): Promise<IQueryExplained> {
+    context.explain = explainMode;
+    const output = await this.queryOrExplain(query, context);
+    return <IQueryExplained> output;
+  }
+
+  /**
    * Evaluate or explain the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
    * @param context An optional query context.
