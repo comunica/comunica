@@ -143,7 +143,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       it('should test on sparql-results+xml booleans', () => {
         return expect(actor.test(
           { context,
-            handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
+            handle: <any> { type: 'boolean', execute: () => Promise.resolve(true) },
             handleMediaType: 'sparql-results+xml' },
         ))
           .resolves.toBeTruthy();
@@ -257,7 +257,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           context,
           handle: <any> {
             type: 'boolean',
-            booleanResult: Promise.resolve(true),
+            execute: () => Promise.resolve(true),
             metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
@@ -275,7 +275,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           context,
           handle: <any> {
             type: 'boolean',
-            booleanResult: Promise.resolve(false),
+            execute: () => Promise.resolve(false),
             metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
@@ -293,7 +293,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           context,
           handle: <any> {
             type: 'boolean',
-            booleanResult: Promise.reject(new Error('e')),
+            execute: () => Promise.reject(new Error('e')),
             metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',

@@ -102,7 +102,7 @@ describe('ActorQueryOperationAsk', () => {
       const op: any = { operation: { type: 'ask' }};
       return actor.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
-        expect(await output.booleanResult).toBeTruthy();
+        expect(await output.execute()).toBeTruthy();
       });
     });
 
@@ -113,7 +113,7 @@ describe('ActorQueryOperationAsk', () => {
       );
       return actorEmpty.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
-        expect(await output.booleanResult).toBeFalsy();
+        expect(await output.execute()).toBeFalsy();
       });
     });
 
@@ -124,7 +124,7 @@ describe('ActorQueryOperationAsk', () => {
       );
       return actorError.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
-        return expect(output.booleanResult).rejects.toBeTruthy();
+        return expect(output.execute()).rejects.toBeTruthy();
       });
     });
   });

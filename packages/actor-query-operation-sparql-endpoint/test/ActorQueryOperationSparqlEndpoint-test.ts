@@ -329,7 +329,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IQueryOperationResultBoolean = <any> await actor.run(op);
 
-      expect(await output.booleanResult).toEqual(true);
+      expect(await output.execute()).toEqual(true);
     });
 
     it('should run for a CONSTRUCT query', async() => {
@@ -368,11 +368,11 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IQueryOperationResultVoid = <any> await actor.run(op);
 
+      expect(mediatorHttp.mediate).not.toHaveBeenCalled();
+
+      await output.execute();
+
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
-      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeFalsy();
-
-      await output.voidResult;
-
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
     });
 

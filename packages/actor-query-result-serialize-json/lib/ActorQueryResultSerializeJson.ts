@@ -71,7 +71,7 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
       });
     } else {
       try {
-        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).booleanResult)}\n`);
+        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
         data.push(null);
       } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));

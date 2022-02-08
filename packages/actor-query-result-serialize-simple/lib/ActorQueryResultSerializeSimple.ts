@@ -54,13 +54,13 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'boolean') {
       try {
-        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).booleanResult)}\n`);
+        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
         data.push(null);
       } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));
       }
     } else {
-      (<IQueryOperationResultVoid> action).voidResult
+      (<IQueryOperationResultVoid> action).execute()
         .then(() => {
           data.push('ok\n');
           data.push(null);

@@ -1027,7 +1027,7 @@ LIMIT 100
               }
               return Promise.resolve({
                 type: 'boolean',
-                booleanResult: Promise.resolve(true),
+                execute: () => Promise.resolve(true),
               });
             });
 
@@ -1058,7 +1058,7 @@ LIMIT 100
               }
               return Promise.resolve({
                 type: 'void',
-                voidResult: Promise.resolve(true),
+                execute: () => Promise.resolve(true),
               });
             });
 

@@ -26,18 +26,18 @@ export class ActorQueryOperationUpdateCompositeUpdate
 
   public async runOperation(operationOriginal: Algebra.CompositeUpdate, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const updateResult = (async(): Promise<void> => {
+    const execute = (): Promise<void> => (async(): Promise<void> => {
       // Execute update operations in sequence
       for (const operation of operationOriginal.updates) {
         const subResult = ActorQueryOperation
           .getSafeVoid(await this.mediatorQueryOperation.mediate({ operation, context }));
-        await subResult.voidResult;
+        await subResult.execute();
       }
     })();
 
     return {
       type: 'void',
-      voidResult: updateResult,
+      execute,
     };
   }
 }

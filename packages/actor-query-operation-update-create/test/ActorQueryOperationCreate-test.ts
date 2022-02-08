@@ -14,7 +14,7 @@ describe('ActorQueryOperationCreate', () => {
     bus = new Bus({ name: 'bus' });
     mediatorUpdateQuads = {
       mediate: jest.fn(() => Promise.resolve({
-        voidResult: Promise.resolve(),
+        execute: () => Promise.resolve(),
       })),
     };
   });
@@ -54,7 +54,7 @@ describe('ActorQueryOperationCreate', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],
         requireNonExistence: true,
@@ -71,7 +71,7 @@ describe('ActorQueryOperationCreate', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],
         requireNonExistence: false,

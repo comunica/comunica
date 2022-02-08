@@ -26,7 +26,7 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
       { operation: operation.input, context },
     );
     const bindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(output);
-    const booleanResult: Promise<boolean> = new Promise<boolean>((resolve, reject) => {
+    const execute: () => Promise<boolean> = () => new Promise<boolean>((resolve, reject) => {
       // Resolve to true if we find one element, and close immediately
       bindings.bindingsStream.once('data', () => {
         resolve(true);
@@ -39,6 +39,6 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
       // Reject if an error occurs in the stream
       bindings.bindingsStream.on('error', reject);
     });
-    return { type: 'boolean', booleanResult };
+    return { type: 'boolean', execute };
   }
 }

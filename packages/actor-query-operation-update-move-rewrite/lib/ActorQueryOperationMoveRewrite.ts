@@ -30,7 +30,7 @@ export class ActorQueryOperationMoveRewrite extends ActorQueryOperationTypedMedi
         operationOriginal.destination.equals(operationOriginal.source))) {
       return Promise.resolve({
         type: 'void',
-        voidResult: Promise.resolve(),
+        execute: () => Promise.resolve(),
       });
     }
 

@@ -121,12 +121,12 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       case 'ASK':
         return <IQueryOperationResultBoolean>{
           type: 'boolean',
-          booleanResult: this.endpointFetcher.fetchAsk(endpoint, query!),
+          execute: () => this.endpointFetcher.fetchAsk(endpoint, query!),
         };
       default:
         return {
           type: 'void',
-          voidResult: this.endpointFetcher.fetchUpdate(endpoint, query!),
+          execute: () => this.endpointFetcher.fetchUpdate(endpoint, query!),
         };
     }
   }

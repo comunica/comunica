@@ -94,7 +94,7 @@ describe('ActorQueryResultSerializeJson', () => {
       });
 
       it('should test on application/json booleans', () => {
-        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+        return expect(actor.test({ handle: <any> { type: 'boolean', execute: () => Promise.resolve(true), context },
           handleMediaType: 'application/json',
           context }))
           .resolves.toBeTruthy();
@@ -161,7 +161,7 @@ describe('ActorQueryResultSerializeJson', () => {
 
       it('should run on a boolean result resolving to true', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+          { handle: <any> { type: 'boolean', execute: () => Promise.resolve(true), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data))
@@ -171,7 +171,7 @@ describe('ActorQueryResultSerializeJson', () => {
 
       it('should run on a boolean result resolving to false', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), context },
+          { handle: <any> { type: 'boolean', execute: () => Promise.resolve(false), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data))
@@ -197,7 +197,7 @@ describe('ActorQueryResultSerializeJson', () => {
 
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlJson')), context },
+          { handle: <any> { type: 'boolean', execute: () => Promise.reject(new Error('SparqlJson')), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data)).rejects.toBeTruthy();

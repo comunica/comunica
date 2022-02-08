@@ -106,7 +106,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
       });
     } else {
       try {
-        data.push(`"boolean":${await (<IQueryOperationResultBoolean> action).booleanResult}\n}\n`);
+        data.push(`"boolean":${await (<IQueryOperationResultBoolean> action).execute()}\n}\n`);
         data.push(null);
       } catch (error: unknown) {
         data.once('newListener', () => data.emit('error', error));

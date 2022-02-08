@@ -57,14 +57,14 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     }
 
     // Insert quad stream
-    const { voidResult } = await this.mediatorUpdateQuads.mediate({
+    const { execute } = await this.mediatorUpdateQuads.mediate({
       quadStreamInsert: quadStream,
       context,
     });
 
     return {
       type: 'void',
-      voidResult,
+      execute,
     };
   }
 }

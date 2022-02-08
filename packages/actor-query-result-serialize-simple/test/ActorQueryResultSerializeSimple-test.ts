@@ -98,14 +98,14 @@ describe('ActorQueryResultSerializeSimple', () => {
       });
 
       it('should test on simple booleans', () => {
-        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+        return expect(actor.test({ handle: <any> { type: 'boolean', execute: () => Promise.resolve(true), context },
           handleMediaType: 'simple',
           context }))
           .resolves.toBeTruthy();
       });
 
       it('should test on simple update', () => {
-        return expect(actor.test({ handle: <any> { type: 'void', voidResult: Promise.resolve(true), context },
+        return expect(actor.test({ handle: <any> { type: 'void', execute: () => Promise.resolve(true), context },
           handleMediaType: 'simple',
           context }))
           .resolves.toBeTruthy();
@@ -159,7 +159,7 @@ graph:
 
       it('should run on a boolean result that resolves to true', async() => {
         expect(await stringifyStream((<any> (await actor.run({
-          handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), context },
+          handle: <any> { type: 'boolean', execute: () => Promise.resolve(true), context },
           handleMediaType: 'simple',
           context,
         })))
@@ -171,7 +171,7 @@ graph:
 
       it('should run on a boolean result that resolves to false', async() => {
         expect(await stringifyStream((<any> (await actor.run({
-          handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), context },
+          handle: <any> { type: 'boolean', execute: () => Promise.resolve(false), context },
           handleMediaType: 'simple',
           context,
         })))
@@ -183,7 +183,7 @@ graph:
 
       it('should run on an update result that resolves to false', async() => {
         expect(await stringifyStream((<any> (await actor.run({
-          handle: <any> { type: 'void', voidResult: Promise.resolve(), context },
+          handle: <any> { type: 'void', execute: () => Promise.resolve(), context },
           handleMediaType: 'simple',
           context,
         })))
@@ -211,7 +211,7 @@ graph:
 
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlSimple')), context },
+          { handle: <any> { type: 'boolean', execute: () => Promise.reject(new Error('SparqlSimple')), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data)).rejects.toBeTruthy();
@@ -219,7 +219,7 @@ graph:
 
       it('should emit an error when the update is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'void', voidResult: Promise.reject(new Error('SparqlSimple')), context },
+          { handle: <any> { type: 'void', execute: () => Promise.reject(new Error('SparqlSimple')), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data)).rejects.toBeTruthy();

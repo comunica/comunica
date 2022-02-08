@@ -25,7 +25,7 @@ describe('ActorQueryOperationLoad', () => {
     };
     mediatorUpdateQuads = {
       mediate: jest.fn(() => Promise.resolve({
-        voidResult: Promise.resolve(),
+        execute: () => Promise.resolve(),
       })),
     };
   });
@@ -64,7 +64,7 @@ describe('ActorQueryOperationLoad', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
@@ -89,7 +89,7 @@ describe('ActorQueryOperationLoad', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
@@ -115,7 +115,7 @@ describe('ActorQueryOperationLoad', () => {
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
     });
 
@@ -129,7 +129,7 @@ describe('ActorQueryOperationLoad', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('GRAPH')),
       ]);
@@ -150,7 +150,7 @@ describe('ActorQueryOperationLoad', () => {
       });
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([]);
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
     });
@@ -165,7 +165,7 @@ describe('ActorQueryOperationLoad', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);

@@ -319,13 +319,13 @@ export class QueryEngineBase implements IQueryEngine {
       case 'boolean':
         return {
           resultType: 'boolean',
-          execute: async() => internalResult.booleanResult,
+          execute: async() => internalResult.execute(),
           context: internalResult.context,
         };
       case 'void':
         return {
           resultType: 'void',
-          execute: async() => internalResult.voidResult,
+          execute: async() => internalResult.execute(),
           context: internalResult.context,
         };
     }
@@ -352,12 +352,12 @@ export class QueryEngineBase implements IQueryEngine {
       case 'boolean':
         return {
           type: 'boolean',
-          booleanResult: finalResult.execute(),
+          execute: () => finalResult.execute(),
         };
       case 'void':
         return {
           type: 'void',
-          voidResult: finalResult.execute(),
+          execute: () => finalResult.execute(),
         };
     }
   }

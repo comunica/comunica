@@ -52,7 +52,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
     it('should run without streams', () => {
       return actor.run({}).then(async(output: any) => {
-        await expect(output.voidResult).resolves.toBeUndefined();
+        await expect(output.execute()).resolves.toBeUndefined();
       });
     });
 
@@ -61,7 +61,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
         quadStreamInsert: new ArrayIterator([]),
         quadStreamDelete: new ArrayIterator([]),
       }).then(async(output: any) => {
-        await expect(output.voidResult).resolves.toBeUndefined();
+        await expect(output.execute()).resolves.toBeUndefined();
       });
     });
   });

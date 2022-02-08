@@ -14,7 +14,7 @@ describe('ActorQueryOperationDrop', () => {
     bus = new Bus({ name: 'bus' });
     mediatorUpdateQuads = {
       mediate: jest.fn(() => Promise.resolve({
-        voidResult: Promise.resolve(),
+        execute: () => Promise.resolve(),
       })),
     };
   });
@@ -53,7 +53,7 @@ describe('ActorQueryOperationDrop', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: DF.defaultGraph(),
         requireExistence: true,
@@ -71,7 +71,7 @@ describe('ActorQueryOperationDrop', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: DF.defaultGraph(),
         requireExistence: false,
@@ -88,7 +88,7 @@ describe('ActorQueryOperationDrop', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: 'ALL',
         requireExistence: true,
@@ -105,7 +105,7 @@ describe('ActorQueryOperationDrop', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: 'NAMED',
         requireExistence: true,
@@ -122,7 +122,7 @@ describe('ActorQueryOperationDrop', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],
         requireExistence: true,

@@ -321,7 +321,7 @@ describe('QueryEngineBase', () => {
         it('handles a valid boolean query', async() => {
           mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({
             type: 'boolean',
-            booleanResult: Promise.resolve(true),
+            execute: () => Promise.resolve(true),
           }));
           expect(await queryEngine.queryBoolean('ASK ...')).toEqual(true);
         });
@@ -337,7 +337,7 @@ describe('QueryEngineBase', () => {
         it('handles a valid void query', async() => {
           mediatorQueryOperation.mediate = jest.fn(() => Promise.resolve({
             type: 'void',
-            voidResult: Promise.resolve(true),
+            execute: () => Promise.resolve(true),
           }));
           expect(await queryEngine.queryVoid('INSERT ...')).toEqual(true);
         });
@@ -529,7 +529,7 @@ describe('QueryEngineBase', () => {
     it('converts booleans', async() => {
       const final = <QueryType & RDF.QueryBoolean> QueryEngineBase.internalToFinalResult({
         type: 'boolean',
-        booleanResult: Promise.resolve(true),
+        execute: () => Promise.resolve(true),
         context: new ActionContext({ c: 'd' }),
       });
 
@@ -541,7 +541,7 @@ describe('QueryEngineBase', () => {
     it('converts voids', async() => {
       const final = <QueryType & RDF.QueryVoid> QueryEngineBase.internalToFinalResult({
         type: 'void',
-        voidResult: Promise.resolve(),
+        execute: () => Promise.resolve(),
         context: new ActionContext({ c: 'd' }),
       });
 
@@ -606,7 +606,7 @@ describe('QueryEngineBase', () => {
       });
 
       expect(final.type).toEqual('boolean');
-      expect(await final.booleanResult).toEqual(true);
+      expect(await final.execute()).toEqual(true);
     });
 
     it('converts voids', async() => {
@@ -617,7 +617,7 @@ describe('QueryEngineBase', () => {
       });
 
       expect(final.type).toEqual('void');
-      expect(await final.voidResult).toBeUndefined();
+      expect(await final.execute()).toBeUndefined();
     });
   });
 });

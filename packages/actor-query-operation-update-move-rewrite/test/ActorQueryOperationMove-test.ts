@@ -15,7 +15,7 @@ describe('ActorQueryOperationMove', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => Promise.resolve({
-        voidResult: Promise.resolve(),
+        execute: () => Promise.resolve(),
         type: 'void',
       })),
     };
@@ -57,7 +57,7 @@ describe('ActorQueryOperationMove', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
@@ -78,7 +78,7 @@ describe('ActorQueryOperationMove', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
@@ -99,7 +99,7 @@ describe('ActorQueryOperationMove', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).not.toHaveBeenCalled();
     });
 
@@ -114,7 +114,7 @@ describe('ActorQueryOperationMove', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).not.toHaveBeenCalled();
     });
 
@@ -129,7 +129,7 @@ describe('ActorQueryOperationMove', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
@@ -150,7 +150,7 @@ describe('ActorQueryOperationMove', () => {
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
-      await expect(output.voidResult).resolves.toBeUndefined();
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: factory.createCompositeUpdate([
           factory.createDrop('DEFAULT', true),

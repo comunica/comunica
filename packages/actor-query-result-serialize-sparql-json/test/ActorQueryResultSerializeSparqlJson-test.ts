@@ -142,7 +142,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
 
       it('should test on sparql-results+json booleans', () => {
         return expect(actor.test({ context,
-          handle: <any> { booleanResult: Promise.resolve(true), type: 'boolean' },
+          handle: <any> { execute: () => Promise.resolve(true), type: 'boolean' },
           handleMediaType: 'sparql-results+json' }))
           .resolves.toBeTruthy();
       });
@@ -230,7 +230,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         { context,
           handle: <any> {
             type: 'boolean',
-            booleanResult: Promise.resolve(true),
+            execute: () => Promise.resolve(true),
             metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple' },
@@ -245,7 +245,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     it('should run on a boolean result that resolves to false', async() => {
       expect(await stringifyStream((<any> (await actor.run(
         { context,
-          handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: []},
+          handle: <any> { type: 'boolean', execute: () => Promise.resolve(false), variables: []},
           handleMediaType: 'simple' },
       ))).handle.data)).toEqual(
         `{"head": {},

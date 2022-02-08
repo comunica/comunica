@@ -74,9 +74,9 @@ export interface IQueryOperationResultBoolean extends IQueryOperationResultBase 
    */
   type: 'boolean';
   /**
-   * A promise resolving to the boolean output of the operation.
+   * An async function resolving to the boolean output of the operation.
    */
-  booleanResult: Promise<boolean>;
+  execute: () => Promise<boolean>;
 }
 
 /**
@@ -89,9 +89,9 @@ export interface IQueryOperationResultVoid extends IQueryOperationResultBase {
    */
   type: 'void';
   /**
-   * A promise resolving when the update has finished.
+   * An async function resolving when the update has finished.
    */
-  voidResult: Promise<void>;
+  execute: () => Promise<void>;
 }
 
 /**
