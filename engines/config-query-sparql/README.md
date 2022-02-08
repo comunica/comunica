@@ -16,4 +16,4 @@ $ yarn add @comunica/config-query-sparql
 
 ## Usage
 
-TODO
+Guides on how to use these configuration files and package them into a new engine can be found on our [website](https://comunica.dev/docs/modify/).
