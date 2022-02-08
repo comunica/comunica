@@ -34,7 +34,6 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/context-entries": "^2.0.0",
     "@comunica/types": "^2.0.0",
     "immutable": "^3.8.2"
   },

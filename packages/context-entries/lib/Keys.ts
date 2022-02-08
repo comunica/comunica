@@ -1,5 +1,4 @@
-import { ActionContextKey } from '@comunica/core';
-import type { Logger } from '@comunica/core';
+import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type { Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
@@ -20,10 +19,11 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 
 export const KeysCore = {
+  // We create the core context keys in @comunica/core to avoid a cyclic dependency
   /**
    * A logger instance.
    */
-  log: new ActionContextKey<Logger>('@comunica/core:log'),
+  log: CONTEXT_KEY_LOGGER,
 };
 
 export const KeysHttp = {
