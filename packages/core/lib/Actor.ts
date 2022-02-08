@@ -1,6 +1,6 @@
-import { KeysCore } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 import type { Bus } from './Bus';
+import { CONTEXT_KEY_LOGGER } from './ContextEntries';
 import type { Logger } from './Logger';
 
 /**
@@ -50,7 +50,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @return {Logger} The logger or undefined.
    */
   public static getContextLogger(context: IActionContext): Logger | undefined {
-    return context && context.get(KeysCore.log);
+    return context && context.get(CONTEXT_KEY_LOGGER);
   }
 
   /**
