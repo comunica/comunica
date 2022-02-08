@@ -4,8 +4,8 @@ import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
 import * as streamToString from 'stream-to-string';
+import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replace(/\\/ug, '/');
@@ -61,11 +61,11 @@ describe('ActorDereferenceFile', () => {
       return expect(actor.test({ url: 'fake.ttl', context })).rejects.toBeTruthy();
     });
 
-    it('should run', async () => {
+    it('should run', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
       const result = await actor.run({ url: p, context });
       expect(await streamToString(result.data)).toEqual(fs.readFileSync(p).toString());
-      await expect(result).toMatchObject<Partial<IActorDereferenceOutput>>(
+      expect(result).toMatchObject<Partial<IActorDereferenceOutput>>(
         {
           data: expect.anything(),
           exists: true,
@@ -74,12 +74,12 @@ describe('ActorDereferenceFile', () => {
       );
     });
 
-    it('should run for file:/// paths', async () => {
+    it('should run for file:/// paths', async() => {
       let p = path.join(__dirname, 'dummy.ttl');
       const data = fs.readFileSync(p).toString();
 
       p = `file:///${p}`;
-      const result = await actor.run({ url: p, context })
+      const result = await actor.run({ url: p, context });
       expect(await streamToString(result.data)).toEqual(data);
       expect(result).toMatchObject<Partial<IActorDereferenceOutput>>(
         {
