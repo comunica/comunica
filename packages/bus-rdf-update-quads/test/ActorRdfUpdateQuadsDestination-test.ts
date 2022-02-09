@@ -78,7 +78,6 @@ describe('ActorRdfUpdateQuadsDestination', () => {
   describe('An ActorRdfUpdateQuadsDestination instance with rdfjs source', () => {
     const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
     actor.getDestination = context => {
-      // Console.log('get destination called')
       return Promise.resolve(new RdfJsQuadDestination(context.get(KeysRdfUpdateQuads.destination)));
     };
 
