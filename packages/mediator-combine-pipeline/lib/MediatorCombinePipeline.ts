@@ -24,21 +24,19 @@ export class MediatorCombinePipeline
       return action;
     }
 
-    // Delegate test errors.
     if (this.filterErrors) {
-      const _testResults: IActorReply<A, H, T, H>[] = [];
+      let _testResults: IActorReply<A, H, T, H>[] = [];
       for (const result of testResults) {
         try {
           await result.reply;
           _testResults.push(result);
-        } catch {
-          // Ignore errors
-        }
+        } catch (e) {};
       }
       testResults = _testResults;
     }
 
-    await Promise.all(testResults.map(({ reply }) => reply));
+    // Delegate test errors.
+    await Promise.all(testResults.map(({ reply }) => reply))
 
     // Pass action to first actor,
     // and each actor output as input to the following actor.
