@@ -139,7 +139,7 @@ export class FederatedQuadSource implements IQuadSource {
   public static deskolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sourceId: string): Q {
     return mapTerms(quad, (term: RDF.Term): RDF.Term => {
       const newTerm = FederatedQuadSource.deskolemizeTerm(term, sourceId);
-      // If the term was skolemized in a different source then dont deskoelemize it
+      // If the term was skolemized in a different source then dont deskolemize it
       return !newTerm ? term : newTerm;
     });
   }
