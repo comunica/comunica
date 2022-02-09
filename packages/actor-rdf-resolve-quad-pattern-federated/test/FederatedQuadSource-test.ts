@@ -62,7 +62,7 @@ describe('FederatedQuadSource', () => {
         if (type === 'errorSource') {
           const data = new ArrayIterator([], { autoStart: false });
           let ran = false;
-          (<any> data).read = () => {
+          (<any>data).read = () => {
             if (ran) {
               return null;
             }
@@ -159,7 +159,7 @@ describe('FederatedQuadSource', () => {
     it('should change a blank node', () => {
       expect(FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0'))
         .toEqualRdfTerm(DF.blankNode('urn:comunica_skolem:source_0:abc'));
-      expect((<BlankNodeScoped> FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0')).skolemized)
+      expect((<BlankNodeScoped>FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0')).skolemized)
         .toEqualRdfTerm(DF.namedNode('urn:comunica_skolem:source_0:abc'));
     });
   });
@@ -172,7 +172,7 @@ describe('FederatedQuadSource', () => {
         .toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
     });
 
-    it('should not skolemize blank nodes', () => {
+    it('should skolemize blank nodes', () => {
       expect(FederatedQuadSource.skolemizeQuad(
         DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')), '0',
       ))
@@ -182,6 +182,44 @@ describe('FederatedQuadSource', () => {
           DF.blankNode('urn:comunica_skolem:source_0:o'),
           DF.blankNode('urn:comunica_skolem:source_0:g'),
         ));
+    });
+  });
+
+  describe('#deskolemizeQuad', () => {
+    it('should not skolemize named nodes', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')), '0',
+      ))
+        .toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
+    });
+
+    it('should deskolemize blank nodes with the right id', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(
+          DF.blankNode('urn:comunica_skolem:source_0:s'),
+          DF.blankNode('urn:comunica_skolem:source_0:p'),
+          DF.blankNode('urn:comunica_skolem:source_0:o'),
+          DF.blankNode('urn:comunica_skolem:source_0:g'),
+        ), '0',
+      )).toEqualRdfQuad(DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')));
+    });
+
+    it('should deskolemize blank nodes with the right id but not ones with the wrong id', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(
+          DF.blankNode('urn:comunica_skolem:source_0:s'),
+          DF.blankNode('urn:comunica_skolem:source_1:p'),
+          DF.blankNode('urn:comunica_skolem:source_0:o'),
+          DF.blankNode('urn:comunica_skolem:source_0:g'),
+        ), '0',
+      )).toEqualRdfQuad(
+        DF.quad(
+          DF.blankNode('s'),
+          DF.blankNode('urn:comunica_skolem:source_1:p'),
+          DF.blankNode('o'),
+          DF.blankNode('g'),
+        ),
+      );
     });
   });
 
@@ -416,11 +454,11 @@ describe('FederatedQuadSource', () => {
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });
@@ -451,11 +489,11 @@ describe('FederatedQuadSource', () => {
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });
