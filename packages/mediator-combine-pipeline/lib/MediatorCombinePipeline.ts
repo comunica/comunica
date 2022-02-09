@@ -31,9 +31,8 @@ export class MediatorCombinePipeline
         try {
           await result.reply;
           _testResults.push(result);
-          // eslint-disable-next-line no-empty
         } catch {
-          // ignore errors
+          // Ignore errors
         }
       }
       testResults = _testResults;
