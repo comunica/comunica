@@ -42,21 +42,21 @@ export class MediatorCombinePipeline
     // Delegate test errors.
     testResults = await Promise.all(testResults.map(async({ actor, reply }) => ({ actor, reply: await reply })));
 
-    // A function used to extract an ordering value from a test result
-    const getOrder = (elem: T): number => {
-      // If there is a field key use it, otherwise use the input
-      // element for ordering
-      const value = this.field ? (<any> elem)[this.field] : elem;
-
-      // Check the ordering value is a number
-      if (typeof value !== 'number') {
-        throw new Error('Cannot order elements that are not numbers.');
-      }
-      return value;
-    };
-
     // Order the test results if ordering is enabled
     if (this.order) {
+      // A function used to extract an ordering value from a test result
+      const getOrder = (elem: T): number => {
+        // If there is a field key use it, otherwise use the input
+        // element for ordering
+        const value = this.field ? (<any> elem)[this.field] : elem;
+
+        // Check the ordering value is a number
+        if (typeof value !== 'number') {
+          throw new Error('Cannot order elements that are not numbers.');
+        }
+        return value;
+      };
+
       testResults = testResults.sort((actor1, actor2) =>
         (this.order === 'increasing' ? 1 : -1) *
         (getOrder(actor1.reply) - getOrder(actor2.reply)));
