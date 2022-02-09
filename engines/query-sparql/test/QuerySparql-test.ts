@@ -405,7 +405,7 @@ describe('System test: QuerySparql', () => {
         // There should be 3 quads in this destination store
         // (1) The quad that was originally there
         // (2) The quad _:ex:s <ex:a> <ex:thing>, i.e. the insert applied to the bnode from the destination store
-        // (3) The quad _:bc_1_ex:s <ex:a> <ex:thing> i.e. insert applied the the *different* bnode from store2
+        // (3) The quad _:bc_1_ex:s <ex:a> <ex:thing>, i.e. insert applied the the *different* bnode from store2
         expect(store.size).toEqual(3);
         expect(store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
           .toEqual(1);
