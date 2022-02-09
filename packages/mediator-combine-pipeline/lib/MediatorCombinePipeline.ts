@@ -10,13 +10,15 @@ export class MediatorCombinePipeline
 <A extends Actor<H, T, H>, H extends IAction | (IActorOutput & { context: IActionContext }), T extends IActorTest>
   extends Mediator<A, H, T, H> {
   public readonly filterErrors: boolean | undefined;
+  public readonly order: 'increasing' | 'decreasing' | undefined;
+  public readonly field: string | undefined;
 
   public constructor(args: IMediatorCombinePipelineArgs<A, H, T, H>) {
     super(args);
   }
 
   public async mediate(action: H): Promise<H> {
-    let testResults: IActorReply<A, H, T, H>[];
+    let testResults: IActorReply<A, H, T, H>[] | { actor: A; reply: T }[];
     try {
       testResults = this.publish(action);
     } catch {
@@ -24,7 +26,6 @@ export class MediatorCombinePipeline
       return action;
     }
 
-    // Delegate test errors.
     if (this.filterErrors) {
       const _testResults: IActorReply<A, H, T, H>[] = [];
       for (const result of testResults) {
@@ -38,7 +39,28 @@ export class MediatorCombinePipeline
       testResults = _testResults;
     }
 
-    await Promise.all(testResults.map(({ reply }) => reply));
+    // Delegate test errors.
+    testResults = await Promise.all(testResults.map(async({ actor, reply }) => ({ actor, reply: await reply })));
+
+    // Order the test results if ordering is enabled
+    if (this.order) {
+      // A function used to extract an ordering value from a test result
+      const getOrder = (elem: T): number => {
+        // If there is a field key use it, otherwise use the input
+        // element for ordering
+        const value = this.field ? (<any> elem)[this.field] : elem;
+
+        // Check the ordering value is a number
+        if (typeof value !== 'number') {
+          throw new Error('Cannot order elements that are not numbers.');
+        }
+        return value;
+      };
+
+      testResults = testResults.sort((actor1, actor2) =>
+        (this.order === 'increasing' ? 1 : -1) *
+        (getOrder(actor1.reply) - getOrder(actor2.reply)));
+    }
 
     // Pass action to first actor,
     // and each actor output as input to the following actor.
@@ -62,4 +84,16 @@ export interface IMediatorCombinePipelineArgs<A extends Actor<I, T, O>, I extend
    * If actors that throw test errors should be ignored
    */
   filterErrors?: boolean;
+  /**
+   * The field to use for ordering (if the ordering strategy is chosen).
+   * Leave undefined if the test output is a number rather than an object.
+   */
+  field?: string;
+  /**
+   * The strategy of ordering the pipeline (increasing or decreasing).
+   * For choosing to leave the order of the pipeline unchanged, leave this undefined.
+   * For choosing to order by increasing values: 'increasing'.
+   * For choosing to order by decreasing values: 'decreasing'.
+   */
+  order?: 'increasing' | 'decreasing' | undefined;
 }

@@ -43,3 +43,8 @@ After installing, this mediator can be instantiated as follows:
 
 * `bus`: Identifier of the bus to mediate over.
 * `filterErrors`: Optional flag to indicate if actors that throw test errors should be filtered out of the pipeline, defaults to false.
+* `field`: Optional field to use for ordering (if the ordering strategy is chosen). Leave undefined if the test output is a number rather than an object.
+* `order`: Optional strategy of ordering the pipeline (increasing or decreasing).
+   * For choosing to leave the order of the pipeline unchanged, leave this undefined.
+   * For choosing to order by increasing values: 'increasing'.
+   * For choosing to order by decreasing values: 'decreasing'.
