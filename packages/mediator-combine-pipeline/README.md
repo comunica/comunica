@@ -42,4 +42,4 @@ After installing, this mediator can be instantiated as follows:
 ### Config Parameters
 
 * `bus`: Identifier of the bus to mediate over.
-
+* `filterErrors`: Optional flag to indicate if actors that throw test errors should be filtered out of the pipeline, defaults to false.
