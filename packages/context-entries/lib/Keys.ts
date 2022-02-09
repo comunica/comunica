@@ -201,6 +201,10 @@ export const KeysRdfResolveQuadPattern = {
    * A data source.
    */
   source: new ActionContextKey<IDataSource>('@comunica/bus-rdf-resolve-quad-pattern:source'),
+  /**
+   * A map containing unique IDs for each source
+   */
+  sourceIds: new ActionContextKey<Map<IDataSource, string>>('@comunica/bus-rdf-resolve-quad-pattern:sourceIds'),
 };
 
 export const KeysRdfUpdateQuads = {

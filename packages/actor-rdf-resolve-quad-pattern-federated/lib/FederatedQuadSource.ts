@@ -40,7 +40,7 @@ export class FederatedQuadSource implements IQuadSource {
     this.sources = context.get(KeysRdfResolveQuadPattern.sources)!;
     this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
     this.emptyPatterns = emptyPatterns;
-    this.sourceIds = new Map();
+    this.sourceIds = context.get(KeysRdfResolveQuadPattern.sourceIds) ?? new Map();
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
@@ -128,6 +128,20 @@ export class FederatedQuadSource implements IQuadSource {
       return null;
     }
     return term;
+  }
+
+  /**
+   * Deskolemize all terms in the given quad.
+   * @param quad An RDF quad.
+   * @param sourceId A source identifier.
+   * @return The deskolemized quad.
+   */
+  public static deskolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sourceId: string): Q {
+    return mapTerms(quad, (term: RDF.Term): RDF.Term => {
+      const newTerm = FederatedQuadSource.deskolemizeTerm(term, sourceId);
+      // If the term was skolemized in a different source then dont deskoelemize it
+      return !newTerm ? term : newTerm;
+    });
   }
 
   /**

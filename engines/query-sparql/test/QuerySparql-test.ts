@@ -3,18 +3,18 @@
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
 jest.unmock('follow-redirects');
 
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type {
-  QueryStringContext,
   IQueryBindingsEnhanced,
-  QueryBindings,
+  QueryBindings, QueryStringContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import 'jest-rdf';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { mockHttp } from './util';
-import 'jest-rdf';
 const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
@@ -332,6 +332,90 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(1);
         expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
           .toEqual(1);
+      });
+
+      it('with insert where on a single source', async() => {
+        // Prepare store
+        const store = new Store([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
+          DF.quad(DF.blankNode('s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
+          DF.quad(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
+        ]);
+
+        // Execute query
+        const result = <RDF.QueryVoid> await engine.query(`INSERT {
+          ?s <ex:a> <ex:thing> .
+          ?p <ex:a> <ex:thing> .
+          ?o <ex:a> <ex:thing> .
+        } WHERE { ?s ?p ?o }`, {
+          sources: [ store ],
+        });
+        await result.execute();
+
+        // Check store contents
+        expect(store.size).toEqual(8);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
+          .toEqual(1);
+        expect(store.countQuads(DF.blankNode('s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
+          .toEqual(1);
+        expect(store.countQuads(DF.blankNode('s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()))
+          .toEqual(1);
+        expect(
+          store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
+        )
+          .toEqual(1);
+        expect(
+          store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
+        )
+          .toEqual(1);
+        expect(
+          store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
+        )
+          .toEqual(1);
+        expect(
+          store.countQuads(DF.namedNode('ex:p'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
+        )
+          .toEqual(1);
+        expect(
+          store.countQuads(DF.namedNode('ex:o'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
+        )
+          .toEqual(1);
+      });
+
+      it('with insert where on two sources', async() => {
+        // Prepare store
+        const store = new Store([
+          DF.quad(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
+        ]);
+        const store2 = new Store([
+          DF.quad(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
+        ]);
+
+        // Execute query
+        const result = <RDF.QueryVoid> await engine.query(`INSERT {
+          ?s <ex:a> <ex:thing> .
+        } WHERE { ?s ?p ?o }`, {
+          sources: [ store, store2 ],
+          destination: store,
+          [KeysRdfResolveQuadPattern.sourceIds.name]: new Map(),
+        });
+        await result.execute();
+
+        // Check store contents
+        expect(store.size).toEqual(3);
+        expect(store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
+          .toEqual(1);
+        expect(
+          store.countQuads(
+            DF.blankNode('bc_1_ex:s'),
+            DF.namedNode('ex:a'),
+            DF.namedNode('ex:thing'),
+            DF.defaultGraph(),
+          ),
+        ).toEqual(1);
+        expect(
+          store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
+        );
       });
 
       it('with direct insert and delete', async() => {
