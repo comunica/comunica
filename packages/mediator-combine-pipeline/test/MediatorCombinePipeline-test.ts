@@ -70,7 +70,7 @@ describe('MediatorCombinePipeline', () => {
 
     it('should throw an error when mediate is called', async() => {
       const context = new ActionContext();
-      await expect(() => mediator.mediate({ field: 1, context })).rejects.toThrowError('Dummy Error')
+      await expect(() => mediator.mediate({ field: 1, context })).rejects.toThrowError('Dummy Error');
     });
   });
 
@@ -145,14 +145,13 @@ class DummyThrowActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
   }
 
   public async test(action: IDummyAction): Promise<IActorTest> {
-    throw new Error('Dummy Error')
+    throw new Error('Dummy Error');
   }
 
   public async run(action: IDummyAction): Promise<IDummyOutput> {
     return { field: action.field * this.id + this.id, context: action.context };
   }
 }
-
 
 class DummyActorContextOutput extends DummyActor {
   public async run(action: IDummyAction): Promise<IDummyOutput> {
