@@ -1,14 +1,13 @@
+import type { EventEmitter } from 'stream';
+import { FederatedQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-federated';
 import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import 'jest-rdf';
 import { DataFactory, Store } from 'n3';
-import type { EventEmitter } from 'stream';
-import type { IActorRdfUpdateQuadsOutput } from '..';
-import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '..';
-import { FederatedQuadSource } from '../../actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource';
+import type { IActorRdfUpdateQuadsOutput } from '../lib';
+import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '../lib';
 const { quad, namedNode, blankNode } = DataFactory;
 
 describe('ActorRdfUpdateQuadsDestination', () => {
@@ -76,7 +75,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
   });
 
-  describe('An ActorRdfUpdateQuadsDestination instance', () => {
+  describe('An ActorRdfUpdateQuadsDestination instance with rdfjs source', () => {
     const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
     actor.getDestination = context => {
       // Console.log('get destination called')
@@ -135,7 +134,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 /**
  * A quad destination that wraps around an {@link RDF.Store}.
  */
-export class RdfJsQuadDestination {
+class RdfJsQuadDestination {
   private readonly store;
 
   public constructor(store: RDF.Store) {
