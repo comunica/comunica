@@ -1,8 +1,30 @@
+import { FederatedQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-federated';
+import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorRdfUpdateQuads';
 import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads';
 import type { IQuadDestination } from './IQuadDestination';
+
+function deskolemizeStream(stream: AsyncIterator<RDF.Quad> | undefined, id: string):
+AsyncIterator<RDF.Quad> | undefined {
+  return stream?.map(quad => FederatedQuadSource.deskolemizeQuad(quad, id));
+}
+
+function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuads {
+  const destination = action.context.get(KeysRdfUpdateQuads.destination);
+  const id = action.context.get<Map<any, string>>(KeysRdfResolveQuadPattern.sourceIds)?.get(destination);
+  if (!id) {
+    return action;
+  }
+  return {
+    ...action,
+    quadStreamInsert: deskolemizeStream(action.quadStreamInsert, id),
+    quadStreamDelete: deskolemizeStream(action.quadStreamDelete, id),
+  };
+}
 
 /**
  * A base implementation for rdf-update-quads events
@@ -17,7 +39,7 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
 
   public async run(action: IActionRdfUpdateQuads): Promise<IActorRdfUpdateQuadsOutput> {
     const destination = await this.getDestination(action.context);
-    return await this.getOutput(destination, action, action.context);
+    return await this.getOutput(destination, deskolemize(action), action.context);
   }
 
   /**

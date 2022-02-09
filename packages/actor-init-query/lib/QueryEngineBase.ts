@@ -1,6 +1,6 @@
 import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
-import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { Bindings, IActionContext, IPhysicalQueryPlanLogger,
   IQueryOperationResult,
@@ -137,6 +137,9 @@ export class QueryEngineBase implements IQueryEngine {
     }
     if (!actionContext.has(KeysInitQuery.queryTimestamp)) {
       actionContext = actionContext.set(KeysInitQuery.queryTimestamp, new Date());
+    }
+    if (!actionContext.has(KeysRdfResolveQuadPattern.sourceIds)) {
+      actionContext = actionContext.set(KeysRdfResolveQuadPattern.sourceIds, new Map());
     }
 
     // Set the default logger if none is provided

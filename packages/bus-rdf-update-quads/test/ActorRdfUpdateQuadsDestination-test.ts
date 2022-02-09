@@ -1,6 +1,14 @@
-import { Bus } from '@comunica/core';
+import type { EventEmitter } from 'stream';
+import { FederatedQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-federated';
+import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '..';
+import { DataFactory, Store } from 'n3';
+import type { IActorRdfUpdateQuadsOutput } from '../lib';
+import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '../lib';
+const { quad, namedNode, blankNode } = DataFactory;
 
 describe('ActorRdfUpdateQuadsDestination', () => {
   const bus = new Bus({ name: 'bus' });
@@ -51,7 +59,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
 
     it('should run without streams', () => {
-      return actor.run({}).then(async(output: any) => {
+      return actor.run({ context: new ActionContext() }).then(async(output: any) => {
         await expect(output.execute()).resolves.toBeUndefined();
       });
     });
@@ -60,9 +68,91 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       return actor.run({
         quadStreamInsert: new ArrayIterator([]),
         quadStreamDelete: new ArrayIterator([]),
+        context: new ActionContext(),
       }).then(async(output: any) => {
         await expect(output.execute()).resolves.toBeUndefined();
       });
     });
   });
+
+  describe('An ActorRdfUpdateQuadsDestination instance with rdfjs source', () => {
+    const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
+    actor.getDestination = context => {
+      return Promise.resolve(new RdfJsQuadDestination(context.get(KeysRdfUpdateQuads.destination)));
+    };
+
+    it('should deskolemize quads retrieved from the same source', async() => {
+      const q = quad(blankNode('i'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
+
+      const store = new Store();
+      const context: IActionContext = new ActionContext({
+        [KeysRdfUpdateQuads.destination.name]: store,
+        [KeysRdfResolveQuadPattern.sourceIds.name]: new Map([[ store, '1' ]]),
+      });
+
+      const output: IActorRdfUpdateQuadsOutput = await actor.run({
+        quadStreamInsert: new ArrayIterator([
+          FederatedQuadSource.skolemizeQuad(q, '1'),
+        ], { autoStart: false }),
+        quadStreamDelete: new ArrayIterator([], { autoStart: false }),
+        context,
+      });
+
+      await output.execute();
+
+      expect(store.getQuads(null, null, null, null)).toEqual([ q ]);
+    });
+
+    it('should not deskolemize quads retrieved from a different source', async() => {
+      const q = quad(blankNode('i'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
+      const skolemized = quad(
+        blankNode('bc_1_i'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'),
+      );
+
+      const store = new Store();
+      const context: IActionContext = new ActionContext({
+        [KeysRdfUpdateQuads.destination.name]: store,
+        [KeysRdfResolveQuadPattern.sourceIds.name]: new Map([[ store, '2' ]]),
+      });
+
+      const output: IActorRdfUpdateQuadsOutput = await actor.run({
+        quadStreamInsert: new ArrayIterator([
+          FederatedQuadSource.skolemizeQuad(q, '1'),
+        ], { autoStart: false }),
+        quadStreamDelete: new ArrayIterator([], { autoStart: false }),
+        context,
+      });
+
+      await output.execute();
+
+      expect(store.getQuads(null, null, null, null)).toEqual([ skolemized ]);
+    });
+  });
 });
+
+/**
+ * A quad destination that wraps around an {@link RDF.Store}.
+ */
+class RdfJsQuadDestination {
+  private readonly store;
+
+  public constructor(store: RDF.Store) {
+    this.store = store;
+  }
+
+  protected promisifyEventEmitter(eventEmitter: EventEmitter): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      eventEmitter.on('end', resolve);
+      eventEmitter.on('error', reject);
+    });
+  }
+
+  public delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
+    return this.promisifyEventEmitter(this.store.remove(quads));
+  }
+
+  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
+    return this.promisifyEventEmitter(this.store.import(quads));
+  }
+}
+
