@@ -4,7 +4,8 @@ import type { IActionContext } from '@comunica/types';
 import { MediatorCombinePipeline } from '../lib/MediatorCombinePipeline';
 
 describe('MediatorCombinePipeline', () => {
-  let bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>;
+  let bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>
+  | Bus<DummyConcatActor, IDummyConcatAction, IActorTest, IDummyConcatAction>;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -50,6 +51,102 @@ describe('MediatorCombinePipeline', () => {
       expect(result).toHaveProperty('context');
       expect(result.context).not.toEqual(context);
       expect(result.context.toJS().id).toEqual(1_000);
+    });
+  });
+
+  describe('An ordered (increasing) MediatorCombinePipeline instance', () => {
+    let mediator: MediatorCombinePipeline<DummyConcatActor, IDummyConcatAction, IActorTest>;
+
+    beforeEach(() => {
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, order: 'increasing' });
+      new DummyConcatActor('b', bus, 2);
+      new DummyConcatActor('a', bus, 1);
+      new DummyConcatActor('c', bus, 3);
+    });
+
+    it('should mediate without changing the context', async() => {
+      const context = new ActionContext();
+      const result = await mediator.mediate({ field: '_', context });
+      expect(result).toEqual({ field: '_abc', context });
+    });
+  });
+
+  describe('An ordered (decreasing) MediatorCombinePipeline instance', () => {
+    let mediator: MediatorCombinePipeline<DummyConcatActor, IDummyConcatAction, IActorTest>;
+
+    beforeEach(() => {
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, order: 'decreasing' });
+      new DummyConcatActor('b', bus, 2);
+      new DummyConcatActor('a', bus, 1);
+      new DummyConcatActor('c', bus, 3);
+    });
+
+    it('should mediate without changing the context', async() => {
+      const context = new ActionContext();
+      const result = await mediator.mediate({ field: '_', context });
+      expect(result).toEqual({ field: '_cba', context });
+    });
+  });
+
+  describe('An ordered (decreasing) MediatorCombinePipeline instance with field', () => {
+    let mediator: MediatorCombinePipeline<DummyConcatActor, IDummyConcatAction, IActorTest>;
+
+    beforeEach(() => {
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, order: 'decreasing', field: 'field' });
+      new DummyConcatActor('b', bus, { field: 2 });
+      new DummyConcatActor('a', bus, { field: 1 });
+      new DummyConcatActor('c', bus, { field: 3 });
+    });
+
+    it('should mediate without changing the context', async() => {
+      const context = new ActionContext();
+      const result = await mediator.mediate({ field: '_', context });
+      expect(result).toEqual({ field: '_cba', context });
+    });
+  });
+
+  describe('An ordered (decreasing) MediatorCombinePipeline instance with invalid bus order', () => {
+    let mediator: MediatorCombinePipeline<DummyConcatActor, IDummyConcatAction, IActorTest>;
+
+    beforeEach(() => {
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, order: 'decreasing' });
+      new DummyConcatActor('b', bus, {});
+      new DummyConcatActor('a', bus, {});
+    });
+
+    it('should mediate without changing the context', () => {
+      const context = new ActionContext();
+      return expect(() => mediator.mediate({ field: '_', context })).rejects.toThrowError();
+    });
+  });
+
+  describe('An ordered (decreasing) MediatorCombinePipeline instance with invalid bus field order', () => {
+    let mediator: MediatorCombinePipeline<DummyConcatActor, IDummyConcatAction, IActorTest>;
+
+    beforeEach(() => {
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, order: 'decreasing', field: 'field' });
+      new DummyConcatActor('b', bus, {});
+      new DummyConcatActor('a', bus, {});
+    });
+
+    it('should mediate without changing the context', () => {
+      const context = new ActionContext();
+      return expect(() => mediator.mediate({ field: '_', context })).rejects.toThrowError();
+    });
+  });
+
+  describe('An ordered MediatorCombinePipeline instance  - single actor should still run with bad order', () => {
+    let mediator: MediatorCombinePipeline<DummyConcatActor, IDummyConcatAction, IActorTest>;
+
+    beforeEach(() => {
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, order: 'decreasing', field: 'field' });
+      new DummyConcatActor('a', bus, {});
+    });
+
+    it('should mediate without changing the context', async() => {
+      const context = new ActionContext();
+      const result = await mediator.mediate({ field: '_', context });
+      expect(result).toEqual({ field: '_a', context });
     });
   });
 
@@ -121,14 +218,16 @@ describe('MediatorCombinePipeline', () => {
 
 class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
   public readonly id: number;
+  public readonly testOutput: IActorTest;
 
-  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>) {
+  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>, testOutput: IActorTest) {
     super({ name: `dummy${id}`, bus });
     this.id = id;
+    this.testOutput = testOutput;
   }
 
   public async test(action: IDummyAction): Promise<IActorTest> {
-    return true;
+    return this.testOutput ?? true;
   }
 
   public async run(action: IDummyAction): Promise<IDummyOutput> {
@@ -136,20 +235,34 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
   }
 }
 
-class DummyThrowActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
-  public readonly id: number;
-
-  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>) {
-    super({ name: `dummyThrow${id}`, bus });
-    this.id = id;
+class DummyThrowActor extends DummyActor {
+  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>, testOutput: IActorTest) {
+    super(id, bus, testOutput);
   }
 
   public async test(action: IDummyAction): Promise<IActorTest> {
     throw new Error('Dummy Error');
   }
+}
+class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConcatOutput> {
+  public readonly id: string;
+  public readonly testOutput: IActorTest;
 
-  public async run(action: IDummyAction): Promise<IDummyOutput> {
-    return { field: action.field * this.id + this.id, context: action.context };
+  public constructor(
+    id: string,
+    bus: Bus<DummyConcatActor, IDummyConcatAction, IActorTest, IDummyConcatOutput>, testOutput: IActorTest,
+  ) {
+    super({ name: `dummy${id}`, bus });
+    this.id = id;
+    this.testOutput = testOutput;
+  }
+
+  public async test(action: IDummyConcatAction): Promise<IActorTest> {
+    return this.testOutput ?? true;
+  }
+
+  public async run(action: IDummyConcatAction): Promise<IDummyConcatOutput> {
+    return { field: `${action.field}${this.id}`, context: action.context };
   }
 }
 
@@ -166,7 +279,16 @@ interface IDummyAction extends IAction {
   field: number;
 }
 
+interface IDummyConcatAction extends IAction {
+  field: string;
+}
+
 interface IDummyOutput extends IActorOutput {
   field: number;
+  context: IActionContext;
+}
+
+interface IDummyConcatOutput extends IActorOutput {
+  field: string;
   context: IActionContext;
 }
