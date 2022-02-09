@@ -32,7 +32,9 @@ export class MediatorCombinePipeline
           await result.reply;
           _testResults.push(result);
           // eslint-disable-next-line no-empty
-        } catch {}
+        } catch {
+          // ignore errors
+        }
       }
       testResults = _testResults;
     }
