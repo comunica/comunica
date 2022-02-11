@@ -193,33 +193,33 @@ describe('System test: QuerySparql', () => {
         }`;
 
         it('rejects when record does not match', async() => {
-          const context = <any>{ sources: [ store ]};
+          const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('rejects when creator returns null', async() => {
-          const context = <any>{ sources: [ store ]};
+          const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('with results and pointless custom filter given by creator', async() => {
-          const context = <any>{ sources: [ store ]};
+          const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = baseFunctionCreator;
           const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(store.size);
         });
 
         it('with results and pointless custom filter given by record', async() => {
-          const context = <any>{ sources: [ store ]};
+          const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(4);
         });
 
         it('with results but all filtered away', async() => {
-          const context = <any>{ sources: [ store ]};
+          const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => () =>
             DF.literal('false', booleanType);
           const result = <QueryBindings> await engine.query(baseQuery('rejectAll'), context);
@@ -227,7 +227,7 @@ describe('System test: QuerySparql', () => {
         });
 
         it('throws error when supplying both record and creator', async() => {
-          const context = <any>{ sources: [ store ]};
+          const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           context.extensionFunctionCreator = baseFunctionCreator;
           await expect(engine.query(baseQuery(funcAllow), context)).rejects
@@ -235,7 +235,7 @@ describe('System test: QuerySparql', () => {
         });
 
         it('handles complex queries with BIND to', async() => {
-          const context = <any>{ sources: [ store ]};
+          const context = <any> { sources: [ store ]};
           const complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT ?caps WHERE {
               ?s ?p ?o.
@@ -263,7 +263,7 @@ describe('System test: QuerySparql', () => {
           let extensionBuilder: (timout: boolean) => (args: RDF.Term[]) => Promise<RDF.Term>;
 
           beforeEach(() => {
-            context = <any>{ sources: [ store ]};
+            context = <any> { sources: [ store ]};
             complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT (SUM(func:count-chars(?o)) AS ?sum) WHERE {
               ?s ?p ?o.
