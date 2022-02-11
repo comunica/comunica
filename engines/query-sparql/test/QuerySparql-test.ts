@@ -5,6 +5,7 @@ jest.unmock('follow-redirects');
 
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type {
+  IDataSource,
   IQueryBindingsEnhanced,
   QueryBindings, QueryStringContext,
 } from '@comunica/types';
@@ -93,6 +94,70 @@ describe('System test: QuerySparql', () => {
           .toEqual([]);
       });
 
+      describe('Multiple BGP patterns which overlap', () => {
+        it('?s ?p ?o. ?s ?p2 ?o2.', async() => {
+          const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s ?p ?o. ?s ?p2 ?o2.
+          }`, { source: 'https://www.rubensworks.net/' });
+          expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
+        });
+        it('?s ?p ?o. ?s ?p ?o.', async() => {
+          const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s ?p ?o. ?s ?p ?o.
+          }`, { source: 'https://www.rubensworks.net/' });
+          expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
+        });
+        it('?s a ?o. ?s ?p ?o.', async() => {
+          const result1 = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s a ?o.
+          }`, { source: 'https://www.rubensworks.net/' });
+          const result2 = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s a ?o. ?s ?p ?o.
+          }`, { source: 'https://www.rubensworks.net/' });
+          expect((await arrayifyStream(await result1.execute())).length)
+            .toEqual((await arrayifyStream(await result2.execute())).length);
+        });
+      });
+
+      describe('Multiple BGP patterns which overlap on multiple sources', () => {
+        it('?s ?p ?o. ?s ?p2 ?o2.', async() => {
+          const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s ?p ?o. ?s ?p2 ?o2.
+          }`, { sources: [ 'https://www.rubensworks.net/', new Store() ]});
+          expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
+        });
+        it('?s ?p ?o. ?s ?p ?o.', async() => {
+          const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s ?p ?o. ?s ?p ?o.
+          }`, { sources: [ 'https://www.rubensworks.net/', new Store() ]});
+          expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
+        });
+        it('?s a ?o. ?s ?p ?o.', async() => {
+          const result1 = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s a ?o.
+          }`, { sources: [ 'https://www.rubensworks.net/', new Store() ]});
+          const result2 = <QueryBindings> await engine.query(`SELECT * WHERE {
+            ?s a ?o. ?s ?p ?o.
+          }`, { sources: [ 'https://www.rubensworks.net/', new Store() ]});
+          expect((await arrayifyStream(await result1.execute())).length)
+            .toEqual((await arrayifyStream(await result2.execute())).length);
+        });
+      });
+
+      describe('Multiple BGP patterns which overlap on multiple sources containing bnodes', () => {
+        it('?s a ?o. ?s ?p ?o.', async() => {
+          const sources: [IDataSource, ...IDataSource[]] = [ new Store([
+            DF.quad(DF.blankNode('a'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+          ]), new Store([
+            DF.quad(DF.blankNode('b'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+          ]) ];
+          const result1 = <QueryBindings> await engine.query(`SELECT * WHERE { ?s a ?o. }`, { sources });
+          const result2 = <QueryBindings> await engine.query(`SELECT * WHERE { ?s a ?o. ?s ?p ?o. }`, { sources });
+          expect((await arrayifyStream(await result1.execute())).length)
+            .toEqual((await arrayifyStream(await result2.execute())).length);
+        });
+      });
+
       describe('extension function', () => {
         let funcAllow: string;
         let store: Store;
@@ -128,33 +193,33 @@ describe('System test: QuerySparql', () => {
         }`;
 
         it('rejects when record does not match', async() => {
-          const context = <any> { sources: [ store ]};
+          const context = <any>{ sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('rejects when creator returns null', async() => {
-          const context = <any> { sources: [ store ]};
+          const context = <any>{ sources: [ store ]};
           context.extensionFunctionCreator = () => null;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('with results and pointless custom filter given by creator', async() => {
-          const context = <any> { sources: [ store ]};
+          const context = <any>{ sources: [ store ]};
           context.extensionFunctionCreator = baseFunctionCreator;
           const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(store.size);
         });
 
         it('with results and pointless custom filter given by record', async() => {
-          const context = <any> { sources: [ store ]};
+          const context = <any>{ sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(4);
         });
 
         it('with results but all filtered away', async() => {
-          const context = <any> { sources: [ store ]};
+          const context = <any>{ sources: [ store ]};
           context.extensionFunctionCreator = () => () =>
             DF.literal('false', booleanType);
           const result = <QueryBindings> await engine.query(baseQuery('rejectAll'), context);
@@ -162,7 +227,7 @@ describe('System test: QuerySparql', () => {
         });
 
         it('throws error when supplying both record and creator', async() => {
-          const context = <any> { sources: [ store ]};
+          const context = <any>{ sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           context.extensionFunctionCreator = baseFunctionCreator;
           await expect(engine.query(baseQuery(funcAllow), context)).rejects
@@ -170,7 +235,7 @@ describe('System test: QuerySparql', () => {
         });
 
         it('handles complex queries with BIND to', async() => {
-          const context = <any> { sources: [ store ]};
+          const context = <any>{ sources: [ store ]};
           const complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT ?caps WHERE {
               ?s ?p ?o.
@@ -198,7 +263,7 @@ describe('System test: QuerySparql', () => {
           let extensionBuilder: (timout: boolean) => (args: RDF.Term[]) => Promise<RDF.Term>;
 
           beforeEach(() => {
-            context = <any> { sources: [ store ]};
+            context = <any>{ sources: [ store ]};
             complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT (SUM(func:count-chars(?o)) AS ?sum) WHERE {
               ?s ?p ?o.
