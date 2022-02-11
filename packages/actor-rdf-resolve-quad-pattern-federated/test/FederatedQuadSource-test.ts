@@ -1102,6 +1102,62 @@ describe('FederatedQuadSource', () => {
     });
   });
 
+  describe('A FederatedQuadSource instance over a source and a "documentExtender"', () => {
+    let subSource1;
+    let subSource2;
+    let source: FederatedQuadSource;
+    let emptyPatterns;
+    let contextSingleEmpty;
+
+    beforeEach(() => {
+      subSource1 = { type: 'blankNodeSource', value: 'I will contain blank nodes' };
+      subSource2 = { type: 'blankNodeSource', value: 'I will also contain blank nodes', context: new ActionContext({ [KeysRdfResolveQuadPattern.documentExtender.name]: true }) };
+      emptyPatterns = new Map();
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
+          [
+            subSource1,
+            subSource2,
+          ],
+      });
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+    });
+
+
+    it('should not skolemize blank nodes from the documentExtender', async() => {
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
+      expect(a).toEqual([
+        DF.quad(
+          new BlankNodeScoped('bc_0_s1',
+            DF.namedNode('urn:comunica_skolem:source_0:s1')),
+          new BlankNodeScoped('bc_0_p1',
+            DF.namedNode('urn:comunica_skolem:source_0:p1')),
+          new BlankNodeScoped('bc_0_o1',
+            DF.namedNode('urn:comunica_skolem:source_0:o1')),
+        ),
+        DF.quad(
+          DF.blankNode('s1'),
+          DF.blankNode('p1'),
+          DF.blankNode('o1'),
+        ),
+        DF.quad(
+          new BlankNodeScoped('bc_0_s2',
+            DF.namedNode('urn:comunica_skolem:source_0:s2')),
+          new BlankNodeScoped('bc_0_p2',
+            DF.namedNode('urn:comunica_skolem:source_0:p2')),
+          new BlankNodeScoped('bc_0_o2',
+            DF.namedNode('urn:comunica_skolem:source_0:o2')),
+        ),
+        DF.quad(
+          DF.blankNode('s2'),
+          DF.blankNode('p2'),
+          DF.blankNode('o2'),
+        ),
+      ]);
+    });
+
+  })
+
   describe('A FederatedQuadSource instance over two non-empty sources with blank nodes', () => {
     let subSource1;
     let subSource2;

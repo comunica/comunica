@@ -4,6 +4,7 @@
 jest.unmock('follow-redirects');
 
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import type {
   IQueryBindingsEnhanced,
   QueryBindings, QueryStringContext,
@@ -32,64 +33,64 @@ describe('System test: QuerySparql', () => {
     });
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     await pollyContext.polly.flush();
   });
 
   describe('query', () => {
     describe('simple SPO on a raw RDF document', () => {
-      it('with results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      it('with results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
-    }`, { sources: [ 'https://www.rubensworks.net/' ]});
+    }`, { sources: ['https://www.rubensworks.net/'] });
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
       });
 
-      it('without results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      it('without results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT * WHERE {
       ?s <ex:dummy> ?o.
-    }`, { sources: [ 'https://www.rubensworks.net/' ]});
+    }`, { sources: ['https://www.rubensworks.net/'] });
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
 
-      it('for the single source context entry', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      it('for the single source context entry', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     }`, { source: 'https://www.rubensworks.net/' });
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
       });
 
-      it('repeated with the same engine', async() => {
+      it('repeated with the same engine', async () => {
         const query = `SELECT * WHERE {
       ?s ?p ?o.
     }`;
-        const context: QueryStringContext = { sources: [ 'https://www.rubensworks.net/' ]};
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
+        const context: QueryStringContext = { sources: ['https://www.rubensworks.net/'] };
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
       });
 
-      it('repeated with the same engine without results', async() => {
+      it('repeated with the same engine without results', async () => {
         const query = `SELECT * WHERE {
       ?s <ex:dummy> ?o.
     }`;
-        const context: QueryStringContext = { sources: [ 'https://www.rubensworks.net/' ]};
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        const context: QueryStringContext = { sources: ['https://www.rubensworks.net/'] };
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute())))
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        expect((await arrayifyStream(await (<QueryBindings>await engine.query(query, context)).execute())))
           .toEqual([]);
       });
 
@@ -108,10 +109,10 @@ describe('System test: QuerySparql', () => {
           integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
           funcAllow = 'allowAll';
           baseFunctions = {
-            'http://example.org/functions#allowAll': async(args: RDF.Term[]) => DF.literal('true', booleanType),
+            'http://example.org/functions#allowAll': async (args: RDF.Term[]) => DF.literal('true', booleanType),
           };
           baseFunctionCreator = (functionName: RDF.NamedNode) =>
-            async(args: RDF.Term[]) => DF.literal('true', booleanType);
+            async (args: RDF.Term[]) => DF.literal('true', booleanType);
           store = new Store();
           quads = [
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('apple', stringType)),
@@ -127,50 +128,50 @@ describe('System test: QuerySparql', () => {
             FILTER (func:${funcName}(?o))
         }`;
 
-        it('rejects when record does not match', async() => {
-          const context = <any> { sources: [ store ]};
+        it('rejects when record does not match', async () => {
+          const context = <any>{ sources: [store] };
           context.extensionFunctions = baseFunctions;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
-        it('rejects when creator returns null', async() => {
-          const context = <any> { sources: [ store ]};
+        it('rejects when creator returns null', async () => {
+          const context = <any>{ sources: [store] };
           context.extensionFunctionCreator = () => null;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
-        it('with results and pointless custom filter given by creator', async() => {
-          const context = <any> { sources: [ store ]};
+        it('with results and pointless custom filter given by creator', async () => {
+          const context = <any>{ sources: [store] };
           context.extensionFunctionCreator = baseFunctionCreator;
-          const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
+          const result = <QueryBindings>await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(store.size);
         });
 
-        it('with results and pointless custom filter given by record', async() => {
-          const context = <any> { sources: [ store ]};
+        it('with results and pointless custom filter given by record', async () => {
+          const context = <any>{ sources: [store] };
           context.extensionFunctions = baseFunctions;
-          const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
+          const result = <QueryBindings>await engine.query(baseQuery(funcAllow), context);
           expect((await arrayifyStream(await result.execute())).length).toEqual(4);
         });
 
-        it('with results but all filtered away', async() => {
-          const context = <any> { sources: [ store ]};
+        it('with results but all filtered away', async () => {
+          const context = <any>{ sources: [store] };
           context.extensionFunctionCreator = () => () =>
             DF.literal('false', booleanType);
-          const result = <QueryBindings> await engine.query(baseQuery('rejectAll'), context);
+          const result = <QueryBindings>await engine.query(baseQuery('rejectAll'), context);
           expect(await arrayifyStream(await result.execute())).toEqual([]);
         });
 
-        it('throws error when supplying both record and creator', async() => {
-          const context = <any> { sources: [ store ]};
+        it('throws error when supplying both record and creator', async () => {
+          const context = <any>{ sources: [store] };
           context.extensionFunctions = baseFunctions;
           context.extensionFunctionCreator = baseFunctionCreator;
           await expect(engine.query(baseQuery(funcAllow), context)).rejects
             .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
         });
 
-        it('handles complex queries with BIND to', async() => {
-          const context = <any> { sources: [ store ]};
+        it('handles complex queries with BIND to', async () => {
+          const context = <any>{ sources: [store] };
           const complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT ?caps WHERE {
               ?s ?p ?o.
@@ -186,7 +187,7 @@ describe('System test: QuerySparql', () => {
               return arg;
             },
           };
-          const result = <IQueryBindingsEnhanced> await engine.query(complexQuery, context);
+          const result = <IQueryBindingsEnhanced>await engine.query(complexQuery, context);
           expect((await result.bindings()).map(res => res.get(DF.variable('caps'))!.value)).toEqual(
             quads.map(q => q.object.value.toUpperCase()),
           );
@@ -198,13 +199,13 @@ describe('System test: QuerySparql', () => {
           let extensionBuilder: (timout: boolean) => (args: RDF.Term[]) => Promise<RDF.Term>;
 
           beforeEach(() => {
-            context = <any> { sources: [ store ]};
+            context = <any>{ sources: [store] };
             complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT (SUM(func:count-chars(?o)) AS ?sum) WHERE {
               ?s ?p ?o.
         }
           `;
-            extensionBuilder = (timout: boolean) => async(args: RDF.Term[]) => {
+            extensionBuilder = (timout: boolean) => async (args: RDF.Term[]) => {
               const arg = args[0];
               if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
                 if (timout) {
@@ -216,44 +217,44 @@ describe('System test: QuerySparql', () => {
             };
           });
 
-          it('can be evaluated', async() => {
+          it('can be evaluated', async () => {
             context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(false),
             };
-            const result = <IQueryBindingsEnhanced> await engine.query(complexQuery, context);
-            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
+            const result = <IQueryBindingsEnhanced>await engine.query(complexQuery, context);
+            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual(['20']);
           });
 
-          it('can be truly async', async() => {
+          it('can be truly async', async () => {
             context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(true),
             };
-            const result = <IQueryBindingsEnhanced> await engine.query(complexQuery, context);
-            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
+            const result = <IQueryBindingsEnhanced>await engine.query(complexQuery, context);
+            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual(['20']);
           });
         });
       });
     });
 
     describe('two-pattern query on a raw RDF document', () => {
-      it('with results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
+      it('with results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
-    }`, { sources: [ 'https://www.rubensworks.net/' ]});
+    }`, { sources: ['https://www.rubensworks.net/'] });
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(20);
       });
 
-      it('without results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
+      it('without results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <ex:dummy> ?name.
-    }`, { sources: [ 'https://www.rubensworks.net/' ]});
+    }`, { sources: ['https://www.rubensworks.net/'] });
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
 
-      it('for the single source entry', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
+      it('for the single source entry', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
     }`, { source: 'https://www.rubensworks.net/' });
@@ -262,48 +263,108 @@ describe('System test: QuerySparql', () => {
     });
 
     describe('simple SPO on a TPF entrypoint', () => {
-      it('with results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      it('with results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
-    } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
+    } LIMIT 300`, { sources: ['https://fragments.dbpedia.org/2016-04/en'] });
         expect((await arrayifyStream(await result.execute())).length).toEqual(300);
       });
 
-      it('with filtered results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      it('with filtered results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT * WHERE {
       ?s a ?o.
-    } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
+    } LIMIT 300`, { sources: ['https://fragments.dbpedia.org/2016-04/en'] });
         expect((await arrayifyStream(await result.execute())).length).toEqual(300);
       });
     });
 
     describe('two-pattern query on a TPF entrypoint', () => {
-      it('with results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      it('with results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT * WHERE {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/Italy>.
-    }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
+    }`, { sources: ['https://fragments.dbpedia.org/2016-04/en'] });
         expect((await arrayifyStream(await result.execute())).length).toEqual(19);
       });
 
-      it('without results', async() => {
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      it('without results', async () => {
+        const result = <QueryBindings>await engine.query(`SELECT * WHERE {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/UNKNOWN>.
-    }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
+    }`, { sources: ['https://fragments.dbpedia.org/2016-04/en'] });
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
     });
   });
 
   describe('update', () => {
+    describe('with documentExtender destination', () => {
+      it('Should run with single source and document extender', async () => {
+        // Prepare store
+        const store = new Store([
+          DF.quad(DF.blankNode('b0'), DF.namedNode('ex:knows'), DF.namedNode('ex:bob'), DF.defaultGraph()),
+        ]);
+
+        // Prepare extenderSource
+        const extenderSource = { value: new Store(), type: 'rdfjsSource', context: new ActionContext({ [KeysRdfResolveQuadPattern.documentExtender.name]: true }) };
+
+        // Execute update
+        const update = <RDF.QueryVoid>await engine.query(`INSERT {
+            ?s a <ex:Agent>.
+          } WHERE { ?s ?p ?o. }`, {
+          destination: extenderSource,
+          sources: [store, extenderSource],
+        });
+        await update.execute();
+
+        // Execute query
+
+        const query = <RDF.QueryBindings<any>>await engine.query(`SELECT * WHERE { ?s ?p <ex:Agent> . ?s ?p ?o }`, {
+          destination: extenderSource,
+          sources: [store, extenderSource],
+        });
+        const bindings = await query.execute();
+
+        const query2 = <RDF.QueryBindings<any>>await engine.query(`SELECT * WHERE { ?s ?p ?o }`, {
+          destination: extenderSource,
+          sources: [store, extenderSource],
+        });
+        const bindings2 = await query2.execute();
+
+        const result: RDF.Bindings[] = await arrayifyStream(bindings);
+
+
+        console.log(JSON.stringify(await arrayifyStream(bindings2), null, 2));
+        console.log(JSON.stringify(result, null, 2));
+
+        // console.log(store.getQuads(null, null, null, null))
+        // console.log(extenderSource.value.getQuads(null, null, null, null))
+
+        // const result: RDF.Bindings[] = await arrayifyStream(bindings);
+        // console.log('----')
+        // for (const r of result) {
+        //   console.log(JSON.stringify(r, null, 2))
+        //   // console.log(1)
+        //   // r.
+        //   // console.log(r.get(DF.variable('?s')))
+        //   // console.log(r.get(DF.variable('?p')))
+        //   // console.log(r.get(DF.variable('?o')))
+        // }
+        // console.log('----')
+
+        expect(result.length).toEqual(2);
+
+
+      })
+    })
+
     describe('without sources on destination RDFJS Store', () => {
-      it('with direct insert', async() => {
+      it('with direct insert', async () => {
         // Prepare store
         const store = new Store();
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
+        const result = <RDF.QueryVoid>await engine.query(`INSERT DATA {
       <ex:s> <ex:p> <ex:o>.
     }`, {
           destination: store,
@@ -316,15 +377,15 @@ describe('System test: QuerySparql', () => {
           .toEqual(1);
       });
 
-      it('with direct insert on a single source', async() => {
+      it('with direct insert on a single source', async () => {
         // Prepare store
         const store = new Store();
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
+        const result = <RDF.QueryVoid>await engine.query(`INSERT DATA {
       <ex:s> <ex:p> <ex:o>.
     }`, {
-          sources: [ store ],
+          sources: [store],
         });
         await result.execute();
 
@@ -334,7 +395,7 @@ describe('System test: QuerySparql', () => {
           .toEqual(1);
       });
 
-      it('with insert where on a single source', async() => {
+      it('with insert where on a single source', async () => {
         // Prepare store
         const store = new Store([
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
@@ -343,12 +404,12 @@ describe('System test: QuerySparql', () => {
         ]);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`INSERT {
+        const result = <RDF.QueryVoid>await engine.query(`INSERT {
           ?s <ex:a> <ex:thing> .
           ?p <ex:a> <ex:thing> .
           ?o <ex:a> <ex:thing> .
         } WHERE { ?s ?p ?o }`, {
-          sources: [ store ],
+          sources: [store],
         });
         await result.execute();
 
@@ -382,7 +443,7 @@ describe('System test: QuerySparql', () => {
           .toEqual(1);
       });
 
-      it('with insert where on two sources', async() => {
+      it('with insert where on two sources', async () => {
         // Prepare store
         const store = new Store([
           DF.quad(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
@@ -392,10 +453,10 @@ describe('System test: QuerySparql', () => {
         ]);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`INSERT {
+        const result = <RDF.QueryVoid>await engine.query(`INSERT {
           ?s <ex:a> <ex:thing> .
         } WHERE { ?s ?p ?o }`, {
-          sources: [ store, store2 ],
+          sources: [store, store2],
           destination: store,
           [KeysRdfResolveQuadPattern.sourceIds.name]: new Map(),
         });
@@ -422,13 +483,13 @@ describe('System test: QuerySparql', () => {
         );
       });
 
-      it('with direct insert and delete', async() => {
+      it('with direct insert and delete', async () => {
         // Prepare store
         const store = new Store();
         store.addQuad(DF.quad(DF.namedNode('ex:s-pre'), DF.namedNode('ex:p-pre'), DF.namedNode('ex:o-pre')));
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
+        const result = <RDF.QueryVoid>await engine.query(`INSERT DATA {
       <ex:s> <ex:p> <ex:o>.
     };
     DELETE DATA {
@@ -447,7 +508,7 @@ describe('System test: QuerySparql', () => {
           .toEqual(0);
       });
 
-      it('with variable delete', async() => {
+      it('with variable delete', async () => {
         // Prepare store
         const store = new Store();
         store.addQuads([
@@ -459,10 +520,10 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(4);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`DELETE WHERE {
+        const result = <RDF.QueryVoid>await engine.query(`DELETE WHERE {
       <ex:s> ?p ?o.
     }`, {
-          sources: [ store ],
+          sources: [store],
           destination: store,
         });
         await result.execute();
@@ -473,12 +534,12 @@ describe('System test: QuerySparql', () => {
           .toEqual(1);
       });
 
-      it('with load', async() => {
+      it('with load', async () => {
         // Prepare store
         const store = new Store();
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(
+        const result = <RDF.QueryVoid>await engine.query(
           `LOAD <https://www.rubensworks.net/> INTO GRAPH <ex:graph>`,
           {
             destination: store,
@@ -490,7 +551,7 @@ describe('System test: QuerySparql', () => {
         expect(store.size > 0).toBeTruthy();
       });
 
-      it('with clear', async() => {
+      it('with clear', async () => {
         // Prepare store
         const store = new Store();
         store.addQuads([
@@ -502,8 +563,8 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(4);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`CLEAR NAMED`, {
-          sources: [ store ],
+        const result = <RDF.QueryVoid>await engine.query(`CLEAR NAMED`, {
+          sources: [store],
           destination: store,
         });
         await result.execute();
@@ -514,7 +575,7 @@ describe('System test: QuerySparql', () => {
           .toEqual(1);
       });
 
-      it('with drop', async() => {
+      it('with drop', async () => {
         // Prepare store
         const store = new Store();
         store.addQuads([
@@ -526,8 +587,8 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(4);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`DROP DEFAULT`, {
-          sources: [ store ],
+        const result = <RDF.QueryVoid>await engine.query(`DROP DEFAULT`, {
+          sources: [store],
           destination: store,
         });
         await result.execute();
@@ -538,7 +599,7 @@ describe('System test: QuerySparql', () => {
           .toEqual(0);
       });
 
-      it('with create', async() => {
+      it('with create', async () => {
         // Prepare store
         const store = new Store();
         store.addQuads([
@@ -548,25 +609,25 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(2);
 
         // Resolve for non-existing graph
-        await expect((<RDF.QueryVoid> await engine.query(`CREATE GRAPH <ex:g2>`, {
-          sources: [ store ],
+        await expect((<RDF.QueryVoid>await engine.query(`CREATE GRAPH <ex:g2>`, {
+          sources: [store],
           destination: store,
         })).execute()).resolves.toBeUndefined();
 
         // Reject for existing graph
-        await expect((<RDF.QueryVoid> await engine.query(`CREATE GRAPH <ex:g1>`, {
-          sources: [ store ],
+        await expect((<RDF.QueryVoid>await engine.query(`CREATE GRAPH <ex:g1>`, {
+          sources: [store],
           destination: store,
         })).execute()).rejects.toThrowError('Unable to create graph ex:g1 as it already exists');
 
         // Resolve for existing graph in silent mode
-        await expect((<RDF.QueryVoid> await engine.query(`CREATE SILENT GRAPH <ex:g1>`, {
-          sources: [ store ],
+        await expect((<RDF.QueryVoid>await engine.query(`CREATE SILENT GRAPH <ex:g1>`, {
+          sources: [store],
           destination: store,
         })).execute()).resolves.toBeUndefined();
       });
 
-      it('with add', async() => {
+      it('with add', async () => {
         // Prepare store
         const store = new Store();
         store.addQuads([
@@ -576,8 +637,8 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(2);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`ADD DEFAULT TO <ex:g1>`, {
-          sources: [ store ],
+        const result = <RDF.QueryVoid>await engine.query(`ADD DEFAULT TO <ex:g1>`, {
+          sources: [store],
           destination: store,
         });
         await result.execute();
@@ -589,7 +650,7 @@ describe('System test: QuerySparql', () => {
           .toEqual(1);
       });
 
-      it('with move', async() => {
+      it('with move', async () => {
         // Prepare store
         const store = new Store();
         store.addQuads([
@@ -599,8 +660,8 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(2);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`MOVE DEFAULT TO <ex:g1>`, {
-          sources: [ store ],
+        const result = <RDF.QueryVoid>await engine.query(`MOVE DEFAULT TO <ex:g1>`, {
+          sources: [store],
           destination: store,
         });
         await result.execute();
@@ -612,7 +673,7 @@ describe('System test: QuerySparql', () => {
           .toEqual(1);
       });
 
-      it('with copy', async() => {
+      it('with copy', async () => {
         // Prepare store
         const store = new Store();
         store.addQuads([
@@ -622,8 +683,8 @@ describe('System test: QuerySparql', () => {
         expect(store.size).toEqual(2);
 
         // Execute query
-        const result = <RDF.QueryVoid> await engine.query(`COPY DEFAULT TO <ex:g1>`, {
-          sources: [ store ],
+        const result = <RDF.QueryVoid>await engine.query(`COPY DEFAULT TO <ex:g1>`, {
+          sources: [store],
           destination: store,
         });
         await result.execute();
@@ -639,11 +700,11 @@ describe('System test: QuerySparql', () => {
 
   describe('explain', () => {
     describe('a simple SPO on a raw RDF document', () => {
-      it('explaining parsing', async() => {
+      it('explaining parsing', async () => {
         const result = await engine.explain(`SELECT * WHERE {
       ?s ?p ?o.
     }`, {
-          sources: [ 'https://www.rubensworks.net/' ],
+          sources: ['https://www.rubensworks.net/'],
         }, 'parsed');
         expect(result).toEqual({
           explain: true,
@@ -669,11 +730,11 @@ describe('System test: QuerySparql', () => {
         });
       });
 
-      it('explaining logical plan', async() => {
+      it('explaining logical plan', async () => {
         const result = await engine.explain(`SELECT * WHERE {
       ?s ?p ?o.
     }`, {
-          sources: [ 'https://www.rubensworks.net/' ],
+          sources: ['https://www.rubensworks.net/'],
         }, 'logical');
         expect(result).toEqual({
           explain: true,
@@ -699,18 +760,18 @@ describe('System test: QuerySparql', () => {
         });
       });
 
-      it('explaining physical plan', async() => {
+      it('explaining physical plan', async () => {
         const result = await engine.explain(`SELECT * WHERE {
       ?s ?p ?o.
     }`, {
-          sources: [ 'https://www.rubensworks.net/' ],
+          sources: ['https://www.rubensworks.net/'],
         }, 'physical');
         expect(result).toEqual({
           explain: true,
           type: 'physical',
           data: {
             logical: 'project',
-            variables: [ 's', 'p', 'o' ],
+            variables: ['s', 'p', 'o'],
             children: [
               {
                 logical: 'join',

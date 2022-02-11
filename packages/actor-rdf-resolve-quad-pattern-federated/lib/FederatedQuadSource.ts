@@ -113,7 +113,7 @@ export class FederatedQuadSource implements IQuadSource {
    */
   public static deskolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | null {
     if (term.termType === 'BlankNode' && 'skolemized' in term) {
-      term = (<BlankNodeScoped> term).skolemized;
+      term = (<BlankNodeScoped>term).skolemized;
     }
     if (term.termType === 'NamedNode' && term.value.startsWith(FederatedQuadSource.SKOLEM_PREFIX)) {
       const colonSeparator = term.value.indexOf(':', FederatedQuadSource.SKOLEM_PREFIX.length);
@@ -267,7 +267,24 @@ export class FederatedQuadSource implements IQuadSource {
       });
 
       // Determine the data stream from this source
-      let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
+      let data = output.data
+      if (typeof source !== 'object' || !('context' in source) || !source.context?.get(KeysRdfResolveQuadPattern.documentExtender)) {
+        data = data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
+      } else {
+        function skolemizeTerm(term: RDF.Term): RDF.Term | BlankNodeScoped {
+          if (term.termType === 'BlankNode') {
+            const [_, sourceId, value] = term.value.split('_');
+            return new BlankNodeScoped(term.value, DF.namedNode(`${FederatedQuadSource.SKOLEM_PREFIX}${sourceId}:${value}`));
+          }
+          return term;
+        }
+        function skolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q,): Q {
+          return mapTerms(quad, term => skolemizeTerm(term));
+        }
+        data = data.map(quad => skolemizeQuad(quad));
+
+      }
+
       // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
       if (graph.termType === 'Variable') {
         data = data.filter(quad => quad.graph.termType !== 'DefaultGraph');
@@ -280,7 +297,7 @@ export class FederatedQuadSource implements IQuadSource {
     }));
 
     // Take the union of all source streams
-    const it = new TransformIterator(async() => new UnionIterator(await proxyIt), { autoStart: false });
+    const it = new TransformIterator(async () => new UnionIterator(await proxyIt), { autoStart: false });
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {

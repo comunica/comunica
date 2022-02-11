@@ -205,6 +205,11 @@ export const KeysRdfResolveQuadPattern = {
    * A map containing unique IDs for each source
    */
   sourceIds: new ActionContextKey<Map<IDataSource, string>>('@comunica/bus-rdf-resolve-quad-pattern:sourceIds'),
+  /**
+   * Whether the source is to be treated as a document extender rather than a document of its own right.
+   * This means that skolemisation is not applied to the source.
+   */
+  documentExtender: new ActionContextKey<boolean>('@comunica/bus-rdf-resolve-quad-pattern:documentExtender'),
 };
 
 export const KeysRdfUpdateQuads = {
