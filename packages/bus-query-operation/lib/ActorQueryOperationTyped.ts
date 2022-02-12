@@ -37,20 +37,18 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Log to physical plan
-    if (action.context) {
-      const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action?.context
-        .get(KeysInitQuery.physicalQueryPlanLogger);
-      if (physicalQueryPlanLogger) {
-        physicalQueryPlanLogger.logOperation(
-          action.operation.type,
-          undefined,
-          action.operation,
-          action.context.get(KeysInitQuery.physicalQueryPlanNode),
-          this.name,
-          {},
-        );
-        action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
-      }
+    const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
+      .get(KeysInitQuery.physicalQueryPlanLogger);
+    if (physicalQueryPlanLogger) {
+      physicalQueryPlanLogger.logOperation(
+        action.operation.type,
+        undefined,
+        action.operation,
+        action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        this.name,
+        {},
+      );
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
     }
 
     const operation: O = <O> action.operation;

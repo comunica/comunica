@@ -217,7 +217,8 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         DF.variable('x'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('y'),
-      ) };
+      ),
+      context: new ActionContext() };
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
   });

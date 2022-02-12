@@ -401,7 +401,7 @@ describe('ActorQueryOperationSlice', () => {
       actor = new ActorQueryOperationSlice({ bus,
         mediatorQueryOperation: mediatorQueryOperationBoolean,
         name: 'actor' });
-      const op: any = { operation: { type: 'project', start: 0 }};
+      const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
       await expect(actor.run(op)).rejects.toBeTruthy();
     });
   });

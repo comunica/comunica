@@ -3,7 +3,6 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import { ActionContext } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
