@@ -65,17 +65,19 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should test on service', () => {
-      const op: any = { operation: { type: 'service', silent: false, name: DF.namedNode('dummy') }};
+      const op: any = { operation: { type: 'service', silent: false, name: DF.namedNode('dummy') },
+        context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-service', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on service with a non-named node name', () => {
-      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
+      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') },
+        context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -96,7 +98,8 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should run without context', () => {
-      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
+      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') },
+        context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
@@ -109,7 +112,8 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should run on a silent operation when the endpoint errors', () => {
-      const op: any = { operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: 'error' }};
+      const op: any = { operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: 'error' },
+        context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
@@ -120,12 +124,14 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should not run on a non-silent operation when the endpoint errors', () => {
-      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy'), input: 'error' }};
+      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy'), input: 'error' },
+        context: new ActionContext() };
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
 
     it('should run and use undefined source type when forceSparqlEndpoint is disabled', () => {
-      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
+      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') },
+        context: new ActionContext() };
       const actorThis = new ActorQueryOperationService(
         { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' },
       );
@@ -144,7 +150,8 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should run and use sparql source type when forceSparqlEndpoint is enabled', () => {
-      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
+      const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') },
+        context: new ActionContext() };
       const actorThis = new ActorQueryOperationService(
         { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor' },
       );

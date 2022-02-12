@@ -56,7 +56,7 @@ export function getContextDestination(context: IActionContext): IDataDestination
  * @return {IDataDestination} The single datadestination or undefined.
  */
 export function getContextDestinationFirst(context: IActionContext): IDataDestination | undefined {
-  if (context && context.has(KeysRdfUpdateQuads.destination)) {
+  if (context.has(KeysRdfUpdateQuads.destination)) {
     // If the single destination is set
     return context.get(KeysRdfUpdateQuads.destination);
   }

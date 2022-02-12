@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -39,17 +39,17 @@ describe('ActorQueryOperationNop', () => {
     });
 
     it('should test on nop', () => {
-      const op: any = { operation: { type: 'nop' }};
+      const op: any = { operation: { type: 'nop' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-nop', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op: any = { operation: { type: 'nop' }};
+      const op: any = { operation: { type: 'nop' }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
         expect(await output.metadata())

@@ -17,8 +17,7 @@ export class ActorContextPreprocessSourceToDestination extends ActorContextPrepr
   }
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
-    if (action.context && action.context.get(KeysRdfResolveQuadPattern.sources) &&
-      !action.context.get(KeysRdfUpdateQuads.destination)) {
+    if (action.context.get(KeysRdfResolveQuadPattern.sources) && !action.context.get(KeysRdfUpdateQuads.destination)) {
       const sources: DataSources = action.context.get(KeysRdfResolveQuadPattern.sources)!;
       if (sources.length === 1) {
         return { context: action.context.set(KeysRdfUpdateQuads.destination, sources[0]) };

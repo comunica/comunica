@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -245,12 +245,12 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should not test on non-union', () => {
-      const op: any = { operation: { type: 'some-other-type', input: [ op3, op2 ]}};
+      const op: any = { operation: { type: 'some-other-type', input: [ op3, op2 ]}, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on two streams', () => {
-      const op: any = { operation: { type: 'union', input: [ op3, op2 ]}};
+      const op: any = { operation: { type: 'union', input: [ op3, op2 ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 5 },
@@ -269,7 +269,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run on three streams', () => {
-      const op: any = { operation: { type: 'union', input: [ op3, op2, op2Undef ]}};
+      const op: any = { operation: { type: 'union', input: [ op3, op2, op2Undef ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 7 },
@@ -290,7 +290,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run with a right stream with undefs', () => {
-      const op: any = { operation: { type: 'union', input: [ op3, op2Undef ]}};
+      const op: any = { operation: { type: 'union', input: [ op3, op2Undef ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 5 },

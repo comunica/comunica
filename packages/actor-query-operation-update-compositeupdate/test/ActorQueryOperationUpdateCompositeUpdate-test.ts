@@ -48,7 +48,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
     });
 
     it('should test on compositeupdate', () => {
-      const op: any = { operation: { type: 'compositeupdate' }};
+      const op: any = { operation: { type: 'compositeupdate' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -61,7 +61,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
     });
 
     it('should not test on non-compositeupdate', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -71,6 +71,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
           type: 'compositeupdate',
           updates: [],
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -85,6 +86,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
             'RESOLVE',
           ],
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -101,6 +103,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
             'RESOLVE',
           ],
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');

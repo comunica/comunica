@@ -33,7 +33,6 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     const endpoint: string = operation.name.value;
 
     // Adjust our context to only have the endpoint as source
-    context = context || new ActionContext({});
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
       .delete(KeysRdfResolveQuadPattern.sources)

@@ -27,7 +27,7 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should test on create', () => {
-      const op: any = { operation: { type: 'create' }};
+      const op: any = { operation: { type: 'create' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -40,7 +40,7 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should not test on non-create', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -51,6 +51,7 @@ describe('ActorQueryOperationCreate', () => {
           source: DF.namedNode('g1'),
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -68,6 +69,7 @@ describe('ActorQueryOperationCreate', () => {
           source: DF.namedNode('g1'),
           silent: true,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');

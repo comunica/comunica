@@ -29,7 +29,7 @@ describe('ActorQueryOperationMove', () => {
     });
 
     it('should test on move', () => {
-      const op: any = { operation: { type: 'move' }};
+      const op: any = { operation: { type: 'move' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -42,7 +42,7 @@ describe('ActorQueryOperationMove', () => {
     });
 
     it('should not test on non-move', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -54,11 +54,13 @@ describe('ActorQueryOperationMove', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
           factory.createAdd(DF.namedNode('SOURCE'), DF.namedNode('DEST'), false),
@@ -75,11 +77,13 @@ describe('ActorQueryOperationMove', () => {
           destination: DF.namedNode('DEST'),
           silent: true,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
           factory.createAdd(DF.namedNode('SOURCE'), DF.namedNode('DEST'), true),
@@ -96,6 +100,7 @@ describe('ActorQueryOperationMove', () => {
           destination: DF.namedNode('SOURCE'),
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -111,6 +116,7 @@ describe('ActorQueryOperationMove', () => {
           destination: 'DEFAULT',
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -126,11 +132,13 @@ describe('ActorQueryOperationMove', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createCompositeUpdate([
           factory.createDrop(DF.namedNode('DEST'), true),
           factory.createAdd('DEFAULT', DF.namedNode('DEST'), false),
@@ -147,11 +155,13 @@ describe('ActorQueryOperationMove', () => {
           destination: 'DEFAULT',
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createCompositeUpdate([
           factory.createDrop('DEFAULT', true),
           factory.createAdd(DF.namedNode('SOURCE'), 'DEFAULT', false),

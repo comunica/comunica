@@ -11,6 +11,13 @@ export class ActionContext implements IActionContext {
     this.map = Map<string, any>(data);
   }
 
+  /**
+   * Will only set the value if the key is not already set.
+   */
+  public setSafe<V>(key: IActionContextKey<V>, value: V): IActionContext {
+    return this.has(key) ? this : this.set(key, value);
+  }
+
   public set<V>(key: IActionContextKey<V>, value: V): IActionContext {
     return this.setRaw(key.name, value);
   }

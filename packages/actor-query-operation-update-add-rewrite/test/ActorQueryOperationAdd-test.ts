@@ -29,7 +29,7 @@ describe('ActorQueryOperationAdd', () => {
     });
 
     it('should test on add', () => {
-      const op: any = { operation: { type: 'add' }};
+      const op: any = { operation: { type: 'add' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -42,7 +42,7 @@ describe('ActorQueryOperationAdd', () => {
     });
 
     it('should not test on non-add', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -54,11 +54,13 @@ describe('ActorQueryOperationAdd', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('DEST')),
         ], factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('SOURCE'))),
@@ -73,11 +75,13 @@ describe('ActorQueryOperationAdd', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('DEST')),
         ], factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph())),
@@ -92,11 +96,13 @@ describe('ActorQueryOperationAdd', () => {
           destination: 'DEFAULT',
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph()),
         ], factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('SOURCE'))),
@@ -111,11 +117,13 @@ describe('ActorQueryOperationAdd', () => {
           destination: 'DEFAULT',
           silent: false,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
         operation: factory.createDeleteInsert(undefined, [
           factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph()),
         ], factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph())),

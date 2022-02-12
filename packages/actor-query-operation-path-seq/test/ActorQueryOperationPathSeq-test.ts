@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -128,7 +128,8 @@ describe('ActorQueryOperationPathSeq', () => {
           factory.createLink(DF.namedNode('p2')),
         ]),
         DF.variable('x'),
-      ) };
+      ),
+      context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
         cardinality: 3,
@@ -142,7 +143,7 @@ describe('ActorQueryOperationPathSeq', () => {
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
-        context: undefined,
+        context: expect.anything(),
         operation: factory.createPath(
           DF.namedNode('s'),
           factory.createLink(DF.namedNode('p1')),
@@ -150,7 +151,7 @@ describe('ActorQueryOperationPathSeq', () => {
         ),
       });
       expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
-        context: undefined,
+        context: expect.anything(),
         operation: factory.createPath(
           DF.variable('b0'),
           factory.createLink(DF.namedNode('p2')),
@@ -169,6 +170,7 @@ describe('ActorQueryOperationPathSeq', () => {
           ]),
           DF.variable('x'),
         ),
+        context: new ActionContext(),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
@@ -183,7 +185,7 @@ describe('ActorQueryOperationPathSeq', () => {
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
-        context: undefined,
+        context: expect.anything(),
         operation: factory.createPath(
           DF.namedNode('b0'),
           factory.createLink(DF.namedNode('p1')),
@@ -191,7 +193,7 @@ describe('ActorQueryOperationPathSeq', () => {
         ),
       });
       expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
-        context: undefined,
+        context: expect.anything(),
         operation: factory.createPath(
           DF.variable('b0b'),
           factory.createLink(DF.namedNode('p2')),

@@ -43,7 +43,7 @@ describe('ActorQueryOperationTyped', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run({ operation: { type: 'op' }})).resolves.toBeTruthy();
+      return expect(actor.run({ operation: { type: 'op' }, context: new ActionContext() })).resolves.toBeTruthy();
     });
 
     it('should run and invoke the physicalQueryPlanLogger', async() => {

@@ -54,7 +54,7 @@ describe('ActorDereferenceHttp', () => {
 
     beforeEach(() => {
       mediatorHttp.mediate = (action: any) => {
-        if (action.context && action.context.hasRaw('httpReject')) {
+        if (action.context.hasRaw('httpReject')) {
           return Promise.reject(new Error('Http reject error'));
         }
         if (action.input.includes('error')) {

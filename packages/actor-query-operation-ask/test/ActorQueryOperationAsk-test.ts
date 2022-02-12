@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBoolean } from '@comunica/types';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -89,17 +89,17 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should test on ask', () => {
-      const op: any = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-ask', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a non-empty stream', () => {
-      const op: any = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.execute()).toBeTruthy();
@@ -107,7 +107,7 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should run on an empty stream', () => {
-      const op: any = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
@@ -118,7 +118,7 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should run and return a rejecting promise on an errorring stream', () => {
-      const op: any = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );

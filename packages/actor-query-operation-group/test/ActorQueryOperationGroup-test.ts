@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -119,7 +119,7 @@ function constructCase(
     variables: groupVariables.map(name => DF.variable(name)) || [],
     aggregates: aggregates || [],
   };
-  const op: any = { operation };
+  const op: any = { operation, context: new ActionContext() };
 
   const actor = new ActorQueryOperationGroup({ name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings });
   return { actor, bus, mediatorQueryOperation, op };

@@ -54,7 +54,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     }
 
     const operation: O = <O> action.operation;
-    const subContext = action.context && action.context.set(KeysQueryOperation.operation, operation);
+    const subContext = action.context.set(KeysQueryOperation.operation, operation);
     const output: IQueryOperationResult = await this.runOperation(operation, subContext);
     if ('metadata' in output) {
       output.metadata = <any> ActorQueryOperation

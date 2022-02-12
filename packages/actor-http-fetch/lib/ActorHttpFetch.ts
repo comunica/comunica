@@ -63,7 +63,7 @@ export class ActorHttpFetch extends ActorHttp {
       .context?.get(KeysHttp.fetch);
     return (customFetch || fetch)(action.input, this.fetchInitPreprocessor.handle({
       ...action.init,
-      ...action.context && action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
+      ...action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
     })).then(response => {
       // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
       // If it doesn't exist, we monkey-patch it.

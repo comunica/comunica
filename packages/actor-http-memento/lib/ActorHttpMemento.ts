@@ -16,7 +16,7 @@ export class ActorHttpMemento extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IActorTest> {
-    if (!(action.context && action.context.has(KeysHttpMemento.datetime) &&
+    if (!(action.context.has(KeysHttpMemento.datetime) &&
           action.context.get(KeysHttpMemento.datetime) instanceof Date)) {
       throw new Error('This actor only handles request with a set valid datetime.');
     }

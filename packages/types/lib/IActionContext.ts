@@ -16,6 +16,10 @@
  */
 export interface IActionContext {
   set: <V>(key: IActionContextKey<V>, value: V) => IActionContext;
+  /**
+   * Will only set the value if the key is not already set.
+   */
+  setSafe: <V>(key: IActionContextKey<V>, value: V) => IActionContext;
   delete: <V>(key: IActionContextKey<V>) => IActionContext;
   get: <V>(key: IActionContextKey<V>) => V | undefined;
   has: <V>(key: IActionContextKey<V>) => boolean;
