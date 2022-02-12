@@ -61,7 +61,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // https://www.w3.org/TR/sparql11-query/#propertypaths
   public async isPathArbitraryLengthDistinct(context: IActionContext, path: Algebra.Path):
   Promise<{ context: IActionContext; operation: IQueryOperationResultBindings | undefined }> {
-    if (!context || !context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
+    if (!context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
       context = context.set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, true);
       return { context,
         operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
