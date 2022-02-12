@@ -14,7 +14,7 @@ export class ActionContext implements IActionContext {
   /**
    * Will only set the value if the key is not already set.
    */
-  public setSafe<V>(key: IActionContextKey<V>, value: V): IActionContext {
+  public setDefault<V>(key: IActionContextKey<V>, value: V): IActionContext {
     return this.has(key) ? this : this.set(key, value);
   }
 

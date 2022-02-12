@@ -128,16 +128,16 @@ export class QueryEngineBase implements IQueryEngine {
       queryFormat = actionContext.get(KeysInitQuery.queryFormat)!;
       actionContext = actionContext.delete(KeysInitQuery.queryFormat);
       if (queryFormat.language === 'graphql') {
-        actionContext = actionContext.setSafe(KeysInitQuery.graphqlSingularizeVariables, {});
+        actionContext = actionContext.setDefault(KeysInitQuery.graphqlSingularizeVariables, {});
       }
     }
     const baseIRI: string | undefined = actionContext.get(KeysInitQuery.baseIRI);
 
     actionContext = actionContext
-      .setSafe(KeysInitQuery.queryTimestamp, new Date())
-      .setSafe(KeysRdfResolveQuadPattern.sourceIds, new Map())
+      .setDefault(KeysInitQuery.queryTimestamp, new Date())
+      .setDefault(KeysRdfResolveQuadPattern.sourceIds, new Map())
       // Set the default logger if none is provided
-      .setSafe(KeysCore.log, this.actorInitQuery.logger);
+      .setDefault(KeysCore.log, this.actorInitQuery.logger);
 
     // Pre-processing the context
     actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;
