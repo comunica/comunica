@@ -96,7 +96,7 @@ export class ActorHttpNative extends ActorHttp {
             };
 
             // Support abort controller
-            if (action.init && action.init.signal) {
+            if (action.init?.signal) {
               if (action.init.signal.aborted) {
                 httpResponse.destroy();
               } else {
