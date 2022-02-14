@@ -15,20 +15,20 @@ export class Bindings implements RDF.Bindings {
     this.entries = entries;
   }
 
-  public has(key: RDF.Variable): boolean {
-    return this.entries.has(key.value);
+  public has(key: RDF.Variable | string): boolean {
+    return this.entries.has(typeof key === 'string' ? key : key.value);
   }
 
-  public get(key: RDF.Variable): RDF.Term | undefined {
-    return this.entries.get(key.value);
+  public get(key: RDF.Variable | string): RDF.Term | undefined {
+    return this.entries.get(typeof key === 'string' ? key : key.value);
   }
 
-  public set(key: RDF.Variable, value: RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, this.entries.set(key.value, value));
+  public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
+    return new Bindings(this.dataFactory, this.entries.set(typeof key === 'string' ? key : key.value, value));
   }
 
-  public delete(key: RDF.Variable): Bindings {
-    return new Bindings(this.dataFactory, this.entries.delete(key.value));
+  public delete(key: RDF.Variable | string): Bindings {
+    return new Bindings(this.dataFactory, this.entries.delete(typeof key === 'string' ? key : key.value));
   }
 
   public keys(): Iterable<RDF.Variable> {

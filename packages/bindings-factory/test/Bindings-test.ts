@@ -21,12 +21,19 @@ describe('Bindings', () => {
     it('should return false for uncontained keys', () => {
       expect(bindings.has(DF.variable('d'))).toBeFalsy();
       expect(bindings.has(DF.variable('a.other'))).toBeFalsy();
+
+      expect(bindings.has('d')).toBeFalsy();
+      expect(bindings.has('a.other')).toBeFalsy();
     });
 
     it('should return true for contained keys', () => {
       expect(bindings.has(DF.variable('a'))).toBeTruthy();
       expect(bindings.has(DF.variable('b'))).toBeTruthy();
       expect(bindings.has(DF.variable('c'))).toBeTruthy();
+
+      expect(bindings.has('a')).toBeTruthy();
+      expect(bindings.has('b')).toBeTruthy();
+      expect(bindings.has('c')).toBeTruthy();
     });
   });
 
@@ -34,12 +41,19 @@ describe('Bindings', () => {
     it('should return undefined for uncontained keys', () => {
       expect(bindings.get(DF.variable('d'))).toBeUndefined();
       expect(bindings.get(DF.variable('a.other'))).toBeUndefined();
+
+      expect(bindings.get('d')).toBeUndefined();
+      expect(bindings.get('a.other')).toBeUndefined();
     });
 
     it('should return for contained keys', () => {
       expect(bindings.get(DF.variable('a'))).toEqualRdfTerm(DF.namedNode('ex:a'));
       expect(bindings.get(DF.variable('b'))).toEqualRdfTerm(DF.namedNode('ex:b'));
       expect(bindings.get(DF.variable('c'))).toEqualRdfTerm(DF.namedNode('ex:c'));
+
+      expect(bindings.get('a')).toEqualRdfTerm(DF.namedNode('ex:a'));
+      expect(bindings.get('b')).toEqualRdfTerm(DF.namedNode('ex:b'));
+      expect(bindings.get('c')).toEqualRdfTerm(DF.namedNode('ex:c'));
     });
   });
 
@@ -57,6 +71,20 @@ describe('Bindings', () => {
       expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c2'));
       expect(bindings.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
     });
+
+    it('should set a non-existing variable using string keys', () => {
+      const bindingsNew = bindings.set('d', DF.namedNode('ex:d'));
+      expect(bindingsNew).not.toBe(bindings);
+      expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+      expect(bindings.get(DF.variable('d'))).toBeUndefined();
+    });
+
+    it('should overwrite an existing variable using string keys', () => {
+      const bindingsNew = bindings.set('c', DF.namedNode('ex:c2'));
+      expect(bindingsNew).not.toBe(bindings);
+      expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c2'));
+      expect(bindings.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+    });
   });
 
   describe('delete', () => {
@@ -68,6 +96,20 @@ describe('Bindings', () => {
 
     it('should delete an existing variable', () => {
       const bindingsNew = bindings.delete(DF.variable('c'));
+      expect(bindingsNew).not.toBe(bindings);
+      expect(bindingsNew.get(DF.variable('c'))).toBeUndefined();
+      expect(bindingsNew.has(DF.variable('c'))).toBeFalsy();
+      expect(bindings.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+    });
+
+    it('should not do anything on a non-existing variable using string keys', () => {
+      const bindingsNew = bindings.delete('d');
+      expect(bindingsNew).not.toBe(bindings);
+      expect(bindingsNew.size).toEqual(bindings.size);
+    });
+
+    it('should delete an existing variable using string keys', () => {
+      const bindingsNew = bindings.delete('c');
       expect(bindingsNew).not.toBe(bindings);
       expect(bindingsNew.get(DF.variable('c'))).toBeUndefined();
       expect(bindingsNew.has(DF.variable('c'))).toBeFalsy();
