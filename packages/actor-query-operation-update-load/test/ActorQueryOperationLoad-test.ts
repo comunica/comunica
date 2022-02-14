@@ -38,7 +38,7 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should test on load', () => {
-      const op: any = { operation: { type: 'load' }};
+      const op: any = { operation: { type: 'load' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -51,7 +51,7 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should not test on non-load', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -61,6 +61,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -73,6 +74,7 @@ describe('ActorQueryOperationLoad', () => {
         operation: expect.anything(),
         context: new ActionContext({
           [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
+          [KeysQueryOperation.operation.name]: expect.anything(),
         }),
       });
     });
@@ -109,6 +111,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -126,6 +129,7 @@ describe('ActorQueryOperationLoad', () => {
           source: DF.namedNode('URL'),
           destination: DF.namedNode('GRAPH'),
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -142,6 +146,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
+        context: new ActionContext(),
       };
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         quadStream: new ArrayIterator([], { autoStart: false }),
@@ -162,6 +167,7 @@ describe('ActorQueryOperationLoad', () => {
           source: DF.namedNode('URL'),
           silent: true,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -175,6 +181,7 @@ describe('ActorQueryOperationLoad', () => {
         context: new ActionContext({
           [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
           [KeysInitQuery.lenient.name]: true,
+          [KeysQueryOperation.operation.name]: expect.anything(),
         }),
       });
     });

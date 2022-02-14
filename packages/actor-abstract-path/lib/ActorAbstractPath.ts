@@ -6,7 +6,6 @@ import {
 } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import { ActionContext } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -62,9 +61,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // https://www.w3.org/TR/sparql11-query/#propertypaths
   public async isPathArbitraryLengthDistinct(context: IActionContext, path: Algebra.Path):
   Promise<{ context: IActionContext; operation: IQueryOperationResultBindings | undefined }> {
-    if (!context || !context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
-      context = (context || new ActionContext())
-        .set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, true);
+    if (!context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
+      context = context.set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, true);
       return { context,
         operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
           operation: ActorAbstractPath.FACTORY.createDistinct(path),

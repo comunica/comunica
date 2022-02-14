@@ -92,12 +92,12 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should test on filter', () => {
-      const op: any = { operation: { type: 'filter', expression: truthyExpression }};
+      const op: any = { operation: { type: 'filter', expression: truthyExpression }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should fail on unsupported operators', () => {
-      const op: any = { operation: { type: 'filter', expression: unknownExpression }};
+      const op: any = { operation: { type: 'filter', expression: unknownExpression }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -107,7 +107,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should return the full stream for a truthy filter', async() => {
-      const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression },
+        context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -120,7 +121,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should return an empty stream for a falsy filter', async() => {
-      const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression },
+        context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       expect(await output.metadata())
@@ -129,7 +131,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should return an empty stream when the expressions error', async() => {
-      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
+        context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       expect(await output.metadata())
@@ -140,7 +143,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     it('Should log warning for an expressionError', async() => {
       // The order is very important. This item requires isExpressionError to still have it's right definition.
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
-      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
+        context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
       expect(logWarnSpy).toHaveBeenCalledTimes(3);
@@ -160,7 +164,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
-      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
+        context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });

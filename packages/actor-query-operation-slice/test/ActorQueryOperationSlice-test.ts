@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings,
   IQueryOperationResultQuads } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -113,7 +113,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should test on slices', () => {
-      const op: any = { operation: { type: 'slice', start: 0, length: 100 }};
+      const op: any = { operation: { type: 'slice', start: 0, length: 100 }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -123,7 +123,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 100', () => {
-      const op: any = { operation: { type: 'project', start: 0, length: 100 }};
+      const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
@@ -140,7 +140,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 1 and length 100', () => {
-      const op: any = { operation: { type: 'project', start: 1, length: 100 }};
+      const op: any = { operation: { type: 'project', start: 1, length: 100 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 2 },
@@ -156,7 +156,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 3 and length 100', () => {
-      const op: any = { operation: { type: 'project', start: 3, length: 100 }};
+      const op: any = { operation: { type: 'project', start: 3, length: 100 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 0 },
@@ -169,7 +169,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 3', () => {
-      const op: any = { operation: { type: 'project', start: 0, length: 3 }};
+      const op: any = { operation: { type: 'project', start: 0, length: 3 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
@@ -186,7 +186,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 2', () => {
-      const op: any = { operation: { type: 'project', start: 0, length: 2 }};
+      const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 2 },
@@ -202,7 +202,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 0', () => {
-      const op: any = { operation: { type: 'project', start: 0, length: 0 }};
+      const op: any = { operation: { type: 'project', start: 0, length: 0 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 0 },
@@ -215,7 +215,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 1 and length 3', () => {
-      const op: any = { operation: { type: 'project', start: 1, length: 3 }};
+      const op: any = { operation: { type: 'project', start: 1, length: 3 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 2 },
@@ -231,7 +231,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 1 and length 1', () => {
-      const op: any = { operation: { type: 'project', start: 1, length: 1 }};
+      const op: any = { operation: { type: 'project', start: 1, length: 1 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 1 },
@@ -246,7 +246,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 2 and length 1', () => {
-      const op: any = { operation: { type: 'project', start: 2, length: 1 }};
+      const op: any = { operation: { type: 'project', start: 2, length: 1 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 1 },
@@ -261,7 +261,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 2 and length 0', () => {
-      const op: any = { operation: { type: 'project', start: 2, length: 0 }};
+      const op: any = { operation: { type: 'project', start: 2, length: 0 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 0 },
@@ -274,7 +274,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 3 and length 1', () => {
-      const op: any = { operation: { type: 'project', start: 3, length: 1 }};
+      const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 0 },
@@ -286,7 +286,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 3 and length 0', () => {
-      const op: any = { operation: { type: 'project', start: 3, length: 1 }};
+      const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 0 },
@@ -299,7 +299,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 4 and length 1', () => {
-      const op: any = { operation: { type: 'project', start: 4, length: 1 }};
+      const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 0 },
@@ -312,7 +312,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 4 and length 0', () => {
-      const op: any = { operation: { type: 'project', start: 4, length: 1 }};
+      const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 0 },
@@ -328,7 +328,7 @@ describe('ActorQueryOperationSlice', () => {
       actor = new ActorQueryOperationSlice({ bus,
         mediatorQueryOperation: mediatorQueryOperationMetaInf,
         name: 'actor' });
-      const op: any = { operation: { type: 'project', start: 0, length: 100 }};
+      const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
@@ -348,7 +348,7 @@ describe('ActorQueryOperationSlice', () => {
       actor = new ActorQueryOperationSlice({ bus,
         mediatorQueryOperation: mediatorQueryOperationUndefs,
         name: 'actor' });
-      const op: any = { operation: { type: 'project', start: 0, length: 100 }};
+      const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
@@ -365,7 +365,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and no length', () => {
-      const op: any = { operation: { type: 'project', start: 0 }};
+      const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 3 },
@@ -385,7 +385,7 @@ describe('ActorQueryOperationSlice', () => {
       actor = new ActorQueryOperationSlice({ bus,
         mediatorQueryOperation: mediatorQueryOperationQuads,
         name: 'actor' });
-      const op: any = { operation: { type: 'project', start: 0, length: 2 }};
+      const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await output.metadata())
           .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
@@ -401,7 +401,7 @@ describe('ActorQueryOperationSlice', () => {
       actor = new ActorQueryOperationSlice({ bus,
         mediatorQueryOperation: mediatorQueryOperationBoolean,
         name: 'actor' });
-      const op: any = { operation: { type: 'project', start: 0 }};
+      const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
       await expect(actor.run(op)).rejects.toBeTruthy();
     });
   });

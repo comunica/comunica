@@ -127,25 +127,17 @@ export class QueryEngineBase implements IQueryEngine {
     if (actionContext.has(KeysInitQuery.queryFormat)) {
       queryFormat = actionContext.get(KeysInitQuery.queryFormat)!;
       actionContext = actionContext.delete(KeysInitQuery.queryFormat);
-      if (queryFormat.language === 'graphql' && !actionContext.has(KeysInitQuery.graphqlSingularizeVariables)) {
-        actionContext = actionContext.set(KeysInitQuery.graphqlSingularizeVariables, {});
+      if (queryFormat.language === 'graphql') {
+        actionContext = actionContext.setDefault(KeysInitQuery.graphqlSingularizeVariables, {});
       }
     }
-    let baseIRI: string | undefined;
-    if (actionContext.has(KeysInitQuery.baseIRI)) {
-      baseIRI = actionContext.get(KeysInitQuery.baseIRI);
-    }
-    if (!actionContext.has(KeysInitQuery.queryTimestamp)) {
-      actionContext = actionContext.set(KeysInitQuery.queryTimestamp, new Date());
-    }
-    if (!actionContext.has(KeysRdfResolveQuadPattern.sourceIds)) {
-      actionContext = actionContext.set(KeysRdfResolveQuadPattern.sourceIds, new Map());
-    }
+    const baseIRI: string | undefined = actionContext.get(KeysInitQuery.baseIRI);
 
-    // Set the default logger if none is provided
-    if (!actionContext.has(KeysCore.log)) {
-      actionContext = actionContext.set(KeysCore.log, this.actorInitQuery.logger);
-    }
+    actionContext = actionContext
+      .setDefault(KeysInitQuery.queryTimestamp, new Date())
+      .setDefault(KeysRdfResolveQuadPattern.sourceIds, new Map())
+      // Set the default logger if none is provided
+      .setDefault(KeysCore.log, this.actorInitQuery.logger);
 
     // Pre-processing the context
     actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;

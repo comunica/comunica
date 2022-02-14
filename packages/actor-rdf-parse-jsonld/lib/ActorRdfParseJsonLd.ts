@@ -33,9 +33,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   }
 
   public async testHandle(action: IActionRdfParse, mediaType: string, context: IActionContext): Promise<IActorTest> {
-    if (context &&
-      context.has(KeysRdfParseHtmlScript.processingHtmlScript) &&
-      mediaType !== 'application/ld+json') {
+    if (context.has(KeysRdfParseHtmlScript.processingHtmlScript) && mediaType !== 'application/ld+json') {
       throw new Error(`JSON-LD in script tags can only have media type 'application/ld+json'`);
     }
     if (!(mediaType in this.mediaTypePriorities) && !mediaType.endsWith('+json')) {
@@ -47,10 +45,10 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: IActionContext):
   Promise<IActorRdfParseOutput> {
     const parser = JsonLdParser.fromHttpResponse(action.metadata?.baseIRI ?? '', mediaType, action.headers, {
-      documentLoader: actionContext && actionContext.get(KeysRdfParseJsonLd.documentLoader) ||
+      documentLoader: actionContext.get(KeysRdfParseJsonLd.documentLoader) ||
         new DocumentLoaderMediated(this.mediatorHttp, actionContext),
-      strictValues: actionContext && actionContext.get(KeysRdfParseJsonLd.strictValues),
-      ...actionContext && actionContext.get(KeysRdfParseJsonLd.parserOptions),
+      strictValues: actionContext.get(KeysRdfParseJsonLd.strictValues),
+      ...actionContext.get(KeysRdfParseJsonLd.parserOptions),
     });
     const data = <Readable> parser.import(action.data);
     return { data };

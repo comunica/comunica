@@ -150,7 +150,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define context
     if (args.context) {
       Object.assign(context, JSON.parse(existsSync(args.context) ? readFileSync(args.c, 'utf8') : args.context));
-    } else if (args.sources[0] && args.sources[0].startsWith('{')) {
+    } else if (args.sources[0]?.startsWith('{')) {
       // For backwards compatibility inline JSON
       Object.assign(context, JSON.parse(args.sources[0]));
       args.sources.shift();

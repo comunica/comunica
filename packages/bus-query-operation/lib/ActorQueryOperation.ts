@@ -111,27 +111,24 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
-    if (context) {
-      const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
-      const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
+    const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
+    const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
 
-      // Handle two variants of providing extension functions
-      if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
-        throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
-      }
-      let extensionFunctionCreator: ((functionNamedNode: RDF.NamedNode) =>
-      ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined) | undefined = context
-        .get(KeysInitQuery.extensionFunctionCreator);
-      // Convert dictionary-based variant to callback
-      const extensionFunctions: (Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>) | undefined = context
-        .get(KeysInitQuery.extensionFunctions);
-      if (extensionFunctions) {
-        extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
-      }
-
-      return { now, baseIRI, extensionFunctionCreator };
+    // Handle two variants of providing extension functions
+    if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
+      throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
     }
-    return {};
+    let extensionFunctionCreator: ((functionNamedNode: RDF.NamedNode) =>
+    ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined) | undefined = context
+      .get(KeysInitQuery.extensionFunctionCreator);
+    // Convert dictionary-based variant to callback
+    const extensionFunctions: (Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>) | undefined = context
+      .get(KeysInitQuery.extensionFunctions);
+    if (extensionFunctions) {
+      extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
+    }
+
+    return { now, baseIRI, extensionFunctionCreator };
   }
 
   /**
@@ -160,7 +157,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
     };
-    if (context && mediatorQueryOperation) {
+    if (mediatorQueryOperation) {
       expressionContext.exists = ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation);
     }
     return expressionContext;
@@ -202,7 +199,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param context An action context.
    */
   public static throwOnReadOnly(context: IActionContext): void {
-    if (context && context.get(KeysQueryOperation.readOnly)) {
+    if (context.get(KeysQueryOperation.readOnly)) {
       throw new Error(`Attempted a write operation in read-only mode`);
     }
   }

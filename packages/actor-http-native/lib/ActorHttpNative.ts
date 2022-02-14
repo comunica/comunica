@@ -59,11 +59,11 @@ export class ActorHttpNative extends ActorHttp {
     }
 
     options.method = options.method || 'GET';
-    if (action.context && action.context.get(KeysHttp.includeCredentials)) {
+    if (action.context.get(KeysHttp.includeCredentials)) {
       options.withCredentials = true;
     }
 
-    if (action.context && action.context.get(KeysHttp.auth)) {
+    if (action.context.get(KeysHttp.auth)) {
       options.auth = action.context.get(KeysHttp.auth);
     }
 
@@ -96,7 +96,7 @@ export class ActorHttpNative extends ActorHttp {
             };
 
             // Support abort controller
-            if (action.init && action.init.signal) {
+            if (action.init?.signal) {
               if (action.init.signal.aborted) {
                 httpResponse.destroy();
               } else {

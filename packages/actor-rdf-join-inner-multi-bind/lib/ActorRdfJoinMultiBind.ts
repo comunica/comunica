@@ -155,7 +155,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     remainingMetadatas.splice(smallestIndex, 1);
 
     // Bind the remaining patterns for each binding in the stream
-    const subContext = action.context && action.context
+    const subContext = action.context
       .set(KeysQueryOperation.joinLeftMetadata, metadatas[smallestIndex])
       .set(KeysQueryOperation.joinRightMetadatas, remainingMetadatas);
     const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(

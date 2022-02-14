@@ -27,7 +27,7 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should test on clear', () => {
-      const op: any = { operation: { type: 'drop' }};
+      const op: any = { operation: { type: 'drop' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -40,7 +40,7 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should not test on non-clear', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -50,6 +50,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: 'DEFAULT',
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -68,6 +69,7 @@ describe('ActorQueryOperationDrop', () => {
           source: 'DEFAULT',
           silent: true,
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -85,6 +87,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: 'ALL',
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -102,6 +105,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: 'NAMED',
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -119,6 +123,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: DF.namedNode('g1'),
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');

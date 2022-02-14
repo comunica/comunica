@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
@@ -53,18 +53,19 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should test on projects', () => {
-      const op: any = { operation: { type: 'project', input: 'in' }};
+      const op: any = { operation: { type: 'project', input: 'in' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-projects', () => {
-      const op: any = { operation: { type: 'bgp', input: 'in' }};
+      const op: any = { operation: { type: 'bgp', input: 'in' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a stream with variables that should not be deleted or are missing', () => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('delet') ]},
+        context: new ActionContext(),
       };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
@@ -80,7 +81,8 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should run on a stream with variables that should be deleted', () => {
-      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({ variables: [ DF.variable('a') ]});
@@ -96,6 +98,7 @@ describe('ActorQueryOperationProject', () => {
     it('should error run on a stream with variables that should be deleted and are missing', async() => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('missing') ]},
+        context: new ActionContext(),
       };
       await expect(actor.run(op)).rejects
         .toThrow('Variables \'?missing\' are used in the projection result, but are not assigned.');
@@ -121,7 +124,8 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
       });
-      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({ variables: [ DF.variable('a') ]});
@@ -163,7 +167,8 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
       });
-      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({ variables: [ DF.variable('a') ]});
@@ -205,7 +210,8 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
       });
-      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({ variables: [ DF.variable('a') ], canContainUndefs: true });
@@ -239,7 +245,8 @@ describe('ActorQueryOperationProject', () => {
         operated: arg,
         type: 'bindings',
       });
-      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({ variables: [ DF.variable('a') ]});

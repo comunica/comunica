@@ -54,7 +54,7 @@ export class ActorHttpFetch extends ActorHttp {
     }));
 
     // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
-    if (action.init && action.init.headers && 'append' in action.init.headers && action.context.has(KeysHttp.fetch)) {
+    if (action.init?.headers && 'append' in action.init.headers && action.context.has(KeysHttp.fetch)) {
       action.init.headers = ActorHttp.headersToHash(action.init.headers);
     }
 
@@ -63,7 +63,7 @@ export class ActorHttpFetch extends ActorHttp {
       .context?.get(KeysHttp.fetch);
     return (customFetch || fetch)(action.input, this.fetchInitPreprocessor.handle({
       ...action.init,
-      ...action.context && action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
+      ...action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
     })).then(response => {
       // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
       // If it doesn't exist, we monkey-patch it.

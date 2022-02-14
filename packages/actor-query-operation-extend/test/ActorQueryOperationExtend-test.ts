@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Actor, Bus } from '@comunica/core';
+import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -106,17 +106,17 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should test on extend', () => {
-      const op: any = { operation: example(defaultExpression) };
+      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-extend', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
-      const op: any = { operation: example(defaultExpression) };
+      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         BF.bindings([
@@ -142,7 +142,7 @@ describe('ActorQueryOperationExtend', () => {
       const warn = jest.fn();
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
-      const op: any = { operation: example(faultyExpression) };
+      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
 
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
@@ -159,7 +159,7 @@ describe('ActorQueryOperationExtend', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
-      const op: any = { operation: example(faultyExpression) };
+      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
       expect(warn).toBeCalledTimes(0);

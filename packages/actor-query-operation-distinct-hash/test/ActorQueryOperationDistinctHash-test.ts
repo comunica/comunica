@@ -89,17 +89,17 @@ describe('ActorQueryOperationDistinctHash', () => {
     });
 
     it('should test on distinct', () => {
-      const op: any = { operation: { type: 'distinct' }};
+      const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-distinct', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op: any = { operation: { type: 'distinct' }};
+      const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
         expect(output.type).toEqual('bindings');

@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -94,17 +94,17 @@ describe('ActorQueryOperationConstruct', () => {
     });
 
     it('should test on construct', () => {
-      const op: any = { operation: { type: 'construct', template: []}};
+      const op: any = { operation: { type: 'construct', template: []}, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-construct', () => {
-      const op: any = { operation: { type: 'some-other-type', template: []}};
+      const op: any = { operation: { type: 'some-other-type', template: []}, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on an empty template', () => {
-      const op: any = { operation: { type: 'construct', template: []}};
+      const op: any = { operation: { type: 'construct', template: []}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await (<any> output).metadata())
           .toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
@@ -118,7 +118,8 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ],
-      type: 'construct' }};
+      type: 'construct' },
+      context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await (<any> output).metadata())
           .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
@@ -136,7 +137,8 @@ describe('ActorQueryOperationConstruct', () => {
           DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
           DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
         ],
-        type: 'construct' }};
+        type: 'construct' },
+      context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await (<any> output).metadata())
           .toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });

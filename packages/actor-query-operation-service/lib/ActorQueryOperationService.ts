@@ -3,7 +3,6 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import { ActionContext } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -33,7 +32,6 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     const endpoint: string = operation.name.value;
 
     // Adjust our context to only have the endpoint as source
-    context = context || new ActionContext({});
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
       .delete(KeysRdfResolveQuadPattern.sources)

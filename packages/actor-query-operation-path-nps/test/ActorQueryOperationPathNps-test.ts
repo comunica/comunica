@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -77,12 +77,14 @@ describe('ActorQueryOperationPathNps', () => {
     });
 
     it('should test on Nps paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }},
+        context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -91,7 +93,8 @@ describe('ActorQueryOperationPathNps', () => {
         DF.namedNode('s'),
         factory.createNps([ DF.namedNode('2') ]),
         DF.variable('x'),
-      ) };
+      ),
+      context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([

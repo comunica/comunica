@@ -16,11 +16,11 @@ export class ActorHttpMemento extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IActorTest> {
-    if (!(action.context && action.context.has(KeysHttpMemento.datetime) &&
+    if (!(action.context.has(KeysHttpMemento.datetime) &&
           action.context.get(KeysHttpMemento.datetime) instanceof Date)) {
       throw new Error('This actor only handles request with a set valid datetime.');
     }
-    if (action.init && new Headers(action.init.headers ?? {}).has('accept-datetime')) {
+    if (action.init && new Headers(action.init.headers).has('accept-datetime')) {
       throw new Error('The request already has a set datetime.');
     }
     return true;
@@ -46,9 +46,7 @@ export class ActorHttpMemento extends ActorHttp {
       // The links might have a timegate that can help us
       const links = result.headers.has('link') && parseLink(result.headers.get('link')!);
       if (links && links.timegate) {
-        if (result.body) {
-          await result.body.cancel();
-        }
+        await result.body?.cancel();
         // Respond with a time-negotiated response from the timegate instead
         const followLink: IActionHttp = { context: action.context, input: links.timegate.url, init };
         return this.mediatorHttp.mediate(followLink);

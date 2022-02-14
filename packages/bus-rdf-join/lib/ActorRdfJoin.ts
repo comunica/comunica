@@ -278,9 +278,9 @@ export abstract class ActorRdfJoin
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
-    if (action.context && action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
+    if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
       parentPhysicalQueryPlanNode = action.context.get(KeysInitQuery.physicalQueryPlanNode);
-      action.context = action.context && action.context.set(KeysInitQuery.physicalQueryPlanNode, action);
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action);
     }
 
     const { result, physicalPlanMetadata } = await this.getOutput(action);

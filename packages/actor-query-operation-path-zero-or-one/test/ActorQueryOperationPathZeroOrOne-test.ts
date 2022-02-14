@@ -87,12 +87,14 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should test on ZeroOrOne paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }}};
+      const op: any = { context: new ActionContext(),
+        operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { context: new ActionContext(),
+        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -101,7 +103,8 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         DF.namedNode('s'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ) };
+      ),
+      context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
         cardinality: { type: 'estimate', value: 1 },
@@ -214,7 +217,8 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         DF.variable('x'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('y'),
-      ) };
+      ),
+      context: new ActionContext() };
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
   });

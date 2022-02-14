@@ -73,7 +73,7 @@ export function getContextSourceFirst(context: IActionContext): IDataSource | un
 
   // If multiple sources are set
   const datasources: DataSources | undefined = context.get(KeysRdfResolveQuadPattern.sources);
-  if (datasources && datasources.length === 1) {
+  if (datasources?.length === 1) {
     return datasources[0];
   }
 }

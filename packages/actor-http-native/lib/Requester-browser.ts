@@ -78,7 +78,7 @@ export default class Requester {
         if (!this.negotiatedResources[resource]) {
           // Ensure the resource is not a timegate
           const links = (resHeaders.get('link') && parseLink(resHeaders.get('link')!)) ?? undefined;
-          const timegate = this.removeQuery(links && links.timegate && links.timegate.url);
+          const timegate = this.removeQuery(links && links.timegate?.url);
           if (resource !== timegate) {
             this.negotiatedResources[resource] = true;
           }

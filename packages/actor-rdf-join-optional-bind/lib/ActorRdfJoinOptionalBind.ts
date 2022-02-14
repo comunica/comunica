@@ -31,7 +31,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     action.entries[1].output.bindingsStream.close();
 
     // Bind the right pattern for each binding in the stream
-    const subContext = action.context && action.context
+    const subContext = action.context
       .set(KeysQueryOperation.joinLeftMetadata, await action.entries[0].output.metadata())
       .set(KeysQueryOperation.joinRightMetadatas, [ await action.entries[1].output.metadata() ]);
     const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(

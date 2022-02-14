@@ -50,7 +50,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @return {Logger} The logger or undefined.
    */
   public static getContextLogger(context: IActionContext): Logger | undefined {
-    return context && context.get(CONTEXT_KEY_LOGGER);
+    return context.get(CONTEXT_KEY_LOGGER);
   }
 
   /**

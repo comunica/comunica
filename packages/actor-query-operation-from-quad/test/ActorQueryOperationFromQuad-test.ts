@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -833,18 +833,19 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should test on from', () => {
-      const op: any = { operation: { type: 'from' }};
+      const op: any = { operation: { type: 'from' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-from', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
       const input = Object.assign(quad('s', 'p', 'o'), { type: 'path' });
-      const op: any = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input }};
+      const op: any = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input },
+        context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),

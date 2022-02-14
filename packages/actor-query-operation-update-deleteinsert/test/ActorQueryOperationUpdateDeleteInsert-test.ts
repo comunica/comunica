@@ -71,7 +71,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should test on deleteinsert', () => {
-      const op: any = { operation: { type: 'deleteinsert' }};
+      const op: any = { operation: { type: 'deleteinsert' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -84,12 +84,12 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should not test on non-deleteinsert', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run without operation input', async() => {
-      const op: any = { operation: { type: 'deleteinsert' }};
+      const op: any = { operation: { type: 'deleteinsert' }, context: new ActionContext() };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
       await expect(output.execute()).resolves.toBeUndefined();
@@ -105,6 +105,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
             factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           ],
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -123,6 +124,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
             factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           ],
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -144,6 +146,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
             factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
           ],
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -165,6 +168,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -186,6 +190,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -210,6 +215,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -236,6 +242,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: {
           type: 'deleteinsert',
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -259,6 +266,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -284,6 +292,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -312,6 +321,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');

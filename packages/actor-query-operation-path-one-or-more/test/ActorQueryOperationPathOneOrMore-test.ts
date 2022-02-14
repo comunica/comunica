@@ -100,7 +100,8 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ) };
+      ),
+      context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
         cardinality: 1,
