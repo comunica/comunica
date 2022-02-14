@@ -10485,12 +10485,12 @@ sparqlalgebrajs@^4.0.0:
     rdf-string "^1.6.0"
     sparqljs "^3.5.1"
 
-sparqlee@2.0.0-beta.0:
-  version "2.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-2.0.0-beta.0.tgz#fef7b44d89afbd90cd6ac146f4ca1f50fa12524a"
-  integrity sha512-tvVdX2zr3lllzyewgK38f16SdB5e81kd/yyCg9Ny3L/x2+nLbK5Debl6k7eflEI/be9tnDE6niLw6gxSd3jrRQ==
+sparqlee@2.0.0-beta.1:
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-2.0.0-beta.1.tgz#8ff16a63fc58d5fd5150d6dfa88f1892cb20d486"
+  integrity sha512-pAKmPmY7G7Gh4JXWBQGEqMrfI2j0cfdDLHPyOay6DrMZxqV81mKJh/UsQ+YWoUuo32FP6WYtDX/QzUPMnOy51g==
   dependencies:
-    "@comunica/bindings-factory" "^2.0.0"
+    "@comunica/bindings-factory" "*"
     "@rdfjs/types" "1.1.0-next.0"
     "@types/lru-cache" "^5.1.1"
     "@types/spark-md5" "^3.0.2"
