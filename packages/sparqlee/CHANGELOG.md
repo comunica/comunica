@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.0.0-beta.1"></a>
+## [v2.0.0-beta.1](https://github.com/comunica/sparqlee/compare/v1.10.0...v2.0.0-beta.1) - 2022-02-14
+
+### Changed
+* [Temporarily widen version range of @comunica/bindings-factory](https://github.com/comunica/sparqlee/commit/fc6508638bc1b25b43bb6f0b29a2a75316c30f9a)
+
 <a name="v2.0.0-beta.0"></a>
 ## [v2.0.0-beta.0](https://github.com/comunica/sparqlee/compare/v1.10.0...v2.0.0-beta.0) - 2022-02-03
 
