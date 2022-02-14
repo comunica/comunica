@@ -16,6 +16,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "keywords": [
     "semantic",
     "actor",
