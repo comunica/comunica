@@ -1,5 +1,5 @@
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
-import { KeysCore } from '@comunica/context-entries';
+import { KeysCore, KeysQueryOperation } from '@comunica/context-entries';
 import type { IAction, IActorOutput } from '@comunica/core';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -276,6 +276,120 @@ Actor 3 rejects`);
             'LOGICAL-PHYSICAL1': 500_060,
             'LOGICAL-PHYSICAL2': 200_060,
             'LOGICAL-PHYSICAL3': 101_050,
+          },
+        },
+      );
+    });
+
+    it('should prefer actors without persisted items with a limitIndicator', async() => {
+      new DummyActor(1, {
+        iterations: 100,
+        persistedItems: 20,
+        blockingItems: 30,
+        requestTime: 50,
+      }, bus);
+      new DummyActor(2, {
+        iterations: 100,
+        persistedItems: 20,
+        blockingItems: 30,
+        requestTime: 20,
+      }, bus);
+      new DummyActor(3, {
+        iterations: 1_000,
+        persistedItems: 0,
+        blockingItems: 30,
+        requestTime: 10,
+      }, bus);
+
+      action.context = action.context.set(KeysQueryOperation.limitIndicator, 10);
+      expect(await mediator.mediate(action)).toEqual({ id: 3 });
+
+      expect(debugLog).toHaveBeenCalledWith(
+        `Determined physical join operator 'LOGICAL-PHYSICAL3'`,
+        {
+          entries: 1,
+          variables: [[ 'V' ]],
+          coefficients: {
+            'LOGICAL-PHYSICAL1': {
+              iterations: 100,
+              persistedItems: 20,
+              blockingItems: 30,
+              requestTime: 50,
+            },
+            'LOGICAL-PHYSICAL2': {
+              iterations: 100,
+              persistedItems: 20,
+              blockingItems: 30,
+              requestTime: 20,
+            },
+            'LOGICAL-PHYSICAL3': {
+              iterations: 1_000,
+              persistedItems: 0,
+              blockingItems: 30,
+              requestTime: 10,
+            },
+          },
+          costs: {
+            'LOGICAL-PHYSICAL1': undefined,
+            'LOGICAL-PHYSICAL2': undefined,
+            'LOGICAL-PHYSICAL3': 1_040,
+          },
+        },
+      );
+    });
+
+    it('should prefer actors without persisted items with a limitIndicator unless limit is high', async() => {
+      new DummyActor(1, {
+        iterations: 100,
+        persistedItems: 20,
+        blockingItems: 30,
+        requestTime: 50,
+      }, bus);
+      new DummyActor(2, {
+        iterations: 100,
+        persistedItems: 20,
+        blockingItems: 30,
+        requestTime: 20,
+      }, bus);
+      new DummyActor(3, {
+        iterations: 1_000,
+        persistedItems: 0,
+        blockingItems: 30,
+        requestTime: 10,
+      }, bus);
+
+      action.context = action.context.set(KeysQueryOperation.limitIndicator, 200);
+      expect(await mediator.mediate(action)).toEqual({ id: 2 });
+
+      expect(debugLog).toHaveBeenCalledWith(
+        `Determined physical join operator 'LOGICAL-PHYSICAL2'`,
+        {
+          entries: 1,
+          variables: [[ 'V' ]],
+          coefficients: {
+            'LOGICAL-PHYSICAL1': {
+              iterations: 100,
+              persistedItems: 20,
+              blockingItems: 30,
+              requestTime: 50,
+            },
+            'LOGICAL-PHYSICAL2': {
+              iterations: 100,
+              persistedItems: 20,
+              blockingItems: 30,
+              requestTime: 20,
+            },
+            'LOGICAL-PHYSICAL3': {
+              iterations: 1_000,
+              persistedItems: 0,
+              blockingItems: 30,
+              requestTime: 10,
+            },
+          },
+          costs: {
+            'LOGICAL-PHYSICAL1': 200,
+            'LOGICAL-PHYSICAL2': 170,
+            'LOGICAL-PHYSICAL3': 1_040,
           },
         },
       );

@@ -1,4 +1,5 @@
 import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorReply, IMediatorArgs } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -32,11 +33,18 @@ export class MediatorJoinCoefficientsFixed
       }));
     const coefficients = await Promise.all(promises);
 
+    // Check if we had a limit indicator in the context
+    const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
+
     // Calculate costs
     const costs: (number | undefined)[] = coefficients
       // eslint-disable-next-line array-callback-return
       .map(coeff => {
-        if (coeff) {
+        if (coeff &&
+          // If we have a limit indicator,
+          // disallow entries that have a number of iterations that is higher than the limit AND persist items.
+          // In these cases, join operators that produce results early on will be preferred.
+          (!limitIndicator || coeff.iterations < limitIndicator || coeff.persistedItems === 0)) {
           return coeff.iterations * this.cpuWeight +
             coeff.persistedItems * this.memoryWeight +
             coeff.blockingItems * this.timeWeight +

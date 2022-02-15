@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings,
   IQueryOperationResultQuads } from '@comunica/types';
@@ -23,7 +24,7 @@ describe('ActorQueryOperationSlice', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => Promise.resolve({
+      mediate: jest.fn((arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -36,7 +37,7 @@ describe('ActorQueryOperationSlice', () => {
         }),
         operated: arg,
         type: 'bindings',
-      }),
+      })),
     };
     mediatorQueryOperationMetaInf = {
       mediate: (arg: any) => Promise.resolve({
@@ -131,6 +132,8 @@ describe('ActorQueryOperationSlice', () => {
           variables: [ DF.variable('a') ],
         });
         expect(output.type).toEqual('bindings');
+        expect(mediatorQueryOperation.mediate.mock.calls[0][0].context.get(KeysQueryOperation.limitIndicator))
+          .toEqual(100);
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -209,6 +212,8 @@ describe('ActorQueryOperationSlice', () => {
           canContainUndefs: false,
           variables: [ DF.variable('a') ],
         });
+        expect(mediatorQueryOperation.mediate.mock.calls[0][0].context.get(KeysQueryOperation.limitIndicator))
+          .toBeUndefined();
         expect(output.type).toEqual('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });

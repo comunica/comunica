@@ -164,6 +164,10 @@ export const KeysQueryOperation = {
   isPathArbitraryLengthDistinctKey: new ActionContextKey<boolean>(
     '@comunica/bus-query-operation:isPathArbitraryLengthDistinct',
   ),
+  /**
+   * An indicator that the stream will be limited to the given number of elements afterwards.
+   */
+  limitIndicator: new ActionContextKey<number>('@comunica/bus-query-operation:limitIndicator'),
 };
 
 export const KeysRdfParseJsonLd = {

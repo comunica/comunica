@@ -2,6 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type {
   IQueryOperationResult,
@@ -26,6 +27,12 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
 
   public async runOperation(operation: Algebra.Slice, context: IActionContext):
   Promise<IQueryOperationResult> {
+    // Add limit indicator to the context, which can be used for query planning
+    // eslint-disable-next-line unicorn/explicit-length-check
+    if (operation.length) {
+      context = context.set(KeysQueryOperation.limitIndicator, operation.length);
+    }
+
     // Resolve the input
     const output: IQueryOperationResult = await this.mediatorQueryOperation
       .mediate({ operation: operation.input, context });
