@@ -84,7 +84,7 @@ _[**Read more** about querying from the command line](https://comunica.dev/docs/
 Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
 
 ```bash
-$ comunica-sparql-http http://fragments.dbpedia.org/2015/en
+$ comunica-sparql-http https://fragments.dbpedia.org/2015/en
 ```
 
 This command has a similar signature to `comunica-sparql`, minus the query input options.
