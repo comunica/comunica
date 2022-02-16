@@ -15,35 +15,35 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#hydra-controls",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-controls",
       "@type": "ActorRdfMetadataExtractHydraControls"
     },
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#hydra-count",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-count",
       "@type": "ActorRdfMetadataExtractHydraCount"
     },
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#hydra-pagesize",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-pagesize",
       "@type": "ActorRdfMetadataExtractHydraPagesize"
     },
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#request-time",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#request-time",
       "@type": "ActorRdfMetadataExtractRequestTime"
     },
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#allow-http-methods",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#allow-http-methods",
       "@type": "ActorRdfMetadataExtractAllowHttpMethods"
     },
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#put-accepted",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#put-accepted",
       "@type": "ActorRdfMetadataExtractPutAccepted"
     },
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#patch-sparql-update",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#patch-sparql-update",
       "@type": "ActorRdfMetadataExtractPatchSparqlUpdate"
     },
     {
-      "@id": "urn:comunica:default:hash-bindings/actors#sparql-service",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#sparql-service",
       "@type": "ActorRdfMetadataExtractSparqlService"
     }
   ]
