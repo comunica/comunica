@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-rdf-join-inner-multi-bind",
+  "name": "@comunica/bus-rdf-join-entries-sort",
   "version": "2.0.0",
-  "description": "A multi-bind rdf-join actor",
+  "description": "A comunica bus for rdf-join-entries-sort events.",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-rdf-join-inner-multi-bind"
+    "directory": "packages/bus-rdf-join-entries-sort"
   },
   "publishConfig": {
     "access": "public"
@@ -16,9 +16,8 @@
   "sideEffects": false,
   "keywords": [
     "comunica",
-    "actor",
-    "rdf-join",
-    "multi-bind"
+    "bus",
+    "rdf-join-entries-sort"
   ],
   "license": "MIT",
   "bugs": {
@@ -31,13 +30,8 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.0.0",
-    "@comunica/bus-rdf-join": "^2.0.0",
-    "@comunica/bus-rdf-join-entries-sort": "^2.0.0",
-    "@comunica/context-entries": "^2.0.0",
     "@comunica/core": "^2.0.0",
-    "asynciterator": "^3.2.1",
-    "sparqlalgebrajs": "^4.0.0"
+    "@comunica/types": "^2.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

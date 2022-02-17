@@ -1,6 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
@@ -28,6 +29,7 @@ describe('ActorRdfJoinMultiBind', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let context: IActionContext;
     let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryOperationResultBindings>,
     IActionQueryOperation, IActorTest, IQueryOperationResultBindings>;
@@ -37,6 +39,13 @@ describe('ActorRdfJoinMultiBind', () => {
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 0.8 }),
+      };
+      mediatorJoinEntriesSort = <any> {
+        async mediate(action: IActionRdfJoinEntriesSort) {
+          const entries = [ ...action.entries ]
+            .sort((left, right) => left.metadata.cardinality.value - right.metadata.cardinality.value);
+          return { entries };
+        },
       };
       context = new ActionContext({ a: 'b' });
       mediatorQueryOperation = <any> {
@@ -69,6 +78,7 @@ describe('ActorRdfJoinMultiBind', () => {
         selectivityModifier: 0.1,
         mediatorQueryOperation,
         mediatorJoinSelectivity,
+        mediatorJoinEntriesSort,
       });
       logSpy = (<any> actor).logDebug = jest.fn();
     });
@@ -303,171 +313,461 @@ describe('ActorRdfJoinMultiBind', () => {
       });
     });
 
-    describe('getLeftEntryIndex', () => {
-      it('picks the lowest of 2 entries', async() => {
-        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
+    describe('sortJoinEntries', () => {
+      it('sorts 2 entries', async() => {
+        expect(await actor.sortJoinEntries(
           [
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 2 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
           ],
-          [
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
-          ],
-        )).toEqual(1);
-      });
-
-      it('picks the lowest of 3 entries', async() => {
-        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
-          [
-            {
-              output: <any> {},
-              operation: <any> {},
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-            },
-          ],
-          [
-            {
-              cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
+          context,
+        )).toEqual([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
               cardinality: { type: 'estimate', value: 2 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
-            {
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+        ]);
+      });
+
+      it('sorts 3 entries', async() => {
+        expect(await actor.sortJoinEntries([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 2 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
               cardinality: { type: 'estimate', value: 5 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
-          ],
-        )).toEqual(1);
+          },
+        ],
+        context)).toEqual([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 2 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 5 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+        ]);
       });
 
-      it('picks the first of 3 equal entries', async() => {
-        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
+      it('sorts 3 equal entries', async() => {
+        expect(await actor.sortJoinEntries(
           [
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
           ],
-          [
-            {
+          context,
+        )).toEqual([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
-            {
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
-            {
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
-          ],
-        )).toEqual(0);
+          },
+        ]);
       });
 
-      it('picks the first of 3 entries if there is an undef', async() => {
-        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
+      it('does not sort if there is an undef', async() => {
+        expect(await actor.sortJoinEntries(
           [
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 2 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 5 },
+                canContainUndefs: true,
+                variables: [ DF.variable('a') ],
+              },
             },
           ],
-          [
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
-            { cardinality: { type: 'estimate', value: 5 }, canContainUndefs: true, variables: [ DF.variable('a') ]},
-          ],
-        )).toEqual(0);
+          context,
+        )).toEqual([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 2 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 5 },
+              canContainUndefs: true,
+              variables: [ DF.variable('a') ],
+            },
+          },
+        ]);
       });
 
       it('throws if there are no overlapping variables', async() => {
-        await expect(ActorRdfJoinMultiBind.getLeftEntryIndex(
+        await expect(actor.sortJoinEntries(
           [
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a1'), DF.variable('b1') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 2 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a2'), DF.variable('b2') ],
+              },
             },
           ],
-          [
-            {
-              cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a1'), DF.variable('b1') ],
-            },
-            {
-              cardinality: { type: 'estimate', value: 2 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a2'), DF.variable('b2') ],
-            },
-          ],
+          context,
         )).rejects.toThrow('Bind join can only join entries with at least one common variable');
       });
 
-      it('excludes entries without common variables', async() => {
-        expect(await ActorRdfJoinMultiBind.getLeftEntryIndex(
+      it('sorts entries without common variables in the back', async() => {
+        expect(await actor.sortJoinEntries(
           [
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 1 },
+                canContainUndefs: false,
+                variables: [ DF.variable('b') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
             {
               output: <any> {},
               operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 2 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
             },
           ],
+          context,
+        )).toEqual([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 2 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 1 },
+              canContainUndefs: false,
+              variables: [ DF.variable('b') ],
+            },
+          },
+        ]);
+      });
+
+      it('sorts several entries without variables in the back', async() => {
+        expect(await actor.sortJoinEntries(
           [
-            { cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false, variables: [ DF.variable('b') ]},
-            { cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
-            { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 3 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 1 },
+                canContainUndefs: false,
+                variables: [ DF.variable('b') ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 20 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 20 },
+                canContainUndefs: false,
+                variables: [ DF.variable('c') ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 2 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 10 },
+                canContainUndefs: false,
+                variables: [ DF.variable('d') ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                cardinality: { type: 'estimate', value: 10 },
+                canContainUndefs: false,
+                variables: [ DF.variable('a') ],
+              },
+            },
           ],
-        )).toEqual(2);
+          context,
+        )).toEqual([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 2 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 3 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 10 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 20 },
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 1 },
+              canContainUndefs: false,
+              variables: [ DF.variable('b') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 10 },
+              canContainUndefs: false,
+              variables: [ DF.variable('d') ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              cardinality: { type: 'estimate', value: 20 },
+              canContainUndefs: false,
+              variables: [ DF.variable('c') ],
+            },
+          },
+        ]);
       });
     });
 
@@ -621,6 +921,7 @@ describe('ActorRdfJoinMultiBind', () => {
           selectivityModifier: 0.1,
           mediatorQueryOperation,
           mediatorJoinSelectivity,
+          mediatorJoinEntriesSort,
         });
 
         const action: IActionRdfJoin = {

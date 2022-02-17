@@ -2,6 +2,7 @@ import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloo
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
@@ -44,6 +45,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let mediatorJoin: any;
     let actor: ActorRdfJoinMultiSmallest;
     let action3: IActionRdfJoin;
@@ -55,19 +57,29 @@ describe('ActorRdfJoinMultiSmallest', () => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
+      mediatorJoinEntriesSort = <any> {
+        async mediate(action: IActionRdfJoinEntriesSort) {
+          const entries = [ ...action.entries ]
+            .sort((left, right) => left.metadata.cardinality.value - right.metadata.cardinality.value);
+          return { entries };
+        },
+      };
       invocationCounter = 0;
       mediatorJoin = {
         mediate(a: any) {
           if (a.entries.length === 2) {
-            a.entries[0].called = invocationCounter;
-            a.entries[1].called = invocationCounter;
+            a.entries[0].operation.called = invocationCounter;
+            a.entries[1].operation.called = invocationCounter;
             invocationCounter++;
-            return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity }).run(a);
+            return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoinEntriesSort })
+              .run(a);
           }
           return actor.run(a);
         },
       };
-      actor = new ActorRdfJoinMultiSmallest({ name: 'actor', bus, mediatorJoin, mediatorJoinSelectivity });
+      actor = new ActorRdfJoinMultiSmallest(
+        { name: 'actor', bus, mediatorJoin, mediatorJoinSelectivity, mediatorJoinEntriesSort },
+      );
       action3 = {
         type: 'inner',
         entries: [
@@ -385,9 +397,9 @@ describe('ActorRdfJoinMultiSmallest', () => {
       ]);
 
       // Check join order
-      expect((<any> action3.entries[0]).called).toBe(0);
-      expect((<any> action3.entries[1]).called).toBe(1);
-      expect((<any> action3.entries[2]).called).toBe(0);
+      expect((<any> action3.entries[0]).operation.called).toBe(0);
+      expect((<any> action3.entries[1]).operation.called).toBe(1);
+      expect((<any> action3.entries[2]).operation.called).toBe(0);
     });
 
     it('should run on 4 streams', async() => {
@@ -414,10 +426,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
       ]);
 
       // Check join order
-      expect((<any> action4.entries[0]).called).toBe(1);
-      expect((<any> action4.entries[1]).called).toBe(2);
-      expect((<any> action4.entries[2]).called).toBe(0);
-      expect((<any> action4.entries[3]).called).toBe(0);
+      expect((<any> action4.entries[0]).operation.called).toBe(1);
+      expect((<any> action4.entries[1]).operation.called).toBe(2);
+      expect((<any> action4.entries[2]).operation.called).toBe(0);
+      expect((<any> action4.entries[3]).operation.called).toBe(0);
     });
   });
 });

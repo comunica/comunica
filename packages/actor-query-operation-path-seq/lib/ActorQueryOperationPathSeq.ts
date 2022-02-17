@@ -3,8 +3,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import type { Bindings, IActionContext, IQueryOperationResult, IJoinEntry } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 

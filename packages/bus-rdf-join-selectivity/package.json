@@ -31,7 +31,8 @@
   ],
   "dependencies": {
     "@comunica/core": "^2.0.0",
-    "@comunica/mediatortype-accuracy": "^2.0.0"
+    "@comunica/mediatortype-accuracy": "^2.0.0",
+    "@comunica/types": "^2.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -8,12 +8,11 @@ import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IQueryOperationResultBindings, MetadataBindings,
-  IPhysicalQueryPlanLogger, Bindings, IActionContext,
+  IPhysicalQueryPlanLogger, Bindings, IActionContext, IJoinEntry, IJoinEntryWithMetadata,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
 const DF = new DataFactory();
 
 /**
@@ -133,29 +132,8 @@ export abstract class ActorRdfJoin
    * @param {Record<string, any>} metadata A metadata object.
    * @return {number} The estimated number of items, or `Infinity` if cardinality is falsy.
    */
-  public static getCardinality(metadata: Record<string, any>): RDF.QueryResultCardinality {
-    return metadata.cardinality || metadata.cardinality === 0 ? metadata.cardinality : Number.POSITIVE_INFINITY;
-  }
-
-  /**
-   * Find the metadata index with the lowest cardinality.
-   * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
-   * @param indexBlacklist An optional array of blacklisted indexes that will not be considered.
-   * @return {number} The index of the entry with the lowest cardinality.
-   */
-  public static getLowestCardinalityIndex(metadatas: MetadataBindings[], indexBlacklist: number[] = []): number {
-    let smallestId = -1;
-    let smallestCount: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
-    for (const [ i, meta ] of metadatas.entries()) {
-      if (!indexBlacklist.includes(i)) {
-        const count: RDF.QueryResultCardinality = ActorRdfJoin.getCardinality(meta);
-        if (count.value < smallestCount.value || smallestId === -1) {
-          smallestCount = count;
-          smallestId = i;
-        }
-      }
-    }
-    return smallestId;
+  public static getCardinality(metadata: MetadataBindings): RDF.QueryResultCardinality {
+    return metadata.cardinality;
   }
 
   /**
@@ -164,6 +142,15 @@ export abstract class ActorRdfJoin
    */
   public static async getMetadatas(entries: IJoinEntry[]): Promise<MetadataBindings[]> {
     return await Promise.all(entries.map(entry => entry.output.metadata()));
+  }
+
+  /**
+   * Obtain the join entries witt metadata from all given join entries.
+   * @param entries Join entries.
+   */
+  public static async getEntriesWithMetadatas(entries: IJoinEntry[]): Promise<IJoinEntryWithMetadata[]> {
+    const metadatas = await ActorRdfJoin.getMetadatas(entries);
+    return entries.map((entry, i) => ({ ...entry, metadata: metadatas[i] }));
   }
 
   /**
@@ -378,20 +365,6 @@ export interface IActionRdfJoin extends IAction {
    * The array of streams to join.
    */
   entries: IJoinEntry[];
-}
-
-/**
- * A joinable entry.
- */
-export interface IJoinEntry {
-  /**
-   * A (lazy) resolved bindings stream, from which metadata may be obtained.
-   */
-  output: IQueryOperationResultBindings;
-  /**
-   * The original query operation from which the bindings stream was produced.
-   */
-  operation: Algebra.Operation;
 }
 
 export interface IActorRdfJoinOutputInner {

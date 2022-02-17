@@ -3,9 +3,9 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { IJoinEntry, MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryOperationResult, IActionContext } from '@comunica/types';
+import type { IQueryOperationResult, IActionContext, IJoinEntry } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**

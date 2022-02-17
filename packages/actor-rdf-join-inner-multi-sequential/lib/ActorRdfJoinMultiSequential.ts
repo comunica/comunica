@@ -3,14 +3,13 @@ import {
 } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
-  IJoinEntry,
   IActorRdfJoinOutputInner,
   IActorRdfJoinArgs,
   MediatorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { MetadataBindings } from '@comunica/types';
+import type { MetadataBindings, IJoinEntry } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**

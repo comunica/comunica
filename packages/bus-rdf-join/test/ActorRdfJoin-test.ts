@@ -332,74 +332,14 @@ describe('ActorRdfJoin', () => {
   });
 
   describe('getCardinality', () => {
-    it('should be infinity for empty metadata', () => {
-      return expect(ActorRdfJoin.getCardinality({})).toEqual(Number.POSITIVE_INFINITY);
-    });
-
     it('should handle 0 metadata', () => {
-      return expect(ActorRdfJoin.getCardinality({ cardinality: 0 })).toEqual(0);
+      return expect(ActorRdfJoin.getCardinality(<any>{ cardinality: { type: 'exact', value: 0 }}))
+        .toEqual({ type: 'exact', value: 0 });
     });
 
     it('should handle 5 metadata', () => {
-      return expect(ActorRdfJoin.getCardinality({ cardinality: 5 })).toEqual(5);
-    });
-  });
-
-  describe('getLowestCardinalityIndex', () => {
-    it('should return -1 for no metadatas', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([])).toEqual(-1);
-    });
-
-    it('should return 0 for 1 empty metadata', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        <any> {},
-      ])).toEqual(0);
-    });
-
-    it('should return 0 for 3 empty metadatas', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        <any> {},
-        <any> {},
-        <any> {},
-      ])).toEqual(0);
-    });
-
-    it('should return 0 for 1 metadata', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-      ])).toEqual(0);
-    });
-
-    it('should return 1 for 3 metadatas', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: { type: 'estimate', value: 20 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 30 }, canContainUndefs: false, variables: []},
-      ])).toEqual(1);
-    });
-
-    it('should return 0 for 3 infinite metadatas', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
-      ])).toEqual(0);
-    });
-
-    it('should return 1 for 2 infinite metadatas', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 1_000 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false, variables: []},
-      ])).toEqual(1);
-    });
-
-    it('should allow indexes to be ignored', () => {
-      return expect(ActorRdfJoin.getLowestCardinalityIndex([
-        { cardinality: { type: 'estimate', value: 20 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 30 }, canContainUndefs: false, variables: []},
-      ], [ 1, 0 ])).toEqual(2);
+      return expect(ActorRdfJoin.getCardinality(<any>{ cardinality: { type: 'exact', value: 5 }}))
+        .toEqual({ type: 'exact', value: 5 });
     });
   });
 
