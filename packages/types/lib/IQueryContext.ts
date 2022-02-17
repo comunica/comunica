@@ -9,11 +9,11 @@ import type { QueryExplainMode } from './IQueryOperationResult';
 /**
  * Query context when a string-based query was passed.
  */
-export type QueryStringContext = RDF.QueryStringContext<SourceType> & IQueryContextCommon;
+export type QueryStringContext = RDF.QueryStringContext & RDF.QuerySourceContext<SourceType> & IQueryContextCommon;
 /**
  * Query context when an algebra-based query was passed.
  */
-export type QueryAlgebraContext = RDF.QueryAlgebraContext<SourceType> & IQueryContextCommon;
+export type QueryAlgebraContext = RDF.QueryAlgebraContext & RDF.QuerySourceContext<SourceType> & IQueryContextCommon;
 
 /**
  * Common query context interface

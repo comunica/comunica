@@ -6,7 +6,7 @@ import type {
   IPhysicalQueryPlanLogger,
   IActionContext, QueryStringContext, IQueryBindingsEnhanced, IQueryQuadsEnhanced,
   QueryType, IQueryOperationResultQuads,
-  IQueryOperationResultBindings, IQueryOperationResultBoolean, IQueryOperationResultVoid,
+  IQueryOperationResultBindings, IQueryOperationResultBoolean, IQueryOperationResultVoid, IQueryEngine,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -95,7 +95,7 @@ describe('QueryEngineBase', () => {
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
     let input: any;
     let actor: ActorInitQuery;
-    let queryEngine: QueryEngineBase;
+    let queryEngine: IQueryEngine;
     const mediatorContextPreprocess: any = {
       mediate: (action: any) => Promise.resolve(action),
     };
@@ -170,6 +170,7 @@ describe('QueryEngineBase', () => {
     describe('query', () => {
       it('should apply bindings when initialBindings are passed via the context', () => {
         const ctx: QueryStringContext = {
+          sources: [ 'dummy' ],
           '@comunica/actor-init-query:initialBindings': BF.bindings([
             [ DF.variable('s'), DF.literal('sl') ],
           ]),
@@ -180,6 +181,7 @@ describe('QueryEngineBase', () => {
 
       it('should apply bindings when initialBindings in the old format are passed via the context', () => {
         const ctx: QueryStringContext = {
+          sources: [ 'dummy' ],
           initialBindings: BF.bindings([
             [ DF.variable('s'), DF.literal('sl') ],
           ]),
@@ -199,7 +201,7 @@ describe('QueryEngineBase', () => {
       });
 
       it('should allow KeysInitSparql.queryTimestamp to be set', () => {
-        const ctx: QueryStringContext = { [KeysInitQuery.queryTimestamp.name]: new Date() };
+        const ctx: QueryStringContext = { sources: [ 'dummy' ], [KeysInitQuery.queryTimestamp.name]: new Date() };
         return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
@@ -226,7 +228,10 @@ describe('QueryEngineBase', () => {
         mediatorOptimizeQueryOperation.mediate = (action: any) => {
           return Promise.resolve({ ...action, context: undefined });
         };
-        const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { 'the-answer': 42 });
+        const result = await queryEngine.query(
+          'SELECT * WHERE { ?s ?p ?o }',
+          { sources: [ 'dummy' ], 'the-answer': 42 },
+        );
         expect(result).toHaveProperty('context');
         expect((<ActionContext> result.context).getRaw('the-answer')).toEqual(42);
       });

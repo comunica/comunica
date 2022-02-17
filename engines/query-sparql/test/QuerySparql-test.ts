@@ -55,7 +55,7 @@ describe('System test: QuerySparql', () => {
       it('for the single source context entry', async() => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
-    }`, { source: 'https://www.rubensworks.net/' });
+    }`, { sources: [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
       });
 
@@ -256,7 +256,7 @@ describe('System test: QuerySparql', () => {
         const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
-    }`, { source: 'https://www.rubensworks.net/' });
+    }`, { sources: [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(20);
       });
     });
@@ -306,6 +306,7 @@ describe('System test: QuerySparql', () => {
         const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
       <ex:s> <ex:p> <ex:o>.
     }`, {
+          sources: [ 'dummy' ],
           destination: store,
         });
         await result.execute();
@@ -434,6 +435,7 @@ describe('System test: QuerySparql', () => {
     DELETE DATA {
       <ex:s-pre> <ex:p-pre> <ex:o-pre>.
     }`, {
+          sources: [ 'dummy' ],
           destination: store,
         });
         await result.execute();
@@ -481,6 +483,7 @@ describe('System test: QuerySparql', () => {
         const result = <RDF.QueryVoid> await engine.query(
           `LOAD <https://www.rubensworks.net/> INTO GRAPH <ex:graph>`,
           {
+            sources: [ 'dummy' ],
             destination: store,
           },
         );

@@ -111,7 +111,7 @@ export class QueryEngineBase implements IQueryEngine {
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
   ): Promise<QueryType | IQueryExplained> {
-    context = context || {};
+    context = context || <any>{};
 
     // Expand shortcuts
     for (const key in context) {

@@ -79,7 +79,7 @@ export class ActorInitQuery extends ActorInitQueryBase {
     }
 
     // Evaluate query
-    const queryResult = await queryEngine.queryOrExplain(query!, context);
+    const queryResult = await queryEngine.queryOrExplain(query!, <any> context);
 
     // Output query explanations in a different way
     if ('explain' in queryResult) {
