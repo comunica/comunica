@@ -25,10 +25,9 @@ describe('ActorQueryOperationFromQuad', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -852,9 +851,9 @@ describe('ActorQueryOperationFromQuad', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      expect(await output.metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject([ DF.variable('a') ]);
     });
   });
 });

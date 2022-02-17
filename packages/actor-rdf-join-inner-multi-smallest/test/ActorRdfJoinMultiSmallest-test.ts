@@ -71,7 +71,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             a.entries[0].operation.called = invocationCounter;
             a.entries[1].operation.called = invocationCounter;
             invocationCounter++;
-            return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoinEntriesSort })
+            return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity })
               .run(a);
           }
           return actor.run(a);

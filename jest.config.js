@@ -9,7 +9,8 @@ module.exports = {
   ],
   globals: {
     'ts-jest': {
-      isolatedModules: true
+      // Enabling this can fix issues when using prereleases of typings packages
+      //isolatedModules: true
     },
   },
   setupFilesAfterEnv: [ './setup-jest.js' ],

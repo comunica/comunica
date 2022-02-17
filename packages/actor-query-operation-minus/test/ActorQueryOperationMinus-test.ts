@@ -1,8 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IJoinEntry } from '@comunica/bus-rdf-join';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultBindings } from '@comunica/types';
+import type { IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationMinus } from '../lib/ActorQueryOperationMinus';
@@ -25,19 +24,21 @@ describe('ActorQueryOperationMinus', () => {
           BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('x') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('x') ],
       }),
     };
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
-        metadata: () => Promise.resolve({ cardinality: 100, canContainUndefs: false }),
+        metadata: () => Promise.resolve({
+          cardinality: 100,
+          canContainUndefs: false,
+          variables: [ DF.variable('x'), DF.variable('y') ],
+        }),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('x'), DF.variable('y') ],
       }),
     };
   });
@@ -79,9 +80,12 @@ describe('ActorQueryOperationMinus', () => {
     it('should run', () => {
       const op: any = { operation: { type: 'minus', input: [{}, {}, {}]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.variables).toEqual([ DF.variable('x'), DF.variable('y') ]);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({ cardinality: 100, canContainUndefs: false });
+        expect(await output.metadata()).toEqual({
+          cardinality: 100,
+          canContainUndefs: false,
+          variables: [ DF.variable('x'), DF.variable('y') ],
+        });
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),

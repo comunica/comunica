@@ -4,8 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { MediatorCombinePipeline } from '../lib/MediatorCombinePipeline';
 
 describe('MediatorCombinePipeline', () => {
-  let bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>
-  | Bus<DummyConcatActor, IDummyConcatAction, IActorTest, IDummyConcatAction>;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -28,7 +27,7 @@ describe('MediatorCombinePipeline', () => {
     let mediator: MediatorCombinePipeline<DummyActor, IDummyAction, IActorTest>;
 
     beforeEach(() => {
-      mediator = new MediatorCombinePipeline({ name: 'mediator', bus });
+      mediator = new MediatorCombinePipeline(<any> { name: 'mediator', bus });
       new DummyActor(10, bus);
       new DummyActor(100, bus);
       new DummyActor(1, bus);
@@ -220,7 +219,11 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
   public readonly id: number;
   public readonly testOutput: IActorTest;
 
-  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>, testOutput: IActorTest) {
+  public constructor(
+    id: number,
+    bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>,
+    testOutput: IActorTest = {},
+  ) {
     super({ name: `dummy${id}`, bus });
     this.id = id;
     this.testOutput = testOutput;
@@ -236,7 +239,11 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
 }
 
 class DummyThrowActor extends DummyActor {
-  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>, testOutput: IActorTest) {
+  public constructor(
+    id: number,
+    bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>,
+    testOutput: IActorTest = {},
+  ) {
     super(id, bus, testOutput);
   }
 

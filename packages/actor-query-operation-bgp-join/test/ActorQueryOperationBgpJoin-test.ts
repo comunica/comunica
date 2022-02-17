@@ -25,10 +25,9 @@ describe('ActorQueryOperationBgpJoin', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
       })),
     };
   });
@@ -56,8 +55,8 @@ describe('ActorQueryOperationBgpJoin', () => {
       const op = <any> { operation: { type: 'bgp', patterns }, context };
 
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
-      expect(output.variables).toEqual([ DF.variable('a') ]);
+      expect(await output.metadata())
+        .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
       expect(output.type).toEqual('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),

@@ -77,7 +77,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
   describe('An ActorRdfUpdateQuadsDestination instance with rdfjs source', () => {
     const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
-    actor.getDestination = context => {
+    actor.getDestination = (context: any) => {
       return Promise.resolve(new RdfJsQuadDestination(context.get(KeysRdfUpdateQuads.destination)));
     };
 
@@ -148,11 +148,11 @@ class RdfJsQuadDestination {
   }
 
   public delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.remove(quads));
+    return this.promisifyEventEmitter(this.store.remove(<any> quads));
   }
 
   public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.import(quads));
+    return this.promisifyEventEmitter(this.store.import(<any> quads));
   }
 }
 
