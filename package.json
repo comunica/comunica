@@ -90,7 +90,7 @@
     "version": "manual-git-changelog onversion"
   },
   "resolutions": {
-    "@rdfjs/types": "1.1.0-next.1"
+    "@rdfjs/types": "1.1.0"
   },
   "dependencies": {}
 }
