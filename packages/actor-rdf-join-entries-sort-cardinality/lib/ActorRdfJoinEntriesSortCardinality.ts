@@ -4,9 +4,7 @@ import { ActorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 
 /**
- * A comunica Variable Counting RDF Join Selectivity Actor.
- * Based on the "variable counting predicates" heuristic from
- * "SPARQL basic graph pattern optimization using selectivity estimation."
+ * An actor that sorts join entries by increasing cardinality.
  */
 export class ActorRdfJoinEntriesSortCardinality extends ActorRdfJoinEntriesSort {
   public constructor(
