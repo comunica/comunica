@@ -36,7 +36,7 @@ let bnodeCounter = 0;
  */
 export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IQueryOperationResult> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cbqo:components/BusQueryOperation.jsonld#BusQueryOperation>} bus
    */
   protected constructor(args: IActorQueryOperationArgs) {
     super(args);
