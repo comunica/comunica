@@ -3013,10 +3013,10 @@
     "@typescript-eslint/types" "5.5.0"
     "@typescript-eslint/visitor-keys" "5.5.0"
 
-"@typescript-eslint/types@4.33.0":
-  version "4.33.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.33.0.tgz#a1e59036a3b53ae8430ceebf2a919dc7f9af6d72"
-  integrity sha512-zKp7CjQzLQImXEpLt2BUw1tvOMPfNoTAfb8l51evhYbOEEzdWyQNmHWWGPR6hwKJDAi+1VXSBmnhL9kyVTTOuQ==
+"@typescript-eslint/types@5.12.0":
+  version "5.12.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.12.0.tgz#5b4030a28222ee01e851836562c07769eecda0b8"
+  integrity sha512-JowqbwPf93nvf8fZn5XrPGFBdIK8+yx5UEGs2QFAYFI8IWYfrzz+6zqlurGr2ctShMaJxqwsqmra3WXWjH1nRQ==
 
 "@typescript-eslint/types@5.5.0":
   version "5.5.0"
@@ -3036,26 +3036,26 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/typescript-estree@^4.6.1":
-  version "4.33.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-4.33.0.tgz#0dfb51c2908f68c5c08d82aefeaf166a17c24609"
-  integrity sha512-rkWRY1MPFzjwnEVHsxGemDzqqddw2QbTJlICPD9p9I9LfsO8fdmfQPOX3uKfUaGRDFJbfrtm/sXhVXN4E+bzCA==
+"@typescript-eslint/typescript-estree@^5.11.0":
+  version "5.12.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.12.0.tgz#cabf545fd592722f0e2b4104711e63bf89525cd2"
+  integrity sha512-Dd9gVeOqt38QHR0BEA8oRaT65WYqPYbIc5tRFQPkfLquVEFPD1HAtbZT98TLBkEcCkvwDYOAvuSvAD9DnQhMfQ==
   dependencies:
-    "@typescript-eslint/types" "4.33.0"
-    "@typescript-eslint/visitor-keys" "4.33.0"
-    debug "^4.3.1"
-    globby "^11.0.3"
-    is-glob "^4.0.1"
+    "@typescript-eslint/types" "5.12.0"
+    "@typescript-eslint/visitor-keys" "5.12.0"
+    debug "^4.3.2"
+    globby "^11.0.4"
+    is-glob "^4.0.3"
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/visitor-keys@4.33.0":
-  version "4.33.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.33.0.tgz#2a22f77a41604289b7a186586e9ec48ca92ef1dd"
-  integrity sha512-uqi/2aSz9g2ftcHWf8uLPJA70rUv6yuMW5Bohw+bwcuzaxQIHaKFZCKGoGXIrc9vkTJ3+0txM73K0Hq3d5wgIg==
+"@typescript-eslint/visitor-keys@5.12.0":
+  version "5.12.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.12.0.tgz#1ac9352ed140b07ba144ebf371b743fdf537ec16"
+  integrity sha512-cFwTlgnMV6TgezQynx2c/4/tx9Tufbuo9LPzmWqyRC3QC4qTGkAG1C6pBr0/4I10PAI/FlYunI3vJjIcu+ZHMg==
   dependencies:
-    "@typescript-eslint/types" "4.33.0"
-    eslint-visitor-keys "^2.0.0"
+    "@typescript-eslint/types" "5.12.0"
+    eslint-visitor-keys "^3.0.0"
 
 "@typescript-eslint/visitor-keys@5.5.0":
   version "5.5.0"
@@ -4322,45 +4322,26 @@ compare-func@^2.0.0:
     array-ify "^1.0.0"
     dot-prop "^5.1.0"
 
-componentsjs-generator@3.0.0-beta.5:
-  version "3.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-3.0.0-beta.5.tgz#d80a06aab21a3f6e83c190f5521ba8c7c86ef02d"
-  integrity sha512-Zk/6ROTQ2vWi6bX3A6i11M8hD4LDI2Nrccj/h+A6z4twH11nufV8kiRjcfqvu1sNhj5Do3jypV4A7sZVj+9Fwg==
+componentsjs-generator@3.0.0-beta.7:
+  version "3.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/componentsjs-generator/-/componentsjs-generator-3.0.0-beta.7.tgz#5d591076251e74b20770617739aa64dbc6c8577f"
+  integrity sha512-tJd43CFrdCh/f41I1O5Ql15otAr6ttIxtvjS9yZgm0MuGccNGVQEJqIvF7HWH2/PmZfWLuLMIbSDITBo+S8lvg==
   dependencies:
     "@types/lru-cache" "^5.1.0"
     "@types/semver" "^7.3.4"
-    "@typescript-eslint/typescript-estree" "^4.6.1"
+    "@typescript-eslint/typescript-estree" "^5.11.0"
     comment-parser "^0.7.6"
-    componentsjs "5.0.0-beta.0"
+    componentsjs "5.0.0-beta.5"
     jsonld-context-parser "^2.1.5"
     lru-cache "^6.0.0"
     minimist "^1.2.5"
     rdf-object "^1.13.0"
     semver "^7.3.2"
 
-componentsjs@5.0.0-beta.0:
-  version "5.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-5.0.0-beta.0.tgz#f55224e647e7e077e87387e1891a44478ae40e03"
-  integrity sha512-kdxIpCTDwpXhLFQNiccrm78LCuCxMDXLpWSer8WvaTnHu0RqknOe9IHFOu6qctBpiZyml02lEPIQrj+AEs1Wrw==
-  dependencies:
-    "@rdfjs/types" "*"
-    "@types/minimist" "^1.2.0"
-    "@types/node" "^14.14.7"
-    "@types/semver" "^7.3.4"
-    jsonld-context-parser "^2.1.1"
-    minimist "^1.2.0"
-    rdf-data-factory "^1.1.0"
-    rdf-object "^1.12.0"
-    rdf-parse "^1.9.1"
-    rdf-quad "^1.5.0"
-    rdf-terms "^1.7.0"
-    semver "^7.3.2"
-    winston "^3.3.3"
-
-componentsjs@5.0.0-beta.3:
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-5.0.0-beta.3.tgz#e03abbfc4f8d630ff8c9a8345ec92308d905ccc8"
-  integrity sha512-qAhUa4vJ4FsVCQGSg29OOeG00IP80uNzlyHd5eo03lA5qJZJrewzDQ9m6feAx1ljoj3oOr4nEsfxBtZ2ax/G7w==
+componentsjs@5.0.0-beta.5:
+  version "5.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-5.0.0-beta.5.tgz#9998a0f37944c25d2acfaccfb57c9fabc7b6b319"
+  integrity sha512-nmFGTXLieremP0mfTFnHI+hw8ildR/NSC9mzxGrn6ZJjc4xUWK1eMex1rYDEx7BogElZsTXPnO671lngdSpD9Q==
   dependencies:
     "@rdfjs/types" "*"
     "@types/minimist" "^1.2.0"
@@ -4370,6 +4351,25 @@ componentsjs@5.0.0-beta.3:
     minimist "^1.2.0"
     rdf-data-factory "^1.1.0"
     rdf-object "^1.13.0"
+    rdf-parse "^1.9.1"
+    rdf-quad "^1.5.0"
+    rdf-terms "^1.7.0"
+    semver "^7.3.2"
+    winston "^3.3.3"
+
+componentsjs@5.0.0-beta.7:
+  version "5.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-5.0.0-beta.7.tgz#c0bf1e036a76df91651a0426c09ab47e1d22ab71"
+  integrity sha512-iStwkM5w6wiU0vdDmJYg6qX45ey3XB3JnKaye7rYcah8xn3p/te1vopaj8aaI7lKNS4RL/Qg3sM/UsmADcH40g==
+  dependencies:
+    "@rdfjs/types" "*"
+    "@types/minimist" "^1.2.0"
+    "@types/node" "^14.14.7"
+    "@types/semver" "^7.3.4"
+    jsonld-context-parser "^2.1.1"
+    minimist "^1.2.0"
+    rdf-data-factory "^1.1.0"
+    rdf-object "^1.13.1"
     rdf-parse "^1.9.1"
     rdf-quad "^1.5.0"
     rdf-terms "^1.7.0"
@@ -6117,7 +6117,7 @@ globals@^13.6.0, globals@^13.9.0:
   dependencies:
     type-fest "^0.20.2"
 
-globby@^11.0.2, globby@^11.0.3, globby@^11.0.4:
+globby@^11.0.2, globby@^11.0.4:
   version "11.0.4"
   resolved "https://registry.yarnpkg.com/globby/-/globby-11.0.4.tgz#2cbaff77c2f2a62e71e9b2813a67b97a3a3001a5"
   integrity sha512-9O4MVG9ioZJ08ffbcyVYyLOJLk5JQ688pJ4eMGLpdWLHq/Wr1D9BlriLQyL0E+jbkuePVZXYFj47QM/v093wHg==
@@ -9524,10 +9524,10 @@ rdf-object@^1.11.0:
     rdf-string "^1.6.0"
     streamify-array "^1.0.1"
 
-rdf-object@^1.12.0:
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.12.0.tgz#76f786f333a5bd4eb9f11b10af8879950123249e"
-  integrity sha512-LF4LjYCneh2RJcUSPWbTfGgsYqRMcElmHDR3lPkMrJQ6azrCqY9DLdVWaqK7xRn1ujeHWiOkS34ThTZgzzvuUQ==
+rdf-object@^1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.13.0.tgz#8914d09de1430fcc76a197f2ee1ecab8c341e852"
+  integrity sha512-a32scuLEGWfes8Da2fg3ArpT5iJZABEtpQ3OS1ZbPAAMKiwMTNtJxbsK1XZeXYaVAxNTcxLAwDnOrcmy8vtImA==
   dependencies:
     "@rdfjs/types" "*"
     jsonld-context-parser "^2.0.2"
@@ -9535,10 +9535,10 @@ rdf-object@^1.12.0:
     rdf-string "^1.6.0"
     streamify-array "^1.0.1"
 
-rdf-object@^1.13.0:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.13.0.tgz#8914d09de1430fcc76a197f2ee1ecab8c341e852"
-  integrity sha512-a32scuLEGWfes8Da2fg3ArpT5iJZABEtpQ3OS1ZbPAAMKiwMTNtJxbsK1XZeXYaVAxNTcxLAwDnOrcmy8vtImA==
+rdf-object@^1.13.1:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/rdf-object/-/rdf-object-1.13.1.tgz#e88a7ebe93397b0e9877e89b855681d523065b1f"
+  integrity sha512-Sgq+GbsqdPsMYh+d4OZ4C9brXlzqa9MvfVHG4pkuT9p7o+AX39nqjTWE/8HVaXjjOZBIDe8T54WWTMWphu3BpA==
   dependencies:
     "@rdfjs/types" "*"
     jsonld-context-parser "^2.0.2"
@@ -10452,7 +10452,7 @@ spark-md5@^3.0.1:
   resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.1.tgz#83a0e255734f2ab4e5c466e5a2cfc9ba2aa2124d"
   integrity sha512-0tF3AGSD1ppQeuffsLDIOWlKUd3lS92tFxcsrh5Pe3ZphhnoK+oXIBTzOAThZCiuINZLvpiLH/1VS1/ANEJVig==
 
-sparqlalgebrajs@^3.0.0, sparqlalgebrajs@^3.0.1:
+sparqlalgebrajs@^3.0.1:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-3.0.3.tgz#a0b2b2ea2bacf97a74b4e3f3fc90be72b96d94a1"
   integrity sha512-XFNhsO55bprayrM35h/jY0kzzuGc3oZ1On3kc+s7Un0BFQBXa046aLcMZFp4MYSvn7GtMe9eZ08ONFnBH5kEsQ==
