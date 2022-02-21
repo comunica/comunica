@@ -58,6 +58,22 @@ describe('BindingsFactory', () => {
       expect(bindings.has(DF.variable('d'))).toBeFalsy();
     });
   });
+
+  describe('fromRecord', () => {
+    it('should create a Bindings object', () => {
+      const bindings = (<BindingsFactory> factory).fromRecord({
+        a: DF.namedNode('ex:a'),
+        b: DF.namedNode('ex:b'),
+        c: DF.namedNode('ex:c'),
+      });
+      expect(bindings).toBeInstanceOf(Bindings);
+
+      expect(bindings.has(DF.variable('a'))).toBeTruthy();
+      expect(bindings.has(DF.variable('b'))).toBeTruthy();
+      expect(bindings.has(DF.variable('c'))).toBeTruthy();
+      expect(bindings.has(DF.variable('d'))).toBeFalsy();
+    });
+  });
 });
 
 // eslint-disable-next-line mocha/max-top-level-suites

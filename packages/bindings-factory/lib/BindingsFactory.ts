@@ -21,6 +21,10 @@ export class BindingsFactory implements RDF.BindingsFactory {
   public fromBindings(bindings: Bindings): Bindings {
     return this.bindings([ ...bindings ]);
   }
+
+  public fromRecord(record: Record<string, RDF.Term>): Bindings {
+    return this.bindings(Object.entries(record).map(([ key, value ]) => [ this.dataFactory.variable!(key), value ]));
+  }
 }
 
 export function bindingsToString(bindings: RDF.Bindings): string {
