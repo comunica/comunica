@@ -1,5 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
+import { bindingsToString } from './bindingsToString';
 
 /**
  * An immutable.js-based Bindings object.
@@ -138,6 +139,10 @@ export class Bindings implements RDF.Bindings {
     }
 
     return new Bindings(this.dataFactory, Map(entries));
+  }
+
+  public toString(): string {
+    return bindingsToString(this);
   }
 
   protected * mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {

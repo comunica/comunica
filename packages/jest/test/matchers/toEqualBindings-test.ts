@@ -44,11 +44,11 @@ describe('toEqualBindings', () => {
       [ DF.variable('b'), DF.namedNode('b1') ],
     ])))
       .toThrowError(`expected {
-  "?a": "a1",
-  "?b": "b1"
+  "a": "a1",
+  "b": "b1"
 } and {
-  "?a": "a1",
-  "?b": "b1"
+  "a": "a1",
+  "b": "b1"
 } not to be equal`);
   });
 
@@ -61,11 +61,11 @@ describe('toEqualBindings', () => {
       [ DF.variable('b'), DF.namedNode('b2') ],
     ])))
       .toThrowError(`expected {
-  "?a": "a1",
-  "?b": "b1"
+  "a": "a1",
+  "b": "b1"
 } and {
-  "?a": "a2",
-  "?b": "b2"
+  "a": "a2",
+  "b": "b2"
 } to be equal`);
   });
 });

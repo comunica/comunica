@@ -384,4 +384,18 @@ describe('Bindings', () => {
       expect(cb).toHaveBeenNthCalledWith(1, DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.variable('a'));
     });
   });
+
+  describe('toString', () => {
+    it('should stringify empty bindings', () => {
+      expect(new Bindings(DF, Map()).toString()).toEqual(`{}`);
+    });
+
+    it('should stringify non-empty bindings', () => {
+      expect(bindings.toString()).toEqual(`{
+  "a": "ex:a",
+  "b": "ex:b",
+  "c": "ex:c"
+}`);
+    });
+  });
 });

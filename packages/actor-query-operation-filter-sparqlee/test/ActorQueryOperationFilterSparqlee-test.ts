@@ -154,7 +154,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           const { error, bindings } = dataCB();
           expect(isExpressionError(error)).toBeTruthy();
           expect(bindings).toEqual(`{
-  "?a": "\\"1\\""
+  "a": "\\"1\\""
 }`);
         }
       });

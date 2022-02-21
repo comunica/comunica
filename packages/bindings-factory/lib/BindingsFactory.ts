@@ -1,7 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import { Bindings } from './Bindings';
 
 /**
@@ -25,12 +24,4 @@ export class BindingsFactory implements RDF.BindingsFactory {
   public fromRecord(record: Record<string, RDF.Term>): Bindings {
     return this.bindings(Object.entries(record).map(([ key, value ]) => [ this.dataFactory.variable!(key), value ]));
   }
-}
-
-export function bindingsToString(bindings: RDF.Bindings): string {
-  const raw: Record<string, string> = {};
-  for (const key of bindings.keys()) {
-    raw[termToString(key)] = termToString(bindings.get(key))!;
-  }
-  return JSON.stringify(raw, null, '  ');
 }

@@ -99,17 +99,17 @@ describe('toEqualBindingsStream', () => {
       ]),
     ]))
       .rejects.toThrowError(`expected [ {
-  "?a": "a1",
-  "?b": "b1"
+  "a": "a1",
+  "b": "b1"
 }, {
-  "?b": "b1",
-  "?c": "c1"
+  "b": "b1",
+  "c": "c1"
 } ] not to equal [ {
-  "?a": "a1",
-  "?b": "b1"
+  "a": "a1",
+  "b": "b1"
 }, {
-  "?b": "b1",
-  "?c": "c1"
+  "b": "b1",
+  "c": "c1"
 } ]`);
   });
 
@@ -134,17 +134,17 @@ describe('toEqualBindingsStream', () => {
       ]),
     ]))
       .rejects.toThrowError(`expected [ {
-  "?a": "a1",
-  "?b": "b1"
+  "a": "a1",
+  "b": "b1"
 }, {
-  "?b": "b1",
-  "?c": "c1"
+  "b": "b1",
+  "c": "c1"
 } ] to equal [ {
-  "?a": "a2",
-  "?b": "b2"
+  "a": "a2",
+  "b": "b2"
 }, {
-  "?b": "b2",
-  "?c": "c1"
+  "b": "b2",
+  "c": "c1"
 } ]
 Index 0 is different.`);
   });
@@ -166,14 +166,14 @@ Index 0 is different.`);
       ]),
     ]))
       .rejects.toThrowError(`expected [ {
-  "?a": "a1",
-  "?b": "b1"
+  "a": "a1",
+  "b": "b1"
 }, {
-  "?b": "b1",
-  "?c": "c1"
+  "b": "b1",
+  "c": "c1"
 } ] to equal [ {
-  "?a": "a2",
-  "?b": "b2"
+  "a": "a2",
+  "b": "b2"
 } ]`);
   });
 });
