@@ -44,7 +44,7 @@ export class ActorHttpMemento extends ActorHttp {
     // Did we ask for a time-negotiated response, but haven't received one?
     if (headers.has('accept-datetime') && result.headers && !result.headers.has('memento-datetime')) {
       // The links might have a timegate that can help us
-      const links = result.headers.has('link') && parseLink(result.headers.get('link')!);
+      const links = result.headers.has('link') && parseLink(result.headers.get('link'));
       if (links && links.timegate) {
         await result.body?.cancel();
         // Respond with a time-negotiated response from the timegate instead

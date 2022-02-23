@@ -68,7 +68,9 @@ export class ActorHttpFetch extends ActorHttp {
       // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
       // If it doesn't exist, we monkey-patch it.
       if (response.body && !response.body.cancel) {
-        response.body.cancel = async(error?: Error) => (<Readable> <any> response.body).destroy(error);
+        response.body.cancel = async(error?: Error) => {
+          (<Readable> <any> response.body).destroy(error);
+        };
       }
       return response;
     });

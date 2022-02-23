@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { Bindings, BindingsStream } from './Bindings';
+import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
 import type { IMetadata, MetadataQuads, MetadataBindings } from './IMetadata';
 
@@ -111,10 +111,6 @@ export type IQueryOperationResult =
 export interface IQueryBindingsEnhanced extends QueryBindings {
   // Override with more specific return type
   execute: (opts?: RDF.QueryExecuteOptions<RDF.Variable>) => Promise<BindingsStream>;
-  /**
-   * The collection of bindings after an 'end' event occured.
-   */
-  bindings: () => Promise<Bindings[]>;
 }
 
 /**
@@ -125,10 +121,6 @@ export interface IQueryQuadsEnhanced extends QueryQuads {
   // Override with more specific return type
   execute: (opts?: RDF.QueryExecuteOptions<RDF.QuadTermName>)
   => Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>>;
-  /**
-   * The collection of bindings after an 'end' event occured.
-   */
-  quads: () => Promise<RDF.Quad[]>;
 }
 
 export type QueryBindings = RDF.QueryBindings<RDF.AllMetadataSupport>;

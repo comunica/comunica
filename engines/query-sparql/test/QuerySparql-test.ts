@@ -4,10 +4,7 @@
 jest.unmock('follow-redirects');
 
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type {
-  IQueryBindingsEnhanced,
-  QueryBindings, QueryStringContext,
-} from '@comunica/types';
+import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import { Store } from 'n3';
@@ -186,8 +183,8 @@ describe('System test: QuerySparql', () => {
               return arg;
             },
           };
-          const result = <IQueryBindingsEnhanced> await engine.query(complexQuery, context);
-          expect((await result.bindings()).map(res => res.get(DF.variable('caps'))!.value)).toEqual(
+          const bindingsStream = await engine.queryBindings(complexQuery, context);
+          expect((await bindingsStream.toArray()).map(res => res.get(DF.variable('caps'))!.value)).toEqual(
             quads.map(q => q.object.value.toUpperCase()),
           );
         });
@@ -220,16 +217,16 @@ describe('System test: QuerySparql', () => {
             context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(false),
             };
-            const result = <IQueryBindingsEnhanced> await engine.query(complexQuery, context);
-            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
+            const bindingsStream = await engine.queryBindings(complexQuery, context);
+            expect((await bindingsStream.toArray()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
           });
 
           it('can be truly async', async() => {
             context.extensionFunctions = {
               'http://example.org/functions#count-chars': extensionBuilder(true),
             };
-            const result = <IQueryBindingsEnhanced> await engine.query(complexQuery, context);
-            expect((await result.bindings()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
+            const bindingsStream = await engine.queryBindings(complexQuery, context);
+            expect((await bindingsStream.toArray()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
           });
         });
       });
@@ -664,9 +661,9 @@ describe('System test: QuerySparql', () => {
             },
             type: 'project',
             variables: [
-              DF.variable('s'),
-              DF.variable('p'),
               DF.variable('o'),
+              DF.variable('p'),
+              DF.variable('s'),
             ],
           },
         });
@@ -694,9 +691,9 @@ describe('System test: QuerySparql', () => {
             },
             type: 'project',
             variables: [
-              DF.variable('s'),
-              DF.variable('p'),
               DF.variable('o'),
+              DF.variable('p'),
+              DF.variable('s'),
             ],
           },
         });
@@ -713,7 +710,7 @@ describe('System test: QuerySparql', () => {
           type: 'physical',
           data: {
             logical: 'project',
-            variables: [ 's', 'p', 'o' ],
+            variables: [ 'o', 'p', 's' ],
             children: [
               {
                 logical: 'join',

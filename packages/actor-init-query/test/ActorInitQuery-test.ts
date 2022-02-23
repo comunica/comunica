@@ -82,6 +82,7 @@ describe('ActorInitQuery', () => {
       input.push(triple);
       input.push(null);
     };
+    (<any> input).toArray = () => [ 'element' ];
   });
 
   describe('An ActorInitQuery instance', () => {

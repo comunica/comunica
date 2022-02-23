@@ -2,7 +2,7 @@ import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { Bindings, IActionContext, IPhysicalQueryPlanLogger,
+import type { IActionContext, IPhysicalQueryPlanLogger,
   IQueryOperationResult,
   IQueryEngine, IQueryExplained,
   QueryFormatType,
@@ -214,10 +214,10 @@ export class QueryEngineBase implements IQueryEngine {
       // Make sure the whole result is produced
       switch (finalOutput.resultType) {
         case 'bindings':
-          await finalOutput.bindings();
+          await (await finalOutput.execute()).toArray();
           break;
         case 'quads':
-          await finalOutput.quads();
+          await (await finalOutput.execute()).toArray();
           break;
         case 'boolean':
           await finalOutput.execute();
@@ -309,12 +309,6 @@ export class QueryEngineBase implements IQueryEngine {
           execute: async() => internalResult.bindingsStream,
           metadata: async() => <any> await internalResult.metadata(),
           context: internalResult.context,
-          bindings: () => new Promise<Bindings[]>((resolve, reject) => {
-            const result: Bindings[] = [];
-            internalResult.bindingsStream.on('data', (data: Bindings) => result.push(data));
-            internalResult.bindingsStream.on('end', () => resolve(result));
-            internalResult.bindingsStream.on('error', reject);
-          }),
         };
       case 'quads':
         return {
@@ -322,12 +316,6 @@ export class QueryEngineBase implements IQueryEngine {
           execute: async() => internalResult.quadStream,
           metadata: async() => <any> await internalResult.metadata(),
           context: internalResult.context,
-          quads: () => new Promise<RDF.Quad[]>((resolve, reject) => {
-            const result: RDF.Quad[] = [];
-            internalResult.quadStream.on('data', (data: RDF.Quad) => result.push(data));
-            internalResult.quadStream.on('end', () => resolve(result));
-            internalResult.quadStream.on('error', reject);
-          }),
         };
       case 'boolean':
         return {

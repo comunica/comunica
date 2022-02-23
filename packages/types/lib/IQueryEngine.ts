@@ -15,12 +15,10 @@ export type QueryType = QueryEnhanced & { context?: IActionContext };
  * Base interface for a Comunica query engine.
  */
 export interface IQueryEngine extends
-/* eslint-disable @typescript-eslint/no-unnecessary-type-arguments */
   RDF.StringQueryable<RDF.AllMetadataSupport, QueryStringContext>,
   RDF.AlgebraQueryable<Algebra.Operation, RDF.AllMetadataSupport, QueryAlgebraContext>,
   RDF.StringSparqlQueryable<RDF.SparqlResultSupport, QueryStringContext>,
   RDF.AlgebraSparqlQueryable<Algebra.Operation, RDF.SparqlResultSupport, QueryAlgebraContext> {
-/* eslint-enable @typescript-eslint/no-unnecessary-type-arguments */
 
   /**
    * Query the bindings results of a SELECT query.

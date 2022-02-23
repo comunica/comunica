@@ -248,26 +248,6 @@ describe('QueryEngineBase', () => {
         expect((<ActionContext> result.context).getRaw('the-answer')).toEqual(42);
       });
 
-      it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
-        const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { sources: [ 'abc' ]});
-        const array = await (<IQueryBindingsEnhanced> result).bindings();
-        expect(array).toEqual([{ a: 'triple' }]);
-      });
-
-      it('bindings() should return empty list if no solutions', async() => {
-        // Set input empty
-        const inputThis = new Readable({ objectMode: true });
-        inputThis._read = () => {
-          inputThis.push(null);
-        };
-        mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-          Promise.resolve({ bindingsStream: inputThis, type: 'bindings' }) :
-          Promise.reject(new Error('a'));
-        const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { sources: [ 'abc' ]});
-        const array = await (<IQueryBindingsEnhanced> result).bindings();
-        expect(array).toEqual([]);
-      });
-
       it('should return a rejected promise on an invalid request', () => {
         const ctx: QueryStringContext = { sources: [ 'abc' ]};
         // Make it reject instead of reading input
@@ -438,33 +418,6 @@ describe('QueryEngineBase', () => {
       queryEngine = new QueryEngineBase(actor);
     });
 
-    it('quads() should collect all quads until "end" event occurs', async() => {
-      const ctx: QueryStringContext = { sources: [ 'abc' ]};
-      const result = await queryEngine.query('CONSTRUCT WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryQuadsEnhanced> result).quads();
-      expect(array).toEqual([ DF.quad(
-        DF.namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
-        DF.namedNode('http://dbpedia.org/ontology/assembly'),
-        DF.namedNode('http://dbpedia.org/resource/Belgium'),
-        DF.defaultGraph(),
-      ) ]);
-    });
-
-    it('quads() should return empty list if no solutions', async() => {
-      const ctx: QueryStringContext = { sources: [ 'abc' ]};
-      // Set input empty
-      const input = new Readable({ objectMode: true });
-      input._read = () => {
-        input.push(null);
-      };
-      mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-        Promise.resolve({ quadStream: input, type: 'quads' }) :
-        Promise.reject(new Error('a'));
-      const result = await queryEngine.query('CONSTRUCT * WHERE { ?s ?p ?o }', ctx);
-      const array = await (<IQueryQuadsEnhanced> result).quads();
-      expect(array).toEqual([]);
-    });
-
     it('should return a rejected promise on an invalid request', () => {
       // Make it reject instead of reading input
       mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
@@ -501,7 +454,6 @@ describe('QueryEngineBase', () => {
         variables: [ DF.variable('a') ],
       });
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
-      expect(final.bindings).toBeTruthy();
     });
 
     it('converts quads', async() => {
@@ -528,7 +480,6 @@ describe('QueryEngineBase', () => {
         variables: [ DF.variable('a') ],
       });
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
-      expect(final.quads).toBeTruthy();
     });
 
     it('converts booleans', async() => {

@@ -37,7 +37,7 @@
     "@comunica/core": "^2.0.0",
     "@comunica/types": "^2.0.0",
     "@types/json-stable-stringify": "^1.0.32",
-    "asynciterator": "^3.2.1",
+    "asynciterator": "^3.3.0",
     "rdf-data-factory": "^1.1.0",
     "sparqlalgebrajs": "^4.0.0",
     "sparqlee": "2.0.0-beta.1"
