@@ -34,7 +34,7 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:join.json#myRdfJoinSelectivityActorVariableCounting",
+      "@id": "urn:comunica:default:rdf-join-selectivity/actors#variable-counting",
       "@type": "ActorRdfJoinSelectivityVariableCounting"
     }
   ]

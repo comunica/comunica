@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-metadata-extract-put-accepted.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-metadata-extract-put-accepted)
 
 An [RDF Metadata Extract](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract) actor that
-extracts the `[`Accept-Put`](https://solidproject.org/TR/protocol#accept-put) HTTP response header.
+extracts the [`Accept-Put`](https://solidproject.org/TR/protocol#accept-put) HTTP response header.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
