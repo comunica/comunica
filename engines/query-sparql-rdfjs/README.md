@@ -37,12 +37,30 @@ const bindingsStream = await myEngine.queryBindings(`
   } LIMIT 100`, {
   sources: [store],
 });
-bindingsStream.on('data', (data) => {
-  // Each data object contains a mapping from variables to RDFJS terms.
-  console.log(data.get('?s'));
-  console.log(data.get('?p'));
-  console.log(data.get('?o'));
+
+// Consume results as a stream (best performance)
+bindingsStream.on('data', (binding) => {
+  console.log(binding.toString()); // Quick way to print bindings for testing
+
+  console.log(binding.has('s')); // Will be true
+
+  // Obtaining values
+  console.log(binding.get('s').value);
+  console.log(binding.get('s').termType);
+  console.log(binding.get('p').value);
+  console.log(binding.get('o').value);
 });
+bindingsStream.on('end', () => {
+  // The data-listener will not be called anymore once we get here.
+});
+bindingsStream.on('error', (error) => {
+  console.error(error);
+});
+
+// Consume results as an array (easier)
+const bindings = await bindingsStream.toArray();
+console.log(bindings[0].get('s').value);
+console.log(bindings[0].get('s').termType);
 ```
 
 _[**Read more** about querying in an application](https://comunica.dev/docs/query/getting_started/query_app/)._

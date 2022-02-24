@@ -153,6 +153,12 @@ bindingsStream.on('data', (binding) => {
     console.log(binding.get('p').value);
     console.log(binding.get('o').value);
 });
+bindingsStream.on('end', () => {
+    // The data-listener will not be called anymore once we get here.
+});
+bindingsStream.on('error', (error) => {
+    console.error(error);
+});
 
 // Consume results as an array (easier)
 const bindings = await bindingsStream.toArray();
