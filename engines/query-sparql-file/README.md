@@ -44,8 +44,8 @@ Show the help with all options:
 $ comunica-sparql-file --help
 ```
 
-Just like [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/query-sparql),
-a [dynamic variant](https://github.com/comunica/comunica/tree/master/packages/query-sparql#usage-from-the-command-line) (`comunica-dynamic-sparql-file`) also exists.
+Just like [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/engines/query-sparql),
+a [dynamic variant](https://github.com/comunica/comunica/tree/master/engines/query-sparql#usage-from-the-command-line) (`comunica-dynamic-sparql-file`) also exists.
 
 _[**Read more** about querying from the command line](https://comunica.dev/docs/query/getting_started/query_cli_file/)._
 
@@ -54,10 +54,10 @@ _[**Read more** about querying from the command line](https://comunica.dev/docs/
 This engine can be used in JavaScript/TypeScript applications as follows:
 
 ```javascript
-const newEngine = require('@comunica/query-sparql-file').newEngine;
-const myEngine = newEngine();
+const QueryEngine = require('@comunica/query-sparql-file').QueryEngine;
+const myEngine = new QueryEngine();
 
-const result = await myEngine.query(`
+const bindingsStream = await myEngine.queryBindings(`
   SELECT ?s ?p ?o WHERE {
     ?s ?p <http://dbpedia.org/resource/Belgium>.
     ?s ?p ?o
@@ -66,19 +66,22 @@ const result = await myEngine.query(`
 });
 
 // Consume results as a stream (best performance)
-result.bindingsStream.on('data', (binding) => {
-    console.log(binding.get('?s').value);
-    console.log(binding.get('?s').termType);
+bindingsStream.on('data', (binding) => {
+    console.log(binding.toString()); // Quick way to print bindings for testing
 
-    console.log(binding.get('?p').value);
+    console.log(binding.has('s')); // Will be true
 
-    console.log(binding.get('?o').value);
+    // Obtaining values
+    console.log(binding.get('s').value);
+    console.log(binding.get('s').termType);
+    console.log(binding.get('p').value);
+    console.log(binding.get('o').value);
 });
 
 // Consume results as an array (easier)
-const bindings = await result.bindings();
-console.log(bindings[0].get('?s').value);
-console.log(bindings[0].get('?s').termType);
+const bindings = await bindingsStream.toArray();
+console.log(bindings[0].get('s').value);
+console.log(bindings[0].get('s').termType);
 ```
 
 _[**Read more** about querying an application](https://comunica.dev/docs/query/getting_started/query_app/)._
@@ -88,7 +91,7 @@ _[**Read more** about querying an application](https://comunica.dev/docs/query/g
 Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
 
 ```bash
-$ comunica-sparql-file-http "{ \"sources\": [\"/path/to/my/file.ttl\"]}"
+$ comunica-sparql-file-http path/to/my/file.ttl
 ```
 
 Show the help with all options:

@@ -20,10 +20,10 @@ $ yarn add @comunica/logger-pretty
 ## Usage
 
 ```typescript
-const newEngine = require('@comunica/actor-init-query').newEngine;
+const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 import {LoggerPretty} from "@comunica/logger-pretty";
 
-const result = await myEngine.query('SELECT * WHERE { ?s ?p ?o }', {
+const bindingsStream = await new QueryEngine().queryBindings('SELECT * WHERE { ?s ?p ?o }', {
   sources: ['http://fragments.dbpedia.org/2015/en'],
   log: new LoggerPretty({ level: 'debug' }),
 });

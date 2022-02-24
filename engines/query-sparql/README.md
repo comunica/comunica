@@ -15,7 +15,7 @@ It's main distinguishing features are the following:
 
 **[Learn more about Comunica on our website](https://comunica.dev/).**
 
-**This actor can not query over local files for security reasons, but [Comunica SPARQL file](https://github.com/comunica/comunica/tree/master/packages/query-sparql-file#readme) can.**
+**This actor can not query over local files for security reasons, but [Comunica SPARQL file](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme) can.**
 
 _Internally, this is a [Comunica module](https://comunica.dev/) that is configured with modules to execute SPARQL queries._
 
@@ -42,21 +42,21 @@ the command line, HTTP (SPARQL protocol), within a Node.JS application, or from 
 Show 100 triples from http://fragments.dbpedia.org/2015-10/en:
 
 ```bash
-$ comunica-sparql http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+$ comunica-sparql https://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Show all triples from http://dbpedia.org/resource/Belgium:
 
 ```bash
-$ comunica-sparql http://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o }"
+$ comunica-sparql https://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o }"
 ```
 
 
 Combine multiple sources:
 
 ```bash
-$ comunica-sparql http://fragments.dbpedia.org/2015-10/en \
-  file@http://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+$ comunica-sparql https://fragments.dbpedia.org/2015-10/en \
+  file@https://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Show the help with all options:
@@ -69,10 +69,10 @@ The dynamic variant of this executable is `comunica-dynamic-sparql`.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
 When you are working with this module in the Comunica monorepo development environment,
-this command can be invoked directly as follows (when inside the `packages/query-sparql` folder):
+this command can be invoked directly as follows (when inside the `engines/query-sparql` folder):
 
 ```bash
-node bin/query.js http://fragments.dbpedia.org/2016-04/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+node bin/query.js https://fragments.dbpedia.org/2016-04/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Use `bin/query-dynamic.js` when running dynamically inside the Comunica monorepo development environment.
@@ -81,7 +81,7 @@ _[**Read more** about querying from the command line](https://comunica.dev/docs/
 
 ### Usage as a SPARQL endpoint
 
-Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
+Start a webservice exposing https://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
 
 ```bash
 $ comunica-sparql-http https://fragments.dbpedia.org/2015/en
@@ -107,27 +107,33 @@ _[**Read more** about setting up a SPARQL endpoint](https://comunica.dev/docs/qu
 The easiest way to create an engine (with default config) is as follows:
 
 ```javascript
-const newEngine = require('@comunica/query-sparql').newEngine;
+const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 
-const myEngine = newEngine();
+const myEngine = new QueryEngine();
 ```
 
 Alternatively, an engine can also be created dynamically with a custom config:
 
 ```javascript
-const newEngineDynamic = require('@comunica/query-sparql').newEngineDynamic;
+const QueryEngineFactory = require('@comunica/query-sparql').QueryEngineFactory;
 
-const myEngine = await newEngineDynamic({ configResourceUrl: 'path/to/config.json' });
+const myEngine = await new QueryEngineFactory().create({ configPath: 'path/to/config.json' });
 ```
 
 Once you have created your query engine,
-you can use it to call the async `query(queryString, context)` method,
-which returns an output of type that depends on the given query string.
+you can use it to call one of the async query methods,
+such as `queryBindings` for `SELECT` queries,
+`queryQuads` for `CONSTRUCT` and `DESCRIBE` queries,
+`queryBoolean` for `ASK` queries,
+or `queryVoid` for update queries.
+
+All query methods have the require a query string and a context object,
+with the return type depending on the query type.
 
 For example, a `SELECT` query can be executed as follows:
 
 ```javascript
-const result = await myEngine.query(`
+const bindingsStream = await myEngine.queryBindings(`
   SELECT ?s ?p ?o WHERE {
     ?s ?p <http://dbpedia.org/resource/Belgium>.
     ?s ?p ?o
@@ -136,25 +142,28 @@ const result = await myEngine.query(`
 });
 
 // Consume results as a stream (best performance)
-result.bindingsStream.on('data', (binding) => {
-    console.log(binding.get('?s').value);
-    console.log(binding.get('?s').termType);
+bindingsStream.on('data', (binding) => {
+    console.log(binding.toString()); // Quick way to print bindings for testing
 
-    console.log(binding.get('?p').value);
+    console.log(binding.has('s')); // Will be true
 
-    console.log(binding.get('?o').value);
+    // Obtaining values
+    console.log(binding.get('s').value);
+    console.log(binding.get('s').termType);
+    console.log(binding.get('p').value);
+    console.log(binding.get('o').value);
 });
 
 // Consume results as an array (easier)
-const bindings = await result.bindings();
-console.log(bindings[0].get('?s').value);
-console.log(bindings[0].get('?s').termType);
+const bindings = await bindingsStream.toArray();
+console.log(bindings[0].get('s').value);
+console.log(bindings[0].get('s').termType);
 ```
 
 Optionally, specific [types of sources](https://comunica.dev/docs/query/advanced/source_types/) can be specified (_otherwise, the type of source will be detected automatically_):
 
 ```javascript
-const result = await myEngine.query(`...`, {
+const bindingsStream = await myEngine.queryBindings(`...`, {
   sources: [
     'http://fragments.dbpedia.org/2015/en',
     { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2016/en' },
@@ -171,7 +180,7 @@ For `CONSTRUCT` and `DESCRIBE` queries,
 results can be collected as follows.
 
 ```javascript
-const result = await myEngine.query(`
+const quadStream = await myEngine.queryQuads(`
   CONSTRUCT WHERE {
     ?s ?p ?o
   } LIMIT 100`, {
@@ -179,7 +188,7 @@ const result = await myEngine.query(`
 });
 
 // Consume results as a stream (best performance)
-result.quadStream.on('data', (quad) => {
+quadStream.on('data', (quad) => {
     console.log(quad.subject.value);
     console.log(quad.predicate.value);
     console.log(quad.object.value);
@@ -187,7 +196,7 @@ result.quadStream.on('data', (quad) => {
 });
 
 // Consume results as an array (easier)
-const quads = await result.quads();
+const quads = await quadStream.toArray();
 console.log(quads[0].subject.value);
 console.log(quads[0].predicate.value);
 console.log(quads[0].object.value);
@@ -197,13 +206,12 @@ console.log(quads[0].graph.value);
 Finally, `ASK` queries return async booleans.
 
 ```javascript
-const result = await myEngine.query(`
+const hasMatches = await myEngine.queryAsk(`
   ASK {
     ?s ?p <http://dbpedia.org/resource/Belgium>
   }`, {
   sources: ['http://fragments.dbpedia.org/2015/en'],
 })
-const hasMatches = await result.booleanResult;
 ```
 
 _[**Read more** about querying an application](https://comunica.dev/docs/query/getting_started/query_app/)._

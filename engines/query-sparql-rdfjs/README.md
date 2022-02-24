@@ -15,8 +15,8 @@ $ yarn add @comunica/query-sparql-rdfjs
 
 ## Query
 
-```javascript
-const newEngine = require('@comunica/query-sparql-rdfjs').newEngine;
+```typescript
+const QueryEngine = require('@comunica/query-sparql-rdfjs').QueryEngine;
 const N3Store = require('n3').Store;
 const DataFactory = require('n3').DataFactory;
 
@@ -29,10 +29,15 @@ store.addQuad(DataFactory.quad(
 
 // Create our engine, and query it.
 // If you intend to query multiple times, be sure to cache your engine for optimal performance.
-const myEngine = newEngine();
-const result = await myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [store] });
-result.bindingsStream.on('data', (data) => {
+const myEngine = new QueryEngine();
+const bindingsStream = await myEngine.queryBindings(`
+  SELECT ?s ?p ?o WHERE {
+    ?s ?p <http://dbpedia.org/resource/Belgium>.
+    ?s ?p ?o
+  } LIMIT 100`, {
+  sources: [store],
+});
+bindingsStream.on('data', (data) => {
   // Each data object contains a mapping from variables to RDFJS terms.
   console.log(data.get('?s'));
   console.log(data.get('?p'));
@@ -45,14 +50,14 @@ _[**Read more** about querying in an application](https://comunica.dev/docs/quer
 ## Update
 
 ```javascript
-const newEngine = require('@comunica/query-sparql-rdfjs').newEngine;
+const QueryEngine = require('@comunica/query-sparql-rdfjs').QueryEngine;
 const N3Store = require('n3').Store;
 
 // This can be any RDFJS store
 const store = new N3Store();
 
 // Create our engine, and query it.
-const myEngine = newEngine();
+const myEngine = new QueryEngine();
 const query = `
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 INSERT DATA
@@ -62,13 +67,10 @@ INSERT DATA
 }
 `;
 
-// Initiate the update
-const result = await myEngine.query(query, {
+// Execute the update
+await myEngine.queryVoid(query, {
   sources: [store],
 });
-
-// Wait for the update to complete
-await result.updateResult;
 
 // Prints '2' => the store is updated
 console.log(store.size);
