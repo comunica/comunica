@@ -1024,6 +1024,16 @@
   dependencies:
     rdfa-streaming-parser "^1.5.0"
 
+"@comunica/bindings-factory@^2.0.1-alpha.5.0":
+  version "2.0.1-alpha.5.0"
+  resolved "https://registry.yarnpkg.com/@comunica/bindings-factory/-/bindings-factory-2.0.1-alpha.5.0.tgz#0a83058419c8345fc17a62b284dd8a8e001ab7b7"
+  integrity sha512-YD8oUu8DQpSX5B8u5f88xlw+ar79OAwEF8KgVZ6gl/xs/rlOJbv/BEDh7DrquIdMGPmLn/zbg4L4o0TyZoF8pA==
+  dependencies:
+    "@rdfjs/types" "*"
+    immutable "^3.8.2"
+    rdf-data-factory "^1.1.0"
+    rdf-string "^1.6.0"
+
 "@comunica/bus-http@~1.22.0":
   version "1.22.1"
   resolved "https://registry.yarnpkg.com/@comunica/bus-http/-/bus-http-1.22.1.tgz#0ac597826a9aa4e5b230edc62250e6bc445fc46a"
@@ -2301,7 +2311,7 @@
     qs "^6.7.0"
     url-parse "^1.4.7"
 
-"@rdfjs/types@*", "@rdfjs/types@1.1.0", "@rdfjs/types@1.1.0-next.0":
+"@rdfjs/types@*", "@rdfjs/types@1.1.0", "@rdfjs/types@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.1.0.tgz#098f180b7cccb03bb416c7b4d03baaa9d480e36b"
   integrity sha512-5zm8bN2/CC634dTcn/0AhTRLaQRjXDZs3QfcAsQKNturHT7XVWcKy/8p3P5gXl+YkZTAmy7T5M/LyiT/jbkENw==
@@ -9878,13 +9888,13 @@ sparqlalgebrajs@^4.0.0:
     rdf-string "^1.6.0"
     sparqljs "^3.5.1"
 
-sparqlee@2.0.0-beta.1:
-  version "2.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-2.0.0-beta.1.tgz#8ff16a63fc58d5fd5150d6dfa88f1892cb20d486"
-  integrity sha512-pAKmPmY7G7Gh4JXWBQGEqMrfI2j0cfdDLHPyOay6DrMZxqV81mKJh/UsQ+YWoUuo32FP6WYtDX/QzUPMnOy51g==
+sparqlee@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-2.0.0.tgz#576f04d4552c26ce5422be0b1eaca9513f3d72c6"
+  integrity sha512-ZfHjrKyuL7981EzMf9adz+6XnquUYszdeSqCJF4z6ZSnMnj2CAFvEM2USLzquPX3HMX864F6xpCCnGW37kJ+dA==
   dependencies:
-    "@comunica/bindings-factory" "*"
-    "@rdfjs/types" "1.1.0-next.0"
+    "@comunica/bindings-factory" "^2.0.1-alpha.5.0"
+    "@rdfjs/types" "^1.1.0"
     "@types/lru-cache" "^5.1.1"
     "@types/spark-md5" "^3.0.2"
     "@types/uuid" "^8.0.0"
