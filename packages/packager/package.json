@@ -32,7 +32,7 @@
     "@comunica/runner": "^2.0.0",
     "@comunica/runner-cli": "^2.0.0",
     "@types/minimist": "^1.2.0",
-    "componentsjs": "5.0.0-beta.7",
+    "componentsjs": "^5.0.0",
     "minimist": "^1.2.0"
   },
   "scripts": {
