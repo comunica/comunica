@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_resolve_hypermedia.IActionRdfResolveHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span>
+						<a href="../modules/bus_rdf_resolve_hypermedia.html#IActorRdfResolveHypermediaArgs" class="tsd-signature-type" data-tsd-kind="Type alias">IActorRdfResolveHypermediaArgs</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">IActorRdfResolveHypermediaQpfArgs</span>
@@ -97,9 +97,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#beforeActors" class="tsd-kind-icon">before<wbr>Actors</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#bus" class="tsd-kind-icon">bus</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#graphUri" class="tsd-kind-icon">graph<wbr>Uri</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorDereferenceRdf" class="tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorMetadata" class="tsd-kind-icon">mediator<wbr>Metadata</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorMetadataExtract" class="tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorRdfDereference" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#objectUri" class="tsd-kind-icon">object<wbr>Uri</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#predicateUri" class="tsd-kind-icon">predicate<wbr>Uri</a></li>
@@ -116,22 +116,32 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Actors</h3>
 					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_resolve_hypermedia.IActionRdfResolveHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#beforeActors">beforeActors</a></p>
+						<p>Inherited from IActorRdfResolveHypermediaArgs.beforeActors</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L168">packages/core/lib/Actor.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L175">packages/core/lib/Actor.ts:175</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
 					<h3>bus</h3>
 					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Bus.html" class="tsd-signature-type" data-tsd-kind="Class">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_resolve_hypermedia.IActionRdfResolveHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActionRdfResolveHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#bus">bus</a></p>
+						<p>Inherited from IActorRdfResolveHypermediaArgs.bus</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L171">packages/core/lib/Actor.ts:171</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="graphUri" class="tsd-anchor"></a>
@@ -139,50 +149,85 @@
 					<div class="tsd-signature tsd-kind-icon">graph<wbr>Uri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L83">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:83</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L96">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:96</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The URI that should be interpreted as graph URI</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="http://www.w3.org/ns/sparql-service-description#graph%7D">http://www.w3.org/ns/sparql-service-description#graph}</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="mediatorDereferenceRdf" class="tsd-anchor"></a>
+					<h3>mediator<wbr>Dereference<wbr>Rdf</h3>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_dereference_rdf.html#MediatorDereferenceRdf" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorDereferenceRdf</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L76">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:76</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The RDF dereference mediator</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="mediatorMetadata" class="tsd-anchor"></a>
 					<h3>mediator<wbr>Metadata</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_metadata.html#MediatorRdfMetadata" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadata</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L74">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L68">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:68</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The metadata mediator</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="mediatorMetadataExtract" class="tsd-anchor"></a>
 					<h3>mediator<wbr>Metadata<wbr>Extract</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadataExtract</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_metadata_extract.IActorRdfMetadataExtractOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataExtractOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadataExtract</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_metadata_extract.IActorRdfMetadataExtractOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataExtractOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_metadata_extract.html#MediatorRdfMetadataExtract" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadataExtract</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L76">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L72">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:72</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="mediatorRdfDereference" class="tsd-anchor"></a>
-					<h3>mediator<wbr>Rdf<wbr>Dereference</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_dereference.IActionRdfDereference.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfDereference</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_dereference.IActorRdfDereferenceOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfDereferenceOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_rdf_dereference.IActionRdfDereference.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfDereference</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_rdf_dereference.IActorRdfDereferenceOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfDereferenceOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L78">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:78</a></li>
-						</ul>
-					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The metadata extract mediator</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#name">name</a></p>
+						<p>Inherited from IActorRdfResolveHypermediaArgs.name</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L166">packages/core/lib/Actor.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="rdf:subject">rdf:subject</a>}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="objectUri" class="tsd-anchor"></a>
@@ -190,9 +235,19 @@
 					<div class="tsd-signature tsd-kind-icon">object<wbr>Uri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L82">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:82</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L91">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:91</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The URI that should be interpreted as object URI</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#object%7D">http://www.w3.org/1999/02/22-rdf-syntax-ns#object}</a></p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="predicateUri" class="tsd-anchor"></a>
@@ -200,9 +255,19 @@
 					<div class="tsd-signature tsd-kind-icon">predicate<wbr>Uri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L81">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:81</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L86">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:86</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The URI that should be interpreted as predicate URI</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate%7D">http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate}</a></p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="subjectUri" class="tsd-anchor"></a>
@@ -210,9 +275,19 @@
 					<div class="tsd-signature tsd-kind-icon">subject<wbr>Uri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L80">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts#L81">packages/actor-rdf-resolve-hypermedia-qpf/lib/ActorRdfResolveHypermediaQpf.ts:81</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The URI that should be interpreted as subject URI</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject%7D">http://www.w3.org/1999/02/22-rdf-syntax-ns#subject}</a></p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -253,13 +328,13 @@
 										<a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#graphUri" class="tsd-kind-icon">graph<wbr>Uri</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorDereferenceRdf" class="tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorMetadata" class="tsd-kind-icon">mediator<wbr>Metadata</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorMetadataExtract" class="tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#mediatorRdfDereference" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 										<a href="actor_rdf_resolve_hypermedia_qpf.IActorRdfResolveHypermediaQpfArgs.html#name" class="tsd-kind-icon">name</a>
@@ -291,6 +366,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

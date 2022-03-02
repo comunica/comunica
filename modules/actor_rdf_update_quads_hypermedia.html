@@ -88,27 +88,17 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-hypermedia/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-hypermedia/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsHypermedia&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:rdf-update-quads/actors#hypermedia&quot;,
       &quot;@type&quot;: &quot;ActorRdfUpdateQuadsHypermedia&quot;,
-      &quot;caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfDereference&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfDereference&quot;
-      },
-      &quot;caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadata&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorMetadata&quot;
-      },
-      &quot;caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadataExtract&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorMetadataExtract&quot;
-      },
-      &quot;caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfUpdateHypermedia&quot;: {
-        &quot;@id&quot;: &quot;config-sets:rdf-update-rdfjs.json#mediatorRdfUpdateHypermedia&quot;,
-        &quot;@type&quot;: &quot;MediatorRace&quot;,
-        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbruh:Bus/RdfUpdateHypermedia&quot; }
-      }
+      &quot;mediatorDereferenceRdf&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:dereference-rdf/mediators#main&quot; },
+      &quot;mediatorMetadata&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-metadata/mediators#main&quot; },
+      &quot;mediatorMetadataExtract&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-metadata-extract/mediators#main&quot; },
+      &quot;mediatorRdfUpdateHypermedia&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-update-hypermedia/mediators#main&quot; }
     }
   ]
 }
@@ -117,10 +107,10 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfDereference</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference">RDF Dereference bus</a>.</li>
-						<li><code>caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadata</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata bus</a>.</li>
-						<li><code>caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadataExtract</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract">RDF Metadata Extract bus</a>.</li>
-						<li><code>caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfUpdateHypermedia</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-hypermedia">RDF Update Hypermedia bus</a>.</li>
+						<li><code>mediatorDereferenceRdf</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf">RDF Dereference bus</a>.</li>
+						<li><code>mediatorMetadata</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata bus</a>.</li>
+						<li><code>mediatorMetadataExtract</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract">RDF Metadata Extract bus</a>.</li>
+						<li><code>mediatorRdfUpdateHypermedia</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-hypermedia">RDF Update Hypermedia bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -184,6 +174,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

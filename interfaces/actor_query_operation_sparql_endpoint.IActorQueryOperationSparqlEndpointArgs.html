@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span>
+						<a href="core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_query_operation.IActionQueryOperation.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../modules/types.html#IQueryOperationResult" class="tsd-signature-type" data-tsd-kind="Type alias">IQueryOperationResult</a><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">IActorQueryOperationSparqlEndpointArgs</span>
@@ -105,24 +105,34 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="beforeActors" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Actors</h3>
-					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_query_operation.IActionQueryOperation.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../modules/types.html#IQueryOperationResult" class="tsd-signature-type" data-tsd-kind="Type alias">IQueryOperationResult</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#beforeActors">beforeActors</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L168">packages/core/lib/Actor.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L175">packages/core/lib/Actor.ts:175</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
 					<h3>bus</h3>
-					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Bus.html" class="tsd-signature-type" data-tsd-kind="Class">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Bus.html" class="tsd-signature-type" data-tsd-kind="Class">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_query_operation.IActionQueryOperation.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../modules/types.html#IQueryOperationResult" class="tsd-signature-type" data-tsd-kind="Type alias">IQueryOperationResult</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.IActionQueryOperation.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../modules/types.html#IQueryOperationResult" class="tsd-signature-type" data-tsd-kind="Type alias">IQueryOperationResult</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L171">packages/core/lib/Actor.ts:171</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="checkUrlSuffixSparql" class="tsd-anchor"></a>
@@ -130,9 +140,19 @@
 					<div class="tsd-signature tsd-kind-icon">check<wbr>Url<wbr>Suffix<wbr>Sparql<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L184">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L200">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:200</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If URLs ending with &#39;/sparql&#39; should also be considered SPARQL endpoints.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{true}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="checkUrlSuffixUpdate" class="tsd-anchor"></a>
@@ -140,9 +160,19 @@
 					<div class="tsd-signature tsd-kind-icon">check<wbr>Url<wbr>Suffix<wbr>Update<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L185">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:185</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L205">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:205</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If URLs ending with &#39;/update&#39; should also be considered SPARQL endpoints.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{true}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="forceHttpGet" class="tsd-anchor"></a>
@@ -150,19 +180,34 @@
 					<div class="tsd-signature tsd-kind-icon">force<wbr>Http<wbr>Get<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L186">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:186</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L210">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:210</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If queries should be sent via HTTP GET instead of POST.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{false}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="mediatorHttp" class="tsd-anchor"></a>
 					<h3>mediator<wbr>Http</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_http.html#MediatorHttp" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorHttp</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L182">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:182</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts#L195">packages/actor-query-operation-sparql-endpoint/lib/ActorQueryOperationSparqlEndpoint.ts:195</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The HTTP mediator</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
@@ -171,9 +216,19 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L166">packages/core/lib/Actor.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="rdf:subject">rdf:subject</a>}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -240,6 +295,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

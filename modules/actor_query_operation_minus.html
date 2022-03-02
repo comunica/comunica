@@ -71,7 +71,8 @@
 						<h1>Comunica Minus Query Operation Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-query-operation-minus"><img src="https://badge.fury.io/js/%40comunica%2Factor-query-operation-minus.svg" alt="npm version"></a></p>
-					<p>A <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation</a> actor that handles <a href="https://www.w3.org/TR/sparql11-query/#neg-notexists-minus">SPARQL <code>MINUS</code></a> operations.</p>
+					<p>A <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation</a> actor that handles <a href="https://www.w3.org/TR/sparql11-query/#neg-notexists-minus">SPARQL <code>MINUS</code></a> operations
+					by delegating to the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join">RDF Join bus</a> bus.</p>
 					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
 					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
 					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
@@ -87,14 +88,15 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myMinusQueryOperator&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:query-operation/actors#minus&quot;,
       &quot;@type&quot;: &quot;ActorQueryOperationMinus&quot;,
-      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; }
+      &quot;mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:query-operation/mediators#main&quot; },
+      &quot;mediatorJoin&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-join/mediators#main&quot; }
     }
   ]
 }
@@ -103,7 +105,8 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorJoin</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join">RDF Join bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -115,13 +118,12 @@
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_query_operation_minus.ActorQueryOperationMinus.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Minus</a></li>
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_query_operation_minus.BindingsIndex.html" class="tsd-kind-icon">Bindings<wbr>Index</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_minus.IDataIndex.html" class="tsd-kind-icon">IData<wbr>Index</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_minus.IActorQueryOperationMinusArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Minus<wbr>Args</a></li>
 							</ul>
 						</section>
 					</div>
@@ -149,11 +151,8 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/actor_query_operation_minus.ActorQueryOperationMinus.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Minus</a>
 							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/actor_query_operation_minus.BindingsIndex.html" class="tsd-kind-icon">Bindings<wbr>Index</a>
-							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="../interfaces/actor_query_operation_minus.IDataIndex.html" class="tsd-kind-icon">IData<wbr>Index</a>
+								<a href="../interfaces/actor_query_operation_minus.IActorQueryOperationMinusArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Minus<wbr>Args</a>
 							</li>
 						</ul>
 					</li>
@@ -171,6 +170,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

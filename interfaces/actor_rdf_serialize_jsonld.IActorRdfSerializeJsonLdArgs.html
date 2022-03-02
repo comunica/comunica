@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfSerializeFixedMediaTypesArgs</a>
+						<a href="../modules/bus_rdf_serialize.html#IActorRdfSerializeFixedMediaTypesArgs" class="tsd-signature-type" data-tsd-kind="Type alias">IActorRdfSerializeFixedMediaTypesArgs</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">IActorRdfSerializeJsonLdArgs</span>
@@ -91,7 +91,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#beforeActors" class="tsd-kind-icon">before<wbr>Actors</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#bus" class="tsd-kind-icon">bus</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#jsonStringifyIndentSpaces" class="tsd-kind-icon">json<wbr>Stringify<wbr>Indent<wbr>Spaces</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#mediaTypes" class="tsd-kind-icon">media<wbr>Types</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#mediaTypeFormats" class="tsd-kind-icon">media<wbr>Type<wbr>Formats</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#mediaTypePriorities" class="tsd-kind-icon">media<wbr>Type<wbr>Priorities</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#priorityScale" class="tsd-kind-icon">priority<wbr>Scale</a></li>
 							</ul>
@@ -106,22 +107,32 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Actors</h3>
 					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/actor_abstract_mediatyped.html#IActionAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActionAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_serialize.IActionRdfSerialize.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfSerialize</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#IActorTestAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#IActorOutputAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_serialize.IActorRdfSerializeOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfSerializeOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html">IActorRdfSerializeFixedMediaTypesArgs</a>.<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html#beforeActors">beforeActors</a></p>
+						<p>Inherited from IActorRdfSerializeFixedMediaTypesArgs.beforeActors</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L168">packages/core/lib/Actor.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L175">packages/core/lib/Actor.ts:175</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
 					<h3>bus</h3>
 					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Bus.html" class="tsd-signature-type" data-tsd-kind="Class">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/actor_abstract_mediatyped.html#IActionAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActionAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_serialize.IActionRdfSerialize.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfSerialize</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#IActorTestAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#IActorOutputAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_serialize.IActorRdfSerializeOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfSerializeOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#IActionAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActionAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_serialize.IActionRdfSerialize.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfSerialize</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#IActorTestAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#IActorOutputAbstractMediaTyped" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_serialize.IActorRdfSerializeOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfSerializeOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html">IActorRdfSerializeFixedMediaTypesArgs</a>.<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html#bus">bus</a></p>
+						<p>Inherited from IActorRdfSerializeFixedMediaTypesArgs.bus</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L171">packages/core/lib/Actor.ts:171</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="jsonStringifyIndentSpaces" class="tsd-anchor"></a>
@@ -129,42 +140,109 @@
 					<div class="tsd-signature tsd-kind-icon">json<wbr>Stringify<wbr>Indent<wbr>Spaces<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-serialize-jsonld/lib/ActorRdfSerializeJsonLd.ts#L33">packages/actor-rdf-serialize-jsonld/lib/ActorRdfSerializeJsonLd.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-serialize-jsonld/lib/ActorRdfSerializeJsonLd.ts#L47">packages/actor-rdf-serialize-jsonld/lib/ActorRdfSerializeJsonLd.ts:47</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The number of spaces that should be used to indent stringified JSON.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>range</dt>
+							<dd><p>{integer}</p>
+							</dd>
+							<dt>default</dt>
+							<dd><p>{2}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="mediaTypes" class="tsd-anchor"></a>
-					<h3>media<wbr>Types</h3>
-					<div class="tsd-signature tsd-kind-icon">media<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="mediaTypeFormats" class="tsd-anchor"></a>
+					<h3>media<wbr>Type<wbr>Formats</h3>
+					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<wbr>Formats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html">IActorRdfSerializeFixedMediaTypesArgs</a>.<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html#mediaTypes">mediaTypes</a></p>
+						<p>Inherited from IActorRdfSerializeFixedMediaTypesArgs.mediaTypeFormats</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L68">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L66">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:66</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A record of media types, with media type name as key, and its format IRI as value.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>range</dt>
+							<dd><p>{json}</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="mediaTypePriorities" class="tsd-anchor"></a>
+					<h3>media<wbr>Type<wbr>Priorities</h3>
+					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<wbr>Priorities<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from IActorRdfSerializeFixedMediaTypesArgs.mediaTypePriorities</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L61">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:61</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A record of media types, with media type name as key, and its priority as value.
+							Priorities are numbers between [0, 1].</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>range</dt>
+							<dd><p>{json}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html">IActorRdfSerializeFixedMediaTypesArgs</a>.<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html#name">name</a></p>
+						<p>Inherited from IActorRdfSerializeFixedMediaTypesArgs.name</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L166">packages/core/lib/Actor.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="rdf:subject">rdf:subject</a>}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="priorityScale" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> priority<wbr>Scale</h3>
 					<div class="tsd-signature tsd-kind-icon">priority<wbr>Scale<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html">IActorRdfSerializeFixedMediaTypesArgs</a>.<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html#priorityScale">priorityScale</a></p>
+						<p>Inherited from IActorRdfSerializeFixedMediaTypesArgs.priorityScale</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L69">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L73">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:73</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A multiplier for media type priorities.
+								This can be used for keeping the original media types in place,
+							but scaling all of their scores with a certain value.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>range</dt>
+							<dd><p>{double}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -202,7 +280,10 @@
 										<a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#jsonStringifyIndentSpaces" class="tsd-kind-icon">json<wbr>Stringify<wbr>Indent<wbr>Spaces</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-										<a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#mediaTypes" class="tsd-kind-icon">media<wbr>Types</a>
+										<a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#mediaTypeFormats" class="tsd-kind-icon">media<wbr>Type<wbr>Formats</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+										<a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#mediaTypePriorities" class="tsd-kind-icon">media<wbr>Type<wbr>Priorities</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 										<a href="actor_rdf_serialize_jsonld.IActorRdfSerializeJsonLdArgs.html#name" class="tsd-kind-icon">name</a>
@@ -228,6 +309,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

@@ -92,13 +92,7 @@
 								<span class="target">IActorArgsMediaTypedFixed</span>
 								<ul class="tsd-hierarchy">
 									<li>
-										<a href="bus_rdf_parse.IActorRdfParseFixedMediaTypesArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfParseFixedMediaTypesArgs</a>
-									</li>
-									<li>
-										<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfSerializeFixedMediaTypesArgs</a>
-									</li>
-									<li>
-										<a href="bus_sparql_serialize.IActorSparqlSerializeFixedMediaTypesArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorSparqlSerializeFixedMediaTypesArgs</a>
+										<a href="bus_query_result_serialize.IActorQueryResultSerializeFixedMediaTypesArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorQueryResultSerializeFixedMediaTypesArgs</a>
 									</li>
 								</ul>
 							</li>
@@ -115,7 +109,8 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#beforeActors" class="tsd-kind-icon">before<wbr>Actors</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#bus" class="tsd-kind-icon">bus</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#mediaTypes" class="tsd-kind-icon">media<wbr>Types</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#mediaTypeFormats" class="tsd-kind-icon">media<wbr>Type<wbr>Formats</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#mediaTypePriorities" class="tsd-kind-icon">media<wbr>Type<wbr>Priorities</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#priorityScale" class="tsd-kind-icon">priority<wbr>Scale</a></li>
 							</ul>
@@ -132,9 +127,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_abstract_mediatyped.IActorArgsMediaTyped.html">IActorArgsMediaTyped</a>.<a href="actor_abstract_mediatyped.IActorArgsMediaTyped.html#beforeActors">beforeActors</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L168">packages/core/lib/Actor.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L175">packages/core/lib/Actor.ts:175</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
@@ -143,19 +143,55 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_abstract_mediatyped.IActorArgsMediaTyped.html">IActorArgsMediaTyped</a>.<a href="actor_abstract_mediatyped.IActorArgsMediaTyped.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L171">packages/core/lib/Actor.ts:171</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="mediaTypes" class="tsd-anchor"></a>
-					<h3>media<wbr>Types</h3>
-					<div class="tsd-signature tsd-kind-icon">media<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="mediaTypeFormats" class="tsd-anchor"></a>
+					<h3>media<wbr>Type<wbr>Formats</h3>
+					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<wbr>Formats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L68">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L66">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:66</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A record of media types, with media type name as key, and its format IRI as value.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>range</dt>
+							<dd><p>{json}</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="mediaTypePriorities" class="tsd-anchor"></a>
+					<h3>media<wbr>Type<wbr>Priorities</h3>
+					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<wbr>Priorities<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L61">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:61</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A record of media types, with media type name as key, and its priority as value.
+							Priorities are numbers between [0, 1].</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>range</dt>
+							<dd><p>{json}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
@@ -164,9 +200,19 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_abstract_mediatyped.IActorArgsMediaTyped.html">IActorArgsMediaTyped</a>.<a href="actor_abstract_mediatyped.IActorArgsMediaTyped.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L166">packages/core/lib/Actor.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="rdf:subject">rdf:subject</a>}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="priorityScale" class="tsd-anchor"></a>
@@ -174,9 +220,21 @@
 					<div class="tsd-signature tsd-kind-icon">priority<wbr>Scale<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L69">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L73">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:73</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A multiplier for media type priorities.
+								This can be used for keeping the original media types in place,
+							but scaling all of their scores with a certain value.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>range</dt>
+							<dd><p>{double}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -226,7 +284,10 @@
 										<a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#bus" class="tsd-kind-icon">bus</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#mediaTypes" class="tsd-kind-icon">media<wbr>Types</a>
+										<a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#mediaTypeFormats" class="tsd-kind-icon">media<wbr>Type<wbr>Formats</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#mediaTypePriorities" class="tsd-kind-icon">media<wbr>Type<wbr>Priorities</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 										<a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html#name" class="tsd-kind-icon">name</a>
@@ -263,6 +324,12 @@
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../modules/actor_abstract_mediatyped.html#IActorTestAbstractMediaTyped" class="tsd-kind-icon">IActor<wbr>Test<wbr>Abstract<wbr>Media<wbr>Typed</a>
 							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/actor_abstract_mediatyped.html#MediateMediaTyped" class="tsd-kind-icon">Mediate<wbr>Media<wbr>Typed</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/actor_abstract_mediatyped.html#MediateMediaTypes" class="tsd-kind-icon">Mediate<wbr>Media<wbr>Types</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -279,6 +346,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

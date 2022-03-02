@@ -119,9 +119,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#graph" class="tsd-kind-icon">graph</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#handledUrls" class="tsd-kind-icon">handled<wbr>Urls</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#linkQueue" class="tsd-kind-icon">link<wbr>Queue</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorDereferenceRdf" class="tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorMetadata" class="tsd-kind-icon">mediator<wbr>Metadata</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorMetadataExtract" class="tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorRdfDereference" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorRdfResolveHypermedia" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorRdfResolveHypermediaLinks" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorRdfResolveHypermediaLinksQueue" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<wbr>Queue</a></li>
@@ -203,6 +203,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#skip" class="tsd-kind-icon">skip</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#surround" class="tsd-kind-icon">surround</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#take" class="tsd-kind-icon">take</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#toArray" class="tsd-kind-icon">to<wbr>Array</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#toString" class="tsd-kind-icon">to<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#transform" class="tsd-kind-icon">transform</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#listenerCount-1" class="tsd-kind-icon">listener<wbr>Count</a></li>
@@ -219,14 +220,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Mediated<wbr>Linked<wbr>Rdf<wbr>Sources<wbr>Async<wbr>Rdf<wbr>Iterator<span class="tsd-signature-symbol">(</span>cacheSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, context<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, forceSourceType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, firstUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mediators<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.IMediatorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IMediatorArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html" class="tsd-signature-type" data-tsd-kind="Class">MediatedLinkedRdfSourcesAsyncRdfIterator</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Mediated<wbr>Linked<wbr>Rdf<wbr>Sources<wbr>Async<wbr>Rdf<wbr>Iterator<span class="tsd-signature-symbol">(</span>cacheSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, forceSourceType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, firstUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mediators<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.IMediatorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IMediatorArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html" class="tsd-signature-type" data-tsd-kind="Class">MediatedLinkedRdfSourcesAsyncRdfIterator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L55">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L33">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -235,7 +236,7 @@
 									<h5>cacheSize: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>forceSourceType: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
@@ -311,7 +312,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_pushedCount">_pushedCount</a></p>
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:402</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:410</li>
 						</ul>
 					</aside>
 				</section>
@@ -322,7 +323,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_reading">_reading</a></p>
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:401</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:409</li>
 						</ul>
 					</aside>
 				</section>
@@ -333,7 +334,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_sourceStarted">_sourceStarted</a></p>
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:403</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:411</li>
 						</ul>
 					</aside>
 				</section>
@@ -351,10 +352,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="context" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> context</h3>
-					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></div>
+					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L50">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L28">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -365,7 +366,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#firstUrl">firstUrl</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L19">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L19">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -375,7 +376,7 @@
 					<div class="tsd-signature tsd-kind-icon">force<wbr>Source<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L51">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L29">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -386,7 +387,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#graph">graph</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L15">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L15">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -396,7 +397,7 @@
 					<div class="tsd-signature tsd-kind-icon">handled<wbr>Urls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L52">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L30">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -406,67 +407,67 @@
 					<div class="tsd-signature tsd-kind-icon">link<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_resolve_hypermedia_links_queue.ILinkQueue.html" class="tsd-signature-type" data-tsd-kind="Interface">ILinkQueue</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L53">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L31">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:31</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="mediatorDereferenceRdf" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Dereference<wbr>Rdf</h3>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_dereference_rdf.html#MediatorDereferenceRdf" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorDereferenceRdf</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L22">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="mediatorMetadata" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Metadata</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_metadata.html#MediatorRdfMetadata" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadata</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L33">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L23">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="mediatorMetadataExtract" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Metadata<wbr>Extract</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_metadata_extract.IActionRdfMetadataExtract.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadataExtract</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata_extract.IActorRdfMetadataExtractOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataExtractOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata_extract.IActionRdfMetadataExtract.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadataExtract</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata_extract.IActorRdfMetadataExtractOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataExtractOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_metadata_extract.html#MediatorRdfMetadataExtract" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadataExtract</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L36">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:36</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="mediatorRdfDereference" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Dereference</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_dereference.IActionRdfDereference.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfDereference</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_dereference.IActorRdfDereferenceOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfDereferenceOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_dereference.IActionRdfDereference.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfDereference</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_dereference.IActorRdfDereferenceOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfDereferenceOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L30">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L24">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="mediatorRdfResolveHypermedia" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_resolve_hypermedia.IActionRdfResolveHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia.IActionRdfResolveHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia.IActorRdfResolveHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_resolve_hypermedia.html#MediatorRdfResolveHypermedia" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfResolveHypermedia</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L39">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L25">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="mediatorRdfResolveHypermediaLinks" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_resolve_hypermedia_links.IActionRdfResolveHypermediaLinks.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermediaLinks</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia_links.IActorRdfResolveHypermediaLinksOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaLinksOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia_links.IActionRdfResolveHypermediaLinks.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermediaLinks</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia_links.IActorRdfResolveHypermediaLinksOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaLinksOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_resolve_hypermedia_links.html#MediatorRdfResolveHypermediaLinks" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfResolveHypermediaLinks</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L42">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L26">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="mediatorRdfResolveHypermediaLinksQueue" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<wbr>Queue</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<wbr>Queue<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_resolve_hypermedia_links_queue.IActionRdfResolveHypermediaLinksQueue.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermediaLinksQueue</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia_links_queue.IActorRdfResolveHypermediaLinksQueueOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaLinksQueueOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia_links_queue.IActionRdfResolveHypermediaLinksQueue.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfResolveHypermediaLinksQueue</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_resolve_hypermedia_links_queue.IActorRdfResolveHypermediaLinksQueueOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfResolveHypermediaLinksQueueOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<wbr>Queue<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_resolve_hypermedia_links_queue.html#MediatorRdfResolveHypermediaLinksQueue" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfResolveHypermediaLinksQueue</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L46">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L27">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -477,7 +478,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#nextSource">nextSource</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L16">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L16">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -488,7 +489,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#object">object</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L14">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L14">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -499,7 +500,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#predicate">predicate</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L13">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L13">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -510,7 +511,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#sourcesState">sourcesState</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L10">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L10">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -521,7 +522,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#subject">subject</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L12">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L12">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -703,7 +704,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:420</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:428</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -718,7 +719,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:421</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:429</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -803,7 +804,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_begin">_begin</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:436</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:444</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -891,7 +892,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_completeClose">_completeClose</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:484</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:492</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -920,7 +921,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_destroy">_destroy</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:485</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:493</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1024,7 +1025,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_fillBuffer">_fillBuffer</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:465</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:473</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1053,7 +1054,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_fillBufferAsync">_fillBufferAsync</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:469</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:477</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1076,7 +1077,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_flush">_flush</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:493</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:501</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1122,7 +1123,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_init">_init</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:428</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:436</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1155,7 +1156,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_push">_push</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:458</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:466</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1192,7 +1193,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_read">_read</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L96">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L96">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1231,7 +1232,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#_toStringDetails">_toStringDetails</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:498</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:506</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1292,14 +1293,14 @@
 					<a name="append" class="tsd-anchor"></a>
 					<h3>append</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">append<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">append<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#append">append</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:289</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:297</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1311,7 +1312,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>items: <span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>items: <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Items to insert after this iterator&#39;s (remaining) items</p>
 									</div>
@@ -1333,7 +1334,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#clone">clone</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:327</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:335</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1360,7 +1361,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#close">close</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:477</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:485</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1391,7 +1392,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#copyProperties">copyProperties</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:241</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:249</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1517,7 +1518,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#filter">filter</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:274</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:282</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1572,7 +1573,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#filter">filter</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:275</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:283</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1674,7 +1675,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#getLinkQueue">getLinkQueue</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L70">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L48">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1716,7 +1717,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#getProperties">getProperties</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:226</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:234</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1745,7 +1746,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#getProperty">getProperty</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:215</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:223</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1809,7 +1810,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#getSource">getSource</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L98">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L75">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:75</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1841,7 +1842,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#getSourceCached">getSourceCached</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L86">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L86">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:86</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1880,7 +1881,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#getSourceLinks">getSourceLinks</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L79">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts#L57">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts:57</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1909,7 +1910,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#handleNextUrl">handleNextUrl</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L194">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:194</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L194">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:194</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1990,7 +1991,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#map">map</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:266</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:274</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2182,14 +2183,14 @@
 					<a name="prepend" class="tsd-anchor"></a>
 					<h3>prepend</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">prepend<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">prepend<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#prepend">prepend</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:282</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:290</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2201,7 +2202,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>items: <span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>items: <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Items to insert before this iterator&#39;s (remaining) items</p>
 									</div>
@@ -2313,7 +2314,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#range">range</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:319</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:327</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2377,7 +2378,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#read">read</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:443</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:451</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2472,7 +2473,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#setCurrentIterator">setCurrentIterator</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L140">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L140">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:140</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2535,7 +2536,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#setProperties">setProperties</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:233</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:241</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2572,7 +2573,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#setProperty">setProperty</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:221</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:229</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2616,7 +2617,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#setSourcesState">setSourcesState</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L54">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L54">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2653,7 +2654,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#skip">skip</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:304</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:312</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2687,7 +2688,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#surround">surround</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:297</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:305</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2727,7 +2728,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#take">take</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:311</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:319</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2747,6 +2748,40 @@
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>A new iterator with at most the given number of items</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+					<a name="toArray" class="tsd-anchor"></a>
+					<h3>to<wbr>Array</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Array<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#toArray">toArray</a></p>
+								<ul>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:210</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Consume all remaining items of the iterator into an array that will be returned asynchronously.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-symbol">{ </span>limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2779,7 +2814,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html">LinkedRdfSourcesAsyncRdfIterator</a>.<a href="actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html#transform">transform</a></p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:258</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:266</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2981,13 +3016,13 @@
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#linkQueue" class="tsd-kind-icon">link<wbr>Queue</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorDereferenceRdf" class="tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorMetadata" class="tsd-kind-icon">mediator<wbr>Metadata</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorMetadataExtract" class="tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorRdfDereference" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#mediatorRdfResolveHypermedia" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Resolve<wbr>Hypermedia</a>
@@ -3203,6 +3238,9 @@
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#take" class="tsd-kind-icon">take</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#toArray" class="tsd-kind-icon">to<wbr>Array</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html#toString" class="tsd-kind-icon">to<wbr>String</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
@@ -3250,6 +3288,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

@@ -71,7 +71,8 @@
 						<h1>Comunica Join BGP Optimize Query Operation Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-join-bgp"><img src="https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-join-bgp.svg" alt="npm version"></a></p>
-					<p>A comunica Join BGP Optimize Query Operation Actor.</p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation">Optimize Query Operation</a> actor
+					that merges joins of BGPs into a single BGP.</p>
 					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
 					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
 					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
@@ -80,10 +81,24 @@
 					</a>
 					<pre><code class="language-bash"><span style="color: #000000">$ yarn add @comunica/actor-optimize-query-operation-join-bgp</span>
 </code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-bgp/^2.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;urn:comunica:default:optimize-query-operation/actors#join-bgp&quot;,
+      &quot;@type&quot;: &quot;ActorOptimizeQueryOperationJoinBgp&quot;
+    }
+  ]
+}
+</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -137,6 +152,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

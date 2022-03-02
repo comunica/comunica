@@ -84,8 +84,8 @@
 						<h2>Bus usage</h2>
 					</a>
 					<ul>
-						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld&quot;</code></li>
-						<li><strong>Bus name</strong>: <code>cbrj:Bus/RdfJoin</code></li>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^2.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>ActorRdfJoin:_default_bus</code></li>
 					</ul>
 					<a href="#creating-actors-on-this-bus" id="creating-actors-on-this-bus" style="color: inherit; text-decoration: none;">
 						<h2>Creating actors on this bus</h2>
@@ -107,9 +107,47 @@
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/bus_rdf_join.IActionRdfJoin.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Join</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/bus_rdf_join.IActorRdfJoinArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Join<wbr>Args</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/bus_rdf_join.IActorRdfJoinInternalOptions.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Join<wbr>Internal<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/bus_rdf_join.IActorRdfJoinOutputInner.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Join<wbr>Output<wbr>Inner</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_rdf_join.html#LogicalJoinType" class="tsd-kind-icon">Logical<wbr>Join<wbr>Type</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_rdf_join.html#MediatorRdfJoin" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Join</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="LogicalJoinType" class="tsd-anchor"></a>
+					<h3>Logical<wbr>Join<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Logical<wbr>Join<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;inner&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;optional&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;minus&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L357">packages/bus-rdf-join/lib/ActorRdfJoin.ts:357</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Represents a logical join type.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="MediatorRdfJoin" class="tsd-anchor"></a>
+					<h3>Mediator<wbr>Rdf<wbr>Join</h3>
+					<div class="tsd-signature tsd-kind-icon">Mediator<wbr>Rdf<wbr>Join<span class="tsd-signature-symbol">:</span> <a href="core.html#Mediate" class="tsd-signature-type" data-tsd-kind="Type alias">Mediate</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_join.IActionRdfJoin.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfJoin</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/types.IQueryOperationResultBindings.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryOperationResultBindings</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/mediatortype_join_coefficients.IMediatorTypeJoinCoefficients.html" class="tsd-signature-type" data-tsd-kind="Interface">IMediatorTypeJoinCoefficients</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L381">packages/bus-rdf-join/lib/ActorRdfJoin.ts:381</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -137,6 +175,21 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/bus_rdf_join.IActionRdfJoin.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Join</a>
 							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/bus_rdf_join.IActorRdfJoinArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Join<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/bus_rdf_join.IActorRdfJoinInternalOptions.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Join<wbr>Internal<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/bus_rdf_join.IActorRdfJoinOutputInner.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Join<wbr>Output<wbr>Inner</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_rdf_join.html#LogicalJoinType" class="tsd-kind-icon">Logical<wbr>Join<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_rdf_join.html#MediatorRdfJoin" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Join</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -153,6 +206,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

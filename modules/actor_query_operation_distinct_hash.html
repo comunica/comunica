@@ -88,14 +88,15 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myDistinctQueryOperator&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:query-operation/actors#distinct&quot;,
       &quot;@type&quot;: &quot;ActorQueryOperationDistinctHash&quot;,
-      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; }
+      &quot;mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;#mediatorQueryOperation&quot; },
+      &quot;mediatorHashBindings&quot;: { &quot;@id&quot;: &quot;#mediatorHashBindings&quot; }
     }
   ]
 }
@@ -104,7 +105,8 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorHashBindings</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-hash-bindings">Hash Bindings bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -116,6 +118,12 @@
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_query_operation_distinct_hash.ActorQueryOperationDistinctHash.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Distinct<wbr>Hash</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_distinct_hash.IActorQueryOperationDistinctHashArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Distinct<wbr>Hash<wbr>Args</a></li>
 							</ul>
 						</section>
 					</div>
@@ -143,6 +151,9 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/actor_query_operation_distinct_hash.ActorQueryOperationDistinctHash.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Distinct<wbr>Hash</a>
 							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/actor_query_operation_distinct_hash.IActorQueryOperationDistinctHashArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Distinct<wbr>Hash<wbr>Args</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -159,6 +170,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

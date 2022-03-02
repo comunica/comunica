@@ -70,7 +70,7 @@
 					<a href="#comunica-bus-sparql-parse" id="comunica-bus-sparql-parse" style="color: inherit; text-decoration: none;">
 						<h1>Comunica Bus SPARQL Parse</h1>
 					</a>
-					<p><a href="https://www.npmjs.com/package/@comunica/bus-sparql-parse"><img src="https://badge.fury.io/js/%40comunica%2Fbus-sparql-parse.svg" alt="npm version"></a></p>
+					<p><a href="https://www.npmjs.com/package/@comunica/logger-void"><img src="https://badge.fury.io/js/%40comunica%2Flogger-void.svg" alt="npm version"></a></p>
 					<p>A logger that voids all log messages.</p>
 					<p><strong><a href="https://comunica.dev/docs/modify/advanced/logging/">Click here to learn more about logging</a>.</strong></p>
 					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
@@ -84,11 +84,11 @@
 					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 						<h2>Usage</h2>
 					</a>
-					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">newEngine</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;@comunica/actor-init-sparql&#039;</span><span style="color: #000000">).</span><span style="color: #001080">newEngine</span><span style="color: #000000">;</span>
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">QueryEngine</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;@comunica/query-sparql&#039;</span><span style="color: #000000">).</span><span style="color: #001080">QueryEngine</span><span style="color: #000000">;</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> {</span><span style="color: #001080">LoggerVoid</span><span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;@comunica/logger-void&quot;</span><span style="color: #000000">;</span>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">result</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">myEngine</span><span style="color: #000000">.</span><span style="color: #795E26">query</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;SELECT * WHERE { ?s ?p ?o }&#039;</span><span style="color: #000000">, {</span>
-<span style="color: #000000">  </span><span style="color: #001080">sources:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;http://fragments.dbpedia.org/2015/en&#039;</span><span style="color: #000000">],</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">bindingsStream</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">QueryEngine</span><span style="color: #000000">().</span><span style="color: #795E26">queryBindings</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;SELECT * WHERE { ?s ?p ?o }&#039;</span><span style="color: #000000">, {</span>
+<span style="color: #000000">  </span><span style="color: #001080">sources:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;https://fragments.dbpedia.org/2015/en&#039;</span><span style="color: #000000">],</span>
 <span style="color: #000000">  </span><span style="color: #001080">log:</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">LoggerVoid</span><span style="color: #000000">(),</span>
 <span style="color: #000000">});</span>
 </code></pre>
@@ -145,6 +145,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

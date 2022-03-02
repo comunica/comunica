@@ -82,7 +82,7 @@
 						<h4>A<span class="tsd-signature-symbol">: </span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">I</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">O</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 					<li>
-						<h4>I<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">IAction</a></h4>
+						<h4>I<span class="tsd-signature-symbol">: </span><a href="core.IAction.html" class="tsd-signature-type" data-tsd-kind="Interface">IAction</a></h4>
 					</li>
 					<li>
 						<h4>T<span class="tsd-signature-symbol">: </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a></h4>
@@ -122,7 +122,7 @@
 					<div class="tsd-signature tsd-kind-icon">actor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">A</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Bus.ts#L202">packages/core/lib/Bus.ts:202</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Bus.ts#L206">packages/core/lib/Bus.ts:206</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -132,7 +132,7 @@
 					<div class="tsd-signature tsd-kind-icon">reply<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Bus.ts#L203">packages/core/lib/Bus.ts:203</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Bus.ts#L207">packages/core/lib/Bus.ts:207</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -156,8 +156,11 @@
 					<li class="current tsd-kind-module">
 						<a href="../modules/core.html" class="tsd-kind-icon">core</a>
 						<ul>
-							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/core.html#IAction" class="tsd-kind-icon">IAction</a>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/core.ActionContext.html" class="tsd-kind-icon">Action<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../classes/core.ActionContextKey.html" class="tsd-kind-icon">Action<wbr>Context<wbr>Key</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../classes/core.ActionObserver.html" class="tsd-kind-icon">Action<wbr>Observer</a>
@@ -176,6 +179,9 @@
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../classes/core.Mediator.html" class="tsd-kind-icon">Mediator</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="core.IAction.html" class="tsd-kind-icon">IAction</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="core.IActionObserverArgs.html" class="tsd-kind-icon">IAction<wbr>Observer<wbr>Args</a>
@@ -209,14 +215,11 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="core.IMediatorArgs.html" class="tsd-kind-icon">IMediator<wbr>Args</a>
 							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/core.html#Mediate" class="tsd-kind-icon">Mediate</a>
+							</li>
 							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="../modules/core.html#KEY_CONTEXT_LOG" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LOG</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="../modules/core.html#ActionContext" class="tsd-kind-icon">Action<wbr>Context</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="../modules/core.html#ensureActionContext" class="tsd-kind-icon">ensure<wbr>Action<wbr>Context</a>
+								<a href="../modules/core.html#CONTEXT_KEY_LOGGER" class="tsd-kind-icon">CONTEXT_<wbr>KEY_<wbr>LOGGER</a>
 							</li>
 						</ul>
 					</li>
@@ -234,6 +237,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

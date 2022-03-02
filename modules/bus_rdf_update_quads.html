@@ -87,8 +87,8 @@
 						<h2>Bus usage</h2>
 					</a>
 					<ul>
-						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld&quot;</code></li>
-						<li><strong>Bus name</strong>: <code>cbruq:Bus/RdfUpdateQuads</code></li>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^2.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>ActorRdfUpdateQuads:_default_bus</code></li>
 					</ul>
 					<a href="#creating-actors-on-this-bus" id="creating-actors-on-this-bus" style="color: inherit; text-decoration: none;">
 						<h2>Creating actors on this bus</h2>
@@ -102,6 +102,18 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getContextDestination" class="tsd-kind-icon">get<wbr>Context<wbr>Destination</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getContextDestinationFirst" class="tsd-kind-icon">get<wbr>Context<wbr>Destination<wbr>First</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getContextDestinationUrl" class="tsd-kind-icon">get<wbr>Context<wbr>Destination<wbr>Url</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getDataDestinationContext" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Context</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getDataDestinationType" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Type</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getDataDestinationValue" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Value</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#isDataDestinationRawType" class="tsd-kind-icon">is<wbr>Data<wbr>Destination<wbr>Raw<wbr>Type</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
@@ -120,22 +132,13 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-kind-icon">IData<wbr>Destination</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Variables</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#KEY_CONTEXT_DESTINATION" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DESTINATION</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#IActorRdfUpdateQuadsArgs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Update<wbr>Quads<wbr>Args</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#MediatorRdfUpdateQuads" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Update<wbr>Quads</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getDataDestinationContext" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Context</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getDataDestinationType" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Type</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#getDataDestinationValue" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Value</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#isDataDestinationRawType" class="tsd-kind-icon">is<wbr>Data<wbr>Destination<wbr>Raw<wbr>Type</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_update_quads.html#validateHttpResponse" class="tsd-kind-icon">validate<wbr>Http<wbr>Response</a></li>
 							</ul>
 						</section>
@@ -143,138 +146,68 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Type aliases</h2>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="IDataDestination" class="tsd-anchor"></a>
-					<h3>IData<wbr>Destination</h3>
-					<div class="tsd-signature tsd-kind-icon">IData<wbr>Destination<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RDF.Store</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>context<span class="tsd-signature-symbol">?: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RDF.Store</span><span class="tsd-signature-symbol"> }</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L79">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:79</a></li>
-						</ul>
-					</aside>
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="getContextDestination" class="tsd-anchor"></a>
+					<h3>get<wbr>Context<wbr>Destination</h3>
+					Re-exports <a href="">getContextDestination</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="getContextDestinationFirst" class="tsd-anchor"></a>
+					<h3>get<wbr>Context<wbr>Destination<wbr>First</h3>
+					Re-exports <a href="">getContextDestinationFirst</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="getContextDestinationUrl" class="tsd-anchor"></a>
+					<h3>get<wbr>Context<wbr>Destination<wbr>Url</h3>
+					Re-exports <a href="">getContextDestinationUrl</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="getDataDestinationContext" class="tsd-anchor"></a>
+					<h3>get<wbr>Data<wbr>Destination<wbr>Context</h3>
+					Re-exports <a href="">getDataDestinationContext</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="getDataDestinationType" class="tsd-anchor"></a>
+					<h3>get<wbr>Data<wbr>Destination<wbr>Type</h3>
+					Re-exports <a href="">getDataDestinationType</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="getDataDestinationValue" class="tsd-anchor"></a>
+					<h3>get<wbr>Data<wbr>Destination<wbr>Value</h3>
+					Re-exports <a href="">getDataDestinationValue</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="isDataDestinationRawType" class="tsd-anchor"></a>
+					<h3>is<wbr>Data<wbr>Destination<wbr>Raw<wbr>Type</h3>
+					Re-exports <a href="">isDataDestinationRawType</a>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
-					<a name="KEY_CONTEXT_DESTINATION" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>DESTINATION</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DESTINATION<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.KeysRdfUpdateQuads.html#destination" class="tsd-signature-type" data-tsd-kind="Enumeration member">destination</a><span class="tsd-signature-symbol"> = ...</span></div>
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="IActorRdfUpdateQuadsArgs" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Rdf<wbr>Update<wbr>Quads<wbr>Args</h3>
+					<div class="tsd-signature tsd-kind-icon">IActor<wbr>Rdf<wbr>Update<wbr>Quads<wbr>Args<span class="tsd-signature-symbol">:</span> <a href="../interfaces/core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IActionRdfUpdateQuads.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfUpdateQuads</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_update_quads.IActorRdfUpdateQuadsOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfUpdateQuadsOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L12">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L82">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:82</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>value</dt>
-							<dd><p>{IDataDestination} A destination.</p>
-							</dd>
-							<dt>deprecated</dt>
-							<dd><p>Import this constant from @comunica/context-entries.</p>
-							</dd>
-						</dl>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="MediatorRdfUpdateQuads" class="tsd-anchor"></a>
+					<h3>Mediator<wbr>Rdf<wbr>Update<wbr>Quads</h3>
+					<div class="tsd-signature tsd-kind-icon">Mediator<wbr>Rdf<wbr>Update<wbr>Quads<span class="tsd-signature-symbol">:</span> <a href="core.html#Mediate" class="tsd-signature-type" data-tsd-kind="Type alias">Mediate</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IActionRdfUpdateQuads.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfUpdateQuads</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_update_quads.IActorRdfUpdateQuadsOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfUpdateQuadsOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L84">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:84</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="getDataDestinationContext" class="tsd-anchor"></a>
-					<h3>get<wbr>Data<wbr>Destination<wbr>Context</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Context<span class="tsd-signature-symbol">(</span>dataDestination<span class="tsd-signature-symbol">: </span><a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a>, context<span class="tsd-signature-symbol">: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L26">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:26</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>dataDestination: <a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a></h5>
-								</li>
-								<li>
-									<h5>context: <a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="getDataDestinationType" class="tsd-anchor"></a>
-					<h3>get<wbr>Data<wbr>Destination<wbr>Type</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Type<span class="tsd-signature-symbol">(</span>dataDestination<span class="tsd-signature-symbol">: </span><a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L17">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:17</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>dataDestination: <a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="getDataDestinationValue" class="tsd-anchor"></a>
-					<h3>get<wbr>Data<wbr>Destination<wbr>Value</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Value<span class="tsd-signature-symbol">(</span>dataDestination<span class="tsd-signature-symbol">: </span><a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RDF.Store</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L23">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:23</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>dataDestination: <a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RDF.Store</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="isDataDestinationRawType" class="tsd-anchor"></a>
-					<h3>is<wbr>Data<wbr>Destination<wbr>Raw<wbr>Type</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Data<wbr>Destination<wbr>Raw<wbr>Type<span class="tsd-signature-symbol">(</span>dataDestination<span class="tsd-signature-symbol">: </span><a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">dataDestination</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L14">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:14</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>dataDestination: <a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">dataDestination</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="validateHttpResponse" class="tsd-anchor"></a>
 					<h3>validate<wbr>Http<wbr>Response</h3>
@@ -285,7 +218,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L51">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L51">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -332,6 +265,27 @@
 					<li class="current tsd-kind-module">
 						<a href="bus_rdf_update_quads.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>update-<wbr>quads</a>
 						<ul>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#getContextDestination" class="tsd-kind-icon">get<wbr>Context<wbr>Destination</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#getContextDestinationFirst" class="tsd-kind-icon">get<wbr>Context<wbr>Destination<wbr>First</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#getContextDestinationUrl" class="tsd-kind-icon">get<wbr>Context<wbr>Destination<wbr>Url</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#getDataDestinationContext" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#getDataDestinationType" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#getDataDestinationValue" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#isDataDestinationRawType" class="tsd-kind-icon">is<wbr>Data<wbr>Destination<wbr>Raw<wbr>Type</a>
+							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/bus_rdf_update_quads.ActorRdfUpdateQuads.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Update<wbr>Quads</a>
 							</li>
@@ -348,22 +302,10 @@
 								<a href="../interfaces/bus_rdf_update_quads.IQuadDestination.html" class="tsd-kind-icon">IQuad<wbr>Destination</a>
 							</li>
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-								<a href="bus_rdf_update_quads.html#IDataDestination" class="tsd-kind-icon">IData<wbr>Destination</a>
+								<a href="bus_rdf_update_quads.html#IActorRdfUpdateQuadsArgs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Update<wbr>Quads<wbr>Args</a>
 							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="bus_rdf_update_quads.html#KEY_CONTEXT_DESTINATION" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DESTINATION</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="bus_rdf_update_quads.html#getDataDestinationContext" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Context</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="bus_rdf_update_quads.html#getDataDestinationType" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Type</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="bus_rdf_update_quads.html#getDataDestinationValue" class="tsd-kind-icon">get<wbr>Data<wbr>Destination<wbr>Value</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="bus_rdf_update_quads.html#isDataDestinationRawType" class="tsd-kind-icon">is<wbr>Data<wbr>Destination<wbr>Raw<wbr>Type</a>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_rdf_update_quads.html#MediatorRdfUpdateQuads" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Update<wbr>Quads</a>
 							</li>
 							<li class=" tsd-kind-function tsd-parent-kind-module">
 								<a href="bus_rdf_update_quads.html#validateHttpResponse" class="tsd-kind-icon">validate<wbr>Http<wbr>Response</a>
@@ -384,6 +326,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

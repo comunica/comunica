@@ -71,7 +71,7 @@
 						<h1>Comunica Follow Redirects Http Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-http-native"><img src="https://badge.fury.io/js/%40comunica%2Factor-http-native.svg" alt="npm version"></a></p>
-					<p><strong>DEPRECATED: use the more flexible @comunica/actor-http-node-fetch instead without loss of performance.</strong></p>
+					<p><strong>DEPRECATED: use the more flexible @comunica/actor-http-fetch instead without loss of performance.</strong></p>
 					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP</a> actor that
 					uses Node&#39;s request API (<code>XMLHttpRequest</code> in the browser) to perform HTTP requests.</p>
 					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
@@ -89,17 +89,23 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:http.json#myHttpFetcher&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:http/actors#native&quot;,
       &quot;@type&quot;: &quot;ActorHttpNative&quot;
     }
   ]
 }
 </code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>agentOptions</code>: The agent JSON options for the HTTP agent. <em>(optional)</em></li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -166,6 +172,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

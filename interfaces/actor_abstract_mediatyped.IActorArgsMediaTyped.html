@@ -94,9 +94,6 @@
 									<li>
 										<a href="actor_abstract_mediatyped.IActorArgsMediaTypedFixed.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgsMediaTypedFixed</a>
 									</li>
-									<li>
-										<a href="actor_sparql_serialize_rdf.IActorSparqlSerializeRdfArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorSparqlSerializeRdfArgs</a>
-									</li>
 								</ul>
 							</li>
 						</ul>
@@ -127,9 +124,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#beforeActors">beforeActors</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L168">packages/core/lib/Actor.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L175">packages/core/lib/Actor.ts:175</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
@@ -138,9 +140,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L171">packages/core/lib/Actor.ts:171</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
@@ -149,9 +156,19 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L166">packages/core/lib/Actor.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="rdf:subject">rdf:subject</a>}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -232,6 +249,12 @@
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../modules/actor_abstract_mediatyped.html#IActorTestAbstractMediaTyped" class="tsd-kind-icon">IActor<wbr>Test<wbr>Abstract<wbr>Media<wbr>Typed</a>
 							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/actor_abstract_mediatyped.html#MediateMediaTyped" class="tsd-kind-icon">Mediate<wbr>Media<wbr>Typed</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/actor_abstract_mediatyped.html#MediateMediaTypes" class="tsd-kind-icon">Mediate<wbr>Media<wbr>Types</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -248,6 +271,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

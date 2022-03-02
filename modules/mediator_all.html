@@ -88,16 +88,16 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
       &quot;@type&quot;: &quot;SomeActor&quot;,
       &quot;someMediator&quot;: {
-        &quot;@id&quot;: &quot;config-sets:sparql-init.json#mediatorHttpInvalidate&quot;,
+        &quot;@id&quot;: &quot;urn:comunica:default:http/mediators#mainInvalidate&quot;,
         &quot;@type&quot;: &quot;MediatorAll&quot;,
-        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbhi:Bus/HttpInvalidate&quot; }
+        &quot;bus&quot;: { &quot;@id&quot;: &quot;ActorHttpInvalidate:_default_bus&quot; }
       }
     }
   ]
@@ -107,7 +107,7 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cc:Mediator/bus</code>: Identifier of the bus to mediate over.</li>
+						<li><code>bus</code>: Identifier of the bus to mediate over.</li>
 					</ul>
 				</div>
 			</section>
@@ -162,6 +162,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

@@ -114,13 +114,13 @@
 										<a href="actor_abstract_mediatyped.ActorAbstractMediaTypedFixed.html" class="tsd-signature-type" data-tsd-kind="Class">ActorAbstractMediaTypedFixed</a>
 									</li>
 									<li>
+										<a href="bus_query_result_serialize.ActorQueryResultSerialize.html" class="tsd-signature-type" data-tsd-kind="Class">ActorQueryResultSerialize</a>
+									</li>
+									<li>
 										<a href="bus_rdf_parse.ActorRdfParse.html" class="tsd-signature-type" data-tsd-kind="Class">ActorRdfParse</a>
 									</li>
 									<li>
 										<a href="bus_rdf_serialize.ActorRdfSerialize.html" class="tsd-signature-type" data-tsd-kind="Class">ActorRdfSerialize</a>
-									</li>
-									<li>
-										<a href="bus_sparql_serialize.ActorSparqlSerialize.html" class="tsd-signature-type" data-tsd-kind="Class">ActorSparqlSerialize</a>
 									</li>
 								</ul>
 							</li>
@@ -186,7 +186,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L17">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L18">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:18</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -227,9 +227,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#beforeActors">beforeActors</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L29">packages/core/lib/Actor.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L26">packages/core/lib/Actor.ts:26</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
@@ -238,9 +243,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L28">packages/core/lib/Actor.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L25">packages/core/lib/Actor.ts:25</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
@@ -249,9 +259,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L27">packages/core/lib/Actor.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L24">packages/core/lib/Actor.ts:24</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -267,7 +282,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#deinitialize">deinitialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L110">packages/core/lib/Actor.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L107">packages/core/lib/Actor.ts:107</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -286,20 +301,20 @@
 					<a name="getDefaultLogData" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Default<wbr>Log<wbr>Data</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#getDefaultLogData">getDefaultLogData</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L116">packages/core/lib/Actor.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L113">packages/core/lib/Actor.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
@@ -325,13 +340,13 @@
 					<a name="getMediaTypeFormats" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> get<wbr>Media<wbr>Type<wbr>Formats</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Media<wbr>Type<wbr>Formats<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Media<wbr>Type<wbr>Formats<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L100">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:100</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L101">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:101</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -342,7 +357,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -359,13 +374,13 @@
 					<a name="getMediaTypes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> get<wbr>Media<wbr>Types</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L84">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L85">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:85</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -376,7 +391,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -400,7 +415,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#initialize">initialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L99">packages/core/lib/Actor.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L96">packages/core/lib/Actor.ts:96</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -419,20 +434,20 @@
 					<a name="logDebug" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Debug</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Debug<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Debug<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#logDebug">logDebug</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L129">packages/core/lib/Actor.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L126">packages/core/lib/Actor.ts:126</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -461,20 +476,20 @@
 					<a name="logError" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Error<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Error<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#logError">logError</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L150">packages/core/lib/Actor.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L147">packages/core/lib/Actor.ts:147</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -503,20 +518,20 @@
 					<a name="logFatal" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Fatal</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Fatal<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Fatal<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#logFatal">logFatal</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L157">packages/core/lib/Actor.ts:157</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L154">packages/core/lib/Actor.ts:154</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -545,20 +560,20 @@
 					<a name="logInfo" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Info</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Info<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Info<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#logInfo">logInfo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L136">packages/core/lib/Actor.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L133">packages/core/lib/Actor.ts:133</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -587,20 +602,20 @@
 					<a name="logTrace" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Trace</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Trace<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Trace<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#logTrace">logTrace</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L122">packages/core/lib/Actor.ts:122</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L119">packages/core/lib/Actor.ts:119</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -629,20 +644,20 @@
 					<a name="logWarn" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Warn</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Warn<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Warn<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#logWarn">logWarn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L143">packages/core/lib/Actor.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L140">packages/core/lib/Actor.ts:140</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -678,7 +693,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#run">run</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L21">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L22">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:22</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -703,13 +718,13 @@
 					<a name="runHandle" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> run<wbr>Handle</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">run<wbr>Handle<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HI</span>, mediaType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HO</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Handle<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HI</span>, mediaType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HO</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L68">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L69">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:69</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -726,13 +741,13 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> mediaType: <span class="tsd-signature-type">string</span></h5>
+									<h5>mediaType: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The media type to run with.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -754,7 +769,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#runObservable">runObservable</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L86">packages/core/lib/Actor.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L83">packages/core/lib/Actor.ts:83</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -788,7 +803,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#test">test</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L35">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L36">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:36</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -812,13 +827,13 @@
 					<a name="testHandle" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> test<wbr>Handle</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">test<wbr>Handle<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HI</span>, mediaType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HT</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">test<wbr>Handle<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HI</span>, mediaType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HT</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L58">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L59">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -836,13 +851,13 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> mediaType: <span class="tsd-signature-type">string</span></h5>
+									<h5>mediaType: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The media type to test.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -857,13 +872,13 @@
 					<a name="testMediaType" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> test<wbr>Media<wbr>Type</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">test<wbr>Media<wbr>Type<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">test<wbr>Media<wbr>Type<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L76">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L77">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:77</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -874,7 +889,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -889,13 +904,13 @@
 					<a name="testMediaTypeFormats" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> test<wbr>Media<wbr>Type<wbr>Formats</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">test<wbr>Media<wbr>Type<wbr>Formats<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">test<wbr>Media<wbr>Type<wbr>Formats<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L92">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L93">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -906,7 +921,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -921,14 +936,14 @@
 					<a name="getContextLogger" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Context<wbr>Logger</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Context<wbr>Logger<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="core.Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Context<wbr>Logger<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="core.Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.Actor.html">Actor</a>.<a href="core.Actor.html#getContextLogger">getContextLogger</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L55">packages/core/lib/Actor.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L52">packages/core/lib/Actor.ts:52</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -939,7 +954,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -1089,6 +1104,12 @@
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../modules/actor_abstract_mediatyped.html#IActorTestAbstractMediaTyped" class="tsd-kind-icon">IActor<wbr>Test<wbr>Abstract<wbr>Media<wbr>Typed</a>
 							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/actor_abstract_mediatyped.html#MediateMediaTyped" class="tsd-kind-icon">Mediate<wbr>Media<wbr>Typed</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/actor_abstract_mediatyped.html#MediateMediaTypes" class="tsd-kind-icon">Mediate<wbr>Media<wbr>Types</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -1105,6 +1126,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

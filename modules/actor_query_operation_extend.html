@@ -87,14 +87,14 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-extend/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-extend/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myExtendQueryOperator&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:query-operation/actors#extend&quot;,
       &quot;@type&quot;: &quot;ActorQueryOperationExtend&quot;,
-      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; }
+      &quot;mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:query-operation/mediators#main&quot; }
     }
   ]
 }
@@ -103,7 +103,7 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -158,6 +158,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

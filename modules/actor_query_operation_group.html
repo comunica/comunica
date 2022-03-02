@@ -87,14 +87,15 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myGroupQueryOperator&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:query-operation/actors#group&quot;,
       &quot;@type&quot;: &quot;ActorQueryOperationGroup&quot;,
-      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; }
+      &quot;mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;#mediatorQueryOperation&quot; },
+      &quot;mediatorHashBindings&quot;: { &quot;@id&quot;: &quot;#mediatorHashBindings&quot; }
     }
   ]
 }
@@ -103,7 +104,8 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorHashBindings</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-hash-bindings">Hash Bindings bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -121,6 +123,7 @@
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_group.IActorQueryOperationGroupArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Group<wbr>Args</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_group.IGroup.html" class="tsd-kind-icon">IGroup</a></li>
 							</ul>
 						</section>
@@ -141,7 +144,7 @@
 					<div class="tsd-signature tsd-kind-icon">Bindings<wbr>Hash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-query-operation-group/lib/GroupsState.ts#L12">packages/actor-query-operation-group/lib/GroupsState.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-query-operation-group/lib/GroupsState.ts#L16">packages/actor-query-operation-group/lib/GroupsState.ts:16</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -177,6 +180,9 @@
 								<a href="../classes/actor_query_operation_group.GroupsState.html" class="tsd-kind-icon">Groups<wbr>State</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/actor_query_operation_group.IActorQueryOperationGroupArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Group<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/actor_query_operation_group.IGroup.html" class="tsd-kind-icon">IGroup</a>
 							</li>
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
@@ -198,6 +204,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

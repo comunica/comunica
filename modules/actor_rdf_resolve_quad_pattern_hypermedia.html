@@ -87,39 +87,19 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#myQuadPatternHypermediaResolver&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:rdf-resolve-quad-pattern/actors#hypermedia&quot;,
       &quot;@type&quot;: &quot;ActorRdfResolveQuadPatternHypermedia&quot;,
-      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfDereference&quot;
-      },
-      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorMetadata&quot;
-      },
-      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorMetadataExtract&quot;
-      },
-      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermedia&quot;,
-        &quot;@type&quot;: &quot;MediatorNumberMax&quot;,
-        &quot;field&quot;: &quot;filterFactor&quot;,
-        &quot;ignoreErrors&quot;: true,
-        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrrh:Bus/RdfResolveHypermedia&quot; }
-      },
-      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks&quot;,
-        &quot;@type&quot;: &quot;MediatorRace&quot;,
-        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrrhl:Bus/RdfResolveHypermediaLinks&quot; }
-      },
-      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue&quot;: {
-        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue&quot;,
-        &quot;@type&quot;: &quot;MediatorRace&quot;,
-        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrrhlq:Bus/RdfResolveHypermediaLinksQueue&quot; }
-      }
+      &quot;mediatorDereferenceRdf&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:dereference-rdf/mediators#main&quot; },
+      &quot;mediatorMetadata&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-metadata/mediators#main&quot; },
+      &quot;mediatorMetadataExtract&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-metadata-extract/mediators#main&quot; },
+      &quot;mediatorRdfResolveHypermedia&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-resolve-hypermedia/mediators#main&quot; },
+      &quot;mediatorRdfResolveHypermediaLinks&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-resolve-hypermedia-links/mediators#main&quot; },
+      &quot;mediatorRdfResolveHypermediaLinksQueue&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-resolve-hypermedia-links-queue/mediators#main&quot; }
     }
   ]
 }
@@ -128,12 +108,12 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference">RDF Dereference bus</a>.</li>
-						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata bus</a>.</li>
-						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract">RDF Metadata Extract bus</a>.</li>
-						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia">RDF Resolve Hypermedia bus</a>.</li>
-						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links">RDF Resolve Hypermedia Links bus</a>.</li>
-						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links-queue">RDF Resolve Hypermedia Links Queue bus</a>.</li>
+						<li><code>mediatorDereferenceRdf</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf">RDF Dereference bus</a>.</li>
+						<li><code>mediatorMetadata</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata bus</a>.</li>
+						<li><code>mediatorMetadataExtract</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract">RDF Metadata Extract bus</a>.</li>
+						<li><code>mediatorRdfResolveHypermedia</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia">RDF Resolve Hypermedia bus</a>.</li>
+						<li><code>mediatorRdfResolveHypermediaLinks</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links">RDF Resolve Hypermedia Links bus</a>.</li>
+						<li><code>mediatorRdfResolveHypermediaLinksQueue</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links-queue">RDF Resolve Hypermedia Links Queue bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -221,6 +201,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

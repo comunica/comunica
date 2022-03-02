@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span>
+						<a href="../modules/bus_http.html#IActorHttpArgs" class="tsd-signature-type" data-tsd-kind="Type alias">IActorHttpArgs</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">IActorHttpProxyArgs</span>
@@ -104,43 +104,68 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Actors</h3>
 					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#beforeActors">beforeActors</a></p>
+						<p>Inherited from IActorHttpArgs.beforeActors</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L168">packages/core/lib/Actor.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L175">packages/core/lib/Actor.ts:175</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
 					<h3>bus</h3>
 					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Bus.html" class="tsd-signature-type" data-tsd-kind="Class">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#bus">bus</a></p>
+						<p>Inherited from IActorHttpArgs.bus</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L171">packages/core/lib/Actor.ts:171</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="mediatorHttp" class="tsd-anchor"></a>
 					<h3>mediator<wbr>Http</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/bus_http.ActorHttp.html" class="tsd-signature-type" data-tsd-kind="Class">ActorHttp</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_http.html#MediatorHttp" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorHttp</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-http-proxy/lib/ActorHttpProxy.ts#L57">packages/actor-http-proxy/lib/ActorHttpProxy.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-http-proxy/lib/ActorHttpProxy.ts#L53">packages/actor-http-proxy/lib/ActorHttpProxy.ts:53</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The HTTP mediator</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.IActorArgs.html">IActorArgs</a>.<a href="core.IActorArgs.html#name">name</a></p>
+						<p>Inherited from IActorHttpArgs.name</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L166">packages/core/lib/Actor.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L167">packages/core/lib/Actor.ts:167</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>{<a href="rdf:subject">rdf:subject</a>}</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -185,15 +210,6 @@
 									</li>
 								</ul>
 							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="actor_http_proxy.IProxyHandler.html" class="tsd-kind-icon">IProxy<wbr>Handler</a>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="actor_http_proxy.IRequest.html" class="tsd-kind-icon">IRequest</a>
-							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="../modules/actor_http_proxy.html#KEY_CONTEXT_HTTPPROXYHANDLER" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>HTTPPROXYHANDLER</a>
-							</li>
 						</ul>
 					</li>
 				</ul>
@@ -210,6 +226,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

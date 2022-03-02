@@ -84,8 +84,8 @@
 						<h2>Bus usage</h2>
 					</a>
 					<ul>
-						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld&quot;</code></li>
-						<li><strong>Bus name</strong>: <code>cbh:Bus/Http</code></li>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^2.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>ActorHttp:_default_bus</code></li>
 					</ul>
 					<a href="#creating-actors-on-this-bus" id="creating-actors-on-this-bus" style="color: inherit; text-decoration: none;">
 						<h2>Creating actors on this bus</h2>
@@ -111,53 +111,36 @@
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Variables</h3>
+							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_http.html#KEY_CONTEXT_AUTH" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>AUTH</a></li>
-								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_http.html#KEY_CONTEXT_INCLUDE_CREDENTIALS" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INCLUDE_<wbr>CREDENTIALS</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_http.html#IActorHttpArgs" class="tsd-kind-icon">IActor<wbr>Http<wbr>Args</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_http.html#MediatorHttp" class="tsd-kind-icon">Mediator<wbr>Http</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
-					<a name="KEY_CONTEXT_AUTH" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>AUTH</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>AUTH<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.KeysHttp.html#auth" class="tsd-signature-type" data-tsd-kind="Enumeration member">auth</a><span class="tsd-signature-symbol"> = ...</span></div>
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="IActorHttpArgs" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Http<wbr>Args</h3>
+					<div class="tsd-signature tsd-kind-icon">IActor<wbr>Http<wbr>Args<span class="tsd-signature-symbol">:</span> <a href="../interfaces/core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-http/lib/ActorHttp.ts#L86">packages/bus-http/lib/ActorHttp.ts:86</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-http/lib/ActorHttp.ts#L77">packages/bus-http/lib/ActorHttp.ts:77</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>value</dt>
-							<dd><p>{string} &quot;username:password&quot;-pair.</p>
-							</dd>
-							<dt>deprecated</dt>
-							<dd><p>Import this constant from @comunica/context-entries.</p>
-							</dd>
-						</dl>
-					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
-					<a name="KEY_CONTEXT_INCLUDE_CREDENTIALS" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>INCLUDE_<wbr>CREDENTIALS</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INCLUDE_<wbr>CREDENTIALS<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.KeysHttp.html#includeCredentials" class="tsd-signature-type" data-tsd-kind="Enumeration member">includeCredentials</a><span class="tsd-signature-symbol"> = ...</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="MediatorHttp" class="tsd-anchor"></a>
+					<h3>Mediator<wbr>Http</h3>
+					<div class="tsd-signature tsd-kind-icon">Mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="core.html#Mediate" class="tsd-signature-type" data-tsd-kind="Type alias">Mediate</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-http/lib/ActorHttp.ts#L79">packages/bus-http/lib/ActorHttp.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-http/lib/ActorHttp.ts#L79">packages/bus-http/lib/ActorHttp.ts:79</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>deprecated</dt>
-							<dd><p>Import this constant from @comunica/context-entries.</p>
-							</dd>
-						</dl>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -188,11 +171,11 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/bus_http.IActorHttpOutput.html" class="tsd-kind-icon">IActor<wbr>Http<wbr>Output</a>
 							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="bus_http.html#KEY_CONTEXT_AUTH" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>AUTH</a>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_http.html#IActorHttpArgs" class="tsd-kind-icon">IActor<wbr>Http<wbr>Args</a>
 							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="bus_http.html#KEY_CONTEXT_INCLUDE_CREDENTIALS" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INCLUDE_<wbr>CREDENTIALS</a>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_http.html#MediatorHttp" class="tsd-kind-icon">Mediator<wbr>Http</a>
 							</li>
 						</ul>
 					</li>
@@ -210,6 +193,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

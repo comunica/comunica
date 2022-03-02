@@ -88,15 +88,15 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-load/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-load/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myLoadQueryOperator&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:query-operation/actors#update-load&quot;,
       &quot;@type&quot;: &quot;ActorQueryOperationLoad&quot;,
-      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; },
-      &quot;caqoul:mediatorUpdateQuads&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads&quot; }
+      &quot;mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:query-operation/mediators#main&quot; },
+      &quot;mediatorUpdateQuads&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:rdf-update-quads/mediators#main&quot; }
     }
   ]
 }
@@ -105,8 +105,8 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
-						<li><code>caqoul:mediatorUpdateQuads</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads">RDF Update Quads bus</a>.</li>
+						<li><code>mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorUpdateQuads</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads">RDF Update Quads bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -126,37 +126,7 @@
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_update_load.IActorQueryOperationLoadArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Load<wbr>Args</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
-							<h3>Variables</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_query_operation_update_load.html#KEY_CONTEXT_LENIENT" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a></li>
-								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_query_operation_update_load.html#KEY_CONTEXT_SOURCES" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES</a></li>
-							</ul>
-						</section>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
-					<a name="KEY_CONTEXT_LENIENT" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>LENIENT</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;@comunica/actor-init-sparql:lenient&quot;</span><span class="tsd-signature-symbol"> = &#x27;@comunica/actor-init-sparql:lenient&#x27;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-query-operation-update-load/lib/ActorQueryOperationLoad.ts#L78">packages/actor-query-operation-update-load/lib/ActorQueryOperationLoad.ts:78</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
-					<a name="KEY_CONTEXT_SOURCES" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>SOURCES</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;@comunica/bus-rdf-resolve-quad-pattern:sources&quot;</span><span class="tsd-signature-symbol"> = &#x27;@comunica/bus-rdf-resolve-quad-pattern:sources&#x27;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-query-operation-update-load/lib/ActorQueryOperationLoad.ts#L77">packages/actor-query-operation-update-load/lib/ActorQueryOperationLoad.ts:77</a></li>
-						</ul>
-					</aside>
 				</section>
 			</section>
 		</div>
@@ -184,12 +154,6 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/actor_query_operation_update_load.IActorQueryOperationLoadArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Load<wbr>Args</a>
 							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="actor_query_operation_update_load.html#KEY_CONTEXT_LENIENT" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a>
-							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="actor_query_operation_update_load.html#KEY_CONTEXT_SOURCES" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES</a>
-							</li>
 						</ul>
 					</li>
 				</ul>
@@ -206,6 +170,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

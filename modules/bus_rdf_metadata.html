@@ -84,8 +84,8 @@
 						<h2>Bus usage</h2>
 					</a>
 					<ul>
-						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld&quot;</code></li>
-						<li><strong>Bus name</strong>: <code>cbrm:Bus/RdfMetadata</code></li>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^2.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>ActorRdfMetadata:_default_bus</code></li>
 					</ul>
 					<a href="#creating-actors-on-this-bus" id="creating-actors-on-this-bus" style="color: inherit; text-decoration: none;">
 						<h2>Creating actors on this bus</h2>
@@ -101,7 +101,6 @@
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/bus_rdf_metadata.ActorRdfMetadata.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Metadata</a></li>
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/bus_rdf_metadata.ActorRdfMetadataQuadPredicate.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Metadata<wbr>Quad<wbr>Predicate</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -111,7 +110,37 @@
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Output</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_rdf_metadata.html#IActorRdfMetadataArgs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Args</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_rdf_metadata.html#MediatorRdfMetadata" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Metadata</a></li>
+							</ul>
+						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="IActorRdfMetadataArgs" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Rdf<wbr>Metadata<wbr>Args</h3>
+					<div class="tsd-signature tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Args<span class="tsd-signature-symbol">:</span> <a href="../interfaces/core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L53">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:53</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="MediatorRdfMetadata" class="tsd-anchor"></a>
+					<h3>Mediator<wbr>Rdf<wbr>Metadata</h3>
+					<div class="tsd-signature tsd-kind-icon">Mediator<wbr>Rdf<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="core.html#Mediate" class="tsd-signature-type" data-tsd-kind="Type alias">Mediate</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L55">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:55</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -136,14 +165,17 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/bus_rdf_metadata.ActorRdfMetadata.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Metadata</a>
 							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/bus_rdf_metadata.ActorRdfMetadataQuadPredicate.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Metadata<wbr>Quad<wbr>Predicate</a>
-							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Metadata</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Output</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_rdf_metadata.html#IActorRdfMetadataArgs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_rdf_metadata.html#MediatorRdfMetadata" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Metadata</a>
 							</li>
 						</ul>
 					</li>
@@ -161,6 +193,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

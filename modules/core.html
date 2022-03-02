@@ -91,6 +91,7 @@
 						<li><a href="https://comunica.github.io/comunica/classes/core.actionobserver.html"><code>ActionObserver</code></a>: An ActionObserver can passively listen to Actor.run inputs and outputs for all actors on a certain bus.</li>
 						<li><a href="https://comunica.github.io/comunica/classes/core.busindexed.html"><code>BusIndexed</code></a>: A bus that indexes identified actors, so that actions with a corresponding identifier can be published more efficiently.</li>
 						<li><a href="https://comunica.github.io/comunica/classes/core.logger.html"><code>Logger</code></a>: A logger accepts messages from different levels and emits them in a certain way.</li>
+						<li><a href="https://comunica.github.io/comunica/classes/core.actioncontext.html"><code>ActionContext</code></a>: Implementation of IActionContext using Immutable.js.</li>
 					</ul>
 				</div>
 			</section>
@@ -99,14 +100,10 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>References</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="core.html#IAction" class="tsd-kind-icon">IAction</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/core.ActionContext.html" class="tsd-kind-icon">Action<wbr>Context</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/core.ActionContextKey.html" class="tsd-kind-icon">Action<wbr>Context<wbr>Key</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/core.ActionObserver.html" class="tsd-kind-icon">Action<wbr>Observer</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/core.Actor.html" class="tsd-kind-icon">Actor</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/core.Bus.html" class="tsd-kind-icon">Bus</a></li>
@@ -118,6 +115,7 @@
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/core.IAction.html" class="tsd-kind-icon">IAction</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/core.IActionObserverArgs.html" class="tsd-kind-icon">IAction<wbr>Observer<wbr>Args</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/core.IActorArgs.html" class="tsd-kind-icon">IActor<wbr>Args</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/core.IActorOutput.html" class="tsd-kind-icon">IActor<wbr>Output</a></li>
@@ -129,118 +127,56 @@
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Variables</h3>
+							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="core.html#KEY_CONTEXT_LOG" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LOG</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="core.html#Mediate" class="tsd-kind-icon">Mediate</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Functions</h3>
+							<h3>Variables</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="core.html#ActionContext" class="tsd-kind-icon">Action<wbr>Context</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="core.html#ensureActionContext" class="tsd-kind-icon">ensure<wbr>Action<wbr>Context</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="core.html#CONTEXT_KEY_LOGGER" class="tsd-kind-icon">CONTEXT_<wbr>KEY_<wbr>LOGGER</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>References</h2>
-				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
-					<a name="IAction" class="tsd-anchor"></a>
-					<h3>IAction</h3>
-					Re-exports <a href="">IAction</a>
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="Mediate" class="tsd-anchor"></a>
+					<h3>Mediate</h3>
+					<div class="tsd-signature tsd-kind-icon">Mediate&lt;I, O, T&gt;<span class="tsd-signature-symbol">:</span> <a href="../classes/core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">I</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">O</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">I</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">O</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Mediator.ts#L116">packages/core/lib/Mediator.ts:116</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>I<span class="tsd-signature-symbol">: </span><a href="../interfaces/core.IAction.html" class="tsd-signature-type" data-tsd-kind="Interface">IAction</a></h4>
+						</li>
+						<li>
+							<h4>O<span class="tsd-signature-symbol">: </span><a href="../interfaces/core.IActorOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorOutput</a></h4>
+						</li>
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a> = <a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Variables</h2>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
-					<a name="KEY_CONTEXT_LOG" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>LOG</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LOG<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.KeysCore.html#log" class="tsd-signature-type" data-tsd-kind="Enumeration member">log</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<a name="CONTEXT_KEY_LOGGER" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> CONTEXT_<wbr>KEY_<wbr>LOGGER</h3>
+					<div class="tsd-signature tsd-kind-icon">CONTEXT_<wbr>KEY_<wbr>LOGGER<span class="tsd-signature-symbol">:</span> <a href="../classes/core.ActionContextKey.html" class="tsd-signature-type" data-tsd-kind="Class">ActionContextKey</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Logger.ts#L44">packages/core/lib/Logger.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/ContextEntries.ts#L4">packages/core/lib/ContextEntries.ts:4</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>value</dt>
-							<dd><p>{Logger} A logger.</p>
-							</dd>
-							<dt>deprecated</dt>
-							<dd><p>Import this constant from @comunica/context-entries.</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="ActionContext" class="tsd-anchor"></a>
-					<h3>Action<wbr>Context</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">Action<wbr>Context<span class="tsd-signature-symbol">(</span>hash<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L200">packages/core/lib/Actor.ts:200</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>A convenience constructor for <a href="core.html#ActionContext">ActionContext</a> based on a given hash.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>hash: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A hash that maps keys to values.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></h4>
-							<p>The immutable action context from the hash.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="ensureActionContext" class="tsd-anchor"></a>
-					<h3>ensure<wbr>Action<wbr>Context</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">ensure<wbr>Action<wbr>Context<span class="tsd-signature-symbol">(</span>maybeActionContext<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L210">packages/core/lib/Actor.ts:210</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Convert the given object to an action context object if it is not an action context object yet.
-									If it already is an action context object, return the object as-is.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>maybeActionContext: <span class="tsd-signature-type">any</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Any object.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="core.html#ActionContext" class="tsd-signature-type" data-tsd-kind="Function">ActionContext</a></h4>
-							<p>An action context object.</p>
-						</li>
-					</ul>
 				</section>
 			</section>
 		</div>
@@ -262,8 +198,11 @@
 					<li class="current tsd-kind-module">
 						<a href="core.html" class="tsd-kind-icon">core</a>
 						<ul>
-							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="core.html#IAction" class="tsd-kind-icon">IAction</a>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/core.ActionContext.html" class="tsd-kind-icon">Action<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../classes/core.ActionContextKey.html" class="tsd-kind-icon">Action<wbr>Context<wbr>Key</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../classes/core.ActionObserver.html" class="tsd-kind-icon">Action<wbr>Observer</a>
@@ -282,6 +221,9 @@
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../classes/core.Mediator.html" class="tsd-kind-icon">Mediator</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/core.IAction.html" class="tsd-kind-icon">IAction</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../interfaces/core.IActionObserverArgs.html" class="tsd-kind-icon">IAction<wbr>Observer<wbr>Args</a>
@@ -307,14 +249,11 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../interfaces/core.IMediatorArgs.html" class="tsd-kind-icon">IMediator<wbr>Args</a>
 							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="core.html#Mediate" class="tsd-kind-icon">Mediate</a>
+							</li>
 							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="core.html#KEY_CONTEXT_LOG" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LOG</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="core.html#ActionContext" class="tsd-kind-icon">Action<wbr>Context</a>
-							</li>
-							<li class=" tsd-kind-function tsd-parent-kind-module">
-								<a href="core.html#ensureActionContext" class="tsd-kind-icon">ensure<wbr>Action<wbr>Context</a>
+								<a href="core.html#CONTEXT_KEY_LOGGER" class="tsd-kind-icon">CONTEXT_<wbr>KEY_<wbr>LOGGER</a>
 							</li>
 						</ul>
 					</li>
@@ -332,6 +271,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

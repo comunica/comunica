@@ -88,16 +88,16 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
       &quot;@type&quot;: &quot;SomeActor&quot;,
       &quot;someMediator&quot;: {
-        &quot;@id&quot;: &quot;config-sets:sparql-init.json#mediatorOptimizeQueryOperation&quot;,
+        &quot;@id&quot;: &quot;#mediatorOptimizeQueryOperation&quot;,
         &quot;@type&quot;: &quot;MediatorCombinePipeline&quot;,
-        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cboqo:Bus/OptimizeQueryOperation&quot; }
+        &quot;bus&quot;: { &quot;@id&quot;: &quot;ActorOptimizeQueryOperation:_default_bus&quot; }
       }
     }
   ]
@@ -107,7 +107,15 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cc:Mediator/bus</code>: Identifier of the bus to mediate over.</li>
+						<li><code>bus</code>: Identifier of the bus to mediate over.</li>
+						<li><code>filterErrors</code>: Optional flag to indicate if actors that throw test errors should be filtered out of the pipeline, defaults to false.</li>
+						<li><code>field</code>: Optional field to use for ordering (if the ordering strategy is chosen). Leave undefined if the test output is a number rather than an object.</li>
+						<li><code>order</code>: Optional strategy of ordering the pipeline (increasing or decreasing).<ul>
+								<li>For choosing to leave the order of the pipeline unchanged, leave this undefined.</li>
+								<li>For choosing to order by increasing values: &#39;increasing&#39;.</li>
+								<li>For choosing to order by decreasing values: &#39;decreasing&#39;.</li>
+							</ul>
+						</li>
 					</ul>
 				</div>
 			</section>
@@ -119,6 +127,12 @@
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/mediator_combine_pipeline.MediatorCombinePipeline.html" class="tsd-kind-icon">Mediator<wbr>Combine<wbr>Pipeline</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/mediator_combine_pipeline.IMediatorCombinePipelineArgs.html" class="tsd-kind-icon">IMediator<wbr>Combine<wbr>Pipeline<wbr>Args</a></li>
 							</ul>
 						</section>
 					</div>
@@ -146,6 +160,9 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../classes/mediator_combine_pipeline.MediatorCombinePipeline.html" class="tsd-kind-icon">Mediator<wbr>Combine<wbr>Pipeline</a>
 							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../interfaces/mediator_combine_pipeline.IMediatorCombinePipelineArgs.html" class="tsd-kind-icon">IMediator<wbr>Combine<wbr>Pipeline<wbr>Args</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -162,6 +179,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

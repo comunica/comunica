@@ -88,27 +88,25 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:http-memento.json#myHttpFetcher&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:http/actors#memento&quot;,
       &quot;@type&quot;: &quot;ActorHttpMemento&quot;,
-      &quot;cahm:Actor/Http/Memento/mediatorHttp&quot;: {
-        &quot;@id&quot;: &quot;config-sets:http.json#mediatorHttp&quot;
-      },
-      &quot;beforeActor&quot;: &quot;config-sets:http.json#myHttpFetcher&quot;
+      &quot;mediatorHttp&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:http/mediators#main&quot; },
+      &quot;beforeActors&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:http/actors#fetch&quot; }
     }
   ]
 }
 </code></pre>
-					<p>Use <code>beforeActor</code> to indicate that this actor MUST always run <em>before</em> your default HTTP actor.</p>
+					<p>Use <code>beforeActors</code> to indicate that this actor MUST always run <em>before</em> your default HTTP actor.</p>
 					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cahm:Actor/Http/Memento/mediatorHttp</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP bus</a>.</li>
+						<li><code>mediatorHttp</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -128,32 +126,6 @@
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_http_memento.IActorHttpMementoArgs.html" class="tsd-kind-icon">IActor<wbr>Http<wbr>Memento<wbr>Args</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
-							<h3>Variables</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_http_memento.html#KEY_CONTEXT_DATETIME" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DATETIME</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
-					<a name="KEY_CONTEXT_DATETIME" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>DATETIME</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DATETIME<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.KeysHttpMemento.html#datetime" class="tsd-signature-type" data-tsd-kind="Enumeration member">datetime</a><span class="tsd-signature-symbol"> = ...</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-http-memento/lib/ActorHttpMemento.ts#L72">packages/actor-http-memento/lib/ActorHttpMemento.ts:72</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>deprecated</dt>
-							<dd><p>Import this constant from @comunica/context-entries.</p>
-							</dd>
-						</dl>
 					</div>
 				</section>
 			</section>
@@ -182,9 +154,6 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/actor_http_memento.IActorHttpMementoArgs.html" class="tsd-kind-icon">IActor<wbr>Http<wbr>Memento<wbr>Args</a>
 							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-module">
-								<a href="actor_http_memento.html#KEY_CONTEXT_DATETIME" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DATETIME</a>
-							</li>
 						</ul>
 					</li>
 				</ul>
@@ -201,6 +170,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

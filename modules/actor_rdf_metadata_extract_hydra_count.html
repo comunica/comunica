@@ -87,7 +87,7 @@
 					</a>
 					<p>This actor adds the following entries to the metadata object.</p>
 					<ul>
-						<li><code>totalItems</code>: Value of <code>http://www.w3.org/ns/hydra/core#totalItems</code> or <code>http://rdfs.org/ns/void#triples</code>.</li>
+						<li><code>cardinality</code>: Value of <code>http://www.w3.org/ns/hydra/core#totalItems</code> or <code>http://rdfs.org/ns/void#triples</code> represented as <code>{ type: &#39;exact&#39; | &#39;estimate&#39;, value: number }</code>.</li>
 					</ul>
 					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
 						<h2>Configure</h2>
@@ -96,14 +96,14 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraCount&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:rdf-metadata-extract/actors#hydra-count&quot;,
       &quot;@type&quot;: &quot;ActorRdfMetadataExtractHydraCount&quot;,
-      &quot;carmehco:Actor/RdfMetadataExtract/HydraCount/predicate&quot;: [
+      &quot;predicates&quot;: [
         &quot;http://www.w3.org/ns/hydra/core#totalItems&quot;,
         &quot;http://rdfs.org/ns/void#triples&quot;
       ]
@@ -115,7 +115,7 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>carmehco:Actor/RdfMetadataExtract/HydraCount/predicate</code>: The predicates to consider when determining counts, defaults to <code>http://www.w3.org/ns/hydra/core#totalItems</code> and <code>http://rdfs.org/ns/void#triples</code>.</li>
+						<li><code>predicate</code>: The predicates to consider when determining counts, defaults to <code>http://www.w3.org/ns/hydra/core#totalItems</code> and <code>http://rdfs.org/ns/void#triples</code>.</li>
 					</ul>
 				</div>
 			</section>
@@ -179,6 +179,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

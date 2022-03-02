@@ -106,9 +106,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#cache" class="tsd-kind-icon">cache</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#cacheSize" class="tsd-kind-icon">cache<wbr>Size</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#httpInvalidator" class="tsd-kind-icon">http<wbr>Invalidator</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorDereferenceRdf" class="tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorMetadata" class="tsd-kind-icon">mediator<wbr>Metadata</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorMetadataExtract" class="tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorRdfDereference" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorRdfUpdateHypermedia" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Update<wbr>Hypermedia</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
@@ -117,8 +117,6 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#deinitialize" class="tsd-kind-icon">deinitialize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getContextDestination" class="tsd-kind-icon">get<wbr>Context<wbr>Destination</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getContextDestinationUrl" class="tsd-kind-icon">get<wbr>Context<wbr>Destination<wbr>Url</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getDefaultLogData" class="tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getDestination" class="tsd-kind-icon">get<wbr>Destination</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getOutput" class="tsd-kind-icon">get<wbr>Output</a></li>
@@ -151,15 +149,9 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L36">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L29">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:29</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>All enumerable properties from the <code>args</code> object are inherited to this actor.</p>
-								</div>
-								<p>The actor will subscribe to the given bus when this constructor is called.</p>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -180,9 +172,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#beforeActors">beforeActors</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L29">packages/core/lib/Actor.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L26">packages/core/lib/Actor.ts:26</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Actor that must be registered in the bus before this actor.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
@@ -191,9 +188,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L28">packages/core/lib/Actor.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L25">packages/core/lib/Actor.ts:25</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The bus this actor subscribes to.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="cache" class="tsd-anchor"></a>
@@ -201,7 +203,7 @@
 					<div class="tsd-signature tsd-kind-icon">cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">LRUCache</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IQuadDestination.html" class="tsd-signature-type" data-tsd-kind="Interface">IQuadDestination</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L33">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L26">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -211,7 +213,7 @@
 					<div class="tsd-signature tsd-kind-icon">cache<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L32">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L25">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -221,47 +223,47 @@
 					<div class="tsd-signature tsd-kind-icon">http<wbr>Invalidator<span class="tsd-signature-symbol">:</span> <a href="bus_http_invalidate.ActorHttpInvalidateListenable.html" class="tsd-signature-type" data-tsd-kind="Class">ActorHttpInvalidateListenable</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L34">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L27">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:27</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="mediatorDereferenceRdf" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Dereference<wbr>Rdf</h3>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_dereference_rdf.html#MediatorDereferenceRdf" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorDereferenceRdf</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L21">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="mediatorMetadata" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Metadata</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActionRdfMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadata</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata.IActorRdfMetadataOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_metadata.html#MediatorRdfMetadata" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadata</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L23">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L22">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="mediatorMetadataExtract" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Metadata<wbr>Extract</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_metadata_extract.IActionRdfMetadataExtract.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadataExtract</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata_extract.IActorRdfMetadataExtractOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataExtractOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata_extract.IActionRdfMetadataExtract.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfMetadataExtract</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_metadata_extract.IActorRdfMetadataExtractOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfMetadataExtractOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_metadata_extract.html#MediatorRdfMetadataExtract" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadataExtract</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L26">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:26</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="mediatorRdfDereference" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Dereference</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_dereference.IActionRdfDereference.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfDereference</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_dereference.IActorRdfDereferenceOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfDereferenceOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_dereference.IActionRdfDereference.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfDereference</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_dereference.IActorRdfDereferenceOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfDereferenceOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L20">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L23">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="mediatorRdfUpdateHypermedia" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Update<wbr>Hypermedia</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Update<wbr>Hypermedia<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_hypermedia.IActionRdfUpdateHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfUpdateHypermedia</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_update_hypermedia.IActorRdfUpdateHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfUpdateHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_update_hypermedia.IActionRdfUpdateHypermedia.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfUpdateHypermedia</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_update_hypermedia.IActorRdfUpdateHypermediaOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfUpdateHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Update<wbr>Hypermedia<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_update_hypermedia.html#MediatorRdfUpdateHypermedia" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfUpdateHypermedia</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L29">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L24">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -272,9 +274,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L27">packages/core/lib/Actor.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L24">packages/core/lib/Actor.ts:24</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name for this actor.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -290,7 +297,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#deinitialize">deinitialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L110">packages/core/lib/Actor.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L107">packages/core/lib/Actor.ts:107</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -306,89 +313,23 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<a name="getContextDestination" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Context<wbr>Destination</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Context<wbr>Destination<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#getContextDestination">getContextDestination</a></p>
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L54">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:54</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Get the destination from the given context.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>An optional context.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a></h4>
-							<p>The destination or undefined.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<a name="getContextDestinationUrl" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Context<wbr>Destination<wbr>Url</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Context<wbr>Destination<wbr>Url<span class="tsd-signature-symbol">(</span>destination<span class="tsd-signature-symbol">?: </span><a href="../modules/bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#getContextDestinationUrl">getContextDestinationUrl</a></p>
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L63">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:63</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Get the destination&#39;s raw URL value from the given context.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> destination: <a href="../modules/bus_rdf_update_quads.html#IDataDestination" class="tsd-signature-type" data-tsd-kind="Type alias">IDataDestination</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A destination.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
-							<p>The URL or undefined.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 					<a name="getDefaultLogData" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Default<wbr>Log<wbr>Data</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#getDefaultLogData">getDefaultLogData</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L116">packages/core/lib/Actor.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L113">packages/core/lib/Actor.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
@@ -414,14 +355,14 @@
 					<a name="getDestination" class="tsd-anchor"></a>
 					<h3>get<wbr>Destination</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Destination<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IQuadDestination.html" class="tsd-signature-type" data-tsd-kind="Interface">IQuadDestination</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Destination<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IQuadDestination.html" class="tsd-signature-type" data-tsd-kind="Interface">IQuadDestination</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#getDestination">getDestination</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L55">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L48">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -432,7 +373,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IQuadDestination.html" class="tsd-signature-type" data-tsd-kind="Interface">IQuadDestination</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -444,14 +385,14 @@
 					<a name="getOutput" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Output</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Output<span class="tsd-signature-symbol">(</span>destination<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_rdf_update_quads.IQuadDestination.html" class="tsd-signature-type" data-tsd-kind="Interface">IQuadDestination</a>, action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_rdf_update_quads.IActionRdfUpdateQuads.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfUpdateQuads</a>, context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IActorRdfUpdateQuadsOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfUpdateQuadsOutput</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Output<span class="tsd-signature-symbol">(</span>destination<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_rdf_update_quads.IQuadDestination.html" class="tsd-signature-type" data-tsd-kind="Interface">IQuadDestination</a>, action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_rdf_update_quads.IActionRdfUpdateQuads.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionRdfUpdateQuads</a>, context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_update_quads.IActorRdfUpdateQuadsOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorRdfUpdateQuadsOutput</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#getOutput">getOutput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts#L28">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts#L51">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -474,7 +415,7 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Optional context data.</p>
 									</div>
@@ -495,7 +436,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#initialize">initialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L99">packages/core/lib/Actor.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L96">packages/core/lib/Actor.ts:96</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -514,20 +455,20 @@
 					<a name="logDebug" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Debug</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Debug<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Debug<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#logDebug">logDebug</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L129">packages/core/lib/Actor.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L126">packages/core/lib/Actor.ts:126</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -556,20 +497,20 @@
 					<a name="logError" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Error<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Error<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#logError">logError</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L150">packages/core/lib/Actor.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L147">packages/core/lib/Actor.ts:147</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -598,20 +539,20 @@
 					<a name="logFatal" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Fatal</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Fatal<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Fatal<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#logFatal">logFatal</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L157">packages/core/lib/Actor.ts:157</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L154">packages/core/lib/Actor.ts:154</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -640,20 +581,20 @@
 					<a name="logInfo" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Info</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Info<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Info<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#logInfo">logInfo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L136">packages/core/lib/Actor.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L133">packages/core/lib/Actor.ts:133</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -682,20 +623,20 @@
 					<a name="logTrace" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Trace</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Trace<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Trace<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#logTrace">logTrace</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L122">packages/core/lib/Actor.ts:122</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L119">packages/core/lib/Actor.ts:119</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -724,20 +665,20 @@
 					<a name="logWarn" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> log<wbr>Warn</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">log<wbr>Warn<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">log<wbr>Warn<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#logWarn">logWarn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L143">packages/core/lib/Actor.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L140">packages/core/lib/Actor.ts:140</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">string</span></h5>
@@ -773,7 +714,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#run">run</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts#L17">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts#L40">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuadsDestination.ts:40</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -805,7 +746,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#runObservable">runObservable</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L86">packages/core/lib/Actor.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L83">packages/core/lib/Actor.ts:83</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -839,7 +780,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#test">test</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L47">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts#L40">packages/actor-rdf-update-quads-hypermedia/lib/ActorRdfUpdateQuadsHypermedia.ts:40</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -863,14 +804,14 @@
 					<a name="getContextLogger" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Context<wbr>Logger</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Context<wbr>Logger<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="core.Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Context<wbr>Logger<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="core.Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html">ActorRdfUpdateQuadsDestination</a>.<a href="bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html#getContextLogger">getContextLogger</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/core/lib/Actor.ts#L55">packages/core/lib/Actor.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L52">packages/core/lib/Actor.ts:52</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -881,7 +822,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional context.</p>
 									</div>
@@ -934,13 +875,13 @@
 										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#httpInvalidator" class="tsd-kind-icon">http<wbr>Invalidator</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorDereferenceRdf" class="tsd-kind-icon">mediator<wbr>Dereference<wbr>Rdf</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorMetadata" class="tsd-kind-icon">mediator<wbr>Metadata</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorMetadataExtract" class="tsd-kind-icon">mediator<wbr>Metadata<wbr>Extract</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorRdfDereference" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#mediatorRdfUpdateHypermedia" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Update<wbr>Hypermedia</a>
@@ -950,12 +891,6 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#deinitialize" class="tsd-kind-icon">deinitialize</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getContextDestination" class="tsd-kind-icon">get<wbr>Context<wbr>Destination</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getContextDestinationUrl" class="tsd-kind-icon">get<wbr>Context<wbr>Destination<wbr>Url</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 										<a href="actor_rdf_update_quads_hypermedia.ActorRdfUpdateQuadsHypermedia.html#getDefaultLogData" class="tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data</a>
@@ -1018,17 +953,18 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>

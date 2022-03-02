@@ -88,14 +88,15 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myReducedQueryOperator&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:query-operation/actors#reduced&quot;,
       &quot;@type&quot;: &quot;ActorQueryOperationReducedHash&quot;,
-      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; }
+      &quot;mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:query-operation/mediators#main&quot; },
+      &quot;mediatorHashBindings&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:hash-bindings/mediators#main&quot; }
     }
   ]
 }
@@ -104,8 +105,9 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
-						<li><code>caqorh:Actor/QueryOperation/ReducedHash/cacheSize</code>: An optional cache size, defaults to <code>100</code>.</li>
+						<li><code>mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>mediatorHashBindings</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-hash-bindings">Hash Bindings bus</a>.</li>
+						<li><code>cacheSize</code>: An optional cache size, defaults to <code>100</code>.</li>
 					</ul>
 				</div>
 			</section>
@@ -122,7 +124,7 @@
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_reduced_hash.IActorInitRdfBindingHashArgs.html" class="tsd-kind-icon">IActor<wbr>Init<wbr>Rdf<wbr>Binding<wbr>Hash<wbr>Args</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_query_operation_reduced_hash.IActorQueryOperationReducedHashArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Reduced<wbr>Hash<wbr>Args</a></li>
 							</ul>
 						</section>
 					</div>
@@ -151,7 +153,7 @@
 								<a href="../classes/actor_query_operation_reduced_hash.ActorQueryOperationReducedHash.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Reduced<wbr>Hash</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="../interfaces/actor_query_operation_reduced_hash.IActorInitRdfBindingHashArgs.html" class="tsd-kind-icon">IActor<wbr>Init<wbr>Rdf<wbr>Binding<wbr>Hash<wbr>Args</a>
+								<a href="../interfaces/actor_query_operation_reduced_hash.IActorQueryOperationReducedHashArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Reduced<wbr>Hash<wbr>Args</a>
 							</li>
 						</ul>
 					</li>
@@ -169,6 +171,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

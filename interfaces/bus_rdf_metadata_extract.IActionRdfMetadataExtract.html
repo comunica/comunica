@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="" class="tsd-signature-type" data-tsd-kind="Interface">IAction</a>
+						<a href="core.IAction.html" class="tsd-signature-type" data-tsd-kind="Interface">IAction</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">IActionRdfMetadataExtract</span>
@@ -91,6 +91,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#context" class="tsd-kind-icon">context</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#headers" class="tsd-kind-icon">headers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#metadata" class="tsd-kind-icon">metadata</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#requestTime" class="tsd-kind-icon">request<wbr>Time</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
@@ -101,27 +102,27 @@
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="context" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> context</h3>
-					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></div>
+					<h3>context</h3>
+					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IAction.context</p>
+						<p>Inherited from <a href="core.IAction.html">IAction</a>.<a href="core.IAction.html#context">context</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/types/index.ts#L149">packages/types/index.ts:149</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/core/lib/Actor.ts#L185">packages/core/lib/Actor.ts:185</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The optional input context that is passed through by actors.</p>
+							<p>The input context that is passed through by actors.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="headers" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
-					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Headers</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts#L35">packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts#L43">packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts:43</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -136,7 +137,7 @@
 					<div class="tsd-signature tsd-kind-icon">metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts#L31">packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts#L34">packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -146,12 +147,28 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="requestTime" class="tsd-anchor"></a>
+					<h3>request<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">request<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts#L39">packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts:39</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The time it took to request the page in milliseconds.
+							This is the time until the first byte arrives.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="url" class="tsd-anchor"></a>
 					<h3>url</h3>
 					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts#L27">packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts#L30">packages/bus-rdf-metadata-extract/lib/ActorRdfMetadataExtract.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -183,12 +200,6 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/bus_rdf_metadata_extract.ActorRdfMetadataExtract.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Metadata<wbr>Extract</a>
 							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/bus_rdf_metadata_extract.ActorRdfMetadataExtractQuery.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Metadata<wbr>Extract<wbr>Query</a>
-							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/bus_rdf_metadata_extract.GraphQlQueryEngine.html" class="tsd-kind-icon">Graph<wbr>QlQuery<wbr>Engine</a>
-							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Metadata<wbr>Extract</a>
 								<ul>
@@ -202,6 +213,9 @@
 										<a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#metadata" class="tsd-kind-icon">metadata</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#requestTime" class="tsd-kind-icon">request<wbr>Time</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_metadata_extract.IActionRdfMetadataExtract.html#url" class="tsd-kind-icon">url</a>
 									</li>
 								</ul>
@@ -209,8 +223,11 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_rdf_metadata_extract.IActorRdfMetadataExtractOutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Extract<wbr>Output</a>
 							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="bus_rdf_metadata_extract.IActorRdfMetadataExtractQueryArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Extract<wbr>Query<wbr>Args</a>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_metadata_extract.html#IActorRdfMetadataExtractArgs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Metadata<wbr>Extract<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_metadata_extract.html#MediatorRdfMetadataExtract" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Metadata<wbr>Extract</a>
 							</li>
 						</ul>
 					</li>
@@ -228,6 +245,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

@@ -71,7 +71,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>An HTML parse listeners that detects <script> data blocks with known RDF media tyoes,
+						<p>An HTML parse listeners that detects <script> data blocks with known RDF media types,
 parses them, and outputs the resulting quads.</p>
 
                 </div>
@@ -152,14 +152,14 @@ parses them, and outputs the resulting quads.</p>
         <h3>constructor</h3>
 
         <ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-        <li class="tsd-signature tsd-kind-icon">new <wbr>Html<wbr>Script<wbr>Listener<span class="tsd-signature-symbol">(</span>mediatorRdfParseHandle<span class="tsd-signature-symbol">: </span><a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/bus_rdf_parse.html#IActionHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActionHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorTestHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorOutputHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputHandleRdfParse</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActionHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActionHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorTestHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorOutputHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputHandleRdfParse</a><span class="tsd-signature-symbol">&gt;</span>, cbQuad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>quad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, cbError<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, cbEnd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, supportedTypes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a>, baseIRI<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, headers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Headers</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_parse_html_script.HtmlScriptListener.html" class="tsd-signature-type" data-tsd-kind="Class">HtmlScriptListener</a></li>
+        <li class="tsd-signature tsd-kind-icon">new <wbr>Html<wbr>Script<wbr>Listener<span class="tsd-signature-symbol">(</span>mediatorRdfParseHandle<span class="tsd-signature-symbol">: </span><a href="../modules/bus_rdf_parse.html#MediatorRdfParseHandle" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfParseHandle</a>, cbQuad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>quad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, cbError<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, cbEnd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, supportedTypes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, baseIRI<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, headers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Headers</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_parse_html_script.HtmlScriptListener.html" class="tsd-signature-type" data-tsd-kind="Class">HtmlScriptListener</a></li>
 </ul>
 
 <ul class="tsd-descriptions">
         <li class="tsd-description">
                 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L36">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:36</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L33">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:33</a></li>
         </ul>
 </aside>
 
@@ -167,7 +167,7 @@ parses them, and outputs the resulting quads.</p>
     <h4 class="tsd-parameters-title">Parameters</h4>
     <ul class="tsd-parameters">
             <li>
-                <h5>mediatorRdfParseHandle: <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/bus_rdf_parse.html#IActionHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActionHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorTestHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorOutputHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputHandleRdfParse</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActionHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActionHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorTestHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorOutputHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputHandleRdfParse</a><span class="tsd-signature-symbol">&gt;</span></h5>
+                <h5>mediatorRdfParseHandle: <a href="../modules/bus_rdf_parse.html#MediatorRdfParseHandle" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfParseHandle</a></h5>
 
                 
             </li>
@@ -262,7 +262,7 @@ parses them, and outputs the resulting quads.</p>
                 
             </li>
             <li>
-                <h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></h5>
+                <h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
 
                 
             </li>
@@ -297,7 +297,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L24">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:24</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L21">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:21</a></li>
         </ul>
 </aside>
 
@@ -313,7 +313,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L21">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:21</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L18">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:18</a></li>
         </ul>
 </aside>
 
@@ -350,7 +350,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L20">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:20</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L17">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:17</a></li>
         </ul>
 </aside>
 
@@ -395,7 +395,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L19">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:19</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L16">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:16</a></li>
         </ul>
 </aside>
 
@@ -436,11 +436,11 @@ parses them, and outputs the resulting quads.</p>
     <a name="context" class="tsd-anchor"></a>
         <h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> context</h3>
 
-        <div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">ActionContext</a></div>
+        <div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></div>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L23">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:23</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L20">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:20</a></li>
         </ul>
 </aside>
 
@@ -456,7 +456,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L32">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:32</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L29">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:29</a></li>
         </ul>
 </aside>
 
@@ -472,7 +472,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L29">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:29</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L26">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:26</a></li>
         </ul>
 </aside>
 
@@ -488,7 +488,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L25">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:25</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L22">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:22</a></li>
         </ul>
 </aside>
 
@@ -504,7 +504,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L34">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:34</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L31">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:31</a></li>
         </ul>
 </aside>
 
@@ -516,11 +516,11 @@ parses them, and outputs the resulting quads.</p>
     <a name="mediatorRdfParseHandle" class="tsd-anchor"></a>
         <h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Parse<wbr>Handle</h3>
 
-        <div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Parse<wbr>Handle<span class="tsd-signature-symbol">:</span> <a href="core.Mediator.html" class="tsd-signature-type" data-tsd-kind="Class">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.Actor.html" class="tsd-signature-type" data-tsd-kind="Class">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/bus_rdf_parse.html#IActionHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActionHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorTestHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorOutputHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputHandleRdfParse</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActionHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActionHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorTestHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorTestHandleRdfParse</a><span class="tsd-signature-symbol">, </span><a href="../modules/bus_rdf_parse.html#IActorOutputHandleRdfParse" class="tsd-signature-type" data-tsd-kind="Type alias">IActorOutputHandleRdfParse</a><span class="tsd-signature-symbol">&gt;</span></div>
+        <div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Parse<wbr>Handle<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_parse.html#MediatorRdfParseHandle" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfParseHandle</a></div>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L15">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:15</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L14">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:14</a></li>
         </ul>
 </aside>
 
@@ -536,7 +536,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L26">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:26</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L23">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:23</a></li>
         </ul>
 </aside>
 
@@ -552,7 +552,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L33">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:33</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L30">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:30</a></li>
         </ul>
 </aside>
 
@@ -568,7 +568,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L22">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:22</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L19">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:19</a></li>
         </ul>
 </aside>
 
@@ -584,7 +584,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L27">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:27</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L24">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:24</a></li>
         </ul>
 </aside>
 
@@ -600,7 +600,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L30">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:30</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L27">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:27</a></li>
         </ul>
 </aside>
 
@@ -616,7 +616,7 @@ parses them, and outputs the resulting quads.</p>
 
 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L31">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:31</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L28">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:28</a></li>
         </ul>
 </aside>
 
@@ -640,7 +640,7 @@ parses them, and outputs the resulting quads.</p>
                 <aside class="tsd-sources">
         <p>Implementation of <a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html">IHtmlParseListener</a>.<a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html#onEnd">onEnd</a></p>
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L63">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:63</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L58">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:58</a></li>
         </ul>
 </aside>
         <div class="tsd-comment tsd-typography">
@@ -673,7 +673,7 @@ parses them, and outputs the resulting quads.</p>
                 <aside class="tsd-sources">
         <p>Implementation of <a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html">IHtmlParseListener</a>.<a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html#onTagClose">onTagClose</a></p>
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L89">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:89</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L84">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:84</a></li>
         </ul>
 </aside>
         <div class="tsd-comment tsd-typography">
@@ -706,7 +706,7 @@ parses them, and outputs the resulting quads.</p>
                 <aside class="tsd-sources">
         <p>Implementation of <a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html">IHtmlParseListener</a>.<a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html#onTagOpen">onTagOpen</a></p>
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L146">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:146</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L146">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:146</a></li>
         </ul>
 </aside>
         <div class="tsd-comment tsd-typography">
@@ -752,7 +752,7 @@ parses them, and outputs the resulting quads.</p>
                 <aside class="tsd-sources">
         <p>Implementation of <a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html">IHtmlParseListener</a>.<a href="../interfaces/bus_rdf_parse_html.IHtmlParseListener.html#onText">onText</a></p>
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L181">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:181</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L181">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:181</a></li>
         </ul>
 </aside>
         <div class="tsd-comment tsd-typography">
@@ -794,7 +794,7 @@ when for example the string is spread over multiple chunks.</p>
         <li class="tsd-description">
                 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L196">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:196</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L196">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:196</a></li>
         </ul>
 </aside>
         <div class="tsd-comment tsd-typography">
@@ -815,7 +815,7 @@ and encapsulate all found contents in an array.</p>
                 <h5>mediaType: <span class="tsd-signature-type">string</span></h5>
 
                         <div class="tsd-comment tsd-typography">
-                <p>A media type.</p>
+                <p>A: IActionRdfParseHtml media type.</p>
 
         </div>
 
@@ -842,7 +842,7 @@ and encapsulate all found contents in an array.</p>
         <li class="tsd-description">
                 <aside class="tsd-sources">
         <ul>
-                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L56">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:56</a></li>
+                    <li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts#L51">packages/actor-rdf-parse-html-script/lib/HtmlScriptListener.ts:51</a></li>
         </ul>
 </aside>
 
@@ -878,10 +878,10 @@ and encapsulate all found contents in an array.</p>
                                     <li class=" ">
                 <a href="../modules.html">Modules</a>
             </li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <li class="current tsd-kind-module">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <li class="current tsd-kind-module">
                 <a href="../modules/actor_rdf_parse_html_script.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>script</a>
             </li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </ul>
             </nav>
 
             <nav class="tsd-navigation secondary menu-sticky">
@@ -989,6 +989,7 @@ and encapsulate all found contents in an array.</p>
                 <ul class="tsd-legend">
                         <li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
                         <li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+                        <li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
                         <li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
                         <li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
                 </ul>

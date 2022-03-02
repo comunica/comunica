@@ -89,16 +89,14 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
-      &quot;@id&quot;: &quot;config-sets:resolve-federated.json#myFederatedQuadPatternResolver&quot;,
+      &quot;@id&quot;: &quot;urn:comunica:default:rdf-resolve-quad-pattern/actors#federated&quot;,
       &quot;@type&quot;: &quot;ActorRdfResolveQuadPatternFederated&quot;,
-      &quot;carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern&quot;: {
-        &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern&quot;
-      }
+      &quot;mediatorResolveQuadPattern&quot;: { &quot;@id&quot;: &quot;urn:comunica:default:query-operation/mediators#main&quot; }
     }
   ]
 }
@@ -107,7 +105,7 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern">RDF Resolve Quad Pattern bus</a>.</li>
+						<li><code>mediatorResolveQuadPattern</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern">RDF Resolve Quad Pattern bus</a>.</li>
 					</ul>
 				</div>
 			</section>
@@ -175,6 +173,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

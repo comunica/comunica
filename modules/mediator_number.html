@@ -88,18 +88,19 @@
 					<pre><code class="language-text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld&quot;  
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld&quot;  
   ],
   &quot;actors&quot;: [
     ...
     {
       &quot;@type&quot;: &quot;SomeActor&quot;,
       &quot;someMediator&quot;: {
-        &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot;,
-        &quot;@type&quot;: &quot;MediatorNumberMin&quot;,
-        &quot;cmn:Mediator/Number/field&quot;: &quot;httpRequests&quot;,
+        &quot;@id&quot;: &quot;#mediatorQueryOperation&quot;,
+        &quot;@type&quot;: &quot;MediatorNumber&quot;,
+        &quot;field&quot;: &quot;httpRequests&quot;,
+        &quot;type&quot;: &quot;min&quot;,
         &quot;ignoreErrors&quot;: true,
-        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbqo:Bus/QueryOperation&quot; }
+        &quot;bus&quot;: { &quot;@id&quot;: &quot;ActorQueryOperation:_default_bus&quot; }
       }
     }
   ]
@@ -110,9 +111,10 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
-						<li><code>cc:Mediator/bus</code>: Identifier of the bus to mediate over.</li>
-						<li><code>cmn:Mediator/Number/field</code>: The field name to mediate over.</li>
-						<li><code>cmn:Mediator/Number/ignoreErrors</code>: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.</li>
+						<li><code>bus</code>: Identifier of the bus to mediate over.</li>
+						<li><code>field</code>: The field name to mediate over.</li>
+						<li><code>type</code>: The way how the index should be selected. For choosing the minimum value: &#39;min&#39;. For choosing the maximum value: &#39;max&#39;.</li>
+						<li><code>ignoreErrors</code>: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.</li>
 					</ul>
 				</div>
 			</section>
@@ -176,6 +178,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

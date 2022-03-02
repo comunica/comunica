@@ -84,8 +84,8 @@
 						<h2>Bus usage</h2>
 					</a>
 					<ul>
-						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld&quot;</code></li>
-						<li><strong>Bus name</strong>: <code>cbhi:Bus/HttpInvalidate</code></li>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^2.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>ActorHttpInvalidate:_default_bus</code></li>
 					</ul>
 				</div>
 			</section>
@@ -110,7 +110,9 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_http_invalidate.html#IActorHttpInvalidateArgs" class="tsd-kind-icon">IActor<wbr>Http<wbr>Invalidate<wbr>Args</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_http_invalidate.html#IInvalidateListener" class="tsd-kind-icon">IInvalidate<wbr>Listener</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="bus_http_invalidate.html#MediatorHttpInvalidate" class="tsd-kind-icon">Mediator<wbr>Http<wbr>Invalidate</a></li>
 							</ul>
 						</section>
 					</div>
@@ -119,12 +121,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="IActorHttpInvalidateArgs" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Http<wbr>Invalidate<wbr>Args</h3>
+					<div class="tsd-signature tsd-kind-icon">IActor<wbr>Http<wbr>Invalidate<wbr>Args<span class="tsd-signature-symbol">:</span> <a href="../interfaces/core.IActorArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http_invalidate.IActionHttpInvalidate.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttpInvalidate</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.IActorTest.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http_invalidate.IActorHttpInvalidateOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpInvalidateOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-http-invalidate/lib/ActorHttpInvalidate.ts#L36">packages/bus-http-invalidate/lib/ActorHttpInvalidate.ts:36</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="IInvalidateListener" class="tsd-anchor"></a>
 					<h3>IInvalidate<wbr>Listener</h3>
 					<div class="tsd-signature tsd-kind-icon">IInvalidate<wbr>Listener<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_http_invalidate.IActionHttpInvalidate.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttpInvalidate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-http-invalidate/lib/ActorHttpInvalidateListenable.ts#L37">packages/bus-http-invalidate/lib/ActorHttpInvalidateListenable.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-http-invalidate/lib/ActorHttpInvalidateListenable.ts#L41">packages/bus-http-invalidate/lib/ActorHttpInvalidateListenable.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -153,6 +165,16 @@
 							</li>
 						</ul>
 					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="MediatorHttpInvalidate" class="tsd-anchor"></a>
+					<h3>Mediator<wbr>Http<wbr>Invalidate</h3>
+					<div class="tsd-signature tsd-kind-icon">Mediator<wbr>Http<wbr>Invalidate<span class="tsd-signature-symbol">:</span> <a href="core.html#Mediate" class="tsd-signature-type" data-tsd-kind="Type alias">Mediate</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http_invalidate.IActionHttpInvalidate.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttpInvalidate</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http_invalidate.IActorHttpInvalidateOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpInvalidateOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-http-invalidate/lib/ActorHttpInvalidate.ts#L38">packages/bus-http-invalidate/lib/ActorHttpInvalidate.ts:38</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -187,7 +209,13 @@
 								<a href="../interfaces/bus_http_invalidate.IActorHttpInvalidateOutput.html" class="tsd-kind-icon">IActor<wbr>Http<wbr>Invalidate<wbr>Output</a>
 							</li>
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_http_invalidate.html#IActorHttpInvalidateArgs" class="tsd-kind-icon">IActor<wbr>Http<wbr>Invalidate<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 								<a href="bus_http_invalidate.html#IInvalidateListener" class="tsd-kind-icon">IInvalidate<wbr>Listener</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="bus_http_invalidate.html#MediatorHttpInvalidate" class="tsd-kind-icon">Mediator<wbr>Http<wbr>Invalidate</a>
 							</li>
 						</ul>
 					</li>
@@ -205,6 +233,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>

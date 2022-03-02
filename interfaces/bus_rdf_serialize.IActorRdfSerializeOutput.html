@@ -103,7 +103,7 @@
 					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReadableStream</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts#L40">packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts#L63">packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts:63</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -118,7 +118,7 @@
 					<div class="tsd-signature tsd-kind-icon">triples<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1dc145f/packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts#L46">packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d15b8f5/packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts#L69">packages/bus-rdf-serialize/lib/ActorRdfSerialize.ts:69</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -158,9 +158,6 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_rdf_serialize.IActionRdfSerialize.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Serialize</a>
 							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="bus_rdf_serialize.IActorRdfSerializeFixedMediaTypesArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Serialize<wbr>Fixed<wbr>Media<wbr>Types<wbr>Args</a>
-							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_rdf_serialize.IActorRdfSerializeOutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Serialize<wbr>Output</a>
 								<ul>
@@ -173,13 +170,58 @@
 								</ul>
 							</li>
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActionRdfSerializeHandle" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Serialize<wbr>Handle</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActionRdfSerializeMediaTypeFormats" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Type<wbr>Formats</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActionRdfSerializeMediaTypes" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Types</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 								<a href="../modules/bus_rdf_serialize.html#IActionRootRdfSerialize" class="tsd-kind-icon">IAction<wbr>Root<wbr>Rdf<wbr>Serialize</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorOutputRdfSerializeHandle" class="tsd-kind-icon">IActor<wbr>Output<wbr>Rdf<wbr>Serialize<wbr>Handle</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorOutputRdfSerializeMediaTypeFormats" class="tsd-kind-icon">IActor<wbr>Output<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Type<wbr>Formats</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorOutputRdfSerializeMediaTypes" class="tsd-kind-icon">IActor<wbr>Output<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Types</a>
 							</li>
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 								<a href="../modules/bus_rdf_serialize.html#IActorOutputRootRdfSerialize" class="tsd-kind-icon">IActor<wbr>Output<wbr>Root<wbr>Rdf<wbr>Serialize</a>
 							</li>
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorRdfSerializeArgs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Serialize<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorRdfSerializeFixedMediaTypesArgs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Serialize<wbr>Fixed<wbr>Media<wbr>Types<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorTestRdfSerializeHandle" class="tsd-kind-icon">IActor<wbr>Test<wbr>Rdf<wbr>Serialize<wbr>Handle</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorTestRdfSerializeMediaTypeFormats" class="tsd-kind-icon">IActor<wbr>Test<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Type<wbr>Formats</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#IActorTestRdfSerializeMediaTypes" class="tsd-kind-icon">IActor<wbr>Test<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Types</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 								<a href="../modules/bus_rdf_serialize.html#IActorTestRootRdfSerialize" class="tsd-kind-icon">IActor<wbr>Test<wbr>Root<wbr>Rdf<wbr>Serialize</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#MediatorRdfSerialize" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Serialize</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#MediatorRdfSerializeHandle" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Serialize<wbr>Handle</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#MediatorRdfSerializeMediaTypeFormats" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Type<wbr>Formats</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_serialize.html#MediatorRdfSerializeMediaTypes" class="tsd-kind-icon">Mediator<wbr>Rdf<wbr>Serialize<wbr>Media<wbr>Types</a>
 							</li>
 						</ul>
 					</li>
@@ -197,6 +239,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
