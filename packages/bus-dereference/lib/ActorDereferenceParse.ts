@@ -28,6 +28,10 @@ export interface IActorDereferenceParseArgs<
   mediatorDereference: MediatorDereference;
   mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
   mediatorParseMediatypes: MediateMediaTypes;
+  /**
+   * A collection of mappings, mapping file extensions to their corresponding media type.
+   * @range {json}
+   */
   mediaMappings: Record<string, string>;
 }
 
