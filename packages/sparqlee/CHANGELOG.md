@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.0.0"></a>
+## [v2.0.0](https://github.com/comunica/sparqlee/compare/v2.0.0-beta.1...v2.0.0) - 2022-03-02
+
+### Changed
+* [Bump to non-beta versions of @rdfjs/types and @comunica/bindings-factory](https://github.com/comunica/sparqlee/commit/d81a0ea9eba0cab95b3bb462c300c55a44f8fe07)
+
 <a name="v2.0.0-beta.1"></a>
 ## [v2.0.0-beta.1](https://github.com/comunica/sparqlee/compare/v1.10.0...v2.0.0-beta.1) - 2022-02-14
 
