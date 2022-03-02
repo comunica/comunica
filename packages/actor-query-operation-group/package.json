@@ -40,7 +40,7 @@
     "asynciterator": "^3.3.0",
     "rdf-data-factory": "^1.1.0",
     "sparqlalgebrajs": "^4.0.0",
-    "sparqlee": "^2.0.0"
+    "sparqlee": "^2.0.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
