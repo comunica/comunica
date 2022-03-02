@@ -4,8 +4,7 @@ FROM node:16
 ENV dir /var/www/@comunica/query-sparql/
 
 # Copy the engine files (generated from package.json!files)
-COPY components ${dir}/components/
-COPY ../config-query-sparql/config ${dir}/config/
+COPY config ${dir}/config/
 COPY lib/*.js ${dir}/lib/
 COPY bin/*.js ${dir}/bin/
 COPY engine-default.js package.json ${dir}
