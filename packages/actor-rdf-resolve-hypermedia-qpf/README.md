@@ -25,29 +25,16 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-qpf/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-qpf/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-hypermedia.json#myHypermediaQpfResolver",
+      "@id": "urn:comunica:default:rdf-resolve-hypermedia/actors#qpf",
       "@type": "ActorRdfResolveHypermediaQpf",
-      "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorRdfDereference": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
-        "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
-      },
-      "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadata": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
-        "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
-      },
-      "carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadataExtract": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
-        "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
-        "cmcu:Mediator/CombineUnion/field": "metadata"
-      }
+      "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
+      "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
+      "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" }
     }
   ]
 }
@@ -55,6 +42,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorRdfDereference`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference).
-* `carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
-* `carrhq:Actor/RdfResolveHypermedia/Qpf/mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
+* `mediatorDereferenceRdf`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf).
+* `mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
+* `mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).

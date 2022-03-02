@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-clear/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-update-clear",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-update-clear",
-  "import": [
-    "files-caqoucl:components/Actor/QueryOperation/Clear.jsonld"
-  ]
-}

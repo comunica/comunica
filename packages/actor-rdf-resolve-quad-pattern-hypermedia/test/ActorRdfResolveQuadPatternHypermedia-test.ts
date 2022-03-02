@@ -1,63 +1,37 @@
-import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
+import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import 'jest-rdf';
-import { ArrayIterator } from 'asynciterator';
 import { MediatedQuadSource } from '..';
 import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
+import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let bus: any;
-  let mediatorRdfDereference: any;
-  let mediatorMetadata: any;
-  let mediatorMetadataExtract: any;
-  let mediatorRdfResolveHypermedia: any;
-  let mediatorRdfResolveHypermediaLinks: any;
-  let mediatorRdfResolveHypermediaLinksQueue: any;
+  let mediatorDereferenceRdf: MediatorDereferenceRdf;
+  let mediatorMetadata: MediatorRdfMetadata;
+  let mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  let mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
+  let mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
+  let mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    mediatorRdfDereference = {
-      async mediate({ url }: any) {
-        const data = {
-          quads: url === 'firstUrl' ?
-            new ArrayIterator([
-              quad('s1', 'p1', 'o1'),
-              quad('s2', 'p2', 'o2'),
-            ], { autoStart: false }) :
-            new ArrayIterator([
-              quad('s3', 'p3', 'o3'),
-              quad('s4', 'p4', 'o4'),
-            ], { autoStart: false }),
-          triples: true,
-          url,
-        };
-        data.quads.setProperty('metadata', { firstMeta: true });
-        return data;
-      },
-    };
-    mediatorMetadata = {
-      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }}),
-    };
-    mediatorMetadataExtract = {
-      mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
-    };
-    mediatorRdfResolveHypermedia = {
-      mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
-        dataset: 'MYDATASET',
-        source: {
-          match: () => quads.clone(),
-        },
-      }),
-    };
-    mediatorRdfResolveHypermediaLinks = {
-      mediate: () => Promise.resolve({ urls: [ 'next' ]}),
-    };
-    mediatorRdfResolveHypermediaLinksQueue = {
-      mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
-    };
+    mediatorDereferenceRdf = utilMediators.mediatorDereferenceRdf;
+    mediatorMetadata = utilMediators.mediatorMetadata;
+    mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
+    mediatorRdfResolveHypermedia = utilMediators.mediatorRdfResolveHypermedia;
+    mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
+    mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
   });
 
   describe('The ActorRdfResolveQuadPatternHypermedia module', () => {
@@ -68,7 +42,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
     it('should be a ActorRdfResolveQuadPatternHypermedia constructor', () => {
       expect(new (<any> ActorRdfResolveQuadPatternHypermedia)({
         bus,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfResolveHypermedia,
@@ -85,7 +59,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         bus,
         cacheSize: 10,
         httpInvalidator,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfResolveHypermedia,
@@ -101,7 +75,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
 
   describe('An ActorRdfResolveQuadPatternHypermedia instance', () => {
     let actor: any;
-    let context: ActionContext;
+    let context: IActionContext;
     let pattern: any;
     let httpInvalidator: any;
     let listener: any;
@@ -116,29 +90,29 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
         name: 'actor',
       });
-      context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'firstUrl' }});
+      context = new ActionContext({ [KeysRdfResolveQuadPattern.source.name]: { value: 'firstUrl' }});
       pattern = quad('?s', 'p1', '?o');
     });
 
     describe('test', () => {
       it('should test', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'abc' }},
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: { value: 'abc' }},
           ) }))
           .resolves.toBeTruthy();
       });
 
       it('should test on raw source form', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': 'abc' },
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: 'abc' },
           ) }))
           .resolves.toBeTruthy();
       });
@@ -148,20 +122,20 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       });
 
       it('should not test without a file', () => {
-        return expect(actor.test({ pattern: null, context: ActionContext({}) })).rejects.toBeTruthy();
+        return expect(actor.test({ pattern: null, context: new ActionContext({}) })).rejects.toBeTruthy();
       });
 
       it('should not test on an invalid value', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: null }},
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: { value: null }},
           ) }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on no sources', () => {
         return expect(actor.test({ pattern: null,
-          context: ActionContext(
+          context: new ActionContext(
             { '@comunica/bus-rdf-resolve-quad-pattern:sources': []},
           ) }))
           .rejects.toBeTruthy();
@@ -170,7 +144,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       it('should not test on multiple sources', () => {
         return expect(actor.test(
           { pattern: null,
-            context: ActionContext(
+            context: new ActionContext(
               { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ value: 'a' }, { value: 'b' }]},
             ) },
         ))
@@ -184,65 +158,65 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       });
 
       it('should cache the source', async() => {
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
       });
 
       it('should cache the source and allow invalidation for a specific url', async() => {
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
 
         listener({ url: 'source1' });
 
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).not.toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
       });
 
       it('should cache the source and allow invalidation for all urls', async() => {
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).toBe(source2);
 
         listener({});
 
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).not.toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).not.toBe(source2);
       });
 
@@ -253,69 +227,29 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           httpInvalidator,
           mediatorMetadata,
           mediatorMetadataExtract,
-          mediatorRdfDereference,
+          mediatorDereferenceRdf,
           mediatorRdfResolveHypermedia,
           mediatorRdfResolveHypermediaLinks,
+          mediatorRdfResolveHypermediaLinksQueue,
           name: 'actor',
         });
 
-        const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        const source1 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern);
-        const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        const source2 = await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source1' }},
         ), pattern)).not.toBe(source1);
-        expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        expect(await actor.getSource(new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'source2' }},
         ), pattern)).not.toBe(source2);
       });
     });
 
     describe('run', () => {
-      it('should return a quad stream and metadata', async() => {
-        const { data } = await actor.run({ context, pattern });
-        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s2', 'p2', 'o2'),
-          quad('s3', 'p3', 'o3'),
-          quad('s4', 'p4', 'o4'),
-        ]);
-        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-          .toEqual({ firstMeta: true, a: 1 });
-      });
-
-      it('should return a quad stream and metadata, with metadata resolving first', async() => {
-        const { data } = await actor.run({ context, pattern });
-        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-          .toEqual({ firstMeta: true, a: 1 });
-        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s2', 'p2', 'o2'),
-          quad('s3', 'p3', 'o3'),
-          quad('s4', 'p4', 'o4'),
-        ]);
-      });
-    });
-
-    describe('run without mediatorRdfResolveHypermediaLinksQueue', () => {
-      beforeEach(() => {
-        actor = new ActorRdfResolveQuadPatternHypermedia({
-          bus,
-          cacheSize: 10,
-          httpInvalidator,
-          mediatorMetadata,
-          mediatorMetadataExtract,
-          mediatorRdfDereference,
-          mediatorRdfResolveHypermedia,
-          mediatorRdfResolveHypermediaLinks,
-          mediatorRdfResolveHypermediaLinksQueue: undefined,
-          name: 'actor',
-        });
-      });
-
       it('should return a quad stream and metadata', async() => {
         const { data } = await actor.run({ context, pattern });
         expect(await arrayifyStream(data)).toEqualRdfQuadArray([

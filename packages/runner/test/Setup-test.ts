@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import { ActionContext } from '@comunica/core';
 import { ComponentsManagerBuilder } from 'componentsjs';
 import * as Setup from '..';
 
@@ -25,11 +26,11 @@ describe('Setup', () => {
     });
 
     it('should allow \'run\' to be called without optional arguments', () => {
-      return Setup.run('', { argv: [], env: {}, stdin: new Readable() });
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable(), context: new ActionContext() });
     });
 
     it('should allow \'run\' to be called with optional arguments', () => {
-      return Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable(), context: new ActionContext() }, 'myuri', {});
     });
 
     it('should throw an error when the runner resolves to false when calling \'run\'', async() => {
@@ -46,7 +47,8 @@ describe('Setup', () => {
           },
         };
       });
-      await expect(Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {})).rejects
+      await expect(Setup
+        .run('', { argv: [], env: {}, stdin: new Readable(), context: new ActionContext() }, 'myuri', {})).rejects
         .toBeTruthy();
     });
   });

@@ -1,0 +1,49 @@
+{
+  "name": "@comunica/actor-dereference-http",
+  "version": "2.0.0",
+  "description": "A http dereference actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-dereference-http"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "dereference",
+    "http"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "dependencies": {
+    "@comunica/core": "^2.0.0",
+    "@comunica/bus-dereference": "^2.0.0",
+    "@comunica/bus-http": "^2.0.0",
+    "cross-fetch": "^3.0.5",
+    "relative-to-absolute-iri": "^1.0.5",
+    "stream-to-string": "^1.2.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "browser": {
+    "./lib/ActorDereferenceHttp.js": "./lib/ActorDereferenceHttp-browser.js"
+  }
+}

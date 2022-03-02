@@ -1,0 +1,50 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-controls/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-pagesize/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-request-time/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-allow-http-methods/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-put-accepted/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-patch-sparql-update/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-controls",
+      "@type": "ActorRdfMetadataExtractHydraControls"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-count",
+      "@type": "ActorRdfMetadataExtractHydraCount"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-pagesize",
+      "@type": "ActorRdfMetadataExtractHydraPagesize"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#request-time",
+      "@type": "ActorRdfMetadataExtractRequestTime"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#allow-http-methods",
+      "@type": "ActorRdfMetadataExtractAllowHttpMethods"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#put-accepted",
+      "@type": "ActorRdfMetadataExtractPutAccepted"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#patch-sparql-update",
+      "@type": "ActorRdfMetadataExtractPatchSparqlUpdate"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#sparql-service",
+      "@type": "ActorRdfMetadataExtractSparqlService"
+    }
+  ]
+}

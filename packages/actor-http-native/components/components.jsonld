@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-http-native",
-  "@type": "Module",
-  "requireName": "@comunica/actor-http-native",
-  "import": [
-    "files-cahn:components/Actor/Http/Native.jsonld"
-  ]
-}

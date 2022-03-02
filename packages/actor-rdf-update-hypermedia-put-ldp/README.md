@@ -26,22 +26,16 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-put-ldp/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-put-ldp/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPutLdp",
+      "@id": "urn:comunica:default:rdf-update-hypermedia/actors#put-ldp",
       "@type": "ActorRdfUpdateHypermediaPutLdp",
-      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
-      },
-      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerializeMediatypes": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes"
-      },
-      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerialize": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
-      }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "mediatorRdfSerializeMediatypes": { "@id": "urn:comunica:default:query-result-serialize/mediators#mainMediatypes" },
+      "mediatorRdfSerialize": { "@id": "urn:comunica:default:query-result-serialize/mediators#main" }
     }
   ]
 }
@@ -49,6 +43,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
-* `caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerializeMediatypes`: A mediator over the [RDF serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for obtaining all media types.
-* `caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerialize`: A mediator over the [RDF serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize).
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `mediatorRdfSerializeMediatypes`: A mediator over the [RDF serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) for obtaining all media types.
+* `mediatorRdfSerialize`: A mediator over the [RDF serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize).

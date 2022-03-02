@@ -1,7 +1,7 @@
 import type { IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+  IActorRdfMetadataExtractOutput, IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 
 /**
  * An RDF Metadata Extract Actor that extracts total items counts from a metadata stream based on the given predicates.
@@ -26,19 +26,23 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
       // Immediately resolve when a value has been found.
       action.metadata.on('data', quad => {
         if (this.predicates.includes(quad.predicate.value)) {
-          resolve({ metadata: { totalItems: Number.parseInt(quad.object.value, 10) }});
+          resolve({ metadata: { cardinality: { type: 'estimate', value: Number.parseInt(quad.object.value, 10) }}});
         }
       });
 
       // If no value has been found, assume infinity.
       action.metadata.on('end', () => {
-        resolve({ metadata: { totalItems: Number.POSITIVE_INFINITY }});
+        resolve({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
       });
     });
   }
 }
 
-export interface IActorRdfParseFixedMediaTypesArgs
-  extends IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+export interface IActorRdfParseFixedMediaTypesArgs extends IActorRdfMetadataExtractArgs {
+  /**
+   * A predicate that provides a count estimate
+   * @default {http://www.w3.org/ns/hydra/core#totalItems}
+   * @default {http://rdfs.org/ns/void#triples}
+   */
   predicates: string[];
 }

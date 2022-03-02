@@ -1,5 +1,6 @@
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationJoinBgp } from '../lib/ActorOptimizeQueryOperationJoinBgp';
@@ -7,10 +8,12 @@ const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationJoinBgp', () => {
   let bus: any;
+  let context: IActionContext;
   let factory: Factory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
     factory = new Factory();
   });
 
@@ -39,7 +42,7 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
     });
 
     it('should always test', () => {
-      return expect(actor.test({ operation: <any> null })).resolves.toBeTruthy();
+      return expect(actor.test({ operation: <any> null, context })).resolves.toBeTruthy();
     });
 
     it('should run on and not modify a BGP', () => {
@@ -47,15 +50,15 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
-      return expect(actor.run({ operation })).resolves.toMatchObject({ operation });
+      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation });
     });
 
     it('should run on and not modify a join without inner BGPs', () => {
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-      );
-      return expect(actor.run({ operation })).resolves.toMatchObject({ operation });
+      ]);
+      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation });
     });
 
     it('should run on and not modify a join without left BGP', () => {
@@ -63,11 +66,11 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         bgp1,
-      );
-      return expect(actor.run({ operation })).resolves.toMatchObject({ operation });
+      ]);
+      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation });
     });
 
     it('should run on and not modify a join without right BGP', () => {
@@ -75,11 +78,11 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         bgp1,
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-      );
-      return expect(actor.run({ operation })).resolves.toMatchObject({ operation });
+      ]);
+      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation });
     });
 
     it('should run on and modify a join with left and right BGP', () => {
@@ -91,17 +94,17 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
         factory.createPattern(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
         factory.createPattern(DF.namedNode('s4'), DF.namedNode('p4'), DF.namedNode('o4')),
       ]);
-      const operation = factory.createJoin(
+      const operation = factory.createJoin([
         bgp1,
         bgp2,
-      );
+      ]);
       const operationOut = factory.createBgp([
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
         factory.createPattern(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
         factory.createPattern(DF.namedNode('s4'), DF.namedNode('p4'), DF.namedNode('o4')),
       ]);
-      return expect(actor.run({ operation })).resolves.toMatchObject({ operation: operationOut });
+      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation: operationOut });
     });
   });
 });

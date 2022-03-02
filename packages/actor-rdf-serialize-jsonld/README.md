@@ -22,16 +22,16 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-jsonld/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-jsonld/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-serializers.json#myRdfSerializeJsonLd",
+      "@id": "urn:comunica:default:rdf-serialize/actors#jsonld",
       "@type": "ActorRdfSerializeJsonLd",
-      "carsjl:Actor/RdfSerialize/JsonLd/jsonStringifyIndentSpaces": 2,
-      "caam:Actor/AbstractMediaTypedFixed/priorityScale": 0.9
+      "jsonStringifyIndentSpaces": 2,
+      "priorityScale": 0.9
     }
   ]
 }
@@ -39,5 +39,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbqo:carsjl:Actor/RdfSerialize/JsonLd/jsonStringifyIndentSpaces`: An optional parameter to indicate with how many spaces JSON should be indented, defaults to `2`.
-* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.
+* `jsonStringifyIndentSpaces`: An optional parameter to indicate with how many spaces JSON should be indented, defaults to `2`.
+* `priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.

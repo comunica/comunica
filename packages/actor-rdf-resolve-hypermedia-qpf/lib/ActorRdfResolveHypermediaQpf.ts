@@ -1,13 +1,11 @@
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
+import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput,
-  IActorRdfResolveHypermediaTest } from '@comunica/bus-rdf-resolve-hypermedia';
-import {
-  ActorRdfResolveHypermedia,
-} from '@comunica/bus-rdf-resolve-hypermedia';
-import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+  IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
+import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { RdfSourceQpf } from './RdfSourceQpf';
 
@@ -16,15 +14,9 @@ import { RdfSourceQpf } from './RdfSourceQpf';
  */
 export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
   implements IActorRdfResolveHypermediaQpfArgs {
-  public readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-
-  public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-
-  public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-
+  public readonly mediatorMetadata: MediatorRdfMetadata;
+  public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   public readonly subjectUri: string;
   public readonly predicateUri: string;
   public readonly objectUri: string;
@@ -44,7 +36,7 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
 
   /**
    * Look for the search form
-   * @param {IActionRdfResolveHypermedia} the metadata to look for the form.
+   * @param {IActionRdfResolveHypermedia} action the metadata to look for the form.
    * @return {Promise<IActorRdfResolveHypermediaOutput>} A promise resolving to a hypermedia form.
    */
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
@@ -53,11 +45,11 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
     return { source, dataset: source.searchForm.dataset };
   }
 
-  protected createSource(metadata: Record<string, any>, context?: ActionContext, quads?: RDF.Stream): RdfSourceQpf {
+  protected createSource(metadata: Record<string, any>, context: IActionContext, quads?: RDF.Stream): RdfSourceQpf {
     return new RdfSourceQpf(
       this.mediatorMetadata,
       this.mediatorMetadataExtract,
-      this.mediatorRdfDereference,
+      this.mediatorDereferenceRdf,
       this.subjectUri,
       this.predicateUri,
       this.objectUri,
@@ -69,16 +61,37 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
   }
 }
 
-export interface IActorRdfResolveHypermediaQpfArgs extends
-  IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
-  mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+export interface IActorRdfResolveHypermediaQpfArgs extends IActorRdfResolveHypermediaArgs {
+  /**
+   * The metadata mediator
+   */
+  mediatorMetadata: MediatorRdfMetadata;
+  /**
+   * The metadata extract mediator
+   */
+  mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  /**
+   * The RDF dereference mediator
+   */
+  mediatorDereferenceRdf: MediatorDereferenceRdf;
+  /**
+   * The URI that should be interpreted as subject URI
+   * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#subject}
+   */
   subjectUri: string;
+  /**
+   * The URI that should be interpreted as predicate URI
+   * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate}
+   */
   predicateUri: string;
+  /**
+   * The URI that should be interpreted as object URI
+   * @default {http://www.w3.org/1999/02/22-rdf-syntax-ns#object}
+   */
   objectUri: string;
+  /**
+   * The URI that should be interpreted as graph URI
+   * @default {http://www.w3.org/ns/sparql-service-description#graph}
+   */
   graphUri?: string;
 }

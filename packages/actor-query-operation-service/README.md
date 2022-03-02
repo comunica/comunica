@@ -23,15 +23,15 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-service/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-service/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:sparql-queryoperators.json#myServiceQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#service",
       "@type": "ActorQueryOperationService",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
-      "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint": false
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "forceSparqlEndpoint": false
     }
   ]
 }
@@ -39,5 +39,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
-* `caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint`: Optional flag indicating if the SERVICE target should be assumed to be a SPARQL endpoint, defaults to `false`.
+* `cbqo:lib/ActorQueryOperationTypedMediated#ActorQueryOperationTypedMediated_mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `forceSparqlEndpoint`: Optional flag indicating if the SERVICE target should be assumed to be a SPARQL endpoint, defaults to `false`.

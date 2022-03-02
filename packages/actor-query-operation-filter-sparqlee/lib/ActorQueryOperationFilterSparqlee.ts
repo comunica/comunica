@@ -1,10 +1,11 @@
+import { bindingsToString } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -16,22 +17,21 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     super(args, 'filter');
   }
 
-  public async testOperation(pattern: Algebra.Filter, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
-    const _ = new AsyncEvaluator(pattern.expression, config);
+    const _ = new AsyncEvaluator(operation.expression, config);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Filter, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.input, context });
+  public async runOperation(operation: Algebra.Filter, context: IActionContext):
+  Promise<IQueryOperationResult> {
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
-    const { variables, metadata } = output;
 
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
-    const evaluator = new AsyncEvaluator(pattern.expression, config);
+    const evaluator = new AsyncEvaluator(operation.expression, config);
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {
@@ -52,7 +52,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
         if (isExpressionError(<Error> error)) {
           // In many cases, this is a user error, where the user should manually cast the variable to a string.
           // In order to help users debug this, we should report these errors via the logger as warnings.
-          this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: item.toJS() }));
+          this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: bindingsToString(item) }));
         } else {
           bindingsStream.emit('error', error);
         }
@@ -61,6 +61,6 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     };
 
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
-    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs };
+    return { type: 'bindings', bindingsStream, metadata: output.metadata };
   }
 }

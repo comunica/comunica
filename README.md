@@ -54,10 +54,13 @@ Read one of our [guides to **get started** with querying](https://comunica.dev/d
 * [Query using the latest development version](https://comunica.dev/docs/query/getting_started/query_dev_version/)
 
 Or jump right into one of the available query engines:
-* [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI ([Browser-ready via a CDN](https://github.com/rdfjs/comunica-browser))
-* [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme): Library to query over local RDF files
-* [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme): Library to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
-* [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local HDT files
+* [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/engines/query-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI ([Browser-ready via a CDN](https://github.com/rdfjs/comunica-browser))
+* [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme): Engine to query over local RDF files
+* [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
+* [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
+* [Comunica SPARQL Solid](https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme): Engine to query over files behind [Solid access control](https://solidproject.org/).
+* [Comunica SPARQL Link Traversal](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal#readme): Engine to query over multiple files by following links between them.
+* [Comunica SPARQL Link Traversal Solid](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal-solid#readme): Engine to query within [Solid data vaults](https://solidproject.org/) by following links between documents.
 
 ## Modify or Extending Comunica
 
@@ -102,7 +105,7 @@ $ yarn install
 
 This will install the dependencies of all modules, and bootstrap the Lerna monorepo.
 After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages) are available in the `packages/` folder
-and can be used in a development environment, such as querying with [Comunica SPARQL (`packages/actor-init-sparql`)](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql).
+and can be used in a development environment, such as querying with [Comunica SPARQL (`@comunica/query-sparql`)](https://github.com/comunica/comunica/tree/master/engines/query-sparql).
 
 Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-commit)
 to build, lint and test.
@@ -139,5 +142,5 @@ we would appreciate a citation of our [article](https://comunica.github.io/Artic
 ```
 
 ## License
-This code is copyrighted by [Ghent University – imec](http://idlab.ugent.be/)
+This code is copyrighted by [the Comunica Association](https://comunica.dev/association/) and [Ghent University – imec](http://idlab.ugent.be/)
 and released under the [MIT license](http://opensource.org/licenses/MIT).

@@ -22,12 +22,12 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-rdfjs.json#myRdfRdfJsSourceQuadPatternResolver",
+      "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#rdfjs-source",
       "@type": "ActorRdfResolveQuadPatternRdfJsSource"
     }
   ]

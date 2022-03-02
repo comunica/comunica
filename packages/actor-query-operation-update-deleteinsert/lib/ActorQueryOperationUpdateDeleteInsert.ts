@@ -1,22 +1,23 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
-import type { BindingsStream, IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+  ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import type { IActorTest } from '@comunica/core';
+import type { IQueryOperationResult, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
+const BF = new BindingsFactory();
 /**
  * A comunica Update DeleteInsert Query Operation Actor.
  */
 export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTypedMediated<Algebra.DeleteInsert> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   protected blankNodeCounter = 0;
 
@@ -24,35 +25,38 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     super(args, 'deleteinsert');
   }
 
-  public async testOperation(pattern: Algebra.DeleteInsert, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(
+    operation: Algebra.DeleteInsert,
+    context: IActionContext,
+  ): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.DeleteInsert, context: ActionContext):
-  Promise<IActorQueryOperationOutput> {
+  public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
+  Promise<IQueryOperationResult> {
     // Evaluate the where clause
-    const whereBindings: BindingsStream = pattern.where ?
+    const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
-        .mediate({ operation: pattern.where, context })).bindingsStream :
-      new ArrayIterator([ Bindings({}) ], { autoStart: false });
+        .mediate({ operation: operation.where, context })).bindingsStream :
+      new ArrayIterator([ BF.bindings() ], { autoStart: false });
 
     // Construct triples using the result based on the pattern.
     let quadStreamInsert: AsyncIterator<RDF.Quad> | undefined;
     let quadStreamDelete: AsyncIterator<RDF.Quad> | undefined;
-    if (pattern.insert) {
+    if (operation.insert) {
       // Localize blank nodes in pattern, to avoid clashes across different INSERT/DELETE calls
       quadStreamInsert = new BindingsToQuadsIterator(
-        pattern.insert.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
+        operation.insert.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
         whereBindings.clone(),
         false,
       );
       this.blankNodeCounter++;
     }
-    if (pattern.delete) {
+    if (operation.delete) {
       // Localize blank nodes in pattern, to avoid clashes across different INSERT/DELETE calls
       quadStreamDelete = new BindingsToQuadsIterator(
-        pattern.delete.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
+        operation.delete.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
         whereBindings.clone(),
         false,
       );
@@ -60,20 +64,22 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     }
 
     // Evaluate the required modifications
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { execute } = await this.mediatorUpdateQuads.mediate({
       quadStreamInsert,
       quadStreamDelete,
       context,
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      execute,
     };
   }
 }
 
 export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  /**
+   * The RDF Update Quads mediator
+   */
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }

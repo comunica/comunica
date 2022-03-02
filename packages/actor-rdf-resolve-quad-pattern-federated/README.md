@@ -24,16 +24,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-federated.json#myFederatedQuadPatternResolver",
+      "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#federated",
       "@type": "ActorRdfResolveQuadPatternFederated",
-      "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
-        "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern"
-      }
+      "mediatorResolveQuadPattern": { "@id": "urn:comunica:default:query-operation/mediators#main" }
     }
   ]
 }
@@ -41,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
+* `mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).

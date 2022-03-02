@@ -1,0 +1,25 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-bgp/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-bgp-to-join/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-connected/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#join-bgp",
+      "@type": "ActorOptimizeQueryOperationJoinBgp"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#bgp-to-join",
+      "@type": "ActorOptimizeQueryOperationBgpToJoin"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#join-connected",
+      "@type": "ActorOptimizeQueryOperationJoinConnected"
+    }
+  ]
+}

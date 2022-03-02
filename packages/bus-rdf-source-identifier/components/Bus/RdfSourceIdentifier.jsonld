@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-source-identifier/^1.0.0/components/context.jsonld",
-  "@id": "cbrsi:Bus/RdfSourceIdentifier",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for rdf-source-identifier events."
-}

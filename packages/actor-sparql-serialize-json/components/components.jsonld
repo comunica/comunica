@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-json/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-sparql-serialize-json",
-  "@type": "Module",
-  "requireName": "@comunica/actor-sparql-serialize-json",
-  "import": [
-    "files-cassj:components/Actor/SparqlSerialize/Json.jsonld"
-  ]
-}

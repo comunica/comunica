@@ -1,9 +1,10 @@
 {
   "name": "@comunica/mediatortype-time",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "A comunica mediator type for the 'time' parameter.",
-  "main": "index.js",
-  "typings": "index",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -12,6 +13,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "keywords": [
     "comunica",
     "bus",
@@ -25,18 +27,12 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
-  "peerDependencies": {
-    "@comunica/core": "^1.0.0"
-  },
-  "devDependencies": {
-    "@comunica/core": "^1.22.0"
+  "dependencies": {
+    "@comunica/core": "^2.0.0"
   },
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
   }
 }

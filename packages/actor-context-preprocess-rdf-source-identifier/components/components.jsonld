@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-rdf-source-identifier/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-context-preprocess-rdf-source-identifier",
-  "@type": "Module",
-  "requireName": "@comunica/actor-context-preprocess-rdf-source-identifier",
-  "import": [
-    "files-cacprsi:components/Actor/ContextPreprocess/RdfSourceIdentifier.jsonld"
-  ]
-}

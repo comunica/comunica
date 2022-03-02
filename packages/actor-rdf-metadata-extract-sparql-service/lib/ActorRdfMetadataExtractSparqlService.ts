@@ -1,6 +1,7 @@
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
+  IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
 
 /**
@@ -49,7 +50,10 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
   }
 }
 
-export interface IActorRdfMetadataExtractSparqlServiceArgs
-  extends IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+export interface IActorRdfMetadataExtractSparqlServiceArgs extends IActorRdfMetadataExtractArgs {
+  /**
+   * If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based
+   * @default {true}
+   */
   inferHttpsEndpoint: boolean;
 }

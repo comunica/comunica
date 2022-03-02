@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -10,11 +10,14 @@ import type * as RDF from '@rdfjs/types';
  * * Test:   <none>
  * * Output: IActorRdfMetadataOutput: An RDF quad data stream and RDF quad metadata stream.
  *
- * @see IActionRdfDereference
- * @see IActorRdfDereferenceOutput
+ * @see IActionDereferenceRdf
+ * @see IActorDereferenceRdfOutput
  */
 export abstract class ActorRdfMetadata extends Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
-  public constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
+  public constructor(args: IActorRdfMetadataArgs) {
     super(args);
   }
 }
@@ -46,3 +49,7 @@ export interface IActorRdfMetadataOutput extends IActorOutput {
    */
   metadata: RDF.Stream;
 }
+
+export type IActorRdfMetadataArgs = IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+
+export type MediatorRdfMetadata = Mediate<IActionRdfMetadata, IActorRdfMetadataOutput>;

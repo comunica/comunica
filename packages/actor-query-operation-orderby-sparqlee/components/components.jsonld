@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-orderby-sparqlee/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-orderby-sparqlee",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-orderby-sparqlee",
-  "import": [
-    "files-caqood:components/Actor/QueryOperation/OrderBySparqlee.jsonld"
-  ]
-}

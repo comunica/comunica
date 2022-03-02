@@ -1,13 +1,16 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathNps } from '../lib/ActorQueryOperationPathNps';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationPathNps', () => {
   let bus: any;
@@ -18,33 +21,32 @@ describe('ActorQueryOperationPathNps', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate(arg: any) {
-        const vars: any = [];
+        const vars: RDF.Variable[] = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
-            vars.push(termToString(arg.operation[name]));
+            vars.push(arg.operation[name]);
           }
         }
 
         const bindings = [];
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
-            const bind: any = {};
+            const bind: [RDF.Variable, RDF.Term][] = [];
             for (const [ j, element ] of vars.entries()) {
-              bind[element] = DF.namedNode(`${1 + i + j}`);
+              bind.push([ element, DF.namedNode(`${1 + i + j}`) ]);
             }
-            bindings.push(Bindings(bind));
+            bindings.push(BF.bindings(bind));
           }
         } else {
-          bindings.push(Bindings({}));
+          bindings.push(BF.bindings());
         }
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({ totalItems: 3 }),
+          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: vars,
-          canContainUndefs: false,
         });
       },
     };
@@ -75,12 +77,14 @@ describe('ActorQueryOperationPathNps', () => {
     });
 
     it('should test on Nps paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }},
+        context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -89,12 +93,13 @@ describe('ActorQueryOperationPathNps', () => {
         DF.namedNode('s'),
         factory.createNps([ DF.namedNode('2') ]),
         DF.variable('x'),
-      ) };
+      ),
+      context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.canContainUndefs).toEqual(false);
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.namedNode('2') }),
-        Bindings({ '?x': DF.namedNode('4') }),
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('4') ]]),
       ]);
     });
   });

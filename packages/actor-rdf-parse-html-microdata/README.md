@@ -22,12 +22,12 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-microdata/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-microdata/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlMicrodata",
+      "@id": "urn:comunica:default:rdf-parse-html/actors#microdata",
       "@type": "ActorRdfParseHtmlMicrodata"
     }
   ]

@@ -1,5 +1,4 @@
-import { KeysHttp } from '@comunica/context-entries';
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
@@ -19,7 +18,10 @@ const toWebReadableStream = require('web-streams-node').toWebReadableStream;
  * @see IActorHttpOutput
  */
 export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHttpOutput> {
-  public constructor(args: IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
+  public constructor(args: IActorHttpArgs) {
     super(args);
   }
 
@@ -72,15 +74,6 @@ export interface IActorHttpOutput extends IActorOutput, Response {
 
 }
 
-/**
- * @type {string} Context entry for the include credentials flags.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_INCLUDE_CREDENTIALS = KeysHttp.includeCredentials;
+export type IActorHttpArgs = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>;
 
-/**
- * @type {string} Context entry for the authentication for a source.
- * @value {string} "username:password"-pair.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_AUTH = KeysHttp.auth;
+export type MediatorHttp = Mediate<IActionHttp, IActorHttpOutput>;

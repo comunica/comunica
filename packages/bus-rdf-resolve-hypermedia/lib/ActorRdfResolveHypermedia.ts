@@ -1,5 +1,5 @@
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -18,9 +18,11 @@ export abstract class ActorRdfResolveHypermedia extends Actor<IActionRdfResolveH
 IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
   protected readonly sourceType: string;
 
-  public constructor(args: IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest,
-  IActorRdfResolveHypermediaOutput>,
-  sourceType: string) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param sourceType The source type.
+   */
+  public constructor(args: IActorRdfResolveHypermediaArgs, sourceType: string) {
     super(args);
     this.sourceType = sourceType;
   }
@@ -79,3 +81,9 @@ export interface IActorRdfResolveHypermediaOutput extends IActorOutput {
    */
   dataset?: string;
 }
+
+export type IActorRdfResolveHypermediaArgs = IActorArgs<
+IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>;
+
+export type MediatorRdfResolveHypermedia = Mediate<
+IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput, IActorRdfResolveHypermediaTest>;

@@ -13,16 +13,22 @@ import type { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
  *
  * @see IActionInit
  */
-export abstract class ActorRdfParseFixedMediaTypes extends ActorAbstractMediaTypedFixed<
-IActionRdfParse, IActorTest, IActorRdfParseOutput> implements IActorRdfParseFixedMediaTypesArgs {
+export abstract class ActorRdfParseFixedMediaTypes extends
+  ActorAbstractMediaTypedFixed<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
+  /* eslint-disable max-len */
+  /**
+   * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
+   * @param args - @defaultNested {<cbrp:components/ActorRdfParse.jsonld#ActorRdfParse_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
   }
+  /* eslint-enable max-len */
 
   public async testHandleChecked(action: IActionRdfParse): Promise<boolean> {
     return true;
   }
 }
 
-export interface IActorRdfParseFixedMediaTypesArgs
-  extends IActorArgsMediaTypedFixed<IActionRdfParse, IActorTest, IActorRdfParseOutput> {}
+export type IActorRdfParseFixedMediaTypesArgs = IActorArgsMediaTypedFixed<
+IActionRdfParse, IActorTest, IActorRdfParseOutput>;

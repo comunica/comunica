@@ -3,9 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { ActionContext } from '@comunica/core';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
-import { termToString } from 'rdf-string';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -16,12 +14,12 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     super(args, Algebra.types.NPS);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
-    const predicate = <Algebra.Nps> path.predicate;
-    const blank = this.generateVariable(path);
-    const blankName = termToString(blank);
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
+    const predicate = <Algebra.Nps> operation.predicate;
+    const blank = this.generateVariable(operation);
 
-    const pattern = ActorAbstractPath.FACTORY.createPattern(path.subject, blank, path.object, path.graph);
+    const pattern = ActorAbstractPath.FACTORY
+      .createPattern(operation.subject, blank, operation.object, operation.graph);
     const output = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern, context }),
     );
@@ -29,14 +27,18 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     // Remove the generated blank nodes from the bindings
     const bindingsStream = output.bindingsStream.transform<Bindings>({
       filter(bindings) {
-        return !predicate.iris.some(iri => iri.equals(bindings.get(blankName)));
+        return !predicate.iris.some(iri => iri.equals(bindings.get(blank)));
       },
       transform(item, next, push) {
-        push(item.delete(blankName));
+        push(item.delete(blank));
         next();
       },
     });
 
-    return { type: 'bindings', bindingsStream, variables: output.variables, canContainUndefs: false };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: output.metadata,
+    };
   }
 }

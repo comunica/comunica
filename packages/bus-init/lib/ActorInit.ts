@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import type { IAction, IActorOutput, IActorTest, IActorArgs } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
 /**
@@ -15,7 +15,10 @@ import { Actor } from '@comunica/core';
  * @see IActionInit
  */
 export abstract class ActorInit extends Actor<IActionInit, IActorTest, IActorOutputInit> {
-  public constructor(args: IActorArgs<IActionInit, IActorTest, IActorOutputInit>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
+  public constructor(args: IActorInitArgs) {
     super(args);
   }
 }
@@ -48,3 +51,7 @@ export interface IActorOutputInit extends IActorOutput {
    */
   stdout?: Readable;
 }
+
+export type IActorInitArgs = IActorArgs<IActionInit, IActorTest, IActorOutputInit>;
+
+export type MediatorInit = Mediate<IActionInit, IActorOutputInit>;

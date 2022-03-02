@@ -1,11 +1,16 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type {
+  Bindings,
+  BindingsStream,
+  IActionContext,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 const DF = new DataFactory();
 
@@ -17,26 +22,28 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     super(args, 'project');
   }
 
-  public async testOperation(pattern: Algebra.Project, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Project, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Project, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(operation: Algebra.Project, context: IActionContext):
+  Promise<IQueryOperationResult> {
     // Resolve the input
-    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
-      await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }),
+    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
 
     // Find all variables that should be deleted from the input stream.
-    const variables: string[] = pattern.variables.map(x => x.termType === 'Wildcard' ? '*' : termToString(x));
-    const deleteVariables = output.variables.filter(variable => !variables.includes(variable));
+    const outputMetadata = await output.metadata();
+    const variables = operation.variables;
+    const deleteVariables = outputMetadata.variables
+      .filter(variable => !variables.some(subVariable => variable.value === subVariable.value));
 
     // Error if there are variables that are not bound in the input stream.
-    const missingVariables = variables.filter(variable => !output.variables.includes(variable) &&
-      variable !== '*');
+    const missingVariables = variables
+      .filter(variable => !outputMetadata.variables.some(subVariable => variable.value === subVariable.value));
     if (missingVariables.length > 0) {
-      throw new Error(`Variables '${missingVariables}' are used in the projection result, but are not assigned.`);
+      throw new Error(`Variables '${missingVariables.map(variable => `?${variable.value}`)}' are used in the projection result, but are not assigned.`);
     }
 
     // Make sure the project variables are the only variables that are present in the bindings.
@@ -60,7 +67,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       map(bindings: Bindings) {
         blankNodeCounter++;
         const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
-        return <Bindings> bindings.map(term => {
+        return bindings.map(term => {
           if (term instanceof BlankNodeBindingsScoped) {
             let scopedBlankNode = scopedBlankNodesCache.get(term.value);
             if (!scopedBlankNode) {
@@ -78,9 +85,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: output.metadata,
-      variables,
-      canContainUndefs: output.canContainUndefs,
+      metadata: async() => ({ ...outputMetadata, variables }),
     };
   }
 }

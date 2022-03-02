@@ -1,29 +1,41 @@
-import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import type { IActionQueryOperation,
-  IActorQueryOperationOutput, IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/types';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IQueryOperationResult,
+  BindingsStream,
+  Bindings,
+  IActionContext,
+  MetadataBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { termToString } from 'rdf-string';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
+const BF = new BindingsFactory();
+const DF = new DataFactory();
 
 /**
  * A comunica Values Query Operation Actor.
  */
 export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.Values> {
-  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult>) {
     super(args, 'values');
   }
 
-  public async testOperation(pattern: Algebra.Values, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Values, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Values, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
-    const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(pattern.bindings.map(x => Bindings(x)));
-    const metadata = (): Promise<Record<string, any>> => Promise.resolve({ totalItems: pattern.bindings.length });
-    const variables: string[] = pattern.variables.map(x => termToString(x));
-    const canContainUndefs = pattern.bindings.some(bindings => variables.some(variable => !(variable in bindings)));
-    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs };
+  public async runOperation(operation: Algebra.Values, context: IActionContext):
+  Promise<IQueryOperationResult> {
+    const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
+      .map(x => BF.bindings(Object.entries(x)
+        .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
+    const variables = operation.variables;
+    const metadata = (): Promise<MetadataBindings> => Promise.resolve({
+      cardinality: { type: 'exact', value: operation.bindings.length },
+      canContainUndefs: operation.bindings.some(bindings => variables.some(variable => !(`?${variable.value}` in bindings))),
+      variables,
+    });
+    return { type: 'bindings', bindingsStream, metadata };
   }
 }

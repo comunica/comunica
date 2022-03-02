@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-join-coefficients-fixed/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:rdf-join/mediators#main",
+  "@type": "MediatorJoinCoefficientsFixed",
+  "cpuWeight": 1,
+  "memoryWeight": 1,
+  "timeWeight": 10,
+  "ioWeight": 100,
+  "bus": { "@id": "ActorRdfJoin:_default_bus" }
+}

@@ -1,16 +1,16 @@
 import { RdfJsQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source';
-import type { IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaOutput, IActorRdfResolveHypermediaTest } from '@comunica/bus-rdf-resolve-hypermedia';
+import type {
+  IActionRdfResolveHypermedia, IActorRdfResolveHypermediaArgs,
+  IActorRdfResolveHypermediaOutput, IActorRdfResolveHypermediaTest,
+} from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
-import type { IActorArgs } from '@comunica/core';
 import { storeStream } from 'rdf-store-stream';
 
 /**
  * A comunica None RDF Resolve Hypermedia Actor.
  */
 export class ActorRdfResolveHypermediaNone extends ActorRdfResolveHypermedia {
-  public constructor(args: IActorArgs<IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>) {
+  public constructor(args: IActorRdfResolveHypermediaArgs) {
     super(args, 'file');
   }
 

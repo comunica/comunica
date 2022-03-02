@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-native.svg)](https://www.npmjs.com/package/@comunica/actor-http-native)
 
-**DEPRECATED: use the more flexible @comunica/actor-http-node-fetch instead without loss of performance.**
+**DEPRECATED: use the more flexible @comunica/actor-http-fetch instead without loss of performance.**
 
 An [HTTP](https://github.com/comunica/comunica/tree/master/packages/bus-http) actor that
 uses Node's request API (`XMLHttpRequest` in the browser) to perform HTTP requests.
@@ -25,14 +25,18 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:http.json#myHttpFetcher",
+      "@id": "urn:comunica:default:http/actors#native",
       "@type": "ActorHttpNative"
     }
   ]
 }
 ```
+
+### Config Parameters
+
+* `agentOptions`: The agent JSON options for the HTTP agent. _(optional)_ 

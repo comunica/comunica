@@ -1,6 +1,7 @@
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { QuadDestinationPutLdp } from '../lib/QuadDestinationPutLdp';
@@ -10,7 +11,7 @@ const stringifyStream = require('stream-to-string');
 const streamifyString = require('streamify-string');
 
 describe('QuadDestinationPutLdp', () => {
-  let context: ActionContext;
+  let context: IActionContext;
   let mediaTypes: string[];
   let url: string;
   let mediatorHttp: any;
@@ -40,7 +41,7 @@ describe('QuadDestinationPutLdp', () => {
         },
       })),
     };
-    context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+    context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
     mediaTypes = [ 'text/turtle', 'application/ld+json' ];
     url = 'abc';
     destination = new QuadDestinationPutLdp(
@@ -63,7 +64,8 @@ describe('QuadDestinationPutLdp', () => {
       });
 
       expect(mediatorRdfSerialize.mediate).toHaveBeenCalledWith({
-        handle: { quadStream: 'QUADS' },
+        context,
+        handle: { context, quadStream: 'QUADS' },
         handleMediaType: 'text/turtle',
       });
 
@@ -99,7 +101,8 @@ describe('QuadDestinationPutLdp', () => {
       });
 
       expect(mediatorRdfSerialize.mediate).toHaveBeenCalledWith({
-        handle: { quadStream: 'QUADS' },
+        context,
+        handle: { context, quadStream: 'QUADS' },
         handleMediaType: 'application/trig',
       });
 

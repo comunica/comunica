@@ -1,5 +1,6 @@
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfResolveQuadPatternFederated } from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
@@ -8,18 +9,23 @@ const squad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternFederated', () => {
   let bus: any;
+  let context: IActionContext;
   let mediatorResolveQuadPattern: any;
   let skipEmptyPatterns: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
     mediatorResolveQuadPattern = {
       mediate() {
         const data = new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
         ], { autoStart: false });
-        data.setProperty('metadata', { totalItems: 2 });
+        data.setProperty('metadata', {
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: false,
+        });
         return Promise.resolve({ data });
       },
     };
@@ -58,32 +64,28 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
 
     it('should test with sources', () => {
       return expect(actor.test({ pattern: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:sources': 'something' },
         ) })).resolves.toBeTruthy();
     });
 
     it('should not test with a single source', () => {
       return expect(actor.test({ pattern: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': {}},
         ) })).rejects.toBeTruthy();
     });
 
     it('should not test without sources', () => {
       return expect(actor.test({ pattern: <any> null,
-        context: ActionContext(
+        context: new ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:sources': null },
         ) })).rejects.toBeTruthy();
     });
 
-    it('should not test without context', () => {
-      return expect(actor.test({ pattern: <any> null, context: undefined })).rejects.toBeTruthy();
-    });
-
     it('should run for default graph', () => {
       const pattern = squad('?s', 'p', 'o');
-      const context = ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -93,7 +95,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
       return actor.run({ pattern, context })
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-            .toEqual({ totalItems: 4 });
+            .toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false });
           expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o1'),
@@ -105,7 +107,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
 
     it('should run for variable graph', () => {
       const pattern = squad('?s', 'p', 'o', '?g');
-      const context = ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -115,14 +117,14 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
       return actor.run({ pattern, context })
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-            .toEqual({ totalItems: 4 });
+            .toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false });
           expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([]);
         });
     });
 
     it('should run when only metadata is called', () => {
       const pattern = squad('?s', 'p', 'o', '?g');
-      const context = ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -131,12 +133,12 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
       });
       return expect(actor.run({ pattern, context })
         .then(output => new Promise(resolve => output.data.getProperty('metadata', resolve))))
-        .resolves.toEqual({ totalItems: 4 });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false });
     });
 
     it('should run when only data is called', () => {
       const pattern = squad('?s', 'p', 'o');
-      const context = ActionContext({
+      context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources':
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },

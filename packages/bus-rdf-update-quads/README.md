@@ -19,8 +19,8 @@ $ yarn add @comunica/bus-rdf-update-quads
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbruq:Bus/RdfUpdateQuads`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^2.0.0/components/context.jsonld"`
+* **Bus name**: `ActorRdfUpdateQuads:_default_bus`
 
 ## Creating actors on this bus
 

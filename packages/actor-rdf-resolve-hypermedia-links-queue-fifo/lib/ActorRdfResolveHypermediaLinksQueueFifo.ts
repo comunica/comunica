@@ -1,17 +1,16 @@
 import type {
-  IActionRdfResolveHypermediaLinksQueue,
+  IActionRdfResolveHypermediaLinksQueue, IActorRdfResolveHypermediaLinksQueueArgs,
   IActorRdfResolveHypermediaLinksQueueOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { ActorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { LinkQueueFifo } from './LinkQueueFifo';
 
 /**
  * A comunica FIFO RDF Resolve Hypermedia Links Queue Actor.
  */
 export class ActorRdfResolveHypermediaLinksQueueFifo extends ActorRdfResolveHypermediaLinksQueue {
-  public constructor(args: IActorArgs<
-  IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>) {
+  public constructor(args: IActorRdfResolveHypermediaLinksQueueArgs) {
     super(args);
   }
 

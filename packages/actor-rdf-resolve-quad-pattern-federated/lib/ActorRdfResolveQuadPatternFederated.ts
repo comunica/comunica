@@ -1,9 +1,12 @@
-import type { IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import {
-  ActorRdfResolveQuadPatternSource,
+import type {
+  IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs,
+  IQuadSource, MediatorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import {
+  ActorRdfResolveQuadPatternSource, getContextSources,
+} from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { FederatedQuadSource } from './FederatedQuadSource';
 
@@ -12,9 +15,7 @@ import { FederatedQuadSource } from './FederatedQuadSource';
  */
 export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatternSource
   implements IActorRdfResolveQuadPatternFederatedArgs {
-  public readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
-
+  public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
   public readonly skipEmptyPatterns: boolean;
 
   protected readonly emptyPatterns: Map<IDataSource, RDF.Quad[]> = new Map();
@@ -24,14 +25,14 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    const sources = this.getContextSources(action.context);
+    const sources = getContextSources(action.context);
     if (!sources) {
       throw new Error(`Actor ${this.name} can only resolve quad pattern queries against a sources array.`);
     }
     return true;
   }
 
-  protected async getSource(context: ActionContext): Promise<IQuadSource> {
+  protected async getSource(context: IActionContext): Promise<IQuadSource> {
     return new FederatedQuadSource(
       this.mediatorResolveQuadPattern,
       context,
@@ -41,9 +42,15 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
   }
 }
 
-export interface IActorRdfResolveQuadPatternFederatedArgs
-  extends IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput> {
-  mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
+export interface IActorRdfResolveQuadPatternFederatedArgs extends IActorRdfResolveQuadPatternArgs {
+  /**
+   * The quad pattern resolve mediator.
+   */
+  mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
+  /**
+   * If quad patterns that are sub-patterns of empty quad patterns should be skipped.
+   * This assumes that sources remain static during query evaluation.
+   * @default {false}
+   */
   skipEmptyPatterns?: boolean;
 }

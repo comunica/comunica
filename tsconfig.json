@@ -3,12 +3,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": [
-      "es6",
-      "es2019",
-      "dom",
-      "esnext.asynciterable"
+      "es2020",
+      "es2021",
+      "dom"
     ],
-    "target": "es2017",
+    "target": "es2020",
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
@@ -22,8 +21,8 @@
     "strictPropertyInitialization": false
   },
   "include": [
-    "packages/*/index.ts",
-    "packages/*/index-browser.ts",
+    "engines/*/bin/**/*",
+    "engines/*/lib/**/*",
     "packages/*/bin/**/*",
     "packages/*/lib/**/*"
   ],

@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-values/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-values",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-values",
-  "import": [
-    "files-caqov:components/Actor/QueryOperation/Values.jsonld"
-  ]
-}

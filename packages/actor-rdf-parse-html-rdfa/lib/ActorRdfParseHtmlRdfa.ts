@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput,
+  IActorRdfParseHtmlArgs } from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { RdfaParser } from 'rdfa-streaming-parser';
 
 /**
  * A comunica RDFa RDF Parse Html Actor.
  */
 export class ActorRdfParseHtmlRdfa extends ActorRdfParseHtml {
-  public constructor(args: IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>) {
+  public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
   }
 
@@ -24,6 +24,7 @@ export class ActorRdfParseHtmlRdfa extends ActorRdfParseHtml {
     const htmlParseListener = new RdfaParser({ baseIRI: action.baseIRI, profile, language });
     htmlParseListener.on('error', action.error);
     htmlParseListener.on('data', action.emit);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const onTagEndOld = htmlParseListener.onEnd;
     htmlParseListener.onEnd = () => {
       onTagEndOld.call(htmlParseListener);

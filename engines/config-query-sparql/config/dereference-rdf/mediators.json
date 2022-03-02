@@ -1,0 +1,9 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-dereference-rdf/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:dereference-rdf/mediators#main",
+  "@type": "MediatorRace",
+  "bus": { "@id": "ActorDereferenceRdf:_default_bus" }
+}

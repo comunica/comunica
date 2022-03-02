@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-file/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-dereference-file",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-dereference-file",
-  "import": [
-    "files-cardf:components/Actor/RdfDereference/File.jsonld"
-  ]
-}

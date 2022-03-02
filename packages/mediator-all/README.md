@@ -23,16 +23,16 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:sparql-init.json#mediatorHttpInvalidate",
+        "@id": "urn:comunica:default:http/mediators#mainInvalidate",
         "@type": "MediatorAll",
-        "cc:Mediator/bus": { "@id": "cbhi:Bus/HttpInvalidate" }
+        "bus": { "@id": "ActorHttpInvalidate:_default_bus" }
       }
     }
   ]
@@ -41,4 +41,4 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
+* `bus`: Identifier of the bus to mediate over.

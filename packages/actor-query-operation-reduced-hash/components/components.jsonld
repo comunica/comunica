@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-reduced-hash",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-reduced-hash",
-  "import": [
-    "files-caqorh:components/Actor/QueryOperation/ReducedHash.jsonld"
-  ]
-}

@@ -1,0 +1,16 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-inv/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:query-operation/actors#path-inv",
+      "@type": "ActorQueryOperationPathInv",
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
+    }
+  ]
+}

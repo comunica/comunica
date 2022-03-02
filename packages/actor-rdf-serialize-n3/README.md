@@ -23,15 +23,15 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-serializers.json#myRdfSerializerN3",
+      "@id": "urn:comunica:default:rdf-serialize/actors#n3",
       "@type": "ActorRdfSerializeN3",
-      "caam:Actor/AbstractMediaTypedFixed/priorityScale": 1
+      "priorityScale": 1
     }
   ]
 }
@@ -39,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.
+* `priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.

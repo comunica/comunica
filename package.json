@@ -2,104 +2,84 @@
   "private": true,
   "repository": "https://github.com/comunica/comunica/",
   "workspaces": [
+    "engines/*",
     "packages/*"
   ],
-  "engines": {
-    "node": ">=8.0"
-  },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-syntax-object-rest-spread": "^7.8.3",
-    "@babel/plugin-transform-async-to-generator": "^7.8.3",
-    "@babel/polyfill": "^7.8.7",
-    "@babel/preset-env": "^7.9.5",
+    "@babel/core": "^7.16.0",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.16.4",
     "@pollyjs/adapter-node-http": "^5.1.0",
     "@pollyjs/core": "^6.0.0",
     "@pollyjs/persister-fs": "^6.0.0",
-    "rdf-data-factory": "^1.1.0",
+    "@strictsoftware/typedoc-plugin-monorepo": "^0.4.2",
     "@types/jest": "^27.0.0",
     "@types/node": "^14.0.0",
     "@types/pollyjs__adapter-node-http": "^2.0.0",
     "@types/pollyjs__core": "^4.3.0",
     "@types/pollyjs__persister-fs": "^2.0.0",
     "@types/setup-polly-jest": "^0.5.0",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
     "abort-controller": "^3.0.0",
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^3.2.0",
-    "babel-loader": "^8.1.0",
-    "eslint": "^7.9.0",
-    "eslint-config-es": "3.28.30",
-    "eslint-plugin-tsdoc": "^0.2.7",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^25.0.0",
-    "eslint-import-resolver-typescript": "^2.3.0",
+    "babel-loader": "^8.2.3",
+    "componentsjs-generator": "^3.0.0",
+    "eslint": "^8.3.0",
+    "eslint-config-es": "4.1.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-eslint-comments": "3.2.0",
+    "eslint-plugin-extended": "0.2.0",
+    "eslint-plugin-import": "2.25.2",
+    "eslint-plugin-jest": "^25.3.0",
+    "eslint-plugin-mocha": "9.0.0",
+    "eslint-plugin-react": "7.27.1",
+    "eslint-plugin-react-hooks": "4.2.0",
+    "eslint-plugin-tsdoc": "^0.2.14",
+    "eslint-plugin-unicorn": "37.0.1",
     "eslint-plugin-unused-imports": "^2.0.0",
     "immutable": "^3.8.2",
     "jest": "^27.0.1",
     "jest-rdf": "^1.7.0",
     "lerna": "^4.0.0",
     "manual-git-changelog": "^1.0.0",
+    "memory-streams": "^0.1.3",
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "nodemon": "^2.0.15",
     "pre-commit": "^1.2.2",
+    "rdf-data-factory": "^1.1.0",
     "rdf-quad": "^1.5.0",
     "rdf-test-suite": "^1.18.0",
     "rdf-test-suite-ldf": "^1.4.0",
     "setup-polly-jest": "^0.10.0",
-    "sparqlalgebrajs": "^3.0.2",
+    "sparqlalgebrajs": "^4.0.0",
     "stream-to-string": "^1.1.0",
     "streamify-array": "^1.0.0",
     "streamify-string": "^1.0.1",
-    "string-replace-webpack-plugin": "^0.1.3",
     "ts-jest": "^27.0.1",
     "typedoc": "^0.21.0",
-    "@strictsoftware/typedoc-plugin-monorepo": "^0.4.2",
-    "typescript": "^4.3.5",
-    "uglifyjs-webpack-plugin": "^2.1.1",
-    "webpack": "^4.28.3",
-    "webpack-cli": "^4.0.0",
-    "memory-streams": "^0.1.3"
+    "typescript": "^4.5.2",
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1"
   },
   "pre-commit": [
     "build",
     "lint",
     "test"
   ],
-  "jest": {
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "/test/.*-test.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "setupFilesAfterEnv": [ "./setup-jest.js" ],
-    "collectCoverage": true,
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/mocks/",
-      "index.js"
-    ],
-    "testEnvironment": "node",
-    "coverageThreshold": {
-      "global": {
-        "branches": 100,
-        "functions": 100,
-        "lines": 100,
-        "statements": 100
-      }
-    }
-  },
   "scripts": {
     "test-changed": "lerna run test --since HEAD",
     "build-changed": "lerna run build --since HEAD",
     "test": "jest",
     "test-ci": "jest --ci --maxWorkers=4 --coverage",
     "lint": "eslint . --ext .ts --cache",
-    "clean": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules",
-    "build": "tsc",
-    "build-watch": " tsc --watch",
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "tsc",
+    "build:components": "componentsjs-generator engines/* packages/*",
+    "build-watch": "nodemon -e ts --ignore '*.d.ts' --exec yarn run build",
+    "build-watch:ts": "tsc --watch",
+    "build-watch:components": "nodemon -e d.ts --exec yarn run build:components",
     "publish": "yarn run build",
     "publish-release": "lerna publish",
     "publish-bare": "lerna exec -- npm publish --silent",
@@ -108,5 +88,9 @@
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
     "postinstall": "yarn run build && lerna run prepare",
     "version": "manual-git-changelog onversion"
-  }
+  },
+  "resolutions": {
+    "@rdfjs/types": "1.1.0"
+  },
+  "dependencies": {}
 }

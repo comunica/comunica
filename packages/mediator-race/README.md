@@ -22,16 +22,16 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
+        "@id": "#mediatorRdfParseHandle",
         "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+        "bus": { "@id": "ActorRdfParse:_default_bus" }
       }
     }
   ]
@@ -40,6 +40,6 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
+* `bus`: Identifier of the bus to mediate over.
 
 

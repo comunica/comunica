@@ -22,12 +22,12 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserXmlRdfa",
+      "@id": "urn:comunica:default:rdf-parse/actors#xml-rdfa",
       "@type": "ActorRdfParseXmlRdfa",
       "priorityScale": 0.3
     }
@@ -37,4 +37,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
+* `priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.

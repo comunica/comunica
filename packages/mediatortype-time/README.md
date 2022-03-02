@@ -16,7 +16,3 @@ and should only be used by [developers that want to build their own query engine
 ```bash
 $ yarn add @comunica/mediatortype-time
 ```
-
-## Usage
-
-TODO

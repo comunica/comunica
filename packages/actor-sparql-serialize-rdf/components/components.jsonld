@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-rdf/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-sparql-serialize-rdf",
-  "@type": "Module",
-  "requireName": "@comunica/actor-sparql-serialize-rdf",
-  "import": [
-    "files-cassr:components/Actor/SparqlSerialize/Rdf.jsonld"
-  ]
-}

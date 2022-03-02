@@ -1,6 +1,5 @@
-import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import type { IActionQueryOperation, IActorQueryOperationOutput } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { IActorQueryOperationArgs, MediatorQueryOperation } from './ActorQueryOperation';
 import { ActorQueryOperationTyped } from './ActorQueryOperationTyped';
 
 /**
@@ -8,16 +7,13 @@ import { ActorQueryOperationTyped } from './ActorQueryOperationTyped';
  */
 export abstract class ActorQueryOperationTypedMediated<O extends Algebra.Operation> extends ActorQueryOperationTyped<O>
   implements IActorQueryOperationTypedMediatedArgs {
-  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+  public readonly mediatorQueryOperation: MediatorQueryOperation;
 
   public constructor(args: IActorQueryOperationTypedMediatedArgs, operationName: string) {
     super(args, operationName);
   }
 }
 
-export interface IActorQueryOperationTypedMediatedArgs
-  extends IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
+export interface IActorQueryOperationTypedMediatedArgs extends IActorQueryOperationArgs {
+  mediatorQueryOperation: MediatorQueryOperation;
 }

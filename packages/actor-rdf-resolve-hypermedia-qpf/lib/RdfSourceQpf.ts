@@ -1,10 +1,9 @@
-/* eslint-disable id-length */
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
+import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -19,34 +18,28 @@ const DF = new DataFactory();
 export class RdfSourceQpf implements IQuadSource {
   public readonly searchForm: ISearchForm;
 
-  private readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+  private readonly mediatorMetadata: MediatorRdfMetadata;
 
-  private readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
 
-  private readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
 
   private readonly subjectUri: string;
   private readonly predicateUri: string;
   private readonly objectUri: string;
   private readonly graphUri?: string;
   private readonly defaultGraph?: RDF.NamedNode;
-  private readonly context?: ActionContext;
+  private readonly context: IActionContext;
   private readonly cachedQuads: Record<string, AsyncIterator<RDF.Quad>>;
 
-  public constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>,
-  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
-  subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
-  metadata: Record<string, any>, context: ActionContext | undefined, initialQuads?: RDF.Stream) {
+  public constructor(mediatorMetadata: MediatorRdfMetadata,
+    mediatorMetadataExtract: MediatorRdfMetadataExtract,
+    mediatorDereferenceRdf: MediatorDereferenceRdf,
+    subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
+    metadata: Record<string, any>, context: IActionContext, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
-    this.mediatorRdfDereference = mediatorRdfDereference;
+    this.mediatorDereferenceRdf = mediatorDereferenceRdf;
     this.subjectUri = subjectUri;
     this.predicateUri = predicateUri;
     this.objectUri = objectUri;
@@ -81,8 +74,6 @@ export class RdfSourceQpf implements IQuadSource {
 
     // Find a quad pattern or triple pattern search form
     const { searchForms } = metadata;
-
-    // TODO: in the future, a query-based search form getter should be used.
     for (const searchForm of searchForms.values) {
       if (this.graphUri &&
         this.subjectUri in searchForm.mappings &&
@@ -145,16 +136,25 @@ export class RdfSourceQpf implements IQuadSource {
 
     const quads = new TransformIterator(async() => {
       let url: string = this.createFragmentUri(this.searchForm, subject, predicate, object, graph);
-      const rdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ context: this.context, url });
-      url = rdfDereferenceOutput.url;
+      const dereferenceRdfOutput = await this.mediatorDereferenceRdf.mediate({ context: this.context, url });
+      url = dereferenceRdfOutput.url;
 
       // Determine the metadata and emit it
       const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-        { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
+        { context: this.context,
+          url,
+          quads: dereferenceRdfOutput.data,
+          triples: dereferenceRdfOutput.metadata?.triples },
       );
       const metadataExtractPromise = this.mediatorMetadataExtract
-        .mediate({ context: this.context, url, metadata: rdfMetadataOuput.metadata })
-        .then(({ metadata }) => quads.setProperty('metadata', metadata));
+        .mediate({
+          context: this.context,
+          url,
+          metadata: rdfMetadataOuput.metadata,
+          requestTime: dereferenceRdfOutput.requestTime,
+        })
+        .then(({ metadata }) => quads
+          .setProperty('metadata', { ...metadata, canContainUndefs: false }));
 
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.
@@ -200,12 +200,14 @@ export class RdfSourceQpf implements IQuadSource {
   }
 
   protected getPatternId(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
+    /* eslint-disable id-length */
     return JSON.stringify({
       s: subject.termType === 'Variable' ? '' : termToString(subject),
       p: predicate.termType === 'Variable' ? '' : termToString(predicate),
       o: object.termType === 'Variable' ? '' : termToString(object),
       g: graph.termType === 'Variable' ? '' : termToString(graph),
     });
+    /* eslint-enable id-length */
   }
 
   protected cacheQuads(quads: AsyncIterator<RDF.Quad>,

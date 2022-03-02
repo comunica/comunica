@@ -30,7 +30,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should test', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { sparqlService: true };
       const exists = true;
@@ -38,7 +38,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should not test on invalid metadata', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -47,7 +47,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should test on invalid metadata with forced destination type', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -56,7 +56,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should test on invalid metadata when URL ends with /sparql', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc/sparql';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -72,7 +72,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         checkUrlSuffixSparql: false,
         checkUrlSuffixUpdate: true,
       });
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc/sparql';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -88,7 +88,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: false,
       });
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc/update';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -97,7 +97,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should not test on invalid metadata with forced destination type for different destination type', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -106,7 +106,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should run', async() => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { sparqlService: 'service' };
       const exists = true;
@@ -116,7 +116,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should run without sparqlService metadata', async() => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = {};
       const exists = true;

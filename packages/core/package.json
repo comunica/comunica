@@ -1,13 +1,13 @@
 {
   "name": "@comunica/core",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
-  "main": "index.js",
+  "main": "lib/index.js",
   "engines": {
-    "node": ">=8.0"
+    "node": ">=14.0"
   },
-  "typings": "index",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -16,6 +16,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "keywords": [
     "semantic",
     "actor",
@@ -31,35 +32,15 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/context-entries": "^1.22.0",
-    "@comunica/types": "^1.22.0",
+    "@comunica/types": "^2.0.0",
     "immutable": "^3.8.2"
   },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "../../tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "collectCoverage": true
-  },
   "scripts": {
-    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
-    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
   }
 }

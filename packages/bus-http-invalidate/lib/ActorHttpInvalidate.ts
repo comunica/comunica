@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
 /**
@@ -13,7 +13,10 @@ import { Actor } from '@comunica/core';
  * @see IActorHttpInvalidateOutput
  */
 export abstract class ActorHttpInvalidate extends Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput> {
-  public constructor(args: IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
+  public constructor(args: IActorHttpInvalidateArgs) {
     super(args);
   }
 }
@@ -29,3 +32,7 @@ export interface IActionHttpInvalidate extends IAction {
 export interface IActorHttpInvalidateOutput extends IActorOutput {
 
 }
+
+export type IActorHttpInvalidateArgs = IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
+
+export type MediatorHttpInvalidate = Mediate<IActionHttpInvalidate, IActorHttpInvalidateOutput>;

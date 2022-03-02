@@ -23,24 +23,15 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
+      "@id": "urn:comunica:default:rdf-parse-html/actors#script",
       "@type": "ActorRdfParseHtmlScript",
-      "carphs:mediatorRdfParseMediatypes": {
-        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
-        "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
-      },
-      "carphs:mediatorRdfParseHandle": {
-        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseHandle",
-        "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
-      }
+      "mediatorRdfParseMediatypes": { "@id": "urn:comunica:default:rdf-parse/mediators#mediaType" },
+      "mediatorRdfParseHandle": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
     }
   ]
 }
@@ -48,5 +39,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carphs:mediatorRdfParseMediatypes`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for collecting media types.
-* `carphs:mediatorRdfParseHandle`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.
+* `mediatorRdfParseMediatypes`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for collecting media types.
+* `mediatorRdfParseHandle`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) for actual parsing.

@@ -22,17 +22,17 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
+        "@id": "#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
-        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+        "bus": { "@id": "ActorRdfParse:_default_bus" },
+        "field": "mediaTypes"
       }
     }
   ]
@@ -41,6 +41,6 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
-* `cmcu:Mediator/CombineUnion/field`: The field name to mediate over.
+* `bus`: Identifier of the bus to mediate over.
+* `field`: The field name to mediate over.
 

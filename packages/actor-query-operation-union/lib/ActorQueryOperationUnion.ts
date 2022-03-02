@@ -3,9 +3,15 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { BindingsStream,
+  IQueryOperationResultBindings,
+  IActionContext,
+  IQueryOperationResult,
+  MetadataBindings, MetadataQuads } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
+import { uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -22,55 +28,66 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @param {string[][]} variables Double array of variables to take the union of.
    * @return {string[]} The union of the given variables.
    */
-  public static unionVariables(variables: string[][]): string[] {
-    const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
-    return [ ...new Set(withDuplicates) ];
+  public static unionVariables(variables: RDF.Variable[][]): RDF.Variable[] {
+    return uniqTerms(variables.flat());
   }
 
   /**
    * Takes the union of the given metadata array.
-   * It will ensure that the totalItems metadata value is properly calculated.
+   * It will ensure that the cardinality metadata value is properly calculated.
    * @param {{[p: string]: any}[]} metadatas Array of metadata.
+   * @param bindings If the union of the variables field should also be taken.
    * @return {{[p: string]: any}} Union of the metadata.
    */
-  public static unionMetadata(metadatas: Record<string, any>[]): Record<string, any> {
-    let totalItems = 0;
+  public static unionMetadata<
+    Bindings extends boolean,
+    M extends (Bindings extends true ? MetadataBindings : MetadataQuads)
+  >(metadatas: M[], bindings: Bindings): M {
+    // Union cardinality
+    const cardinality: RDF.QueryResultCardinality = { type: 'exact', value: 0 };
     for (const metadata of metadatas) {
-      if (metadata.totalItems && Number.isFinite(metadata.totalItems)) {
-        totalItems += metadata.totalItems;
+      if ((metadata.cardinality.value && Number.isFinite(metadata.cardinality.value)) ||
+        metadata.cardinality.value === 0) {
+        if (metadata.cardinality.type === 'estimate') {
+          cardinality.type = 'estimate';
+        }
+        cardinality.value += metadata.cardinality.value;
       } else {
-        totalItems = Number.POSITIVE_INFINITY;
+        cardinality.type = 'estimate';
+        cardinality.value = Number.POSITIVE_INFINITY;
         break;
       }
     }
-    return { totalItems };
+
+    const metadataBase: MetadataQuads = {
+      cardinality,
+      canContainUndefs: metadatas.some(metadata => metadata.canContainUndefs),
+    };
+
+    // Union variables
+    if (bindings) {
+      metadataBase.variables = ActorQueryOperationUnion.unionVariables(metadatas.map(metadata => metadata.variables));
+      return <M> metadataBase;
+    }
+    return <M> metadataBase;
   }
 
-  public async testOperation(pattern: Algebra.Union, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Union, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Union, context: ActionContext):
-  Promise<IActorQueryOperationOutputBindings> {
-    const outputs: IActorQueryOperationOutputBindings[] = (await Promise.all([
-      this.mediatorQueryOperation.mediate({ operation: pattern.left, context }),
-      this.mediatorQueryOperation.mediate({ operation: pattern.right, context }),
-    ])).map(ActorQueryOperation.getSafeBindings);
+  public async runOperation(operation: Algebra.Union, context: IActionContext):
+  Promise<IQueryOperationResult> {
+    const outputs: IQueryOperationResultBindings[] = (await Promise.all(operation.input
+      .map(subOperation => this.mediatorQueryOperation.mediate({ operation: subOperation, context }))))
+      .map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
-      (output: IActorQueryOperationOutputBindings) => output.bindingsStream,
+      (output: IQueryOperationResultBindings) => output.bindingsStream,
     ), { autoStart: false });
-    const metadata: (() => Promise<Record<string, any>>) | undefined = outputs[0].metadata && outputs[1].metadata ?
-      () =>
-        Promise.all([
-          (<() => Promise<Record<string, any>>>outputs[0].metadata)(),
-          (<() => Promise<Record<string, any>>>outputs[1].metadata)(),
-        ]).then(ActorQueryOperationUnion.unionMetadata) :
-      undefined;
-    const variables: string[] = ActorQueryOperationUnion.unionVariables(
-      outputs.map((output: IActorQueryOperationOutputBindings) => output.variables),
-    );
-    const canContainUndefs = outputs.reduce((acc, val) => acc || val.canContainUndefs, false);
-    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs };
+
+    const metadata: () => Promise<MetadataBindings> = () => Promise.all(outputs.map(output => output.metadata()))
+      .then(subMeta => ActorQueryOperationUnion.unionMetadata(subMeta, true));
+    return { type: 'bindings', bindingsStream, metadata };
   }
 }

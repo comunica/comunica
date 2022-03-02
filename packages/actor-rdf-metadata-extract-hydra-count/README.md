@@ -21,7 +21,7 @@ $ yarn add @comunica/actor-rdf-metadata-extract-hydra-count
 
 This actor adds the following entries to the metadata object.
 
-* `totalItems`: Value of `http://www.w3.org/ns/hydra/core#totalItems` or `http://rdfs.org/ns/void#triples`.
+* `cardinality`: Value of `http://www.w3.org/ns/hydra/core#totalItems` or `http://rdfs.org/ns/void#triples` represented as `{ type: 'exact' | 'estimate', value: number }`.
 
 ## Configure
 
@@ -30,14 +30,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraCount",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#hydra-count",
       "@type": "ActorRdfMetadataExtractHydraCount",
-      "carmehco:Actor/RdfMetadataExtract/HydraCount/predicate": [
+      "predicates": [
         "http://www.w3.org/ns/hydra/core#totalItems",
         "http://rdfs.org/ns/void#triples"
       ]
@@ -48,4 +48,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carmehco:Actor/RdfMetadataExtract/HydraCount/predicate`: The predicates to consider when determining counts, defaults to `http://www.w3.org/ns/hydra/core#totalItems` and `http://rdfs.org/ns/void#triples`.
+* `predicate`: The predicates to consider when determining counts, defaults to `http://www.w3.org/ns/hydra/core#totalItems` and `http://rdfs.org/ns/void#triples`.

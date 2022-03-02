@@ -23,14 +23,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-sparql.json#mySparqlEndpointResolver",
+      "@id": "urn:comunica:default:query-operation/actors#sparql-endpoint",
       "@type": "ActorQueryOperationSparqlEndpoint",
-      "caqose:Actor/QueryOperation/SparqlEndpoint/mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]
 }
@@ -38,5 +38,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caqose:Actor/QueryOperation/SparqlEndpoint/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
-* `caqose:Actor/QueryOperation/SparqlEndpoint/forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.

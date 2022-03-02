@@ -1,6 +1,7 @@
-import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryOperationResultVoid } from '@comunica/types';
 import { ActorQueryOperationUpdateCompositeUpdate } from '../lib/ActorQueryOperationUpdateCompositeUpdate';
 
 describe('ActorQueryOperationUpdateCompositeUpdate', () => {
@@ -13,8 +14,8 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
       mediate(arg: any) {
         if (arg.operation === 'RESOLVE') {
           return Promise.resolve({
-            type: 'update',
-            updateResult: Promise.resolve(),
+            type: 'void',
+            execute: () => Promise.resolve(),
           });
         }
         throw new Error(`INVALID OPERATION ${JSON.stringify(arg)}`);
@@ -47,19 +48,20 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
     });
 
     it('should test on compositeupdate', () => {
-      const op: any = { operation: { type: 'compositeupdate' }};
+      const op: any = { operation: { type: 'compositeupdate' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
       const op: any = {
-        operation: { type: 'compositeupdate' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }),
+        operation: { type: 'compositeupdate' },
+        context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-compositeupdate', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -69,10 +71,11 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
           type: 'compositeupdate',
           updates: [],
         },
+        context: new ActionContext(),
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.execute()).resolves.toBeUndefined();
     });
 
     it('should run with one operation', async() => {
@@ -83,10 +86,11 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
             'RESOLVE',
           ],
         },
+        context: new ActionContext(),
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.execute()).resolves.toBeUndefined();
     });
 
     it('should run with one three operations', async() => {
@@ -99,10 +103,11 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
             'RESOLVE',
           ],
         },
+        context: new ActionContext(),
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.execute()).resolves.toBeUndefined();
     });
   });
 });

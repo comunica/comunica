@@ -1,10 +1,10 @@
 {
   "name": "@comunica/bus-rdf-parse-html",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "A comunica bus for rdf-parse-html events.",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -13,6 +13,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "keywords": [
     "comunica",
     "bus",
@@ -26,21 +27,15 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/core": "^2.0.0",
     "@rdfjs/types": "*"
   },
-  "peerDependencies": {
-    "@comunica/core": "^1.8.0"
-  },
-  "devDependencies": {
-    "@comunica/core": "^1.22.0"
-  },
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
   }
 }

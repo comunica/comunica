@@ -1,8 +1,8 @@
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -10,37 +10,38 @@ import type { Algebra } from 'sparqlalgebrajs';
  * handles SPARQL create operations.
  */
 export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<Algebra.Create> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   public constructor(args: IActorQueryOperationCreateArgs) {
     super(args, 'create');
   }
 
-  public async testOperation(pattern: Algebra.Create, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Create, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Create, context: ActionContext):
-  Promise<IActorQueryOperationOutput> {
+  public async runOperation(operation: Algebra.Create, context: IActionContext):
+  Promise<IQueryOperationResult> {
     // Delegate to update-quads bus
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { execute } = await this.mediatorUpdateQuads.mediate({
       createGraphs: {
-        graphs: [ pattern.source ],
-        requireNonExistence: !pattern.silent,
+        graphs: [ operation.source ],
+        requireNonExistence: !operation.silent,
       },
       context,
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      execute,
     };
   }
 }
 
 export interface IActorQueryOperationCreateArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  /**
+   * The RDF Update Quads mediator
+   */
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }

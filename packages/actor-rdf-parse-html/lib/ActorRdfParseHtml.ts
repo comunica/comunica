@@ -10,7 +10,8 @@ import type {
   IActorRdfParseHtmlOutput,
   IHtmlParseListener,
 } from '@comunica/bus-rdf-parse-html';
-import type { ActionContext, Actor, Bus, IActorTest } from '@comunica/core';
+import type { Actor, Bus, IActorTest } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { WritableStream as HtmlParser } from 'htmlparser2/lib/WritableStream';
 
@@ -22,34 +23,45 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
   private readonly busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest,
   IActorRdfParseHtmlOutput>, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
 
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "text/html": 1.0,
+   *       "application/xhtml+xml": 0.9
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "text/html": "http://www.w3.org/ns/formats/HTML",
+   *       "application/xhtml+xml": "http://www.w3.org/ns/formats/HTML"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
+  public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
-    const quads = new Readable({ objectMode: true });
-    quads._read = async() => {
+    const data = new Readable({ objectMode: true });
+    data._read = async() => {
       // Only initialize once
-      quads._read = () => {
+      data._read = () => {
         // Do nothing
       };
 
       // Create callbacks action
       let endBarrier = 1;
       function emit(quad: RDF.Quad): void {
-        quads.emit('data', quad);
+        data.emit('data', quad);
       }
       function error(subError: unknown): void {
-        quads.emit('error', subError);
+        data.emit('error', subError);
       }
       function end(): void {
         if (--endBarrier === 0) {
-          quads.push(null);
+          data.push(null);
         }
       }
-      const htmlAction = {
-        baseIRI: action.baseIRI,
+      const htmlAction: IActionRdfParseHtml = {
+        baseIRI: action.metadata?.baseIRI ?? '',
         context,
         emit,
         end,
@@ -98,10 +110,10 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
                 error(error_);
               }
             },
-            ontext(data: string) {
+            ontext(text: string) {
               try {
                 for (const htmlParseListener of htmlParseListeners) {
-                  htmlParseListener.onText(data);
+                  htmlParseListener.onText(text);
                 }
               } catch (error_: unknown) {
                 error(error_);
@@ -114,16 +126,22 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
           });
 
           // Push stream to parser
-          action.input.on('error', error);
-          action.input.pipe(<any> parser);
+          action.data.on('error', error);
+          action.data.pipe(<any> parser);
         }).catch(error);
     };
 
-    return { quads };
+    return { data };
   }
 }
 
 export interface IActorRdfParseHtmlArgs extends IActorRdfParseFixedMediaTypesArgs {
+  /* eslint-disable max-len */
+  /**
+   * The RDF Parse HTML bus for fetching HTML listeners
+   * @default {<npmd:@comunica/bus-rdf-parse-html/^2.0.0/components/ActorRdfParseHtml.jsonld#ActorRdfParseHtml_default_bus>}
+   */
   busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>,
   IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
+  /* eslint-enable max-len */
 }

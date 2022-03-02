@@ -1,12 +1,8 @@
-/* eslint-disable max-len */
-import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-  Bindings,
-} from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { IQueryOperationResultVoid, IQueryOperationResultBindings,
+  IQueryOperationResultBoolean, IQueryOperationResultQuads } from '@comunica/types';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';
@@ -17,7 +13,10 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 import 'jest-rdf';
+import '@comunica/jest';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 const factory = new Factory();
 
@@ -97,7 +96,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a single sparql source', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql' },
       });
       const op: any = { operation: 'bla', context };
@@ -105,7 +104,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a single sparql source and equal destination', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'a' },
         '@comunica/bus-rdf-update-quads:destination': { type: 'sparql', value: 'a' },
       });
@@ -114,7 +113,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a URL ending with /sparql', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/sparql' },
       });
       const op: any = { operation: 'bla', context };
@@ -122,7 +121,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on a URL ending with /update', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/update' },
       });
       const op: any = { operation: 'bla', context };
@@ -130,7 +129,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on equal source and destination URL ending with /sparql', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/sparql' },
         '@comunica/bus-rdf-update-quads:destination': { value: '/sparql' },
       });
@@ -139,7 +138,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should test on equal source and destination URL ending with /update', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/update' },
         '@comunica/bus-rdf-update-quads:destination': { value: '/update' },
       });
@@ -148,13 +147,13 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on no source', () => {
-      const context = ActionContext({});
+      const context = new ActionContext({});
       const op: any = { operation: 'bla', context };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on a single non-sparql source', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'nosparql' },
       });
       const op: any = { operation: 'bla', context };
@@ -162,7 +161,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on a missing operation', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql' },
       });
       const op: any = { operation: null, context };
@@ -170,7 +169,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on a differing source and destination', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'a' },
         '@comunica/bus-rdf-update-quads:destination': { type: 'sparql', value: 'b' },
       });
@@ -179,7 +178,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should not test on a differing source and destination when both end with /sparql', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'a/sparql' },
         '@comunica/bus-rdf-update-quads:destination': { value: 'b/sparql' },
       });
@@ -188,32 +187,40 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should fail to run for a missing source', async() => {
-      const context = ActionContext({});
+      const context = new ActionContext({});
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       await expect(actor.run(op)).rejects.toThrow(new Error('Illegal state: undefined sparql endpoint source.'));
     });
 
     it('should run for a sub-query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?p' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('p') ],
+      });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
+        ]),
       ]);
     });
 
     it('should run for a SELECT query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
@@ -221,15 +228,23 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ DF.variable('myP') ],
         ) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?myP' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('myP') ],
+      });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
+        ]),
       ]);
     });
 
@@ -242,20 +257,28 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
       });
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?p' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('p') ],
+      });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3`) ],
+        ]),
       ]);
     });
 
@@ -268,7 +291,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
       });
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
       const op: any = { context,
@@ -276,43 +299,57 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ DF.variable('myP') ],
         ) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual([ '?myP' ]);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
-      expect(output.canContainUndefs).toEqual(true);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('myP') ],
+      });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3`) ],
+        ]),
       ]);
     });
 
     it('should run for an ASK query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-ask' },
       });
       const op: any = { context,
         operation: factory.createAsk(
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
         ) };
-      const output: IActorQueryOperationOutputBoolean = <any> await actor.run(op);
+      const output: IQueryOperationResultBoolean = <any> await actor.run(op);
 
-      expect(await output.booleanResult).toEqual(true);
+      expect(await output.execute()).toEqual(true);
     });
 
     it('should run for a CONSTRUCT query', async() => {
-      const context = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-construct' },
+      const context = new ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': {
+          type: 'sparql',
+          value: 'http://example.org/sparql-construct',
+        },
       });
       const op: any = { context,
         operation: factory.createConstruct(
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) ],
         ) };
-      const output: IActorQueryOperationOutputQuads = <any> await actor.run(op);
+      const output: IQueryOperationResultQuads = <any> await actor.run(op);
 
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 2 },
+        canContainUndefs: true,
+      });
 
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),
@@ -321,7 +358,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should run for an update query', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-update' },
       });
       const op: any = { context,
@@ -329,13 +366,13 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           DF.namedNode('http://s'),
           true,
         ) };
-      const output: IActorQueryOperationOutputUpdate = <any> await actor.run(op);
+      const output: IQueryOperationResultVoid = <any> await actor.run(op);
+
+      expect(mediatorHttp.mediate).not.toHaveBeenCalled();
+
+      await output.execute();
 
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
-      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeFalsy();
-
-      await output.updateResult;
-
       expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
     });
 
@@ -351,7 +388,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           };
         },
       };
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
       const op: any = { context,
@@ -371,7 +408,7 @@ this is a body`));
     });
 
     it('should run and error for a fetching error', () => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
       const op: any = { context,
@@ -383,19 +420,29 @@ this is a body`));
     });
 
     it('should run using the original query string in the context if one exists', async() => {
-      const context = ActionContext({
+      const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
-        '@comunica/actor-init-sparql:queryString': 'SELECT ?myP WHERE { <http://s> ?p <http://o>. }',
+        '@comunica/actor-query-sparql:queryString': 'SELECT ?myP WHERE { <http://s> ?p <http://o>. }',
       });
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      expect(await (<any> output).metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('p') ],
+      });
 
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2') }),
-        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3') }),
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
+        ]),
       ]);
     });
   });

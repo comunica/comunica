@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-context-preprocess-source-to-destination",
-  "@type": "Module",
-  "requireName": "@comunica/actor-context-preprocess-source-to-destination",
-  "import": [
-    "files-cacpstd:components/Actor/ContextPreprocess/SourceToDestination.jsonld"
-  ]
-}

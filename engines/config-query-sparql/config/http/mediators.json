@@ -1,0 +1,16 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:default:http/mediators#main",
+      "@type": "MediatorNumber",
+      "type": "min",
+      "field": "time",
+      "ignoreErrors": true,
+      "bus": { "@id": "ActorHttp:_default_bus" }
+    }
+  ]
+}

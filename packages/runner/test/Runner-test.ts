@@ -1,13 +1,15 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus } from '@comunica/core';
-
+import { ActionContext, Actor, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { Runner } from '../lib/Runner';
 
 describe('Runner', () => {
   let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The Runner module', () => {
@@ -16,7 +18,7 @@ describe('Runner', () => {
     });
 
     it('should be a Runner constructor', () => {
-      expect(new (<any> Runner)({ busInit: bus, actors: []})).toBeInstanceOf(Runner);
+      expect(new (<any> Runner)(bus, [])).toBeInstanceOf(Runner);
     });
 
     it('should not be able to create new Runner objects without \'new\'', () => {
@@ -24,11 +26,11 @@ describe('Runner', () => {
     });
 
     it('should throw an error when constructed without actors', () => {
-      expect(() => { new (<any> Runner)({ busInit: bus }); }).toThrow();
+      expect(() => { new (<any> Runner)(bus); }).toThrow();
     });
 
     it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> Runner)({ actors: []}); }).toThrow();
+      expect(() => { new (<any> Runner)(undefined, []); }).toThrow();
     });
 
     it('should throw an error when constructed without a name and bus', () => {
@@ -57,7 +59,7 @@ describe('Runner', () => {
     };
 
     beforeEach(() => {
-      runner = new (<any> Runner)({ busInit: bus, actors: []});
+      runner = new (<any> Runner)(bus, []);
       actor1 = new (<any> Actor)({ name: 'actor1', bus: new Bus({ name: 'bus1' }) });
       actor2 = new (<any> Actor)({ name: 'actor2', bus: new Bus({ name: 'bus2' }) });
 
@@ -84,15 +86,15 @@ describe('Runner', () => {
     });
 
     it('should delegate \'init\' actions to actors on the bus', async() => {
-      await runner.run({ argv: [ 'a', 'b' ], env: { c: 'd' }, stdin: <any> undefined });
+      await runner.run({ argv: [ 'a', 'b' ], env: { c: 'd' }, stdin: <any> undefined, context });
 
       expect(actor1.test).toHaveBeenCalledTimes(1);
       expect(actor2.test).toHaveBeenCalledTimes(1);
       expect(actor1.run).toHaveBeenCalledTimes(1);
       expect(actor2.run).toHaveBeenCalledTimes(1);
 
-      expect(actor1.run).toHaveBeenCalledWith({ argv: [ 'a', 'b' ], env: { c: 'd' }});
-      expect(actor2.run).toHaveBeenCalledWith({ argv: [ 'a', 'b' ], env: { c: 'd' }});
+      expect(actor1.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }});
+      expect(actor2.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }});
     });
 
     it('should be initializable', () => {

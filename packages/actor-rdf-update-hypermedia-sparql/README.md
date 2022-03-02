@@ -22,13 +22,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-sparql/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-sparql/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": TODO,
-      "@type": "ActorRdfUpdateHypermediaSparql"
+      "@id": "urn:comunica:default:rdf-update-hypermedia/actors#sparql",
+      "@type": "ActorRdfUpdateHypermediaSparql",
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]
 }
@@ -36,4 +37,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-TODO
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).

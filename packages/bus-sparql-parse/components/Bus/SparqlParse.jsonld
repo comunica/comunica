@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld",
-  "@id": "cbsp:Bus/SparqlParse",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for sparql-parse events."
-}

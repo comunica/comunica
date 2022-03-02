@@ -1,10 +1,14 @@
-import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
-import { Bindings } from '@comunica/bus-query-operation';
-import type { Term } from '@rdfjs/types';
-import { termToString } from 'rdf-string';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { HashFunction } from '@comunica/bus-hash-bindings';
+import type { Bindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncAggregateEvaluator } from 'sparqlee';
 import type { AsyncEvaluatorConfig } from 'sparqlee';
+
+const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 /**
  * A simple type alias for strings that should be hashes of Bindings
@@ -36,10 +40,14 @@ export class GroupsState {
   private waitResolver: (bindings: Bindings[]) => void;
   private resultHasBeenCalled: boolean;
 
-  public constructor(private readonly pattern: Algebra.Group, private readonly sparqleeConfig: AsyncEvaluatorConfig) {
+  public constructor(
+    private readonly hashFunction: HashFunction,
+    private readonly pattern: Algebra.Group,
+    private readonly sparqleeConfig: AsyncEvaluatorConfig,
+  ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
-    this.groupVariables = new Set(this.pattern.variables.map(x => termToString(x)));
+    this.groupVariables = new Set(this.pattern.variables.map(x => x.value));
     this.distinctHashes = pattern.aggregates.some(({ distinct }) => distinct) ?
       new Map() :
       null;
@@ -64,9 +72,9 @@ export class GroupsState {
 
     // Select the bindings on which we group
     const grouper = bindings
-      .filter((_, variable: string) => this.groupVariables.has(variable))
-      .toMap();
+      .filter((_, variable) => this.groupVariables.has(variable.value));
     const groupHash = this.hashBindings(grouper);
+
     // First member of group -> create new group
     let groupInitializer: Promise<IGroup> | undefined = this.groupsInitializer.get(groupHash);
 
@@ -76,7 +84,7 @@ export class GroupsState {
       groupInitializer = (async() => {
         const aggregators: Record<string, AsyncAggregateEvaluator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
-          const key = termToString(aggregate.variable);
+          const key = aggregate.variable.value;
           aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
           await aggregators[key].put(bindings);
         }));
@@ -106,7 +114,7 @@ export class GroupsState {
             this.distinctHashes!.get(groupHash)!.add(hash);
           }
 
-          const variable = termToString(aggregate.variable);
+          const variable = aggregate.variable.value;
           await group.aggregators[variable].put(bindings);
         }));
       })().then(() => {
@@ -129,32 +137,32 @@ export class GroupsState {
 
       // Collect aggregator bindings
       // If the aggregate errorred, the result will be undefined
-      const aggBindings: Record<string, Term> = {};
+      let returnBindings = groupBindings;
       for (const variable in aggregators) {
         const value = aggregators[variable].result();
-        if (value !== undefined) {
+        if (value) {
           // Filter undefined
-          aggBindings[variable] = value;
+          returnBindings = returnBindings.set(DF.variable(variable), value);
         }
       }
 
       // Merge grouping bindings and aggregator bindings
-      return groupBindings.merge(aggBindings);
+      return returnBindings;
     });
 
     // Case: No Input
     // Some aggregators still define an output on the empty input
     // Result is a single Bindings
     if (rows.length === 0 && this.groupVariables.size === 0) {
-      const single: Record<string, Term> = {};
+      const single: [RDF.Variable, RDF.Term][] = [];
       for (const aggregate of this.pattern.aggregates) {
-        const key = termToString(aggregate.variable);
+        const key = aggregate.variable;
         const value = AsyncAggregateEvaluator.emptyValue(aggregate);
         if (value !== undefined) {
-          single[key] = value;
+          single.push([ key, value ]);
         }
       }
-      rows = [ Bindings(single) ];
+      rows = [ BF.bindings(single) ];
     }
     this.waitResolver(rows);
   }
@@ -188,6 +196,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return AbstractFilterHash.hash(bindings);
+    return this.hashFunction(bindings);
   }
 }

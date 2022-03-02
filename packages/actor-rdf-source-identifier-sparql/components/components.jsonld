@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-sparql/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-source-identifier-sparql",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-source-identifier-sparql",
-  "import": [
-    "files-carsis:components/Actor/RdfSourceIdentifier/Sparql.jsonld"
-  ]
-}

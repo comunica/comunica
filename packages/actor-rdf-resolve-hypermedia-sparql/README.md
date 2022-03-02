@@ -22,16 +22,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-sparql/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-sparql/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-sparql.json#mySparqlQuadPatternResolver",
+      "@id": "urn:comunica:default:rdf-resolve-hypermedia/actors#sparql",
       "@type": "ActorRdfResolveHypermediaSparql",
-      "carrhs:Actor/RdfResolveHypermedia/Sparql/mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
-      }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]
 }
@@ -39,5 +37,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carrhs:Actor/RdfResolveHypermedia/Sparql/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
-* `carrhs:Actor/RdfResolveHypermedia/Sparql/forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.

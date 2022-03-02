@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:rdf-resolve-hypermedia/mediators#main",
+  "@type": "MediatorNumber",
+  "type": "max",
+  "field": "filterFactor",
+  "ignoreErrors": true,
+  "bus": { "@id": "ActorRdfResolveHypermedia:_default_bus" }
+}

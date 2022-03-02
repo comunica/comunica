@@ -1,26 +1,23 @@
 import { Readable } from 'stream';
-import type { IActionHandleRdfParse, IActorOutputHandleRdfParse,
-  IActorTestHandleRdfParse } from '@comunica/bus-rdf-parse';
+import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
-import type { Actor, Mediator } from '@comunica/core';
-import { ActionContext } from '@comunica/core';
+import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
 
 /**
- * An HTML parse listeners that detects <script> data blocks with known RDF media tyoes,
+ * An HTML parse listeners that detects <script> data blocks with known RDF media types,
  * parses them, and outputs the resulting quads.
  */
 export class HtmlScriptListener implements IHtmlParseListener {
-  private readonly mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  private readonly mediatorRdfParseHandle: MediatorRdfParseHandle;
 
   private readonly cbQuad: (quad: RDF.Quad) => void;
   private readonly cbError: (error: Error) => void;
   private readonly cbEnd: () => void;
   private readonly supportedTypes: Record<string, number>;
-  private readonly context: ActionContext;
+  private readonly context: IActionContext;
   private baseIRI: string;
   private readonly headers?: Headers;
   private readonly onlyFirstScript: boolean;
@@ -33,22 +30,20 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private passedScripts = 0;
   private isFinalJsonLdProcessing = false;
 
-  public constructor(mediatorRdfParseHandle: Mediator<
-  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-  cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-  supportedTypes: Record<string, number>, context: ActionContext | undefined, baseIRI: string,
-  headers: Headers | undefined) {
+  public constructor(mediatorRdfParseHandle: MediatorRdfParseHandle,
+    cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
+    supportedTypes: Record<string, number>, context: IActionContext, baseIRI: string,
+    headers: Headers | undefined) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
     this.cbError = cbError;
     this.cbEnd = cbEnd;
     this.supportedTypes = supportedTypes;
-    this.context = (context || ActionContext({}))
-      .set('@comunica/actor-rdf-parse-html-script:processing-html-script', true);
+    this.context = context
+      .set(KeysRdfParseHtmlScript.processingHtmlScript, true);
     this.baseIRI = baseIRI;
     this.headers = headers;
-    this.onlyFirstScript = (context && context.get('extractAllScripts') === false) ?? false;
+    this.onlyFirstScript = context.get(KeysRdfParseHtmlScript.extractAllScripts) === false;
     const fragmentPos = this.baseIRI.indexOf('#');
     this.targetScriptId = fragmentPos > 0 ? this.baseIRI.slice(fragmentPos + 1, this.baseIRI.length) : null;
   }
@@ -105,13 +100,18 @@ export class HtmlScriptListener implements IHtmlParseListener {
         // Send all collected text to parser
         const parseAction = {
           context: this.context,
-          handle: { baseIRI: this.baseIRI, input: textStream, headers: this.headers },
+          handle: {
+            metadata: { baseIRI: this.baseIRI },
+            data: textStream,
+            headers: this.headers,
+            context: this.context,
+          },
           handleMediaType: this.handleMediaType,
         };
         this.mediatorRdfParseHandle.mediate(parseAction)
           .then(({ handle }) => {
             // Initialize text parsing
-            handle.quads
+            handle.data
               .on('error', error => this.cbError(HtmlScriptListener
                 .newErrorCoded(error.message, 'invalid script element')))
               .on('data', this.cbQuad)
@@ -191,7 +191,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
    * As such, we have to buffer all JSON-LD until the end of HTML processing,
    * and encapsulate all found contents in an array.
    *
-   * @param mediaType A media type.
+   * @param mediaType A: IActionRdfParseHtml media type.
    */
   public requiresCustomJsonLdHandling(mediaType: string): boolean {
     return !this.onlyFirstScript && !this.targetScriptId && mediaType === 'application/ld+json';

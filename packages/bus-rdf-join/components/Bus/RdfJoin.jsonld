@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld",
-  "@id": "cbrj:Bus/RdfJoin",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for rdf-join events."
-}

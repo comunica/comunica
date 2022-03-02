@@ -1,10 +1,10 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type {
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean,
+  IActionContext,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
 } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -16,17 +16,17 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     super(args, 'ask');
   }
 
-  public async testOperation(pattern: Algebra.Ask, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Ask, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Ask, context: ActionContext): Promise<IActorQueryOperationOutputBoolean> {
+  public async runOperation(operation: Algebra.Ask, context: IActionContext): Promise<IQueryOperationResult> {
     // Call other query operations like this:
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
-      { operation: pattern.input, context },
+    const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(
+      { operation: operation.input, context },
     );
-    const bindings: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(output);
-    const booleanResult: Promise<boolean> = new Promise<boolean>((resolve, reject) => {
+    const bindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(output);
+    const execute: () => Promise<boolean> = () => new Promise<boolean>((resolve, reject) => {
       // Resolve to true if we find one element, and close immediately
       bindings.bindingsStream.once('data', () => {
         resolve(true);
@@ -39,6 +39,6 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
       // Reject if an error occurs in the stream
       bindings.bindingsStream.on('error', reject);
     });
-    return { type: 'boolean', booleanResult };
+    return { type: 'boolean', execute };
   }
 }

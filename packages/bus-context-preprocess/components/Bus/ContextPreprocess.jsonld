@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^1.0.0/components/context.jsonld",
-  "@id": "cbcp:Bus/ContextPreprocess",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for context-preprocess events."
-}

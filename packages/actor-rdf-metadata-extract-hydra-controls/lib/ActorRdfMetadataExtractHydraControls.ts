@@ -1,7 +1,7 @@
 import type { IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+  IActorRdfMetadataExtractOutput, IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { UriTemplate } from 'uritemplate';
 import { parse as parseUriTemplate } from 'uritemplate';
@@ -14,7 +14,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
   public static readonly LINK_TYPES: string[] = [ 'first', 'next', 'previous', 'last' ];
   protected readonly parsedUriTemplateCache: Record<string, UriTemplate> = {};
 
-  public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
 
@@ -30,13 +30,12 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
    */
   public getLinks(pageUrl: string, hydraProperties: Record<string, Record<string, string[]>>):
   Record<string, any> {
-    return ActorRdfMetadataExtractHydraControls.LINK_TYPES.reduce((metadata: Record<string, any>, link) => {
+    return Object.fromEntries(ActorRdfMetadataExtractHydraControls.LINK_TYPES.map(link => {
       // First check the correct hydra:next, then the deprecated hydra:nextPage
       const links = hydraProperties[link] || hydraProperties[`${link}Page`];
       const linkTargets = links && links[pageUrl];
-      metadata[link] = linkTargets && linkTargets.length > 0 ? linkTargets[0] : null;
-      return metadata;
-    }, {});
+      return [ link, linkTargets && linkTargets.length > 0 ? linkTargets[0] : null ];
+    }));
   }
 
   /**
@@ -74,26 +73,23 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
           const searchTemplate: UriTemplate = this.parseUriTemplateCached(template);
 
           // Parse the template mappings
-          const mappings: Record<string, string> = ((hydraProperties.mapping || {})[searchFormId] || [])
-            .reduce((acc: Record<string, string>, mapping: string) => {
-              const variable = ((hydraProperties.variable || {})[mapping] || [])[0];
-              const property = ((hydraProperties.property || {})[mapping] || [])[0];
-              if (!variable) {
-                throw new Error(`Expected a hydra:variable for ${mapping}`);
-              }
-              if (!property) {
-                throw new Error(`Expected a hydra:property for ${mapping}`);
-              }
-              acc[property] = variable;
-              return acc;
-            }, {});
+          const mappings: Record<string, string> = Object
+            .fromEntries(((hydraProperties.mapping || {})[searchFormId] || [])
+              .map(mapping => {
+                const variable = ((hydraProperties.variable || {})[mapping] || [])[0];
+                const property = ((hydraProperties.property || {})[mapping] || [])[0];
+                if (!variable) {
+                  throw new Error(`Expected a hydra:variable for ${mapping}`);
+                }
+                if (!property) {
+                  throw new Error(`Expected a hydra:property for ${mapping}`);
+                }
+                return [ property, variable ];
+              }));
 
           // Gets the URL of the Triple Pattern Fragment with the given triple pattern
           const getUri = (entries: Record<string, string>): string => searchTemplate
-            .expand(Object.keys(entries).reduce((variables: Record<string, string>, key) => {
-              variables[mappings[key]] = entries[key];
-              return variables;
-            }, {}));
+            .expand(Object.fromEntries(Object.keys(entries).map(key => [ mappings[key], entries[key] ])));
 
           searchForms.push({ dataset, template, mappings, getUri });
         }
@@ -128,7 +124,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
-    const metadata: Record<string, any> = {};
+    const metadata: IActorRdfMetadataExtractOutput['metadata'] = {};
     const hydraProperties = await this.getHydraProperties(action.metadata);
     Object.assign(metadata, this.getLinks(action.url, hydraProperties));
     metadata.searchForms = this.getSearchForms(hydraProperties);
@@ -166,5 +162,4 @@ export interface ISearchForms {
    * All available search forms.
    */
   values: ISearchForm[];
-  // TODO: in the future, a query-based search form getter should be available here.
 }

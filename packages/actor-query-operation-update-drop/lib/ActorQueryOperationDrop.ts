@@ -1,8 +1,8 @@
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -14,46 +14,47 @@ const DF = new DataFactory();
  * that handles SPARQL drop operations.
  */
 export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Algebra.Drop> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   public constructor(args: IActorQueryOperationDropArgs) {
     super(args, 'drop');
   }
 
-  public async testOperation(pattern: Algebra.Drop, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Drop, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Drop, context: ActionContext):
-  Promise<IActorQueryOperationOutput> {
+  public async runOperation(operation: Algebra.Drop, context: IActionContext):
+  Promise<IQueryOperationResult> {
     // Delegate to update-quads bus
     let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];
-    if (pattern.source === 'DEFAULT') {
+    if (operation.source === 'DEFAULT') {
       graphs = DF.defaultGraph();
-    } else if (typeof pattern.source === 'string') {
-      graphs = pattern.source;
+    } else if (typeof operation.source === 'string') {
+      graphs = operation.source;
     } else {
-      graphs = [ pattern.source ];
+      graphs = [ operation.source ];
     }
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { execute } = await this.mediatorUpdateQuads.mediate({
       deleteGraphs: {
         graphs,
-        requireExistence: !pattern.silent,
+        requireExistence: !operation.silent,
         dropGraphs: true,
       },
       context,
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      execute,
     };
   }
 }
 
 export interface IActorQueryOperationDropArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  /**
+   * The RDF Update Quads mediator
+   */
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }

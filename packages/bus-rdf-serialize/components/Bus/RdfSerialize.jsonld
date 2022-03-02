@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld",
-  "@id": "cbrs:Bus/RdfSerialize",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for rdf-serialize events."
-}

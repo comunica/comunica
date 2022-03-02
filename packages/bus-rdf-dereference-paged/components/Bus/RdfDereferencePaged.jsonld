@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference-paged/^1.0.0/components/context.jsonld",
-  "@id": "cbrdp:Bus/RdfDereferencePaged",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for rdf-dereference-paged events."
-}

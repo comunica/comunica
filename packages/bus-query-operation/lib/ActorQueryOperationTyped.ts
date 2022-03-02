@@ -1,15 +1,14 @@
-import { KeysQueryOperation } from '@comunica/context-entries';
-import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import type { IActionQueryOperation, IActorQueryOperationOutput,
-  IActorQueryOperationOutputStream } from '@comunica/types';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import type { IActorTest } from '@comunica/core';
+import type {
+  IQueryOperationResult,
+  IPhysicalQueryPlanLogger,
+  IActionContext, IMetadata,
+} from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
-
-/**
- * @type {string} Context entry for the current query operation.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_QUERYOPERATION = KeysQueryOperation.operation;
 
 /**
  * A base implementation for query operation actors for a specific operation type.
@@ -17,8 +16,7 @@ export const KEY_CONTEXT_QUERYOPERATION = KeysQueryOperation.operation;
 export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> extends ActorQueryOperation {
   public readonly operationName: string;
 
-  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-    operationName: string) {
+  protected constructor(args: IActorQueryOperationArgs, operationName: string) {
     super(<any> { ...args, operationName });
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');
@@ -37,19 +35,34 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return this.testOperation(operation, action.context);
   }
 
-  public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
+  public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
+    // Log to physical plan
+    const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
+      .get(KeysInitQuery.physicalQueryPlanLogger);
+    if (physicalQueryPlanLogger) {
+      physicalQueryPlanLogger.logOperation(
+        action.operation.type,
+        undefined,
+        action.operation,
+        action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        this.name,
+        {},
+      );
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
+    }
+
     const operation: O = <O> action.operation;
-    const subContext = action.context && action.context.set(KeysQueryOperation.operation, operation);
-    const output: IActorQueryOperationOutput = await this.runOperation(operation, subContext);
-    if ((<IActorQueryOperationOutputStream> output).metadata) {
-      (<IActorQueryOperationOutputStream> output).metadata =
-        ActorQueryOperation.cachifyMetadata((<IActorQueryOperationOutputStream> output).metadata);
+    const subContext = action.context.set(KeysQueryOperation.operation, operation);
+    const output: IQueryOperationResult = await this.runOperation(operation, subContext);
+    if ('metadata' in output) {
+      output.metadata = <any> ActorQueryOperation
+        .cachifyMetadata<IMetadata<RDF.QuadTermName | RDF.Variable>, RDF.QuadTermName | RDF.Variable>(output.metadata);
     }
     return output;
   }
 
-  protected abstract testOperation(operation: O, context: ActionContext | undefined): Promise<IActorTest>;
+  protected abstract testOperation(operation: O, context: IActionContext): Promise<IActorTest>;
 
-  protected abstract runOperation(operation: O, context: ActionContext | undefined):
-  Promise<IActorQueryOperationOutput>;
+  protected abstract runOperation(operation: O, context: IActionContext):
+  Promise<IQueryOperationResult>;
 }

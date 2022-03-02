@@ -1,7 +1,7 @@
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -20,15 +20,15 @@ export class ActorQueryOperationAddRewrite extends ActorQueryOperationTypedMedia
     this.factory = new Factory();
   }
 
-  public async testOperation(pattern: Algebra.Add, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Add, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public runOperation(pattern: Algebra.Add, context: ActionContext): Promise<IActorQueryOperationOutput> {
+  public runOperation(operationOriginal: Algebra.Add, context: IActionContext): Promise<IQueryOperationResult> {
     // CONSTRUCT all quads from the source, and INSERT them into the destination
-    const destination = pattern.destination === 'DEFAULT' ? DF.defaultGraph() : pattern.destination;
-    const source = pattern.source === 'DEFAULT' ? DF.defaultGraph() : pattern.source;
+    const destination = operationOriginal.destination === 'DEFAULT' ? DF.defaultGraph() : operationOriginal.destination;
+    const source = operationOriginal.source === 'DEFAULT' ? DF.defaultGraph() : operationOriginal.source;
 
     const operation = this.factory.createDeleteInsert(undefined, [
       this.factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), destination),

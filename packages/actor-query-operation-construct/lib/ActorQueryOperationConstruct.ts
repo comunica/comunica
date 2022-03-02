@@ -3,15 +3,13 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type {
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
-} from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IQueryOperationResultBindings, IActionContext, IQueryOperationResult,
+  MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
 /**
@@ -32,34 +30,38 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       .apply([], patterns.map(pattern => getVariables(getTerms(pattern)))));
   }
 
-  public async testOperation(pattern: Algebra.Construct, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Construct, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Construct, context: ActionContext):
-  Promise<IActorQueryOperationOutputQuads> {
+  public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext):
+  Promise<IQueryOperationResult> {
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
-    const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
-    const operation: Algebra.Operation = { type: 'project', input: pattern.input, variables };
+    const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(operationOriginal.template);
+    const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: operationOriginal.input, variables };
 
     // Evaluate the input query
-    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation, context }),
     );
 
     // Construct triples using the result based on the pattern.
-    const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
+    const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(
+      operationOriginal.template,
+      output.bindingsStream,
+    );
 
     // Let the final metadata contain the estimated number of triples
-    let metadata: (() => Promise<Record<string, any>>) | undefined;
-    if (output.metadata) {
-      metadata = () => (<() => Promise<Record<string, any>>> output.metadata)().then(meta => {
-        if (meta.totalItems) {
-          return { ...meta, totalItems: meta.totalItems * pattern.template.length };
-        }
-        return meta;
-      });
-    }
+    const metadata: (() => Promise<MetadataQuads>) = () => output.metadata().then(meta => ({
+      ...meta,
+      order: undefined,
+      cardinality: {
+        type: meta.cardinality.type,
+        value: meta.cardinality.value * operationOriginal.template.length,
+      },
+      canContainUndefs: false,
+      availableOrders: undefined,
+    }));
 
     return {
       metadata,

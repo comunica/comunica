@@ -1,7 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -26,7 +26,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     recursiveCb: (subOperation: Algebra.Operation) => Algebra.Operation): Algebra.Operation {
     const copiedOperation: Algebra.Operation = <any> {};
     for (const key of Object.keys(operation)) {
-      if (Array.isArray(operation[key])) {
+      if (Array.isArray(operation[key]) && key !== 'template') {
+        // We exclude the 'template' entry, as we don't want to modify the template value of construct operations
         if (key === 'variables') {
           copiedOperation[key] = operation[key];
         } else {
@@ -50,7 +51,9 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    */
   public static applyOperationDefaultGraph(operation: Algebra.Operation, defaultGraphs: RDF.Term[]): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((operation.type === 'bgp' && operation.patterns.length > 0) || operation.type === 'path') {
+    if ((operation.type === 'bgp' && operation.patterns.length > 0) ||
+      operation.type === 'path' ||
+      operation.type === 'pattern') {
       if (operation.type === 'bgp') {
         return ActorQueryOperationFromQuad.joinOperations(operation.patterns.map((pattern: Algebra.Pattern) => {
           if (pattern.graph.termType !== 'DefaultGraph') {
@@ -66,10 +69,16 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         return operation;
       }
       const paths = defaultGraphs.map(
-        (graph: RDF.Term) => ActorQueryOperationFromQuad.FACTORY
-          .createPath(operation.subject, operation.predicate, operation.object, graph),
+        (graph: RDF.Term) => {
+          if (operation.type === 'path') {
+            return ActorQueryOperationFromQuad.FACTORY
+              .createPath(operation.subject, operation.predicate, operation.object, graph);
+          }
+          return ActorQueryOperationFromQuad.FACTORY
+            .createPattern(operation.subject, operation.predicate, operation.object, graph);
+        },
       );
-      return ActorQueryOperationFromQuad.joinOperations(paths);
+      return ActorQueryOperationFromQuad.unionOperations(paths);
     }
 
     return ActorQueryOperationFromQuad.copyOperation(operation,
@@ -84,35 +93,45 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @param {RDF.Term[]} defaultGraphs Default graph terms.
    * @return {Operation} A new operation.
    */
-  public static applyOperationNamedGraph(operation: Algebra.Operation, namedGraphs: RDF.Term[],
+  public static applyOperationNamedGraph(operation: Algebra.Operation, namedGraphs: RDF.NamedNode[],
     defaultGraphs: RDF.Term[]): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((operation.type === 'bgp' && operation.patterns.length > 0) || operation.type === 'path') {
+    if ((operation.type === 'bgp' && operation.patterns.length > 0) ||
+      operation.type === 'path' ||
+      operation.type === 'pattern') {
       const patternGraph: RDF.Term = operation.type === 'bgp' ? operation.patterns[0].graph : operation.graph;
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
         // The FROMs are transformed before this step to a named node, so this will not apply to this case anymore.
-        return { type: 'bgp', patterns: []};
+        return { type: Algebra.types.BGP, patterns: []};
       }
       if (patternGraph.termType === 'Variable') {
         if (namedGraphs.length === 1) {
-          const graph: RDF.Term = namedGraphs[0];
+          const graph: RDF.NamedNode = namedGraphs[0];
           // If the pattern graph is a variable, replace the graph and bind the variable using VALUES
-          const bindings: Record<string, RDF.Term> = {};
+          const bindings: Record<string, RDF.Literal | RDF.NamedNode> = {};
           bindings[`?${patternGraph.value}`] = graph;
           const values: Algebra.Values = ActorQueryOperationFromQuad.FACTORY
             .createValues([ patternGraph ], [ bindings ]);
-          const pattern: Algebra.Operation = operation.type === 'bgp' ?
-            ActorQueryOperationFromQuad.FACTORY
+
+          let pattern: Algebra.Operation;
+          if (operation.type === 'bgp') {
+            pattern = ActorQueryOperationFromQuad.FACTORY
               .createBgp(operation.patterns.map((pat: Algebra.Pattern) => ActorQueryOperationFromQuad.FACTORY
-                .createPattern(pat.subject, pat.predicate, pat.object, graph))) :
-            ActorQueryOperationFromQuad.FACTORY
+                .createPattern(pat.subject, pat.predicate, pat.object, graph)));
+          } else if (operation.type === 'path') {
+            pattern = ActorQueryOperationFromQuad.FACTORY
               .createPath(operation.subject, operation.predicate, operation.object, graph);
-          return ActorQueryOperationFromQuad.FACTORY.createJoin(values, pattern);
+          } else {
+            pattern = ActorQueryOperationFromQuad.FACTORY
+              .createPattern(operation.subject, operation.predicate, operation.object, graph);
+          }
+
+          return ActorQueryOperationFromQuad.FACTORY.createJoin([ values, pattern ]);
         }
         // If the pattern graph is a variable, take the union of the pattern applied to each available named graph
         return ActorQueryOperationFromQuad.unionOperations(namedGraphs.map(
-          (graph: RDF.Term) => ActorQueryOperationFromQuad.applyOperationNamedGraph(
+          (graph: RDF.NamedNode) => ActorQueryOperationFromQuad.applyOperationNamedGraph(
             operation, [ graph ], defaultGraphs,
           ),
         ));
@@ -126,7 +145,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         return operation;
       }
       // No-op if the pattern's graph was not selected in a FROM NAMED.
-      return { type: 'bgp', patterns: []};
+      return { type: Algebra.types.BGP, patterns: []};
     }
 
     return ActorQueryOperationFromQuad.copyOperation(operation,
@@ -142,12 +161,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     if (operations.length === 1) {
       return operations[0];
     }
-    if (operations.length === 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations[0], operations[1]);
-    }
-    if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations.shift()!,
-        this.joinOperations(operations));
+    if (operations.length > 1) {
+      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations);
     }
     throw new Error('A join can only be applied on at least one operation');
   }
@@ -161,12 +176,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     if (operations.length === 1) {
       return operations[0];
     }
-    if (operations.length === 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations[0], operations[1]);
-    }
-    if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations.shift()!,
-        this.unionOperations(operations));
+    if (operations.length > 1) {
+      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations);
     }
     throw new Error('A union can only be applied on at least one operation');
   }
@@ -194,12 +205,15 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     return operation;
   }
 
-  public async testOperation(pattern: Algebra.From, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.From, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.From, context: ActionContext): Promise<IActorQueryOperationOutput> {
-    const operation: Algebra.Operation = ActorQueryOperationFromQuad.createOperation(pattern);
+  public async runOperation(
+    operationOriginal: Algebra.From,
+    context: IActionContext,
+  ): Promise<IQueryOperationResult> {
+    const operation: Algebra.Operation = ActorQueryOperationFromQuad.createOperation(operationOriginal);
     return this.mediatorQueryOperation.mediate({ operation, context });
   }
 }

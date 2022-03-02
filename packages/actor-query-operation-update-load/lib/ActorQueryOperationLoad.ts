@@ -1,9 +1,9 @@
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { ActionContext } from '@comunica/core';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -15,8 +15,7 @@ const DF = new DataFactory();
  * that handles SPARQL load operations.
  */
 export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Algebra.Load> {
-  public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   private readonly factory: Factory;
   private readonly constructOperation: Algebra.Construct;
@@ -30,20 +29,17 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     );
   }
 
-  public async testOperation(pattern: Algebra.Load, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Load, context: ActionContext):
-  Promise<IActorQueryOperationOutput> {
+  public async runOperation(operation: Algebra.Load, context: IActionContext):
+  Promise<IQueryOperationResult> {
     // Create CONSTRUCT query on the given source
-    if (!context) {
-      context = ActionContext({});
-    }
-    let subContext = context.set(KEY_CONTEXT_SOURCES, [ pattern.source.value ]);
-    if (pattern.silent) {
-      subContext = subContext.set(KEY_CONTEXT_LENIENT, true);
+    let subContext = context.set(KeysRdfResolveQuadPattern.sources, [ operation.source.value ]);
+    if (operation.silent) {
+      subContext = subContext.set(KeysInitQuery.lenient, true);
     }
     const output = ActorQueryOperationLoad.getSafeQuads(await this.mediatorQueryOperation.mediate({
       operation: this.constructOperation,
@@ -52,27 +48,26 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
 
     // Determine quad stream to insert
     let quadStream = output.quadStream;
-    if (pattern.destination) {
-      quadStream = quadStream.map(quad => DF.quad(quad.subject, quad.predicate, quad.object, pattern.destination));
+    if (operation.destination) {
+      quadStream = quadStream.map(quad => DF.quad(quad.subject, quad.predicate, quad.object, operation.destination));
     }
 
     // Insert quad stream
-    const { updateResult } = await this.mediatorUpdateQuads.mediate({
+    const { execute } = await this.mediatorUpdateQuads.mediate({
       quadStreamInsert: quadStream,
       context,
     });
 
     return {
-      type: 'update',
-      updateResult,
+      type: 'void',
+      execute,
     };
   }
 }
 
 export interface IActorQueryOperationLoadArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
-  IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+  /**
+   * The RDF Update Quads mediator
+   */
+  mediatorUpdateQuads: MediatorRdfUpdateQuads;
 }
-
-export const KEY_CONTEXT_SOURCES = '@comunica/bus-rdf-resolve-quad-pattern:sources';
-export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';

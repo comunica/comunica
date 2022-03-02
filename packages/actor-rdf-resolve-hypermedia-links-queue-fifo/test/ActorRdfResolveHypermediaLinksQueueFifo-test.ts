@@ -1,4 +1,4 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import { LinkQueueFifo } from '..';
 import { ActorRdfResolveHypermediaLinksQueueFifo } from '../lib/ActorRdfResolveHypermediaLinksQueueFifo';
 
@@ -17,11 +17,13 @@ describe('ActorRdfResolveHypermediaLinksQueueFifo', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ firstUrl: 'A' })).resolves.toEqual(true);
+      return expect(actor.test({ firstUrl: 'A', context: new ActionContext() }))
+        .resolves.toEqual(true);
     });
 
     it('should run', () => {
-      return expect(actor.run({ firstUrl: 'A' })).resolves.toEqual({ linkQueue: new LinkQueueFifo() });
+      return expect(actor.run({ firstUrl: 'A', context: new ActionContext() }))
+        .resolves.toEqual({ linkQueue: new LinkQueueFifo() });
     });
   });
 });

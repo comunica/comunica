@@ -1,10 +1,13 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBoolean } from '@comunica/types';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryOperationResultBoolean } from '@comunica/types';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationAsk', () => {
   let bus: any;
@@ -18,23 +21,23 @@ describe('ActorQueryOperationAsk', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
     mediatorQueryOperationEmpty = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
     mediatorQueryOperationError = {
@@ -43,20 +46,20 @@ describe('ActorQueryOperationAsk', () => {
         setImmediate(() => bindingsStream.emit('error', new Error('Error!')));
         resolve({
           bindingsStream,
-          metadata: () => Promise.resolve({ totalItems: 0 }),
+          metadata: () => Promise.resolve({ cardinality: 0 }),
           operated: arg,
           type: 'bindings',
-          variables: [ 'a' ],
+          variables: [ DF.variable('a') ],
         });
       }),
     };
     mediatorQueryOperationInf = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: range(0, Number.POSITIVE_INFINITY),
-        metadata: () => Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
+        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -86,42 +89,42 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should test on ask', () => {
-      const op: any = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-ask', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a non-empty stream', () => {
-      const op: any = { operation: { type: 'ask' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBoolean) => {
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
+      return actor.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
-        expect(await output.booleanResult).toBeTruthy();
+        expect(await output.execute()).toBeTruthy();
       });
     });
 
     it('should run on an empty stream', () => {
-      const op: any = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
-      return actorEmpty.run(op).then(async(output: IActorQueryOperationOutputBoolean) => {
+      return actorEmpty.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
-        expect(await output.booleanResult).toBeFalsy();
+        expect(await output.execute()).toBeFalsy();
       });
     });
 
     it('should run and return a rejecting promise on an errorring stream', () => {
-      const op: any = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );
-      return actorError.run(op).then(async(output: IActorQueryOperationOutputBoolean) => {
+      return actorError.run(op).then(async(output: IQueryOperationResultBoolean) => {
         expect(output.type).toEqual('boolean');
-        return expect(output.booleanResult).rejects.toBeTruthy();
+        return expect(output.execute()).rejects.toBeTruthy();
       });
     });
   });

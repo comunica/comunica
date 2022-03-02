@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-jsonld/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-serialize-jsonld",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-serialize-jsonld",
-  "import": [
-    "files-carsjl:components/Actor/RdfSerialize/JsonLd.jsonld"
-  ]
-}

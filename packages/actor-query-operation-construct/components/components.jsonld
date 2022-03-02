@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-construct/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-construct",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-construct",
-  "import": [
-    "files-caqoc:components/Actor/QueryOperation/Construct.jsonld"
-  ]
-}

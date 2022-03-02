@@ -1,38 +1,10 @@
-/* eslint-disable mocha/max-top-level-suites */
-import { Map } from 'immutable';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import { Bindings, ensureBindings, isBindings, materializeOperation, materializeTerm } from '..';
+import { materializeOperation, materializeTerm } from '..';
 
 const DF = new DataFactory();
-
-describe('Bindings', () => {
-  it('should create a map', () => {
-    expect(Bindings({ a: DF.namedNode('b') })).toBeInstanceOf(Map);
-  });
-});
-
-describe('isBindings', () => {
-  it('should be true for bindings', () => {
-    expect(isBindings(Bindings({}))).toBeTruthy();
-  });
-
-  it('should be false for other objects', () => {
-    expect(isBindings({})).toBeFalsy();
-  });
-});
-
-describe('ensureBindings', () => {
-  it('should not change things that are already bindings', () => {
-    const b = Bindings({});
-    expect(ensureBindings(b)).toBe(b);
-  });
-
-  it('should create bindings from hashes', () => {
-    expect(ensureBindings({})).toBeInstanceOf(Map);
-    expect(ensureBindings({ a: DF.namedNode('b') }).get('a')).toEqual(DF.namedNode('b'));
-  });
-});
+const BF = new BindingsFactory();
 
 const factory = new Factory();
 
@@ -45,12 +17,24 @@ const termVariableD = DF.variable('d');
 const termDefaultGraph = DF.defaultGraph();
 
 const valueA = DF.literal('A');
+const valueB = DF.literal('B');
 const valueC = DF.literal('C');
 
-const bindingsEmpty = Bindings({});
-const bindingsA = Bindings({ '?a': DF.literal('A') });
-const bindingsC = Bindings({ '_:c': DF.literal('C') });
-const bindingsAC = Bindings({ '?a': valueA, '_:c': valueC });
+const bindingsEmpty = BF.bindings();
+const bindingsA = BF.bindings([
+  [ DF.variable('a'), DF.literal('A') ],
+]);
+const bindingsC = BF.bindings([
+  [ DF.variable('c'), DF.literal('C') ],
+]);
+const bindingsAC = BF.bindings([
+  [ DF.variable('a'), valueA ],
+  [ DF.variable('c'), valueC ],
+]);
+const bindingsAB = BF.bindings([
+  [ DF.variable('a'), valueA ],
+  [ DF.variable('b'), valueB ],
+]);
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
@@ -134,6 +118,7 @@ describe('materializeTerm', () => {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('materializeOperation', () => {
   it('should materialize a quad pattern with empty bindings', () => {
     return expect(materializeOperation(
@@ -177,10 +162,10 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createPath(
         termVariableA,
-        factory.createAlt(
+        factory.createAlt([
           factory.createNps([ DF.namedNode('A') ]),
           factory.createNps([ DF.namedNode('B') ]),
-        ),
+        ]),
         termVariableC,
         termNamedNode,
       ),
@@ -188,10 +173,10 @@ describe('materializeOperation', () => {
     ))
       .toEqual(factory.createPath(
         valueA,
-        factory.createAlt(
+        factory.createAlt([
           factory.createNps([ DF.namedNode('A') ]),
           factory.createNps([ DF.namedNode('B') ]),
-        ),
+        ]),
         termVariableC,
         termNamedNode,
       ));
@@ -238,7 +223,7 @@ describe('materializeOperation', () => {
         factory.createTermExpression(termVariableA),
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a BIND operator.'));
   });
 
@@ -320,7 +305,7 @@ describe('materializeOperation', () => {
         ) ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a GROUP BY operator.'));
   });
 
@@ -364,7 +349,7 @@ describe('materializeOperation', () => {
         ) ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind ?a in a SUM aggregate.'));
   });
 
@@ -412,7 +397,7 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableB, termVariableD ],
+        [ termVariableA, termVariableB, termVariableD ],
       ),
       bindingsA,
     ))
@@ -429,7 +414,7 @@ describe('materializeOperation', () => {
         [ termVariableB, termVariableD ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     ))
       .toEqual(factory.createProject(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
@@ -445,7 +430,7 @@ describe('materializeOperation', () => {
         [ termVariableA, termVariableD ],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a SELECT operator.'));
   });
 
@@ -459,6 +444,20 @@ describe('materializeOperation', () => {
     ))
       .toEqual(factory.createProject(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableD ],
+      ));
+  });
+
+  it('should only modify variables in the project operation that are present in the projection range', () => {
+    return expect(materializeOperation(
+      factory.createProject(
+        factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        [ termVariableD, termVariableB ],
+      ),
+      bindingsAB,
+    ))
+      .toEqual(factory.createProject(
+        factory.createPattern(termVariableA, termNamedNode, valueB, termNamedNode),
         [ termVariableD ],
       ));
   });
@@ -484,7 +483,7 @@ describe('materializeOperation', () => {
         [{ '?b': valueC }],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     ))
       .toEqual(factory.createValues(
         [ termVariableB, termVariableD ],
@@ -500,7 +499,7 @@ describe('materializeOperation', () => {
         [{ '?a': valueC, '?d': valueC }],
       ),
       bindingsA,
-      true,
+      { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind variable ?a in a VALUES operator.'));
   });
 
@@ -508,7 +507,25 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createValues(
         [ termVariableA, termVariableD ],
-        [{ '?a': valueC, '?d': valueC }],
+        [{ '?a': valueA, '?d': valueC }],
+      ),
+      bindingsA,
+    ))
+      .toEqual(factory.createValues(
+        [ termVariableD ],
+        [{ '?d': valueC }],
+      ));
+  });
+
+  it('should modify a values operation with a binding variable equal to the target variable, ' +
+    'and a non-matching binding value', () => {
+    return expect(materializeOperation(
+      factory.createValues(
+        [ termVariableA, termVariableD ],
+        [
+          { '?a': valueA, '?d': valueC },
+          { '?a': valueC, '?d': valueC },
+        ],
       ),
       bindingsA,
     ))
@@ -565,6 +582,33 @@ describe('materializeOperation', () => {
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(valueA),
+          factory.createTermExpression(termVariableB),
+        ]),
+      ));
+  });
+
+  it('should not modify a filter expression with matching variables with bindFilter: false', () => {
+    return expect(materializeOperation(
+      factory.createFilter(
+        factory.createBgp([
+          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        ]),
+        factory.createOperatorExpression('contains', [
+          factory.createTermExpression(termVariableA),
+          factory.createTermExpression(termVariableB),
+        ]),
+      ),
+      bindingsA,
+      { bindFilter: false },
+    ))
+      .toEqual(factory.createFilter(
+        factory.createBgp([
+          factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        ]),
+        factory.createOperatorExpression('contains', [
+          factory.createTermExpression(termVariableA),
           factory.createTermExpression(termVariableB),
         ]),
       ));

@@ -23,16 +23,16 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:sparql-init.json#mediatorOptimizeQueryOperation",
+        "@id": "#mediatorOptimizeQueryOperation",
         "@type": "MediatorCombinePipeline",
-        "cc:Mediator/bus": { "@id": "cboqo:Bus/OptimizeQueryOperation" }
+        "bus": { "@id": "ActorOptimizeQueryOperation:_default_bus" }
       }
     }
   ]
@@ -41,5 +41,10 @@ After installing, this mediator can be instantiated as follows:
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
-
+* `bus`: Identifier of the bus to mediate over.
+* `filterErrors`: Optional flag to indicate if actors that throw test errors should be filtered out of the pipeline, defaults to false.
+* `field`: Optional field to use for ordering (if the ordering strategy is chosen). Leave undefined if the test output is a number rather than an object.
+* `order`: Optional strategy of ordering the pipeline (increasing or decreasing).
+   * For choosing to leave the order of the pipeline unchanged, leave this undefined.
+   * For choosing to order by increasing values: 'increasing'.
+   * For choosing to order by decreasing values: 'decreasing'.

@@ -1,34 +1,27 @@
+import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import type { IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput } from '@comunica/bus-rdf-update-hypermedia';
+import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
 import {
-  ActorRdfUpdateQuadsDestination,
+  ActorRdfUpdateQuadsDestination, getContextDestination,
+  getContextDestinationUrl,
   getDataDestinationType,
 } from '@comunica/bus-rdf-update-quads';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput, IDataDestination,
-  IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import type { Actor, IActorArgs, IActorTest, Mediator, ActionContext } from '@comunica/core';
+import type { IActionRdfUpdateQuads,
+  IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IDataDestination } from '@comunica/types';
 import LRUCache = require('lru-cache');
 
 /**
  * A comunica Hypermedia RDF Update Quads Actor.
  */
 export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestination {
-  // Mediators
-  public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-
-  public readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-
-  public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-
-  public readonly mediatorRdfUpdateHypermedia: Mediator<Actor<IActionRdfUpdateHypermedia, IActorTest,
-  IActorRdfUpdateHypermediaOutput>, IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>;
-
+  public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
+  public readonly mediatorMetadata: MediatorRdfMetadata;
+  public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  public readonly mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
   public readonly cacheSize: number;
   public readonly cache?: LRUCache<string, Promise<IQuadDestination>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
@@ -45,16 +38,16 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   }
 
   public async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
-    const url = this.getContextDestinationUrl(this.getContextDestination(action.context));
+    const url = getContextDestinationUrl(getContextDestination(action.context));
     if (!url) {
       throw new Error(`Actor ${this.name} can only update quads against a single destination URL.`);
     }
     return true;
   }
 
-  public getDestination(context: ActionContext): Promise<IQuadDestination> {
-    const dataDestination: IDataDestination = this.getContextDestination(context)!;
-    let url: string = this.getContextDestinationUrl(dataDestination)!;
+  public getDestination(context: IActionContext): Promise<IQuadDestination> {
+    const dataDestination: IDataDestination = getContextDestination(context)!;
+    let url: string = getContextDestinationUrl(dataDestination)!;
 
     // Try to read from cache
     if (this.cache && this.cache.has(url)) {
@@ -67,20 +60,21 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
       let exists: boolean;
       try {
         // Dereference destination URL
-        const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
+        const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
           .mediate({ context, url, acceptErrors: true });
-        exists = rdfDereferenceOutput.exists;
-        url = rdfDereferenceOutput.url;
+        exists = dereferenceRdfOutput.exists;
+        url = dereferenceRdfOutput.url;
 
         // Determine the metadata
         const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-          { context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
+          { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
         );
         metadata = (await this.mediatorMetadataExtract.mediate({
           context,
           url,
           metadata: rdfMetadataOuput.metadata,
-          headers: rdfDereferenceOutput.headers,
+          headers: dereferenceRdfOutput.headers,
+          requestTime: dereferenceRdfOutput.requestTime,
         })).metadata;
       } catch {
         metadata = {};
@@ -104,16 +98,34 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   }
 }
 
-export interface IActorRdfUpdateQuadsHypermediaArgs
-  extends IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput> {
+export interface IActorRdfUpdateQuadsHypermediaArgs extends IActorRdfUpdateQuadsArgs {
+  /**
+   * The maximum number of entries in the LRU cache, set to 0 to disable.
+   * @range {integer}
+   * @default {100}
+   */
   cacheSize: number;
+  /* eslint-disable max-len */
+  /**
+   * An actor that listens to HTTP invalidation events
+   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^2.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
+   */
   httpInvalidator: ActorHttpInvalidateListenable;
-  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
-  mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
-  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-  mediatorRdfUpdateHypermedia: Mediator<Actor<IActionRdfUpdateHypermedia, IActorTest,
-  IActorRdfUpdateHypermediaOutput>, IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>;
+  /* eslint-enable max-len */
+  /**
+   * The RDF dereference mediator
+   */
+  mediatorDereferenceRdf: MediatorDereferenceRdf;
+  /**
+   * The metadata mediator
+   */
+  mediatorMetadata: MediatorRdfMetadata;
+  /**
+   * The metadata extract mediator
+   */
+  mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  /**
+   * The hypermedia resolver
+   */
+  mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
 }

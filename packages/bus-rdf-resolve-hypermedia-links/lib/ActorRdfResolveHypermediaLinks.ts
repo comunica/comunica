@@ -1,5 +1,6 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -15,8 +16,10 @@ import type * as RDF from '@rdfjs/types';
  */
 export abstract class ActorRdfResolveHypermediaLinks
   extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput> {
-  public constructor(args:
-  IActorArgs<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
+  public constructor(args: IActorRdfResolveHypermediaLinksArgs) {
     super(args);
   }
 }
@@ -32,7 +35,7 @@ export interface IActorRdfResolveHypermediaLinksOutput extends IActorOutput {
   /**
    * An array of links to follow.
    */
-  urls: (string | ILink)[];
+  links: ILink[];
 }
 
 /**
@@ -54,7 +57,7 @@ export interface ILink {
    * Optional context to apply onto mediators when handling this link as source.
    * All entries of this context will be added (or overwritten) into the existing context.
    */
-  context?: ActionContext;
+  context?: IActionContext;
   /**
    * An optional link-specific metadata object.
    * This may be used to keep track of data that is relevant to links,
@@ -62,3 +65,9 @@ export interface ILink {
    */
   metadata?: Record<string, any>;
 }
+
+export type IActorRdfResolveHypermediaLinksArgs = IActorArgs<
+IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>;
+
+export type MediatorRdfResolveHypermediaLinks = Mediate<
+IActionRdfResolveHypermediaLinks, IActorRdfResolveHypermediaLinksOutput>;

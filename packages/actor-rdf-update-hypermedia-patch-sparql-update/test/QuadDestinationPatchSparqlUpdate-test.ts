@@ -1,6 +1,7 @@
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
@@ -10,7 +11,7 @@ const DF = new DataFactory();
 const stringifyStream = require('stream-to-string');
 
 describe('QuadDestinationPatchSparqlUpdate', () => {
-  let context: ActionContext;
+  let context: IActionContext;
   let url: string;
   let mediatorHttp: any;
   let destination: QuadDestinationPatchSparqlUpdate;
@@ -21,7 +22,7 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         status: 200,
       })),
     };
-    context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+    context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
     url = 'abc';
     destination = new QuadDestinationPatchSparqlUpdate(url, context, mediatorHttp);
   });

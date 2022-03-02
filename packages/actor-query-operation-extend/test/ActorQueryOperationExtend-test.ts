@@ -1,6 +1,7 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
-import { Actor, Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { ActionContext, Actor, Bus } from '@comunica/core';
+import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
@@ -8,6 +9,7 @@ import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
@@ -62,9 +64,9 @@ describe('ActorQueryOperationExtend', () => {
   };
 
   const input = [
-    Bindings({ '?a': DF.literal('1') }),
-    Bindings({ '?a': DF.literal('2') }),
-    Bindings({ '?a': DF.literal('3') }),
+    BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+    BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+    BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
   ];
 
   beforeEach(() => {
@@ -72,11 +74,9 @@ describe('ActorQueryOperationExtend', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator(input),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ '?a' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -106,52 +106,50 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should test on extend', () => {
-      const op: any = { operation: example(defaultExpression) };
+      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-extend', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
-      const op: any = { operation: example(defaultExpression) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({
-          '?a': DF.literal('1'),
-          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
-        }),
-        Bindings({
-          '?a': DF.literal('2'),
-          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
-        }),
-        Bindings({
-          '?a': DF.literal('3'),
-          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
-        }),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('1') ],
+          [ DF.variable('l'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('2') ],
+          [ DF.variable('l'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('3') ],
+          [ DF.variable('l'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+        ]),
       ]);
 
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
-      expect(output.variables).toMatchObject([ '?a', '?l' ]);
-      expect(output.canContainUndefs).toEqual(false);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a'), DF.variable('l') ]});
     });
 
     it('should not extend bindings on erroring expressions', async() => {
       const warn = jest.fn();
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
-      const op: any = { operation: example(faultyExpression) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
 
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
-      expect(output.variables).toMatchObject([ '?a', '?l' ]);
-      expect(output.canContainUndefs).toEqual(false);
+      expect(await output.metadata())
+        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a'), DF.variable('l') ]});
     });
 
     it('should emit error when evaluation code returns a hard error', async() => {
@@ -161,8 +159,8 @@ describe('ActorQueryOperationExtend', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
-      const op: any = { operation: example(faultyExpression) };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
       expect(warn).toBeCalledTimes(0);
     });

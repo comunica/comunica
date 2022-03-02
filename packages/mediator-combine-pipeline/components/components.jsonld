@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/mediator-combine-pipeline",
-  "@type": "Module",
-  "requireName": "@comunica/mediator-combine-pipeline",
-  "import": [
-    "files-cmcp:components/Mediator/CombinePipeline.jsonld"
-  ]
-}

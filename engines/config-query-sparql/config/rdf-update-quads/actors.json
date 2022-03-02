@@ -1,0 +1,24 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-hypermedia/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-rdfjs-store/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:rdf-update-quads/actors#hypermedia",
+      "@type": "ActorRdfUpdateQuadsHypermedia",
+      "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
+      "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
+      "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },
+      "mediatorRdfUpdateHypermedia": { "@id": "urn:comunica:default:rdf-update-hypermedia/mediators#main" }
+    },
+    {
+      "@id": "urn:comunica:default:rdf-update-quads/actors#rdfjs-store",
+      "@type": "ActorRdfUpdateQuadsRdfJsStore"
+    }
+  ]
+}

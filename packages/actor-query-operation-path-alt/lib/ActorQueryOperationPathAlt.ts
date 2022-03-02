@@ -1,10 +1,9 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
-import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { IQueryOperationResultBindings, IQueryOperationResult,
+  IActionContext, MetadataBindings } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -16,24 +15,26 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     super(args, Algebra.types.ALT);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
-    const predicate = <Algebra.Alt> path.predicate;
+  public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
+    const predicate = <Algebra.Alt> operation.predicate;
 
-    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
-      this.mediatorQueryOperation.mediate({
+    const subOperations: IQueryOperationResultBindings[] = (await Promise.all(predicate.input
+      .map(subPredicate => this.mediatorQueryOperation.mediate({
         context,
-        operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, path.object, path.graph),
-      }),
-      this.mediatorQueryOperation.mediate({
-        context,
-        operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.right, path.object, path.graph),
-      }),
-    ])).map(op => ActorQueryOperation.getSafeBindings(op));
+        operation: ActorAbstractPath.FACTORY
+          .createPath(operation.subject, subPredicate, operation.object, operation.graph),
+      }))))
+      .map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
-    const variables = (<string[]> []).concat
-      .apply([], subOperations.map(op => op.variables));
+    const metadata: (() => Promise<MetadataBindings>) = () =>
+      Promise.all(subOperations.map(output => output.metadata()))
+        .then(subMeta => ActorQueryOperationUnion.unionMetadata(subMeta, true));
 
-    return { type: 'bindings', bindingsStream, variables: [ ...new Set(variables) ], canContainUndefs: false };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata,
+    };
   }
 }

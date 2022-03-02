@@ -1,12 +1,16 @@
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type {
+  IActionRdfMetadataExtract,
+  IActorRdfMetadataExtractArgs,
+  IActorRdfMetadataExtractOutput,
+} from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 
 /**
  * A comunica Allow HTTP Methods RDF Metadata Extract Actor.
  */
 export class ActorRdfMetadataExtractAllowHttpMethods extends ActorRdfMetadataExtract {
-  public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
 
@@ -15,9 +19,9 @@ export class ActorRdfMetadataExtractAllowHttpMethods extends ActorRdfMetadataExt
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
-    const metadata: any = {};
-    if (action.headers && action.headers.allow) {
-      metadata.allowHttpMethods = action.headers.allow.split(/, */u);
+    const metadata: Record<string, any> = {};
+    if (action.headers?.get('allow')) {
+      metadata.allowHttpMethods = action.headers.get('allow')?.split(/, */u);
     }
     return { metadata };
   }

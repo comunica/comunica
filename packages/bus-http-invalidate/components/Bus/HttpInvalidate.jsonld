@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld",
-  "@id": "cbhi:Bus/HttpInvalidate",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for http-invalidate events."
-}

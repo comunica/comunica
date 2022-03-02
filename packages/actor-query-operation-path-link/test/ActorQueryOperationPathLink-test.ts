@@ -1,11 +1,14 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathLink } from '../lib/ActorQueryOperationPathLink';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationPathLink', () => {
   let bus: any;
@@ -17,15 +20,14 @@ describe('ActorQueryOperationPathLink', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?x': DF.literal('1') }),
-          Bindings({ '?x': DF.literal('2') }),
-          Bindings({ '?x': DF.literal('3') }),
+          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ]),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
-        canContainUndefs: false,
+        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -60,19 +62,21 @@ describe('ActorQueryOperationPathLink', () => {
     });
 
     it('should test on different paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should support Link paths', async() => {
       const op: any = { operation: factory
-        .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')) };
+        .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')),
+      context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.canContainUndefs).toEqual(false);
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': DF.literal('1') }),
-        Bindings({ '?x': DF.literal('2') }),
-        Bindings({ '?x': DF.literal('3') }),
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
       ]);
     });
   });

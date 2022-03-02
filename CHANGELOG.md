@@ -1,6 +1,45 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.0"></a>
+## [v2.0.0](https://github.com/comunica/comunica/compare/v1.22.1...v2.0.0) - 2021-11-30
+
+### BREAKING CHANGES
+* [Make metadata in query operations mandatory and strictly typed](https://github.com/comunica/comunica/commit/576ff98bdaec03094a3749a417e6c16a940b0dda)
+* Refactor join bus:
+  * [Add logical join type field to join action](https://github.com/comunica/comunica/commit/67ec6365564ab48ef9155240abaafba15baa0af3)
+  * [Add actor to cluster connected join entries](https://github.com/comunica/comunica/commit/a4926410cd177f03ac3886014c8c59cc47e89712)
+  * [Consider multiple coefficients during join mediation](https://github.com/comunica/comunica/commit/deee22928453867886ec2f1009f61355d64ecb6c)
+  * [Add optimize actor to convert BGPs to joins](https://github.com/comunica/comunica/commit/7202ecb1fb0ca04750be7d5ac8764a5ad1ecab19)
+  * [Add cardinality metadata to all property path actors](https://github.com/comunica/comunica/commit/da8e964eeb5f84ff6bb6cd4964ac77640c7078f1)
+  * [Rename totalItems metadata to cardinality](https://github.com/comunica/comunica/commit/1c2035d7cc8ad0179fb4251a34557648819dddba)
+  * [Remove BGP actors in favor of new join actors](https://github.com/comunica/comunica/commit/4dedb345498c3340b4972cc594d14bdf512ff58d)
+  * [Add BGP actor that delegates to join bus](https://github.com/comunica/comunica/commit/c383376a406f4c32b24b70872330bec2d6740d5d)
+  * [Add Bind-Join actor](https://github.com/comunica/comunica/commit/479f59b194c5a29d671425a6139c6a257ee784c9)
+  * [Add bus for providing join selectivities](https://github.com/comunica/comunica/commit/65bf49edf3f2cce565f8431ced4a4407a3984f8b)
+  * [Add variable counting join cardinality heuristic](https://github.com/comunica/comunica/commit/d54363780bde8ff8e421965e63a0ce94a4573dd5)
+  * [Add minus query operation actor that delegates to join bus](https://github.com/comunica/comunica/commit/ff7cf9bf1a54339a057ded6a373feecd0951fb71)
+  * [Add left join query operation actor that delegates to join bus](https://github.com/comunica/comunica/commit/e6de38792a8c86b4d73eb152b6a0acec2e3fcd8e)
+  * [Add hash-based minus join actor that does not handle undefs](https://github.com/comunica/comunica/commit/0e21cff26ce453c652ee7d2a557d38bd1786d4dd)
+  * [Add hash-based minus join actor that handles undefs](https://github.com/comunica/comunica/commit/751f4f119c26fcbc5a9a62525a36f9f1e67abd38)
+  * [Add bind-based optional join actor](https://github.com/comunica/comunica/commit/bd3b6147e06f1abf7fb4448603d40ee880c8a404)
+  * [Add nested loop-based optional join actor](https://github.com/comunica/comunica/commit/281f2891a497bed51058e9853eddf6b08311b41e)
+  * [Change BGP-specific context entries to more general join entries](https://github.com/comunica/comunica/commit/20dd9d567f1aa7302ae62055f96de98e875ec043)
+  * [Include original operations into join input interface](https://github.com/comunica/comunica/commit/5a869c0e02d4ebe8af681d8c6bba6b196961d9d5)
+  * [Migrate to multi-join-based datastructures in sparqlalgebrajs](https://github.com/comunica/comunica/commit/b8d410bff0e6654adbf382e440356c1a4e078db4)
+  * [Rename plain join actors to inner join actors](https://github.com/comunica/comunica/commit/9b375cd09619d33e227a4ca3470699a43495f32b)
+
+### Added
+* [Allow query plan to be printed](https://github.com/comunica/comunica/commit/ce8575e0d47c66b62c33f3899cb4e7f281e4f5b9)
+* [Add bindings-factory package](https://github.com/comunica/comunica/commit/60db84c8b1664133fffb323de30abb13204a843a)
+
+### Changed
+* Automatically generate `components/` directories:
+  * [Remove components directory from git](https://github.com/comunica/comunica/commit/957fefdcae177cb4aed66fe339b853cad9acadef)
+  * [Generate components in bulk](https://github.com/comunica/comunica/commit/58187c86541ceca4a96b2289b98ba835694b9517)
+* [Move index files to lib directory](https://github.com/comunica/comunica/commit/0148e0aefe0b33e7219d17ec563ed4a3b102d3af)
+* [Update to sparqlalgebrajs 4](https://github.com/comunica/comunica/commit/bf571ffbcf9eac9d31c5c1efd5ea4c330bc6f25f)
+
 <a name="v1.22.3"></a>
 ## [v1.22.3](https://github.com/comunica/comunica/compare/v1.22.2...v1.22.3) - 2021-10-19
 

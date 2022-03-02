@@ -1,9 +1,12 @@
-import type { DataSources, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type {
+  IActorRdfResolveQuadPatternOutput,
+  IQuadSource,
+  MediatorRdfResolveQuadPattern,
+} from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataSourceContext, getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
@@ -21,25 +24,23 @@ const DF = new DataFactory();
 export class FederatedQuadSource implements IQuadSource {
   private static readonly SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
-  protected readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
+  protected readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
 
   protected readonly sources: DataSources;
-  protected readonly contextDefault: ActionContext;
+  protected readonly contextDefault: IActionContext;
   protected readonly emptyPatterns: Map<IDataSource, RDF.BaseQuad[]>;
   protected readonly sourceIds: Map<IDataSource, string>;
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
-  public constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
-  context: ActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
-  skipEmptyPatterns: boolean) {
+  public constructor(mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern,
+    context: IActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
+    skipEmptyPatterns: boolean) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
-    this.sources = context.get(KeysRdfResolveQuadPattern.sources);
+    this.sources = context.get(KeysRdfResolveQuadPattern.sources)!;
     this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
     this.emptyPatterns = emptyPatterns;
-    this.sourceIds = new Map();
+    this.sourceIds = context.get(KeysRdfResolveQuadPattern.sourceIds) ?? new Map();
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
@@ -130,6 +131,20 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   /**
+   * Deskolemize all terms in the given quad.
+   * @param quad An RDF quad.
+   * @param sourceId A source identifier.
+   * @return The deskolemized quad.
+   */
+  public static deskolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sourceId: string): Q {
+    return mapTerms(quad, (term: RDF.Term): RDF.Term => {
+      const newTerm = FederatedQuadSource.deskolemizeTerm(term, sourceId);
+      // If the term was skolemized in a different source then dont deskolemize it
+      return !newTerm ? term : newTerm;
+    });
+  }
+
+  /**
    * If the given source is guaranteed to produce an empty result for the given pattern.
    *
    * This prediction is done based on the 'emptyPatterns' datastructure that is stored within this actor.
@@ -172,12 +187,12 @@ export class FederatedQuadSource implements IQuadSource {
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     // Counters for our metadata
-    const metadata: Record<string, any> = { totalItems: 0 };
+    const metadata: MetadataQuads = { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false };
     let remainingSources = this.sources.length;
 
-    // Anonymous function to handle totalItems from metadata
+    // Anonymous function to handle cardinality from metadata
     const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
-      pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>): void => {
+      pattern: RDF.BaseQuad | undefined, lastMetadata?: MetadataQuads): void => {
       if (this.skipEmptyPatterns && !currentTotalItems && pattern && !this.isSourceEmpty(source, pattern)) {
         this.emptyPatterns.get(source)!.push(pattern);
       }
@@ -203,7 +218,7 @@ export class FederatedQuadSource implements IQuadSource {
       let pattern: Algebra.Pattern | undefined;
 
       // Prepare the context for this specific source
-      let context: ActionContext = getDataSourceContext(source, this.contextDefault);
+      let context: IActionContext = getDataSourceContext(source, this.contextDefault);
       context = context.set(KeysRdfResolveQuadPattern.source,
         { type: getDataSourceType(source), value: getDataSourceValue(source) });
 
@@ -216,23 +231,39 @@ export class FederatedQuadSource implements IQuadSource {
         this.isSourceEmpty(source, pattern = this.algebraFactory
           .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
-        output.data.setProperty('metadata', { totalItems: 0 });
+        output.data.setProperty('metadata', { cardinality: 0, canContainUndefs: false });
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
 
       // Handle the metadata from this source
-      output.data.getProperty('metadata', (subMetadata: Record<string, any>) => {
-        if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !Number.isFinite(subMetadata.totalItems)) {
+      output.data.getProperty('metadata', (subMetadata: MetadataQuads) => {
+        if (!subMetadata.cardinality || !Number.isFinite(subMetadata.cardinality.value)) {
           // We're already at infinite, so ignore any later metadata
-          metadata.totalItems = Number.POSITIVE_INFINITY;
+          metadata.cardinality.type = 'estimate';
+          metadata.cardinality.value = Number.POSITIVE_INFINITY;
           remainingSources = 0;
-          checkEmitMetadata(Number.POSITIVE_INFINITY, source, pattern, subMetadata);
         } else {
-          metadata.totalItems += subMetadata.totalItems;
+          if (subMetadata.cardinality.type === 'estimate') {
+            metadata.cardinality.type = 'estimate';
+          }
+          metadata.cardinality.value += subMetadata.cardinality.value;
           remainingSources--;
-          checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
         }
+        if (metadata.requestTime || subMetadata.requestTime) {
+          metadata.requestTime = metadata.requestTime || 0;
+          subMetadata.requestTime = subMetadata.requestTime || 0;
+          metadata.requestTime += subMetadata.requestTime;
+        }
+        if (metadata.pageSize || subMetadata.pageSize) {
+          metadata.pageSize = metadata.pageSize || 0;
+          subMetadata.pageSize = subMetadata.pageSize || 0;
+          metadata.pageSize += subMetadata.pageSize;
+        }
+        if (subMetadata.canContainUndefs) {
+          metadata.canContainUndefs = true;
+        }
+        checkEmitMetadata(metadata.cardinality.value, source, pattern, subMetadata);
       });
 
       // Determine the data stream from this source

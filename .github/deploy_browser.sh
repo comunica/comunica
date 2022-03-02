@@ -21,15 +21,15 @@ mkdir -p $targetDir
 cd $targetDir
 
 echo "Discovered browser scripts:"
-find packages -name 'comunica-browser.js*'
+find engines -name 'comunica-browser.js*'
 
 # Update browser scripts
-rm -r packages/* 2> /dev/null
+rm -r engines/* 2> /dev/null
 pushd ../../..
-cp --parents $(find packages -name 'comunica-browser.js*') $targetDir
+cp --parents $(find engines -name 'comunica-browser.js*') $targetDir
 
 # If we're a release, update the major version folder
-if [ ! -z "$TRAVIS_TAG" ] || [[ "$GITHUB_REF" =~ refs/tags/* ]]; then
+if [[ "$GITHUB_REF" =~ refs/tags/* ]]; then
     MAJORVERSION=$(echo $VERSION | sed "s/^\([^\.]*\)\..*$/\1/")
 
     targetDir="rdfjs-comunica-browser/versions/${MAJORVERSION}"
@@ -37,9 +37,9 @@ if [ ! -z "$TRAVIS_TAG" ] || [[ "$GITHUB_REF" =~ refs/tags/* ]]; then
     cd $targetDir
 
     # Update browser scripts
-    rm -r packages/* 2> /dev/null
+    rm -r engines/* 2> /dev/null
     pushd ../../..
-    cp --parents $(find packages -name 'comunica-browser.js*') $targetDir
+    cp --parents $(find engines -name 'comunica-browser.js*') $targetDir
     popd
 fi
 

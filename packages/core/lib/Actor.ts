@@ -1,10 +1,7 @@
-import { KeysCore } from '@comunica/context-entries';
-import type { IAction, ActionContext as _ActionContext } from '@comunica/types';
-import { Map } from 'immutable';
+import type { IActionContext } from '@comunica/types';
 import type { Bus } from './Bus';
+import { CONTEXT_KEY_LOGGER } from './ContextEntries';
 import type { Logger } from './Logger';
-
-export type { IAction };
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.
@@ -52,8 +49,8 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {ActionContext} context An optional context.
    * @return {Logger} The logger or undefined.
    */
-  public static getContextLogger(context?: ActionContext): Logger | undefined {
-    return context && context.get(KeysCore.log);
+  public static getContextLogger(context: IActionContext): Logger | undefined {
+    return context.get(CONTEXT_KEY_LOGGER);
   }
 
   /**
@@ -113,48 +110,48 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 
   /* Proxy methods for the (optional) logger that is defined in the context */
 
-  protected getDefaultLogData(context: ActionContext | undefined, data?: (() => any)): any {
+  protected getDefaultLogData(context: IActionContext, data?: (() => any)): any {
     const dataActual = data ? data() : {};
     dataActual.actor = this.name;
     return dataActual;
   }
 
-  protected logTrace(context: ActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logTrace(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.trace(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logDebug(context: ActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logDebug(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.debug(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logInfo(context: ActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logInfo(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.info(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logWarn(context: ActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logWarn(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.warn(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logError(context: ActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logError(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.error(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logFatal(context: ActionContext | undefined, message: string, data?: (() => any)): void {
+  protected logFatal(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.fatal(message, this.getDefaultLogData(context, data));
@@ -163,52 +160,29 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 }
 
 export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput> {
+  /**
+   * The name for this actor.
+   * @default {<rdf:subject>}
+   */
   name: string;
+  /**
+   * The bus this actor subscribes to.
+   */
   bus: Bus<Actor<I, T, O>, I, T, O>;
+  /**
+   * Actor that must be registered in the bus before this actor.
+   */
   beforeActors?: Actor<I, T, O>[];
 }
 
 /**
- * An immutable key-value mapped context that can be passed to any (@link IAction}.
- * All actors that receive a context must forward this context to any actor, mediator or bus that it calls.
- * This context may be transformed before forwarding.
- *
- * Each bus should describe in its action interface which context entries are possible (non-restrictive)
- * and corresponding context keys should be exposed in '@comunica/context-entries' for easy reuse.
- * If actors support any specific context entries next to those inherited by the bus action interface,
- * then this should be described in its README file.
- *
- * To avoid entry conflicts, all keys must be properly namespaced using the following convention:
- *   Each key must be prefixed with the package name followed by a `:`.
- *   For example, the `rdf-resolve-quad-pattern` bus declares the `sources` entry,
- *   which should be named as `@comunica/bus-rdf-resolve-quad-pattern:sources`.
- *
- * This context can contain any information that might be relevant for certain actors.
- * For instance, this context can contain a list of datasources over which operators should query.
- *
- * @deprecated Use the same type from @comunica/types
+ * Data interface for the type of action.
  */
-export type ActionContext = _ActionContext;
-
-/**
- * A convenience constructor for {@link ActionContext} based on a given hash.
- * @param {{[p: string]: any}} hash A hash that maps keys to values.
- * @return {ActionContext} The immutable action context from the hash.
- * @constructor
- */
-// eslint-disable-next-line no-redeclare
-export function ActionContext(hash: Record<string, any>): ActionContext {
-  return Map(hash);
-}
-
-/**
- * Convert the given object to an action context object if it is not an action context object yet.
- * If it already is an action context object, return the object as-is.
- * @param maybeActionContext Any object.
- * @return {ActionContext} An action context object.
- */
-export function ensureActionContext(maybeActionContext: any): ActionContext {
-  return Map.isMap(maybeActionContext) ? maybeActionContext : ActionContext(maybeActionContext);
+export interface IAction {
+  /**
+   * The input context that is passed through by actors.
+   */
+  context: IActionContext;
 }
 
 /**

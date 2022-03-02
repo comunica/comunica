@@ -1,11 +1,14 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
-import { ArrayIterator } from 'asynciterator';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
+import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationJoin } from '../lib/ActorQueryOperationJoin';
-const arrayifyStream = require('arrayify-stream');
+import '@comunica/jest';
+
 const DF = new DataFactory();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationJoin', () => {
   let bus: any;
@@ -17,27 +20,25 @@ describe('ActorQueryOperationJoin', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1') }),
-          Bindings({ a: DF.literal('2') }),
-          Bindings({ a: DF.literal('3') }),
-        ]),
-        metadata: () => Promise.resolve({ totalItems: 3 }),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+        ], { autoStart: false }),
+        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a' ],
       }),
     };
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          Bindings({ a: DF.literal('1'), b: DF.literal('1') }),
-          Bindings({ a: DF.literal('2'), b: DF.literal('2') }),
-        ]),
-        metadata: () => Promise.resolve({ totalItems: 2 }),
+        bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
+        metadata: () => Promise.resolve({
+          cardinality: 100,
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        }),
         operated: arg,
         type: 'bindings',
-        variables: [ 'a', 'b' ],
-        canContainUndefs: false,
       }),
     };
   });
@@ -77,15 +78,24 @@ describe('ActorQueryOperationJoin', () => {
     });
 
     it('should run', () => {
-      const op: any = { operation: { type: 'join' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual([ 'a', 'b' ]);
+      const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(output.type).toEqual('bindings');
-        expect(output.canContainUndefs).toEqual(false);
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: DF.literal('1'), b: DF.literal('1') }),
-          Bindings({ a: DF.literal('2'), b: DF.literal('2') }),
+        expect(await output.metadata()).toEqual({
+          cardinality: 100,
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
     });

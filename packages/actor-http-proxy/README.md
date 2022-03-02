@@ -23,24 +23,22 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:http.json#myHttpProxy",
+      "@id": "urn:comunica:default:http/actors#proxy",
       "@type": "ActorHttpProxy",
-      "cahp:Actor/Http/Proxy/mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
-      },
-      "beforeActor": "config-sets:http.json#myHttpFetcher"
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "beforeActors": { "@id": "urn:comunica:default:http/actors#fetch" }
     }
   ]
 }
 ```
 
-Use `beforeActor` to indicate that this actor MUST always run _before_ your default HTTP actor.
+Use `beforeActors` to indicate that this actor MUST always run _before_ your default HTTP actor.
 
 ### Config Parameters
 
-* `cahp:Actor/Http/Proxy/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).

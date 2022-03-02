@@ -1,114 +1,19 @@
-import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
-import type { ActionContext, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
-  IActionQueryOperation,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputUpdate,
-  IActorQueryOperationOutputStream,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
+  IQueryOperationResultQuads,
+  IQueryOperationResultVoid,
   Bindings,
-  PatternBindings,
+  IMetadata, IActionContext,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { IActionQueryOperation };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { IActorQueryOperationOutput };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { IActorQueryOperationOutputBindings };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { IActorQueryOperationOutputBoolean };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { IActorQueryOperationOutputQuads };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { IActorQueryOperationOutputUpdate };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { IActorQueryOperationOutputStream };
-
-/**
- * @deprecated Use the type in @comunica/types
- */
-export type { PatternBindings as IPatternBindings };
-
-/**
- * @type {string} Context entry for current metadata.
- *                I.e., the metadata that was used to determine the next BGP operation.
- * @value {any} A metadata hash.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BGP_CURRENTMETADATA = KeysQueryOperation.bgpCurrentMetadata;
-/**
- * @type {string} Context entry for an array of parent metadata.
- *                I.e., an array of the metadata that was present before materializing the current BGP operations.
- *                This can be passed in 'bgp' actions.
- *                The array entries should correspond to the pattern entries in the BGP.
- * @value {any} An array of metadata hashes.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BGP_PARENTMETADATA = KeysQueryOperation.bgpParentMetadata;
-/**
- * @type {string} Context entry for indicating which patterns were bound from variables.
- *                I.e., an array of the same length as the value of KeysQueryOperation.patternParentMetadata,
- *                where each array value corresponds to the pattern bindings for the corresponding pattern.
- * @value {any} An array of {@link PatternBindings}.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BGP_PATTERNBINDINGS = KeysQueryOperation.bgpPatternBindings;
-/**
- * @type {string} Context entry for parent metadata.
- *                I.e., the metadata that was present before materializing the current operation.
- *                This can be passed in 'pattern' actions.
- * @value {any} A metadata hash.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_PATTERN_PARENTMETADATA = KeysQueryOperation.patternParentMetadata;
-/**
- * @type {string} Context entry for query's base IRI.
- * @value {any} A string.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_BASEIRI = KeysInitSparql.baseIRI;
-/**
- * @type {string} A timestamp representing the current time.
- *                This is required for certain SPARQL operations such as NOW().
- * @value {any} a date.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_QUERY_TIMESTAMP = KeysInitSparql.queryTimestamp;
-
-/**
- * @type {string} Context entry for indicating that only read operations are allowed, defaults to false.
- * @value {any} A boolean.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_READONLY = KeysQueryOperation.readOnly;
 
 /**
  * A counter that keeps track blank node generated through BNODE() SPARQL
@@ -127,101 +32,103 @@ let bnodeCounter = 0;
  * * Output: IActorQueryOperationOutput: A bindings stream.
  *
  * @see IActionQueryOperation
- * @see IActorQueryOperationOutput
+ * @see IQueryOperationResult
  */
-export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
-  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
+export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IQueryOperationResult> {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cbqo:components/BusQueryOperation.jsonld#BusQueryOperation>} bus
+   */
+  protected constructor(args: IActorQueryOperationArgs) {
     super(args);
   }
 
   /**
    * Safely cast a query operation output to a bindings output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IActorQueryOperationOutput} output A query operation output.
-   * @return {IActorQueryOperationOutputBindings} A bindings query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultBindings} A bindings query operation output.
    */
-  public static getSafeBindings(output: IActorQueryOperationOutput): IActorQueryOperationOutputBindings {
+  public static getSafeBindings(output: IQueryOperationResult): IQueryOperationResultBindings {
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
-    return <IActorQueryOperationOutputBindings> output;
+    return <IQueryOperationResultBindings> output;
   }
 
   /**
    * Safely cast a query operation output to a quads output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IActorQueryOperationOutput} output A query operation output.
-   * @return {IActorQueryOperationOutputQuads} A quads query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultQuads} A quads query operation output.
    */
-  public static getSafeQuads(output: IActorQueryOperationOutput): IActorQueryOperationOutputQuads {
+  public static getSafeQuads(output: IQueryOperationResult): IQueryOperationResultQuads {
     ActorQueryOperation.validateQueryOutput(output, 'quads');
-    return <IActorQueryOperationOutputQuads> output;
+    return <IQueryOperationResultQuads> output;
   }
 
   /**
    * Safely cast a query operation output to a boolean output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IActorQueryOperationOutput} output A query operation output.
-   * @return {IActorQueryOperationOutputBoolean} A boolean query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultBoolean} A boolean query operation output.
    */
-  public static getSafeBoolean(output: IActorQueryOperationOutput): IActorQueryOperationOutputBoolean {
+  public static getSafeBoolean(output: IQueryOperationResult): IQueryOperationResultBoolean {
     ActorQueryOperation.validateQueryOutput(output, 'boolean');
-    return <IActorQueryOperationOutputBoolean> output;
+    return <IQueryOperationResultBoolean> output;
   }
 
   /**
-   * Safely cast a query operation output to an update output.
+   * Safely cast a query operation output to a void output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IActorQueryOperationOutput} output A query operation output.
-   * @return {IActorQueryOperationOutputUpdate} An update query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
+   * @return {IQueryOperationResultVoid} A void query operation output.
    */
-  public static getSafeUpdate(output: IActorQueryOperationOutput): IActorQueryOperationOutputUpdate {
-    ActorQueryOperation.validateQueryOutput(output, 'update');
-    return <IActorQueryOperationOutputUpdate> output;
+  public static getSafeVoid(output: IQueryOperationResult): IQueryOperationResultVoid {
+    ActorQueryOperation.validateQueryOutput(output, 'void');
+    return <IQueryOperationResultVoid> output;
   }
 
   /**
    * Convert a metadata callback to a lazy callback where the response value is cached.
-   * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
+   * @param {() => Promise<IMetadata>} metadata A metadata callback
    * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
    */
-  public static cachifyMetadata<T extends (() => Promise<Record<string, any>>)
-  | (undefined | (() => Promise<Record<string, any>>))>(metadata: T): T {
-    let lastReturn: Promise<Record<string, any>>;
+  public static cachifyMetadata<M extends IMetadata<T>, T extends RDF.Variable | RDF.QuadTermName>(
+    metadata: () => Promise<M>,
+  ): () => Promise<M> {
+    let lastReturn: Promise<M>;
     // eslint-disable-next-line no-return-assign,@typescript-eslint/no-misused-promises
-    return <T> (metadata && (() => (lastReturn || (lastReturn = metadata()))));
+    return () => (lastReturn || (lastReturn = metadata()));
   }
 
   /**
    * Throw an error if the output type does not match the expected type.
-   * @param {IActorQueryOperationOutput} output A query operation output.
+   * @param {IQueryOperationResult} output A query operation output.
    * @param {string} expectedType The expected output type.
    */
-  public static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string): void {
+  public static validateQueryOutput(output: IQueryOperationResult, expectedType: IQueryOperationResult['type']): void {
     if (output.type !== expectedType) {
       throw new Error(`Invalid query output type: Expected '${expectedType}' but got '${output.type}'`);
     }
   }
 
-  protected static getBaseExpressionContext(context: ActionContext): IBaseExpressionContext {
-    if (context) {
-      const now: Date = context.get(KeysInitSparql.queryTimestamp);
-      const baseIRI: string = context.get(KeysInitSparql.baseIRI);
+  protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
+    const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
+    const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
 
-      // Handle two variants of providing extension functions
-      if (context.has(KeysInitSparql.extensionFunctionCreator) && context.has(KeysInitSparql.extensionFunctions)) {
-        throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
-      }
-      let extensionFunctionCreator: (functionNamedNode: RDF.NamedNode) =>
-      ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined = context.get(KeysInitSparql.extensionFunctionCreator);
-      // Convert dictionary-based variant to callback
-      const extensionFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>> = context
-        .get(KeysInitSparql.extensionFunctions);
-      if (extensionFunctions) {
-        extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
-      }
-
-      return { now, baseIRI, extensionFunctionCreator };
+    // Handle two variants of providing extension functions
+    if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
+      throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
     }
-    return {};
+    let extensionFunctionCreator: ((functionNamedNode: RDF.NamedNode) =>
+    ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined) | undefined = context
+      .get(KeysInitQuery.extensionFunctionCreator);
+    // Convert dictionary-based variant to callback
+    const extensionFunctions: (Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>) | undefined = context
+      .get(KeysInitQuery.extensionFunctions);
+    if (extensionFunctions) {
+      extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
+    }
+
+    return { now, baseIRI, extensionFunctionCreator };
   }
 
   /**
@@ -230,9 +137,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
+  public static getExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  ISyncExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`),
@@ -245,14 +151,13 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getAsyncExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IAsyncExpressionContext {
+  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  IAsyncExpressionContext {
     const expressionContext: IAsyncExpressionContext = {
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
     };
-    if (context && mediatorQueryOperation) {
+    if (mediatorQueryOperation) {
       expressionContext.exists = ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation);
     }
     return expressionContext;
@@ -263,10 +168,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param context An action context.
    * @param mediatorQueryOperation A query operation mediator.
    */
-  public static createExistenceResolver(context: ActionContext, mediatorQueryOperation: Mediator<
-  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>):
-    (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
+  public static createExistenceResolver(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
+  (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async(expr, bindings) => {
       const operation = materializeOperation(expr.input, bindings);
 
@@ -295,34 +198,32 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * Throw an error if the context contains the readOnly flag.
    * @param context An action context.
    */
-  public static throwOnReadOnly(context?: ActionContext): void {
-    if (context && context.get(KEY_CONTEXT_READONLY)) {
+  public static throwOnReadOnly(context: IActionContext): void {
+    if (context.get(KeysQueryOperation.readOnly)) {
       throw new Error(`Attempted a write operation in read-only mode`);
     }
   }
 }
 
-/**
- * Helper function to get the metadata of an action output.
- * @param actionOutput An action output, with an optional metadata function.
- * @return The metadata.
- */
-export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Promise<Record<string, any>> {
-  if (!actionOutput.metadata) {
-    return Promise.resolve({});
-  }
-  return actionOutput.metadata();
+export interface IActionQueryOperation extends IAction {
+  /**
+   * The query operation to handle.
+   */
+  operation: Algebra.Operation;
 }
 
-interface IBaseExpressionContext {
+export type IActorQueryOperationArgs = IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult>;
+
+export type MediatorQueryOperation = Mediate<IActionQueryOperation, IQueryOperationResult>;
+
+export interface IBaseExpressionContext {
   now?: Date;
   baseIRI?: string;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>
   ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
 }
 
-// TODO: rename to ISyncExpressionContext in next major version
-export interface IExpressionContext extends IBaseExpressionContext {
+export interface ISyncExpressionContext extends IBaseExpressionContext {
   bnode: (input?: string | undefined) => RDF.BlankNode;
 }
 

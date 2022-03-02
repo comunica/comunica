@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-abstract-path",
-  "@type": "Module",
-  "requireName": "@comunica/actor-abstract-path",
-  "import": [
-    "files-caap:components/Actor/AbstractPath.jsonld"
-  ]
-}

@@ -23,14 +23,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-quadpattern/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-quadpattern/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:sparql-queryoperators.json#myQuadPatternQueryOperator",
+      "@id": "urn:comunica:default:query-operation/actors#quadpattern",
       "@type": "ActorQueryOperationQuadpattern",
-      "caqoq:mediatorResolveQuadPattern": { "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern" }
+      "mediatorResolveQuadPattern": { "@id": "urn:comunica:default:query-operation/mediators#main" }
     }
   ]
 }
@@ -38,7 +38,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `caqoq:mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
+* `mediatorResolveQuadPattern`: A mediator over the [RDF Resolve Quad Pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
 
 ## Notes
 

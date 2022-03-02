@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
-  "@id": "cbrd:Bus/RdfDereference",
-  "@type": "cc:Bus",
-  "comment": "A bus for RDF deference events"
-}

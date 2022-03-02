@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-graphql/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-sparql-parse-graphql",
-  "@type": "Module",
-  "requireName": "@comunica/actor-sparql-parse-graphql",
-  "import": [
-    "files-caspg:components/Actor/SparqlParse/Graphql.jsonld"
-  ]
-}

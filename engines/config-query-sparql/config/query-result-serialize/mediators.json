@@ -1,0 +1,27 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-result-serialize/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:default:query-result-serialize/mediators#serialize",
+      "@type": "MediatorRace",
+      "bus": { "@id": "ActorQueryResultSerialize:_default_bus" }
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/mediators#mediaType",
+      "@type": "MediatorCombineUnion",
+      "bus": { "@id": "ActorQueryResultSerialize:_default_bus" },
+      "field": "mediaTypes"
+    },
+    {
+      "@id": "urn:comunica:default:query-result-serialize/mediators#mediaTypeFormat",
+      "@type": "MediatorCombineUnion",
+      "bus": { "@id": "ActorQueryResultSerialize:_default_bus" },
+      "field": "mediaTypeFormats"
+    }
+  ]
+}

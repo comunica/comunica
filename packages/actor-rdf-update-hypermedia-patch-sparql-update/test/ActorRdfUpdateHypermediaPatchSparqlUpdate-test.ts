@@ -24,7 +24,7 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
     });
 
     it('should test', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { patchSparqlUpdate: true };
       const exists = true;
@@ -32,7 +32,7 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
     });
 
     it('should not test on invalid metadata', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -41,7 +41,7 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
     });
 
     it('should not test on a non-existing destination', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { patchSparqlUpdate: true };
       const exists = false;
@@ -50,7 +50,7 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
     });
 
     it('should test on invalid metadata with forced destination type', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -59,7 +59,7 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
     });
 
     it('should not test on invalid metadata with forced destination type for different destination type', () => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
@@ -68,7 +68,7 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
     });
 
     it('should run', async() => {
-      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { patchSparqlUpdate: true };
       const exists = true;

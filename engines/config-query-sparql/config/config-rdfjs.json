@@ -1,0 +1,39 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^2.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/context-preprocess/actors.json",
+    "ccqs:config/context-preprocess/mediators.json",
+    "ccqs:config/hash-bindings/actors.json",
+    "ccqs:config/hash-bindings/mediators.json",
+
+    "ccqs:config/http/mediators.json",
+
+    "ccqs:config/http-invalidate/mediators.json",
+    "ccqs:config/init/actors.json",
+    "ccqs:config/optimize-query-operation/actors.json",
+    "ccqs:config/optimize-query-operation/mediators.json",
+    "ccqs:config/query-operation/actors.json",
+    "ccqs:config/query-operation/mediators.json",
+    "ccqs:config/query-parse/actors.json",
+    "ccqs:config/query-parse/mediators.json",
+    "ccqs:config/query-result-serialize/actors.json",
+    "ccqs:config/query-result-serialize/mediators.json",
+
+    "ccqs:config/rdf-join/actors.json",
+    "ccqs:config/rdf-join/mediators.json",
+    "ccqs:config/rdf-join-entries-sort/actors.json",
+    "ccqs:config/rdf-join-entries-sort/mediators.json",
+    "ccqs:config/rdf-join-selectivity/actors.json",
+    "ccqs:config/rdf-join-selectivity/mediators.json",
+
+    "ccqs:config/rdf-resolve-quad-pattern/actors-rdfjs.json",
+    "ccqs:config/rdf-resolve-quad-pattern/mediators.json",
+    "ccqs:config/rdf-serialize/actors.json",
+    "ccqs:config/rdf-serialize/mediators.json",
+
+    "ccqs:config/rdf-update-quads/actors-rdfjs.json",
+    "ccqs:config/rdf-update-quads/mediators.json"
+  ]
+}

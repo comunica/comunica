@@ -17,8 +17,8 @@ $ yarn add @comunica/bus-rdf-parse
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"`
-* **Bus name**: `cbrp:Bus/RdfParse`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^2.0.0/components/context.jsonld"`
+* **Bus name**: `ActorRdfParse:_default_bus`
 
 ## Creating actors on this bus
 

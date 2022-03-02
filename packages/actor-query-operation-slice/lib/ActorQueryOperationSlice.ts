@@ -2,11 +2,13 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import { KeysQueryOperation } from '@comunica/context-entries';
+import type { IActorTest } from '@comunica/core';
 import type {
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputStream,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
+  IQueryOperationResultStream, IMetadata, IActionContext,
 } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -19,33 +21,38 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     super(args, 'slice');
   }
 
-  public async testOperation(pattern: Algebra.Slice, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Slice, context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Slice, context: ActionContext): Promise<IActorQueryOperationOutputStream> {
-    // Resolve the input
-    const output: IActorQueryOperationOutputStream = await this.mediatorQueryOperation
-      .mediate({ operation: pattern.input, context });
+  public async runOperation(operation: Algebra.Slice, context: IActionContext):
+  Promise<IQueryOperationResult> {
+    // Add limit indicator to the context, which can be used for query planning
+    // eslint-disable-next-line unicorn/explicit-length-check
+    if (operation.length) {
+      context = context.set(KeysQueryOperation.limitIndicator, operation.length);
+    }
 
-    const metadata = this.sliceMetadata(output, pattern);
+    // Resolve the input
+    const output: IQueryOperationResult = await this.mediatorQueryOperation
+      .mediate({ operation: operation.input, context });
 
     if (output.type === 'bindings') {
-      const bindingsOutput = <IActorQueryOperationOutputBindings> output;
-      const bindingsStream = this.sliceStream(bindingsOutput.bindingsStream, pattern);
-      return <IActorQueryOperationOutputBindings> {
+      const bindingsStream = this.sliceStream(output.bindingsStream, operation);
+      return <IQueryOperationResultBindings> {
         type: 'bindings',
         bindingsStream,
-        metadata,
-        variables: bindingsOutput.variables,
-        canContainUndefs: bindingsOutput.canContainUndefs,
+        metadata: this.sliceMetadata(output, operation),
       };
     }
 
     if (output.type === 'quads') {
-      const quadOutput = <IActorQueryOperationOutputQuads> output;
-      const quadStream = this.sliceStream(quadOutput.quadStream, pattern);
-      return <IActorQueryOperationOutputQuads> { type: 'quads', quadStream, metadata };
+      const quadStream = this.sliceStream(output.quadStream, operation);
+      return <IQueryOperationResultQuads> {
+        type: 'quads',
+        quadStream,
+        metadata: this.sliceMetadata(output, operation),
+      };
     }
 
     throw new Error(`Invalid query output type: Expected 'bindings' or 'quads' but got '${output.type}'`);
@@ -61,22 +68,22 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
   }
 
   // If we find metadata, apply slicing on the total number of items
-  private sliceMetadata(output: IActorQueryOperationOutputStream, pattern: Algebra.Slice):
-  (() => Promise<Record<string, any>>) | undefined {
+  private sliceMetadata(
+    output: IQueryOperationResultStream<any, any>,
+    pattern: Algebra.Slice,
+  ): () => Promise<IMetadata<any>> {
     // eslint-disable-next-line unicorn/explicit-length-check
     const hasLength: boolean = Boolean(pattern.length) || pattern.length === 0;
-    return !output.metadata ?
-      undefined :
-      () => (<() => Promise<Record<string, any>>>output.metadata)()
-        .then(subMetadata => {
-          let { totalItems } = subMetadata;
-          if (Number.isFinite(totalItems)) {
-            totalItems = Math.max(0, totalItems - pattern.start);
-            if (hasLength) {
-              totalItems = Math.min(totalItems, pattern.length!);
-            }
+    return () => (<() => Promise<IMetadata<any>>>output.metadata)()
+      .then(subMetadata => {
+        const cardinality = { ...subMetadata.cardinality };
+        if (Number.isFinite(cardinality.value)) {
+          cardinality.value = Math.max(0, cardinality.value - pattern.start);
+          if (hasLength) {
+            cardinality.value = Math.min(cardinality.value, pattern.length!);
           }
-          return { ...subMetadata, totalItems };
-        });
+        }
+        return { ...subMetadata, cardinality };
+      });
   }
 }

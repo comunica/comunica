@@ -1,6 +1,6 @@
 # Comunica Bus SPARQL Parse
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fbus-sparql-parse.svg)](https://www.npmjs.com/package/@comunica/bus-sparql-parse)
+[![npm version](https://badge.fury.io/js/%40comunica%2Flogger-pretty.svg)](https://www.npmjs.com/package/@comunica/logger-pretty)
 
 A logger that prints to standard output.
 
@@ -20,10 +20,10 @@ $ yarn add @comunica/logger-pretty
 ## Usage
 
 ```typescript
-const newEngine = require('@comunica/actor-init-sparql').newEngine;
+const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 import {LoggerPretty} from "@comunica/logger-pretty";
 
-const result = await myEngine.query('SELECT * WHERE { ?s ?p ?o }', {
+const bindingsStream = await new QueryEngine().queryBindings('SELECT * WHERE { ?s ?p ?o }', {
   sources: ['http://fragments.dbpedia.org/2015/en'],
   log: new LoggerPretty({ level: 'debug' }),
 });

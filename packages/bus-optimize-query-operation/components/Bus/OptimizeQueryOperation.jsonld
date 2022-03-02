@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/^1.0.0/components/context.jsonld",
-  "@id": "cboqo:Bus/OptimizeQueryOperation",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for optimize-query-operation events."
-}

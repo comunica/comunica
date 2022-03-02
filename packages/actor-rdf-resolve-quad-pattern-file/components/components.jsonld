@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-file/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-file",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-resolve-quad-pattern-file",
-  "import": [
-    "files-carrqpfi:components/Actor/RdfResolveQuadPattern/File.jsonld"
-  ]
-}

@@ -1,12 +1,9 @@
 {
   "name": "@comunica/data-factory",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "RDFJS DataFactory utilities",
-  "main": "index.js",
-  "engines": {
-    "node": ">=8.0"
-  },
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -15,6 +12,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "keywords": [
     "semantic",
     "actor",
@@ -29,33 +27,12 @@
   "homepage": "https://comunica.dev/",
   "files": [
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
     "@rdfjs/types": "*"
   },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "../../tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "collectCoverage": true
-  },
   "scripts": {
-    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
-    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
   }
 }

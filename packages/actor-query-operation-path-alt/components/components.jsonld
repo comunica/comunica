@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-alt/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-path-alt",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-path-alt",
-  "import": [
-    "files-caqopa:components/Actor/QueryOperation/PathAlt.jsonld"
-  ]
-}

@@ -1,5 +1,6 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
@@ -9,7 +10,7 @@ const DF = new DataFactory();
 const streamifyString = require('streamify-string');
 
 describe('QuadDestinationSparql', () => {
-  let context: ActionContext;
+  let context: IActionContext;
   let url: string;
   let mediatorHttp: any;
   let destination: QuadDestinationSparql;
@@ -27,7 +28,7 @@ describe('QuadDestinationSparql', () => {
         };
       }),
     };
-    context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+    context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
     url = 'abc';
     destination = new QuadDestinationSparql(url, context, mediatorHttp);
   });

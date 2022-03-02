@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -14,7 +14,10 @@ import type * as RDF from '@rdfjs/types';
  * @see IActorRdfParseHtmlOutput
  */
 export abstract class ActorRdfParseHtml extends Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
-  public constructor(args: IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
+  public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
   }
 }
@@ -83,3 +86,7 @@ export interface IHtmlParseListener {
    */
   onEnd: () => void;
 }
+
+export type IActorRdfParseHtmlArgs = IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
+
+export type MediatorRdfParseHtml = Mediate<IActionRdfParseHtml, IActorRdfParseHtmlOutput>;

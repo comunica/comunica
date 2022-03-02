@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/filename-case */
+/* eslint-enable unicorn/filename-case */
 /* ! @license MIT ©2013-2016 Ruben Verborgh, Ghent University - imec */
 /* Single-function HTTP(S) request module for browsers */
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/browser/Request.js */
@@ -76,8 +77,8 @@ export default class Requester {
         const resource = this.removeQuery(resHeaders.get('content-location') ?? settings.url);
         if (!this.negotiatedResources[resource]) {
           // Ensure the resource is not a timegate
-          const links = (resHeaders.get('link') && parseLink(resHeaders.get('link')!)) ?? undefined;
-          const timegate = this.removeQuery(links && links.timegate && links.timegate.url);
+          const links = (resHeaders.get('link') && parseLink(resHeaders.get('link'))) ?? undefined;
+          const timegate = this.removeQuery(links && links.timegate?.url);
           if (resource !== timegate) {
             this.negotiatedResources[resource] = true;
           }

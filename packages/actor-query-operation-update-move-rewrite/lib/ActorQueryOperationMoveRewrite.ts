@@ -1,7 +1,7 @@
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
@@ -17,28 +17,28 @@ export class ActorQueryOperationMoveRewrite extends ActorQueryOperationTypedMedi
     this.factory = new Factory();
   }
 
-  public async testOperation(pattern: Algebra.Move, context: ActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Move, context: IActionContext): Promise<IActorTest> {
     ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
-  public runOperation(pattern: Algebra.Move, context: ActionContext): Promise<IActorQueryOperationOutput> {
+  public runOperation(operationOriginal: Algebra.Move, context: IActionContext): Promise<IQueryOperationResult> {
     // No-op if source === destination
-    if ((typeof pattern.destination === 'string' && typeof pattern.source === 'string' &&
-      pattern.destination === pattern.source) ||
-      (typeof pattern.destination !== 'string' && typeof pattern.source !== 'string' &&
-        pattern.destination.equals(pattern.source))) {
+    if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
+        operationOriginal.destination === operationOriginal.source) ||
+      (typeof operationOriginal.destination !== 'string' && typeof operationOriginal.source !== 'string' &&
+        operationOriginal.destination.equals(operationOriginal.source))) {
       return Promise.resolve({
-        type: 'update',
-        updateResult: Promise.resolve(),
+        type: 'void',
+        execute: () => Promise.resolve(),
       });
     }
 
     // MOVE is equivalent to drop destination, add, and drop source
     const updates = [
-      this.factory.createDrop(pattern.destination, true),
-      this.factory.createAdd(pattern.source, pattern.destination, pattern.silent),
-      this.factory.createDrop(pattern.source),
+      this.factory.createDrop(operationOriginal.destination, true),
+      this.factory.createAdd(operationOriginal.source, operationOriginal.destination, operationOriginal.silent),
+      this.factory.createDrop(operationOriginal.source),
     ];
     const operation = this.factory.createCompositeUpdate(updates);
     return this.mediatorQueryOperation.mediate({ operation, context });

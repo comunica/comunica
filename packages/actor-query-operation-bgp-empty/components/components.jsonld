@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-empty/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-bgp-empty",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-bgp-empty",
-  "import": [
-    "files-caqobe:components/Actor/QueryOperation/BgpEmpty.jsonld"
-  ]
-}

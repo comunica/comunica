@@ -1,6 +1,13 @@
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import type {
+  IActionDereferenceRdf,
+  IActorDereferenceRdfOutput,
+  MediatorDereferenceRdf,
+} from '@comunica/bus-dereference-rdf';
+import type { IActionRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 const DF = new DataFactory();
@@ -8,13 +15,13 @@ const arrayifyStream = require('arrayify-stream');
 
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
-    let context: ActionContext;
+    let context: IActionContext;
     let source: any;
     let s;
     let p;
     let o;
     let g;
-    let mediatorRdfDereference: any;
+    let mediatorDereferenceRdf: MediatorDereferenceRdf;
     let mediatorMetadata: any;
     let mediatorMetadataExtract: any;
     let mediatorRdfResolveHypermedia: any;
@@ -22,16 +29,18 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let mediatorRdfResolveHypermediaLinksQueue: any;
 
     beforeEach(() => {
-      context = ActionContext({});
+      context = new ActionContext({});
       s = DF.namedNode('s');
       p = DF.namedNode('p');
       o = DF.namedNode('o');
       g = DF.namedNode('g');
-      mediatorRdfDereference = {
-        mediate: jest.fn(({ url }: any) => Promise.resolve({
+      // @ts-expect-error
+      mediatorDereferenceRdf = {
+        // @ts-expect-error
+        mediate: jest.fn(({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> => Promise.resolve({
           url,
-          quads: `QUADS(${url})+METADATA`,
-          triples: true,
+          data: `QUADS(${url})+METADATA`,
+          metadata: { triples: true },
           headers: 'HEADERS',
         })),
       };
@@ -43,14 +52,15 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediate: jest.fn(({ metadata }: any) => Promise.resolve({ metadata: { myKey: metadata }})),
       };
       mediatorRdfResolveHypermedia = {
-        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
-          dataset: 'MYDATASET',
-          source: { sourceContents: quads },
-        })),
+        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: IActionRdfResolveHypermedia) =>
+          Promise.resolve({
+            dataset: 'MYDATASET',
+            source: { sourceContents: quads },
+          })),
       };
       mediatorRdfResolveHypermediaLinks = {
         mediate: jest.fn(({ metadata }: any) => Promise
-          .resolve({ urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ]})),
+          .resolve({ links: [{ url: `${metadata.baseURL}url1` }, { url: `${metadata.baseURL}url2` }]})),
       };
       mediatorRdfResolveHypermediaLinksQueue = {
         mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
@@ -58,7 +68,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       const mediators: any = {
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorDereferenceRdf,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
@@ -104,7 +114,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should not re-emit any the first url', async() => {
-        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: [ 'first' ]});
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ links: [{ url: 'first' }]});
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
       });
 
@@ -126,26 +136,6 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
       });
-
-      it('should get urls based on mediatorRdfResolveHypermediaLinks when they are provided as string', async() => {
-        mediatorRdfResolveHypermediaLinks.mediate = ({ metadata }: any) => Promise.resolve({
-          urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ],
-        });
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
-          { url: 'http://base.org/url1' },
-          { url: 'http://base.org/url2' },
-        ]);
-      });
-
-      it('should get urls based on mediatorRdfResolveHypermediaLinks when they are provided as links', async() => {
-        mediatorRdfResolveHypermediaLinks.mediate = ({ metadata }: any) => Promise.resolve({
-          urls: [{ url: `${metadata.baseURL}url1` }, { url: `${metadata.baseURL}url2` }],
-        });
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
-          { url: 'http://base.org/url1' },
-          { url: 'http://base.org/url2' },
-        ]);
-      });
     });
 
     describe('getSource', () => {
@@ -159,7 +149,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should get urls based on mediatorRdfResolveHypermedia without dataset id', async() => {
-        mediatorRdfResolveHypermedia.mediate = ({ forceSourceType, handledDatasets, metadata, quads }: any) =>
+        mediatorRdfResolveHypermedia.mediate = ({
+          forceSourceType, handledDatasets, metadata, quads,
+        }: IActionRdfResolveHypermedia) =>
           Promise.resolve({
             source: { sourceContents: quads },
           });
@@ -183,26 +175,26 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should apply the link context', async() => {
-        expect(await source.getSource({ url: 'startUrl', context: ActionContext({ a: 'b' }) }, {})).toEqual({
-          link: { url: 'startUrl', context: ActionContext({ a: 'b' }) },
+        expect(await source.getSource({ url: 'startUrl', context: new ActionContext({ a: 'b' }) }, {})).toEqual({
+          link: { url: 'startUrl', context: new ActionContext({ a: 'b' }) },
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
         });
-        expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith({
+        expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
         });
         expect(mediatorMetadata.mediate).toHaveBeenCalledWith({
           quads: 'QUADS(startUrl)+METADATA',
           triples: true,
           url: 'startUrl',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
         });
         expect(mediatorMetadataExtract.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
           metadata: 'METADATA',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
           headers: 'HEADERS',
         });
         expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledWith({
@@ -211,13 +203,13 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           quads: 'QUADS(startUrl)',
-          context: ActionContext({ a: 'b' }),
+          context: new ActionContext({ a: 'b' }),
         });
       });
 
       it('should delegate dereference errors to the source', async() => {
         const error = new Error('MediatedLinkedRdfSourcesAsyncRdfIterator dereference error');
-        mediatorRdfDereference.mediate = () => Promise.reject(error);
+        mediatorDereferenceRdf.mediate = () => Promise.reject(error);
         const ret = await source.getSource({ url: 'startUrl' }, {});
         expect(ret).toEqual({
           link: { url: 'startUrl' },

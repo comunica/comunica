@@ -1,12 +1,15 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputQuads } from '@comunica/types';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryOperationResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
 const arrayifyStream = require('arrayify-stream');
+
 const DF = new DataFactory<RDF.BaseQuad>();
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationConstruct', () => {
   let bus: any;
@@ -18,20 +21,20 @@ describe('ActorQueryOperationConstruct', () => {
       mediate: (arg: any) => arg.operation.input ?
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            Bindings({ '?a': DF.literal('1') }),
-            Bindings({ '?a': DF.literal('2') }),
-            Bindings({ '?a': DF.literal('3') }),
+            BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ totalItems: 3 }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
-          variables: [ 'a' ],
+          variables: [ DF.variable('a') ],
         }) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            Bindings({}),
+            BF.bindings(),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ totalItems: 1 }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false }),
           operated: arg,
           type: 'bindings',
           variables: [],
@@ -91,19 +94,20 @@ describe('ActorQueryOperationConstruct', () => {
     });
 
     it('should test on construct', () => {
-      const op: any = { operation: { type: 'construct', template: []}};
+      const op: any = { operation: { type: 'construct', template: []}, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-construct', () => {
-      const op: any = { operation: { type: 'some-other-type', template: []}};
+      const op: any = { operation: { type: 'some-other-type', template: []}, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on an empty template', () => {
-      const op: any = { operation: { type: 'construct', template: []}};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
+      const op: any = { operation: { type: 'construct', template: []}, context: new ActionContext() };
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([]);
       });
@@ -114,9 +118,11 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ],
-      type: 'construct' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+      type: 'construct' },
+      context: new ActionContext() };
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.blankNode('s10'), DF.namedNode('p1'), DF.literal('o1')),
@@ -131,9 +137,11 @@ describe('ActorQueryOperationConstruct', () => {
           DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
           DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
         ],
-        type: 'construct' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 6 });
+        type: 'construct' },
+      context: new ActionContext() };
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
+        expect(await (<any> output).metadata())
+          .toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.blankNode('s10'), DF.literal('1'), DF.literal('o1')),
@@ -145,48 +153,6 @@ describe('ActorQueryOperationConstruct', () => {
           DF.quad(DF.blankNode('s12'), DF.literal('3'), DF.literal('o1')),
           DF.quad(DF.blankNode('s22'), DF.namedNode('p2'), DF.literal('3'), DF.literal('3')),
         ]);
-      });
-    });
-
-    it('should run on a template with variables when the mediator provides no metadata promise', () => {
-      actor = new ActorQueryOperationConstruct({ bus,
-        mediatorQueryOperation: <any> {
-          mediate: (arg: any) => Promise.resolve({
-            bindingsStream: new ArrayIterator([]),
-            metadata: null,
-            operated: arg,
-            type: 'bindings',
-            variables: [ 'a' ],
-          }),
-        },
-        name: 'actor' });
-      const op: any = { operation: { template: [
-        DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
-      ],
-      type: 'construct' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(output.metadata).toBeFalsy();
-      });
-    });
-
-    it('should run on a template with variables when the mediator provides metadata without totalItems', () => {
-      actor = new ActorQueryOperationConstruct({ bus,
-        mediatorQueryOperation: <any> {
-          mediate: (arg: any) => Promise.resolve({
-            bindingsStream: new ArrayIterator([]),
-            metadata: () => Promise.resolve({}),
-            operated: arg,
-            type: 'bindings',
-            variables: [ 'a' ],
-          }),
-        },
-        name: 'actor' });
-      const op: any = { operation: { template: [
-        DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
-      ],
-      type: 'construct' }};
-      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
-        expect(await (<any> output).metadata()).toEqual({});
       });
     });
   });

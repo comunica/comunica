@@ -1,6 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld",
-  "@id": "cbrme:Bus/RdfMetadataExtract",
-  "@type": "cc:Bus",
-  "comment": "A comunica bus for rdf-metadata-extract events."
-}

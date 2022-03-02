@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-paged-next/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-dereference-paged-next",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-dereference-paged-next",
-  "import": [
-    "files-cardph:components/Actor/RdfDereferencePaged/Next.jsonld"
-  ]
-}

@@ -30,12 +30,12 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-sparql.json#myRdfMetadataExtractSparqlService",
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#sparql-service",
       "@type": "ActorRdfMetadataExtractSparqlService"
     }
   ]
@@ -44,4 +44,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `carmess:Actor/RdfMetadataExtract/SparqlService#inferHttpsEndpoint`: If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based, defaults to `true`.
+* `inferHttpsEndpoint`: If HTTPS endpoints should be forcefully used if the original URL was HTTPS-based, defaults to `true`.

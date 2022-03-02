@@ -1,10 +1,10 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
-  "version": "1.22.2",
+  "version": "2.0.0",
   "description": "A hypermedia rdf-resolve-quad-pattern actor",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -13,6 +13,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
@@ -27,66 +28,33 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo": "^1.22.0",
-    "@comunica/bus-rdf-metadata": "^1.22.0",
-    "@comunica/bus-rdf-metadata-extract": "^1.22.0",
-    "@comunica/types": "^1.22.0",
-    "@comunica/utils-datasource": "^1.22.2",
+    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^2.0.0",
+    "@comunica/actor-query-result-serialize-sparql-json": "^2.0.0",
+    "@comunica/bus-http-invalidate": "^2.0.0",
+    "@comunica/bus-dereference-rdf": "^2.0.0",
+    "@comunica/bus-rdf-metadata": "^2.0.0",
+    "@comunica/bus-rdf-metadata-extract": "^2.0.0",
+    "@comunica/bus-rdf-resolve-hypermedia": "^2.0.0",
+    "@comunica/bus-rdf-resolve-hypermedia-links": "^2.0.0",
+    "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^2.0.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^2.0.0",
+    "@comunica/core": "^2.0.0",
+    "@comunica/types": "^2.0.0",
     "@rdfjs/types": "*",
     "@types/lru-cache": "^5.1.0",
-    "asynciterator": "^3.2.0",
+    "asynciterator": "^3.3.0",
     "lru-cache": "^6.0.0",
     "rdf-data-factory": "^1.0.3",
     "rdf-string": "^1.5.0",
     "rdf-terms": "^1.6.2",
-    "sparqlalgebrajs": "^3.0.0"
-  },
-  "peerDependencies": {
-    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",
-    "@comunica/bus-http-invalidate": "^1.0.0",
-    "@comunica/bus-rdf-dereference": "^1.0.0",
-    "@comunica/bus-rdf-resolve-hypermedia": "^1.0.0",
-    "@comunica/bus-rdf-resolve-hypermedia-links": "^1.0.0",
-    "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^1.0.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.0.0",
-    "@comunica/core": "^1.0.0"
-  },
-  "devDependencies": {
-    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.22.0",
-    "@comunica/actor-sparql-serialize-sparql-json": "^1.22.0",
-    "@comunica/bus-http-invalidate": "^1.22.0",
-    "@comunica/bus-rdf-dereference": "^1.22.2",
-    "@comunica/bus-rdf-resolve-hypermedia": "^1.22.0",
-    "@comunica/bus-rdf-resolve-hypermedia-links": "^1.22.0",
-    "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^1.22.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.22.0",
-    "@comunica/core": "^1.22.0"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "../../tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "collectCoverage": true
+    "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {
-    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
-    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
   }
 }

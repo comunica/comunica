@@ -1,6 +1,6 @@
 # Comunica Bus SPARQL Parse
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fbus-sparql-parse.svg)](https://www.npmjs.com/package/@comunica/bus-sparql-parse)
+[![npm version](https://badge.fury.io/js/%40comunica%2Flogger-void.svg)](https://www.npmjs.com/package/@comunica/logger-void)
 
 A logger that voids all log messages.
 
@@ -20,11 +20,11 @@ $ yarn add @comunica/logger-void
 ## Usage
 
 ```typescript
-const newEngine = require('@comunica/actor-init-sparql').newEngine;
+const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 import {LoggerVoid} from "@comunica/logger-void";
 
-const result = await myEngine.query('SELECT * WHERE { ?s ?p ?o }', {
-  sources: ['http://fragments.dbpedia.org/2015/en'],
+const bindingsStream = await new QueryEngine().queryBindings('SELECT * WHERE { ?s ?p ?o }', {
+  sources: ['https://fragments.dbpedia.org/2015/en'],
   log: new LoggerVoid(),
 });
 ```

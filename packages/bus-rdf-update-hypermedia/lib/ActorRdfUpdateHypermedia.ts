@@ -1,5 +1,5 @@
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
 /**
@@ -17,10 +17,11 @@ export abstract class ActorRdfUpdateHypermedia
   extends Actor<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
   protected readonly destinationType: string;
 
-  public constructor(
-    args: IActorArgs<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>,
-    destinationType: string,
-  ) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param destinationType - The destination type.
+   */
+  public constructor(args: IActorRdfUpdateHypermediaArgs, destinationType: string) {
     super(args);
     this.destinationType = destinationType;
   }
@@ -61,3 +62,8 @@ export interface IActorRdfUpdateHypermediaOutput extends IActorOutput {
    */
   destination: IQuadDestination;
 }
+
+export type IActorRdfUpdateHypermediaArgs = IActorArgs<
+IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput>;
+
+export type MediatorRdfUpdateHypermedia = Mediate<IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput>;

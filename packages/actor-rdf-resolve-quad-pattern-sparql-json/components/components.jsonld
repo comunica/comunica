@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-sparql-json/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
-  "import": [
-    "files-carrqpsj:components/Actor/RdfResolveQuadPattern/SparqlJson.jsonld"
-  ]
-}

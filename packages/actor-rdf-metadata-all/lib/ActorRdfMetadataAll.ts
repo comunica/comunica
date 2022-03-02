@@ -1,13 +1,13 @@
 import { Readable } from 'stream';
-import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadata, IActorRdfMetadataArgs, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 
 /**
  * A comunica All RDF Metadata Actor.
  */
 export class ActorRdfMetadataAll extends ActorRdfMetadata {
-  public constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
+  public constructor(args: IActorRdfMetadataArgs) {
     super(args);
   }
 

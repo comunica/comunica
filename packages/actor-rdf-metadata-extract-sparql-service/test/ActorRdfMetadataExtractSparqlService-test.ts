@@ -1,15 +1,18 @@
 import type { Readable } from 'stream';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractSparqlService } from '../lib/ActorRdfMetadataExtractSparqlService';
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
 
 describe('ActorRdfMetadataExtractSparqlService', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('The ActorRdfMetadataExtractSparqlService module', () => {
@@ -97,57 +100,63 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: 'http://example.org/', metadata: input })).resolves.toBeTruthy();
+      return expect(actor
+        .test({ url: 'http://example.org/', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
     });
 
     it('should run on a stream where an endpoint is defined', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: input })).resolves
+      return expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0, context })).resolves
         .toEqual({ metadata: { sparqlService: 'http://example2.org/ENDPOINT' }});
     });
 
     it('should run on a stream where an endpoint is defined, but for another URL', () => {
-      return expect(actor.run({ url: 'http://example2.org/', metadata: input })).resolves
+      return expect(actor.run({ url: 'http://example2.org/', metadata: input, requestTime: 0, context })).resolves
         .toEqual({ metadata: {}});
     });
 
     it('should run on a stream where a default graph is defined', () => {
-      return expect(actor.run({ url: 'URL', metadata: inputDefaultGraph })).resolves
+      return expect(actor.run({ url: 'URL', metadata: inputDefaultGraph, requestTime: 0, context })).resolves
         .toEqual({ metadata: { defaultGraph: 'GRAPH' }});
     });
 
     it('should run on a stream where an endpoint and default graph is defined', () => {
-      return expect(actor.run({ url: 'URL', metadata: inputAll })).resolves
+      return expect(actor.run({ url: 'URL', metadata: inputAll, requestTime: 0, context })).resolves
         .toEqual({ metadata: { sparqlService: 'ENDPOINT', defaultGraph: 'GRAPH' }});
     });
 
     it('should run on a stream where an endpoint is not given', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: inputNone })).resolves
+      return expect(actor.run({ url: 'http://example.org/', metadata: inputNone, requestTime: 0, context })).resolves
         .toEqual({ metadata: {}});
     });
 
     it('should run on a stream where an endpoint is defined as a relative IRI in a literal', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: inputRelativeLiteral })).resolves
+      return expect(actor
+        .run({ url: 'http://example.org/', metadata: inputRelativeLiteral, requestTime: 0, context })).resolves
         .toEqual({ metadata: { sparqlService: 'http://example.org/ENDPOINT' }});
     });
 
     it('should run on a stream where an endpoint is defined as a relative IRI in a named node', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: inputRelativeIri })).resolves
+      return expect(actor
+        .run({ url: 'http://example.org/', metadata: inputRelativeIri, requestTime: 0, context })).resolves
         .toEqual({ metadata: { sparqlService: 'ENDPOINT' }});
     });
 
     it('should run on a stream where the service description subject is a blank node', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: inputBlankSubject })).resolves
+      return expect(actor
+        .run({ url: 'http://example.org/', metadata: inputBlankSubject, requestTime: 0, context })).resolves
         .toEqual({ metadata: { sparqlService: 'http://example2.org/ENDPOINT' }});
     });
 
     it('should run on a stream where https refers to http', () => {
-      return expect(actor.run({ url: 'https://example.org/', metadata: inputHttpsHttp })).resolves
+      return expect(actor
+        .run({ url: 'https://example.org/', metadata: inputHttpsHttp, requestTime: 0, context })).resolves
         .toEqual({ metadata: { sparqlService: 'http://example2.org/ENDPOINT' }});
     });
 
     it('should run on a stream where https refers to http with inferHttpsEndpoint', () => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: true });
-      return expect(actor.run({ url: 'https://example.org/', metadata: inputHttpsHttp })).resolves
+      return expect(actor
+        .run({ url: 'https://example.org/', metadata: inputHttpsHttp, requestTime: 0, context })).resolves
         .toEqual({ metadata: { sparqlService: 'https://example2.org/ENDPOINT' }});
     });
   });

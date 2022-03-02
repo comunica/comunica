@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-init-hello-world",
-  "@type": "Module",
-  "requireName": "@comunica/actor-init-hello-world",
-  "import": [
-    "files-chw:components/Actor/Init/HelloWorld.jsonld"
-  ]
-}

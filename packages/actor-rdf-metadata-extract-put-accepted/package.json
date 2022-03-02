@@ -1,10 +1,10 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-put-accepted",
-  "version": "1.22.0",
+  "version": "2.0.0",
   "description": "A put-accepted rdf-metadata-extract actor",
   "lsd:module": true,
-  "main": "index.js",
-  "typings": "index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
@@ -13,6 +13,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
@@ -27,38 +28,15 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "index.d.ts",
-    "index.js"
+    "lib/**/*.js"
   ],
-  "peerDependencies": {
-    "@comunica/bus-rdf-metadata-extract": "^1.21.1",
-    "@comunica/core": "^1.21.1"
-  },
-  "devDependencies": {
-    "@comunica/bus-rdf-metadata-extract": "^1.22.0",
-    "@comunica/core": "^1.22.0"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "../../tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "collectCoverage": true
+  "dependencies": {
+    "@comunica/bus-rdf-metadata-extract": "^2.0.0",
+    "@comunica/core": "^2.0.0"
   },
   "scripts": {
-    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
-    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
   }
 }

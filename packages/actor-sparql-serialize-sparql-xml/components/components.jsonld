@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-sparql-xml/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-sparql-serialize-sparql-xml",
-  "@type": "Module",
-  "requireName": "@comunica/actor-sparql-serialize-sparql-xml",
-  "import": [
-    "files-casssx:components/Actor/SparqlSerialize/SparqlXml.jsonld"
-  ]
-}

@@ -1,10 +1,11 @@
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
-
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';
 
@@ -17,15 +18,15 @@ const v = DF.variable('v');
 
 describe('FederatedQuadSource', () => {
   let mediator: any;
-  let context: ActionContext;
+  let context: IActionContext;
 
   beforeEach(() => {
     mediator = {
       mediate(action: any) {
-        const type = action.context.get('@comunica/bus-rdf-resolve-quad-pattern:source').type;
+        const type = action.context.get(KeysRdfResolveQuadPattern.source).type;
         if (type === 'emptySource') {
           const data = new ArrayIterator([], { autoStart: false });
-          data.setProperty('metadata', { totalItems: 0 });
+          data.setProperty('metadata', { cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
           return Promise.resolve({ data });
         }
         if (type === 'nonEmptySourceNoMeta') {
@@ -41,7 +42,10 @@ describe('FederatedQuadSource', () => {
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'blankNodeSource') {
@@ -49,13 +53,16 @@ describe('FederatedQuadSource', () => {
             squad('_:s1', '_:p1', '_:o1'),
             squad('_:s2', '_:p2', '_:o2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'errorSource') {
           const data = new ArrayIterator([], { autoStart: false });
           let ran = false;
-          (<any> data).read = () => {
+          (<any>data).read = () => {
             if (ran) {
               return null;
             }
@@ -63,7 +70,10 @@ describe('FederatedQuadSource', () => {
             data.emit('error', new Error('FederatedQuadSource: errorSource'));
             return squad('_:s1', '_:p1', '_:o1');
           };
-          data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'graphs') {
@@ -75,19 +85,39 @@ describe('FederatedQuadSource', () => {
             squad('s3', 'p1', 'o1', 'g2'),
             squad('s3', 'p1', 'o2', 'g2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { totalItems: 6 });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: 6 },
+            canContainUndefs: false,
+          });
+          return Promise.resolve({ data });
+        }
+        if (type === 'nonEmptySourceUndefs') {
+          const data = new ArrayIterator([
+            squad('s1', 'p1', 'o1'),
+            squad('s1', 'p1', 'o2'),
+          ], { autoStart: false });
+          data.setProperty('metadata', {
+            cardinality: { type: 'estimate', value: 2 },
+            canContainUndefs: true,
+          });
           return Promise.resolve({ data });
         }
         const data = new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
         ], { autoStart: false });
-        data.setProperty('metadata', { totalItems: 2, otherMetadata: true });
+        data.setProperty('metadata', {
+          cardinality: { type: 'estimate', value: 2 },
+          requestTime: 10,
+          pageSize: 100,
+          canContainUndefs: false,
+          otherMetadata: true,
+        });
         return Promise.resolve({ data });
       },
     };
-    context = ActionContext({
-      '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'myType', value: 'myValue' }],
+    context = new ActionContext({
+      [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'myType', value: 'myValue' }],
     });
   });
 
@@ -129,7 +159,7 @@ describe('FederatedQuadSource', () => {
     it('should change a blank node', () => {
       expect(FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0'))
         .toEqualRdfTerm(DF.blankNode('urn:comunica_skolem:source_0:abc'));
-      expect((<BlankNodeScoped> FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0')).skolemized)
+      expect((<BlankNodeScoped>FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0')).skolemized)
         .toEqualRdfTerm(DF.namedNode('urn:comunica_skolem:source_0:abc'));
     });
   });
@@ -142,7 +172,7 @@ describe('FederatedQuadSource', () => {
         .toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
     });
 
-    it('should not skolemize blank nodes', () => {
+    it('should skolemize blank nodes', () => {
       expect(FederatedQuadSource.skolemizeQuad(
         DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')), '0',
       ))
@@ -152,6 +182,44 @@ describe('FederatedQuadSource', () => {
           DF.blankNode('urn:comunica_skolem:source_0:o'),
           DF.blankNode('urn:comunica_skolem:source_0:g'),
         ));
+    });
+  });
+
+  describe('#deskolemizeQuad', () => {
+    it('should not skolemize named nodes', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')), '0',
+      ))
+        .toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
+    });
+
+    it('should deskolemize blank nodes with the right id', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(
+          DF.blankNode('urn:comunica_skolem:source_0:s'),
+          DF.blankNode('urn:comunica_skolem:source_0:p'),
+          DF.blankNode('urn:comunica_skolem:source_0:o'),
+          DF.blankNode('urn:comunica_skolem:source_0:g'),
+        ), '0',
+      )).toEqualRdfQuad(DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')));
+    });
+
+    it('should deskolemize blank nodes with the right id but not ones with the wrong id', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(
+          DF.blankNode('urn:comunica_skolem:source_0:s'),
+          DF.blankNode('urn:comunica_skolem:source_1:p'),
+          DF.blankNode('urn:comunica_skolem:source_0:o'),
+          DF.blankNode('urn:comunica_skolem:source_0:g'),
+        ), '0',
+      )).toEqualRdfQuad(
+        DF.quad(
+          DF.blankNode('s'),
+          DF.blankNode('urn:comunica_skolem:source_1:p'),
+          DF.blankNode('o'),
+          DF.blankNode('g'),
+        ),
+      );
     });
   });
 
@@ -386,11 +454,11 @@ describe('FederatedQuadSource', () => {
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });
@@ -421,11 +489,11 @@ describe('FederatedQuadSource', () => {
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any>{}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });
@@ -437,7 +505,7 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': []});
+      contextEmpty = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: []});
       source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true);
     });
 
@@ -445,10 +513,10 @@ describe('FederatedQuadSource', () => {
       expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
     });
 
-    it('should emit metadata with 0 totalItems', async() => {
+    it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 0 });
+        .resolves.toEqual({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false });
     });
   });
 
@@ -461,7 +529,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
+      contextSingleEmpty = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
@@ -469,10 +537,10 @@ describe('FederatedQuadSource', () => {
       expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
     });
 
-    it('should emit metadata with 0 totalItems', async() => {
+    it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 0 });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -501,7 +569,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
-      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
+      contextSingle = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
@@ -516,10 +584,16 @@ describe('FederatedQuadSource', () => {
       expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
     });
 
-    it('should emit metadata with 2 totalItems', async() => {
+    it('should emit metadata with 2 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 2, otherMetadata: true });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 2 },
+          requestTime: 10,
+          pageSize: 100,
+          canContainUndefs: false,
+          otherMetadata: true,
+        });
     });
 
     it('should store no queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -545,7 +619,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'graphs', value: 'I will contain named graphs' };
       emptyPatterns = new Map();
-      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
+      contextSingle = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
@@ -571,10 +645,10 @@ describe('FederatedQuadSource', () => {
       ]);
     });
 
-    it('should emit metadata with 6 totalItems', async() => {
+    it('should emit metadata with 6 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 6 });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
     });
   });
 
@@ -589,8 +663,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'emptySource', value: 'I will be empty' };
       subSource2 = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]: [
           subSource1,
           subSource2,
         ],
@@ -611,10 +685,15 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with 2 totalItems', async() => {
+    it('should emit metadata with 2 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 2 });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 2 },
+          requestTime: 10,
+          pageSize: 100,
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -646,8 +725,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'emptySource', value: 'I will be empty' };
       subSource2 = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]: [
           subSource1,
           subSource2,
         ],
@@ -665,10 +744,10 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with 0 totalItems', async() => {
+    it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 0 });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -701,8 +780,8 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource,
             subSource,
@@ -721,10 +800,10 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with 0 totalItems', async() => {
+    it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 0 });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -751,8 +830,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'emptySource', value: 'I will be empty' },
             { type: 'emptySource', value: 'I will be empty' },
@@ -771,10 +850,10 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with 0 totalItems', async() => {
+    it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 0 });
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -800,8 +879,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'nonEmptySource', value: 'I will not be empty' };
       subSource2 = { type: 'nonEmptySource2', value: 'I will also not be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
             subSource2,
@@ -825,10 +904,15 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with 2 totalItems', async() => {
+    it('should emit metadata with 2 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 4 });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 4 },
+          requestTime: 20,
+          pageSize: 200,
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -853,8 +937,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
@@ -878,10 +962,15 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with Infinity totalItems', async() => {
+    it('should emit metadata with Infinity cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          requestTime: 10,
+          pageSize: 100,
+          canContainUndefs: false,
+        });
     });
   });
 
@@ -892,8 +981,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySourceNoMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
@@ -917,10 +1006,13 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with Infinity totalItems', async() => {
+    it('should emit metadata with Infinity cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          canContainUndefs: false,
+        });
     });
   });
 
@@ -931,8 +1023,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
@@ -956,10 +1048,15 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with Infinity totalItems', async() => {
+    it('should emit metadata with Infinity cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          requestTime: 10,
+          pageSize: 100,
+          canContainUndefs: false,
+        });
     });
   });
 
@@ -970,8 +1067,8 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             { type: 'nonEmptySourceInfMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
@@ -995,10 +1092,13 @@ describe('FederatedQuadSource', () => {
       expect(a).toEqual([]);
     });
 
-    it('should emit metadata with Infinity totalItems', async() => {
+    it('should emit metadata with Infinity cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          canContainUndefs: false,
+        });
     });
   });
 
@@ -1013,8 +1113,8 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'blankNodeSource', value: 'I will contain blank nodes' };
       subSource2 = { type: 'blankNodeSource', value: 'I will also contain blank nodes' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
             subSource2,
@@ -1248,6 +1348,100 @@ describe('FederatedQuadSource', () => {
     });
   });
 
+  describe('A FederatedQuadSource instance over two sources, the first one containing undefs', () => {
+    let subSource1: any;
+    let subSource2: any;
+    let source: FederatedQuadSource;
+    let emptyPatterns: any;
+    let contextSingleEmpty;
+
+    beforeEach(() => {
+      subSource1 = { type: 'nonEmptySourceUndefs', value: 'I will not be empty' };
+      subSource2 = { type: 'nonEmptySource', value: 'I will also not be empty, and contain undefs' };
+      emptyPatterns = new Map();
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
+          [
+            subSource1,
+            subSource2,
+          ],
+      });
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+    });
+
+    it('should emit metadata with canContainUndefs true', async() => {
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 4 },
+          pageSize: 100,
+          requestTime: 10,
+          canContainUndefs: true,
+        });
+    });
+  });
+
+  describe('A FederatedQuadSource instance over two sources, the second one containing undefs', () => {
+    let subSource1: any;
+    let subSource2: any;
+    let source: FederatedQuadSource;
+    let emptyPatterns: any;
+    let contextSingleEmpty;
+
+    beforeEach(() => {
+      subSource1 = { type: 'nonEmptySource', value: 'I will not be empty' };
+      subSource2 = { type: 'nonEmptySourceUndefs', value: 'I will also not be empty, and contain undefs' };
+      emptyPatterns = new Map();
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
+          [
+            subSource1,
+            subSource2,
+          ],
+      });
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+    });
+
+    it('should emit metadata with canContainUndefs true', async() => {
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({
+          cardinality: { type: 'estimate', value: 4 },
+          pageSize: 100,
+          requestTime: 10,
+          canContainUndefs: true,
+        });
+    });
+  });
+
+  describe('A FederatedQuadSource instance over two sources, both containing undefs', () => {
+    let subSource1: any;
+    let subSource2: any;
+    let source: FederatedQuadSource;
+    let emptyPatterns: any;
+    let contextSingleEmpty;
+
+    beforeEach(() => {
+      subSource1 = { type: 'nonEmptySourceUndefs', value: 'I will not be empty' };
+      subSource2 = { type: 'nonEmptySourceUndefs', value: 'I will also not be empty, and contain undefs' };
+      emptyPatterns = new Map();
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
+          [
+            subSource1,
+            subSource2,
+          ],
+      });
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+    });
+
+    it('should emit metadata with canContainUndefs true', async() => {
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true });
+    });
+  });
+
   describe('A FederatedQuadSource instance over an erroring source', () => {
     let subSource1;
     let source: FederatedQuadSource;
@@ -1257,8 +1451,8 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource1 = { type: 'errorSource', value: 'I will emit a data error' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+      contextSingleEmpty = new ActionContext({
+        [KeysRdfResolveQuadPattern.sources.name]:
           [
             subSource1,
           ],

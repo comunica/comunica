@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 
@@ -10,12 +10,15 @@ import type * as RDF from '@rdfjs/types';
  * * Test:   <none>
  * * Output: IActorRdfMetadataExtractOutput: A metadata hash.
  *
- * @see IActionRdfDereference
- * @see IActorRdfDereferenceOutput
+ * @see IActionDereferenceRdf
+ * @see IActorDereferenceRdfOutput
  */
 export abstract class ActorRdfMetadataExtract
   extends Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
-  public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  /**
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
+  public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
 }
@@ -30,9 +33,14 @@ export interface IActionRdfMetadataExtract extends IAction {
    */
   metadata: RDF.Stream;
   /**
+   * The time it took to request the page in milliseconds.
+   * This is the time until the first byte arrives.
+   */
+  requestTime: number;
+  /**
    * The headers of the page.
    */
-  headers?: Record<string, string>;
+  headers?: Headers;
 }
 
 export interface IActorRdfMetadataExtractOutput extends IActorOutput {
@@ -41,3 +49,8 @@ export interface IActorRdfMetadataExtractOutput extends IActorOutput {
    */
   metadata: Record<string, any>;
 }
+
+export type IActorRdfMetadataExtractArgs = IActorArgs<
+IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+
+export type MediatorRdfMetadataExtract = Mediate<IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput>;

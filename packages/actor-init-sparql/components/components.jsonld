@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-init-sparql",
-  "@type": "Module",
-  "requireName": "@comunica/actor-init-sparql",
-  "import": [
-    "files-cais:components/Actor/Init/Sparql.jsonld"
-  ]
-}

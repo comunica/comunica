@@ -1,0 +1,46 @@
+{
+  "name": "@comunica/jest",
+  "version": "2.0.0",
+  "description": "Jest utilities for Comunica",
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/jest"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "jest",
+    "rdf",
+    "comunica",
+    "testing",
+    "testing",
+    "matchers",
+    "extend"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "dependencies": {
+    "@comunica/bindings-factory": "^2.0.0",
+    "@comunica/types": "^2.0.0",
+    "@rdfjs/types": "*",
+    "arrayify-stream": "^1.0.0",
+    "rdf-string": "^1.6.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-void/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/logger-void",
-  "@type": "Module",
-  "requireName": "@comunica/logger-void",
-  "import": [
-    "files-clv:components/Logger/Void.jsonld"
-  ]
-}

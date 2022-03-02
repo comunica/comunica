@@ -23,18 +23,19 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@type": "SomeActor",
       "someMediator": {
-        "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation",
-        "@type": "MediatorNumberMin",
-        "cmn:Mediator/Number/field": "httpRequests",
+        "@id": "#mediatorQueryOperation",
+        "@type": "MediatorNumber",
+        "field": "httpRequests",
+        "type": "min",
         "ignoreErrors": true,
-        "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
+        "bus": { "@id": "ActorQueryOperation:_default_bus" }
       }
     }
   ]
@@ -45,6 +46,7 @@ Instead of `MediatorNumberMin`, `MediatorNumberMax` could also be used to resolv
 
 ### Config Parameters
 
-* `cc:Mediator/bus`: Identifier of the bus to mediate over.
-* `cmn:Mediator/Number/field`: The field name to mediate over.
-* `cmn:Mediator/Number/ignoreErrors`: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.
+* `bus`: Identifier of the bus to mediate over.
+* `field`: The field name to mediate over.
+* `type`: The way how the index should be selected. For choosing the minimum value: 'min'. For choosing the maximum value: 'max'.
+* `ignoreErrors`: Optional flag to indicate if actors that throw test errors should be ignored, defaults to false.

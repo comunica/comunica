@@ -1,24 +1,33 @@
 import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
   IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
-import type { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
 
 /**
  * A comunica RDF/XML RDF Parse Actor.
  */
 export class ActorRdfParseRdfXml extends ActorRdfParseFixedMediaTypes {
+  /**
+   * @param args -
+   *   \ @defaultNested {{
+   *       "application/rdf+xml": 1.0
+   *     }} mediaTypePriorities
+   *   \ @defaultNested {{
+   *       "application/rdf+xml": "http://www.w3.org/ns/formats/RDF_XML"
+   *     }} mediaTypeFormats
+   */
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
+  public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
-    action.input.on('error', error => quads.emit('error', error));
-    const quads = action.input.pipe(new RdfXmlParser({ baseIRI: action.baseIRI }));
+    action.data.on('error', error => data.emit('error', error));
+    const data = action.data.pipe(new RdfXmlParser({ baseIRI: action.metadata?.baseIRI }));
     return {
-      quads,
-      triples: true,
+      data,
+      metadata: { triples: true },
     };
   }
 }

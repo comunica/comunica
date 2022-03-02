@@ -1,8 +1,6 @@
-import type {
-  IActorQueryOperationOutputUpdate,
-} from '@comunica/bus-query-operation';
-import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationCreate } from '../lib/ActorQueryOperationCreate';
 const DF = new DataFactory();
@@ -16,7 +14,7 @@ describe('ActorQueryOperationCreate', () => {
     bus = new Bus({ name: 'bus' });
     mediatorUpdateQuads = {
       mediate: jest.fn(() => Promise.resolve({
-        updateResult: Promise.resolve(),
+        execute: () => Promise.resolve(),
       })),
     };
   });
@@ -29,17 +27,20 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should test on create', () => {
-      const op: any = { operation: { type: 'create' }};
+      const op: any = { operation: { type: 'create' }, context: new ActionContext() };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op: any = { operation: { type: 'create' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = {
+        operation: { type: 'create' },
+        context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
+      };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-create', () => {
-      const op: any = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -50,10 +51,11 @@ describe('ActorQueryOperationCreate', () => {
           source: DF.namedNode('g1'),
           silent: false,
         },
+        context: new ActionContext(),
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],
         requireNonExistence: true,
@@ -67,10 +69,11 @@ describe('ActorQueryOperationCreate', () => {
           source: DF.namedNode('g1'),
           silent: true,
         },
+        context: new ActionContext(),
       };
-      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
-      expect(output.type).toEqual('update');
-      await expect(output.updateResult).resolves.toBeUndefined();
+      const output = <IQueryOperationResultVoid> await actor.run(op);
+      expect(output.type).toEqual('void');
+      await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],
         requireNonExistence: false,

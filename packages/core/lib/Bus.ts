@@ -191,6 +191,10 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
 }
 
 export interface IBusArgs {
+  /**
+   * The name for this bus.
+   * @default {<rdf:subject>}
+   */
   name: string;
 }
 

@@ -1,7 +1,7 @@
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import 'cross-fetch/polyfill';
 import * as parseLink from 'parse-link-header';
 
@@ -9,19 +9,18 @@ import * as parseLink from 'parse-link-header';
  * A comunica Memento Http Actor.
  */
 export class ActorHttpMemento extends ActorHttp {
-  public readonly mediatorHttp: Mediator<ActorHttp,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  public readonly mediatorHttp: MediatorHttp;
 
   public constructor(args: IActorHttpMementoArgs) {
     super(args);
   }
 
   public async test(action: IActionHttp): Promise<IActorTest> {
-    if (!(action.context && action.context.has(KeysHttpMemento.datetime) &&
+    if (!(action.context.has(KeysHttpMemento.datetime) &&
           action.context.get(KeysHttpMemento.datetime) instanceof Date)) {
       throw new Error('This actor only handles request with a set valid datetime.');
     }
-    if (action.init && new Headers(action.init.headers ?? {}).has('accept-datetime')) {
+    if (action.init && new Headers(action.init.headers).has('accept-datetime')) {
       throw new Error('The request already has a set datetime.');
     }
     return true;
@@ -32,8 +31,9 @@ export class ActorHttpMemento extends ActorHttp {
     const init: RequestInit = action.init ? { ...action.init } : {};
     const headers: Headers = init.headers = new Headers(init.headers ?? {});
 
-    if (action.context && action.context.has(KeysHttpMemento.datetime)) {
-      headers.append('accept-datetime', action.context.get(KeysHttpMemento.datetime).toUTCString());
+    const dateTime: Date | undefined = action.context.get(KeysHttpMemento.datetime);
+    if (dateTime) {
+      headers.append('accept-datetime', dateTime.toUTCString());
     }
 
     const httpAction: IActionHttp = { context: action.context, input: action.input, init };
@@ -44,11 +44,9 @@ export class ActorHttpMemento extends ActorHttp {
     // Did we ask for a time-negotiated response, but haven't received one?
     if (headers.has('accept-datetime') && result.headers && !result.headers.has('memento-datetime')) {
       // The links might have a timegate that can help us
-      const links = result.headers.has('link') && parseLink(result.headers.get('link')!);
+      const links = result.headers.has('link') && parseLink(result.headers.get('link'));
       if (links && links.timegate) {
-        if (result.body) {
-          await result.body.cancel();
-        }
+        await result.body?.cancel();
         // Respond with a time-negotiated response from the timegate instead
         const followLink: IActionHttp = { context: action.context, input: links.timegate.url, init };
         return this.mediatorHttp.mediate(followLink);
@@ -59,14 +57,9 @@ export class ActorHttpMemento extends ActorHttp {
   }
 }
 
-export interface IActorHttpMementoArgs
-  extends IActorArgs<IActionHttp, IActorTest, IActorHttpOutput> {
-  mediatorHttp: Mediator<ActorHttp,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+export interface IActorHttpMementoArgs extends IActorHttpArgs {
+  /**
+   * The HTTP mediator
+   */
+  mediatorHttp: MediatorHttp;
 }
-
-/**
- * @type {string} Context entry for the desired datetime.
- * @deprecated Import this constant from @comunica/context-entries.
- */
-export const KEY_CONTEXT_DATETIME = KeysHttpMemento.datetime;

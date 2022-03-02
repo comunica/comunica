@@ -1,7 +1,6 @@
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
-import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
 import Requester from './Requester';
@@ -17,7 +16,7 @@ export class ActorHttpNative extends ActorHttp {
   public constructor(args: IActorHttpNativeArgs) {
     super(args);
     this.userAgent = ActorHttpNative.createUserAgent();
-    this.requester = new Requester(args.agentOptions ? JSON.parse(args.agentOptions) : undefined);
+    this.requester = new Requester(args.agentOptions);
   }
 
   public static createUserAgent(): string {
@@ -27,7 +26,6 @@ export class ActorHttpNative extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
-    // TODO: check for unsupported fetch features
     return { time: Number.POSITIVE_INFINITY };
   }
 
@@ -61,11 +59,11 @@ export class ActorHttpNative extends ActorHttp {
     }
 
     options.method = options.method || 'GET';
-    if (action.context && action.context.get(KeysHttp.includeCredentials)) {
+    if (action.context.get(KeysHttp.includeCredentials)) {
       options.withCredentials = true;
     }
 
-    if (action.context && action.context.get(KeysHttp.auth)) {
+    if (action.context.get(KeysHttp.auth)) {
       options.auth = action.context.get(KeysHttp.auth);
     }
 
@@ -98,7 +96,7 @@ export class ActorHttpNative extends ActorHttp {
             };
 
             // Support abort controller
-            if (action.init && action.init.signal) {
+            if (action.init?.signal) {
               if (action.init.signal.aborted) {
                 httpResponse.destroy();
               } else {
@@ -126,8 +124,11 @@ export class ActorHttpNative extends ActorHttp {
   }
 }
 
-// Try to keep connections open, and set a maximum number of connections per server
-// AGENT_SETTINGS = {keepAlive: true, maxSockets: 5};
-export interface IActorHttpNativeArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
-  agentOptions?: string;
+export interface IActorHttpNativeArgs extends IActorHttpArgs {
+  /**
+   * The agent options for the HTTP agent
+   * @range {json}
+   * @default {{ "keepAlive": true, "maxSockets": 5 }}
+   */
+  agentOptions?: Record<string, any>;
 }

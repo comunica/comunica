@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-union/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-union",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-union",
-  "import": [
-    "files-caqou:components/Actor/QueryOperation/Union.jsonld"
-  ]
-}

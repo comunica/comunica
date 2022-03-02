@@ -25,3 +25,4 @@ $ yarn add @comunica/core
 * [`ActionObserver`](https://comunica.github.io/comunica/classes/core.actionobserver.html): An ActionObserver can passively listen to Actor.run inputs and outputs for all actors on a certain bus.
 * [`BusIndexed`](https://comunica.github.io/comunica/classes/core.busindexed.html): A bus that indexes identified actors, so that actions with a corresponding identifier can be published more efficiently.
 * [`Logger`](https://comunica.github.io/comunica/classes/core.logger.html): A logger accepts messages from different levels and emits them in a certain way.
+* [`ActionContext`](https://comunica.github.io/comunica/classes/core.actioncontext.html): Implementation of IActionContext using Immutable.js.

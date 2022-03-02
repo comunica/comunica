@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-qpf/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-qpf",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-resolve-hypermedia-qpf",
-  "import": [
-    "files-carrhq:components/Actor/RdfResolveHypermedia/Qpf.jsonld"
-  ]
-}

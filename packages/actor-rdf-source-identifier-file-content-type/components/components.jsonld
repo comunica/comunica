@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-file-content-type/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-source-identifier-file-content-type",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-source-identifier-file-content-type",
-  "import": [
-    "files-carsifct:components/Actor/RdfSourceIdentifier/FileContentType.jsonld"
-  ]
-}
