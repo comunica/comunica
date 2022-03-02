@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.3"></a>
+## [v2.0.3](https://github.com/comunica/comunica/compare/v2.0.2...v2.0.3) - 2022-03-02
+
+### Fixed
+* [Bump deps to avoid old transitive Comunica deps](https://github.com/comunica/comunica/commit/89e3d93b4f0fb72fc0534d3bc00a34121f31a569)
+
 <a name="v2.0.2"></a>
 ## [v2.0.2](https://github.com/comunica/comunica/compare/v2.0.1...v2.0.2) - 2022-03-02
 

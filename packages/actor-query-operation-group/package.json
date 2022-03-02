@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-group",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "A group query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",

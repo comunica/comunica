@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": true,
   "main": "lib/index.js",

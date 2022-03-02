@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-query",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "A query init actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -43,7 +43,7 @@
     "@comunica/context-entries": "^2.0.1",
     "@comunica/core": "^2.0.1",
     "@comunica/logger-pretty": "^2.0.1",
-    "@comunica/runner": "^2.0.1",
+    "@comunica/runner": "^2.0.3",
     "@comunica/types": "^2.0.1",
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.2",
