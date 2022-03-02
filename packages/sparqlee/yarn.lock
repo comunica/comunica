@@ -309,10 +309,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@comunica/bindings-factory@^2.0.1-alpha.5.0":
-  version "2.0.1-alpha.5.0"
-  resolved "https://registry.yarnpkg.com/@comunica/bindings-factory/-/bindings-factory-2.0.1-alpha.5.0.tgz#0a83058419c8345fc17a62b284dd8a8e001ab7b7"
-  integrity sha512-YD8oUu8DQpSX5B8u5f88xlw+ar79OAwEF8KgVZ6gl/xs/rlOJbv/BEDh7DrquIdMGPmLn/zbg4L4o0TyZoF8pA==
+"@comunica/bindings-factory@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@comunica/bindings-factory/-/bindings-factory-2.0.1.tgz#ebd546d6191e124d360ecd7544675b9df20e08af"
+  integrity sha512-EbtDiHVt9tzr57jGq64/hH2UrCZBB6Vikn2S76FZtEbYecoN+pm+rymKGGuHNgthXQs+zNtInPVk69VZMQKMwA==
   dependencies:
     "@rdfjs/types" "*"
     immutable "^3.8.2"
