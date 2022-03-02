@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-dereference",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A bus for dereferencing a path or URL into a (generic) stream.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,8 +30,8 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/core": "^2.0.0",
-    "@comunica/context-entries": "^2.0.0"
+    "@comunica/context-entries": "^2.0.1",
+    "@comunica/core": "^2.0.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

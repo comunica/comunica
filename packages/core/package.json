@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -35,7 +35,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/types": "^2.0.0",
+    "@comunica/types": "^2.0.1",
     "immutable": "^3.8.2"
   },
   "scripts": {

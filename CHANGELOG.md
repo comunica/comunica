@@ -1,12 +1,54 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-<a name="v2.0.0"></a>
-## [v2.0.0](https://github.com/comunica/comunica/compare/v1.22.1...v2.0.0) - 2021-11-30
+<a name="v2.0.1"></a>
+## [v2.0.1](https://github.com/comunica/comunica/compare/v1.22.3...v2.0.1) - 2022-03-02
 
 ### BREAKING CHANGES
-* [Make metadata in query operations mandatory and strictly typed](https://github.com/comunica/comunica/commit/576ff98bdaec03094a3749a417e6c16a940b0dda)
-* Refactor join bus:
+* [Set minimum Node version to 14](https://github.com/comunica/comunica/commit/18363c2ce18f0e410c2ed5a571d5a5b274e950ad)
+  * [Update tsconfig to es2020](https://github.com/comunica/comunica/commit/5ce4b3e6de6f41304241e46f2a798986ef6cada7)
+* Public API
+  * [Improve names of query result interfaces](https://github.com/comunica/comunica/commit/d6f2e01a537e3bdfe961a5163d6b6be098fb9887)
+  * [Implement new RDF/JS Bindings and BindingsFactory](https://github.com/comunica/comunica/commit/780e4e82234bc5ad807c2e05b236b5b6d135be47)
+  * [Rename update results to void results](https://github.com/comunica/comunica/commit/e6ad56c3efd75dfa51a041604b5e243215deec2f)
+  * [Implement RDF.Queryable in IQueryEngine](https://github.com/comunica/comunica/commit/afed0f4e302e25e2c90a08526d5fc9795c07cfb7)
+  * [Make query context type-safe](https://github.com/comunica/comunica/commit/ba82f35775d7454b321e74d12baa74680703412e)
+  * [Represent query formats as RDF.QueryFormat](https://github.com/comunica/comunica/commit/fff4d2ec31b5c5c47a079dbbbad3dcc761aa2f04)
+  * [Implement RDF.SparqlQueryable in IQueryEngine](https://github.com/comunica/comunica/commit/b385bff21feb1e9490b32dabff2120317949a0e0)
+* Internal API
+  * [Make metadata in query operations mandatory and strictly typed](https://github.com/comunica/comunica/commit/576ff98bdaec03094a3749a417e6c16a940b0dda)
+  * [Add Mediate utility type, Closes #902](https://github.com/comunica/comunica/commit/2bdd706ea4e58135b62af2601b4c8c006688bc4d)
+  * [Make ActionContext type-safe](https://github.com/comunica/comunica/commit/aa206ee718ac27f8c9caa508e321db41f2ca3349)
+  * [Make context object required in actions](https://github.com/comunica/comunica/commit/a2af7f742346a8333c5095cbbb138c0fcb0fb608)
+  * [Use Headers rather than Record<string, string>](https://github.com/comunica/comunica/commit/5d88d714d1ee710ad781c2a05d89f323ba837011)
+  * [Rename IQueryableResult to IQueryOperationResult](https://github.com/comunica/comunica/commit/1df63cc3d692629ef48758f4ebb6bcb9e2a6d9b3)
+  * [Make IMediatorTypeJoinCoefficients implement RDF.QueryOperationCost](https://github.com/comunica/comunica/commit/3e42f16a49232dedce3cb19b7bb7d71aa8a2fe34)
+  * [Migrate metadata interface to RDF/JS metadata types](https://github.com/comunica/comunica/commit/b701dcab3833264f7c8db23e6f116a898bfd19a0)
+  * [Move variables field into metadata](https://github.com/comunica/comunica/commit/1ed479f2980a467fc1f1e993a628f8cf7619d0a3)
+  * [Make boolean and void results lazy](https://github.com/comunica/comunica/commit/a5ed9ab9e51e18cc0e6ee9bfffe0af5a4a8ad85b)
+* Remove deprecated features
+  * [Remove deprecated string variant in links bus output](https://github.com/comunica/comunica/commit/b90c2df62652935b1f9324e9adb83d4e4223df68)
+  * [Make links queue mediator in hypermedia resolver mandatory](https://github.com/comunica/comunica/commit/ca671ef8e26ba1767d942e97a2f7288bde6d6496)
+  * [Remove backwards-compat for source and hypermedia tagged sources](https://github.com/comunica/comunica/commit/4656bef4e5590bb15cfdb84c84a9563379ac35d2)
+  * [Remove deprecated exports](https://github.com/comunica/comunica/commit/bb11387cfb98b1675e281e04ecd12aadc4e5340b)
+  * [Remove unused init actors](https://github.com/comunica/comunica/commit/ee6094312db959c72d5d1f0b3c9a76a6fc736112)
+  * [Remove deprecated packages](https://github.com/comunica/comunica/commit/373433070090bc91f5d6871126c3357850dbe816)
+  * [Remove inefficient query-based metadata extractors](https://github.com/comunica/comunica/commit/08e23e4f33815437717f169555b5a0581a073f65)
+  * [Remove utils-datasource package](https://github.com/comunica/comunica/commit/4c7fe5922dd89445983a797661691d3c137d30f7)
+  * [Remove bindings and quads methods in favor of toArray on AsyncIterator](https://github.com/comunica/comunica/commit/5abf8fcbd4b431b21bf83ecc88d265fb5a567ff3)
+* Restructure packages
+  * [Move index files to lib directory](https://github.com/comunica/comunica/commit/0148e0aefe0b33e7219d17ec563ed4a3b102d3af)
+  * [Rename actor-rdf-dereference-http-parse to actor-rdf-dereference-http](https://github.com/comunica/comunica/commit/5c02a30add803b3b50925a900c27e32527b1da8d)
+  * [Move peerDependencies to dependencies](https://github.com/comunica/comunica/commit/055de6385e1ac1d76d83751af14a07a3e34eb617)
+  * [Remove unnecessary entries from package.json files](https://github.com/comunica/comunica/commit/27706de117232901cd5891ada0789edbc0a09531)
+  * [Rename bus-sparql-serialize to bus-query-result-serialize](https://github.com/comunica/comunica/commit/78a4a602a30c75b3256c389879afc17fc431e208)
+  * [Rename bus-sparql-parse to bus-query-parse](https://github.com/comunica/comunica/commit/56d0e5f47b3cca5e708e8fc183552f2381e87c12)
+  * [Rename actor-http-node-fetch to actor-http-fetch](https://github.com/comunica/comunica/commit/f8d6f555c824f856c1f059d6b1c6f38bbe539a8d)
+  * [Decouple configs and query engines into separate packages](https://github.com/comunica/comunica/commit/acd03dd99ba086ce9eb94cfbb035fff71016da93)
+  * [Add generic dereference bus](https://github.com/comunica/comunica/commit/c585090b3c1bb84ae08628a573a788ed3f87ce85)
+  * [Move sorting of join entries to dedicated bus](https://github.com/comunica/comunica/commit/d5e6294077434c2467fc41c78fe3b3c95a0b4733)
+  * [Remove args_ prefixes in config files when possible](https://github.com/comunica/comunica/commit/ee9424334704b5db2234f32ea9f40a8aa9b2ba37)
+* Refactor join operations:
   * [Add logical join type field to join action](https://github.com/comunica/comunica/commit/67ec6365564ab48ef9155240abaafba15baa0af3)
   * [Add actor to cluster connected join entries](https://github.com/comunica/comunica/commit/a4926410cd177f03ac3886014c8c59cc47e89712)
   * [Consider multiple coefficients during join mediation](https://github.com/comunica/comunica/commit/deee22928453867886ec2f1009f61355d64ecb6c)
@@ -28,10 +70,22 @@ All notable changes to this project will be documented in this file.
   * [Include original operations into join input interface](https://github.com/comunica/comunica/commit/5a869c0e02d4ebe8af681d8c6bba6b196961d9d5)
   * [Migrate to multi-join-based datastructures in sparqlalgebrajs](https://github.com/comunica/comunica/commit/b8d410bff0e6654adbf382e440356c1a4e078db4)
   * [Rename plain join actors to inner join actors](https://github.com/comunica/comunica/commit/9b375cd09619d33e227a4ca3470699a43495f32b)
+* Other 
+  * [Deskolemise blank nodes before updates, Closes #911](https://github.com/comunica/comunica/commit/07f890db44f53ecda9782a224c57e20d8de6db05)
 
 ### Added
-* [Allow query plan to be printed](https://github.com/comunica/comunica/commit/ce8575e0d47c66b62c33f3899cb4e7f281e4f5b9)
-* [Add bindings-factory package](https://github.com/comunica/comunica/commit/60db84c8b1664133fffb323de30abb13204a843a)
+* Public API
+  * [Allow query plan to be printed](https://github.com/comunica/comunica/commit/ce8575e0d47c66b62c33f3899cb4e7f281e4f5b9)
+  * [Add bindings-factory package](https://github.com/comunica/comunica/commit/60db84c8b1664133fffb323de30abb13204a843a)
+  * [Allow full stack trace to be printed on CLI via --showStackTrace](https://github.com/comunica/comunica/commit/72f04f0b9c6c9904e4bd590f37cb260e6c0adab5)
+  * [Add dedicated explain method on IQueryEngine](https://github.com/comunica/comunica/commit/7f865a47cd793b53443e7f5050ab3512e404b8e6)
+* Internal API 
+  * [Expose convenience types in bus packages for simpler actors impls](https://github.com/comunica/comunica/commit/d160c8f074e98bf0e857a9a530322a7f54dcd807)
+  * [Add hash provider bus](https://github.com/comunica/comunica/commit/035682bd00772e794d66870112faeece2ad6ab7c)
+  * [Allow packager to output list of dependencies for a config](https://github.com/comunica/comunica/commit/ac869b4ce84b68bf6e8134671e9fd09423db99ce)
+  * [An optional parameter to MediatorCombinePipeline to filter erroring actors](https://github.com/comunica/comunica/commit/a2f4d401c66b036d399a0c4cb3de4fe388cf95f1)
+  * [Add option to enable ordering strategy in MediatorCombinePipeline](https://github.com/comunica/comunica/commit/38d1f82dca6dc9aa23ed3a2ec3f04ac1281d029f)
+  * [Add setSafe method to IActionContext](https://github.com/comunica/comunica/commit/ff4aa04af9bbb1d768150aa2f167395ce2095a2c)
 
 ### Changed
 * Automatically generate `components/` directories:
@@ -39,6 +93,11 @@ All notable changes to this project will be documented in this file.
   * [Generate components in bulk](https://github.com/comunica/comunica/commit/58187c86541ceca4a96b2289b98ba835694b9517)
 * [Move index files to lib directory](https://github.com/comunica/comunica/commit/0148e0aefe0b33e7219d17ec563ed4a3b102d3af)
 * [Update to sparqlalgebrajs 4](https://github.com/comunica/comunica/commit/bf571ffbcf9eac9d31c5c1efd5ea4c330bc6f25f)
+* [Mark parsed quad stream as Readable](https://github.com/comunica/comunica/commit/d48058699a155a71b3a81fa70d775925cc4852f9)
+* [Send original SPARQL query string to endpoints](https://github.com/comunica/comunica/commit/9daec7da03e159726559720acd0221881533d179)
+* [Update to Webpack 5](https://github.com/comunica/comunica/commit/dcd2a8adc2e15be0b3f9033ed81e3e6dc791a370)
+* [Add sideEffects: false to package.json files for treeshaking](https://github.com/comunica/comunica/commit/a4380229eea6e28aba544f7982829556b6d0f6e9)
+* [Prefer joins with early results for queries with limit](https://github.com/comunica/comunica/commit/5e2789cf6db024c18468642b3986277224516ae8)
 
 <a name="v1.22.3"></a>
 ## [v1.22.3](https://github.com/comunica/comunica/compare/v1.22.2...v1.22.3) - 2021-10-19

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-sparql-json",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A sparql-json query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,10 +31,10 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.0.0",
-    "@comunica/bus-query-result-serialize": "^2.0.0",
-    "@comunica/core": "^2.0.0",
-    "@comunica/types": "^2.0.0",
+    "@comunica/bus-query-operation": "^2.0.1",
+    "@comunica/bus-query-result-serialize": "^2.0.1",
+    "@comunica/core": "^2.0.1",
+    "@comunica/types": "^2.0.1",
     "@rdfjs/types": "*"
   },
   "scripts": {
