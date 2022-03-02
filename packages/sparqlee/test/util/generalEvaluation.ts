@@ -38,7 +38,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
     }
     return { asyncResult: asyncResultLegacy };
   }
-  const syncConfig = <ISyncEvaluatorContext | undefined> arg.generalEvaluationConfig?.config;
+  const syncConfig = arg.generalEvaluationConfig?.config;
   const convertedConfig = syncConfigToAsyncConfig(syncConfig);
   const asyncResult = await evaluateAsync(
     arg.expression,
@@ -74,7 +74,7 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined > {
     }
   }
   const res: { asyncError: unknown; syncError?: unknown } = Object.create(null);
-  const syncConfig = <ISyncEvaluatorContext | undefined> arg.generalEvaluationConfig?.config;
+  const syncConfig = arg.generalEvaluationConfig?.config;
   try {
     await evaluateAsync(
       arg.expression,

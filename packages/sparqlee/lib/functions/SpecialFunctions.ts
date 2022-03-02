@@ -404,10 +404,10 @@ const BNODE: ISpecialDefinition = {
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
       }
-      // eslint-disable-next-line prefer-const
       strInput = operation(context)([ input ]).str();
     }
 
+    // eslint-disable-next-line unicorn/consistent-destructuring
     if (context.bnode) {
       const bnode = await context.bnode(strInput);
       return new E.BlankNode(bnode);
@@ -427,10 +427,10 @@ const BNODE: ISpecialDefinition = {
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
       }
-      // eslint-disable-next-line prefer-const
       strInput = operation(context)([ input ]).str();
     }
 
+    // eslint-disable-next-line unicorn/consistent-destructuring
     if (context.bnode) {
       const bnode = context.bnode(strInput);
       return new E.BlankNode(bnode);
