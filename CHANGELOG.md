@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.2"></a>
+## [v2.0.2](https://github.com/comunica/comunica/compare/v2.0.1...v2.0.2) - 2022-03-02
+
+### Fixed
+* [Fix extension-based media type identification not working](https://github.com/comunica/comunica/commit/bac8966bdfcd3ce48503f8c7a37a0150d1166dbf)
+* [Fix invalid Dockerfile](https://github.com/comunica/comunica/commit/356d36c3d5907ec7d61f0c781c57be83960425d9)
+
 <a name="v2.0.1"></a>
 ## [v2.0.1](https://github.com/comunica/comunica/compare/v1.22.3...v2.0.1) - 2022-03-02
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-fallback",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A fallback dereference actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-dereference": "^2.0.1",
+    "@comunica/bus-dereference": "^2.0.2",
     "@comunica/core": "^2.0.1"
   },
   "scripts": {
