@@ -39,7 +39,7 @@
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unicorn": "37.0.1",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "immutable": "^3.8.2",
+    "immutable": "^4.0.0",
     "jest": "^27.0.1",
     "jest-rdf": "^1.7.0",
     "lerna": "^4.0.0",
