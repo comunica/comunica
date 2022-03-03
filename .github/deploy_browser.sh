@@ -3,10 +3,10 @@
 
 REPO_NAME="comunica/comunica"
 TARGET_REPO_NAME="rdfjs/comunica-browser.git"
-if [ "$GITHUB_REPOSITORY" != "$REPO_NAME" ] || ([ "$GITHUB_REF" != "refs/heads/master" ] && [ "$GITHUB_REF" != refs/tags/* ]); then exit; fi
+if [ "$GITHUB_REPOSITORY" != "$REPO_NAME" ] || ([ "$GITHUB_REF" != "refs/heads/master" ] && [[ ! "$GITHUB_REF" =~ refs/tags/* ]]); then exit; fi
 
 # Set the target version
-if [ "$GITHUB_REF" == refs/tags/* ]; then
+if [[ "$GITHUB_REF" =~ refs/tags/* ]]; then
     VERSION=${GITHUB_REF:10}
 else
     VERSION="latest"
@@ -49,7 +49,7 @@ popd
 git add --all
 git config user.name  "GitHub"
 git config user.email "GitHub@github.org"
-if [ "$GITHUB_REF" == refs/tags/* ]; then
+if [[ "$GITHUB_REF" =~ refs/tags/* ]]; then
     git commit -m "Update to comunica/comunica#$VERSION."
 else
     git commit -m "Update to comunica/comunica#$GITHUB_SHA."
