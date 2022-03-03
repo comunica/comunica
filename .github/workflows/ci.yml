@@ -18,7 +18,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Load cache
         uses: actions/cache@v2
         with:
@@ -62,7 +62,7 @@ jobs:
         with:
           node-version: '14.x'
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Load cache
         uses: actions/cache@v2
         with:
@@ -84,7 +84,7 @@ jobs:
         with:
           node-version: '14.x'
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Load cache
         uses: actions/cache@v2
         with:
@@ -111,7 +111,7 @@ jobs:
         with:
           node-version: '14.x'
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Load cache
         uses: actions/cache@v2
         with:
@@ -141,7 +141,7 @@ jobs:
         with:
           node-version: '14.x'
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Load cache
         uses: actions/cache@v2
         with:
