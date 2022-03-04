@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
-  "version": "2.0.2",
+  "version": "2.0.5",
   "description": "A hypermedia rdf-resolve-quad-pattern actor",
   "lsd:module": true,
   "main": "lib/index.js",

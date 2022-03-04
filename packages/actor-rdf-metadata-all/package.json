@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-all",
-  "version": "2.0.1",
+  "version": "2.0.5",
   "description": "A all rdf-metadata actor",
   "lsd:module": true,
   "main": "lib/index.js",

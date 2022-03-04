@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.5"></a>
+## [v2.0.5](https://github.com/comunica/comunica/compare/v2.0.4...v2.0.5) - 2022-03-04
+
+### Fixed
+* [Fix unhandled parse errors, Closes #872](https://github.com/comunica/comunica/commit/392f81e64bfebd8ded5aac68c61073b28602eb88)
+
 <a name="v2.0.4"></a>
 ## [v2.0.4](https://github.com/comunica/comunica/compare/v2.0.3...v2.0.4) - 2022-03-04
 
