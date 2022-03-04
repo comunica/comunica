@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.0.2"></a>
+## [v2.0.2](https://github.com/comunica/sparqlee/compare/v2.0.1...v2.0.2) - 2022-03-04
+
+### Fixed
+* [Fix bin script referring to wrong file](https://github.com/comunica/sparqlee/commit/58325d080189c4172c04a8acdc92a5b4c3318f0c)
+
 <a name="v2.0.1"></a>
 ## [v2.0.1](https://github.com/comunica/sparqlee/compare/v2.0.0...v2.0.1) - 2022-03-02
 
