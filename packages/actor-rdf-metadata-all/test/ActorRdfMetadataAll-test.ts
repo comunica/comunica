@@ -104,6 +104,20 @@ describe('ActorRdfMetadataAll', () => {
         });
     });
 
+    it('should run and delegate errors without data listener being attached', () => {
+      return actor.run({ url: '', quads: input, context })
+        .then(output => {
+          setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
+          return Promise.all([ new Promise((resolve, reject) => {
+            output.data.on('error', resolve);
+          }), new Promise((resolve, reject) => {
+            output.metadata.on('error', resolve);
+          }) ]).then(errors => {
+            return expect(errors).toHaveLength(2);
+          });
+        });
+    });
+
     it('should run and not re-attach listeners after calling .read again', () => {
       return actor.run({ url: 'o1?param', quads: inputDifferent, context })
         .then(async output => {

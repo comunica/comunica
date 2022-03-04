@@ -92,6 +92,14 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
         { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
       );
+
+      rdfMetadataOutput.data.on('error', () => {
+        // Silence errors in the data stream,
+        // as they will be emitted again in the metadata stream,
+        // and will result in a promise rejection anyways.
+        // If we don't do this, we end up with an unhandled error message
+      });
+
       metadata = (await this.mediatorMetadataExtract.mediate({
         context,
         url,

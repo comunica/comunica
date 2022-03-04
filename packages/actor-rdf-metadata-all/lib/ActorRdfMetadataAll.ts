@@ -19,18 +19,18 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
     const data: Readable = new Readable({ objectMode: true });
     const metadata: Readable = new Readable({ objectMode: true });
 
+    // Forward errors (attach them immediately as they could arrive earlier)
+    action.quads.on('error', error => {
+      data.emit('error', error);
+      metadata.emit('error', error);
+    });
+
     // Delay attachment of listeners until the data or metadata stream is being read.
     const attachListeners = (): void => {
       // Attach listeners only once
       data._read = metadata._read = () => {
         // Do nothing
       };
-
-      // Forward errors
-      action.quads.on('error', error => {
-        data.emit('error', error);
-        metadata.emit('error', error);
-      });
 
       // Forward quads to both streams
       action.quads.on('data', quad => {

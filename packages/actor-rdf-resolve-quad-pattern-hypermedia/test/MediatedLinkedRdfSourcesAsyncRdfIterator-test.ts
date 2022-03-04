@@ -8,6 +8,8 @@ import type {
 import type { IActionRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 const DF = new DataFactory();
@@ -39,23 +41,32 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         // @ts-expect-error
         mediate: jest.fn(({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> => Promise.resolve({
           url,
-          data: `QUADS(${url})+METADATA`,
+          data: new ArrayIterator([
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.literal(`QUADS(${url})+METADATA`)),
+          ], { autoStart: false }),
           metadata: { triples: true },
           headers: 'HEADERS',
         })),
       };
       mediatorMetadata = {
         mediate: jest.fn(({ quads }: any) => Promise
-          .resolve({ data: quads.split('+')[0], metadata: quads.split('+')[1] })),
+          .resolve({
+            data: quads.clone()
+              .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(q.object.value.split('+')[0]))),
+            metadata: quads.clone()
+              .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(q.object.value.split('+')[1]))),
+          })),
       };
       mediatorMetadataExtract = {
-        mediate: jest.fn(({ metadata }: any) => Promise.resolve({ metadata: { myKey: metadata }})),
+        mediate: jest.fn(async({ metadata }: any) => ({
+          metadata: { myKey: (await metadata.toArray())[0].object.value },
+        })),
       };
       mediatorRdfResolveHypermedia = {
-        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: IActionRdfResolveHypermedia) =>
-          Promise.resolve({
+        mediate: jest.fn(async({ forceSourceType, handledDatasets, metadata, quads }: IActionRdfResolveHypermedia) =>
+          ({
             dataset: 'MYDATASET',
-            source: { sourceContents: quads },
+            source: { sourceContents: 'toArray' in quads ? (await (<any> quads).toArray())[0].object.value : quads },
           })),
       };
       mediatorRdfResolveHypermediaLinks = {
@@ -149,11 +160,11 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should get urls based on mediatorRdfResolveHypermedia without dataset id', async() => {
-        mediatorRdfResolveHypermedia.mediate = ({
+        mediatorRdfResolveHypermedia.mediate = async({
           forceSourceType, handledDatasets, metadata, quads,
         }: IActionRdfResolveHypermedia) =>
-          Promise.resolve({
-            source: { sourceContents: quads },
+          ({
+            source: { sourceContents: (await (<any> quads).toArray())[0].object.value },
           });
         expect(await source.getSource({ url: 'startUrl' }, {})).toEqual({
           link: { url: 'startUrl' },
@@ -164,14 +175,15 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should apply the link transformation', async() => {
-        const transform = jest.fn(input => Promise.resolve(`TRANSFORMED(${input})`));
+        const transform = jest.fn(inputQuads => inputQuads
+          .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(`TRANSFORMED(${q.object.value})`))));
         expect(await source.getSource({ url: 'startUrl', transform }, {})).toEqual({
           link: { url: 'startUrl', transform },
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'TRANSFORMED(QUADS(startUrl))' },
         });
-        expect(transform).toHaveBeenCalledWith('QUADS(startUrl)');
+        expect(transform).toHaveBeenCalledWith(expect.any(AsyncIterator));
       });
 
       it('should apply the link context', async() => {
@@ -186,14 +198,14 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           context: new ActionContext({ a: 'b' }),
         });
         expect(mediatorMetadata.mediate).toHaveBeenCalledWith({
-          quads: 'QUADS(startUrl)+METADATA',
+          quads: expect.any(AsyncIterator),
           triples: true,
           url: 'startUrl',
           context: new ActionContext({ a: 'b' }),
         });
         expect(mediatorMetadataExtract.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
-          metadata: 'METADATA',
+          metadata: expect.any(AsyncIterator),
           context: new ActionContext({ a: 'b' }),
           headers: 'HEADERS',
         });
@@ -202,7 +214,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           forceSourceType: 'forcedType',
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
-          quads: 'QUADS(startUrl)',
+          quads: expect.any(AsyncIterator),
           context: new ActionContext({ a: 'b' }),
         });
       });
@@ -218,6 +230,23 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           source: { sourceContents: expect.any(Readable) },
         });
         await expect(arrayifyStream(ret.source.sourceContents)).rejects.toThrow(error);
+      });
+
+      it('should ignore data errors', async() => {
+        mediatorMetadata.mediate = jest.fn(({ quads }: any) => {
+          const data = new Readable();
+          (<any> data).on = (name: string, cb: any) => {
+            cb();
+          };
+          return Promise
+            .resolve({
+              data,
+              metadata: quads.clone()
+                .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(q.object.value.split('+')[1]))),
+            });
+        });
+
+        await source.getSource({ url: 'startUrl' }, {});
       });
     });
   });
