@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.4"></a>
+## [v2.0.4](https://github.com/comunica/comunica/compare/v2.0.3...v2.0.4) - 2022-03-04
+
+### Fixed
+* [Disable fetch keepalive when sending a body](https://github.com/comunica/comunica/commit/16fa09cf3a4b30554b3a772b83e0007b3ec17911)
+
 <a name="v2.0.3"></a>
 ## [v2.0.3](https://github.com/comunica/comunica/compare/v2.0.2...v2.0.3) - 2022-03-02
 
