@@ -19,10 +19,10 @@
     "preversion": "yarn test",
     "version": "manual-git-changelog onversion",
     "postversion": "git push && git push --tags",
-    "sparqlee": "./dist/bin/Sparqlee.js"
+    "sparqlee": "./dist/bin/sparqlee.js"
   },
   "bin": {
-    "sparqlee": "dist/bin/Sparqlee.js"
+    "sparqlee": "dist/bin/sparqlee.js"
   },
   "files": [
     "/dist/bin",
