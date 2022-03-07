@@ -3013,6 +3013,11 @@ arrayify-stream@^1.0.0:
   resolved "https://registry.yarnpkg.com/arrayify-stream/-/arrayify-stream-1.0.0.tgz#9e8e113d43325c3a44e965c59b5b89d962b9a37f"
   integrity sha512-RP80ep76Lbew2wWN5ogrl2NluTnBVYYh2K3NNCcWfcmmUB7nBcNBctiJeEZAixp3I1vQ9H88iHZ9MbHSdkuupQ==
 
+arrayify-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/arrayify-stream/-/arrayify-stream-2.0.0.tgz#4ea64935fac42e94b22d7624cfe8af77123a007e"
+  integrity sha512-Z2NRtxpWQIz3NRA2bEZOziIungBH+fpsFFEolc5u8uVRheYitvsDNvejlfyh/hjZ9VyS9Ba62oY0zc5oa6Wu7g==
+
 arrify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
