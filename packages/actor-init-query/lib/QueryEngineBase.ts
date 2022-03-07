@@ -150,6 +150,7 @@ export class QueryEngineBase implements IQueryEngine {
     if (typeof query === 'string') {
       // Save the original query string in the context
       actionContext = actionContext.set(KeysInitQuery.queryString, query);
+
       const queryParseOutput = await this.actorInitQuery.mediatorQueryParse
         .mediate({ context: actionContext, query, queryFormat, baseIRI });
       operation = queryParseOutput.operation;
@@ -173,6 +174,9 @@ export class QueryEngineBase implements IQueryEngine {
     // Apply initial bindings in context
     if (actionContext.has(KeysInitQuery.initialBindings)) {
       operation = materializeOperation(operation, actionContext.get(KeysInitQuery.initialBindings)!);
+
+      // Delete the query string from the context, since our initial query might have changed
+      actionContext = actionContext.delete(KeysInitQuery.queryString);
     }
 
     // Optimize the query operation
