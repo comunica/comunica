@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.6"></a>
+## [v2.0.6](https://github.com/comunica/comunica/compare/v2.0.5...v2.0.6) - 2022-03-07
+
+### Fixed
+* [Remove original query string from context for initialBindings, Closes #941](https://github.com/comunica/comunica/commit/eb48d5abd8a1d29c2aa9280654b76c2a06b6e466)
+
 <a name="v2.0.5"></a>
 ## [v2.0.5](https://github.com/comunica/comunica/compare/v2.0.4...v2.0.5) - 2022-03-04
 
