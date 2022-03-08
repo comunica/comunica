@@ -1,7 +1,7 @@
 FROM node:16
 
 # Create user
-RUN useradd comunica
+RUN useradd --create-home comunica
 USER comunica
 
 # Install location
