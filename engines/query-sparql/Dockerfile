@@ -1,5 +1,9 @@
 FROM node:16
 
+# Create user
+RUN useradd comunica
+USER comunica
+
 # Install location
 ENV dir /var/www/@comunica/query-sparql/
 
