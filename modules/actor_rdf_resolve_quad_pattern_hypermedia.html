@@ -108,6 +108,9 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
+						<li><code>cacheSize</code>: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.</li>
+						<li><code>maxIterators</code>: The maximum number of links that can be followed in parallel, defaults to 64.</li>
+						<li><code>httpInvalidator</code>: An optional actor that listens to HTTP invalidation events.</li>
 						<li><code>mediatorDereferenceRdf</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf">RDF Dereference bus</a>.</li>
 						<li><code>mediatorMetadata</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata bus</a>.</li>
 						<li><code>mediatorMetadataExtract</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract">RDF Metadata Extract bus</a>.</li>
