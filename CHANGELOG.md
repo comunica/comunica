@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.1.0"></a>
+## [v2.1.0](https://github.com/comunica/comunica/compare/v2.0.6...v2.1.0) - 2022-03-09
+
+### Added
+* [Allow links to be followed in parallel](https://github.com/comunica/comunica/commit/9ad64da7bae9dda857e12b7bb0b3af58d5f0f2af)
+
 <a name="v2.0.6"></a>
 ## [v2.0.6](https://github.com/comunica/comunica/compare/v2.0.5...v2.0.6) - 2022-03-07
 
