@@ -5,7 +5,7 @@ RUN useradd --create-home comunica
 USER comunica
 
 # Install location
-ENV dir /var/www/@comunica/query-sparql/
+ENV dir /home/comunica/query-sparql/
 
 # Copy the engine files (generated from package.json!files)
 COPY config ${dir}/config/
