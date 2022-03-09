@@ -32,6 +32,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   public readonly cacheSize: number;
   public readonly cache?: LRUCache<string, MediatedQuadSource>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
+  public readonly maxIterators: number;
 
   public constructor(args: IActorRdfResolveQuadPatternHypermediaArgs) {
     super(args);
@@ -62,14 +63,21 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
       source = this.cache.get(url)!;
     } else {
       // If not in cache, create a new source
-      source = new MediatedQuadSource(this.cacheSize, context, url, getDataSourceType(contextSource), {
-        mediatorMetadata: this.mediatorMetadata,
-        mediatorMetadataExtract: this.mediatorMetadataExtract,
-        mediatorDereferenceRdf: this.mediatorDereferenceRdf,
-        mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
-        mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
-        mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
-      });
+      source = new MediatedQuadSource(
+        this.cacheSize,
+        context,
+        url,
+        getDataSourceType(contextSource),
+        this.maxIterators,
+        {
+          mediatorMetadata: this.mediatorMetadata,
+          mediatorMetadataExtract: this.mediatorMetadataExtract,
+          mediatorDereferenceRdf: this.mediatorDereferenceRdf,
+          mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
+          mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
+          mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
+        },
+      );
 
       // Set in cache
       if (this.cache) {
@@ -94,6 +102,11 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends IActorRdfReso
    * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^2.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
+  /**
+   * The maximum number of links that can be followed in parallel.
+   * @default {64}
+   */
+  maxIterators: number;
   /* eslint-enable max-len */
   /**
    * The RDF dereference mediator

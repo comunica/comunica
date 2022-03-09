@@ -84,7 +84,18 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
       };
-      source = new MediatedLinkedRdfSourcesAsyncRdfIterator(10, context, 'forcedType', s, p, o, g, 'first', mediators);
+      source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+        10,
+        context,
+        'forcedType',
+        s,
+        p,
+        o,
+        g,
+        'first',
+        64,
+        mediators,
+      );
     });
 
     describe('getLinkQueue', () => {

@@ -46,7 +46,7 @@ describe('MediatedQuadSource', () => {
     let source: MediatedQuadSource;
 
     beforeEach(() => {
-      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', mediators);
+      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', 64, mediators);
     });
 
     describe('match', () => {

@@ -87,6 +87,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       actor = new ActorRdfResolveQuadPatternHypermedia({
         bus,
         cacheSize: 10,
+        maxIterators: 64,
         httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -224,6 +225,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         actor = new ActorRdfResolveQuadPatternHypermedia({
           bus,
           cacheSize: 0,
+          maxIterators: 64,
           httpInvalidator,
           mediatorMetadata,
           mediatorMetadataExtract,

@@ -32,8 +32,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
   public constructor(cacheSize: number, context: IActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string, mediators: IMediatorArgs) {
-    super(cacheSize, subject, predicate, object, graph, firstUrl);
+    firstUrl: string, maxIterators: number, mediators: IMediatorArgs) {
+    super(cacheSize, subject, predicate, object, graph, firstUrl, maxIterators);
     this.context = context;
     this.forceSourceType = forceSourceType;
     this.mediatorDereferenceRdf = mediators.mediatorDereferenceRdf;

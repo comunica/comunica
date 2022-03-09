@@ -41,6 +41,9 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
+* `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
+* `maxIterators`: The maximum number of links that can be followed in parallel, defaults to 64.
+* `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
 * `mediatorDereferenceRdf`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf).
 * `mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
 * `mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).

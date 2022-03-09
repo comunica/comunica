@@ -18,8 +18,8 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
   public linkQueue: ILinkQueue = new LinkQueueFifo();
 
   public constructor(data: RDF.Quad[][], subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string) {
-    super(10, subject, predicate, object, graph, firstUrl);
+    firstUrl: string, maxIterators = 64) {
+    super(10, subject, predicate, object, graph, firstUrl, maxIterators);
     this.data = data;
   }
 
@@ -37,7 +37,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
   protected async getSource(link: ILink): Promise<ISourceState> {
     const requestedPage = this.getPage(link.url);
-    if (requestedPage >= this.data.length) {
+    if (this.data && requestedPage >= this.data.length) {
       return {
         link,
         handledDatasets: { [link.url]: true },
@@ -70,6 +70,17 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 class InvalidDummy extends Dummy {
   protected getSource(link: ILink): Promise<ISourceState> {
     return Promise.reject(new Error('NextSource error'));
+  }
+}
+
+// Dummy class with a rejecting getNextSource in the second call
+class InvalidDummySecond extends Dummy {
+  public call = 0;
+  protected getSourceCached(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
+    if (++this.call === 3) {
+      return Promise.reject(new Error('NextSourceSecond error'));
+    }
+    return super.getSourceCached(link, handledDatasets);
   }
 }
 
@@ -216,8 +227,15 @@ class DummyErrorLinkQueueLater extends Dummy {
 }
 
 describe('LinkedRdfSourcesAsyncRdfIterator', () => {
+  describe('A LinkedRdfSourcesAsyncRdfIterator instance with negative maxIterators', () => {
+    const data = [[]];
+    const quads = toTerms(data);
+    expect(() => new Dummy(quads, v, v, v, v, 'first', -64))
+      .toThrow('LinkedRdfSourcesAsyncRdfIterator.maxIterators must be larger than zero, but got -64');
+  });
+
   describe('A LinkedRdfSourcesAsyncRdfIterator instance', () => {
-    it('handles a single page', done => {
+    it('handles a single page', async() => {
       const data = [[
         [ 'a', 'b', 'c' ],
         [ 'd', 'e', 'f' ],
@@ -225,26 +243,17 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ]];
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(2);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { requestedPage: 1, subseq: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it.on('end', resolve));
+
+      expect(result).toEqual(quads.flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(4);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
     });
 
     it('handles metadata for a single page after consuming data', async() => {
@@ -255,7 +264,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ]];
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await new Promise<void>(resolve => {
         const result: any = [];
@@ -282,7 +291,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ]];
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
         firstPageToken: true,
@@ -305,7 +314,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const data = [[]];
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
       it.on('end', () => {
@@ -318,7 +327,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const data = [[]];
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await new Promise<void>(resolve => {
         const result: any = [];
@@ -341,7 +350,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const data = [[]];
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
         firstPageToken: true,
@@ -360,7 +369,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       });
     });
 
-    it('handles a single page when the first source is pre-loaded', done => {
+    it('handles a single page when the first source is pre-loaded', async() => {
       const data = [[
         [ 'a', 'b', 'c' ],
         [ 'd', 'e', 'f' ],
@@ -369,29 +378,20 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
       it.setSourcesState();
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(2);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { requestedPage: 1, subseq: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it.on('end', resolve));
+
+      expect(result).toEqual(quads.flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(4);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
     });
 
-    it('handles a single page when the first source is pre-loaded from another iterator', done => {
+    it('handles a single page when the first source is pre-loaded from another iterator', async() => {
       const data = [[
         [ 'a', 'b', 'c' ],
         [ 'd', 'e', 'f' ],
@@ -402,29 +402,20 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it1.setSourcesState();
       const it2 = new Dummy(quads, v, v, v, v, 'first');
       it2.setSourcesState(it1.sourcesState);
-      jest.spyOn(<any> it2, 'handleNextUrl');
+      jest.spyOn(<any> it2, 'startIteratorsForNextUrls');
       const result: any = [];
       it2.on('data', d => result.push(d));
-      it2.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it2).handleNextUrl).toHaveBeenCalledTimes(2);
-        expect((<any> it2).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it2).handleNextUrl).toHaveBeenNthCalledWith(2, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { requestedPage: 1, subseq: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it2.on('end', resolve));
+
+      expect(result).toEqual(quads.flat());
+      expect((<any> it2).startIteratorsForNextUrls).toHaveBeenCalledTimes(4);
+      expect((<any> it2).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it2).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it2).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
+      expect((<any> it2).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
     });
 
-    it('handles multiple pages', done => {
+    it('handles multiple pages', async() => {
       const data = [
         [
           [ 'a', 'b', 'c' ],
@@ -444,41 +435,25 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ];
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(4);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
-          link: { url: 'P2' },
-          handledDatasets: { P2: true },
-          metadata: { requestedPage: 2, firstPageToken: true, next: 'P3', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(4, {
-          link: { url: 'P3' },
-          handledDatasets: { P3: true },
-          metadata: { requestedPage: 3, subseq: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it.on('end', resolve));
+
+      expect(result).toEqual(quads.flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(9);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(9, { P3: true }, true);
     });
 
-    it('handles multiple pages when the first source is pre-loaded', done => {
+    it('handles multiple pages when the first source is pre-loaded', async() => {
       const data = [
         [
           [ 'a', 'b', 'c' ],
@@ -499,41 +474,24 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const quads = toTerms(data);
       const it = new Dummy(quads, v, v, v, v, 'first');
       it.setSourcesState();
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(4);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
-          link: { url: 'P2' },
-          handledDatasets: { P2: true },
-          metadata: { requestedPage: 2, firstPageToken: true, next: 'P3', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(4, {
-          link: { url: 'P3' },
-          handledDatasets: { P3: true },
-          metadata: { requestedPage: 3, subseq: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it.on('end', resolve));
+
+      expect(result).toEqual(quads.flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(8);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { P3: true }, true);
     });
 
-    it('handles multiple pages with multiple next page links', done => {
+    it('handles multiple pages with multiple next page links', async() => {
       const data = [
         [
           [ 'a', 'b', 'c' ],
@@ -548,72 +506,39 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ];
       const quads = toTerms(data);
       const it = new DummyMultiple(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', (d: any) => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(toTerms([
-          [
-            [ 'a', 'b', 'c' ],
-            [ 'd', 'e', 'f' ],
-            [ 'g', 'h', 'i' ],
-          ],
-          [
-            [ 'a', 'b', '1' ],
-            [ 'd', 'e', '2' ],
-            [ 'g', 'h', '3' ],
-          ],
-          [
-            [ 'a', 'b', '1' ],
-            [ 'd', 'e', '2' ],
-            [ 'g', 'h', '3' ],
-          ],
-        ]).flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(7);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(4, {
-          link: { url: 'P2' },
-          handledDatasets: { P2: true },
-          metadata: { requestedPage: 2, subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(5, {
-          link: { url: 'P2' },
-          handledDatasets: { P2: true },
-          metadata: { requestedPage: 2, subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(6, {
-          link: { url: 'P2' },
-          handledDatasets: { P2: true },
-          metadata: { requestedPage: 2, subseq: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(7, {
-          link: { url: 'P2' },
-          handledDatasets: { P2: true },
-          metadata: { requestedPage: 2, subseq: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it.on('end', resolve));
+
+      expect(result).toEqual(toTerms([
+        [
+          [ 'a', 'b', 'c' ],
+          [ 'd', 'e', 'f' ],
+          [ 'g', 'h', 'i' ],
+        ],
+        [
+          [ 'a', 'b', '1' ],
+          [ 'd', 'e', '2' ],
+          [ 'g', 'h', '3' ],
+        ],
+        [
+          [ 'a', 'b', '1' ],
+          [ 'd', 'e', '2' ],
+          [ 'g', 'h', '3' ],
+        ],
+      ]).flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(10);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(9, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(10, { P2: true }, true);
     });
 
     it('catches invalid getNextSource results', async() => {
@@ -627,6 +552,17 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       })).toEqual(new Error('NextSource error'));
     });
 
+    it('catches invalid getNextSource results within the _read call', async() => {
+      const it = new InvalidDummySecond([[]], v, v, v, v, 'first');
+      expect(await new Promise((resolve, reject) => {
+        it.on('error', resolve);
+        it.on('end', () => reject(new Error('No NextSourceSecond error was emitted')));
+        it.on('data', () => {
+          // Do nothing
+        });
+      })).toEqual(new Error('NextSourceSecond error'));
+    });
+
     it('catches invalid getNextSource results on next page', async() => {
       const it = new InvalidDummyNext([[], []], v, v, v, v, 'first');
       expect(await new Promise((resolve, reject) => {
@@ -638,7 +574,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       })).toEqual(new Error('NextSource2 error'));
     });
 
-    it('handles metadata overriding on first page', done => {
+    it('handles metadata overriding on first page', async() => {
       const data = [
         [
           [ 'a', 'b', 'c' ],
@@ -653,89 +589,50 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ];
       const quads = toTerms(data);
       const it = new DummyMetaOverride(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(3);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { firstPageToken: true, next: 'P1', override: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
-          link: { url: 'P1' },
-          handledDatasets: { P1: true },
-          metadata: { firstPageToken: true, next: 'P2', override: true },
-          source: expect.anything(),
-        });
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
-          link: { url: 'P2' },
-          handledDatasets: { P2: true },
-          metadata: { requestedPage: 2, subseq: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it.on('end', resolve));
+
+      expect(result).toEqual(quads.flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(6);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { P2: true }, true);
     });
 
-    it('handles metadata event emitted before the end event', done => {
+    it('handles metadata event emitted before the end event', async() => {
       const data: any = [];
       const quads = toTerms(data);
       const it = new DummyMetaOverrideEarly(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(1);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { firstPageToken: true, override: true },
-          source: expect.anything(),
-        });
-        done();
-      });
+      await new Promise(resolve => it.on('end', resolve));
+
+      expect(result).toEqual(quads.flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(3);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, true);
     });
 
-    it('handles metadata event emitted after the end event', done => {
+    it('handles metadata event emitted after the end event', async() => {
       const data: any = [];
       const quads = toTerms(data);
       const it = new DummyMetaOverrideLate(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       const result: any = [];
       it.on('data', d => result.push(d));
-      it.on('end', () => {
-        expect(result).toEqual(quads.flat());
-        expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(1);
-        expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
-          link: { url: 'first' },
-          handledDatasets: { first: true },
-          metadata: { firstPageToken: true, override: true },
-          source: expect.anything(),
-        });
-        done();
-      });
-    });
+      await new Promise(resolve => it.on('end', resolve));
 
-    it('calling _read while already iterating should not do anything', () => {
-      const data = [[
-        [ 'a', 'b', 'c' ],
-        [ 'd', 'e', 'f' ],
-        [ 'g', 'h', 'i' ],
-      ]];
-      const quads = toTerms(data);
-      const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'handleNextUrl');
-      (<any> it).started = true;
-      (<any> it).iterating = true;
-      (<any> it)._read(1, () => {
-        // Do nothing
-      });
-      expect((<any> it).handleNextUrl).not.toHaveBeenCalled();
+      expect(result).toEqual(quads.flat());
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(2);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
     });
 
     it('delegates error events from the source', async() => {
