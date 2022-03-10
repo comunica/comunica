@@ -206,3 +206,12 @@ export interface IActorReply<A extends Actor<I, T, O>,
   actor: A;
   reply: Promise<T>;
 }
+
+export type IReply<
+  I extends IAction = IAction,
+  O extends IActorOutput = IActorOutput,
+  T extends IActorTest = IActorTest
+> = IActorReply<Actor<I, T, O>, I, T, O>;
+
+export type IBus<I extends IAction = IAction, O extends IActorOutput = IActorOutput, T extends IActorTest = IActorTest>
+= Bus<Actor<I, T, O>, I, T, O>;
