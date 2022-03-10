@@ -4,7 +4,7 @@ import { ActorRdfParseHtmlScript } from '@comunica/actor-rdf-parse-html-script';
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
 import type { IActionRdfParse, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
-import type { Actor, IActorTest } from '@comunica/core';
+import type { IBus } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
@@ -49,8 +49,7 @@ describe('ActorRdfParseHtml', () => {
   });
 
   describe('An ActorRdfParseHtml instance', () => {
-    let busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest,
-    IActorRdfParseHtmlOutput>, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
+    let busRdfParseHtml: IBus<IActionRdfParseHtml, IActorRdfParseHtmlOutput>;
     let mediaTypePriorities;
     let actor: ActorRdfParseHtml;
     let input: Readable;

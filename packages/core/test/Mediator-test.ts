@@ -1,8 +1,8 @@
-import type { IAction, IActorOutput, IActorTest } from '..';
+import type { IBus } from '..';
 import { Actor, Bus, Mediator } from '..';
 
 describe('Mediator', () => {
-  let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
+  let bus: IBus;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
