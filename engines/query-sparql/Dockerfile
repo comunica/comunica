@@ -1,11 +1,13 @@
 FROM node:16
 
 # Create user
-RUN useradd --create-home comunica
-USER comunica
+RUN addgroup comunica && adduser -S -G comunica comunica
 
 # Install location
 ENV dir /home/comunica/query-sparql/
+RUN mkdir -p ${dir} && chown -R comunica:comunica ${dir}
+
+USER comunica
 
 # Copy the engine files (generated from package.json!files)
 COPY config ${dir}/config/
