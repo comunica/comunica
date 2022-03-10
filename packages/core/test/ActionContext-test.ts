@@ -48,6 +48,30 @@ describe('ActionContext', () => {
       });
     });
 
+    describe('getSafe', () => {
+      beforeEach(() => {
+        context = context
+          .set(key1, 'abc')
+          .set(key3, [ true, false ]);
+      });
+
+      it('should get entries', () => {
+        expect(context.getSafe(key1)).toEqual('abc');
+        expect(() => context.getSafe(key2)).toThrow(`Context entry ${key2.name} is required but not available`);
+        expect(context.getSafe(key3)).toEqual([ true, false ]);
+      });
+
+      it('should fail during compilation for an incorrect key value', () => {
+        // @ts-expect-error
+        const a: number = context.getSafe(key1);
+      });
+
+      it('should fail during compilation for an undefined casting', () => {
+        // @ts-expect-error
+        const a: undefined = context.getSafe(key1);
+      });
+    });
+
     describe('delete', () => {
       it('should delete existing entries', () => {
         context = context

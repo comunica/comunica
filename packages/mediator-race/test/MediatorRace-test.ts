@@ -1,10 +1,10 @@
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, IBus } from '@comunica/core';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { MediatorRace } from '..';
 
 describe('MediatorRace', () => {
-  let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
+  let bus: IBus;
   let context: IActionContext;
 
   beforeEach(() => {

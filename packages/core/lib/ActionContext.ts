@@ -38,6 +38,13 @@ export class ActionContext implements IActionContext {
     return this.map.get(key);
   }
 
+  public getSafe<V>(key: IActionContextKey<V>): V {
+    if (!this.has(key)) {
+      throw new Error(`Context entry ${key.name} is required but not available`);
+    }
+    return <V> this.get(key);
+  }
+
   public has<V>(key: IActionContextKey<V>): boolean {
     return this.hasRaw(key.name);
   }
