@@ -1,7 +1,7 @@
 FROM node:16
 
 # Create user
-RUN addgroup comunica && adduser -S -G comunica comunica
+RUN addgroup comunica && adduser --system --group comunica comunica
 
 # Install location
 ENV dir /home/comunica/query-sparql/
