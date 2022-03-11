@@ -1,11 +1,14 @@
 FROM node:16
 
-# Create user
-RUN adduser --system --group comunica
-USER comunica
-
 # Install location
 ENV dir /home/comunica/
+
+# Create user
+RUN useradd --create-home --shell /bin/bash comunica
+USER comunica
+WORKDIR ${dir}
+
+# Debug
 RUN ls -al ${dir}
 RUN whoami
 
@@ -23,7 +26,6 @@ RUN npm config set @comunica:registry $NPM_REGISTRY
 RUN cd ${dir} && npm install --only=production
 
 # Run base binary (generated from package.json!bin)
-WORKDIR ${dir}
 ENTRYPOINT ["node", "./bin/query.js"]
 
 # Default command
