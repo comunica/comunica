@@ -1,29 +1,24 @@
 FROM node:16
 
 # Install location
-ENV dir /home/comunica/
+WORKDIR /usr/src/app
 
-# Create user
-RUN useradd --create-home --shell /bin/bash comunica
-USER comunica
-WORKDIR ${dir}
-
-# Debug
-RUN ls -al ${dir}
-RUN whoami
+# Run as default node user
+RUN chown node:node ./
+USER node
 
 # Copy the engine files (generated from package.json!files)
-COPY config ${dir}/config/
-COPY lib/*.js ${dir}/lib/
-COPY bin/*.js ${dir}/bin/
-COPY engine-default.js package.json ${dir}
+COPY config ./config/
+COPY lib/*.js ./lib/
+COPY bin/*.js ./bin/
+COPY engine-default.js package.json ./
 
 # Set the npm registry
 ARG NPM_REGISTRY=https://registry.npmjs.org/
 RUN npm config set @comunica:registry $NPM_REGISTRY
 
 # Install the node module
-RUN cd ${dir} && npm install --only=production
+RUN npm install --only=production
 
 # Run base binary (generated from package.json!bin)
 ENTRYPOINT ["node", "./bin/query.js"]
