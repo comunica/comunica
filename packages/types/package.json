@@ -31,7 +31,7 @@
     "bin/**/*.js"
   ],
   "dependencies": {
-    "@rdfjs/types": "*",
+    "@rdfjs/types": "^1.1.0",
     "@types/yargs": "^17.0.2",
     "asynciterator": "^3.3.0",
     "sparqlalgebrajs": "^4.0.0"
