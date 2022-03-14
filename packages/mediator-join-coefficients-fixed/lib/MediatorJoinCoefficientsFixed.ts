@@ -33,24 +33,31 @@ export class MediatorJoinCoefficientsFixed
       }));
     const coefficients = await Promise.all(promises);
 
-    // Check if we had a limit indicator in the context
-    const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
-
     // Calculate costs
-    const costs: (number | undefined)[] = coefficients
+    let costs: (number | undefined)[] = coefficients
       // eslint-disable-next-line array-callback-return
-      .map(coeff => {
-        if (coeff &&
-          // If we have a limit indicator,
-          // disallow entries that have a number of iterations that is higher than the limit AND persist items.
-          // In these cases, join operators that produce results early on will be preferred.
-          (!limitIndicator || coeff.iterations < limitIndicator || coeff.persistedItems === 0)) {
+      .map((coeff, i) => {
+        if (coeff) {
           return coeff.iterations * this.cpuWeight +
             coeff.persistedItems * this.memoryWeight +
             coeff.blockingItems * this.timeWeight +
             coeff.requestTime * this.ioWeight;
         }
       });
+    const maxCost = Math.max(...(<number[]> costs.filter(cost => cost !== undefined)));
+
+    // If we have a limit indicator in the context,
+    // increase cost of entries that have a number of iterations that is higher than the limit AND persist items.
+    // In these cases, join operators that produce results early on will be preferred.
+    const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
+    if (limitIndicator) {
+      costs = costs.map((cost, i) => {
+        if (cost !== undefined && coefficients[i]!.persistedItems > 0 && coefficients[i]!.iterations > limitIndicator) {
+          return cost + maxCost;
+        }
+        return cost;
+      });
+    }
 
     // Determine index with lowest cost
     let minIndex = -1;
