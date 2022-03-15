@@ -9,7 +9,7 @@
     "@babel/core": "^7.16.0",
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.16.4",
-    "@pollyjs/adapter-node-http": "^5.1.0",
+    "@pollyjs/adapter-node-http": "^6.0.0",
     "@pollyjs/core": "^6.0.0",
     "@pollyjs/persister-fs": "^6.0.0",
     "@strictsoftware/typedoc-plugin-monorepo": "^0.4.2",
