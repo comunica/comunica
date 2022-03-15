@@ -264,6 +264,7 @@ describe('System test: QuerySparql', () => {
       ?s ?p ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(await result.execute())).length).toEqual(300);
+        await new Promise(resolve => setTimeout(resolve, 10)); // To avoid unhandled errors
       });
 
       it('with filtered results', async() => {
@@ -271,6 +272,7 @@ describe('System test: QuerySparql', () => {
       ?s a ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(await result.execute())).length).toEqual(300);
+        await new Promise(resolve => setTimeout(resolve, 10)); // To avoid unhandled errors
       });
     });
 
