@@ -1,7 +1,7 @@
 import type { BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import toEqualBindingsArray from './toEqualBindingsArray';
-const arrayifyStream = require('arrayify-stream');
 
 export default {
   async toEqualBindingsStream(received: BindingsStream, actual: RDF.Bindings[]) {

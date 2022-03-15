@@ -8,9 +8,9 @@ import type { IBus } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
 
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
 

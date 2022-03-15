@@ -3,13 +3,13 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid, IQueryOperationResultBindings,
   IQueryOperationResultBoolean, IQueryOperationResultQuads } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { mocked } from 'ts-jest/utils';
 import { ActorQueryOperationSparqlEndpoint } from '../lib/ActorQueryOperationSparqlEndpoint';
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 import 'jest-rdf';

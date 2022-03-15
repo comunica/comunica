@@ -1,12 +1,11 @@
 import { PassThrough } from 'stream';
 import { ActionContext } from '@comunica/core';
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import 'cross-fetch/polyfill'; // Needed to load Headers
 import 'jest-rdf';
 import { Factory } from 'sparqlalgebrajs';
 import { RdfSourceSparql } from '../lib/RdfSourceSparql';
-
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 const DF = new DataFactory();

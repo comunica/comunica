@@ -3,13 +3,13 @@ import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';
 
-const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
 const factory = new Factory();
 const DF = new DataFactory<RDF.BaseQuad>();

@@ -2,6 +2,7 @@ import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
@@ -10,7 +11,6 @@ import { RdfJsQuadDestination } from '../lib/RdfJsQuadDestination';
 import 'jest-rdf';
 
 const DF = new DataFactory();
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfUpdateQuadsRdfJsStore', () => {
   let bus: any;

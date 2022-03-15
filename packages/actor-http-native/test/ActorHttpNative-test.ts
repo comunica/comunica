@@ -6,9 +6,9 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { AbortController } from 'abort-controller';
+import arrayifyStream from 'arrayify-stream';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 
-const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
 
 describe('ActorHttpNative', () => {

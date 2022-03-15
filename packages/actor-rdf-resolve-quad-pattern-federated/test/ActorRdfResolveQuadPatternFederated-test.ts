@@ -1,10 +1,10 @@
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfResolveQuadPatternFederated } from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
-const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternFederated', () => {

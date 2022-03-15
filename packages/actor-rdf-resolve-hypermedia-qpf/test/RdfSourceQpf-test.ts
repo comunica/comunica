@@ -3,10 +3,10 @@ import { Readable } from 'stream';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { ActionContext, Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 const DF = new DataFactory();

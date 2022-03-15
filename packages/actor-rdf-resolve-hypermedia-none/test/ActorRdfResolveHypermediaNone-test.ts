@@ -3,10 +3,10 @@ import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia'
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveHypermediaNone } from '../lib/ActorRdfResolveHypermediaNone';
 
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 const DF = new DataFactory();

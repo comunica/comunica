@@ -7,12 +7,12 @@ import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
+import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { mockHttp } from './util';
-const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
 const factory = new Factory();

@@ -1,6 +1,7 @@
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import 'jest-rdf';
 import LRUCache = require('lru-cache');
@@ -11,7 +12,6 @@ import { MediatedQuadSource } from '../lib/MediatedQuadSource';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 
 const DF = new DataFactory();
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const v = DF.variable('v');
 

@@ -1,14 +1,12 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
-
-const arrayifyStream = require('arrayify-stream');
 
 describe('BindingsToQuadsIterator', () => {
   describe('#bindTerm', () => {

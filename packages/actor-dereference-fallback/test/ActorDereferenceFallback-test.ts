@@ -1,7 +1,7 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import arrayifyStream from 'arrayify-stream';
 import { ActorDereferenceFallback } from '../lib/ActorDereferenceFallback';
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorDereferenceFallback', () => {
   let bus: any;

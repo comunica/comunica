@@ -3,10 +3,10 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
-const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory<RDF.BaseQuad>();
 const BF = new BindingsFactory();

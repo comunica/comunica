@@ -1,12 +1,12 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
-const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
