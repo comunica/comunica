@@ -44,7 +44,7 @@ export class Bindings implements RDF.Bindings {
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
-    this.entries.forEach((value, key) => fn(value!, this.dataFactory.variable!(key!)));
+    this.entries.forEach((value, key) => fn(value, this.dataFactory.variable!(key)));
   }
 
   public get size(): number {
@@ -83,12 +83,12 @@ export class Bindings implements RDF.Bindings {
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .filter((value, key) => fn(value!, this.dataFactory.variable!(key!)))));
+      .filter((value, key) => fn(value, this.dataFactory.variable!(key)))));
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .map((value, key) => fn(value!, this.dataFactory.variable!(key!)))));
+      .map((value, key) => fn(value, this.dataFactory.variable!(key)))));
   }
 
   public merge(other: Bindings): Bindings | undefined {
@@ -101,7 +101,7 @@ export class Bindings implements RDF.Bindings {
     // Collect entries
     const entries: [string, RDF.Term][] = [];
     for (const key of keys) {
-      const left = this.entries.get(key);
+      const left = this.entries.get(key)!;
       const right = other.get(this.dataFactory.variable!(key));
       if (left && right && !left.equals(right)) {
         return;
@@ -127,7 +127,7 @@ export class Bindings implements RDF.Bindings {
     const entries: [string, RDF.Term][] = [];
     for (const key of keys) {
       const variable = this.dataFactory.variable!(key);
-      const left = this.entries.get(key);
+      const left = this.entries.get(key)!;
       const right = other.get(variable);
       let value: RDF.Term;
       if (left && right && !left.equals(right)) {

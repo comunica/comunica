@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "@comunica/types": "^2.0.1",
-    "immutable": "^3.8.2"
+    "immutable": "^4.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
