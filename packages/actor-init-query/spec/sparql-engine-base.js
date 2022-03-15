@@ -19,11 +19,11 @@ module.exports = function(engine) {
       if (result.resultType === 'boolean') {
         return new RdfTestSuite.QueryResultBoolean(await result.execute());
       } else if (result.resultType === 'quads') {
-        return new RdfTestSuite.QueryResultQuads(await require('arrayify-stream')(await result.execute()));
+        return new RdfTestSuite.QueryResultQuads(await require('arrayify-stream').default(await result.execute()));
       } else if (result.resultType === 'bindings') {
         return new RdfTestSuite.QueryResultBindings(
             (await result.metadata()).variables.map(variable => `?${variable.value}`),
-            (await require('arrayify-stream')(await result.execute()))
+            (await require('arrayify-stream').default(await result.execute()))
               .map((binding) => Object.fromEntries([ ...binding ]
                   .map(([ key, value ]) => [ `?${key.value}`, value ]))),
         );
