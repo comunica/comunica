@@ -37,7 +37,7 @@
     "eslint-plugin-react": "7.29.3",
     "eslint-plugin-react-hooks": "4.3.0",
     "eslint-plugin-tsdoc": "^0.2.14",
-    "eslint-plugin-unicorn": "37.0.1",
+    "eslint-plugin-unicorn": "41.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "immutable": "^3.8.2",
     "jest": "^27.0.1",
