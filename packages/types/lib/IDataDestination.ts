@@ -1,4 +1,4 @@
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext } from './IActionContext';
 import type * as RDF from '@rdfjs/types';
 
 export type IDataDestination = string | RDF.Store | {

@@ -43,6 +43,7 @@
     "jest": "^27.0.1",
     "jest-rdf": "^1.7.0",
     "lerna": "^4.0.0",
+    "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.0",
     "memory-streams": "^0.1.3",
     "node-polyfill-webpack-plugin": "^1.1.4",
@@ -90,7 +91,8 @@
     "postinstall": "yarn run build && lerna run prepare",
     "version": "manual-git-changelog onversion",
     "depcheck": "lerna exec --stream --scope=@comunica/* -- depcheck --ignore-patterns=test/*",
-    "depcheck:dev": "lerna exec --no-bail --stream --scope=@comunica/* -- depcheck --ignore-patterns=test/*"
+    "depcheck:dev": "lerna exec --no-bail --stream --scope=@comunica/* -- depcheck --ignore-patterns=test/*",
+    "depcheck:fix": "lerna-script depcheckTask"
   },
   "resolutions": {
     "@rdfjs/types": "1.1.0"
