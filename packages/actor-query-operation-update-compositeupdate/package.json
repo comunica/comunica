@@ -29,7 +29,8 @@
   "dependencies": {
     "@comunica/bus-query-operation": "^2.0.1",
     "@comunica/core": "^2.0.1",
-    "@rdfjs/types": "*"
+    "@comunica/types": "^2.0.1",
+    "sparqlalgebrajs": "^4.0.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

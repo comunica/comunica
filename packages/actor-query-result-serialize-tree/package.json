@@ -31,12 +31,10 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.0.1",
     "@comunica/bus-query-result-serialize": "^2.0.1",
     "@comunica/context-entries": "^2.0.1",
     "@comunica/core": "^2.0.1",
     "@comunica/types": "^2.0.1",
-    "@rdfjs/types": "*",
     "sparqljson-to-tree": "^2.0.0"
   },
   "scripts": {

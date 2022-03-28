@@ -30,11 +30,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^2.0.1",
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.0.1",
     "@comunica/core": "^2.0.1",
-    "@rdfjs/types": "*",
-    "asynciterator": "^3.3.0"
+    "@rdfjs/types": "*"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

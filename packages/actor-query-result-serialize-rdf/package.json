@@ -31,8 +31,6 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-mediatyped": "^2.0.1",
-    "@comunica/bus-query-operation": "^2.0.1",
     "@comunica/bus-query-result-serialize": "^2.0.1",
     "@comunica/bus-rdf-serialize": "^2.0.1",
     "@comunica/core": "^2.0.1",

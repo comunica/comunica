@@ -31,7 +31,6 @@
     "bin/**/*.js"
   ],
   "dependencies": {
-    "@comunica/core": "^2.0.1",
     "@rdfjs/types": ">=1.1.0",
     "@types/yargs": "^17.0.2",
     "asynciterator": "^3.3.0",

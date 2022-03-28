@@ -1,4 +1,4 @@
-import type { Logger } from '@comunica/core';
+import type { Logger } from './Logger';
 import type * as RDF from '@rdfjs/types';
 import type { IDataDestination } from './IDataDestination';
 import type { IDataSource } from './IDataSource';

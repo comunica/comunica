@@ -31,7 +31,6 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^2.0.1",
-    "@comunica/bus-query-operation": "^2.0.1",
     "@comunica/core": "^2.0.1",
     "@comunica/types": "^2.0.1"
   },

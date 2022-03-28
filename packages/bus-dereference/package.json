@@ -33,7 +33,8 @@
     "@comunica/actor-abstract-mediatyped": "^2.0.1",
     "@comunica/actor-abstract-parse": "^2.0.1",
     "@comunica/context-entries": "^2.0.1",
-    "@comunica/core": "^2.0.1"
+    "@comunica/core": "^2.0.1",
+    "@comunica/types": "^2.0.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

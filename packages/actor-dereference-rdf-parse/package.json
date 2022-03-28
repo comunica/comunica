@@ -32,8 +32,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/bus-dereference": "^2.0.2",
     "@comunica/bus-dereference-rdf": "^2.0.2",
-    "@comunica/core": "^2.0.1"
+    "@comunica/bus-rdf-parse": "^2.0.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

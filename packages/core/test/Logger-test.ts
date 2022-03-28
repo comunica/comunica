@@ -1,4 +1,4 @@
-import { Logger } from '../lib/Logger';
+import { Logger } from '../lib';
 
 describe('Logger', () => {
   describe('#getLevelOrdinal', () => {

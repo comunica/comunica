@@ -33,9 +33,7 @@
   "dependencies": {
     "@comunica/bus-http": "^2.0.1",
     "@comunica/context-entries": "^2.0.1",
-    "@comunica/core": "^2.0.1",
     "@comunica/mediatortype-time": "^2.0.1",
-    "@types/parse-link-header": "^2.0.0",
     "cross-fetch": "^3.0.5",
     "follow-redirects": "^1.5.1",
     "parse-link-header": "^2.0.0"

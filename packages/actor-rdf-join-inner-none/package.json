@@ -32,9 +32,7 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.0.1",
-    "@comunica/bus-query-operation": "^2.0.1",
     "@comunica/bus-rdf-join": "^2.0.1",
-    "@comunica/core": "^2.0.1",
     "@comunica/mediatortype-join-coefficients": "^2.0.1",
     "asynciterator": "^3.3.0"
   },

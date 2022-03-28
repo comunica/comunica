@@ -37,6 +37,8 @@
     "@comunica/bus-rdf-update-quads": "^2.0.1",
     "@comunica/core": "^2.0.1",
     "@comunica/types": "^2.0.1",
+    "@rdfjs/types": "^1.1.0",
+    "asynciterator": "^3.4.0",
     "cross-fetch": "^3.0.5"
   },
   "scripts": {

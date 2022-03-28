@@ -30,7 +30,8 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/core": "^2.0.1"
+    "@comunica/core": "^2.0.1",
+    "@comunica/types": "^2.0.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -41,11 +41,9 @@
     "@comunica/mediatortype-httprequests": "^2.0.1",
     "@comunica/types": "^2.0.1",
     "@rdfjs/types": "*",
-    "arrayify-stream": "^2.0.0",
     "asynciterator": "^3.3.0",
     "fetch-sparql-endpoint": "^2.3.2",
     "rdf-data-factory": "^1.1.0",
-    "rdf-terms": "^1.6.2",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {

@@ -32,7 +32,9 @@
   "dependencies": {
     "@comunica/core": "^2.0.1",
     "@comunica/types": "^2.0.1",
-    "jsonld-context-parser": "^2.1.5"
+    "@rdfjs/types": "^1.1.0",
+    "jsonld-context-parser": "^2.1.5",
+    "sparqlalgebrajs": "^4.0.2"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-parse": "^2.0.1",
-    "@comunica/core": "^2.0.1",
+    "@comunica/types": "^2.0.1",
     "@types/n3": "^1.4.4",
     "n3": "^1.6.3"
   },

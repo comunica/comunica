@@ -34,7 +34,7 @@
     "@comunica/bus-rdf-parse": "^2.0.1",
     "@comunica/bus-rdf-parse-html": "^2.0.1",
     "@comunica/core": "^2.0.1",
-    "@rdfjs/types": "*",
+    "@comunica/types": "^2.0.1",
     "htmlparser2": "^7.0.0"
   },
   "scripts": {

@@ -33,6 +33,7 @@
   "dependencies": {
     "@comunica/bus-rdf-join-selectivity": "^2.0.1",
     "@comunica/core": "^2.0.1",
+    "@comunica/mediatortype-accuracy": "^2.0.1",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {
