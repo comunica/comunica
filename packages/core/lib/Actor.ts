@@ -1,4 +1,5 @@
-import { type IActionContext, Logger } from '@comunica/types';
+import type { Logger } from '@comunica/types';
+import { type IActionContext } from '@comunica/types';
 import type { Bus } from './Bus';
 import { CONTEXT_KEY_LOGGER } from './ContextEntries';
 
