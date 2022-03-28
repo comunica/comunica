@@ -1,9 +1,8 @@
-import type { Readable } from 'stream';
-import { PassThrough } from 'stream';
+import { PassThrough, type Readable } from 'stream';
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
-import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from '@comunica/bus-dereference';
 import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference';
 import { ActorDereferenceBase, isHardError } from './ActorDereferenceBase';
 
 /**

@@ -30,6 +30,8 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@comunica/actor-abstract-mediatyped": "^2.0.1",
+    "@comunica/actor-abstract-parse": "^2.0.1",
     "@comunica/context-entries": "^2.0.1",
     "@comunica/core": "^2.0.1"
   },
