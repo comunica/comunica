@@ -36,7 +36,7 @@
     "@comunica/bus-query-operation": "^2.0.1",
     "@comunica/core": "^2.0.1",
     "@comunica/types": "^2.0.1",
-    "@rdfjs/types": "^1.1.0",
+    "@rdfjs/types": "*",
     "asynciterator": "^3.3.0",
     "rdf-data-factory": "^1.1.0",
     "sparqlalgebrajs": "^4.0.0",
