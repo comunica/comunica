@@ -71,19 +71,19 @@ async function depcheckTask(log) {
 
     const missing_deps = Object.keys(missing)
     if (missing_deps.length > 0) {
-      throw new Error('Missing dependencies: ' + missing_deps.join(', '), 'from', package.name)
+      throw new Error(`Missing dependencies:  ${missing_deps.join(', ')} from ${package.name}`);
     }
 
     const unused_deps = [...dependencies, ...devDependencies].filter(elem => !Object.keys(using).includes(elem));
     if (unused_deps.length > 0) {
-      throw new Error('Extra dependencies: ' + unused_deps.join(', '), 'in', package.name)
+      throw new Error(`Extra dependencies: ${unused_deps.join(', ')} in ${package.name}`);
     }
 
     // Now check all resolutions use a star ("*") import
     const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
     for (const dep of Object.keys(packageJson.dependencies ?? {})) {
       if (resolutions.includes(dep) && packageJson.dependencies[dep] !== '*') {
-        throw new Error('Resolution not using \'*\' import for', dep, 'in', package.name)
+        throw new Error(`Resolution not using \'*\' import for ${dep} in ${package.name}`);
       }
     }
   })
