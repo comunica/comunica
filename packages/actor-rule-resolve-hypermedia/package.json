@@ -1,0 +1,49 @@
+{
+  "name": "@comunica/actor-rule-resolve-hypermedia",
+  "version": "1.0.0",
+  "description": "A hypermedia rule-resolve actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica-feature-reasoning.git",
+    "directory": "packages/actor-rule-resolve-hypermedia"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rule-resolve",
+    "hypermedia"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica-feature-reasoning/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "dependencies": {
+    "@comunica/bus-dereference-rule": "^1.0.0",
+    "@comunica/reasoning-types": "^1.0.0",
+    "@comunica/bus-http-invalidate": "^2.0.0",
+    "@comunica/bus-rule-resolve": "^1.0.0",
+    "@comunica/core": "^2.0.0",
+    "@comunica/types": "^2.0.0",
+    "@comunica/reasoning-context-entries": "^1.0.0",
+    "@types/lru-cache": "^5.1.0",
+    "asynciterator": "^3.4.0",
+    "lru-cache": "^6.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

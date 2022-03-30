@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-intercept-reasoned/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:rdf-update-quads-intercept/actors#reasoned",
+      "@type": "ActorRdfUpdateQuadsInterceptReasoned",
+      "mediatorRdfReason": { "@id": "urn:comunica:default:rdf-reason/mediators#main" },
+      "mediatorRdfUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" },
+      "mediatorRdfResolveQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" }
+    }
+  ]
+}

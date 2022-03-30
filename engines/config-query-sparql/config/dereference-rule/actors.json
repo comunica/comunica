@@ -1,0 +1,18 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-dereference-rule-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:dereference-rule/actors#parse",
+      "@type": "ActorDereferenceRuleParse",
+      "mediatorParseMediatypes": { "@id": "urn:comunica:default:rule-parse/mediators#mediaType" },
+      "mediatorParse": { "@id": "urn:comunica:default:rule-parse/mediators#parse" },
+      "mediatorDereference": { "@id": "urn:comunica:default:dereference/mediators#main" }
+    }
+  ]
+}

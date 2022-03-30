@@ -34,6 +34,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
   }
 
   public async test(action: IActionAbstractMediaTyped<HI>): Promise<IActorTestAbstractMediaTyped<HT>> {
+    this.logDebug(action.context, 'runnign test')
     if ('handle' in action) {
       const typedAction: IActionAbstractMediaTypedHandle<HI> = action;
       return { handle: await this.testHandle(typedAction.handle, typedAction.handleMediaType, action.context) };

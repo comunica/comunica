@@ -6,7 +6,8 @@ import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
-
+import { KeysRdfReason } from '@comunica/reasoning-context-entries';
+import { Store } from 'n3';
 /**
  * Basic CLI arguments handler that handles common options.
  */
@@ -114,6 +115,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'Prints the full stacktrace when errors are thrown',
         },
+        rules: {
+          type: 'string',
+          describe: 'The rule source to use',
+          alias: 'r'
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -184,5 +190,12 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     if (args.lenient) {
       context[KeysInitQuery.lenient.name] = true;
     }
+
+    // The rules to use for reasoning
+    if (args.rules) {
+      context[KeysRdfReason.rules.name] = args.rules;
+    }
+
+    context[KeysRdfReason.implicitDatasetFactory.name] = () => new Store();
   }
 }

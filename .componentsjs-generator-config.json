@@ -12,7 +12,10 @@
     "packages/data-factory",
     "packages/jest",
     "packages/packager",
-    "packages/runner-cli"
+    "packages/runner-cli",
+    "packages/reasoning-mocks",
+    "packages/reasoning-types",
+    "packages/reasoning-context-entries"
   ],
   "ignoreComponents": [
     "Error",
@@ -59,7 +62,13 @@
     "Factory",
 
     "UriTemplate",
-    "LRUCache"
+    "LRUCache",
+
+    "NodeJS.ReadableStream",
+    "Headers",
+    "Readable",
+    "LRUCache",
+    "RuleStream"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",
@@ -74,6 +83,7 @@
     "@comunica/actor-rdf-join-inner-symmetrichash": "carjish",
     "@comunica/actor-rdf-metadata-extract-hydra-count": "carmehco",
     "@comunica/actor-query-result-serialize-stats": "caqrsst",
-    "@comunica/actor-query-result-serialize-tree": "caqrstr"
+    "@comunica/actor-query-result-serialize-tree": "caqrstr",
+    "@comunica/bus-dereference-rule": "cbdrl"
   }
 }

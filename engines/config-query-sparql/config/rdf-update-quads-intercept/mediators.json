@@ -1,0 +1,8 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:rdf-update-quads-intercept/mediators#main",
+  "@type": "MediatorRace",
+  "bus": { "@id": "ActorRdfUpdateQuadsIntercept:_default_bus" }
+}

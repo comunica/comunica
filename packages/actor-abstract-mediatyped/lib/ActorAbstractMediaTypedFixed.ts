@@ -20,9 +20,11 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
   }
 
   public async testHandle(action: HI, mediaType: string, context: IActionContext): Promise<HT> {
+    this.logDebug(context, `Testing ${mediaType} against ${JSON.stringify(this.mediaTypePriorities, null, 2)}`);
     if (!(mediaType in this.mediaTypePriorities)) {
       throw new Error(`Unrecognized media type: ${mediaType}`);
     }
+    this.logDebug(context, 'Test handle SUCCESS')
     return await this.testHandleChecked(action, context);
   }
 

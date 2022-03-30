@@ -1,0 +1,23 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-normalize-rule/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:optimize-rule/actors#remove-false-conclusion",
+      "@type": "ActorOptimizeRuleRemoveFalseConclusion"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-rule/actors#pattern-restriction",
+      "@type": "ActorOptimizeRulePatternRestriction"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-rule/actors#reconcile-premise",
+      "@type": "ActorOptimizeRuleReconcilePremise",
+      "mediatorNormalizeRule": { "@id": "urn:comunica:default:normalize-rule/mediators#main" }
+    }
+  ]
+}

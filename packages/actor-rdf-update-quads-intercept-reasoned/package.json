@@ -1,0 +1,51 @@
+{
+  "name": "@comunica/actor-rdf-update-quads-intercept-reasoned",
+  "version": "1.0.0",
+  "description": "A reasoned rdf-update-quads-intercept actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica-feature-reasoning.git",
+    "directory": "packages/actor-rdf-update-quads-intercept-reasoned"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-update-quads-intercept",
+    "reasoned"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica-feature-reasoning/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "dependencies": {
+    "@comunica/bus-rdf-reason": "^1.0.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^2.0.1",
+    "@comunica/bus-rdf-update-quads-intercept": "^1.0.0",
+    "@comunica/core": "^2.0.0",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.4.0",
+    "n3": "^1.16.0",
+    "sparqlalgebrajs": "^4.0.2"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "devDependencies": {
+    "@comunica/bus-rdf-update-quads": "^2.0.1",
+    "@types/n3": "^1.10.4"
+  }
+}

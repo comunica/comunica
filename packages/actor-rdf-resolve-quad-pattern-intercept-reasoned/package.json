@@ -1,0 +1,41 @@
+{
+  "name": "@comunica/actor-rdf-resolve-quad-pattern-intercept-reasoned",
+  "version": "1.0.0",
+  "description": "A reasoned rdf-resolve-quad-pattern-intercept actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica-feature-reasoning.git",
+    "directory": "packages/actor-rdf-resolve-quad-pattern-intercept-reasoned"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-resolve-quad-pattern-intercept",
+    "reasoned"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica-feature-reasoning/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "dependencies": {
+    "@comunica/bus-rdf-reason": "^1.0.0",
+    "@comunica/bus-rdf-resolve-quad-pattern-intercept": "^1.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

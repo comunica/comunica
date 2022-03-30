@@ -1,0 +1,44 @@
+{
+  "name": "@comunica/actor-dereference-rule-parse",
+  "version": "1.0.0",
+  "description": "An actor that dereferences and parses a rule.",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica-feature-reasoning.git",
+    "directory": "packages/actor-dereference-rule-parse"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "dereference",
+    "rule",
+    "parse"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica-feature-reasoning/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "dependencies": {
+    "@comunica/bus-dereference": "^2.0.2",
+    "@comunica/bus-dereference-rule": "^1.0.0",
+    "@comunica/bus-rule-parse": "^1.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "devDependencies": {}
+}

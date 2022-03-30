@@ -1,0 +1,40 @@
+{
+  "name": "@comunica/reasoning-context-entries",
+  "version": "1.0.0",
+  "description": "A collection of reusable Comunica Reasoning context key definitions.",
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "lsd:module": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica-feature-reasoning.git",
+    "directory": "packages/reasoning-context-entries"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "context",
+    "entries",
+    "reasoning",
+    "keys"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica-feature-reasoning/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "dependencies": {
+    "@comunica/core": "^2.0.1",
+    "@comunica/reasoning-types": "^1.0.0"
+  },
+  "scripts": {
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
+  }
+}
