@@ -17,7 +17,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
 
   public handle(init: RequestInit): RequestInit {
     // Convert body Web stream to Node stream, as node-fetch does not support Web streams
-    if (init.body && 'getReader' in <any> init.body) {
+    if (init.body && typeof init.body !== 'string' && 'getReader' in <any> init.body) {
       init.body = <any> ActorHttp.toNodeReadable(<any> init.body);
     }
 
