@@ -8,12 +8,12 @@ import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorR
 import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads';
 import type { IQuadDestination } from './IQuadDestination';
 
-function deskolemizeStream(stream: AsyncIterator<RDF.Quad> | undefined, id: string):
+export function deskolemizeStream(stream: AsyncIterator<RDF.Quad> | undefined, id: string):
 AsyncIterator<RDF.Quad> | undefined {
   return stream?.map(quad => FederatedQuadSource.deskolemizeQuad(quad, id));
 }
 
-function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuads {
+export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuads {
   const destination = action.context.get(KeysRdfUpdateQuads.destination);
   const id = action.context.get<Map<any, string>>(KeysRdfResolveQuadPattern.sourceIds)?.get(destination);
   if (!id) {
