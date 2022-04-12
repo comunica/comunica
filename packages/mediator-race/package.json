@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-race",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "A mediator for a single mediation number value",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -29,7 +29,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/core": "^2.0.1"
+    "@comunica/core": "^2.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

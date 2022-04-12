@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-parse-html",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "A comunica bus for rdf-parse-html events.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,7 +30,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/core": "^2.0.1",
+    "@comunica/core": "^2.2.0",
     "@rdfjs/types": "*"
   },
   "scripts": {

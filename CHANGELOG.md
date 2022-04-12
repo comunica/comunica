@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.2.0"></a>
+## [v2.2.0](https://github.com/comunica/comunica/compare/v2.1.0...v2.2.0) - 2022-04-12
+
+### Added
+* [Add getSafe to ActionContext and bus convenience interfaces](https://github.com/comunica/comunica/commit/731cde8060796d7430dea339e638a5cf0c9d7e5c)
+* [Export deskolimisation functions (#974)](https://github.com/comunica/comunica/commit/fbd6d287a835348558dda1aacf3f8b859b08f08e)
+
+### Changed
+* [Require minimum @rdfjs/types version (#948)](https://github.com/comunica/comunica/commit/e7d69320649d0ee42f557c1a2780f6e998ebd93c)
+* [Update to arrayify-stream 2](https://github.com/comunica/comunica/commit/276408c6002de53b0af4e66ed724084860a96c83)
+* [Update to immutable.js 4](https://github.com/comunica/comunica/commit/6199e753efbe4d5658b5ef9ef500012525f093e3)
+* [Add missing deps in bus-dereference](https://github.com/comunica/comunica/commit/448bfbadd805dcad95841789cd12b0d33a672585)
+
+### Fixed
+* [Fix invalid JSON in a config file](https://github.com/comunica/comunica/commit/38760ab84898ebcc32e7129a237d95c127c9381d)
+* [Fix hash joins not working on queries with limits](https://github.com/comunica/comunica/commit/431233c0f887abe4987482ea4d8c96fdbbf9fb0e)
+* [Fix crash for requests with string body, Closes #969](https://github.com/comunica/comunica/commit/6667d669544289f6b48e1bcaedb46163ae469af6)
+
 <a name="v2.1.0"></a>
 ## [v2.1.0](https://github.com/comunica/comunica/compare/v2.0.6...v2.1.0) - 2022-03-09
 
