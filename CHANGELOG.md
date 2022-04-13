@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.2.1"></a>
+## [v2.2.1](https://github.com/comunica/comunica/compare/v2.2.0...v2.2.1) - 2022-04-13
+
+### Fixed
+* [Fix request with body in browser not working](https://github.com/comunica/comunica/commit/976f1e0206898d28210f5437f0bbfd300ed6dfde)
+
 <a name="v2.2.0"></a>
 ## [v2.2.0](https://github.com/comunica/comunica/compare/v2.1.0...v2.2.0) - 2022-04-12
 

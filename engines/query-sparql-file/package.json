@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-file",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -51,7 +51,7 @@
     "@comunica/actor-dereference-http": "^2.2.0",
     "@comunica/actor-dereference-rdf-parse": "^2.2.0",
     "@comunica/actor-hash-bindings-sha1": "^2.2.0",
-    "@comunica/actor-http-fetch": "^2.2.0",
+    "@comunica/actor-http-fetch": "^2.2.1",
     "@comunica/actor-http-proxy": "^2.2.0",
     "@comunica/actor-init-query": "^2.2.0",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^2.2.0",
