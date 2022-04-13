@@ -32,7 +32,7 @@ export class ActorHttpFetch extends ActorHttp {
     return { time: Number.POSITIVE_INFINITY };
   }
 
-  public run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     // Prepare headers
     const initHeaders = action.init ? action.init.headers || {} : {};
     action.init = action.init ? action.init : {};
@@ -61,7 +61,7 @@ export class ActorHttpFetch extends ActorHttp {
     // Perform request
     const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
       .context?.get(KeysHttp.fetch);
-    return (customFetch || fetch)(action.input, this.fetchInitPreprocessor.handle({
+    return await (customFetch || fetch)(action.input, await this.fetchInitPreprocessor.handle({
       ...action.init,
       ...action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
     })).then(response => {

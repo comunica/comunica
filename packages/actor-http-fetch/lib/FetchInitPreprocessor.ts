@@ -15,7 +15,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     this.agent = (_parsedURL: URL): HttpAgent => _parsedURL.protocol === 'http:' ? httpAgent : httpsAgent;
   }
 
-  public handle(init: RequestInit): RequestInit {
+  public async handle(init: RequestInit): Promise<RequestInit> {
     // Convert body Web stream to Node stream, as node-fetch does not support Web streams
     if (init.body && typeof init.body !== 'string' && 'getReader' in <any> init.body) {
       init.body = <any> ActorHttp.toNodeReadable(<any> init.body);
