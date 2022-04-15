@@ -55,12 +55,22 @@ Read one of our [guides to **get started** with querying](https://comunica.dev/d
 
 Or jump right into one of the available query engines:
 * [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/engines/query-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI ([Browser-ready via a CDN](https://github.com/rdfjs/comunica-browser))
-* [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme): Engine to query over local RDF files
-* [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
-* [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
-* [Comunica SPARQL Solid](https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme): Engine to query over files behind [Solid access control](https://solidproject.org/).
-* [Comunica SPARQL Link Traversal](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal#readme): Engine to query over multiple files by following links between them.
-* [Comunica SPARQL Link Traversal Solid](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal-solid#readme): Engine to query within [Solid data vaults](https://solidproject.org/) by following links between documents.
+
+ - Source Customisation
+   * [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme): Engine to query over local RDF files
+   * [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
+   * [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
+
+ - Solid Customisation
+   * [Comunica SPARQL Solid](https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme): Engine to query over files behind [Solid access control](https://solidproject.org/).
+
+ - Link Traversal Research
+   * [Comunica SPARQL Link Traversal](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal#readme): Engine to query over multiple files by following links between them.
+   * [Comunica SPARQL Link Traversal Solid](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal-solid#readme): Engine to query within [Solid data vaults](https://solidproject.org/) by following links between documents.
+
+ - Reasoning Support
+   * [Comunica SPARQL Reasoning](https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-reasoning): Engine that adds support for reasoning
+   * [Comunica SPARQL Reasoning File](https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-file-reasoning): Engine to query over local RDF files with support for reasoning
 
 ## Modify or Extending Comunica
 
