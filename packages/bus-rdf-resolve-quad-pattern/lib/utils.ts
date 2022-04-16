@@ -1,13 +1,15 @@
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { IActionContext, DataSources, IDataSource } from '@comunica/types';
+import type { IActionContext, DataSources, IDataSource, IResolvedDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
  * Check if the given data source is a string or RDF store.
  * @param dataSource A data source.
  */
-export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
-  return typeof dataSource === 'string' || 'match' in dataSource;
+export function isDataSourceRawType(
+  dataSource: IDataSource,
+): dataSource is string | RDF.Source | Promise<IResolvedDataSource> {
+  return typeof dataSource === 'string' || 'match' in dataSource || dataSource instanceof Promise;
 }
 
 /**
@@ -18,6 +20,9 @@ export function getDataSourceType(dataSource: IDataSource): string | undefined {
   if (typeof dataSource === 'string') {
     return '';
   }
+  if (dataSource instanceof Promise) {
+    return 'promise';
+  }
   return 'match' in dataSource ? 'rdfjsSource' : dataSource.type;
 }
 
@@ -25,7 +30,7 @@ export function getDataSourceType(dataSource: IDataSource): string | undefined {
  * Get the data source value.
  * @param dataSource A data source.
  */
-export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
+export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source | Promise<IResolvedDataSource> {
   return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
 }
 
@@ -35,7 +40,7 @@ export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source
  * @param {IDataSource} dataSource The source or undefined.
  */
 export function getDataSourceContext(dataSource: IDataSource, context: IActionContext): IActionContext {
-  if (typeof dataSource === 'string' || 'match' in dataSource || !dataSource.context) {
+  if (isDataSourceRawType(dataSource) || !dataSource.context) {
     return context;
   }
   return context.merge(dataSource.context);

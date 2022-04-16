@@ -59,7 +59,9 @@
     "Factory",
 
     "UriTemplate",
-    "LRUCache"
+    "LRUCache",
+
+    "Promise"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",
