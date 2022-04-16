@@ -1,7 +1,8 @@
-import type {
+import {
   IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternArgs,
   IActorRdfResolveQuadPatternOutput,
+  isDataSourceRawType,
   MediatorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
@@ -30,9 +31,15 @@ export class ActorRdfResolveQuadPatternPromise extends ActorRdfResolveQuadPatter
   }
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
+    let source = await getContextSource(action.context);
+
+    if (source && !isDataSourceRawType(source)) {
+      source = await source.value;
+    }
+    
     return this.mediatorResolveQuadPattern.mediate({
       ...action,
-      context: action.context.set(KeysRdfResolveQuadPattern.source, await getContextSource(action.context)),
+      context: action.context.set(KeysRdfResolveQuadPattern.source, source),
     });
   }
 }
