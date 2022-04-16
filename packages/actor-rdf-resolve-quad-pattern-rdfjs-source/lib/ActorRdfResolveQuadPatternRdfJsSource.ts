@@ -20,7 +20,12 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
       throw new Error(`${this.name} requires a single source with an rdfjsSource to be present in the context.`);
     }
     const source = getContextSource(action.context);
-    if (!source || typeof source === 'string' || (!('match' in source) && !source.value.match)) {
+    if (
+      !source ||
+      typeof source === 'string' ||
+      source instanceof Promise ||
+      (!('match' in source) && !source.value.match)
+    ) {
       throw new Error(`${this.name} received an invalid rdfjsSource.`);
     }
     return true;
