@@ -24,8 +24,7 @@ describe('ActorRdfResolveQuadPatternPromise', () => {
       mediatorResolveQuadPattern = {
         async mediate(): Promise<IActorRdfResolveQuadPatternOutput> {
           return {
-            // @ts-expect-error
-            data: fromArray([
+            data: <any> fromArray([
               quad(namedNode('a'), namedNode('a'), namedNode('a'), namedNode('a')),
             ]),
           };

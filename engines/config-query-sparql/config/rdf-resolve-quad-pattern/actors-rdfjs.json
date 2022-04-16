@@ -4,7 +4,7 @@
   ],
   "import": [
     "ccqs:config/rdf-resolve-quad-pattern/actors/federated.json",
-
+    "ccqs:config/rdf-resolve-quad-pattern/actors/promise.json",
     "ccqs:config/rdf-resolve-quad-pattern/actors/rdfjs-source.json"
   ]
 }
