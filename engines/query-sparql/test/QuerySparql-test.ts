@@ -232,6 +232,26 @@ describe('System test: QuerySparql', () => {
       });
     });
 
+    describe('simple SPS', () => {
+      it('Raw Source', async() => {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ 'https://www.rubensworks.net/' ]});
+        expect(((await arrayifyStream(await result.execute())).length)).toEqual(1);
+      });
+
+      it('RDFJS Source', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')),
+          DF.quad(DF.namedNode('l'), DF.namedNode('m'), DF.namedNode('n')),
+        ]);
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ store ]});
+        expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+      });
+    });
+
     describe('two-pattern query on a raw RDF document', () => {
       it('with results', async() => {
         const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
