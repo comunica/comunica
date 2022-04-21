@@ -29,8 +29,6 @@
     "bin/package.js"
   ],
   "dependencies": {
-    "@comunica/runner": "^2.2.0",
-    "@comunica/runner-cli": "^2.2.0",
     "@types/minimist": "^1.2.0",
     "componentsjs": "^5.0.1",
     "minimist": "^1.2.0"

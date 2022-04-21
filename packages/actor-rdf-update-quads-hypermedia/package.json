@@ -38,6 +38,7 @@
     "@comunica/bus-rdf-update-hypermedia": "^2.2.0",
     "@comunica/bus-rdf-update-quads": "^2.2.0",
     "@comunica/core": "^2.2.0",
+    "@comunica/types": "^2.2.0",
     "@types/lru-cache": "^5.1.0",
     "lru-cache": "^6.0.0"
   },

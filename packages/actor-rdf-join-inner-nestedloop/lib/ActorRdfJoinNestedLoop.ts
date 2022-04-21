@@ -19,15 +19,15 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(
-      action.entries[0].output.bindingsStream,
-      action.entries[1].output.bindingsStream,
+      <any> action.entries[0].output.bindingsStream,
+      <any> action.entries[1].output.bindingsStream,
       <any> ActorRdfJoin.joinBindings,
       { autoStart: false },
     );
     return {
       result: {
         type: 'bindings',
-        bindingsStream: join,
+        bindingsStream: <any> join,
         metadata: async() => await this.constructResultMetadata(
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),

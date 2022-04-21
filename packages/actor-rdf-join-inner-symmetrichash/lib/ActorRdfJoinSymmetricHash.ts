@@ -20,15 +20,15 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
     const variables = ActorRdfJoin.overlappingVariables(metadatas);
     const join = new SymmetricHashJoin<Bindings, string, Bindings>(
-      action.entries[0].output.bindingsStream,
-      action.entries[1].output.bindingsStream,
+      <any> action.entries[0].output.bindingsStream,
+      <any> action.entries[1].output.bindingsStream,
       entry => ActorRdfJoinSymmetricHash.hash(entry, variables),
       <any> ActorRdfJoin.joinBindings,
     );
     return {
       result: {
         type: 'bindings',
-        bindingsStream: join,
+        bindingsStream: <any> join,
         metadata: async() => await this.constructResultMetadata(action.entries, metadatas, action.context),
       },
     };

@@ -32,8 +32,7 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-metadata": "^2.2.0",
-    "@comunica/core": "^2.2.0",
-    "@rdfjs/types": "*"
+    "@comunica/core": "^2.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

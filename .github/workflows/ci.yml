@@ -31,6 +31,8 @@ jobs:
         run: yarn install --pure-lockfile
       - name: Build project
         run: yarn run build
+      - name: Run depcheck
+        run: yarn run depcheck
       - name: Run tests
         run: yarn run test-ci
       - name: Submit coverage results
