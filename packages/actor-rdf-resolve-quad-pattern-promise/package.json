@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-promise",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "A promise rdf-resolve-quad-pattern actor",
   "lsd:module": true,
   "main": "lib/index.js",
