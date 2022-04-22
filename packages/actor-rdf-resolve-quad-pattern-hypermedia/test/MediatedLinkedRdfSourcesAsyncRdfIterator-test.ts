@@ -232,6 +232,11 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
       it('should delegate dereference errors to the source', async() => {
         const error = new Error('MediatedLinkedRdfSourcesAsyncRdfIterator dereference error');
+        mediatorRdfResolveHypermedia.mediate = ({ quads }: IActionRdfResolveHypermedia) =>
+          ({
+            dataset: 'MYDATASET',
+            source: { sourceContents: quads },
+          });
         mediatorDereferenceRdf.mediate = () => Promise.reject(error);
         const ret = await source.getSource({ url: 'startUrl' }, {});
         expect(ret).toEqual({
@@ -244,11 +249,20 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should ignore data errors', async() => {
+        mediatorRdfResolveHypermedia.mediate = ({ quads }: IActionRdfResolveHypermedia) =>
+          ({
+            dataset: 'MYDATASET',
+            source: { sourceContents: quads },
+          });
         mediatorMetadata.mediate = jest.fn(({ quads }: any) => {
           const data = new Readable();
-          (<any> data).on = (name: string, cb: any) => {
-            cb();
-          };
+          data._read = () => null;
+          data.on('newListener', (name: string) => {
+            if (name === 'error') {
+              setImmediate(() => data
+                .emit('error', new Error('MediatedLinkedRdfSourcesAsyncRdfIterator ignored error')));
+            }
+          });
           return Promise
             .resolve({
               data,
@@ -258,6 +272,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         });
 
         await source.getSource({ url: 'startUrl' }, {});
+        await new Promise(setImmediate);
       });
     });
   });

@@ -119,7 +119,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       // This for example allows SPARQL endpoints that error on service description fetching to still be source-forcible
       quads = new Readable();
       quads.read = () => {
-        quads.emit('error', error);
+        setImmediate(() => quads.emit('error', error));
         return null;
       };
       metadata = {};
