@@ -7,7 +7,7 @@ import { getDataSourceContext, getDataSourceType, getDataSourceValue } from '@co
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
+import * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -206,7 +206,7 @@ export class FederatedQuadSource implements IQuadSource {
       }
     };
 
-    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
+    const proxyIt: Promise<AsyncIterator<RDF.Quad>>[] = this.sources.map(async source => {
       const sourceId = this.getSourceId(source);
 
       // Deskolemize terms, so we send the original blank nodes to each source.
@@ -277,10 +277,10 @@ export class FederatedQuadSource implements IQuadSource {
       data.on('error', error => it.emit('error', error));
 
       return data;
-    }));
+    });
 
     // Take the union of all source streams
-    const it = new TransformIterator(async() => new UnionIterator(await proxyIt), { autoStart: false });
+    const it = new UnionIterator<RDF.Quad>(proxyIt, { autoStart: false });
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {

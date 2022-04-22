@@ -1,7 +1,8 @@
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { getDataSourceType, getDataSourceValue,
-  getDataSourceContext, isDataSourceRawType, getContextSourceFirst } from '..';
+  getDataSourceContext, isDataSourceRawType, getContextSourceFirst, hasContextSingleSource } from '..';
 
 describe('utils', () => {
   const rdfjsSource: RDF.Source = <any> { match: true };
@@ -17,6 +18,30 @@ describe('utils', () => {
 
     it('should return on an object source', () => {
       return expect(isDataSourceRawType({ type: 'T', value: 'abc' })).toEqual(false);
+    });
+  });
+
+  describe('hasContextSingleSource', () => {
+    it('should return on a string source', () => {
+      return expect(hasContextSingleSource(new ActionContext({
+        [KeysRdfResolveQuadPattern.source.name]: 'abc',
+      }))).toEqual(true);
+    });
+
+    it('should return on a typed string source', () => {
+      return expect(hasContextSingleSource(new ActionContext({
+        [KeysRdfResolveQuadPattern.source.name]: { type: 'url', value: 'abc' },
+      }))).toEqual(true);
+    });
+
+    it('should return on an rdfjs source', () => {
+      return expect(hasContextSingleSource(new ActionContext({
+        [KeysRdfResolveQuadPattern.source.name]: rdfjsSource,
+      }))).toEqual(true);
+    });
+
+    it('should return false on no source', () => {
+      return expect(hasContextSingleSource(new ActionContext({ }))).toEqual(false);
     });
   });
 

@@ -49,6 +49,17 @@ describe('System test: QuerySparql', () => {
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
       });
 
+
+        it('Should return bindings on firt read before resolve', async () => {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+          ?s ?p ?o.
+        }`, { sources: [ 'https://www.rubensworks.net/', new Promise((r) => {}) ]});
+
+        const data = result.execute();
+        expect((await data).read()).toBeTruthy();
+        });
+
+
       it('without results', async() => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s <ex:dummy> ?o.
