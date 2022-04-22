@@ -36,6 +36,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-TODO: fill in parameters (this section can be removed if there are none)
-
 * `mediatorRdfResolveQuadPattern`: Actors to use to resolve quad patterns once the source is resolved
