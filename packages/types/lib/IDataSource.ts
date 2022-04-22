@@ -1,12 +1,14 @@
 import type * as RDF from '@rdfjs/types';
 import type { IActionContext } from './IActionContext';
 
-export type IDataSource = IResolvedDataSource | Promise<IResolvedDataSource>;
+export type IDataSource = MaybePromise<IResolvedDataSource>;
 
 export type IResolvedDataSource = string | RDF.Source | {
   type?: string;
-  value: string | RDF.Source;
+  value: MaybePromise<string | RDF.Source>;
   context?: IActionContext;
 };
 
 export type DataSources = IDataSource[];
+
+type MaybePromise<P> = P | Promise<P>;
