@@ -4,7 +4,7 @@ import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
-import { ArrayIterator, TransformIterator } from 'asynciterator';
+import { ArrayIterator, AsyncIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
 import Factory from 'sparqlalgebrajs/lib/factory';
@@ -437,7 +437,7 @@ describe('FederatedQuadSource', () => {
 
     it('should return an AsyncIterator', () => {
       return expect(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.variable('v')))
-        .toBeInstanceOf(TransformIterator);
+        .toBeInstanceOf(AsyncIterator);
     });
 
     describe('when calling isSourceEmpty', () => {

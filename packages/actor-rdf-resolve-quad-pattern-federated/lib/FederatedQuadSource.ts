@@ -280,7 +280,7 @@ export class FederatedQuadSource implements IQuadSource {
     });
 
     // Take the union of all source streams
-    const it = new UnionIterator<RDF.Quad>(proxyIt, { autoStart: false });
+    const it = new UnionIterator(proxyIt, { autoStart: false });
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
