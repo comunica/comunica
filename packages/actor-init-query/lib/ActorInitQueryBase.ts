@@ -8,7 +8,8 @@ import type { MediatorQueryParse } from '@comunica/bus-query-parse';
 import type { MediatorQueryResultSerializeHandle,
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
-import type { IActorTest, Logger } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { Logger } from '@comunica/types';
 
 /**
  * A browser-safe comunica Query Init Actor.

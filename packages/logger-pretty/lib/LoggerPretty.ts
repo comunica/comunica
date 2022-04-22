@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import { Logger } from '@comunica/core';
+import { Logger } from '@comunica/types';
 
 /**
  * A logger that pretty-prints everything.

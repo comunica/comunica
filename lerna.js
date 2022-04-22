@@ -17,6 +17,7 @@ async function depInfo({ location }, log) {
   return {
     unusedDeps: [...dependencies, ...devDependencies].filter(elem => !Object.keys(using).includes(elem)),
     missingDeps: Object.keys(missing),
+    allDeps: Object.keys(using),
   }
 }
 
@@ -27,7 +28,10 @@ async function depfixTask(log) {
   await iter.forEach(packages, { log })(async package => {
     log.info(package.name)
 
-    const { missingDeps, unusedDeps } = await depInfo(package)
+    const { missingDeps, unusedDeps, allDeps } = await depInfo(package);
+
+    if (allDeps.includes(package.name))
+      log.error('     package is a dependency of itself')
 
     if (missingDeps.length > 0) {
       try {
@@ -76,7 +80,7 @@ async function depcheckTask(log) {
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   return iter.forEach(packages, { log })(async package => {
-    const { missingDeps, unusedDeps } = await depInfo(package)
+    const { missingDeps, unusedDeps, allDeps } = await depInfo(package)
 
     if (missingDeps.length > 0) {
       throw new Error(`Missing dependencies:  ${missingDeps.join(', ')} from ${package.name}`);
@@ -85,6 +89,10 @@ async function depcheckTask(log) {
     if (unusedDeps.length > 0) {
       throw new Error(`Extra dependencies: ${unusedDeps.join(', ')} in ${package.name}`);
     }
+
+    if (allDeps.includes(package.name))
+      throw new Error(`${package.name} is a dependency of itself`);
+
 
     // Now check all resolutions use a star ("*") import
     const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));

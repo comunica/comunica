@@ -1,4 +1,4 @@
-import { Logger } from '@comunica/core';
+import { Logger } from '@comunica/types';
 
 /**
  * A logger that voids everything.
