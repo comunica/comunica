@@ -33,7 +33,6 @@
   "dependencies": {
     "@comunica/actor-abstract-path": "^2.2.0",
     "@comunica/bus-query-operation": "^2.2.0",
-    "@comunica/core": "^2.2.0",
     "@comunica/types": "^2.2.0",
     "sparqlalgebrajs": "^4.0.0"
   },

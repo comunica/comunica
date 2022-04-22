@@ -30,7 +30,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/core": "^2.2.0",
+    "@comunica/types": "^2.2.0",
     "@types/bunyan": "^1.8.4",
     "bunyan": "^1.8.12"
   },

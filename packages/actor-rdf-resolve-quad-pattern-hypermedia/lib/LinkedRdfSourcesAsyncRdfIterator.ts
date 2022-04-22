@@ -176,6 +176,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     let receivedMetadata = false;
 
     // Attach readers to the newly created iterator
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     (<any> iterator)._destination = this;
     iterator.on('error', (error: Error) => this.destroy(error));
     iterator.on('readable', () => this._fillBuffer());
