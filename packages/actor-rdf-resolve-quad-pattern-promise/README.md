@@ -22,13 +22,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-promise/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-promise/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#promise",
-      "@type": "ActorRdfResolveQuadPatternPromise"
+      "@type": "ActorRdfResolveQuadPatternPromise",
+      "mediatorResolveQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" }
     }
   ]
 }
