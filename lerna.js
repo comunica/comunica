@@ -3,14 +3,12 @@ const checkDeps = require('depcheck')
 const path = require('path');
 const { readFileSync, writeFileSync, readdirSync, readdir } = require('fs');
 
-async function depInfo({ location }, log) {
-  const folders = readdirSync(location, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name);
+async function depInfo({ location, name }, log) {
+  const folders = readdirSync(location, { withFileTypes: true });
 
   const { files } = JSON.parse(readFileSync(path.join(location, 'package.json'), 'utf8'));
-  let ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem))) : folders;
-  ignore = ignore.map(x => `${x}/**`)
+  let ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
+  ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
   const {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
 
