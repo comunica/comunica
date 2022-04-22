@@ -1,7 +1,7 @@
 /* eslint no-redeclare: "off" */
 import { Logger as _Logger } from '@comunica/types';
 
-// Remove this export, and move test suite to \@comunica/types in the next release
+// TODO: Remove this export, and move test suite to \@comunica/types in the next release
 /**
  * @deprecated Logger should be imported from \@comunica/types
  */
