@@ -7,11 +7,10 @@ import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolv
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IActionRdfResolveQuadPattern,
   IQuadSource, IActorRdfResolveQuadPatternArgs } from '@comunica/bus-rdf-resolve-quad-pattern';
-import {
+import { hasContextSingleSourceOfType,
   ActorRdfResolveQuadPatternSource, getContextSource,
   getContextSourceUrl,
-  getDataSourceType, hasContextSingleSource,
-} from '@comunica/bus-rdf-resolve-quad-pattern';
+  getDataSourceType, hasContextSingleSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import LRUCache = require('lru-cache');
@@ -49,6 +48,12 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     const sources = hasContextSingleSource(action.context);
     if (!sources) {
       throw new Error(`Actor ${this.name} can only resolve quad pattern queries against a single source.`);
+    }
+    if (
+      hasContextSingleSourceOfType('promise', action.context) ||
+      hasContextSingleSourceOfType('rdfjsSource', action.context)
+    ) {
+      throw new Error(`Actor ${this.name} can only resolve quad pattern queries against hypermedia sources.`);
     }
     return true;
   }

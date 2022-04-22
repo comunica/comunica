@@ -9,6 +9,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
+import { Store } from 'n3';
 import { MediatedQuadSource } from '..';
 import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
@@ -116,6 +117,22 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
             { [KeysRdfResolveQuadPattern.source.name]: 'abc' },
           ) }))
           .resolves.toBeTruthy();
+      });
+
+      it('should not test on rdfjs source', () => {
+        return expect(actor.test({ pattern: null,
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: new Store() },
+          ) }))
+          .rejects.toThrowError();
+      });
+
+      it('should not test on promise source', () => {
+        return expect(actor.test({ pattern: null,
+          context: new ActionContext(
+            { [KeysRdfResolveQuadPattern.source.name]: Promise.resolve('http://example.org/test') },
+          ) }))
+          .rejects.toThrowError();
       });
 
       it('should not test without a context', () => {

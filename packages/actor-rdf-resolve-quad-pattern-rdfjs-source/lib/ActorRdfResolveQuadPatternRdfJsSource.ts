@@ -24,7 +24,7 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
       !source ||
       typeof source === 'string' ||
       source instanceof Promise ||
-      (!('match' in source) && !source.value.match)
+      (!('match' in source) && (source.value instanceof Promise || !source.value.match))
     ) {
       throw new Error(`${this.name} received an invalid rdfjsSource.`);
     }
