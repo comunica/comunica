@@ -28,10 +28,14 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
 
   public async runOperation(operation: Algebra.Project, context: IActionContext):
   Promise<IQueryOperationResult> {
+    console.log('run project operation')
+
     // Resolve the input
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
+
+    console.log('input resolved')
 
     // Find all variables that should be deleted from the input stream.
     const outputMetadata = await output.metadata();
@@ -51,6 +55,9 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       output.bindingsStream :
       output.bindingsStream.transform({
         map(bindings: Bindings) {
+          // bindings =deleteVariables.reduce(deleteVariable => bindings.delete(deleteVariable), bindings)
+          // return deleteVariables.reduce((b, deleteVariable) => b.delete(deleteVariable), bindings);
+          
           for (const deleteVariable of deleteVariables) {
             bindings = bindings.delete(deleteVariable);
           }

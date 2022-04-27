@@ -204,6 +204,8 @@ export class QueryEngineBase implements IQueryEngine {
       actionContext = actionContext.set(KeysInitQuery.physicalQueryPlanLogger, physicalQueryPlanLogger);
     }
 
+    console.log('executing', operation)
+
     // Execute query
     const output = await this.actorInitQuery.mediatorQueryOperation.mediate({
       context: actionContext,

@@ -24,6 +24,7 @@ export class MediatorJoinCoefficientsFixed
     action: IActionRdfJoin,
     testResults: IActorReply<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult>[],
   ): Promise<ActorRdfJoin> {
+    console.log('mediating with fixed coefficients');
     // Obtain test results
     const errors: Error[] = [];
     const promises = testResults
@@ -32,6 +33,8 @@ export class MediatorJoinCoefficientsFixed
         errors.push(error);
       }));
     const coefficients = await Promise.all(promises);
+
+    console.log('coefficients collected')
 
     // Calculate costs
     let costs: (number | undefined)[] = coefficients

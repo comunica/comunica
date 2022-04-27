@@ -26,6 +26,8 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
     operationOriginal: Algebra.Join,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
+    console.log('running join operation')
+
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({
         output: await this.mediatorQueryOperation.mediate({ operation: subOperation, context }),
@@ -36,7 +38,15 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
         operation,
       }));
 
-    return this.mediatorJoin.mediate({ type: 'inner', entries, context });
+    console.log('completed collecting entries operation')
+
+    console.log('about to do a join', this.mediatorJoin)
+
+    const join = await this.mediatorJoin.mediate({ type: 'inner', entries, context });
+
+    console.log('completed join mediation')
+
+    return join;
   }
 }
 

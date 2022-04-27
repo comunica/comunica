@@ -82,7 +82,15 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    */
   public async mediate(action: I): Promise<O> {
     // Mediate to one actor and run the action on it
+    
+    if (this.bus.name === 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^2.0.0/components/ActorRdfJoin.jsonld#ActorRdfJoin_default_bus') {
+      console.log('about to mediate actor')
+    }
     const actor: A = await this.mediateActor(action);
+    if (this.bus.name === 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^2.0.0/components/ActorRdfJoin.jsonld#ActorRdfJoin_default_bus') {
+      console.log('actor selected', actor)
+    }
+    
     return actor.runObservable(action);
   }
 

@@ -1,11 +1,24 @@
-import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput, getContextSource, getContextSources } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
-import { ArrayIterator } from 'asynciterator';
+import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { ActorRdfResolveQuadPatternFederated } from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
+import { resolve } from 'path';
 const squad = require('rdf-quad');
+
+function createData() {
+  const data = new ArrayIterator([
+    squad('s1', 'p1', 'o1'),
+    squad('s1', 'p1', 'o2'),
+  ], { autoStart: false });
+  data.setProperty('metadata', {
+    cardinality: { type: 'estimate', value: 2 },
+    canContainUndefs: false,
+  });
+  return { data }
+}
 
 describe('ActorRdfResolveQuadPatternFederated', () => {
   let bus: any;
@@ -17,16 +30,15 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
     mediatorResolveQuadPattern = {
-      mediate() {
-        const data = new ArrayIterator([
-          squad('s1', 'p1', 'o1'),
-          squad('s1', 'p1', 'o2'),
-        ], { autoStart: false });
-        data.setProperty('metadata', {
-          cardinality: { type: 'estimate', value: 2 },
-          canContainUndefs: false,
-        });
-        return Promise.resolve({ data });
+      async mediate(source: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
+        const s = getContextSource(source.context);
+        if (!s || typeof s === 'string')
+          throw new Error('No source in context');
+        
+        if ('type' in s && 'value' in s && s.type !== 'nonEmptySource')
+          return s.value as any;
+
+        return createData();
       },
     };
     skipEmptyPatterns = true;
@@ -103,6 +115,107 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
             squad('s1', 'p1', 'o2'),
           ]);
         });
+    });
+
+    it('should resolve with an iterator when source is a promise', async () => {
+      const pattern = squad('?s', 'p', 'o');
+      let r: Function = () => {};
+      context = new ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
+            { type: 'promiseSource', value: new Promise((resolve) => { r = resolve }) },
+          ],
+      });
+
+      // Testing that an iterator is returned *before* the promise is resolved
+      const { data } = await actor.run({ pattern, context });
+      expect(data).toBeInstanceOf(AsyncIterator);
+      expect(data.read()).toBeNull();
+      expect(data.readable).toBe(false);
+      expect(data.done).toBe(false);
+
+      // Resolve the promise
+      r(createData());
+
+      expect(await arrayifyStream(data)).toBeRdfIsomorphic([
+        squad('s1', 'p1', 'o1'),
+            squad('s1', 'p1', 'o2'),
+      ]);
+    });
+
+    // describe('Testing promise-based sources', async () => {
+    //   const pattern = squad('?s', 'p', 'o');
+    //   let r: Function = () => {};
+
+    //   desc
+
+    // });
+
+
+    it('should resolve with an iterator when one source is a promise and other is resolved', async () => {
+      const pattern = squad('?s', 'p', 'o');
+      let r: Function = () => {};
+      context = new ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
+            { type: 'nonEmptySource', value: 'I will not be empty' },
+            { type: 'promiseSource', value: new Promise((resolve) => { r = resolve }) },
+          ],
+      });
+
+      // Testing that an iterator is returned *before* the promise is resolved
+      const { data } = await actor.run({ pattern, context });
+      expect(data).toBeInstanceOf(AsyncIterator);
+      // Allow time for things to get running
+      expect(await data.toArray({ limit: 2 })).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ])
+
+      expect(data.read()).toBeNull();
+      expect(data.readable).toBe(false);
+      expect(data.done).toBe(false);
+
+      // Resolve the promise
+      r(createData());
+
+      expect(await data.toArray()).toBeRdfIsomorphic([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ]);
+    });
+
+    it('should resolve with an iterator when one source is a promise and other is resolved', async () => {
+      const pattern = squad('?s', 'p', 'o');
+      let r: Function = () => {};
+      context = new ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
+            { type: 'promiseSource', value: new Promise((resolve) => { r = resolve }) },
+            { type: 'nonEmptySource', value: 'I will not be empty' },
+          ],
+      });
+
+      // Testing that an iterator is returned *before* the promise is resolved
+      const { data } = await actor.run({ pattern, context });
+      expect(data).toBeInstanceOf(AsyncIterator);
+      // Allow time for things to get running
+      expect(await data.toArray({ limit: 2 })).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ])
+
+      expect(data.read()).toBeNull();
+      expect(data.readable).toBe(false);
+      expect(data.done).toBe(false);
+
+      // Resolve the promise
+      r(createData());
+
+      expect(await data.toArray()).toBeRdfIsomorphic([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should run for variable graph', () => {

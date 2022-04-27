@@ -86,11 +86,10 @@ export class FederatedQuadSource implements IQuadSource {
    * @return If the given term was a blank node, this will return a skolemized named node, otherwise the original term.
    */
   public static skolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | BlankNodeScoped {
-    if (term.termType === 'BlankNode') {
-      return new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
-        DF.namedNode(`${FederatedQuadSource.SKOLEM_PREFIX}${sourceId}:${term.value}`));
-    }
-    return term;
+    return term.termType === 'BlankNode'
+      ? new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
+          DF.namedNode(`${FederatedQuadSource.SKOLEM_PREFIX}${sourceId}:${term.value}`))
+      : term;
   }
 
   /**
@@ -118,14 +117,10 @@ export class FederatedQuadSource implements IQuadSource {
     if (term.termType === 'NamedNode' && term.value.startsWith(FederatedQuadSource.SKOLEM_PREFIX)) {
       const colonSeparator = term.value.indexOf(':', FederatedQuadSource.SKOLEM_PREFIX.length);
       const termSourceId = term.value.slice(FederatedQuadSource.SKOLEM_PREFIX.length, colonSeparator);
-      // We had a skolemized term
-      if (termSourceId === sourceId) {
-        // It came from the correct source
-        const termLabel = term.value.slice(colonSeparator + 1, term.value.length);
-        return DF.blankNode(termLabel);
-      }
-      // It came from a different source
-      return null;
+      // If the term is a skolemized named node for the given source id, return a blank node otherwise null
+      return termSourceId === sourceId ?
+        DF.blankNode(term.value.slice(colonSeparator + 1)) :
+        null;
     }
     return term;
   }
@@ -137,11 +132,8 @@ export class FederatedQuadSource implements IQuadSource {
    * @return The deskolemized quad.
    */
   public static deskolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sourceId: string): Q {
-    return mapTerms(quad, (term: RDF.Term): RDF.Term => {
-      const newTerm = FederatedQuadSource.deskolemizeTerm(term, sourceId);
-      // If the term was skolemized in a different source then dont deskolemize it
-      return !newTerm ? term : newTerm;
-    });
+    // If the term was skolemized in a different source then dont deskolemize it
+    return mapTerms(quad, term => FederatedQuadSource.deskolemizeTerm(term, sourceId) ?? term);
   }
 
   /**
@@ -157,18 +149,8 @@ export class FederatedQuadSource implements IQuadSource {
    * @return {boolean}
    */
   public isSourceEmpty(source: IDataSource, pattern: RDF.BaseQuad): boolean {
-    if (!this.skipEmptyPatterns) {
-      return false;
-    }
-    const emptyPatterns: RDF.BaseQuad[] | undefined = this.emptyPatterns.get(source);
-    if (emptyPatterns) {
-      for (const emptyPattern of emptyPatterns) {
-        if (FederatedQuadSource.isSubPatternOf(pattern, emptyPattern)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return this.skipEmptyPatterns &&
+      Boolean(this.emptyPatterns.get(source)?.some(p => FederatedQuadSource.isSubPatternOf(pattern, p)));
   }
 
   /**
@@ -197,12 +179,8 @@ export class FederatedQuadSource implements IQuadSource {
         this.emptyPatterns.get(source)!.push(pattern);
       }
       if (!remainingSources) {
-        if (lastMetadata && this.sources.length === 1) {
-          // If we only had one source, emit the metadata as-is.
-          it.setProperty('metadata', lastMetadata);
-        } else {
-          it.setProperty('metadata', metadata);
-        }
+        // If we only had one source, emit the metadata as-is.
+        it.setProperty('metadata', lastMetadata && this.sources.length === 1 ? lastMetadata : metadata);
       }
     };
 
@@ -251,13 +229,13 @@ export class FederatedQuadSource implements IQuadSource {
           remainingSources--;
         }
         if (metadata.requestTime || subMetadata.requestTime) {
-          metadata.requestTime = metadata.requestTime || 0;
-          subMetadata.requestTime = subMetadata.requestTime || 0;
+          metadata.requestTime ||= 0;
+          subMetadata.requestTime ||= 0;
           metadata.requestTime += subMetadata.requestTime;
         }
         if (metadata.pageSize || subMetadata.pageSize) {
-          metadata.pageSize = metadata.pageSize || 0;
-          subMetadata.pageSize = subMetadata.pageSize || 0;
+          metadata.pageSize ||= 0;
+          subMetadata.pageSize ||= 0;
           metadata.pageSize += subMetadata.pageSize;
         }
         if (subMetadata.canContainUndefs) {
