@@ -5,6 +5,22 @@ import { Actor, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IQueryOperationResult } from '@comunica/types';
 
+interface ICoefficientData {
+  cost: number;
+  actor: ActorRdfJoin;
+  coefficients: IMediatorTypeJoinCoefficients
+}
+
+function getBestActor(actors: ICoefficientData[]): ActorRdfJoin {
+  let [best] = actors;
+  for (let i = 1; i < actors.length; i++) {
+    if (actors[i].cost < best.cost) {
+      best = actors[i];
+    }
+  }
+  return best.actor;
+}
+
 /**
  * A mediator that mediates over actors implementing the Join Coefficients mediator type and assigns fixed weights
  * to calculate an overall score and pick the actor with the lowest score.
@@ -31,25 +47,6 @@ export class MediatorJoinCoefficientsFixed
     return coeff.persistedItems > 0 && coeff.iterations > limitIndicator;
   }
 
-  private async logJoinActor(bestActor: ActorRdfJoin, action: IActionRdfJoin, costs: number[], coefficients: IMediatorTypeJoinCoefficients) {
-    // Emit calculations in logger
-    if (bestActor.includeInLogs) {
-      Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
-        entries: action.entries.length,
-        variables: await Promise.all(action.entries
-          .map(async entry => (await entry.output.metadata()).variables.map(variable => variable.value))),
-        costs: Object.fromEntries(costs.map((coeff, i) => [
-          `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
-          coeff,
-        ])),
-        coefficients: Object.fromEntries(coefficients.map((coeff, i) => [
-          `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
-          coeff,
-        ])),
-      });
-    }
-  }
-
   protected async mediateWith(
     action: IActionRdfJoin,
     testResults: IActorReply<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult>[],
@@ -57,23 +54,23 @@ export class MediatorJoinCoefficientsFixed
 
     // Obtain test results
     const errors: Error[] = [];
-    const costs: { cost: number, actor: ActorRdfJoin }[] = [];
-    const penalized: { cost: number, actor: ActorRdfJoin }[] = [];
+    const costs: { cost: number, actor: ActorRdfJoin, coefficients: IMediatorTypeJoinCoefficients }[] = [];
+    const penalized: { cost: number, actor: ActorRdfJoin, coefficients: IMediatorTypeJoinCoefficients }[] = [];
 
 
-    const result = await new Promise<{ cost: number, actor: ActorRdfJoin } | false>(async (resolve) => {
+    const result = await new Promise<{ cost: number, actor: ActorRdfJoin, coefficients: IMediatorTypeJoinCoefficients } | false>(async (resolve) => {
       const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
 
       const promises = testResults
       .map(({ reply, actor }) => reply
-        .then(coeff => {
-          const cost = this.grossCost(coeff);
-          if (limitIndicator && this.penalize(coeff, limitIndicator)) {
-            penalized.push({ cost, actor });
+        .then(coefficients => {
+          const cost = this.grossCost(coefficients);
+          if (limitIndicator && this.penalize(coefficients, limitIndicator)) {
+            penalized.push({ cost, actor, coefficients });
           } else if (cost === 0) {
-            resolve({ cost, actor }); // Early stopping if there is no penalty and the cost is 0
+            resolve({ cost, actor, coefficients }); // Early stopping if there is no penalty and the cost is 0
           } else {
-            costs.push({ cost, actor });
+            costs.push({ cost, actor, coefficients});
           }
         })
         .catch(error => { errors.push(error) }));
@@ -84,78 +81,19 @@ export class MediatorJoinCoefficientsFixed
     if (result) {
       // Emit calculations in logger
     if (result.actor.includeInLogs) {
-      Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
+      Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${result.actor.logicalType}-${result.actor.physicalName}'`, {
         entries: action.entries.length,
         variables: await Promise.all(action.entries
           .map(async entry => (await entry.output.metadata()).variables.map(variable => variable.value))),
-        costs: Object.fromEntries(costs.map((coeff, i) => [
-          `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
-          coeff,
-        ])),
-        coefficients: Object.fromEntries(result.coeffs.map((coeff, i) => [
-          `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
-          coeff,
-        ])),
+        cost: result.cost,
+        coefficients: result.coefficients
       });
     }
     return result.actor;
     }
-      
-    
-    if (costs.length !== 0) {
-      // Select from costs
-    } else {
-      // Select from penalized
-    }
-    
-    
-    console.log('mediating with fixed coefficients');
-    
-    const promises = testResults
-      .map(({ reply }, i) => reply
-        .then(coeff => { costs.push({
-          cost: this.grossCost(coeff),
-          index: i
-        }) })
-        .catch(error => { errors.push(error) }));
-    
-    
 
-    const maxCost = Math.max(...(<number[]> costs.filter(cost => cost !== undefined)));
-
-    // If we have a limit indicator in the context,
-    // increase cost of entries that have a number of iterations that is higher than the limit AND persist items.
-    // In these cases, join operators that produce results early on will be preferred.
-    // const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
-    if (limitIndicator) {
-      costs = costs.map((cost, i) => {
-        if (cost !== undefined && coefficients[i]!.persistedItems > 0 && coefficients[i]!.iterations > limitIndicator) {
-          return cost + maxCost;
-        }
-        return cost;
-      });
-    }
-
-    // Determine index with lowest cost
-    let minIndex = -1;
-    let minValue = Number.POSITIVE_INFINITY;
-    for (const [ i, cost ] of costs.entries()) {
-      if (cost !== undefined && (minIndex === -1 || cost < minValue)) {
-        minIndex = i;
-        minValue = cost;
-      }
-    }
-
-    // Reject if all actors rejected
-    if (minIndex < 0) {
-      throw new Error(`All actors rejected their test in ${this.name}\n${
-        errors.map(error => error.message).join('\n')}`);
-    }
-
-    // Return actor with lowest cost
-    const bestActor = testResults[minIndex].actor;
-
-    // Emit calculations in logger
+    async function log(actor: ActorRdfJoin) {
+      // Emit calculations in logger
     if (bestActor.includeInLogs) {
       Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
         entries: action.entries.length,
@@ -171,8 +109,16 @@ export class MediatorJoinCoefficientsFixed
         ])),
       });
     }
+    }
 
-    return bestActor;
+    if (costs.length !== 0) {
+      return getBestActor(costs)
+    } else if (penalized.length !== 0) {
+      return getBestActor(penalized);
+    } else {
+      throw new Error(`All actors rejected their test in ${this.name}\n${
+        errors.map(error => error.message).join('\n')}`);
+    }
   }
 }
 
