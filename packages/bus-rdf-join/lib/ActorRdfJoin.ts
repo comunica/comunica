@@ -141,6 +141,7 @@ export abstract class ActorRdfJoin
    * @param entries Join entries.
    */
   public static async getMetadatas(entries: IJoinEntry[]): Promise<MetadataBindings[]> {
+    console.log('getMetadatas', entries);
     return await Promise.all(entries.map(entry => entry.output.metadata()));
   }
 

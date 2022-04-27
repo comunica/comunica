@@ -17,10 +17,13 @@ export class ActorRdfJoinSingle extends ActorRdfJoin {
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
     // Allow joining of one or zero streams
+    console.log('testing single join')
     if (action.entries.length !== 1) {
       throw new Error(`Actor ${this.name} can only join a single entry`);
     }
-    return await this.getJoinCoefficients();
+    const coeffs = await this.getJoinCoefficients();
+    console.log('coeffs collected')
+    return coeffs;
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

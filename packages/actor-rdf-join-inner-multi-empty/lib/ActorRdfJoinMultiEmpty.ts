@@ -16,10 +16,12 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
   }
 
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+    console.log('testing multi-empty join')
     if ((await ActorRdfJoin.getMetadatas(action.entries))
       .every(metadata => ActorRdfJoin.getCardinality(metadata).value > 0)) {
       throw new Error(`Actor ${this.name} can only join entries where at least one is empty`);
     }
+    console.log('multi join test replied')
     return super.test(action);
   }
 
