@@ -22,8 +22,21 @@ export function orderTypes(litA: RDF.Term | undefined, litB: RDF.Term | undefine
 
 // Effective ordering
 export function order(orderA: T.Literal<any>, orderB: T.Literal<any>, isAscending: boolean): -1 | 0 | 1 {
+  // If the two values have not the same typedValue type and, hence, are not comparable,
+  // we compare them using the typedValue type name.
+  const aType = getValueClassName(orderA.typedValue);
+  const bType = getValueClassName(orderB.typedValue);
+  if (aType !== bType) {
+    return aType > bType === isAscending ? 1 : -1;
+  }
+
   if (orderA.typedValue === orderB.typedValue) {
     return 0;
   }
   return orderA.typedValue > orderB.typedValue === isAscending ? 1 : -1;
+}
+
+function getValueClassName(value: any): string {
+  const type = typeof value;
+  return type === 'object' ? value.constructor.name : type;
 }

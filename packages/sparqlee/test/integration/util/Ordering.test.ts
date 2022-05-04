@@ -95,21 +95,19 @@ describe('ordering literals', () => {
   });
 
   it('mixed string integer comparison', () => {
-    const numA = string('11');
-    const numB = int('2');
-    const numD = int('11');
-    expect(orderTypes(numA, numB, true)).toEqual(1);
-    expect(orderTypes(numB, numA, true)).toEqual(-1);
-    expect(orderTypes(numA, numD, true)).toEqual(-1);
+    orderTestIsLowerBothSystems(int('11'), string('11'));
+    orderTestIsLowerBothSystems(int('2'), string('11'));
+  });
+
+  it('mixed string dateTime comparison', () => {
+    orderTestIsLowerBothSystems(dateTime('2000-01-01T00:00:00Z'), string('2000-01-01T00:00:00Z'));
+    orderTestIsLowerBothSystems(dateTime('2001-01-01T00:00:00Z'), string('2000-01-01T00:00:00Z'));
   });
 
   it('mixed unknown integer comparison', () => {
-    const numA = int('1');
-    const numB = decimal('011');
-    const numC = DF.literal('011', DF.namedNode('https://example.org/some-decimal'));
-    expect(orderTypes(numA, numB, true)).toEqual(-1);
-    expect(orderTypes(numB, numC, true)).toEqual(-1);
-    expect(orderTypes(numA, numC, true)).toEqual(-1);
+    orderTestIsLowerBothSystems(int('1'), decimal('011'));
+    orderTestIsLowerBothSystems(int('1'), DF.literal('011', DF.namedNode('https://example.org/some-decimal')));
+    orderTestIsLowerBothSystems(decimal('011'), DF.literal('011', DF.namedNode('https://example.org/some-decimal')));
   });
 
   it('handles unknown extended types as basic literals', () => {
