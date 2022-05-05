@@ -67,10 +67,6 @@ describe('ordering literals', () => {
     orderTestIsEqualBothSystems(int('11'), int('11'));
   });
 
-  it('integer decimal type identical', () => {
-    orderTestIsEqualBothSystems(int('11'), decimal('11.0'));
-  });
-
   it('string type identical', () => {
     orderTestIsEqualBothSystems(string('11'), string('11'));
   });
