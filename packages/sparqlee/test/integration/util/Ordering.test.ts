@@ -89,6 +89,14 @@ describe('ordering literals', () => {
   it('dateTime type comparison', () => {
     orderTestIsLowerBothSystems(dateTime('2000-01-01T00:00:00Z'), dateTime('2001-01-01T00:00:00Z'));
   });
+  it('langString type comparison', () => {
+    orderTestIsLowerBothSystems(DF.literal('a', 'de'), DF.literal('a', 'en'));
+    orderTestIsLowerBothSystems(DF.literal('a', 'en'), DF.literal('b', 'en'));
+  });
+  it('boolean type comparison', () => {
+    const bool = DF.namedNode(DT.XSD_BOOLEAN);
+    orderTestIsLowerBothSystems(DF.literal('false', bool), DF.literal('true', bool));
+  });
 
   it('mixed string integer comparison', () => {
     orderTestIsLowerBothSystems(int('11'), string('11'));
@@ -102,8 +110,8 @@ describe('ordering literals', () => {
 
   it('mixed unknown integer comparison', () => {
     orderTestIsLowerBothSystems(int('1'), decimal('011'));
-    orderTestIsLowerBothSystems(int('1'), DF.literal('011', DF.namedNode('https://example.org/some-decimal')));
-    orderTestIsLowerBothSystems(decimal('011'), DF.literal('011', DF.namedNode('https://example.org/some-decimal')));
+    orderTestIsLowerBothSystems(int('1'), DF.literal('011', DF.namedNode(DT.XSD_ENTITY)));
+    orderTestIsLowerBothSystems(decimal('011'), DF.literal('011', DF.namedNode(DT.XSD_ENTITY)));
   });
 
   it('handles unknown extended types as basic literals', () => {
@@ -115,5 +123,16 @@ describe('ordering literals', () => {
     const discover: SuperTypeCallback = _ => TypeURL.XSD_DECIMAL;
     const someType = DF.namedNode('https://example.org/some-decimal');
     orderTestIsLower(DF.literal('2', someType), DF.literal('11', someType), discover, true);
+  });
+
+  it('custom literals comparison', () => {
+    const dt1 = DF.namedNode('http://example.org/dt1');
+    const dt2 = DF.namedNode('http://example.org/dt2');
+    orderTestIsLowerBothSystems(DF.literal('a', dt1), DF.literal('b', dt1));
+    orderTestIsLowerBothSystems(DF.literal('b', dt1), DF.literal('a', dt2));
+  });
+
+  it('invalid literals comparison', () => {
+    orderTestIsLowerBothSystems(dateTime('a'), dateTime('b'));
   });
 });

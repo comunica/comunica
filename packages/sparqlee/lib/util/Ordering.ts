@@ -1,5 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import * as LRUCache from 'lru-cache';
+import * as T from '../expressions/Term';
 import { TermTransformer } from '../transformers/TermTransformer';
 import type { ISuperTypeProvider, SuperTypeCallback, TypeCache } from './TypeHandling';
 
@@ -22,18 +23,35 @@ function isLowerThan(litA: RDF.Term, litB: RDF.Term,
   if (litA.termType === 'Literal' && litB.termType === 'Literal') {
     const myLitA = termTransformer.transformLiteral(litA);
     const myLitB = termTransformer.transformLiteral(litB);
-    const aType = getValueClassName(myLitA.typedValue);
-    const bType = getValueClassName(myLitB.typedValue);
-    if (aType !== bType) {
-      return aType < bType;
+    const typeA = _TYPE_BUCKETS.get(myLitA.constructor) || 'unknown';
+    const typeB = _TYPE_BUCKETS.get(myLitB.constructor) || 'unknown';
+    if (typeA !== typeB) {
+      return typeA < typeB;
     }
-    return myLitA.typedValue < myLitB.typedValue;
+    switch (typeA) {
+      case 'boolean':
+      case 'dateTime':
+      case 'number':
+      case 'string':
+        return myLitA.typedValue < myLitB.typedValue;
+      case 'langString':
+        return myLitA.typedValue < myLitB.typedValue ||
+            (myLitA.typedValue === myLitB.typedValue && (myLitA.language || '') < (myLitB.language || ''));
+      default:
+        return myLitA.dataType < myLitB.dataType ||
+            (myLitA.dataType === myLitB.dataType && myLitA.str() < myLitB.str());
+    }
   }
   // Order is not defined yet for other terms.
   return true;
 }
 
-function getValueClassName(value: any): string {
-  const type = typeof value;
-  return type === 'object' ? value.constructor.name : type;
-}
+const _TYPE_BUCKETS = new Map<any, string>();
+_TYPE_BUCKETS.set(T.BooleanLiteral, 'boolean');
+_TYPE_BUCKETS.set(T.DateTimeLiteral, 'dateTime');
+_TYPE_BUCKETS.set(T.DecimalLiteral, 'number');
+_TYPE_BUCKETS.set(T.DoubleLiteral, 'number');
+_TYPE_BUCKETS.set(T.FloatLiteral, 'number');
+_TYPE_BUCKETS.set(T.IntegerLiteral, 'number');
+_TYPE_BUCKETS.set(T.LangStringLiteral, 'langString');
+_TYPE_BUCKETS.set(T.StringLiteral, 'string');
