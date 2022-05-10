@@ -11,6 +11,109 @@ import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOr
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
+describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
+  let bus: any;
+  let mediatorQueryOperation: any;
+
+  beforeEach(() => {
+    bus = new Bus({ name: 'bus' });
+    mediatorQueryOperation = {
+      mediate: (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.com/a') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.com/b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.blankNode('a') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.blankNode('b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('11') ],
+          ]),
+          BF.bindings([]),
+        ]),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
+        operated: arg,
+        type: 'bindings',
+        variables: [ DF.variable('a') ],
+      }),
+    };
+  });
+
+  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
+    let actor: ActorQueryOperationOrderBySparqlee;
+    let orderA: Algebra.TermExpression;
+    let descOrderA: Algebra.OperatorExpression;
+
+    beforeEach(() => {
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      descOrderA = {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.OPERATOR,
+        operator: 'desc',
+        args: [ orderA ],
+      };
+    });
+
+    it('should sort as an ascending undefined < blank node < named node < literal', async() => {
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext() };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        BF.bindings([]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.namedNode('http://example.com/a') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.namedNode('http://example.com/b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('11') ],
+        ]),
+      ]);
+    });
+
+    it('should sort as an descending undefined < blank node < named node < literal', async() => {
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext() };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('11') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.namedNode('http://example.com/b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.namedNode('http://example.com/a') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a') ],
+        ]),
+        BF.bindings([]),
+      ]);
+    });
+  });
+});
+
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('ActorQueryOperationOrderBySparqlee', () => {
   let bus: any;
   let mediatorQueryOperation: any;
@@ -179,7 +282,6 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
   });
 });
 
-// eslint-disable-next-line mocha/max-top-level-suites
 describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
   let bus: any;
   let mediatorQueryOperation: any;
@@ -702,7 +804,7 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
+describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -755,10 +857,10 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
           [ DF.variable('a'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
         ]),
         BF.bindings([
-          [ DF.variable('a'), DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) ],
+          [ DF.variable('a'), DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) ],
         ]),
         BF.bindings([
-          [ DF.variable('a'), DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) ],
+          [ DF.variable('a'), DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) ],
         ]),
       ]);
     });
@@ -770,10 +872,10 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
-          [ DF.variable('a'), DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) ],
+          [ DF.variable('a'), DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) ],
         ]),
         BF.bindings([
-          [ DF.variable('a'), DF.literal('11', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) ],
+          [ DF.variable('a'), DF.literal('2.0e6', DF.namedNode('http://www.w3.org/2001/XMLSchema#double')) ],
         ]),
         BF.bindings([
           [ DF.variable('a'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
