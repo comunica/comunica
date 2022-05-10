@@ -57,10 +57,34 @@ function orderTestIsEqualBothSystems(litA: RDF.Term | undefined, litB: RDF.Term 
   orderTestIsEqual(litA, litB, true);
 }
 
-describe('ordering literals', () => {
-  it('undefined passed to ordertypes', () => {
-    orderTestIsEqualBothSystems(undefined, int('11'));
+describe('terms order', () => {
+  it('undefined is equal to undefined', () => {
     orderTestIsEqualBothSystems(undefined, undefined); // eslint-disable-line unicorn/no-useless-undefined
+  });
+
+  it('undefined is lower than everything else', () => {
+    orderTestIsLowerBothSystems(undefined, DF.blankNode());
+    orderTestIsLowerBothSystems(undefined, DF.namedNode('http://example.com'));
+    orderTestIsLowerBothSystems(undefined, DF.literal('foo'));
+  });
+
+  it('blank nodes are ordered based on their ids', () => {
+    orderTestIsEqualBothSystems(DF.blankNode('a'), DF.blankNode('a'));
+    orderTestIsLowerBothSystems(DF.blankNode('a'), DF.blankNode('b'));
+  });
+
+  it('blank nodes are lower than other terms', () => {
+    orderTestIsLowerBothSystems(DF.blankNode(), DF.namedNode('http://example.com'));
+    orderTestIsLowerBothSystems(DF.blankNode(), DF.literal('foo'));
+  });
+
+  it('named nodes are ordered based on their IRI strings', () => {
+    orderTestIsEqualBothSystems(DF.namedNode('http://example.com/a'), DF.namedNode('http://example.com/a'));
+    orderTestIsLowerBothSystems(DF.namedNode('http://example.com/a'), DF.namedNode('http://example.com/b'));
+  });
+
+  it('named nodes are lower than literals', () => {
+    orderTestIsLowerBothSystems(DF.namedNode('http://example.com'), DF.literal('foo'));
   });
 
   it('integers type identical', () => {
