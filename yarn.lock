@@ -10966,10 +10966,10 @@ sparqlalgebrajs@^4.0.0, sparqlalgebrajs@^4.0.2:
     rdf-string "^1.6.0"
     sparqljs "^3.5.1"
 
-sparqlee@^2.0.1:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-2.0.2.tgz#4f490678df3a377ad066ae60062f50d0dba988fe"
-  integrity sha512-Bd1gzDVJ3rJJZzG1U8CKCFSRhlryE4aBwxOvGyxpXo3S6pU3YqBRmPUY0wZhaNdw/DEqK5i33eA+xq8jF3Yzkg==
+sparqlee@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-2.1.0.tgz#4949c50d1c16ca0113e657ebb138cd85d630c9c0"
+  integrity sha512-4ElqFxcq1TKXGt4V37nSsQGoGBPqdZUftTd6w2s1iY9QtZosEAXcMelJ6i78vdwqWdSXTMSV7m4cQodp8219EQ==
   dependencies:
     "@comunica/bindings-factory" "^2.0.1"
     "@rdfjs/types" "^1.1.0"
