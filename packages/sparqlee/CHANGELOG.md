@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="v2.1.0"></a>
+## [v2.1.0](https://github.com/comunica/sparqlee/compare/v2.0.1...v2.1.0) - 2022-05-12
+
+### Added
+* [Add support for named and blank node ordering (#140)](https://github.com/comunica/sparqlee/commit/be3b04d8dc3ce1a51b2506da1cec4cf564e1393e)
+* [Returns a consistent order for uncomparable literals](https://github.com/comunica/sparqlee/commit/372db70c7aec9f69eff041b5de697fc1efd7ea09)
+
 <a name="v2.0.2"></a>
 ## [v2.0.2](https://github.com/comunica/sparqlee/compare/v2.0.1...v2.0.2) - 2022-03-04
 
