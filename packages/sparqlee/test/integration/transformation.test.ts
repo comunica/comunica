@@ -1,5 +1,4 @@
 // We need to disable typescript because we want undefined types.
-// @ts-nocheck
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -30,6 +29,7 @@ const DF = new DataFactory();
 describe('transformations', () => {
   let termTransformer: ITermTransformer;
   beforeEach(() => {
+    // @ts-expect-error
     termTransformer = new TermTransformer(getDefaultSharedContext().superTypeProvider);
   });
 
@@ -37,7 +37,9 @@ describe('transformations', () => {
     return {
       termType: 'Literal',
       value,
+      // @ts-expect-error
       language,
+      // @ts-expect-error
       datatype: dataType === undefined ? undefined : DF.namedNode(dataType),
       equals: other => false,
     };
@@ -47,7 +49,9 @@ describe('transformations', () => {
     const lit = DF.literal(value, DF.namedNode(dataType));
     const res = isNonLexicalLiteral(termTransformer.transformLiteral(lit));
     expect(res).toBeTruthy();
+    // @ts-expect-error
     expect(res.typeURL).toEqual(dataType);
+    // @ts-expect-error
     expect(res.strValue).toEqual(value);
   }
 
@@ -55,6 +59,7 @@ describe('transformations', () => {
     it('invalid namedNode', () => {
       // No namednode, language is also not given
       const num = int('11');
+      // @ts-expect-error
       num.termType = undefined;
       const res = termTransformer.transformLiteral(num);
       expect(res.strValue).toEqual('11');
@@ -156,6 +161,7 @@ describe('transformations', () => {
 
       it('transforms simple literal with empty datatype value', () => {
         const someStr = 'apple';
+        // @ts-expect-error
         const lit = simpleLiteralCreator(someStr, null);
         expect(lit.datatype).toBeTruthy();
         expect(lit.language).toBeFalsy();
