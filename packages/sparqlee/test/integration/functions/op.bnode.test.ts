@@ -19,5 +19,8 @@ describe('evaluations of \'bnode\' with custom blank node generator function', (
     "" = _:bcd
     "hello" = _:hellocd
     `,
+    errorTable: `
+    1 = 'Argument types not valid for operator'
+    `,
   });
 });
