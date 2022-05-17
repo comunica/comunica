@@ -28,9 +28,6 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
   }
 
   public transformAlgebra(expr: Alg.Expression): E.Expression {
-    if (!expr) {
-      throw new Err.InvalidExpression(expr);
-    }
     const types = Alg.expressionTypes;
 
     switch (expr.expressionType) {
@@ -46,16 +43,10 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
         return AlgebraTransformer.transformAggregate(expr);
       case types.WILDCARD:
         return AlgebraTransformer.transformWildcard(expr);
-      default:
-        throw new Err.InvalidExpressionType(expr);
     }
   }
 
   private static transformWildcard(term: Alg.WildcardExpression): E.Expression {
-    if (!term.wildcard) {
-      throw new Err.InvalidExpression(term);
-    }
-
     return new E.NamedNode(term.wildcard.value);
   }
 
