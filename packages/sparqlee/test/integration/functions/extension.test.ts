@@ -12,7 +12,7 @@ const BF = new BindingsFactory();
 
 describe('extension functions:', () => {
   describe('term-equal', () => {
-    const extensionTermEqual: SyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => {
+    const extensionFunctions: SyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => {
       if (functionNamedNode.value === 'https://example.org/functions#equal') {
         return (args: RDF.Term[]) => {
           const res = args[0].equals(args[1]);
@@ -24,12 +24,17 @@ describe('extension functions:', () => {
           return DF.literal('false', booleanType);
         };
       }
+      if (functionNamedNode.value === 'https://example.org/functions#bad') {
+        return (args: RDF.Term[]) => {
+          throw new Error('error');
+        };
+      }
     };
 
     describe('Can be evaluated', () => {
       const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync',
         config: {
-          extensionFunctionCreator: extensionTermEqual,
+          extensionFunctionCreator: extensionFunctions,
         }};
       runTestTable({
         arity: 2,
@@ -93,6 +98,23 @@ describe('extension functions:', () => {
         operation: '<https://example.org/functions#equal>',
         aliases: numeric,
         errorTable: errorTable('Unknown named operator'),
+      });
+    });
+
+    describe('throws error when providing a failing implementation', () => {
+      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync',
+        config: {
+          extensionFunctionCreator: extensionFunctions,
+        }};
+      runTestTable({
+        arity: 1,
+        notation: Notation.Function,
+        operation: '<https://example.org/functions#bad>',
+        config: generalEvaluationConfig,
+        aliases: merge(numeric, bool),
+        errorTable: `
+          3i = 'Error thrown in https://example.org/functions#bad'
+          `,
       });
     });
 
