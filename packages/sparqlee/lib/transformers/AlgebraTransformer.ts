@@ -51,8 +51,9 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
   }
 
   private transformOperator(expr: Alg.OperatorExpression): E.OperatorExpression | E.SpecialOperatorExpression {
-    if (C.SpecialOperators.has(expr.operator)) {
-      const specialOp = <C.SpecialOperator>expr.operator;
+    const operator = expr.operator.toLowerCase();
+    if (C.SpecialOperators.has(operator)) {
+      const specialOp = <C.SpecialOperator>operator;
       const specialArgs = expr.args.map(arg => this.transformAlgebra(arg));
       const specialFunc = specialFunctions[specialOp];
       if (!specialFunc.checkArity(specialArgs)) {
@@ -60,10 +61,10 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       }
       return new E.SpecialOperator(specialArgs, specialFunc.applyAsync, specialFunc.applySync);
     }
-    if (!C.Operators.has(expr.operator)) {
+    if (!C.Operators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
     }
-    const regularOp = <C.RegularOperator>expr.operator;
+    const regularOp = <C.RegularOperator>operator;
     const regularArgs = expr.args.map(arg => this.transformAlgebra(arg));
     const regularFunc = regularFunctions[regularOp];
     if (!AlgebraTransformer.hasCorrectArity(regularArgs, regularFunc.arity)) {

@@ -94,8 +94,8 @@ export enum RegularOperator {
   // Operator mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   NOT = '!',
-  UMINUS = 'UMINUS',
-  UPLUS = 'UPLUS',
+  UMINUS = 'uminus',
+  UPLUS = 'uplus',
   // LOGICAL_AND // See SpecialOperators
   // LOGICAL_OR  // See SpecialOperators
 
@@ -200,7 +200,7 @@ export enum SpecialOperator {
   CONCAT = 'concat',
 
   // Context dependant functions
-  BNODE = 'BNODE',
+  BNODE = 'bnode',
 }
 
 export const RegularOperators: Set<string> = new Set(Object.values(RegularOperator));

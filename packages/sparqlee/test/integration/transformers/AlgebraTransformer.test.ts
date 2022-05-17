@@ -44,11 +44,20 @@ describe('AlgebraTransformer', () => {
     })).toEqual(new E.Variable('?foo'));
   });
 
-  it('transform special operator', () => {
+  it('transform special operator upper case', () => {
     expect(algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'BNODE',
+      args: [],
+    })).toBeInstanceOf(E.SpecialOperator);
+  });
+
+  it('transform special operator lower case', () => {
+    expect(algebraTransformer.transformAlgebra({
+      type: types.EXPRESSION,
+      expressionType: expressionTypes.OPERATOR,
+      operator: 'bnode',
       args: [],
     })).toBeInstanceOf(E.SpecialOperator);
   });
@@ -71,11 +80,24 @@ describe('AlgebraTransformer', () => {
     })).toBeInstanceOf(E.SpecialOperator);
   });
 
-  it('transform regular operator', () => {
+  it('transform regular operator lower case', () => {
     expect(algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
-      operator: '!',
+      operator: 'uminus',
+      args: [{
+        type: types.EXPRESSION,
+        expressionType: expressionTypes.TERM,
+        term: DF.literal(''),
+      }],
+    })).toBeInstanceOf(E.Operator);
+  });
+
+  it('transform regular operator upper case', () => {
+    expect(algebraTransformer.transformAlgebra({
+      type: types.EXPRESSION,
+      expressionType: expressionTypes.OPERATOR,
+      operator: 'UMINUS',
       args: [{
         type: types.EXPRESSION,
         expressionType: expressionTypes.TERM,

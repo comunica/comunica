@@ -821,8 +821,8 @@ export const definitions: Record<C.RegularOperator, IOverloadedDefinition> = {
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   // --------------------------------------------------------------------------
   '!': not,
-  UPLUS: unaryPlus,
-  UMINUS: unaryMinus,
+  uplus: unaryPlus,
+  uminus: unaryMinus,
   '*': multiplication,
   '/': division,
   '+': addition,

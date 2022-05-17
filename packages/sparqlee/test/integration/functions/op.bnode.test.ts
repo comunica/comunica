@@ -23,4 +23,14 @@ describe('evaluations of \'bnode\' with custom blank node generator function', (
     1 = 'Argument types not valid for operator'
     `,
   });
+
+  runTestTable({
+    operation: 'bnode',
+    config: { type: 'sync', config },
+    arity: 1,
+    notation: Notation.Function,
+    testTable: `
+    '' = _:bcd
+    `,
+  });
 });

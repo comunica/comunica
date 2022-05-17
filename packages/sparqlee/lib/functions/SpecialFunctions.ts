@@ -474,6 +474,5 @@ export const specialDefinitions: Record<C.SpecialOperator, ISpecialDefinition> =
   concat,
 
   // Context dependent functions
-  BNODE,
+  bnode: BNODE,
 };
-

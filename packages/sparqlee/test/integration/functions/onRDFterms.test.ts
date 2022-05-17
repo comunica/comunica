@@ -18,6 +18,16 @@ describe('evaluation of functions on RDF terms', () => {
         '"1000"^^xsd:integer + "1e3"^^xsd:double' = "2.0E3"
       `,
     });
+
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'STR',
+      testTable: `
+        "simple" = "simple"
+        "lang"@en = "lang"
+      `,
+    });
   });
 
   describe('like \'lang\' receiving', () => {
@@ -31,6 +41,16 @@ describe('evaluation of functions on RDF terms', () => {
       `,
       errorTable: `
         <http://example.com> = 'Argument types not valid for operator'
+      `,
+    });
+
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'LANG',
+      testTable: `
+        "a"@fr = "fr"
+        "a" = ""
       `,
     });
   });
