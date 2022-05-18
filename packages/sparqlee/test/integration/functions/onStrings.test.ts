@@ -45,6 +45,60 @@ describe('string functions', () => {
     });
   });
 
+  describe('evaluation of \'strstarts\' like', () => {
+    runTestTable({
+      arity: 2,
+      operation: 'strstarts',
+      notation: Notation.Function,
+      aliases: bool,
+      testTable: `
+       "ab" "a" = true
+       "ab" "c" = false
+       "ab"@en "a"@en = true
+       "ab"@en "c"@en = false
+      `,
+      errorTable: `
+       "ab"@en "a"@fr = 'Operation on incompatible language literals'
+      `,
+    });
+  });
+
+  describe('evaluation of \'strends\' like', () => {
+    runTestTable({
+      arity: 2,
+      operation: 'strends',
+      notation: Notation.Function,
+      aliases: bool,
+      testTable: `
+       "ab" "b" = true
+       "ab" "c" = false
+       "ab"@en "b"@en = true
+       "ab"@en "c"@en = false
+      `,
+      errorTable: `
+       "ab"@en "b"@fr = 'Operation on incompatible language literals'
+      `,
+    });
+  });
+
+  describe('evaluation of \'contains\' like', () => {
+    runTestTable({
+      arity: 2,
+      operation: 'contains',
+      notation: Notation.Function,
+      aliases: bool,
+      testTable: `
+       "aa" "a" = true
+       "aa" "b" = false
+       "aa"@en "a"@en = true
+       "aa"@en "b"@en = false
+      `,
+      errorTable: `
+       "aa"@en "a"@fr = 'Operation on incompatible language literals'
+      `,
+    });
+  });
+
   // TODO: Add errors for when non BCP47 strings are passed
   describe('evaluation of \'langMatches\' like', () => {
     runTestTable({
@@ -62,6 +116,7 @@ describe('string functions', () => {
        "de" "de-*-DE" = false
        "de-X-De" "de-*-DE" = false
        "de-Deva" "de-*-DE" = false
+       "de" "fr" = false
       `,
     });
   });
@@ -104,7 +159,7 @@ describe('string functions', () => {
   describe('evaluation of \'regex\' like', () => {
     // TODO: Test better
     runTestTable({
-      arity: 2,
+      arity: 'vary',
       operation: 'regex',
       notation: Notation.Function,
       aliases: bool,
@@ -112,6 +167,27 @@ describe('string functions', () => {
       "simple" "simple" = true
       "aaaaaa" "a" = true
       "simple" "blurgh" = false
+      "aaa" "a+" = true
+      "AAA" "a+" = false
+      "AAA" "a+" "i" = true
+      "a\\na" ".+" "s" = true
+      "a\\nb\\nc" "^b$" = false
+      "a\\nb\\nc" "^b$" "m" = true
+      `,
+    });
+  });
+
+  describe('evaluation of \'replace\' like', () => {
+    runTestTable({
+      arity: 'vary',
+      operation: 'replace',
+      notation: Notation.Function,
+      testTable: `
+      "baaab" "a+" "c" = "bcb"
+      "bAAAb" "a+" "c" = "bAAAb"
+      "bAAAb" "a+" "c" "i" = "bcb"
+      "baaab"@en "a+" "c" = "bcb"@en
+      "bAAAb"@en "a+" "c" "i" = "bcb"@en
       `,
     });
   });

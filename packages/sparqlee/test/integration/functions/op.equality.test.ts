@@ -96,4 +96,21 @@ describe('evaluation of \'=\'', () => {
       `,
     });
   });
+
+  describe('with other operands like', () => {
+    runTestTable({
+      ...config,
+      testTable: `
+        <http://example.com> <http://example.com> = true
+        <http://example.com/a> <http://example.com/b> = false
+        <http://example.com> 1 = false
+        1 <http://example.com> = false
+      `,
+      errorTable: `
+        1 true = 'Equality test for literals with unsupported datatypes'
+        1 aaa = 'Equality test for literals with unsupported datatypes'
+        1 earlyN = 'Equality test for literals with unsupported datatypes'
+      `,
+    });
+  });
 });
