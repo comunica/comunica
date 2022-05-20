@@ -124,11 +124,6 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
   }
 
   private static hasCorrectArity(args: E.Expression[], arity: number | number[]): boolean {
-    // Infinity is used to represent var-args, so it's always correct.
-    if (arity === Number.POSITIVE_INFINITY) {
-      return true;
-    }
-
     // If the function has overloaded arity, the actual arity needs to be present.
     if (Array.isArray(arity)) {
       return arity.includes(args.length);
