@@ -65,7 +65,6 @@ export class SyncEvaluator {
   }
 
   public evaluateAsInternal(mapping: RDF.Bindings): E.TermExpression {
-    const result = this.evaluator.evaluate(this.expr, mapping);
-    return result;
+    return this.evaluator.evaluate(this.expr, mapping);
   }
 }

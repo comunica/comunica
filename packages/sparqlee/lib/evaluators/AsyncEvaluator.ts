@@ -65,7 +65,6 @@ export class AsyncEvaluator {
   }
 
   public async evaluateAsInternal(mapping: RDF.Bindings): Promise<E.TermExpression> {
-    const result = await this.evaluator.evaluate(this.expr, mapping);
-    return result;
+    return await this.evaluator.evaluate(this.expr, mapping);
   }
 }
