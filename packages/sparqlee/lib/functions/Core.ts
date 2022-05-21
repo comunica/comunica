@@ -159,11 +159,6 @@ function defaultArityCheck(arity: number): (args: E.Expression[]) => boolean {
       return true;
     }
 
-    // If the function has overloaded arity, the actual arity needs to be present.
-    if (Array.isArray(arity)) {
-      return arity.includes(args.length);
-    }
-
     return args.length === arity;
   };
 }
