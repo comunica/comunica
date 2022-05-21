@@ -8,18 +8,18 @@ import { AsyncAggregateEvaluator } from '../../../lib/evaluators/AsyncAggregateE
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-interface IBaseTestCaseArgs { expr: Algebra.AggregateExpression; throwError?: boolean; evalTogether?: boolean }
+interface IBaseTestCaseArgs { expr: Algebra.AggregateExpression; evalTogether?: boolean }
 type TestCaseArgs = IBaseTestCaseArgs & { input: RDF.Bindings[] };
 
-async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs): Promise<RDF.Term> {
+async function testCase({ expr, input, evalTogether }: TestCaseArgs): Promise<RDF.Term> {
   const results: (RDF.Term | undefined)[] = [];
   if (input.length === 0) {
-    results.push(AggregateEvaluator.emptyValue(expr, throwError || false));
-    results.push(AsyncAggregateEvaluator.emptyValue(expr, throwError || false));
+    results.push(AggregateEvaluator.emptyValue(expr, false));
+    results.push(AsyncAggregateEvaluator.emptyValue(expr, false));
   } else {
     // Evaluate both sync and async while awaiting all
-    const syncEvaluator = new AggregateEvaluator(expr, undefined, throwError || false);
-    const asyncEvaluator = new AsyncAggregateEvaluator(expr, undefined, throwError || false);
+    const syncEvaluator = new AggregateEvaluator(expr, undefined, false);
+    const asyncEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
     for (const bindings of input) {
       syncEvaluator.put(bindings);
       await asyncEvaluator.put(bindings);
@@ -28,7 +28,7 @@ async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs)
     results.push(asyncEvaluator.result());
     // If we can evaluate the aggregator all at once, we will test this to
     if (evalTogether) {
-      const togetherEvaluator = new AsyncAggregateEvaluator(expr, undefined, throwError || false);
+      const togetherEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
       await Promise.all(input.map(bindings => togetherEvaluator.put(bindings)));
       results.push(togetherEvaluator.result());
     }
@@ -46,6 +46,30 @@ async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs)
     throw new Error(message);
   }
   return results[0]!;
+}
+
+function syncErrorTestCase({ expr, input }: TestCaseArgs) {
+  if (input.length === 0) {
+    AggregateEvaluator.emptyValue(expr, true);
+  } else {
+    const syncEvaluator = new AggregateEvaluator(expr, undefined, true);
+    for (const bindings of input) {
+      syncEvaluator.put(bindings);
+    }
+    syncEvaluator.result();
+  }
+}
+
+async function asyncErrorTestCase({ expr, input }: TestCaseArgs) {
+  if (input.length === 0) {
+    AsyncAggregateEvaluator.emptyValue(expr, true);
+  } else {
+    const asyncEvaluator = new AsyncAggregateEvaluator(expr, undefined, true);
+    for (const bindings of input) {
+      await asyncEvaluator.put(bindings);
+    }
+    asyncEvaluator.result();
+  }
 }
 
 function makeAggregate(aggregator: string, distinct = false, separator?: string):
@@ -460,10 +484,9 @@ describe('an aggregate evaluator should be able to', () => {
       const testCaseArg: TestCaseArgs = {
         expr: makeAggregate('max'),
         input: [],
-        throwError: true,
-        evalTogether: true,
       };
-      await expect(testCase(testCaseArg)).rejects.toThrow('Empty aggregate expression');
+      await expect(asyncErrorTestCase(testCaseArg)).rejects.toThrow('Empty aggregate expression');
+      expect(() => syncErrorTestCase(testCaseArg)).toThrow('Empty aggregate expression');
     });
 
     it('and the first value errors', async() => {
@@ -473,10 +496,10 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
           BF.bindings([[ DF.variable('x'), int('1') ]]),
         ],
-        throwError: true,
-        evalTogether: true,
       };
-      await expect(testCase(testCaseArg)).rejects
+      await expect(asyncErrorTestCase(testCaseArg)).rejects
+        .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
+      expect(() => syncErrorTestCase(testCaseArg))
         .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
     });
 
@@ -487,10 +510,10 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('1') ]]),
           BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
         ],
-        evalTogether: true,
-        throwError: true,
       };
-      await expect(testCase(testCaseArg)).rejects
+      await expect(asyncErrorTestCase(testCaseArg)).rejects
+        .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
+      expect(() => syncErrorTestCase(testCaseArg))
         .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
     });
   });
