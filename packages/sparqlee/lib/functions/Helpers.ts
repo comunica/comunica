@@ -12,7 +12,6 @@ import type { MainNumericSparqlType } from '../util/Consts';
 import * as C from '../util/Consts';
 import { TypeAlias, TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
-import { isInternalSubType } from '../util/TypeHandling';
 import type { ExperimentalArgumentType } from './Core';
 import { LegacyTree } from './LegacyTree';
 import type { ImplementationFunction } from './OverloadTree';
@@ -312,32 +311,20 @@ export function bool(val: boolean): E.BooleanLiteral {
   return new E.BooleanLiteral(val);
 }
 
-export function integer(num: number, dt?: C.KnownLiteralTypes): E.IntegerLiteral {
-  if (dt && !isInternalSubType(dt, TypeURL.XSD_INTEGER)) {
-    throw new Error('apple');
-  }
-  return new E.IntegerLiteral(num, dt);
+export function integer(num: number): E.IntegerLiteral {
+  return new E.IntegerLiteral(num);
 }
 
-export function decimal(num: number, dt?: C.KnownLiteralTypes): E.DecimalLiteral {
-  if (dt && !isInternalSubType(dt, TypeURL.XSD_DECIMAL)) {
-    throw new Error('apple');
-  }
-  return new E.DecimalLiteral(num, dt);
+export function decimal(num: number): E.DecimalLiteral {
+  return new E.DecimalLiteral(num);
 }
 
-export function float(num: number, dt?: C.KnownLiteralTypes): E.FloatLiteral {
-  if (dt && !isInternalSubType(dt, TypeURL.XSD_FLOAT)) {
-    throw new Error('apple');
-  }
-  return new E.FloatLiteral(num, dt);
+export function float(num: number): E.FloatLiteral {
+  return new E.FloatLiteral(num);
 }
 
-export function double(num: number, dt?: C.KnownLiteralTypes): E.DoubleLiteral {
-  if (dt && !isInternalSubType(dt, TypeURL.XSD_DOUBLE)) {
-    throw new Error('apple');
-  }
-  return new E.DoubleLiteral(num, dt);
+export function double(num: number): E.DoubleLiteral {
+  return new E.DoubleLiteral(num);
 }
 
 export function string(str: string): E.StringLiteral {
