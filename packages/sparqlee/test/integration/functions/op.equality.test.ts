@@ -110,7 +110,10 @@ describe('evaluation of \'=\'', () => {
         1 true = 'Equality test for literals with unsupported datatypes'
         1 aaa = 'Equality test for literals with unsupported datatypes'
         1 earlyN = 'Equality test for literals with unsupported datatypes'
-      `,
+        true "foo"^^xsd:boolean = 'Invalid lexical form'
+        "foo"^^xsd:boolean true = 'Invalid lexical form'
+        1 "foo"^^xsd:boolean = 'Invalid lexical form'
+        "foo"^^xsd:boolean 1 = 'Invalid lexical form'      `,
     });
   });
 });

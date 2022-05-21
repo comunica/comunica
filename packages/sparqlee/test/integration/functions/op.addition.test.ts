@@ -33,6 +33,19 @@ describe('evaluation of \'+\' like', () => {
       NaN    NaN    = NaN
       NaN    anyNum = NaN
       anyNum NaN    = NaN
+
+      0i 0d = 0d
+      0i 0f = 0f
+      0i "0"^^xsd:double = "0.0E0"^^xsd:double
+      0d 0i = 0d
+      0d 0f = 0f
+      0d "0"^^xsd:double = "0.0E0"^^xsd:double
+      0f 0i = 0f
+      0f 0d = 0f
+      0f "0"^^xsd:double = "0.0E0"^^xsd:double
+      "0"^^xsd:double 0i = "0.0E0"^^xsd:double
+      "0"^^xsd:double 0d = "0.0E0"^^xsd:double
+      "0"^^xsd:double 0f = "0.0E0"^^xsd:double
     `,
   });
   runTestTable({
