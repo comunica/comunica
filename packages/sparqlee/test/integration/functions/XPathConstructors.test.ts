@@ -60,6 +60,10 @@ describe('evaluation of XPath constructors', () => {
         "-7.875"^^xsd:float = "-7.875"^^xsd:float'
         "2.5"^^xsd:decimal = "2.5"^^xsd:float'
         "-2.5"^^xsd:decimal = "-2.5"^^xsd:float'
+        "NaN" = "NaN"^^xsd:float'
+        "INF" = "INF"^^xsd:float'
+        "+INF" = "INF"^^xsd:float'
+        "-INF" = "-INF"^^xsd:float'
       `,
       errorTable: `
         "http://example.org/z"^^xsd:string = ''
@@ -67,6 +71,7 @@ describe('evaluation of XPath constructors', () => {
         "2002-10-10T17:00:00Z"^^xsd:string = ''
         "true"^^xsd:string = ''
         "false"^^xsd:string = ''
+        "foo"^^xsd:float = ''
       `,
     });
   });
@@ -104,6 +109,10 @@ describe('evaluation of XPath constructors', () => {
         "-7.875"^^xsd:float = "-7.875E0"^^xsd:double
         "2.5"^^xsd:decimal = "2.5E0"^^xsd:double
         "-2.5"^^xsd:decimal = "-2.5E0"^^xsd:double
+        "NaN" = "NaN"^^xsd:double
+        "INF" = "INF"^^xsd:double
+        "+INF" = "INF"^^xsd:double
+        "-INF" = "-INF"^^xsd:double
       `,
       errorTable: `
         "http://example.org/z"^^xsd:string = ''
@@ -111,6 +120,7 @@ describe('evaluation of XPath constructors', () => {
         "2002-10-10T17:00:00Z"^^xsd:string = ''
         "true"^^xsd:string = ''
         "false"^^xsd:string = ''
+        "foo"^^xsd:double = ''
       `,
     });
   });
@@ -160,6 +170,10 @@ describe('evaluation of XPath constructors', () => {
         "2002-10-10T17:00:00Z"^^xsd:string = ''
         "true"^^xsd:string = ''
         "false"^^xsd:string = ''
+        "foo"^^xsd:decimal = ''
+        "NaN"^^xsd:double = ''
+        "+INF"^^xsd:double = ''
+        "-INF"^^xsd:double = ''
       `,
     });
   });
@@ -202,6 +216,10 @@ describe('evaluation of XPath constructors', () => {
         "2002-10-10T17:00:00Z"^^xsd:string = ''
         "false"^^xsd:string = ''
         "true"^^xsd:string = ''
+        "foo"^^xsd:integer = ''
+        "NaN"^^xsd:double = ''
+        "+INF"^^xsd:double = ''
+        "-INF"^^xsd:double = ''
       `,
     });
   });
@@ -212,7 +230,13 @@ describe('evaluation of XPath constructors', () => {
       notation: Notation.Function,
       operation: 'xsd:dateTime',
       testTable: `
+        "1999-03-17T06:00:00Z"^^xsd:dateTime = "1999-03-17T06:00:00Z"^^xsd:dateTime
         "1999-03-17T06:00:00Z" = "1999-03-17T06:00:00Z"^^xsd:dateTime
+      `,
+      errorTable: `
+        "foo" = ''
+        "1234567789"^^xsd:integer = ''
+        "foo"^^xsd:dateTime = ''
       `,
     });
   });
@@ -256,6 +280,7 @@ describe('evaluation of XPath constructors', () => {
         "1.5"^^xsd:string = ''
         "1E0"^^xsd:string = ''
         "2002-10-10T17:00:00Z"^^xsd:string = ''
+        "foo"^^xsd:boolean = ''
       `,
     });
   });

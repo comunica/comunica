@@ -194,6 +194,16 @@ export class DoubleLiteral extends NumericLiteral {
   }
 
   protected specificFormatter(val: number): string {
+    if (!Number.isFinite(val)) {
+      if (val > 0) {
+        return 'INF';
+      }
+      if (val < 0) {
+        return '-INF';
+      }
+      return 'NaN';
+    }
+
     const jsExponential = val.toExponential();
     const [ jsMantisse, jsExponent ] = jsExponential.split('e');
 

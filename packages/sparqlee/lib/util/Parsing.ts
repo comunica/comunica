@@ -14,7 +14,7 @@ export function parseXSDFloat(value: string): number | undefined {
     if (value === 'NaN') {
       return Number.NaN;
     }
-    if (value === 'INF') {
+    if (value === 'INF' || value === '+INF') {
       return Number.POSITIVE_INFINITY;
     }
     if (value === '-INF') {
