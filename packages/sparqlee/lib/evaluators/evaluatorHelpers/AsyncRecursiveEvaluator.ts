@@ -97,7 +97,7 @@ export class AsyncRecursiveEvaluator extends BaseExpressionEvaluator
   // TODO: Remove?
   private async evalAggregate(expr: E.Aggregate, _mapping: RDF.Bindings): Promise<E.Term> {
     if (!this.context.aggregate) {
-      throw new Err.NoExistenceHook();
+      throw new Err.NoAggregator();
     }
 
     return this.termTransformer.transformRDFTermUnsafe(await this.context.aggregate(expr.expression));
