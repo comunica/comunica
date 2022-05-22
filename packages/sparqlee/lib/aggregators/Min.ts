@@ -7,10 +7,7 @@ interface IExtremeState {
 export class Min extends BaseAggregator<IExtremeState> {
   public init(start: RDF.Term): IExtremeState {
     const { value } = this.extractValue(start);
-    if (start.termType === 'Literal') {
-      return { extremeValue: value, term: start };
-    }
-    throw new Error('Term should be a literal');
+    return { extremeValue: value, term: <RDF.Literal>start };
   }
 
   public put(state: IExtremeState, term: RDF.Term): IExtremeState {
