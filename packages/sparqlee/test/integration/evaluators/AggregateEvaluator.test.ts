@@ -13,26 +13,28 @@ type TestCaseArgs = IBaseTestCaseArgs & { input: RDF.Bindings[] };
 
 async function testCase({ expr, input, evalTogether }: TestCaseArgs): Promise<RDF.Term> {
   const results: (RDF.Term | undefined)[] = [];
+
   if (input.length === 0) {
     results.push(AggregateEvaluator.emptyValue(expr, false));
     results.push(AsyncAggregateEvaluator.emptyValue(expr, false));
-  } else {
-    // Evaluate both sync and async while awaiting all
-    const syncEvaluator = new AggregateEvaluator(expr, undefined, false);
-    const asyncEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
-    for (const bindings of input) {
-      syncEvaluator.put(bindings);
-      await asyncEvaluator.put(bindings);
-    }
-    results.push(syncEvaluator.result());
-    results.push(asyncEvaluator.result());
-    // If we can evaluate the aggregator all at once, we will test this to
-    if (evalTogether) {
-      const togetherEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
-      await Promise.all(input.map(bindings => togetherEvaluator.put(bindings)));
-      results.push(togetherEvaluator.result());
-    }
   }
+
+  // Evaluate both sync and async while awaiting all
+  const syncEvaluator = new AggregateEvaluator(expr, undefined, false);
+  const asyncEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
+  for (const bindings of input) {
+    syncEvaluator.put(bindings);
+    await asyncEvaluator.put(bindings);
+  }
+  results.push(syncEvaluator.result());
+  results.push(asyncEvaluator.result());
+  // If we can evaluate the aggregator all at once, we will test this to
+  if (evalTogether) {
+    const togetherEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
+    await Promise.all(input.map(bindings => togetherEvaluator.put(bindings)));
+    results.push(togetherEvaluator.result());
+  }
+
   const equalCheck = results.every(((value, index, array) => {
     const other = array[(index + 1) % array.length];
     return (!other && !value) || (value && value.equals(other));
