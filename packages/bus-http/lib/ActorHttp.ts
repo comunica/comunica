@@ -23,6 +23,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    */
   public constructor(args: IActorHttpArgs) {
     super(args);
+    console.log('Constructor Called 2');
   }
 
   /**

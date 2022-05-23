@@ -9,6 +9,14 @@
   "@type": "Runner",
   "actors": [
     {
+      "@id": "urn:comunica:default:http/actors#cache",
+      "@type": "ActorHttpCache",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:http/actors#fetch" },
+        { "@id": "urn:comunica:default:http/actors#proxy" }
+      ]
+    },
+    {
       "@id": "urn:comunica:default:http/actors#proxy",
       "@type": "ActorHttpProxy",
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },

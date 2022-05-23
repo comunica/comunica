@@ -18,6 +18,7 @@ export class ActorHttpFetch extends ActorHttp {
 
   public constructor(args: IActorHttpFetchArgs) {
     super(args);
+    console.log('Constructor Called 1');
     this.userAgent = ActorHttpFetch.createUserAgent();
     this.fetchInitPreprocessor = new FetchInitPreprocessor(args.agentOptions);
   }
