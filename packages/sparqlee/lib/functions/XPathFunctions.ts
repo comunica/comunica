@@ -74,24 +74,26 @@ export function formatDayTimeDuration(timezone: string): string | undefined {
   if (!timezone) {
     return;
   }
-  if (timezone.startsWith('Z')) {
+
+  let sign = '';
+  let hours = 0;
+  let minutes = 0;
+  if (timezone !== 'Z') {
+    sign = timezone.startsWith('-') ? '-' : '';
+    hours = Number.parseInt(timezone.slice(1, 3), 10);
+    minutes = Number.parseInt(timezone.slice(4, 6), 10);
+  }
+
+  if (hours === 0 && minutes === 0) {
     return 'PT0S';
   }
-  // Split string
-  const [ sign, h1Raw, h2Raw, _, m1Raw, m2Raw ] = timezone;
 
-  // Cut of leading zero, set to empty string if 0, and append H;
-  const h1 = h1Raw !== '0' ? h1Raw : '';
-  const h2 = h1 || h2Raw !== '0' ? h2Raw : '';
-  const hours = h1 + h2 ? `${h1 + h2}H` : '';
-
-  // Same as in hours
-  const m1 = m1Raw !== '0' ? m1Raw : '';
-  const m2 = m1 || m2Raw !== '0' ? m2Raw : '';
-  const minutes = m1 + m2 ? `${m1 + m2}M` : '';
-
-  // Concat sign and time and mandatory separators
-  const time = `${hours}${minutes}`;
-  const signNoPlus = sign === '-' ? '-' : '';
-  return `${signNoPlus}PT${time}`;
+  let time = `${sign}PT`;
+  if (hours > 0) {
+    time += `${hours}H`;
+  }
+  if (minutes > 0) {
+    time += `${minutes}M`;
+  }
+  return time;
 }
