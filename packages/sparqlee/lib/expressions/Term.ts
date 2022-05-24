@@ -46,19 +46,12 @@ export class NamedNode extends Term {
 // BlankNodes -----------------------------------------------------------------
 
 export class BlankNode extends Term {
-  public static _nextID = 0;
-
   public value: RDF.BlankNode;
   public termType: TermType = 'blankNode';
 
   public constructor(value: RDF.BlankNode | string) {
     super();
     this.value = typeof value === 'string' ? DF.blankNode(value) : value;
-  }
-
-  public static nextID(): string {
-    BlankNode._nextID += 1;
-    return BlankNode.nextID.toString();
   }
 
   public toRDF(): RDF.Term {
