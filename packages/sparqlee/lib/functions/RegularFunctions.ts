@@ -839,6 +839,7 @@ export const definitions: Record<C.RegularOperator, IOverloadedDefinition> = {
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   // --------------------------------------------------------------------------
   isiri: isIRI,
+  isuri: isIRI,
   isblank: isBlank,
   isliteral: isLiteral,
   isnumeric: isNumeric,

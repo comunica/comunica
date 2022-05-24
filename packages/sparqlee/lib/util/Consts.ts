@@ -118,6 +118,7 @@ export enum RegularOperator {
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   IS_IRI = 'isiri',
+  IS_URI = 'isuri',
   IS_BLANK = 'isblank',
   IS_LITERAL = 'isliteral',
   IS_NUMERIC = 'isnumeric',

@@ -85,6 +85,19 @@ describe('evaluation of functions on RDF terms', () => {
     });
   });
 
+  describe('like \'isURI\' receiving', () => {
+    runTestTable({
+      arity: 1,
+      aliases: bool,
+      notation: Notation.Function,
+      operation: 'isURI',
+      testTable: `
+        <http://example.com> = true
+        "foo" = false
+      `,
+    });
+  });
+
   describe('like \'isBlank\' receiving', () => {
     runTestTable({
       arity: 1,
@@ -117,6 +130,22 @@ describe('evaluation of functions on RDF terms', () => {
       arity: 1,
       notation: Notation.Function,
       operation: 'iri',
+      testTable: `
+      <http://example.com> = http://example.com
+      "http://example.com" = http://example.com
+      `,
+      errorTable: `
+        "foo" = 'Found invalid relative IRI'
+        1 = 'Argument types not valid for operator'
+      `,
+    });
+  });
+
+  describe('like \'uri\' receiving', () => {
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'uri',
       testTable: `
       <http://example.com> = http://example.com
       "http://example.com" = http://example.com
