@@ -2,17 +2,17 @@ import type * as RDF from '@rdfjs/types';
 import { BaseAggregator } from './BaseAggregator';
 
 interface IExtremeState {
-  extremeValue: number; term: RDF.Literal;
+  extremeValue: number; term: RDF.Term;
 }
 export class Min extends BaseAggregator<IExtremeState> {
   public init(start: RDF.Term): IExtremeState {
     const { value } = this.extractValue(start);
-    return { extremeValue: value, term: <RDF.Literal>start };
+    return { extremeValue: value, term: start };
   }
 
   public put(state: IExtremeState, term: RDF.Term): IExtremeState {
     const extracted = this.extractValue(term);
-    if (extracted.value < state.extremeValue && term.termType === 'Literal') {
+    if (extracted.value < state.extremeValue) {
       return {
         extremeValue: extracted.value,
         term,
