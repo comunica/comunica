@@ -3,18 +3,15 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-fetch/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^2.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-cache/^2.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
   "actors": [
     {
       "@id": "urn:comunica:default:http/actors#cache",
-      "@type": "ActorHttpCache",
-      "beforeActors": [
-        { "@id": "urn:comunica:default:http/actors#fetch" },
-        { "@id": "urn:comunica:default:http/actors#proxy" }
-      ]
+      "@type": "ActorHttpCache"
     },
     {
       "@id": "urn:comunica:default:http/actors#proxy",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-cache",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "A cache http actor",
   "lsd:module": true,
   "main": "lib/index.js",
