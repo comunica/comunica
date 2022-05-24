@@ -54,8 +54,6 @@ export abstract class BaseAggregateEvaluator {
    * The actual result method. When the first binding has been given, and the state
    * of the evaluators initialised. The .result API function will be replaced with this
    * function, which implements the behaviour we want.
-   *
-   * @param bindings the bindings to pass to the expression
    */
   protected __result(): RDF.Term {
     return this.aggregator.result(this.state);

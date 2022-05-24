@@ -5,7 +5,6 @@ import type { ArgumentType, ExperimentalArgumentType } from './Core';
 import type { ImplementationFunction } from './OverloadTree';
 
 type SearchStack = LegacyTree[];
-type LegacyNodeCallback = (node: LegacyTree, argumentType: ArgumentType) => void;
 
 /**
  * Maps argument types on their specific implementation in a tree like structure.

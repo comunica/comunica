@@ -244,7 +244,7 @@ async function inRecursiveAsync(
   context: EvalContextAsync,
   results: (Error | false)[],
 ): PTerm {
-  const { args, mapping, evaluate, overloadCache } = context;
+  const { args, mapping, evaluate } = context;
   if (args.length === 0) {
     const noErrors = results.every(val => !val);
     return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
@@ -269,7 +269,7 @@ function inRecursiveSync(
   context: EvalContextSync,
   results: (Error | false)[],
 ): Term {
-  const { args, mapping, evaluate, overloadCache } = context;
+  const { args, mapping, evaluate } = context;
   if (args.length === 0) {
     const noErrors = results.every(val => !val);
     if (noErrors) {

@@ -78,9 +78,9 @@ export function parseXSDDateTime(value: string): ISplittedDate {
   const posT = value.indexOf('T');
   const date = posT >= 0 ? value.slice(0, Math.max(0, posT)) : value;
   const [ year, month, day ] = date.split('-');
-  let hours = '';
-  let minutes = '';
-  let seconds = '';
+  let hours = '00';
+  let minutes = '00';
+  let seconds = '00';
   let timezone = '';
   if (posT >= 0) {
     const timeAndTimeZone = value.slice(posT + 1);
@@ -88,11 +88,6 @@ export function parseXSDDateTime(value: string): ISplittedDate {
     [ hours, minutes, seconds ] = time.split(':');
     const timezoneOrNull = /([+Z-].*)/u.exec(timeAndTimeZone);
     timezone = timezoneOrNull ? timezoneOrNull[0] : '';
-  } else {
-    hours = '00';
-    minutes = '00';
-    seconds = '00';
-    timezone = '';
   }
   return { year, month, day, hours, minutes, seconds, timezone };
 }

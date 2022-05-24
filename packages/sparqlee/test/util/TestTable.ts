@@ -113,7 +113,6 @@ export class UnaryTable extends Table<[string, string]> {
       const { operation } = this.def;
       const aliases = this.def.aliases || {};
       it(`${this.format(operation, row)} should return ${result}`, async() => {
-        const rdfArg = aliases[arg] || arg;
         const expr = this.format(operation, <[string, string]> row.map(el => aliases[el] || el));
         await this.testExpression(expr, result);
       });

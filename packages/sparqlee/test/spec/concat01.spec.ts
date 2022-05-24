@@ -27,7 +27,7 @@ import * as Data from './_data';
  */
 
 describe('We should respect the concat01 spec', () => {
-  const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
+  const { s6, s7 } = Data.data();
   runTestTable({
     arity: 2,
     notation: Notation.Function,

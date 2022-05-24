@@ -20,8 +20,7 @@ export class Sum extends BaseAggregator<SumState> {
 
   public put(state: SumState, term: RDF.Term): SumState {
     const internalTerm = this.termToNumericOrError(term);
-    const sum = <E.NumericLiteral> this.summer.apply([ state, internalTerm ], this.sharedContext);
-    return sum;
+    return <E.NumericLiteral> this.summer.apply([ state, internalTerm ], this.sharedContext);
   }
 
   public result(state: SumState): RDF.Term {
