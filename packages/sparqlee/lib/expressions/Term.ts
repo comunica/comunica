@@ -284,9 +284,7 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
     strValue?: string,
     language?: string,
   ) {
-    super({ toString: () => 'undefined' }, typeURL, strValue, language, 'nonlexical');
-    this.typedValue = { toString: () => 'undefined' };
-    this.dataType = TypeAlias.SPARQL_NON_LEXICAL;
+    super({ toString: () => 'undefined' }, TypeAlias.SPARQL_NON_LEXICAL, strValue, language, 'nonlexical');
   }
 
   public coerceEBV(): boolean {

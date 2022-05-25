@@ -61,6 +61,8 @@ describe('TermTransformer', () => {
     expect(res.typeURL).toEqual(dataType);
     // @ts-expect-error
     expect(res.strValue).toEqual(value);
+    // @ts-expect-error
+    expect(res.typedValue.toString()).toEqual('undefined');
   }
 
   describe('terms', () => {
@@ -260,6 +262,17 @@ describe('TermTransformer', () => {
 
     it('datatype: dateTime', () => {
       returnNonLexicalTest('apple', DT.XSD_DATE_TIME);
+    });
+
+    it('badly invalid literal', () => {
+      // @ts-expect-error
+      const res = termTransformer.transformLiteral({
+        termType: 'Literal',
+        datatype: DF.namedNode(DT.XSD_FLOAT),
+      });
+      expect(res.strValue).toBeUndefined();
+      expect(res.str()).toEqual('');
+      expect(res.typedValue.toString()).toEqual('undefined');
     });
   });
 
