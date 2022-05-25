@@ -63,8 +63,6 @@ export class TermTransformer implements ITermTransformer {
     }
     const dataType = lit.datatype.value;
     switch (dataType) {
-      case null:
-      case undefined:
       case '': {
         return lit.language ?
           new E.LangStringLiteral(lit.value, lit.language) :

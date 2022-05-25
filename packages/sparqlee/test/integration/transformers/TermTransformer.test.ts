@@ -283,8 +283,19 @@ describe('TermTransformer', () => {
     });
 
     it('string', () => {
-      expect(legacyTermTransformer.transformLiteral(DF.literal('foo')))
-        .toEqual(new E.StringLiteral('foo'));
+      for (const dt of [ DT.XSD_ANY_URI,
+        DT.XSD_NORMALIZED_STRING,
+        DT.XSD_TOKEN,
+        DT.XSD_LANGUAGE,
+        DT.XSD_NM_TOKEN,
+        DT.XSD_NAME,
+        DT.XSD_ENTITY,
+        DT.XSD_ID,
+        DT.XSD_ID_REF,
+        DT.XSD_STRING ]) {
+        expect(legacyTermTransformer.transformLiteral(DF.literal('foo', DF.namedNode(dt))))
+          .toEqual(new E.StringLiteral('foo', dt));
+      }
     });
 
     it('langString', () => {
@@ -293,8 +304,22 @@ describe('TermTransformer', () => {
     });
 
     it('integer', () => {
-      expect(legacyTermTransformer.transformLiteral(int('1')))
-        .toEqual(new E.IntegerLiteral(1, DT.XSD_INTEGER, '1'));
+      for (const dt of [ DT.XSD_NON_POSITIVE_INTEGER,
+        DT.XSD_NEGATIVE_INTEGER,
+        DT.XSD_LONG,
+        DT.XSD_INT,
+        DT.XSD_SHORT,
+        DT.XSD_BYTE,
+        DT.XSD_NON_NEGATIVE_INTEGER,
+        DT.XSD_POSITIVE_INTEGER,
+        DT.XSD_UNSIGNED_LONG,
+        DT.XSD_UNSIGNED_INT,
+        DT.XSD_UNSIGNED_SHORT,
+        DT.XSD_UNSIGNED_BYTE,
+        DT.XSD_INTEGER ]) {
+        expect(legacyTermTransformer.transformLiteral(DF.literal('1', DF.namedNode(dt))))
+          .toEqual(new E.IntegerLiteral(1, dt, '1'));
+      }
     });
 
     it('double', () => {
@@ -305,6 +330,13 @@ describe('TermTransformer', () => {
     it('boolean', () => {
       expect(legacyTermTransformer.transformLiteral(boolean('1')))
         .toEqual(new E.BooleanLiteral(true, '1'));
+    });
+
+    it('dateTime', () => {
+      for (const dt of [ DT.XSD_DATE_TIME, DT.XSD_DATE_TIME_STAMP ]) {
+        expect(legacyTermTransformer.transformLiteral(DF.literal('2000-01-01T00:00:00', DF.namedNode(dt))))
+          .toEqual(new E.DateTimeLiteral(new Date('2000-01-01T00:00:00'), '2000-01-01T00:00:00', dt));
+      }
     });
 
     it('invalid literals', () => {
