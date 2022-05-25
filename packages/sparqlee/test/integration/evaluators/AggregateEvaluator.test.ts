@@ -16,8 +16,8 @@ async function testCase({ expr, input, evalTogether }: TestCaseArgs): Promise<RD
   const results: (RDF.Term | undefined)[] = [];
 
   if (input.length === 0) {
-    results.push(AggregateEvaluator.emptyValue(expr, false));
-    results.push(AsyncAggregateEvaluator.emptyValue(expr, false));
+    results.push(AggregateEvaluator.emptyValue(expr));
+    results.push(AsyncAggregateEvaluator.emptyValue(expr));
   }
 
   // Evaluate both sync and async while awaiting all

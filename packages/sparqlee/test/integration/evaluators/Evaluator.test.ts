@@ -5,6 +5,7 @@ import { AsyncEvaluator } from '../../../lib/evaluators/AsyncEvaluator';
 import { SyncEvaluator } from '../../../lib/evaluators/SyncEvaluator';
 import { IntegerLiteral } from '../../../lib/expressions';
 import { TypeURL as DT } from '../../../lib/util/Consts';
+import * as Err from '../../../lib/util/Errors';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -20,6 +21,16 @@ describe('evaluators', () => {
       it('is able to evaluate', () => {
         const evaluator = new SyncEvaluator(parse('1 + 1'));
         expect(evaluator.evaluate(BF.bindings())).toEqual(two);
+      });
+
+      it('has proper default extended XSD type support', () => {
+        const evaluator = new SyncEvaluator(parse('1 + 1'), { enableExtendedXsdTypes: true });
+        expect(evaluator.evaluate(BF.bindings())).toEqual(two);
+      });
+
+      it('has proper extended XSD type support', () => {
+        const evaluator = new SyncEvaluator(parse('1 + "1"^^<http://example.com>'), { enableExtendedXsdTypes: true });
+        expect(() => evaluator.evaluate(BF.bindings())).toThrow(Err.InvalidArgumentTypes);
       });
     });
 
@@ -48,6 +59,16 @@ describe('evaluators', () => {
       it('is able to evaluate', async() => {
         const evaluator = new AsyncEvaluator(parse('1 + 1'));
         expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
+      });
+
+      it('has proper default extended XSD type support', async() => {
+        const evaluator = new AsyncEvaluator(parse('1 + 1'), { enableExtendedXsdTypes: true });
+        expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
+      });
+
+      it('has proper extended XSD type support', async() => {
+        const evaluator = new AsyncEvaluator(parse('1 + "1"^^<http://example.com>'), { enableExtendedXsdTypes: true });
+        await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
       });
     });
 
