@@ -54,7 +54,7 @@
     "rdf-quad": "^1.5.0",
     "rdf-test-suite": "^1.18.0",
     "rdf-test-suite-ldf": "^1.4.1",
-    "setup-polly-jest": "^0.10.0",
+    "setup-polly-jest": "^0.11.0",
     "sparqlalgebrajs": "^4.0.0",
     "stream-to-string": "^1.1.0",
     "streamify-array": "^1.0.0",
