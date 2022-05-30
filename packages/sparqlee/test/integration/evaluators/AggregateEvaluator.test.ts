@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
+import { Wildcard } from 'sparqljs';
 import { AggregateEvaluator } from '../../../lib/evaluators/AggregateEvaluator';
 import { AsyncAggregateEvaluator } from '../../../lib/evaluators/AsyncAggregateEvaluator';
 
@@ -132,6 +133,117 @@ describe('an aggregate evaluator should be able to', () => {
         ],
       });
       expect(await result).toEqual(int('4'));
+    });
+
+    it('with respect to empty input', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [],
+      });
+      expect(await result).toEqual(int('0'));
+    });
+  });
+
+  describe('count distinct', () => {
+    let baseTestCaseArgs: IBaseTestCaseArgs;
+
+    beforeEach(() => {
+      baseTestCaseArgs = { expr: makeAggregate('count', true), evalTogether: true };
+    });
+    it('a list of bindings', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+        ],
+      });
+      expect(await result).toEqual(int('4')); // TODO: should be 2
+    });
+
+    it('with respect to empty input', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [],
+      });
+      expect(await result).toEqual(int('0'));
+    });
+  });
+
+  describe('count wildcard', () => {
+    let baseTestCaseArgs: IBaseTestCaseArgs;
+
+    beforeEach(() => {
+      baseTestCaseArgs = { expr: {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.AGGREGATE,
+        aggregator: 'count',
+        distinct: false,
+        separator: '',
+        expression: {
+          type: Algebra.types.EXPRESSION,
+          expressionType: Algebra.expressionTypes.WILDCARD,
+          wildcard: new Wildcard(),
+        },
+      },
+      evalTogether: true };
+    });
+
+    it('a list of bindings', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('y'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([]),
+        ],
+      });
+      expect(await result).toEqual(int('4'));
+    });
+
+    it('with respect to empty input', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [],
+      });
+      expect(await result).toEqual(int('0'));
+    });
+  });
+
+  describe('count distinct wildcard', () => {
+    let baseTestCaseArgs: IBaseTestCaseArgs;
+
+    beforeEach(() => {
+      baseTestCaseArgs = { expr: {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.AGGREGATE,
+        aggregator: 'count',
+        distinct: true,
+        separator: '',
+        expression: {
+          type: Algebra.types.EXPRESSION,
+          expressionType: Algebra.expressionTypes.WILDCARD,
+          wildcard: new Wildcard(),
+        },
+      },
+      evalTogether: true };
+    });
+
+    it('a list of bindings', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('1') ]]),
+          BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+          BF.bindings([]),
+        ],
+      });
+      expect(await result).toEqual(int('5')); // TODO: should be 4
     });
 
     it('with respect to empty input', async() => {
