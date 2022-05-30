@@ -38,7 +38,7 @@ describe('unary functions', () => {
         "3"^^xsd:integer     = "3"^^xsd:integer
         "3"^^xsd:decimal     = "3"^^xsd:decimal
         "3"^^xsd:float       = "3"^^xsd:float
-        "3"^^xsd:double      = "3"^^xsd:double
+        "3"^^xsd:double      = "3.0E0"^^xsd:double
         "-10.5"^^xsd:decimal = "-10.5"^^xsd:decimal
         "NaN"^^xsd:float     = "NaN"^^xsd:float
       `,

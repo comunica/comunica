@@ -85,7 +85,7 @@
     "rdf-string": "^1.6.0",
     "relative-to-absolute-iri": "^1.0.6",
     "spark-md5": "^3.0.1",
-    "sparqlalgebrajs": "^4.0.0",
+    "sparqlalgebrajs": "^4.0.3",
     "uuid": "^8.0.0"
   },
   "jest": {
