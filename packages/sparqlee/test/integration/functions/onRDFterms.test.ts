@@ -80,6 +80,7 @@ describe('evaluation of functions on RDF terms', () => {
       operation: 'isIRI',
       testTable: `
         <http://example.com> = true
+        BNODE() = false
         "foo" = false
       `,
     });
@@ -93,6 +94,7 @@ describe('evaluation of functions on RDF terms', () => {
       operation: 'isURI',
       testTable: `
         <http://example.com> = true
+        BNODE() = false
         "foo" = false
       `,
     });
@@ -106,6 +108,7 @@ describe('evaluation of functions on RDF terms', () => {
       operation: 'isBlank',
       testTable: `
         <http://example.com> = false
+        BNODE() = true
         "foo" = false
       `,
     });
@@ -119,8 +122,26 @@ describe('evaluation of functions on RDF terms', () => {
       operation: 'isLiteral',
       testTable: `
         <http://example.com> = false
+        BNODE() = false
         "foo" = true
         "foo"@fr = true
+      `,
+    });
+  });
+
+  describe('like \'isNumeric\' receiving', () => {
+    runTestTable({
+      arity: 1,
+      aliases: bool,
+      notation: Notation.Function,
+      operation: 'isNumeric',
+      testTable: `
+        <http://example.com> = false
+        BNODE() = false
+        "foo" = false
+        "foo"@fr = false
+        1 = true
+        "1"^^xsd:int = true
       `,
     });
   });

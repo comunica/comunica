@@ -92,6 +92,7 @@ describe('string functions', () => {
        "aa" "b" = false
        "aa"@en "a"@en = true
        "aa"@en "b"@en = false
+       '"some string"' '"e s"' = true
       `,
       errorTable: `
        "aa"@en "a"@fr = 'Operation on incompatible language literals'
@@ -117,6 +118,52 @@ describe('string functions', () => {
        "de-X-De" "de-*-DE" = false
        "de-Deva" "de-*-DE" = false
        "de" "fr" = false
+      `,
+    });
+  });
+
+  describe('evaluations of \'strbefore\' like', () => {
+    // Inspired on the specs: https://www.w3.org/TR/sparql11-query/#func-strbefore
+    runTestTable({
+      arity: 2,
+      aliases: bool,
+      operation: 'STRBEFORE',
+      notation: Notation.Function,
+      testTable: `
+        "abc" "b" = "a"
+        "abc"@en "bc" = "a"@en
+        "abc"^^xsd:string "" = ""^^xsd:string
+        "abc" "xyz" = ""
+        "abc"@en "z"@en = ""
+        "abc" "z" = ""
+        "abc"@en ""@en = ""@en
+        "abc"@en "" = ""@en
+      `,
+      errorTable: `
+        "abc"@en "b"@cy = 'Operation on incompatible language literals'
+      `,
+    });
+  });
+
+  describe('evaluations of \'strafter\' like', () => {
+    // Inspired on the specs: https://www.w3.org/TR/sparql11-query/#func-strafter
+    runTestTable({
+      arity: 2,
+      aliases: bool,
+      operation: 'STRAFTER',
+      notation: Notation.Function,
+      testTable: `
+        "abc" "b" = "c"
+        "abc"@en "ab" = "c"@en
+        "abc"^^xsd:string "" = "abc"^^xsd:string
+        "abc" "xyz" = ""
+        "abc"@en "z"@en = ""
+        "abc" "z" = ""
+        "abc"@en ""@en = "abc"@en
+        "abc"@en "" = "abc"@en
+      `,
+      errorTable: `
+        "abc"@en "b"@cy = 'Operation on incompatible language literals'
       `,
     });
   });
