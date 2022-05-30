@@ -25,8 +25,6 @@ export function mainSparqlType(typeURL: string): IMainTypeHolder {
     case 'literal': return { types: [ 'literal' ], prio: 1 };
     case 'blankNode': return { types: [ 'blankNode' ], prio: 1 };
     case TypeAlias.SPARQL_NON_LEXICAL: return { types: [ 'nonlexical' ], prio: 2 };
-    case null:
-    case undefined:
     case '':
     case TypeURL.XSD_ANY_URI:
     case TypeURL.XSD_NORMALIZED_STRING:
