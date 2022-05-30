@@ -1,5 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import * as LRUCache from 'lru-cache';
+import type { LangStringLiteral } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
 import type { MainSparqlType } from './Consts';
 import type { ISuperTypeProvider, SuperTypeCallback, TypeCache } from './TypeHandling';
@@ -63,7 +64,8 @@ function isLiteralLowerThan(litA: RDF.Literal, litB: RDF.Literal,
       return myLitA.typedValue < myLitB.typedValue;
     case 'langString':
       return myLitA.typedValue < myLitB.typedValue ||
-          (myLitA.typedValue === myLitB.typedValue && (myLitA.language || '') < (myLitB.language || ''));
+          (myLitA.typedValue === myLitB.typedValue &&
+              (<LangStringLiteral>myLitA).language < (<LangStringLiteral>myLitB).language);
     case 'other':
     case 'nonlexical':
       return myLitA.dataType < myLitB.dataType ||
