@@ -143,15 +143,6 @@ export class UnexpectedError<T> extends Error {
   }
 }
 
-/**
- * An Error that signals a feature or function is yet unimplemented.
- */
-export class UnimplementedError extends Error {
-  public constructor(feature: string) {
-    super(`Unimplemented feature '${feature}!'`);
-  }
-}
-
 export class InvalidArity extends Error {
   public constructor(public args: E.Expression[], public op: C.Operator) {
     super(`The number of args does not match the arity of the operator '${pp(op)}'.`);
