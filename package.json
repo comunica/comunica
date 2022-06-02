@@ -43,7 +43,7 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "jest": "^27.0.1",
     "jest-rdf": "^1.7.0",
-    "lerna": "^4.0.0",
+    "lerna": "^5.0.0",
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.0",
     "memory-streams": "^0.1.3",
