@@ -69,9 +69,6 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
         entries,
         context: action.context,
       }),
-      physicalPlanMetadata: {
-        smallest: [ smallestEntry1, smallestEntry2 ],
-      },
     };
   }
 
