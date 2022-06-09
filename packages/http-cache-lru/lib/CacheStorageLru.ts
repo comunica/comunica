@@ -1,5 +1,5 @@
 import { CacheLru } from './CacheLru';
-import type ICacheLruOptions from './ICacheLruOptions';
+import type { ICacheLruOptions } from './ICacheLruOptions';
 
 export class CacheStorageLru implements CacheStorage {
   private caches: Record<string, Cache> = {};

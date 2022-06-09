@@ -1,9 +1,9 @@
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
 import type { Options } from 'lru-cache';
-import type IPolicyResponse from './IPolicyResponse';
+import type { IPolicyResponse } from './IPolicyResponse';
 
-export default interface ICacheLruOptions {
+export interface ICacheLruOptions {
   lruOptions?: Options<string, IPolicyResponse>;
   fetch?: (
     input: RequestInfo,

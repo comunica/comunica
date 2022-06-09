@@ -270,25 +270,31 @@ export abstract class ActorRdfJoin
       action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action);
     }
 
-    const { result, physicalPlanMetadata } = await this.getOutput(action);
-    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context.get(KeysInitQuery
       .physicalQueryPlanLogger);
+    let planMetadata: any;
     if (this.includeInLogs && physicalQueryPlanLogger) {
+      planMetadata = {};
       physicalQueryPlanLogger.logOperation(
         `join-${this.logicalType}`,
         this.physicalName,
         action,
         parentPhysicalQueryPlanNode,
         this.name,
-        {
-          ...physicalPlanMetadata,
-          cardinalities: metadatas.map(ActorRdfJoin.getCardinality),
-          joinCoefficients: await this.getJoinCoefficients(action, metadatas),
-        },
+        planMetadata,
       );
+    }
+
+    // Get action output
+    const { result, physicalPlanMetadata } = await this.getOutput(action);
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+
+    // Fill in the physical plan metadata after determining action output
+    if (planMetadata) {
+      Object.assign(planMetadata, physicalPlanMetadata);
+      planMetadata.cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
+      planMetadata.joinCoefficients = await this.getJoinCoefficients(action, metadatas);
     }
 
     // Cache metadata

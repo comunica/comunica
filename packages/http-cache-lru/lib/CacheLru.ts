@@ -6,11 +6,11 @@ import {
   requestToRequestWithHashHeaders,
   responseToRequestWithHashHeaders,
 } from './headerConversionHelpers';
-import type ICacheLruOptions from './ICacheLruOptions';
+import type { ICacheLruOptions } from './ICacheLruOptions';
 import {
   applyCacheLruOptionsDefaults,
 } from './ICacheLruOptions';
-import type IPolicyResponse from './IPolicyResponse';
+import type { IPolicyResponse } from './IPolicyResponse';
 
 type Fetch = (
   input: RequestInfo,

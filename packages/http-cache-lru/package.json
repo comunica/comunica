@@ -2,6 +2,7 @@
   "name": "@comunica/http-cache-lru",
   "version": "0.0.1",
   "description": "An implementation of the web Cache API using LRU",
+  "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "scripts": {
