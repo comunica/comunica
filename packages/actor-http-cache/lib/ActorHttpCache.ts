@@ -7,6 +7,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import { Cache } from '@comunica/http-cache-lru';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
+import 'cross-fetch/polyfill';
 
 /**
  * A comunica Cache Http Actor.
