@@ -20,17 +20,13 @@ export class ActorHttpCache extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
-    console.log('In Here');
     if (this.cache.has(new Request(action.input, action.init))) {
-      console.log(3);
       return { time: 1 };
     }
     return { time: Number.POSITIVE_INFINITY };
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
-    console.log('In here 2');
-    console.time('a');
     const customFetch: ((
       input: RequestInfo,
       init?: RequestInit
@@ -42,10 +38,10 @@ export class ActorHttpCache extends ActorHttp {
     // The response should never be undefined. The typings say "undefined" is a
     // possibility because the cache implements the Cache interface, but does
     // not follow the spec.
+    /* istanbul ignore next */
     if (!response) {
       throw new Error('Cache fetch returned false, but should not have');
     }
-    console.timeEnd('a');
     return response;
   }
 }

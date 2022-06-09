@@ -17,7 +17,7 @@ import { mockHttp } from './util';
 const DF = new DataFactory();
 const factory = new Factory();
 
-describe.skip('System test: QuerySparql', () => {
+describe('System test: QuerySparql', () => {
   const pollyContext = mockHttp();
 
   let engine: QueryEngine;
