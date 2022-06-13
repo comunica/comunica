@@ -41,8 +41,6 @@ jest.mock('fs', () => {
   return fs;
 });
 jest.useFakeTimers('legacy');
-// eslint-disable-next-line import/order
-import { mocked } from 'ts-jest/utils';
 
 const argsDefault = {
   moduleRootPath: 'moduleRootPath',
@@ -499,7 +497,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker = new EventEmitter();
         (<any> dummyWorker).process = {};
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit');
@@ -514,7 +512,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         const dummyWorker = new EventEmitter();
         (<any> dummyWorker).exitedAfterDisconnect = true;
         (<any> dummyWorker).process = {};
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit');
@@ -531,7 +529,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', 'start');
@@ -555,7 +553,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', 'start');
@@ -586,7 +584,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', 'start');
@@ -610,7 +608,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         await instance.run(stdout, stderr);
 
         // Simulate SIGINT event
-        (<any> mocked(process.once).mock.calls[0][1])();
+        (<any> jest.mocked(process.once).mock.calls[0][1])();
 
         expect(cluster.disconnect).toBeCalledTimes(1);
       });

@@ -8,7 +8,6 @@ import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import { mocked } from 'ts-jest/utils';
 import { ActorQueryOperationSparqlEndpoint } from '../lib/ActorQueryOperationSparqlEndpoint';
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
@@ -372,8 +371,8 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
 
       await output.execute();
 
-      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
-      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
+      expect(jest.mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
+      expect(jest.mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
     });
 
     it('should run and error for a server error', async() => {
