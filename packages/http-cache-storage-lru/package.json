@@ -21,11 +21,12 @@
   },
   "homepage": "https://github.com/comunica/http-cache-lru#readme",
   "devDependencies": {
-    "@types/http-cache-semantics": "^4.0.1"
+    "@types/http-cache-semantics": "^4.0.1",
+    "cross-fetch": "^3.0.5",
+    "http-cache-semantics": "^4.1.0"
   },
   "dependencies": {
-    "cross-fetch": "^3.0.5",
-    "http-cache-semantics": "^4.1.0",
+    "@comunica/actor-http-cache": "^2.2.0",
     "lru-cache": "^7.10.1"
   }
 }

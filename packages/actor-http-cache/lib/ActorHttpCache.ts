@@ -5,23 +5,24 @@ import type {
 } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
-import { Cache } from '@comunica/http-cache-lru';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
+import { CacheSemanticsHandler } from './CacheSemanticsHandler';
+import type { IHttpCacheStorage } from './IHttpCacheStorage';
 
 /**
  * A comunica Cache Http Actor.
  */
 export class ActorHttpCache extends ActorHttp {
-  private readonly cache: Cache;
+  private readonly cacheSemanticsHandler: CacheSemanticsHandler;
 
-  public constructor(args: IActorHttpArgs) {
+  public constructor(args: IActorHttpCacheArgs) {
     super(args);
-    this.cache = new Cache();
+    this.cacheSemanticsHandler = new CacheSemanticsHandler(args.cacheStorage);
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
-    if (this.cache.has(new Request(action.input, action.init))) {
+    if (await this.cacheSemanticsHandler.has(new Request(action.input, action.init))) {
       return { time: 1 };
     }
     return { time: Number.POSITIVE_INFINITY };
@@ -31,18 +32,15 @@ export class ActorHttpCache extends ActorHttp {
     const customFetch: ((
       input: RequestInfo,
       init?: RequestInit
-    ) => Promise<Response>) | undefined = action.context?.get(KeysHttp.fetch);
-    if (customFetch) {
-      this.cache.setFetch(customFetch);
-    }
-    const response = await this.cache.match(new Request(action.input, action.init));
-    // The response should never be undefined. The typings say "undefined" is a
-    // possibility because the cache implements the Cache interface, but does
-    // not follow the spec.
-    /* istanbul ignore next */
-    if (!response) {
-      throw new Error('Cache fetch returned false, but should not have');
-    }
-    return response;
+    ) => Promise<Response>) | undefined = action.context?.get(KeysHttp.fetch) || fetch;
+    return await this.cacheSemanticsHandler
+      .fetchWithCache(new Request(action.input, action.init), customFetch);
   }
+}
+
+export interface IActorHttpCacheArgs extends IActorHttpArgs {
+  /**
+   * A storage object to be used by the cache
+   */
+  cacheStorage: IHttpCacheStorage;
 }

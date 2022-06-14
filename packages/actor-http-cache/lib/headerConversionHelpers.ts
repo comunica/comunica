@@ -1,4 +1,3 @@
-import type { Request, Response, Headers } from 'cross-fetch';
 import type {
   Headers as HeaderHash,
   Request as CacheRequest,
