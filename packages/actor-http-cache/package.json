@@ -37,7 +37,7 @@
     "@comunica/core": "^2.2.0",
     "@comunica/bus-http": "^2.2.0",
     "@comunica/context-entries": "^2.2.0",
-    "@comunica/http-cache-lru": "^0.0.1",
+    "@comunica/http-cache-storage-lru": "^0.0.1",
     "cross-fetch": "^3.0.5",
     "http-cache-semantics": "^4.1.0"
   },

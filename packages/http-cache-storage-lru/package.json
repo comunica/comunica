@@ -1,5 +1,5 @@
 {
-  "name": "@comunica/http-cache-lru",
+  "name": "@comunica/http-cache-storage-lru",
   "version": "0.0.1",
   "description": "An implementation of the web Cache API using LRU",
   "lsd:module": true,

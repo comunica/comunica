@@ -1,51 +1,9 @@
 import { KeysHttp } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import { Request, Response } from 'cross-fetch';
+import { HttpCacheStorageLru } from '@comunica/http-cache-storage-lru';
 import { ActorHttpCache } from '../lib/ActorHttpCache';
-
-/**
- * Define all the mock fetch request and responses here
- */
-const fetchOptionsData = {
-  plain: <IFetchOptionData> {},
-  maxAge: <IFetchOptionData> {
-    responseInit: {
-      headers: {
-        'cache-control': 'max-age=604800',
-      },
-    },
-  },
-  eTag: <IFetchOptionData> {
-    responseInit: {
-      headers: {
-        etag: '123456',
-      },
-    },
-  },
-  noStore: <IFetchOptionData> {
-    responseInit: {
-      headers: {
-        'cache-control': 'no-store',
-      },
-    },
-  },
-};
-
-interface IFetchOption {
-  uri: string;
-  request: Request;
-  body: string;
-  response: Response;
-}
-
-interface IFetchOptionData {
-  requestInit?: RequestInit;
-  responseInit?: ResponseInit;
-}
-
-type FetchOptions = {
-  [key in keyof typeof fetchOptionsData]: IFetchOption;
-};
+import type { FetchOptions } from './http-test-helper';
+import { getHttpTestHelpers } from './http-test-helper';
 
 describe('ActorHttpCache', () => {
   let bus: any;
@@ -63,31 +21,14 @@ describe('ActorHttpCache', () => {
     let fo: FetchOptions;
 
     beforeEach(() => {
-      // @ts-expect-error
-      fo = {};
-      Object.entries(fetchOptionsData).forEach(([ key, fetchOptionData ]) => {
-        const uri = `https://example.com/${key}`;
-        fo[<keyof typeof fetchOptionsData> key] = <IFetchOption> {
-          uri,
-          request: new Request(uri, fetchOptionData.requestInit),
-          body: key,
-          response: new Response(key, fetchOptionData.responseInit),
-        };
+      const helpers = getHttpTestHelpers();
+      fetch = helpers.fetch;
+      fo = helpers.fo;
+      actor = new ActorHttpCache({
+        name: 'actor',
+        bus,
+        cacheStorage: new HttpCacheStorageLru({ lruOptions: { max: 10 }}),
       });
-
-      fetch = jest.fn(
-        async(input: RequestInfo, init?: RequestInit): Promise<Response> => {
-          const fetchOption = Object.values(fo).find(
-            option => option.uri === new Request(input, init).url,
-          );
-          if (!fetchOption) {
-            throw new Error('Test specified unknown fetch option');
-          }
-          return fetchOption.response;
-        },
-      );
-
-      actor = new ActorHttpCache({ name: 'actor', bus });
     });
 
     it('has a test return infinity if the request is not in the chache', async() => {
