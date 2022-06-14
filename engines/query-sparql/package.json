@@ -49,6 +49,7 @@
     "@comunica/actor-dereference-http": "^2.2.0",
     "@comunica/actor-dereference-rdf-parse": "^2.2.0",
     "@comunica/actor-hash-bindings-sha1": "^2.2.0",
+    "@comunica/actor-http-cache": "^2.2.0",
     "@comunica/actor-http-fetch": "^2.2.1",
     "@comunica/actor-http-proxy": "^2.2.0",
     "@comunica/actor-init-query": "^2.2.0",
