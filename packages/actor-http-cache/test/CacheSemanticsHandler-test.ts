@@ -24,7 +24,7 @@ describe('ActorHttpCache', () => {
       fetch = helpers.fetch;
       fo = helpers.fo;
       handler = new CacheSemanticsHandler(
-        new HttpCacheStorageLru({ lruOptions: { max: 10 }}),
+        new HttpCacheStorageLru({ max: 10 }),
       );
     });
 

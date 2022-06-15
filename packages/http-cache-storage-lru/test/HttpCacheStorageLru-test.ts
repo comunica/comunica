@@ -4,7 +4,7 @@ import { HttpCacheStorageLru } from '../lib/HttpCacheStorageLru';
 
 describe('HttpCacheStorageLru', () => {
   it('performs as a cache', async() => {
-    const cache = new HttpCacheStorageLru({ lruOptions: { max: 10 }});
+    const cache = new HttpCacheStorageLru({ max: 10 });
     const request = new Request('https://example.com/');
     const response = new Response('Test Body');
     const policy = new CachePolicy({ headers: {}}, { headers: {}});

@@ -1,12 +1,11 @@
 import type { IHttpCacheStorage, IHttpCacheStorageValue } from '@comunica/actor-http-cache';
 import * as LRU from 'lru-cache';
-import type { Options } from 'lru-cache';
 
 export class HttpCacheStorageLru implements IHttpCacheStorage {
   private readonly cache: LRU<string, IHttpCacheStorageValue>;
 
   public constructor(args: IHttpCacheLruArgs) {
-    this.cache = new LRU(args.lruOptions);
+    this.cache = new LRU({ max: args.max });
   }
 
   public async set(key: Request, value: IHttpCacheStorageValue, ttl?: number | undefined): Promise<void> {
@@ -31,5 +30,5 @@ export class HttpCacheStorageLru implements IHttpCacheStorage {
 }
 
 export interface IHttpCacheLruArgs {
-  lruOptions: Options<string, IHttpCacheStorageValue>;
+  max: number;
 }
