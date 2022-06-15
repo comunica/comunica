@@ -11,7 +11,8 @@
   "actors": [
     {
       "@id": "urn:comunica:default:http/actors#cache",
-      "@type": "ActorHttpCache"
+      "@type": "ActorHttpCache",
+      "cacheStorage": { "@id": "urn:comunica:default:http/cache-storage#main" }
     },
     {
       "@id": "urn:comunica:default:http/actors#proxy",

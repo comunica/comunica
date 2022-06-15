@@ -157,6 +157,7 @@
     "@comunica/bus-http-invalidate": "^2.2.0",
     "@comunica/config-query-sparql": "^2.2.0",
     "@comunica/core": "^2.2.0",
+    "@comunica/http-cache-storage-lru": "^0.0.1",
     "@comunica/logger-void": "^2.2.0",
     "@comunica/mediator-all": "^2.2.0",
     "@comunica/mediator-combine-pipeline": "^2.2.0",

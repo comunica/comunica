@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/http-cache-lru.git"
+    "url": "git+https://github.com/comunica/comunica.git"
   },
   "author": "Jackson Morgan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/http-cache-lru/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/http-cache-lru#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "devDependencies": {
     "@types/http-cache-semantics": "^4.0.1",
     "cross-fetch": "^3.0.5",
