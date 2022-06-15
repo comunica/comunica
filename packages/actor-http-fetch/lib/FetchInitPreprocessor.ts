@@ -23,4 +23,11 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
 
     return <any> { ...init, agent: this.agent };
   }
+
+  public async createAbortController(): Promise<AbortController> {
+    // Fallback to abort-controller for Node 14 backward compatibility
+    /* istanbul ignore next */
+    const AbortController = global.AbortController || await import('abort-controller');
+    return new AbortController();
+  }
 }

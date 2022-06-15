@@ -32,7 +32,8 @@
     "@comunica/bus-http": "^2.2.0",
     "@comunica/context-entries": "^2.2.0",
     "@comunica/mediatortype-time": "^2.2.0",
-    "cross-fetch": "^3.0.5"
+    "cross-fetch": "^3.0.5",
+    "abort-controller": "^3.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

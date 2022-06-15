@@ -111,6 +111,7 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    *   "lenient": "@comunica/actor-init-query:lenient",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
    *   "httpAuth": "@comunica/bus-http:auth",
+   *   "httpTimeout": "@comunica/bus-http:http-timeout",
    *   "fetch": "@comunica/bus-http:fetch",
    *   "readOnly": "@comunica/bus-query-operation:readOnly",
    *   "extensionFunctions": "@comunica/actor-init-query:extensionFunctions",

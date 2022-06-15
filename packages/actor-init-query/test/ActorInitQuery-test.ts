@@ -624,6 +624,22 @@ LIMIT 100
         });
       });
 
+      it('handles the --httpTimeout flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpTimeout=60' ],
+          env: {},
+          stdin: new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysHttp.httpTimeout.name]: 60,
+        });
+      });
+
       it('handles the destination --to option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],

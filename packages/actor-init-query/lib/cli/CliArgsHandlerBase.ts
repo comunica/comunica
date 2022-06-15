@@ -114,6 +114,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'Prints the full stacktrace when errors are thrown',
         },
+        httpTimeout: {
+          type: 'number',
+          describe: 'HTTP requests timeout in milliseconds',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -183,6 +187,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define lenient-mode
     if (args.lenient) {
       context[KeysInitQuery.lenient.name] = true;
+    }
+
+    // Define HTTP timeout
+    if (args.httpTimeout) {
+      context[KeysHttp.httpTimeout.name] = args.httpTimeout;
     }
   }
 }

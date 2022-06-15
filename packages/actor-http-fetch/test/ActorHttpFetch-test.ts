@@ -338,5 +338,28 @@ describe('ActorHttpFetch', () => {
       expect(fetch).not.toHaveBeenCalled();
       expect(customFetch).toHaveBeenCalled();
     });
+
+    it('should work with a large timeout', async() => {
+      await expect(actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000 }),
+      })).resolves.toMatchObject({ status: 200 });
+    });
+
+    it('should abort properly with a timeout', async() => {
+      jest.useFakeTimers();
+      const customFetch = jest.fn(async(_, init) => {
+        expect(init.signal.constructor.name).toEqual('AbortSignal');
+        expect(init.signal.aborted).toEqual(false);
+        jest.runAllTimers();
+        expect(init.signal.aborted).toEqual(true);
+        throw new Error('foo');
+      });
+      await expect(actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.fetch.name]: customFetch, [KeysHttp.httpTimeout.name]: 10 }),
+      })).rejects.toThrow('foo');
+      jest.useRealTimers();
+    });
   });
 });
