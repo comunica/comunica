@@ -10,6 +10,7 @@ import type {
   MediatorHttpInvalidate,
 } from '@comunica/bus-http-invalidate';
 import { KeysHttp } from '@comunica/context-entries';
+import type { IHttpCacheStorage } from '@comunica/http-cache-storage';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { IActionContext } from '@comunica/types';
 import 'cross-fetch/polyfill';
@@ -19,7 +20,6 @@ import {
   responseToResponseWithHashHeaders,
   addHashHeadersToObject,
 } from './headerConversionHelpers';
-import type { IHttpCacheStorage } from './IHttpCacheStorage';
 
 /**
  * A comunica Cache Http Actor.

@@ -31,6 +31,7 @@
     "lib/**/*.js"
   ],
   "devDependencies": {
+    "@comunica/http-cache-storage": "^0.0.1",
     "@types/http-cache-semantics": "^4.0.1"
   },
   "dependencies": {

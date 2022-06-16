@@ -1,4 +1,4 @@
-import type { IHttpCacheStorage, IHttpCacheStorageValue } from '@comunica/actor-http-cache';
+import type { IHttpCacheStorage, IHttpCacheStorageValue } from '@comunica/http-cache-storage';
 import * as LRU from 'lru-cache';
 
 export class HttpCacheStorageLru implements IHttpCacheStorage {

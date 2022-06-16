@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/http-cache-storage-lru",
+  "name": "@comunica/http-cache-storage",
   "version": "0.0.1",
-  "description": "An implementation of the web Cache API using LRU",
+  "description": "A cache-storage type for comunica",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -19,14 +19,5 @@
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/comunica#readme",
-  "devDependencies": {
-    "@comunica/http-cache-storage": "^0.0.1",
-    "@types/http-cache-semantics": "^4.0.1",
-    "cross-fetch": "^3.0.5",
-    "http-cache-semantics": "^4.1.0"
-  },
-  "dependencies": {
-    "lru-cache": "^7.10.1"
-  }
+  "homepage": "https://github.com/comunica/comunica#readme"
 }
