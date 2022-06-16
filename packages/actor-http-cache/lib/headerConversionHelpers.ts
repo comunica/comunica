@@ -22,7 +22,7 @@ export function requestToRequestWithHashHeaders(
  * @param response the response
  * @returns A response that has hash header
  */
-export function responseToRequestWithHashHeaders(
+export function responseToResponseWithHashHeaders(
   response: Response,
 ): CacheResponse {
   return { ...response, headers: headersToHash(response.headers) };

@@ -36,6 +36,7 @@
   "dependencies": {
     "@comunica/core": "^2.2.0",
     "@comunica/bus-http": "^2.2.0",
+    "@comunica/bus-http-invalidate": "^2.2.0",
     "@comunica/context-entries": "^2.2.0",
     "@comunica/http-cache-storage-lru": "^0.0.1",
     "cross-fetch": "^3.0.5",
