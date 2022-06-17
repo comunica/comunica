@@ -4,7 +4,7 @@ import {
   KeysCore,
   KeysHttp,
   KeysHttpMemento, KeysHttpProxy,
-  KeysInitQuery,
+  KeysInitQuery, KeysQueryOperation,
   KeysRdfResolveQuadPattern, KeysRdfUpdateQuads,
 } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -637,6 +637,22 @@ LIMIT 100
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysHttp.httpTimeout.name]: 60,
+        });
+      });
+
+      it('handles the --unionDefaultGraph flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--unionDefaultGraph' ],
+          env: {},
+          stdin: new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysQueryOperation.unionDefaultGraph.name]: true,
         });
       });
 

@@ -1,17 +1,20 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, IActionContext, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationQuadpattern } from '../lib/ActorQueryOperationQuadpattern';
 const quad = require('rdf-quad');
 import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
+const AF = new Factory();
 
 describe('ActorQueryOperationQuadpattern', () => {
   let bus: any;
@@ -187,7 +190,12 @@ describe('ActorQueryOperationQuadpattern', () => {
           },
         ),
       };
-      actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
+      actor = new ActorQueryOperationQuadpattern({
+        name: 'actor',
+        bus,
+        mediatorResolveQuadPattern,
+        unionDefaultGraph: false,
+      });
     });
 
     it('should test on quad pattern operations', () => {
@@ -446,7 +454,12 @@ describe('ActorQueryOperationQuadpattern', () => {
           },
         ),
       };
-      actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
+      actor = new ActorQueryOperationQuadpattern({
+        name: 'actor',
+        bus,
+        mediatorResolveQuadPattern,
+        unionDefaultGraph: false,
+      });
 
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
@@ -483,6 +496,263 @@ describe('ActorQueryOperationQuadpattern', () => {
           }),
           pattern: operation,
         });
+    });
+
+    it('should run s ?p o under default non-union default graph semantics', async() => {
+      const operation = AF.createPattern(
+        DF.namedNode('s'),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.defaultGraph(),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('p') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
+        ],
+      );
+
+      expect(mediatorResolveQuadPattern.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
+        pattern: AF.createPattern(
+          DF.namedNode('s'),
+          DF.variable('p'),
+          DF.namedNode('o'),
+          DF.defaultGraph(),
+        ),
+      });
+    });
+
+    it('should run s ?p o under union default graph semantics, defined via actor', async() => {
+      actor = new ActorQueryOperationQuadpattern({
+        name: 'actor',
+        bus,
+        mediatorResolveQuadPattern,
+        unionDefaultGraph: true,
+      });
+
+      const operation = AF.createPattern(
+        DF.namedNode('s'),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.defaultGraph(),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('p') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
+        ],
+      );
+
+      expect(mediatorResolveQuadPattern.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
+        pattern: AF.createPattern(
+          DF.namedNode('s'),
+          DF.variable('p'),
+          DF.namedNode('o'),
+          DF.variable('__comunica:defaultGraph'),
+        ),
+      });
+    });
+
+    it('should run s ?p o under union default graph semantics, defined via context', async() => {
+      context = context.set(KeysQueryOperation.unionDefaultGraph, true);
+
+      const operation = AF.createPattern(
+        DF.namedNode('s'),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.defaultGraph(),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('p') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
+        ],
+      );
+
+      expect(mediatorResolveQuadPattern.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
+        pattern: AF.createPattern(
+          DF.namedNode('s'),
+          DF.variable('p'),
+          DF.namedNode('o'),
+          DF.variable('__comunica:defaultGraph'),
+        ),
+      });
+    });
+
+    it('should run s ?p o g under union default graph semantics, defined via actor', async() => {
+      actor = new ActorQueryOperationQuadpattern({
+        name: 'actor',
+        bus,
+        mediatorResolveQuadPattern,
+        unionDefaultGraph: true,
+      });
+
+      const operation = AF.createPattern(
+        DF.namedNode('s'),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.namedNode('g'),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('p') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
+          BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
+        ],
+      );
+
+      expect(mediatorResolveQuadPattern.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
+        pattern: AF.createPattern(
+          DF.namedNode('s'),
+          DF.variable('p'),
+          DF.namedNode('o'),
+          DF.namedNode('g'),
+        ),
+      });
+    });
+
+    it('should run s ?p o ?g under default non-union default graph semantics', async() => {
+      mediatorResolveQuadPattern.mediate = jest.fn(
+        () => {
+          const data = new ArrayIterator([
+            quad('s1', 'p1', 'o1', 'g1'),
+            quad('s2', 'p2', 'o2', 'g2'),
+            quad('s3', 'p3', 'o3', 'g3'),
+            quad('sd', 'pd', 'od'),
+          ]);
+          data.setProperty('metadata', metadataContent);
+          return Promise.resolve({ data });
+        },
+      );
+
+      const operation = AF.createPattern(
+        DF.namedNode('s'),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.variable('g'),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+          { term: DF.variable('g'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('p'), DF.variable('g') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p1') ],
+            [ DF.variable('g'), DF.namedNode('g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p2') ],
+            [ DF.variable('g'), DF.namedNode('g2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p3') ],
+            [ DF.variable('g'), DF.namedNode('g3') ],
+          ]),
+        ],
+      );
+    });
+
+    it('should run s ?p o ?g under union default graph semantics', async() => {
+      context = context.set(KeysQueryOperation.unionDefaultGraph, true);
+      mediatorResolveQuadPattern.mediate = jest.fn(
+        () => {
+          const data = new ArrayIterator([
+            quad('s1', 'p1', 'o1', 'g1'),
+            quad('s2', 'p2', 'o2', 'g2'),
+            quad('s3', 'p3', 'o3', 'g3'),
+            quad('sd', 'pd', 'od'),
+          ]);
+          data.setProperty('metadata', metadataContent);
+          return Promise.resolve({ data });
+        },
+      );
+
+      const operation = AF.createPattern(
+        DF.namedNode('s'),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.variable('g'),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+          { term: DF.variable('g'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('p'), DF.variable('g') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p1') ],
+            [ DF.variable('g'), DF.namedNode('g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p2') ],
+            [ DF.variable('g'), DF.namedNode('g2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p3') ],
+            [ DF.variable('g'), DF.namedNode('g3') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('pd') ],
+            [ DF.variable('g'), DF.defaultGraph() ],
+          ]),
+        ],
+      );
     });
   });
 });

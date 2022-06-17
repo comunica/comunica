@@ -267,11 +267,7 @@ export class FederatedQuadSource implements IQuadSource {
       });
 
       // Determine the data stream from this source
-      let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
-      // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
-      if (graph.termType === 'Variable') {
-        data = data.filter(quad => quad.graph.termType !== 'DefaultGraph');
-      }
+      const data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
 
       // Forward errors to our final iterator
       data.on('error', error => it.emit('error', error));

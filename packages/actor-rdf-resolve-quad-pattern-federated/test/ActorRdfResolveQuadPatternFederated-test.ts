@@ -118,7 +118,12 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
             .toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false });
-          expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([]);
+          expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([
+            squad('s1', 'p1', 'o1'),
+            squad('s1', 'p1', 'o1'),
+            squad('s1', 'p1', 'o2'),
+            squad('s1', 'p1', 'o2'),
+          ]);
         });
     });
 

@@ -172,6 +172,10 @@ export const KeysQueryOperation = {
    * An indicator that the stream will be limited to the given number of elements afterwards.
    */
   limitIndicator: new ActionContextKey<number>('@comunica/bus-query-operation:limitIndicator'),
+  /**
+   * If the default graph should also contain the union of all named graphs.
+   */
+  unionDefaultGraph: new ActionContextKey<boolean>('@comunica/bus-query-operation:unionDefaultGraph'),
 };
 
 export const KeysRdfParseJsonLd = {

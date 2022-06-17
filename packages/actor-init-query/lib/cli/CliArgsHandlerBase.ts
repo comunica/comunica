@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import * as OS from 'os';
-import { KeysHttp, KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
@@ -118,6 +118,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'number',
           describe: 'HTTP requests timeout in milliseconds',
         },
+        unionDefaultGraph: {
+          type: 'boolean',
+          describe: 'If the default graph should also contain the union of all named graphs',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -192,6 +196,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define HTTP timeout
     if (args.httpTimeout) {
       context[KeysHttp.httpTimeout.name] = args.httpTimeout;
+    }
+
+    // Define union default graph
+    if (args.unionDefaultGraph) {
+      context[KeysQueryOperation.unionDefaultGraph.name] = true;
     }
   }
 }
