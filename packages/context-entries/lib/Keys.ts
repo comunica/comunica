@@ -39,6 +39,10 @@ export const KeysHttp = {
    * Fetch function implementation.
    */
   fetch: new ActionContextKey<typeof fetch>('@comunica/bus-http:fetch'),
+  /**
+   * HTTP request timeout in milliseconds.
+   */
+  httpTimeout: new ActionContextKey<number>('@comunica/bus-http:http-timeout'),
 };
 
 export const KeysHttpMemento = {

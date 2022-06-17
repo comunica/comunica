@@ -58,22 +58,43 @@ export class ActorHttpFetch extends ActorHttp {
       action.init.headers = ActorHttp.headersToHash(action.init.headers);
     }
 
-    // Perform request
-    const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
-      .context?.get(KeysHttp.fetch);
-    return await (customFetch || fetch)(action.input, await this.fetchInitPreprocessor.handle({
-      ...action.init,
-      ...action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
-    })).then(response => {
+    let requestInit = { ...action.init };
+
+    if (action.context.get(KeysHttp.includeCredentials)) {
+      requestInit.credentials = 'include';
+    }
+
+    const httpTimeout: number | undefined = action.context?.get(KeysHttp.httpTimeout);
+    let requestTimeout;
+    if (httpTimeout !== undefined) {
+      const controller = await this.fetchInitPreprocessor.createAbortController();
+      requestInit.signal = controller.signal;
+      requestTimeout = setTimeout(() => controller.abort(), httpTimeout);
+    }
+
+    try {
+      requestInit = await this.fetchInitPreprocessor.handle(requestInit);
+
+      // Perform request
+      const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
+        .context?.get(KeysHttp.fetch);
+
+      const response = await (customFetch || fetch)(action.input, requestInit);
+
       // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
       // If it doesn't exist, we monkey-patch it.
       if (response.body && !response.body.cancel) {
         response.body.cancel = async(error?: Error) => {
-          (<Readable> <any> response.body).destroy(error);
+          (<Readable><any>response.body).destroy(error);
         };
       }
       return response;
-    });
+    } finally {
+      // We abort timeouts
+      if (requestTimeout !== undefined) {
+        clearTimeout(requestTimeout);
+      }
+    }
   }
 }
 
