@@ -640,6 +640,33 @@ LIMIT 100
         });
       });
 
+      it('handles the --httpBodyTimeout flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpTimeout=60', '--httpBodyTimeout' ],
+          env: {},
+          stdin: new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysHttp.httpTimeout.name]: 60,
+          [KeysHttp.httpBodyTimeout.name]: true,
+        });
+      });
+
+      it('--httpBodyTimeout flag requires --httpTimeout', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpBodyTimeout' ],
+          env: {},
+          stdin: new PassThrough(),
+          context,
+        })).stderr);
+        expect(stderr).toContain(`The --httpBodyTimeout option requires the --httpTimeout option to be set`);
+      });
+
       it('handles the --unionDefaultGraph flag', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--unionDefaultGraph' ],

@@ -15,7 +15,7 @@ const streamifyString = require('streamify-string');
 (<any> global).fetch = jest.fn((input: any, init: any) => {
   return Promise.resolve({
     status: input.url === 'https://www.google.com/' ? 200 : 404,
-    ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn() }},
+    ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
   });
 });
 
@@ -340,10 +340,24 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should work with a large timeout', async() => {
+      jest.spyOn(global, 'clearTimeout');
       await expect(actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000 }),
       })).resolves.toMatchObject({ status: 200 });
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should work with a large timeout with an error', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      const customFetch = jest.fn(async(_, _init) => {
+        throw new Error('foo');
+      });
+      await expect(actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.fetch.name]: customFetch, [KeysHttp.httpTimeout.name]: 100_000 }),
+      })).rejects.toBeInstanceOf(Error);
+      expect(clearTimeout).toHaveBeenCalled();
     });
 
     it('should abort properly with a timeout', async() => {
@@ -359,6 +373,75 @@ describe('ActorHttpFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({ [KeysHttp.fetch.name]: customFetch, [KeysHttp.httpTimeout.name]: 10 }),
       })).rejects.toThrow('foo');
+      jest.useRealTimers();
+    });
+
+    it('should work with a large timeout including body if there is no body', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      await expect(actor.run({
+        input: <Request> { url: 'NOBODY' },
+        context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000, [KeysHttp.httpBodyTimeout.name]: true }),
+      })).resolves.toMatchObject({ status: 404 });
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should work with a large timeout including body if the body is consumed', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      const customFetch = jest.fn(async(_, _init) => {
+        const body = Readable.from('foo');
+        return Promise.resolve({
+          body,
+        });
+      });
+      const response = await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpTimeout.name]: 100_000,
+          [KeysHttp.httpBodyTimeout.name]: true,
+        }),
+      });
+      const body = <Readable><any> response.body;
+      for await (const chunk of body) {
+        // We just want to consume everything
+      }
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should work with a large timeout including body if the body is cancelled', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      const customFetch = jest.fn(async(_, _init) => {
+        const body = Readable.from('foo');
+        return Promise.resolve({
+          body,
+        });
+      });
+      const response = await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpTimeout.name]: 100_000,
+          [KeysHttp.httpBodyTimeout.name]: true,
+        }),
+      });
+      await response.body?.cancel();
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should abort properly with a timeout including body', async() => {
+      jest.useFakeTimers();
+      const response = await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.httpTimeout.name]: 20, [KeysHttp.httpBodyTimeout.name]: true }),
+      });
+      expect((<any> response.body).destroy).not.toHaveBeenCalled();
+      expect(response.body!.cancel).toBeTruthy();
+
+      jest.runAllTimers();
+      expect((<any> response.body).destroy).toHaveBeenCalledWith(
+        new Error(`HTTP timeout when reading the body of undefined.
+This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeout' options.`),
+      );
       jest.useRealTimers();
     });
   });
