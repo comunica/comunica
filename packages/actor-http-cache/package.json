@@ -35,11 +35,11 @@
     "@types/http-cache-semantics": "^4.0.1"
   },
   "dependencies": {
-    "@comunica/core": "^2.2.0",
     "@comunica/bus-http": "^2.2.0",
     "@comunica/bus-http-invalidate": "^2.2.0",
     "@comunica/context-entries": "^2.2.0",
-    "@comunica/http-cache-storage-lru": "^0.0.1",
+    "@comunica/mediatortype-time": "^2.2.0",
+    "@comunica/types": "^2.2.0",
     "cross-fetch": "^3.0.5",
     "http-cache-semantics": "^4.1.0"
   },
