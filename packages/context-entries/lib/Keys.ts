@@ -43,6 +43,11 @@ export const KeysHttp = {
    * HTTP request timeout in milliseconds.
    */
   httpTimeout: new ActionContextKey<number>('@comunica/bus-http:http-timeout'),
+  /**
+   * Makes the HTTP timeout not only apply until the response starts streaming in
+   * but until the response is fully consumed.
+   */
+  httpBodyTimeout: new ActionContextKey<boolean>('@comunica/bus-http:http-body-timeout'),
 };
 
 export const KeysHttpMemento = {

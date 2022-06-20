@@ -118,6 +118,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'number',
           describe: 'HTTP requests timeout in milliseconds',
         },
+        httpBodyTimeout: {
+          type: 'boolean',
+          describe: 'Makes the HTTP timeout take into account the response body stream read',
+        },
         unionDefaultGraph: {
           type: 'boolean',
           describe: 'If the default graph should also contain the union of all named graphs',
@@ -196,6 +200,14 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define HTTP timeout
     if (args.httpTimeout) {
       context[KeysHttp.httpTimeout.name] = args.httpTimeout;
+    }
+
+    // Define HTTP body timeout
+    if (args.httpBodyTimeout) {
+      if (!args.httpTimeout) {
+        throw new Error('The --httpBodyTimeout option requires the --httpTimeout option to be set');
+      }
+      context[KeysHttp.httpBodyTimeout.name] = args.httpBodyTimeout;
     }
 
     // Define union default graph
