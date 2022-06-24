@@ -7,7 +7,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
-import { mocked } from 'ts-jest/utils';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 const streamifyString = require('streamify-string');
 
@@ -78,11 +77,11 @@ describe('ActorHttpFetch', () => {
     it('should run and pass a custom agent to node-fetch', async() => {
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
         .toBeInstanceOf(HttpsAgent);
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
         .toBeInstanceOf(HttpAgent);
     });
 
@@ -91,11 +90,11 @@ describe('ActorHttpFetch', () => {
 
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
         .toBeInstanceOf(HttpsAgent);
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
         .toBeInstanceOf(HttpAgent);
     });
 
