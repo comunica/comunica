@@ -1366,6 +1366,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(eventEmitter.listeners('test').length).toEqual(1);
         expect(response.end).not.toHaveBeenCalled();
         expect(endListener).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
       });
 
       it('should remove event eventlisteners from eventEmitter when response is closed', async() => {
@@ -1374,6 +1375,16 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(eventEmitter.listeners('test').length).toEqual(0);
         expect(response.end).toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should exit when freshWorkerPerQuery is enabled', async() => {
+        instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4, freshWorkerPerQuery: true });
+
+        instance.stopResponse(response, eventEmitter);
+        response.emit('close');
+
+        expect(process.exit).toHaveBeenCalledWith(9);
       });
     });
 

@@ -32,6 +32,7 @@ export class HttpServiceSparqlEndpoint {
   public readonly workers: number;
 
   public readonly invalidateCacheBeforeQuery: boolean;
+  public readonly freshWorkerPerQuery: boolean;
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
@@ -39,6 +40,7 @@ export class HttpServiceSparqlEndpoint {
     this.port = args.port ?? 3_000;
     this.workers = args.workers ?? 1;
     this.invalidateCacheBeforeQuery = Boolean(args.invalidateCacheBeforeQuery);
+    this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -126,6 +128,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     const invalidateCacheBeforeQuery: boolean = args.invalidateCache;
+    const freshWorkerPerQuery: boolean = args.freshWorker;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -138,6 +141,7 @@ export class HttpServiceSparqlEndpoint {
       configPath,
       context,
       invalidateCacheBeforeQuery,
+      freshWorkerPerQuery,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -480,6 +484,8 @@ export class HttpServiceSparqlEndpoint {
    */
   public stopResponse(response: http.ServerResponse, eventEmitter?: EventEmitter): void {
     response.on('close', killClient);
+    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    const self = this;
     function killClient(): void {
       if (eventEmitter) {
         // Remove all listeners so we are sure no more write calls are made
@@ -490,6 +496,12 @@ export class HttpServiceSparqlEndpoint {
         response.end();
       } catch {
         // Do nothing
+      }
+
+      // Kill the worker if we want fresh workers per query
+      if (self.freshWorkerPerQuery) {
+        // eslint-disable-next-line unicorn/no-process-exit
+        process.exit(9);
       }
     }
   }
@@ -543,6 +555,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   port?: number;
   workers?: number;
   invalidateCacheBeforeQuery?: boolean;
+  freshWorkerPerQuery?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }
