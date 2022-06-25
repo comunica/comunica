@@ -125,7 +125,7 @@ describe('ActorRdfParseN3', () => {
       it('should parse N3', async() => {
         const output: any = await actor.run({ handle: { data: input, context }, handleMediaType: 'text/n3', context });
         const arr = await arrayifyStream(output.handle.data);
-        return expect(arr).toHaveLength(3);
+        expect(arr).toHaveLength(3);
       });
     });
 
