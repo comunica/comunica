@@ -21,6 +21,12 @@
   },
   "homepage": "https://github.com/comunica/comunica#readme",
   "dependencies": {
+    "@comunica/http-cache-storage": "0.0.1",
     "lru-cache": "^7.10.1"
-  }
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ]
 }
