@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@types/minimist": "^1.2.0",
-    "componentsjs": "^5.0.1",
+    "componentsjs": "^5.2.0",
     "minimist": "^1.2.0"
   },
   "scripts": {
