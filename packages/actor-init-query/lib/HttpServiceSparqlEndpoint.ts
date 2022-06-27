@@ -381,9 +381,10 @@ export class HttpServiceSparqlEndpoint {
     // Listen for shutdown events from master for timeouts
     const messageListener = (message: string): void => {
       if (message === 'shutdown') {
-        response.end('!TIMED OUT!');
-        // eslint-disable-next-line unicorn/no-process-exit
-        process.exit(9);
+        response.end('!TIMEDOUT!', () => {
+          // eslint-disable-next-line unicorn/no-process-exit
+          process.exit(9);
+        });
       }
     };
     process.on('message', messageListener);

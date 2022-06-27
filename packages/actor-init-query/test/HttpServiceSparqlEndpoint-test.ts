@@ -1251,8 +1251,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         shutdownListener('shutdown');
 
+        expect(response.end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+
+        // Expect process.exit to only have been called after response.end completes (i.e., the callback is invoked)
+        expect(process.exit).not.toHaveBeenCalled();
+        jest.mocked(response.end).mock.calls[0][1]();
         expect(process.exit).toHaveBeenCalledTimes(1);
-        expect(response.end).toHaveBeenCalledWith('!TIMED OUT!');
       });
 
       it('should ignore non-shutdown messages', async() => {
