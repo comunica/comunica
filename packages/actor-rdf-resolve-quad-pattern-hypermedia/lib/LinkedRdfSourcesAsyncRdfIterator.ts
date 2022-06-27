@@ -42,6 +42,15 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.iteratorsPendingCreation = 0;
   }
 
+  protected _end(destroy?: boolean): void {
+    // Close all running iterators
+    for (const it of this.currentIterators) {
+      it.destroy();
+    }
+
+    super._end(destroy);
+  }
+
   /**
    * Get the internal link queue.
    * The returned instance must always be the same.

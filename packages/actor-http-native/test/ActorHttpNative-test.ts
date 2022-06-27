@@ -271,7 +271,7 @@ describe('ActorHttpNative', () => {
       return expect(actor.run({
         context,
         input: new Request('http://example.com'),
-        init: { signal: abortController.signal },
+        init: { signal: <any> abortController.signal },
       })).resolves.toMatchObject({ status: 200 });
     });
 
@@ -282,7 +282,7 @@ describe('ActorHttpNative', () => {
       const response = await actor.run({
         context,
         input: new Request('http://example.com'),
-        init: { signal: abortController.signal },
+        init: { signal: <any> abortController.signal },
       });
       expect(response.status).toEqual(200);
       expect((<any> response).body.destroy).toHaveBeenCalled();
@@ -294,7 +294,7 @@ describe('ActorHttpNative', () => {
       const response = await actor.run({
         context,
         input: new Request('http://example.com'),
-        init: { signal: abortController.signal },
+        init: { signal: <any> abortController.signal },
       });
       expect((<any> response).body.destroy).not.toHaveBeenCalled();
       expect(response.status).toEqual(200);

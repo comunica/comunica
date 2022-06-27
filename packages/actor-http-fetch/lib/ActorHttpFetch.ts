@@ -90,7 +90,7 @@ export class ActorHttpFetch extends ActorHttp {
           onTimeout = () => response.body?.cancel(new Error(`HTTP timeout when reading the body of ${response.url}.
 This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeout' options.`));
           (<Readable><any>response.body).on('close', () => {
-            clearTimeout(requestTimeout!);
+            clearTimeout(requestTimeout);
           });
         } else {
           clearTimeout(requestTimeout);
