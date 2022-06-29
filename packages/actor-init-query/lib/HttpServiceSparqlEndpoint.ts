@@ -183,8 +183,13 @@ export class HttpServiceSparqlEndpoint {
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
         if (!worker.exitedAfterDisconnect) {
-          stderr.write(`Worker ${worker.process.pid} died with ${code || signal}. Starting new worker.\n`);
-          cluster.fork();
+          if (code === 9 || signal === 'SIGKILL') {
+            stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
+            cluster.disconnect();
+          } else {
+            stderr.write(`Worker ${worker.process.pid} died with ${code || signal}. Starting new worker.\n`);
+            cluster.fork();
+          }
         }
       });
 

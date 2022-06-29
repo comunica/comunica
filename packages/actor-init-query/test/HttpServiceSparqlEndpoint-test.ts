@@ -614,6 +614,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         dummyWorker.emit('exit');
 
         expect(cluster.fork).toBeCalledTimes(5);
+        expect(cluster.disconnect).not.toHaveBeenCalled();
       });
 
       it('should handle worker exits when exitedAfterDisconnect is true', async() => {
@@ -629,6 +630,36 @@ describe('HttpServiceSparqlEndpoint', () => {
         dummyWorker.emit('exit');
 
         expect(cluster.fork).toBeCalledTimes(4);
+      });
+
+      it('should handle worker exits with code 9', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {};
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit', 9);
+
+        expect(cluster.fork).toBeCalledTimes(4);
+        expect(cluster.disconnect).toHaveBeenCalledTimes(1);
+      });
+
+      it('should handle worker exits with signal SIGKILL', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {};
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit', undefined, 'SIGKILL');
+
+        expect(cluster.fork).toBeCalledTimes(4);
+        expect(cluster.disconnect).toHaveBeenCalledTimes(1);
       });
 
       it('should handle worker start messages', async() => {
