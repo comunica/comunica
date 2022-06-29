@@ -1,6 +1,5 @@
 const path = require('path');
 const ProgressPlugin = require('webpack').ProgressPlugin;
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
   entry: [ path.resolve(__dirname, 'lib/index-browser.js') ],
@@ -20,8 +19,12 @@ module.exports = {
       },
     ]
   },
+  resolve: {
+    fallback: {
+      stream: require.resolve('stream-browserify')
+    }
+  },
   plugins: [
-    new NodePolyfillPlugin(),
     new ProgressPlugin(),
   ]
 };
