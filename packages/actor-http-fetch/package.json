@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-fetch",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "A node-fetch http actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -29,11 +29,11 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-http": "^2.2.0",
-    "@comunica/context-entries": "^2.2.0",
-    "@comunica/mediatortype-time": "^2.2.0",
-    "cross-fetch": "^3.0.5",
-    "abort-controller": "^3.0.0"
+    "@comunica/bus-http": "^2.3.0",
+    "@comunica/context-entries": "^2.3.0",
+    "@comunica/mediatortype-time": "^2.3.0",
+    "abort-controller": "^3.0.0",
+    "cross-fetch": "^3.0.5"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-orderby-sparqlee",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A orderby-sparqlee query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,9 +31,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.2.0",
-    "@comunica/core": "^2.2.0",
-    "@comunica/types": "^2.2.0",
+    "@comunica/bus-query-operation": "^2.3.0",
+    "@comunica/core": "^2.3.0",
+    "@comunica/types": "^2.3.0",
     "asynciterator": "^3.4.2",
     "sparqlalgebrajs": "^4.0.0",
     "sparqlee": "^2.1.0"
