@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-dereference-rdf",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A comunica bus for dereferencing a path or URL into a stream of quads.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,9 +30,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-dereference": "^2.2.0",
-    "@comunica/bus-rdf-parse": "^2.2.0",
-    "@comunica/core": "^2.2.0",
+    "@comunica/bus-dereference": "^2.3.0",
+    "@comunica/bus-rdf-parse": "^2.3.0",
+    "@comunica/core": "^2.3.0",
     "@rdfjs/types": "*"
   },
   "scripts": {
