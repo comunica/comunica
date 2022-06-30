@@ -58,22 +58,64 @@ export class ActorHttpFetch extends ActorHttp {
       action.init.headers = ActorHttp.headersToHash(action.init.headers);
     }
 
-    // Perform request
-    const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
-      .context?.get(KeysHttp.fetch);
-    return await (customFetch || fetch)(action.input, await this.fetchInitPreprocessor.handle({
-      ...action.init,
-      ...action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
-    })).then(response => {
+    let requestInit = { ...action.init };
+
+    if (action.context.get(KeysHttp.includeCredentials)) {
+      requestInit.credentials = 'include';
+    }
+
+    const httpTimeout: number | undefined = action.context?.get(KeysHttp.httpTimeout);
+    let requestTimeout: NodeJS.Timeout | undefined;
+    let onTimeout: (() => void) | undefined;
+    if (httpTimeout !== undefined) {
+      const controller = await this.fetchInitPreprocessor.createAbortController();
+      requestInit.signal = controller.signal;
+      onTimeout = () => controller.abort();
+      requestTimeout = setTimeout(() => onTimeout!(), httpTimeout);
+    }
+
+    try {
+      requestInit = await this.fetchInitPreprocessor.handle(requestInit);
+
+      // Perform request
+      const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
+        .context?.get(KeysHttp.fetch);
+
+      const response = await (customFetch || fetch)(action.input, requestInit);
+
+      // We remove or update the timeout
+      if (requestTimeout !== undefined) {
+        const httpBodyTimeout = action.context?.get(KeysHttp.httpBodyTimeout) || false;
+        if (httpBodyTimeout && response.body) {
+          onTimeout = () => response.body?.cancel(new Error(`HTTP timeout when reading the body of ${response.url}.
+This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeout' options.`));
+          (<Readable><any>response.body).on('close', () => {
+            clearTimeout(requestTimeout);
+          });
+        } else {
+          clearTimeout(requestTimeout);
+        }
+      }
+
       // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
       // If it doesn't exist, we monkey-patch it.
       if (response.body && !response.body.cancel) {
         response.body.cancel = async(error?: Error) => {
-          (<Readable> <any> response.body).destroy(error);
+          (<Readable><any>response.body).destroy(error);
+          if (requestTimeout !== undefined) {
+            // We make sure to remove the timeout if it is still enabled
+            clearTimeout(requestTimeout);
+          }
         };
       }
+
       return response;
-    });
+    } catch (error: unknown) {
+      if (requestTimeout !== undefined) {
+        clearTimeout(requestTimeout);
+      }
+      throw error;
+    }
   }
 }
 

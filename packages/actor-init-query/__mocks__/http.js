@@ -1,4 +1,5 @@
 const streams = require('memory-streams');
+const EventEmitter = require('events');
 
 class ServerResponseMock extends streams.WritableStream {
   constructor(){
@@ -12,10 +13,12 @@ function getServerResponseMock() {
   return new ServerResponseMock();
 }
 
-class ServerMock {
+class ServerMock extends EventEmitter {
   constructor(){
+    super();
     this.listen = jest.fn();
     this.setTimeout = jest.fn();
+    this.close = jest.fn();
   }
 }
 

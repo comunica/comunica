@@ -100,11 +100,40 @@ describe('ActorRdfParseN3', () => {
       });
     });
 
+    describe('for parsing n3', () => {
+      beforeEach(() => {
+        input = stringToStream(`
+        { ?uuu ?aaa ?yyy } => { ?aaa a <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> } .
+      `);
+        inputError = new Readable();
+        inputError._read = () => inputError.emit('error', new Error('ParseN3'));
+      });
+
+      it('should test on N3', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'text/n3', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'text/n3',
+            context,
+          }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should parse N3', async() => {
+        const output: any = await actor.run({ handle: { data: input, context }, handleMediaType: 'text/n3', context });
+        const arr = await arrayifyStream(output.handle.data);
+        expect(arr).toHaveLength(3);
+      });
+    });
+
     describe('for parsing', () => {
       beforeEach(() => {
         input = stringToStream(`
           <a> <b> <c>.
-          <d> <e> <f> <g>.
+          <d> <e> <f>.
       `);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseN3'));
@@ -195,6 +224,89 @@ describe('ActorRdfParseN3', () => {
           context,
         })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toHaveLength(2));
+      });
+
+      it('should forward stream errors', async() => {
+        await expect(arrayifyStream((<any>(await actor.run(
+          { handle: { data: inputError, context }, handleMediaType: 'application/trig', context },
+        )))
+          .handle.data)).rejects.toBeTruthy();
+      });
+
+      it('should forward stream errors (with no metadata in input handle)', async() => {
+        await expect(arrayifyStream((<any>(await actor.run({
+          handle: { data: inputError, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/trig',
+          context,
+        })))
+          .handle.data)).rejects.toBeTruthy();
+      });
+    });
+
+    describe('for parsing with quads', () => {
+      beforeEach(() => {
+        input = stringToStream(`
+          <a> <b> <c>.
+          <d> <e> <f> <g>.
+      `);
+        inputError = new Readable();
+        inputError._read = () => inputError.emit('error', new Error('ParseN3'));
+      });
+
+      it('should test on N-Quads', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'application/n-quads', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'application/n-quads',
+            context,
+          }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on Turtle', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'text/turtle', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'text/turtle',
+            context,
+          }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on N-Triples', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: 'application/n-triples', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'application/n-triples',
+            context,
+          }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should not test on JSON-LD', async() => {
+        await expect(actor
+          .test({
+            handle: { data: input, context },
+            handleMediaType: 'application/ld+json',
+            context,
+          }))
+          .rejects.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'application/ld+json',
+            context,
+          }))
+          .rejects.toBeTruthy();
       });
 
       it('should forward stream errors', async() => {

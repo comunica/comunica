@@ -581,7 +581,10 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator with variable graph', async() => {
-      expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
+      expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should emit metadata with 2 cardinality', async() => {
@@ -638,6 +641,9 @@ describe('FederatedQuadSource', () => {
 
     it('should return a non-empty AsyncIterator with variable graph', async() => {
       expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+
         squad('s2', 'p1', 'o1', 'g1'),
         squad('s2', 'p1', 'o2', 'g1'),
         squad('s3', 'p1', 'o1', 'g2'),
@@ -682,7 +688,10 @@ describe('FederatedQuadSource', () => {
 
     it('should return a non-empty AsyncIterator for variable graph', async() => {
       const a = await arrayifyStream(source.match(v, v, v, v));
-      expect(a).toEqual([]);
+      expect(a).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should emit metadata with 2 cardinality', async() => {
@@ -899,9 +908,14 @@ describe('FederatedQuadSource', () => {
       ]);
     });
 
-    it('should return an empty AsyncIterator for a variable graph', async() => {
+    it('should return a non-empty AsyncIterator for a variable graph', async() => {
       const a = await arrayifyStream(source.match(v, v, v, v));
-      expect(a).toEqual([]);
+      expect(a).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should emit metadata with 2 cardinality', async() => {
@@ -959,7 +973,12 @@ describe('FederatedQuadSource', () => {
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
       const a = await arrayifyStream(source.match(v, v, v, v));
-      expect(a).toEqual([]);
+      expect(a).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should emit metadata with Infinity cardinality', async() => {
@@ -1003,7 +1022,12 @@ describe('FederatedQuadSource', () => {
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
       const a = await arrayifyStream(source.match(v, v, v, v));
-      expect(a).toEqual([]);
+      expect(a).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should emit metadata with Infinity cardinality', async() => {
@@ -1045,7 +1069,12 @@ describe('FederatedQuadSource', () => {
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
       const a = await arrayifyStream(source.match(v, v, v, v));
-      expect(a).toEqual([]);
+      expect(a).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should emit metadata with Infinity cardinality', async() => {
@@ -1089,7 +1118,12 @@ describe('FederatedQuadSource', () => {
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
       const a = await arrayifyStream(source.match(v, v, v, v));
-      expect(a).toEqual([]);
+      expect(a).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should emit metadata with Infinity cardinality', async() => {

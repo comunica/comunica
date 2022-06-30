@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import * as OS from 'os';
-import { KeysHttp, KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
@@ -114,6 +114,18 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'Prints the full stacktrace when errors are thrown',
         },
+        httpTimeout: {
+          type: 'number',
+          describe: 'HTTP requests timeout in milliseconds',
+        },
+        httpBodyTimeout: {
+          type: 'boolean',
+          describe: 'Makes the HTTP timeout take into account the response body stream read',
+        },
+        unionDefaultGraph: {
+          type: 'boolean',
+          describe: 'If the default graph should also contain the union of all named graphs',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -183,6 +195,24 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define lenient-mode
     if (args.lenient) {
       context[KeysInitQuery.lenient.name] = true;
+    }
+
+    // Define HTTP timeout
+    if (args.httpTimeout) {
+      context[KeysHttp.httpTimeout.name] = args.httpTimeout;
+    }
+
+    // Define HTTP body timeout
+    if (args.httpBodyTimeout) {
+      if (!args.httpTimeout) {
+        throw new Error('The --httpBodyTimeout option requires the --httpTimeout option to be set');
+      }
+      context[KeysHttp.httpBodyTimeout.name] = args.httpBodyTimeout;
+    }
+
+    // Define union default graph
+    if (args.unionDefaultGraph) {
+      context[KeysQueryOperation.unionDefaultGraph.name] = true;
     }
   }
 }

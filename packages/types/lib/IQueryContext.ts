@@ -35,6 +35,8 @@ export interface IQueryContextCommon {
   lenient?: boolean;
   httpIncludeCredentials?: boolean;
   httpAuth?: string;
+  httpTimeout?: number;
+  httpBodyTimeout?: boolean;
   fetch?: typeof fetch;
   readOnly?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)

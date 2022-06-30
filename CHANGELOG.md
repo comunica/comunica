@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.3.0"></a>
+## [v2.3.0](https://github.com/comunica/comunica/compare/v2.2.1...v2.3.0) - 2022-06-29
+
+### Added
+* [Add httpTimeout option to timeout on HTTP requests](https://github.com/comunica/comunica/commit/05b170b8c58cb13f81caecb02a1415473b2c19bc)
+* [Add httpTimeoutOnBody option](https://github.com/comunica/comunica/commit/c686ae4a246446246454b30d939082f33f65fd02)
+* [Add options to run using union default graph semantics](https://github.com/comunica/comunica/commit/b122c1ac9a3382a65812c843727d752ad21d4846)
+* [Add freshWorker option to HTTP service](https://github.com/comunica/comunica/commit/35aee16d47d1cded212f4df9d725b6d13f21c54a)
+
+### Changed
+* [Improve warning messages in extend actor](https://github.com/comunica/comunica/commit/7db371de8d9f0f4c67836af18c0304f51dbd5199)
+* [Properly sort named nodes, blank nodes and unbounded values](https://github.com/comunica/comunica/commit/9ea0b18df152f03fea33f84a12524fd04aa11101)
+
+### Fixed
+* [Fix race conditions when timing out in HTTP server](https://github.com/comunica/comunica/commit/3564d288bc76bf51ef0268da6aeecaba1b474bd8)
+* [Fix responses not always being sent after HTTP server timeout](https://github.com/comunica/comunica/commit/2b613e5a60a3d7edff541863482646b5f6013a52)
+* [Fix closing of streams not always propagating](https://github.com/comunica/comunica/commit/f3a79b04bcf5f96767847cc335145491ccba68ff)
+* [Fix N3.js parser not receiving parsing media type](https://github.com/comunica/comunica/commit/6619fdcd3e894c3ee0a8e2907f60ba3153f6674e)
+* [Fix physical query plan crash when multi-smallest inner join is used](https://github.com/comunica/comunica/commit/84c3d695d235a53f402dff50c73c878028344b1a)
+
 <a name="v2.2.1"></a>
 ## [v2.2.1](https://github.com/comunica/comunica/compare/v2.2.0...v2.2.1) - 2022-04-13
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-none",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A none rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.2.0",
-    "@comunica/bus-rdf-join": "^2.2.0",
-    "@comunica/mediatortype-join-coefficients": "^2.2.0",
-    "asynciterator": "^3.4.0"
+    "@comunica/bus-rdf-join": "^2.3.0",
+    "@comunica/mediatortype-join-coefficients": "^2.3.0",
+    "asynciterator": "^3.4.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

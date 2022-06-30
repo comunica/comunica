@@ -1,3 +1,4 @@
+import * as EventEmitter from 'events';
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -16,6 +17,7 @@ const v = DF.variable('v');
 class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
   public data: RDF.Quad[][];
   public linkQueue: ILinkQueue = new LinkQueueFifo();
+  public createdSubIterator = new EventEmitter();
 
   public constructor(data: RDF.Quad[][], subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string, maxIterators = 64) {
@@ -46,6 +48,9 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
           match() {
             const it = new ArrayIterator<RDF.Quad>([], { autoStart: false });
             it.setProperty('metadata', { subseq: true });
+            if (this.createdSubIterator) {
+              this.createdSubIterator.emit('data', it);
+            }
             return it;
           },
         },
@@ -59,6 +64,9 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
         match: () => {
           const it = new ArrayIterator<RDF.Quad>([ ...this.data[requestedPage] ], { autoStart: false });
           it.setProperty('metadata', { subseq: true });
+          if (this.createdSubIterator) {
+            this.createdSubIterator.emit('data', it);
+          }
           return it;
         },
       },
@@ -539,6 +547,45 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { P2: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(9, { P2: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(10, { P2: true }, true);
+    });
+
+    it('destroys currentIterators when closed', async() => {
+      const data = [
+        [
+          [ 'a', 'b', 'c' ],
+          [ 'd', 'e', 'f' ],
+          [ 'g', 'h', 'i' ],
+        ],
+        [
+          [ 'a', 'b', '1' ],
+          [ 'd', 'e', '2' ],
+          [ 'g', 'h', '3' ],
+        ],
+        [
+          [ 'a', 'b', '4' ],
+          [ 'd', 'e', '5' ],
+          [ 'g', 'h', '6' ],
+        ],
+      ];
+      const quads = toTerms(data);
+      const it = new Dummy(quads, v, v, v, v, 'first');
+
+      // Trigger iterator start
+      it.read();
+
+      // Wait until sub-iterator has been created
+      const subIt = await new Promise(resolve => it.createdSubIterator.on('data', resolve));
+      const destroySpy = jest.spyOn(<any> subIt, 'destroy');
+
+      // Sanity check to make sure sub-iterator has been created
+      expect((<any> it).currentIterators.length).toEqual(1);
+      expect(destroySpy).not.toHaveBeenCalled();
+
+      // Close the main iterator
+      it.destroy();
+
+      // Check if sub-iterator has been closed as well
+      expect(destroySpy).toHaveBeenCalled();
     });
 
     it('catches invalid getNextSource results', async() => {

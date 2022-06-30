@@ -1,6 +1,7 @@
 import * as cluster from 'cluster';
 import type { EventEmitter } from 'events';
 import * as http from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import * as querystring from 'querystring';
 import type { Writable } from 'stream';
 import * as url from 'url';
@@ -32,6 +33,9 @@ export class HttpServiceSparqlEndpoint {
   public readonly workers: number;
 
   public readonly invalidateCacheBeforeQuery: boolean;
+  public readonly freshWorkerPerQuery: boolean;
+
+  public lastQueryId = 0;
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
@@ -39,6 +43,7 @@ export class HttpServiceSparqlEndpoint {
     this.port = args.port ?? 3_000;
     this.workers = args.workers ?? 1;
     this.invalidateCacheBeforeQuery = Boolean(args.invalidateCacheBeforeQuery);
+    this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -126,6 +131,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     const invalidateCacheBeforeQuery: boolean = args.invalidateCache;
+    const freshWorkerPerQuery: boolean = args.freshWorker;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -138,6 +144,7 @@ export class HttpServiceSparqlEndpoint {
       configPath,
       context,
       invalidateCacheBeforeQuery,
+      freshWorkerPerQuery,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -182,17 +189,23 @@ export class HttpServiceSparqlEndpoint {
       });
 
       // Handle worker timeouts
-      let workerTimeout: NodeJS.Timeout | undefined;
-      worker.on('message', message => {
-        if (message === 'start') {
-          workerTimeout = setTimeout(() => {
-            stderr.write(`Worker ${worker.process.pid} timed out.\n`);
-            worker.send('shutdown');
-            workerTimeout = undefined;
+      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
+      worker.on('message', ({ type, queryId }) => {
+        if (type === 'start') {
+          workerTimeouts[queryId] = setTimeout(() => {
+            stderr.write(`Worker ${worker.process.pid} timed out for query ${queryId}.\n`);
+            try {
+              if (worker.isConnected()) {
+                worker.send('shutdown');
+              }
+            } catch (error: unknown) {
+              stderr.write(`Unable to timeout worker ${worker.process.pid}: ${(<Error> error).message}.\n`);
+            }
+            delete workerTimeouts[queryId];
           }, this.timeout);
-        } else if (message === 'end' && workerTimeout) {
-          clearTimeout(workerTimeout);
-          workerTimeout = undefined;
+        } else if (type === 'end' && workerTimeouts[queryId]) {
+          clearTimeout(workerTimeouts[queryId]);
+          delete workerTimeouts[queryId];
         }
       });
     });
@@ -222,6 +235,33 @@ export class HttpServiceSparqlEndpoint {
     const server = http.createServer(this.handleRequest.bind(this, engine, variants, stdout, stderr));
     server.listen(this.port);
     stderr.write(`Server worker (${process.pid}) running on http://localhost:${this.port}/sparql\n`);
+
+    // Keep track of all open connections
+    const openConnections: Set<ServerResponse> = new Set();
+    server.on('request', (request: IncomingMessage, response: ServerResponse) => {
+      openConnections.add(response);
+      response.on('close', () => {
+        openConnections.delete(response);
+      });
+    });
+
+    // Subscribe to shutdown messages
+    process.on('message', async(message: string): Promise<void> => {
+      if (message === 'shutdown') {
+        stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
+
+        // Stop new connections from being accepted
+        server.close();
+
+        // Close all open connections
+        for (const connection of openConnections) {
+          await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
+        }
+
+        // Kill the worker once the connections have been closed
+        process.exit(15);
+      }
+    });
   }
 
   /**
@@ -278,7 +318,18 @@ export class HttpServiceSparqlEndpoint {
     switch (request.method) {
       case 'POST':
         queryBody = await this.parseBody(request);
-        await this.writeQueryResult(engine, stdout, stderr, request, response, queryBody, mediaType, false, false);
+        await this.writeQueryResult(
+          engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          queryBody,
+          mediaType,
+          false,
+          false,
+          this.lastQueryId++,
+        );
         break;
       case 'HEAD':
       case 'GET':
@@ -287,7 +338,9 @@ export class HttpServiceSparqlEndpoint {
         queryBody = queryValue ? { type: 'query', value: queryValue } : undefined;
         // eslint-disable-next-line no-case-declarations
         const headOnly = request.method === 'HEAD';
-        await this.writeQueryResult(engine, stdout, stderr, request, response, queryBody, mediaType, headOnly, true);
+        await this.writeQueryResult(
+          engine, stdout, stderr, request, response, queryBody, mediaType, headOnly, true, this.lastQueryId++,
+        );
         break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);
@@ -308,6 +361,7 @@ export class HttpServiceSparqlEndpoint {
    * @param {string} mediaType The requested response media type.
    * @param {boolean} headOnly If only the header should be written.
    * @param {boolean} readOnly If only data can be read, but not updated. (i.e., if we're in a GET request)
+   * @param queryId The unique id of this query.
    */
   public async writeQueryResult(
     engine: QueryEngineBase,
@@ -319,6 +373,7 @@ export class HttpServiceSparqlEndpoint {
     mediaType: string,
     headOnly: boolean,
     readOnly: boolean,
+    queryId: number,
   ): Promise<void> {
     if (!queryBody || !queryBody.value) {
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
@@ -372,17 +427,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // Send message to master process to indicate the start of an execution
-    process.send!('start');
-
-    // Listen for shutdown events from master for timeouts
-    const messageListener = (message: string): void => {
-      if (message === 'shutdown') {
-        response.end('!TIMED OUT!');
-        // eslint-disable-next-line unicorn/no-process-exit
-        process.exit(9);
-      }
-    };
-    process.on('message', messageListener);
+    process.send!({ type: 'start', queryId });
 
     let eventEmitter: EventEmitter | undefined;
     try {
@@ -402,11 +447,10 @@ export class HttpServiceSparqlEndpoint {
 
     // Send message to master process to indicate the end of an execution
     response.on('close', () => {
-      process.removeListener('message', messageListener);
-      process.send!('end');
+      process.send!({ type: 'end', queryId });
     });
 
-    this.stopResponse(response, eventEmitter);
+    this.stopResponse(response, queryId, eventEmitter);
   }
 
   public async writeServiceDescription(
@@ -470,26 +514,39 @@ export class HttpServiceSparqlEndpoint {
       response.end('The response for the given query could not be serialized for the requested media type\n');
       return;
     }
-    this.stopResponse(response, eventEmitter);
+    this.stopResponse(response, 0, eventEmitter);
   }
 
   /**
    * Stop after timeout or if the connection is terminated
    * @param {module:http.ServerResponse} response Response object.
+   * @param queryId The unique query id.
    * @param {NodeJS.ReadableStream} eventEmitter Query result stream.
    */
-  public stopResponse(response: http.ServerResponse, eventEmitter?: EventEmitter): void {
+  public stopResponse(response: http.ServerResponse, queryId: number, eventEmitter?: EventEmitter): void {
     response.on('close', killClient);
+    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    const self = this;
     function killClient(): void {
       if (eventEmitter) {
         // Remove all listeners so we are sure no more write calls are made
         eventEmitter.removeAllListeners();
+        eventEmitter.on('error', () => {
+          // Void any errors that may still occur
+        });
         eventEmitter.emit('end');
       }
       try {
         response.end();
       } catch {
         // Do nothing
+      }
+
+      // Kill the worker if we want fresh workers per query
+      if (self.freshWorkerPerQuery) {
+        process.stderr.write(`Killing fresh worker ${process.pid} after query ${queryId}.\n`);
+        // eslint-disable-next-line unicorn/no-process-exit
+        process.exit(15);
       }
     }
   }
@@ -543,6 +600,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   port?: number;
   workers?: number;
   invalidateCacheBeforeQuery?: boolean;
+  freshWorkerPerQuery?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }

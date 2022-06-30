@@ -34,7 +34,7 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
     action.data.on('error', error => data.emit('error', error));
-    const data = action.data.pipe(new StreamParser({ baseIRI: action.metadata?.baseIRI }));
+    const data = action.data.pipe(new StreamParser({ baseIRI: action.metadata?.baseIRI, format: mediaType }));
     return {
       data,
       metadata: {
