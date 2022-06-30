@@ -13,7 +13,8 @@
       "@id": "urn:comunica:default:http/actors#cache",
       "@type": "ActorHttpCache",
       "cacheStorage": { "@id": "urn:comunica:default:http/cache-storage#main" },
-      "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" }
+      "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
+      "actorHttpFetch": { "@id": "urn:comunica:default:http/actors#fetch" }
     },
     {
       "@id": "urn:comunica:default:http/actors#proxy",

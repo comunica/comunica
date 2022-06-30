@@ -9,10 +9,8 @@ import type {
   IActionHttpInvalidate,
   MediatorHttpInvalidate,
 } from '@comunica/bus-http-invalidate';
-import { KeysHttp } from '@comunica/context-entries';
 import type { IHttpCacheStorage } from '@comunica/http-cache-storage';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
-import type { IActionContext } from '@comunica/types';
 import 'cross-fetch/polyfill';
 import * as CachePolicy from 'http-cache-semantics';
 import {
@@ -27,11 +25,13 @@ import {
 export class ActorHttpCache extends ActorHttp {
   private readonly cacheStorage: IHttpCacheStorage;
   private readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
+  private readonly actorHttpFetch: ActorHttp;
 
   public constructor(args: IActorHttpCacheArgs) {
     super(args);
     this.cacheStorage = args.cacheStorage;
     this.mediatorHttpInvalidate = args.mediatorHttpInvalidate;
+    this.actorHttpFetch = args.actorHttpFetch;
     args.httpInvalidator.addInvalidateListener(
       ({ url }: IActionHttpInvalidate) =>
         url ?
@@ -44,19 +44,11 @@ export class ActorHttpCache extends ActorHttp {
     if (await this.has(new Request(action.input, action.init))) {
       return { time: 1 };
     }
-    return { time: Number.POSITIVE_INFINITY };
+    return this.actorHttpFetch.test(action);
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
-    const customFetch: ((
-      input: RequestInfo,
-      init?: RequestInit
-    ) => Promise<Response>) | undefined = action.context?.get(KeysHttp.fetch) || fetch;
-    return await this.fetchWithCache(
-      new Request(action.input, action.init),
-      customFetch,
-      action.context,
-    );
+    return await this.fetchWithCache(action);
   }
 
   /**
@@ -69,18 +61,13 @@ export class ActorHttpCache extends ActorHttp {
    * request and a boolean indicating if the value was from the cache or not
    */
   public async fetchWithCache(
-    request: RequestInfo,
-    fetch: (
-      input: RequestInfo,
-      init?: RequestInit
-    ) => Promise<Response>,
-    context: IActionContext,
+    action: IActionHttp,
   ): Promise<Response> {
-    const newRequest = new Request(request);
+    const newRequest = new Request(action.input, action.init);
     const cacheResult = await this.cacheStorage.get(newRequest);
     // Nothing is in the cache
     if (!cacheResult) {
-      const response = await fetch(newRequest);
+      const response = await this.actorHttpFetch.run(action);
       try {
         await this.put(newRequest, response);
       } catch {
@@ -98,13 +85,13 @@ export class ActorHttpCache extends ActorHttp {
     // If the response is stale
     if (!oldPolicy.satisfiesWithoutRevalidation(newRequestWithHashHeaders)) {
       // Invaidate the cache if it must be refreshed
-      await this.mediatorHttpInvalidate.mediate({ url: newRequest.url, context });
+      await this.mediatorHttpInvalidate.mediate({ url: newRequest.url, context: action.context });
       addHashHeadersToObject(
         oldPolicy.revalidationHeaders(newRequestWithHashHeaders),
         newRequest,
       );
       // Fetch again with new headers
-      const newResponse = await fetch(newRequest);
+      const newResponse = await this.actorHttpFetch.run(action);
       const { policy, modified } = oldPolicy.revalidatedPolicy(
         requestToRequestWithHashHeaders(newRequest),
         responseToResponseWithHashHeaders(newResponse),
@@ -178,4 +165,5 @@ export interface IActorHttpCacheArgs extends IActorHttpArgs {
    */
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */
+  actorHttpFetch: ActorHttp;
 }
