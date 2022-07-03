@@ -37,7 +37,7 @@
     "@comunica/core": "^2.3.0",
     "@comunica/types": "^2.3.0",
     "@rdfjs/types": "*",
-    "relative-to-absolute-iri": "^1.0.5"
+    "relative-to-absolute-iri": "^1.0.6"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

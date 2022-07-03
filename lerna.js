@@ -104,3 +104,22 @@ async function depcheckTask(log) {
 
 module.exports.depfixTask = depfixTask
 module.exports.depcheckTask = depcheckTask
+
+const ncu = require('npm-check-updates');
+async function updateTask(log) {
+  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
+
+  await iter.forEach(packages, { log })(async package => {
+    const upgraded = await ncu.run({
+      // Pass any cli option
+      packageFile: path.join(package.location, 'package.json'),
+      upgrade: true,
+      // Defaults:
+      // jsonUpgraded: true,
+      // silent: true,
+    });
+    log.info(package.name, upgraded);
+  })
+}
+
+module.exports.updateTask = updateTask

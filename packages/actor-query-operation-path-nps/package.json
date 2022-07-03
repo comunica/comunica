@@ -34,7 +34,7 @@
     "@comunica/actor-abstract-path": "^2.3.0",
     "@comunica/bus-query-operation": "^2.3.0",
     "@comunica/types": "^2.3.0",
-    "sparqlalgebrajs": "^4.0.0"
+    "sparqlalgebrajs": "^4.0.3"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

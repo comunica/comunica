@@ -2,7 +2,6 @@ import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@co
 import { Actor } from '@comunica/core';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
-const isStream = require('is-stream');
 const toWebReadableStream = require('web-streams-node').toWebReadableStream;
 
 /**
@@ -32,7 +31,8 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    * @returns {NodeJS.ReadableStream}
    */
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
-    return isStream(body) || body === null ?
+    // Check if body is null or a stream
+    return body === null || typeof (<any> body).pipe === 'function' ?
       <NodeJS.ReadableStream> <any> body :
       <NodeJS.ReadableStream> <any> new ReadableWebToNodeStream(body);
   }

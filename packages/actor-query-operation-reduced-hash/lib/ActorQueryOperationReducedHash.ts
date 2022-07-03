@@ -45,7 +45,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
     const hashes = new LRU<string, boolean>({ max: this.cacheSize });
     return (bindings: Bindings) => {
       const hash: string = hashFunction(bindings);
-      return !hashes.has(hash) && hashes.set(hash, true);
+      return !hashes.has(hash) && (hashes.set(hash, true), true);
     };
   }
 }

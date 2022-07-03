@@ -91,7 +91,8 @@
     "postinstall": "yarn run build && lerna run prepare",
     "version": "manual-git-changelog onversion",
     "depcheck": "lerna-script depcheckTask",
-    "depcheck:fix": "lerna-script depfixTask"
+    "depcheck:fix": "lerna-script depfixTask",
+    "ncu:all": "lerna-script updateTask"
   },
   "resolutions": {
     "@rdfjs/types": "1.1.0"
