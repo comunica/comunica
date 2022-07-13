@@ -582,6 +582,37 @@ describe('HttpServiceSparqlEndpoint', () => {
         await new Promise(setImmediate);
         expect(process.exit).not.toHaveBeenCalled();
       });
+
+      it('should end multiple open connections on uncaught exceptions', async() => {
+        let uncaughtExceptionListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'uncaughtException') {
+            uncaughtExceptionListener = listener;
+          }
+        };
+
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connections
+        const response1 = new EventEmitter();
+        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+        const response2 = new EventEmitter();
+        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response2);
+
+        // Send shutdown message
+        uncaughtExceptionListener(new Error('sparql endpoint uncaught exception'));
+
+        await new Promise(setImmediate);
+        expect((<any> response1).end).toHaveBeenCalledTimes(1);
+        expect((<any> response1).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect((<any> response2).end).toHaveBeenCalledTimes(1);
+        expect((<any> response2).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('run as a master', () => {

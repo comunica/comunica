@@ -198,9 +198,9 @@ export class HttpServiceSparqlEndpoint {
       worker.on('message', ({ type, queryId }) => {
         if (type === 'start') {
           workerTimeouts[queryId] = setTimeout(() => {
-            stderr.write(`Worker ${worker.process.pid} timed out for query ${queryId}.\n`);
             try {
               if (worker.isConnected()) {
+                stderr.write(`Worker ${worker.process.pid} timed out for query ${queryId}.\n`);
                 worker.send('shutdown');
               }
             } catch (error: unknown) {
@@ -266,6 +266,23 @@ export class HttpServiceSparqlEndpoint {
         // Kill the worker once the connections have been closed
         process.exit(15);
       }
+    });
+
+    // Catch global errors, and cleanly close open connections
+    process.on('uncaughtException', async error => {
+      stderr.write(`Terminating worker ${process.pid} with ${openConnections.size} open connections due to uncaught exception.\n`);
+      stderr.write(error.stack);
+
+      // Stop new connections from being accepted
+      server.close();
+
+      // Close all open connections
+      for (const connection of openConnections) {
+        await new Promise<void>(resolve => connection.end('!ERROR!', resolve));
+      }
+
+      // Kill the worker once the connections have been closed
+      process.exit(15);
     });
   }
 
@@ -439,7 +456,9 @@ export class HttpServiceSparqlEndpoint {
       const { data } = await engine.resultToString(result, mediaType);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
-        response.end('An internal server error occurred.\n');
+        if (!response.writableEnded) {
+          response.end('An internal server error occurred.\n');
+        }
       });
       data.pipe(response);
       eventEmitter = data;
