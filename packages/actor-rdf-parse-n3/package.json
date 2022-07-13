@@ -31,7 +31,6 @@
   "dependencies": {
     "@comunica/bus-rdf-parse": "^2.3.0",
     "@comunica/types": "^2.3.0",
-    "@types/n3": "^1.4.4",
     "n3": "^1.6.3"
   },
   "scripts": {

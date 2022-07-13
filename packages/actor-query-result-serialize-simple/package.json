@@ -32,7 +32,8 @@
   ],
   "dependencies": {
     "@comunica/bus-query-result-serialize": "^2.3.0",
-    "@comunica/types": "^2.3.0"
+    "@comunica/types": "^2.3.0",
+    "readable-stream": "^4.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

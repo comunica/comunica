@@ -119,6 +119,7 @@ module.exports = {
     'import/no-unused-modules': 'off',
     'unused-imports/no-unused-imports-ts': 'error',
     'import/no-extraneous-dependencies': 'error',
+    'import/no-nodejs-modules': 'error',
 
     // TODO: Try to re-enable the following rules in the future
     'global-require': 'off',
@@ -178,6 +179,19 @@ module.exports = {
         '@typescript-eslint/no-extra-parens': 'off',
         '@typescript-eslint/restrict-plus-operands': 'off',
         'import/no-extraneous-dependencies': 'off',
+      }
+    },
+    {
+      // Specific rules for NodeJS-specific files
+      files: [
+        '**/test/**/*.ts',
+        'packages/actor-dereference-file/**/*.ts',
+        'packages/actor-http-native/**/*.ts',
+        'packages/logger-bunyan/**/*.ts',
+        'packages/packager/**/*.ts'
+      ],
+      rules: {
+        'import/no-nodejs-modules': 'off',
       }
     }
   ],

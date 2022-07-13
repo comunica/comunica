@@ -1,9 +1,9 @@
-import { Readable } from 'stream';
 import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
 import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { Readable } from 'readable-stream';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
 
 /**

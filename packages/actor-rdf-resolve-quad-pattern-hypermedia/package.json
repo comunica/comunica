@@ -45,6 +45,7 @@
     "@types/lru-cache": "^5.1.0",
     "asynciterator": "^3.4.2",
     "lru-cache": "^6.0.0",
+    "readable-stream": "^4.0.0",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {
