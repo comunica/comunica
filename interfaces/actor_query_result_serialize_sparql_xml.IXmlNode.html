@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ILoggerPrettyArgs | Comunica</title>
+	<title>IXmlNode | Comunica</title>
 	<meta name="description" content="Documentation for Comunica">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,13 +55,13 @@
 					<a href="../modules.html">Comunica</a>
 				</li>
 				<li>
-					<a href="../modules/logger_pretty.html">logger-pretty</a>
+					<a href="../modules/actor_query_result_serialize_sparql_xml.html">actor-query-result-serialize-sparql-xml</a>
 				</li>
 				<li>
-					<a href="logger_pretty.ILoggerPrettyArgs.html">ILoggerPrettyArgs</a>
+					<a href="actor_query_result_serialize_sparql_xml.IXmlNode.html">IXmlNode</a>
 				</li>
 			</ul>
-			<h1>Interface ILoggerPrettyArgs</h1>
+			<h1>Interface IXmlNode</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ILoggerPrettyArgs</span>
+						<span class="target">IXmlNode</span>
 					</li>
 				</ul>
 			</section>
@@ -83,8 +83,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="logger_pretty.ILoggerPrettyArgs.html#actors" class="tsd-kind-icon">actors</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="logger_pretty.ILoggerPrettyArgs.html#level" class="tsd-kind-icon">level</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_query_result_serialize_sparql_xml.IXmlNode.html#attributes" class="tsd-kind-icon">attributes</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_query_result_serialize_sparql_xml.IXmlNode.html#children" class="tsd-kind-icon">children</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_query_result_serialize_sparql_xml.IXmlNode.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,34 +94,34 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="actors" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> actors</h3>
-					<div class="tsd-signature tsd-kind-icon">actors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="attributes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> attributes</h3>
+					<div class="tsd-signature tsd-kind-icon">attributes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1161105/packages/logger-pretty/lib/LoggerPretty.ts#L59">packages/logger-pretty/lib/LoggerPretty.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1161105/packages/actor-query-result-serialize-sparql-xml/lib/XmlSerializer.ts#L79">packages/actor-query-result-serialize-sparql-xml/lib/XmlSerializer.ts:79</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>A whitelist of actor IRIs to log for.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="level" class="tsd-anchor"></a>
-					<h3>level</h3>
-					<div class="tsd-signature tsd-kind-icon">level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="children" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> children</h3>
+					<div class="tsd-signature tsd-kind-icon">children<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="actor_query_result_serialize_sparql_xml.IXmlNode.html" class="tsd-signature-type" data-tsd-kind="Interface">IXmlNode</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1161105/packages/logger-pretty/lib/LoggerPretty.ts#L55">packages/logger-pretty/lib/LoggerPretty.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1161105/packages/actor-query-result-serialize-sparql-xml/lib/XmlSerializer.ts#L80">packages/actor-query-result-serialize-sparql-xml/lib/XmlSerializer.ts:80</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The minimum logging level.</p>
-						</div>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1161105/packages/actor-query-result-serialize-sparql-xml/lib/XmlSerializer.ts#L78">packages/actor-query-result-serialize-sparql-xml/lib/XmlSerializer.ts:78</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -131,7 +132,7 @@
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/logger_pretty.html">logger-<wbr>pretty</a>
+						<a href="../modules/actor_query_result_serialize_sparql_xml.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>xml</a>
 					</li>
 				</ul>
 			</nav>
@@ -140,19 +141,25 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-module">
-						<a href="../modules/logger_pretty.html" class="tsd-kind-icon">logger-<wbr>pretty</a>
+						<a href="../modules/actor_query_result_serialize_sparql_xml.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>xml</a>
 						<ul>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/logger_pretty.LoggerPretty.html" class="tsd-kind-icon">Logger<wbr>Pretty</a>
+								<a href="../classes/actor_query_result_serialize_sparql_xml.ActorQueryResultSerializeSparqlXml.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Result<wbr>Serialize<wbr>Sparql<wbr>Xml</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/actor_query_result_serialize_sparql_xml.XmlSerializer.html" class="tsd-kind-icon">Xml<wbr>Serializer</a>
 							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-module">
-								<a href="logger_pretty.ILoggerPrettyArgs.html" class="tsd-kind-icon">ILogger<wbr>Pretty<wbr>Args</a>
+								<a href="actor_query_result_serialize_sparql_xml.IXmlNode.html" class="tsd-kind-icon">IXml<wbr>Node</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="logger_pretty.ILoggerPrettyArgs.html#actors" class="tsd-kind-icon">actors</a>
+										<a href="actor_query_result_serialize_sparql_xml.IXmlNode.html#attributes" class="tsd-kind-icon">attributes</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="logger_pretty.ILoggerPrettyArgs.html#level" class="tsd-kind-icon">level</a>
+										<a href="actor_query_result_serialize_sparql_xml.IXmlNode.html#children" class="tsd-kind-icon">children</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="actor_query_result_serialize_sparql_xml.IXmlNode.html#name" class="tsd-kind-icon">name</a>
 									</li>
 								</ul>
 							</li>
