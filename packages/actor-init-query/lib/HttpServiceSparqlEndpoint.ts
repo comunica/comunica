@@ -34,6 +34,7 @@ export class HttpServiceSparqlEndpoint {
 
   public readonly invalidateCacheBeforeQuery: boolean;
   public readonly freshWorkerPerQuery: boolean;
+  public readonly contextOverride: boolean;
 
   public lastQueryId = 0;
 
@@ -44,6 +45,7 @@ export class HttpServiceSparqlEndpoint {
     this.workers = args.workers ?? 1;
     this.invalidateCacheBeforeQuery = Boolean(args.invalidateCacheBeforeQuery);
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
+    this.contextOverride = Boolean(args.contextOverride);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -132,6 +134,7 @@ export class HttpServiceSparqlEndpoint {
 
     const invalidateCacheBeforeQuery: boolean = args.invalidateCache;
     const freshWorkerPerQuery: boolean = args.freshWorker;
+    const contextOverride: boolean = args.contextOverride;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -145,6 +148,7 @@ export class HttpServiceSparqlEndpoint {
       context,
       invalidateCacheBeforeQuery,
       freshWorkerPerQuery,
+      contextOverride,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -357,11 +361,20 @@ export class HttpServiceSparqlEndpoint {
       case 'GET':
         // eslint-disable-next-line no-case-declarations
         const queryValue = <string> requestUrl.query.query;
-        queryBody = queryValue ? { type: 'query', value: queryValue } : undefined;
+        queryBody = queryValue ? { type: 'query', value: queryValue, context: undefined } : undefined;
         // eslint-disable-next-line no-case-declarations
         const headOnly = request.method === 'HEAD';
         await this.writeQueryResult(
-          engine, stdout, stderr, request, response, queryBody, mediaType, headOnly, true, this.lastQueryId++,
+          engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          queryBody,
+          mediaType,
+          headOnly,
+          true,
+          this.lastQueryId++,
         );
         break;
       default:
@@ -402,7 +415,10 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // Determine context
-    let context = this.context;
+    let context = {
+      ...this.context,
+      ...this.contextOverride ? queryBody.context : undefined,
+    };
     if (readOnly) {
       context = { ...context, [KeysQueryOperation.readOnly.name]: readOnly };
     }
@@ -592,18 +608,26 @@ export class HttpServiceSparqlEndpoint {
         const contentType: string | undefined = request.headers['content-type'];
         if (contentType) {
           if (contentType.includes('application/sparql-query')) {
-            return resolve({ type: 'query', value: body });
+            return resolve({ type: 'query', value: body, context: undefined });
           }
           if (contentType.includes('application/sparql-update')) {
-            return resolve({ type: 'void', value: body });
+            return resolve({ type: 'void', value: body, context: undefined });
           }
           if (contentType.includes('application/x-www-form-urlencoded')) {
             const bodyStructure = querystring.parse(body);
+            let context: Record<string, any> | undefined;
+            if (bodyStructure.context) {
+              try {
+                context = JSON.parse(<string>bodyStructure.context);
+              } catch (error: unknown) {
+                reject(new Error(`Invalid POST body with context received ('${bodyStructure.context}'): ${(<Error> error).message}`));
+              }
+            }
             if (bodyStructure.query) {
-              return resolve({ type: 'query', value: <string> bodyStructure.query });
+              return resolve({ type: 'query', value: <string> bodyStructure.query, context });
             }
             if (bodyStructure.update) {
-              return resolve({ type: 'void', value: <string> bodyStructure.update });
+              return resolve({ type: 'void', value: <string> bodyStructure.update, context });
             }
           }
         }
@@ -616,6 +640,7 @@ export class HttpServiceSparqlEndpoint {
 export interface IQueryBody {
   type: 'query' | 'void';
   value: string;
+  context: Record<string, any> | undefined;
 }
 
 export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptions {
@@ -625,6 +650,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   workers?: number;
   invalidateCacheBeforeQuery?: boolean;
   freshWorkerPerQuery?: boolean;
+  contextOverride?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }

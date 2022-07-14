@@ -1163,13 +1163,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         query = {
           type: 'query',
           value: 'default_test_query',
+          context: undefined,
         };
         mediaType = 'default_test_mediatype';
         endCalledPromise = new Promise(resolve => response.onEnd = resolve);
       });
 
       it('should end the response with error message content when the query rejects', async() => {
-        query = { type: 'query', value: 'query_reject' };
+        query = { type: 'query', value: 'query_reject', context: undefined };
         await instance.writeQueryResult(await new QueryEngineFactoryBase().create(),
           new PassThrough(),
           new PassThrough(),
@@ -1278,7 +1279,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           false,
           true,
@@ -1330,7 +1331,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           true,
           true,
@@ -1358,7 +1359,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           false,
           true,
@@ -1377,7 +1378,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           'mediatype_throwerror',
           false,
           true,
@@ -1539,6 +1540,49 @@ describe('HttpServiceSparqlEndpoint', () => {
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
       });
+
+      it('should not override context entries by default', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
+
+        query.context = { overrideKey: 'overrideValue' };
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          false,
+          0);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
+      });
+
+      it('should override context entries if contextOverride is enabled', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
+
+        query.context = { overrideKey: 'overrideValue' };
+
+        instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4, contextOverride: true });
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          false,
+          0);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { overrideKey: 'overrideValue' });
+      });
     });
 
     describe('stopResponse', () => {
@@ -1648,6 +1692,27 @@ describe('HttpServiceSparqlEndpoint', () => {
           type: 'void',
           value: querystring.parse(exampleQueryString).update,
         });
+      });
+
+      it('should parse context from url if the content-type is application/x-www-form-urlencoded', () => {
+        const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a":"b"}';
+        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+
+        return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
+          type: 'query',
+          value: querystring.parse(exampleQueryString).query,
+          context: { a: 'b' },
+        });
+      });
+
+      it('should reject if the context is invalid and the content-type is application/x-www-form-urlencoded', () => {
+        const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a:"b"}';
+        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+
+        return expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrowError(`Invalid POST body with context received ('{"a:"b"}'): Unexpected token b in JSON at position 5`);
       });
 
       it('should reject if content-type is not application/[sparql-query|x-www-form-urlencoded]', () => {
