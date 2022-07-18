@@ -33,7 +33,7 @@
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^2.3.0",
     "@comunica/types": "^2.3.0",
-    "jsonld-streaming-serializer": "^1.3.0"
+    "jsonld-streaming-serializer": "^2.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
