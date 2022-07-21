@@ -2,7 +2,8 @@ import type * as CachePolicy from 'http-cache-semantics';
 
 export interface IHttpCacheStorageValue {
   policy: CachePolicy;
-  response: Response;
+  body?: BodyInit;
+  init?: ResponseInit;
 }
 
 export interface IHttpCacheStorage {

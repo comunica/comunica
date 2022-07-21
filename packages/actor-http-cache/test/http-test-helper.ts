@@ -32,6 +32,7 @@ interface IFetchOption {
   request: Request;
   body: string;
   response: Response;
+  responseInit: ResponseInit;
 }
 
 interface IFetchOptionData {
@@ -53,6 +54,7 @@ export function getHttpTestHelpers() {
       request: new Request(uri, fetchOptionData.requestInit),
       body: key,
       response: new Response(key, fetchOptionData.responseInit),
+      responseInit: fetchOptionData.responseInit,
     };
   });
 
@@ -67,7 +69,7 @@ export function getHttpTestHelpers() {
       if (!fetchOption) {
         throw new Error('Test specified unknown fetch option');
       }
-      return fetchOption.response;
+      return new Response(fetchOption.body, fetchOption.responseInit);
     },
   );
 

@@ -67,18 +67,21 @@ export class ActorHttpCache extends ActorHttp {
     const cacheResult = await this.cacheStorage.get(newRequest);
     // Nothing is in the cache
     if (!cacheResult) {
-      const response = await this.actorHttpFetch.run(action);
+      const [ body, init ] = await this.fetchDocument(action);
       try {
-        await this.put(newRequest, response);
+        await this.put(newRequest, body, init);
       } catch {
         // Do nothing if it is not storable
       }
-      return response.clone();
+      console.log();
+      const res = new Response(body, init);
+      console.log(res);
+      return res;
       // Something is in the cache
     }
     // Check if the response is stale
     const oldPolicy = cacheResult.policy;
-    const oldResponse = cacheResult.response;
+    const oldResponse = new Response(cacheResult.body, cacheResult.init);
     const newRequestWithHashHeaders = requestToRequestWithHashHeaders(
       new Request(newRequest),
     );
@@ -91,7 +94,8 @@ export class ActorHttpCache extends ActorHttp {
         newRequest,
       );
       // Fetch again with new headers
-      const newResponse = await this.actorHttpFetch.run(action);
+      const [ body, init ] = await this.fetchDocument(action);
+      const newResponse = new Response(body, init);
       const { policy, modified } = oldPolicy.revalidatedPolicy(
         requestToRequestWithHashHeaders(newRequest),
         responseToResponseWithHashHeaders(newResponse),
@@ -99,12 +103,24 @@ export class ActorHttpCache extends ActorHttp {
       const response = modified ? newResponse : oldResponse;
       await this.cacheStorage.set(
         newRequest,
-        { policy, response },
+        { policy, body, init },
         policy.timeToLive(),
       );
-      return response.clone();
+      return response;
     }
-    return oldResponse.clone();
+    return oldResponse;
+  }
+
+  private async fetchDocument(action: IActionHttp): Promise<[bodyInit?: BodyInit, responseInit?: ResponseInit]> {
+    const response = await this.actorHttpFetch.run(action);
+    return [
+      await response.arrayBuffer(),
+      {
+        headers: response.headers,
+        status: response.status,
+        statusText: response.statusText,
+      },
+    ];
   }
 
   /**
@@ -113,8 +129,9 @@ export class ActorHttpCache extends ActorHttp {
    * @param request The Request object or URL that you want to add to the cache.
    * @param response The Response you want to match up to the request.
    */
-  public async put(requestInfo: RequestInfo, response: Response): Promise<void> {
+  public async put(requestInfo: RequestInfo, body?: BodyInit, init?: ResponseInit): Promise<void> {
     const request = new Request(requestInfo);
+    const response = new Response(body, init);
     // Headers need to be converted to a hash because http-cache-semantics was
     // built for an older version of headers.
     const requestWithHashHeaders = requestToRequestWithHashHeaders(request);
@@ -129,7 +146,7 @@ export class ActorHttpCache extends ActorHttp {
     // Set the cache
     await this.cacheStorage.set(
       request,
-      { policy, response },
+      { policy, body, init },
       policy.timeToLive(),
     );
   }

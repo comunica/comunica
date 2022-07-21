@@ -142,7 +142,7 @@ describe('ActorHttpCache', () => {
 
     describe('put', () => {
       it('puts a response that should be valid', async() => {
-        await actor.put(fo.maxAge.request, fo.maxAge.response);
+        await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.responseInit);
         const cachedResponse = await actor.fetchWithCache({ input: fo.maxAge.request, context });
         expect(await cachedResponse?.text()).toBe(fo.maxAge.body);
         expect(fetch).not.toHaveBeenCalled();
@@ -150,7 +150,7 @@ describe('ActorHttpCache', () => {
 
       it('throws an error when trying to add an invalid request', async() => {
         await expect(
-          actor.put(fo.noStore.request, fo.noStore.response),
+          actor.put(fo.noStore.request, fo.noStore.body, fo.noStore.responseInit),
         ).rejects.toThrow(`${fo.noStore.uri} is not storable.`);
       });
     });
@@ -227,12 +227,12 @@ describe('ActorHttpCache', () => {
       });
 
       it('returns true if the request is in the cache', async() => {
-        await actor.put(fo.maxAge.request, fo.maxAge.response);
+        await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.response);
         expect(await actor.has(fo.maxAge.request)).toBe(true);
       });
 
       it('returns false if the request is in the cache but it is stale', async() => {
-        await actor.put(fo.plain.request, fo.plain.response);
+        await actor.put(fo.plain.request, fo.plain.body, fo.plain.responseInit);
         expect(await actor.has(fo.plain.request)).toBe(false);
       });
     });

@@ -8,8 +8,10 @@ describe('HttpCacheStorageLru', () => {
     const request = new Request('https://example.com/');
     const response = new Response('Test Body');
     const policy = new CachePolicy({ headers: {}}, { headers: {}});
-    await cache.set(request, { response, policy });
-    expect(await cache.get(request)).toEqual({ response, policy });
+    await cache.set(request, { body: await response.text(), policy });
+    const retrieved = await cache.get(request);
+    expect(retrieved?.policy).toEqual(policy);
+    expect(retrieved?.body).toEqual('Test Body');
     expect(await cache.delete(new Request('https://otherExample.com'))).toBe(false);
     await cache.clear();
     expect(await cache.has(request)).toBe(false);
