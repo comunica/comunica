@@ -7,7 +7,6 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.16.0",
-    "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.16.4",
     "@pollyjs/adapter-node-http": "^6.0.4",
     "@pollyjs/core": "^6.0.0",
