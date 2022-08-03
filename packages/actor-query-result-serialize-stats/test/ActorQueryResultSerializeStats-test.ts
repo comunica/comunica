@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -42,11 +43,19 @@ describe('ActorQueryResultSerializeStats', () => {
     let bindingsStream: BindingsStream;
     let quadStream: RDF.Stream;
     let streamError: Readable;
+    let httpInvalidator: ActorHttpInvalidateListenable;
+    let lastListener: IInvalidateListener;
 
     beforeEach(() => {
+      httpInvalidator = <any> {
+        addInvalidateListener: jest.fn((listener: IInvalidateListener) => {
+          lastListener = listener;
+        }),
+      };
       httpObserver = new ActionObserverHttp({
         name: 'observer',
         bus,
+        httpInvalidator,
       });
       actor = new ActorQueryResultSerializeStats({
         bus,
@@ -130,6 +139,24 @@ TOTAL,3.14,0
       });
 
       it('should run on a bindings stream with http requests', async() => {
+        (<any> httpObserver).onRun(null, null, null);
+        (<any> httpObserver).onRun(null, null, null);
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug', context },
+        )
+        )).handle.data)).toEqual(
+          `Result,Delay (ms),HTTP requests
+1,3.14,2
+2,3.14,2
+TOTAL,3.14,2
+`,
+        );
+      });
+
+      it('should run on a bindings stream with http requests and cache invalidations', async() => {
+        (<any> httpObserver).onRun(null, null, null);
+        (<any> httpObserver).onRun(null, null, null);
+        lastListener(<any> {});
         (<any> httpObserver).onRun(null, null, null);
         (<any> httpObserver).onRun(null, null, null);
         expect(await stringifyStream((<any> (await actor.run(

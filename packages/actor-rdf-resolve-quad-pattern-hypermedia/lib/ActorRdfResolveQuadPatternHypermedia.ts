@@ -102,12 +102,12 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends IActorRdfReso
    * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^2.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
+  /* eslint-enable max-len */
   /**
    * The maximum number of links that can be followed in parallel.
    * @default {64}
    */
   maxIterators: number;
-  /* eslint-enable max-len */
   /**
    * The RDF dereference mediator
    */
