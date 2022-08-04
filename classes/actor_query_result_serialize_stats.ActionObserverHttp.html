@@ -102,6 +102,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_query_result_serialize_stats.ActionObserverHttp.html#bus" class="tsd-kind-icon">bus</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_query_result_serialize_stats.ActionObserverHttp.html#httpInvalidator" class="tsd-kind-icon">http<wbr>Invalidator</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_query_result_serialize_stats.ActionObserverHttp.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_query_result_serialize_stats.ActionObserverHttp.html#requests" class="tsd-kind-icon">requests</a></li>
 							</ul>
@@ -121,20 +122,20 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Action<wbr>Observer<wbr>Http<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/core.IActionObserverArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionObserverArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_result_serialize_stats.ActionObserverHttp.html" class="tsd-signature-type" data-tsd-kind="Class">ActionObserverHttp</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Action<wbr>Observer<wbr>Http<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_query_result_serialize_stats.IActionObserverHttpArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionObserverHttpArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_result_serialize_stats.ActionObserverHttp.html" class="tsd-signature-type" data-tsd-kind="Class">ActionObserverHttp</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="core.ActionObserver.html">ActionObserver</a>.<a href="core.ActionObserver.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/58dc932/packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts#L15">packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/4958206/packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts#L17">packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts:17</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>args: <a href="../interfaces/core.IActionObserverArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionObserverArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.IActionHttp.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.IActorHttpOutput.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>args: <a href="../interfaces/actor_query_result_serialize_stats.IActionObserverHttpArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionObserverHttpArgs</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<div class="lead">
 											<p>@defaultNested {<a href="npmd:@comunica/bus-http/%5E2.0.0/components/ActorHttp.jsonld#ActorHttp_default_bus">npmd:@comunica/bus-http/^2.0.0/components/ActorHttp.jsonld#ActorHttp_default_bus</a>} bus</p>
@@ -156,7 +157,17 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.ActionObserver.html">ActionObserver</a>.<a href="core.ActionObserver.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/58dc932/packages/core/lib/ActionObserver.ts#L18">packages/core/lib/ActionObserver.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/4958206/packages/core/lib/ActionObserver.ts#L18">packages/core/lib/ActionObserver.ts:18</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="httpInvalidator" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> http<wbr>Invalidator</h3>
+					<div class="tsd-signature tsd-kind-icon">http<wbr>Invalidator<span class="tsd-signature-symbol">:</span> <a href="bus_http_invalidate.ActorHttpInvalidateListenable.html" class="tsd-signature-type" data-tsd-kind="Class">ActorHttpInvalidateListenable</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/4958206/packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts#L10">packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -167,7 +178,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.ActionObserver.html">ActionObserver</a>.<a href="core.ActionObserver.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/58dc932/packages/core/lib/ActionObserver.ts#L17">packages/core/lib/ActionObserver.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/4958206/packages/core/lib/ActionObserver.ts#L17">packages/core/lib/ActionObserver.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -177,7 +188,7 @@
 					<div class="tsd-signature tsd-kind-icon">requests<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/58dc932/packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts#L9">packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/4958206/packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts#L11">packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -195,7 +206,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="core.ActionObserver.html">ActionObserver</a>.<a href="core.ActionObserver.html#onRun">onRun</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/58dc932/packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts#L21">packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/4958206/packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts#L26">packages/actor-query-result-serialize-stats/lib/ActionObserverHttp.ts:26</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -248,6 +259,9 @@
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 										<a href="actor_query_result_serialize_stats.ActionObserverHttp.html#bus" class="tsd-kind-icon">bus</a>
 									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="actor_query_result_serialize_stats.ActionObserverHttp.html#httpInvalidator" class="tsd-kind-icon">http<wbr>Invalidator</a>
+									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 										<a href="actor_query_result_serialize_stats.ActionObserverHttp.html#name" class="tsd-kind-icon">name</a>
 									</li>
@@ -261,6 +275,9 @@
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="actor_query_result_serialize_stats.ActorQueryResultSerializeStats.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Result<wbr>Serialize<wbr>Stats</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/actor_query_result_serialize_stats.IActionObserverHttpArgs.html" class="tsd-kind-icon">IAction<wbr>Observer<wbr>Http<wbr>Args</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/actor_query_result_serialize_stats.IActorQueryResultSerializeStatsArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Result<wbr>Serialize<wbr>Stats<wbr>Args</a>
