@@ -96,7 +96,7 @@ describe('ActorQueryResultSerializeStats', () => {
 
     describe('for calculating delay', () => {
       it('should return number greater than 0', () => {
-        return expect(actor.delay(process.hrtime())).toBeGreaterThan(0);
+        return expect(actor.delay(actor.now())).toBeGreaterThan(0);
       });
     });
 
