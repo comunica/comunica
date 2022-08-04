@@ -76,6 +76,12 @@
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel">
+				<h3>Implemented by</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../classes/actor_rdf_parse_html.Parser.html" class="tsd-signature-type" data-tsd-kind="Class">Parser</a></li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -85,18 +91,19 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onattribdata" class="tsd-kind-icon">onattribdata</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onattribend" class="tsd-kind-icon">onattribend</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onattribentity" class="tsd-kind-icon">onattribentity</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onattribname" class="tsd-kind-icon">onattribname</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#oncdata" class="tsd-kind-icon">oncdata</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onclosetag" class="tsd-kind-icon">onclosetag</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#oncomment" class="tsd-kind-icon">oncomment</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#ondeclaration" class="tsd-kind-icon">ondeclaration</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onend" class="tsd-kind-icon">onend</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onerror" class="tsd-kind-icon">onerror</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onopentagend" class="tsd-kind-icon">onopentagend</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onopentagname" class="tsd-kind-icon">onopentagname</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onprocessinginstruction" class="tsd-kind-icon">onprocessinginstruction</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#onselfclosingtag" class="tsd-kind-icon">onselfclosingtag</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#ontext" class="tsd-kind-icon">ontext</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-external"><a href="actor_rdf_parse_html.Callbacks.html#ontextentity" class="tsd-kind-icon">ontextentity</a></li>
 							</ul>
 						</section>
 					</div>
@@ -108,19 +115,22 @@
 					<a name="onattribdata" class="tsd-anchor"></a>
 					<h3>onattribdata</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onattribdata<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onattribdata<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:34</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:8</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>value: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -131,19 +141,45 @@
 					<a name="onattribend" class="tsd-anchor"></a>
 					<h3>onattribend</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onattribend<span class="tsd-signature-symbol">(</span>quote<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onattribend<span class="tsd-signature-symbol">(</span>quote<span class="tsd-signature-symbol">: </span><a href="../enums/actor_rdf_parse_html.QuoteType.html" class="tsd-signature-type" data-tsd-kind="Enumeration">QuoteType</a>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:35</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:10</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>quote: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+									<h5>quote: <a href="../enums/actor_rdf_parse_html.QuoteType.html" class="tsd-signature-type" data-tsd-kind="Enumeration">QuoteType</a></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-external">
+					<a name="onattribentity" class="tsd-anchor"></a>
+					<h3>onattribentity</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">onattribentity<span class="tsd-signature-symbol">(</span>codepoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:9</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>codepoint: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -154,19 +190,22 @@
 					<a name="onattribname" class="tsd-anchor"></a>
 					<h3>onattribname</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onattribname<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onattribname<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:36</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:11</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -177,19 +216,25 @@
 					<a name="oncdata" class="tsd-anchor"></a>
 					<h3>oncdata</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">oncdata<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">oncdata<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:37</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:12</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endOffset: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -200,19 +245,22 @@
 					<a name="onclosetag" class="tsd-anchor"></a>
 					<h3>onclosetag</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onclosetag<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onclosetag<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:38</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:13</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -223,19 +271,25 @@
 					<a name="oncomment" class="tsd-anchor"></a>
 					<h3>oncomment</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">oncomment<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">oncomment<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:39</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:14</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endOffset: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -246,19 +300,22 @@
 					<a name="ondeclaration" class="tsd-anchor"></a>
 					<h3>ondeclaration</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">ondeclaration<span class="tsd-signature-symbol">(</span>content<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">ondeclaration<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:40</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:15</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>content: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -275,35 +332,9 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:41</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:16</li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-					<a name="onerror" class="tsd-anchor"></a>
-					<h3>onerror</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onerror<span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span>, state<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">State</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:42</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>error: <span class="tsd-signature-type">Error</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> state: <span class="tsd-signature-type">State</span></h5>
-								</li>
-							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -312,15 +343,21 @@
 					<a name="onopentagend" class="tsd-anchor"></a>
 					<h3>onopentagend</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onopentagend<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onopentagend<span class="tsd-signature-symbol">(</span>endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:43</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:17</li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -329,19 +366,22 @@
 					<a name="onopentagname" class="tsd-anchor"></a>
 					<h3>onopentagname</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onopentagname<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onopentagname<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:44</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:18</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -352,19 +392,22 @@
 					<a name="onprocessinginstruction" class="tsd-anchor"></a>
 					<h3>onprocessinginstruction</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onprocessinginstruction<span class="tsd-signature-symbol">(</span>instruction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onprocessinginstruction<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:45</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:19</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>instruction: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -375,15 +418,21 @@
 					<a name="onselfclosingtag" class="tsd-anchor"></a>
 					<h3>onselfclosingtag</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">onselfclosingtag<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">onselfclosingtag<span class="tsd-signature-symbol">(</span>endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:46</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:20</li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -392,19 +441,45 @@
 					<a name="ontext" class="tsd-anchor"></a>
 					<h3>ontext</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">ontext<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">ontext<span class="tsd-signature-symbol">(</span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:47</li>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:21</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>value: <span class="tsd-signature-type">string</span></h5>
+									<h5>start: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>endIndex: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-external">
+					<a name="ontextentity" class="tsd-anchor"></a>
+					<h3>ontextentity</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">ontextentity<span class="tsd-signature-symbol">(</span>codepoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:22</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>codepoint: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -421,6 +496,11 @@
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/actor_rdf_parse_html.html">actor-<wbr>rdf-<wbr>parse-<wbr>html</a>
+						<ul>
+							<li class=" tsd-kind-namespace tsd-parent-kind-module tsd-is-external">
+								<a href="../modules/actor_rdf_parse_html.domelementtype.html">domelementtype</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</nav>
@@ -431,18 +511,6 @@
 					<li class="current tsd-kind-module">
 						<a href="../modules/actor_rdf_parse_html.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html</a>
 						<ul>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/actor_rdf_parse_html.ActorRdfParseHtml.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Html</a>
-							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module tsd-is-external">
-								<a href="../classes/actor_rdf_parse_html.Parser.html" class="tsd-kind-icon">Parser</a>
-							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module tsd-is-external">
-								<a href="../classes/actor_rdf_parse_html.WritableStream.html" class="tsd-kind-icon">Writable<wbr>Stream</a>
-							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module tsd-is-external">
-								<a href="../classes/actor_rdf_parse_html.default.html" class="tsd-kind-icon">default</a>
-							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-external">
 								<a href="actor_rdf_parse_html.Callbacks.html" class="tsd-kind-icon">Callbacks</a>
 								<ul>
@@ -451,6 +519,9 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
 										<a href="actor_rdf_parse_html.Callbacks.html#onattribend" class="tsd-kind-icon">onattribend</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
+										<a href="actor_rdf_parse_html.Callbacks.html#onattribentity" class="tsd-kind-icon">onattribentity</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
 										<a href="actor_rdf_parse_html.Callbacks.html#onattribname" class="tsd-kind-icon">onattribname</a>
@@ -471,9 +542,6 @@
 										<a href="actor_rdf_parse_html.Callbacks.html#onend" class="tsd-kind-icon">onend</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-										<a href="actor_rdf_parse_html.Callbacks.html#onerror" class="tsd-kind-icon">onerror</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
 										<a href="actor_rdf_parse_html.Callbacks.html#onopentagend" class="tsd-kind-icon">onopentagend</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
@@ -488,16 +556,10 @@
 									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
 										<a href="actor_rdf_parse_html.Callbacks.html#ontext" class="tsd-kind-icon">ontext</a>
 									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-external">
+										<a href="actor_rdf_parse_html.Callbacks.html#ontextentity" class="tsd-kind-icon">ontextentity</a>
+									</li>
 								</ul>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
-								<a href="actor_rdf_parse_html.Handler.html" class="tsd-kind-icon">Handler</a>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="actor_rdf_parse_html.IActorRdfParseHtmlArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Args</a>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
-								<a href="actor_rdf_parse_html.ParserOptions.html" class="tsd-kind-icon">Parser<wbr>Options</a>
 							</li>
 						</ul>
 					</li>
