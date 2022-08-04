@@ -13,7 +13,7 @@ import type {
 import type { Actor, Bus, IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { WritableStream as HtmlParser } from 'htmlparser2/lib/WritableStream';
+import { Parser } from 'htmlparser2';
 
 /**
  * A comunica HTML RDF Parse Actor.
@@ -81,7 +81,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
           }
 
           // Create parser
-          const parser = new HtmlParser({
+          const parser = new Parser({
             onclosetag() {
               try {
                 for (const htmlParseListener of htmlParseListeners) {
@@ -126,8 +126,10 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
           });
 
           // Push stream to parser
-          action.data.on('error', error);
-          action.data.pipe(<any> parser);
+          action.data
+            .on('error', error)
+            .on('data', chunk => parser.write(chunk.toString()))
+            .on('end', () => parser.end());
         }).catch(error);
     };
 
