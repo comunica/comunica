@@ -8,11 +8,16 @@ import type {
   IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { ActionObserverHttp } from './ActionObserverHttp';
 
 /**
  * A comunica sparql-results+xml Serialize Actor.
  */
 export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSerializeFixedMediaTypes {
+  private readonly emitMetadata: boolean;
+  public readonly httpObserver: ActionObserverHttp;
+
+  /* eslint-disable max-len */
   /**
    * @param args -
    *   \ @defaultNested {{
@@ -21,10 +26,13 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
    *   \ @defaultNested {{
    *       "application/sparql-results+json": "http://www.w3.org/ns/formats/SPARQL_Results_JSON"
    *     }} mediaTypeFormats
+   *   \ @defaultNested {true} emitMetadata
+   *   \ @defaultNested {<default_observer> a <caqrssj:components/ActionObserverHttp.jsonld#ActionObserverHttp>} httpObserver
    */
-  public constructor(args: IActorQueryResultSerializeFixedMediaTypesArgs) {
+  public constructor(args: IActorQueryResultSerializeSparqlJsonArgs) {
     super(args);
   }
+  /* eslint-enable max-len */
 
   /**
    * Converts an RDF term to its JSON representation.
@@ -90,18 +98,29 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         }
 
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
-        data.push(JSON.stringify(Object.fromEntries([ ...bindings ]
-          .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]))));
+        const bindingsJson = Object.fromEntries([ ...bindings ]
+          .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]));
+        data.push(JSON.stringify(bindingsJson));
         empty = false;
       });
 
       // Close streams
       resultStream.on('end', () => {
+        // Push bindings header if empty
         if (empty) {
-          data.push('"results": { "bindings": [] }}\n');
-        } else {
-          data.push('\n]}}\n');
+          data.push('"results": { "bindings": [\n');
         }
+
+        // End bindings array
+        data.push('\n]}');
+
+        // Push metadata footer
+        if (this.emitMetadata) {
+          data.push(`,\n"metadata": { "httpRequests": ${this.httpObserver.requests} }`);
+        }
+
+        // End stream
+        data.push('}\n');
         data.push(null);
       });
     } else {
@@ -115,4 +134,9 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
     return { data };
   }
+}
+
+export interface IActorQueryResultSerializeSparqlJsonArgs extends IActorQueryResultSerializeFixedMediaTypesArgs {
+  emitMetadata: boolean;
+  httpObserver: ActionObserverHttp;
 }

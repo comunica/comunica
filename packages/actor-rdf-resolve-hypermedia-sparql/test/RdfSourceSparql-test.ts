@@ -10,6 +10,9 @@ const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 const DF = new DataFactory();
 
+// TODO: Remove when targeting NodeJS 18+
+global.ReadableStream = global.ReadableStream || require('web-streams-ponyfill').ReadableStream;
+
 describe('RdfSourceSparql', () => {
   const context = new ActionContext({});
   const mediatorHttp: any = {
@@ -136,7 +139,7 @@ describe('RdfSourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: require('web-streams-node').toWebReadableStream(query.indexOf('COUNT') > 0 ?
+            body: require('readable-stream-node-to-web')(query.indexOf('COUNT') > 0 ?
               streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,

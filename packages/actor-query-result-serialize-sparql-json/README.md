@@ -33,3 +33,7 @@ After installing, this package can be added to your engine's configuration as fo
   ]
 }
 ```
+
+### Config Parameters
+
+* `emitMetadata`: If a metadata object should be appended to the query results. This contains information such as the number of HTTP requests required for executing the query. _(default: `true`)_

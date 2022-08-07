@@ -40,13 +40,13 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     data.push(`${header}\n`);
   }
 
-  public pushStat(data: Readable, startTime: [number, number], result: number): void {
+  public pushStat(data: Readable, startTime: number, result: number): void {
     const row: string = [ result, this.delay(startTime), this.httpObserver.requests,
     ].join(',');
     data.push(`${row}\n`);
   }
 
-  public pushFooter(data: Readable, startTime: [number, number]): void {
+  public pushFooter(data: Readable, startTime: number): void {
     const footer: string = [ 'TOTAL', this.delay(startTime), this.httpObserver.requests,
     ].join(',');
     data.push(`${footer}\n`);
@@ -64,7 +64,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
       (<IQueryOperationResultBindings> action).bindingsStream :
       (<IQueryOperationResultQuads> action).quadStream;
 
-    const startTime = process.hrtime();
+    const startTime = this.now();
     let result = 1;
 
     this.pushHeader(data);
@@ -75,9 +75,18 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     return { data };
   }
 
-  public delay(startTime: [number, number]): number {
-    const time: [number, number] = process.hrtime(startTime);
-    return time[0] * 1_000 + (time[1] / 1_000_000);
+  /* istanbul ignore next */
+  public now(): number {
+    // TODO: remove when we will drop support of Node 14
+    if (typeof performance === 'undefined') {
+      const time: [number, number] = process.hrtime();
+      return time[0] * 1_000 + (time[1] / 1_000_000);
+    }
+    return performance.now();
+  }
+
+  public delay(startTime: number): number {
+    return this.now() - startTime;
   }
 }
 

@@ -582,6 +582,37 @@ describe('HttpServiceSparqlEndpoint', () => {
         await new Promise(setImmediate);
         expect(process.exit).not.toHaveBeenCalled();
       });
+
+      it('should end multiple open connections on uncaught exceptions', async() => {
+        let uncaughtExceptionListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'uncaughtException') {
+            uncaughtExceptionListener = listener;
+          }
+        };
+
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connections
+        const response1 = new EventEmitter();
+        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+        const response2 = new EventEmitter();
+        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response2);
+
+        // Send shutdown message
+        uncaughtExceptionListener(new Error('sparql endpoint uncaught exception'));
+
+        await new Promise(setImmediate);
+        expect((<any> response1).end).toHaveBeenCalledTimes(1);
+        expect((<any> response1).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect((<any> response2).end).toHaveBeenCalledTimes(1);
+        expect((<any> response2).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('run as a master', () => {
@@ -614,6 +645,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         dummyWorker.emit('exit');
 
         expect(cluster.fork).toBeCalledTimes(5);
+        expect(cluster.disconnect).not.toHaveBeenCalled();
       });
 
       it('should handle worker exits when exitedAfterDisconnect is true', async() => {
@@ -629,6 +661,36 @@ describe('HttpServiceSparqlEndpoint', () => {
         dummyWorker.emit('exit');
 
         expect(cluster.fork).toBeCalledTimes(4);
+      });
+
+      it('should handle worker exits with code 9', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {};
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit', 9);
+
+        expect(cluster.fork).toBeCalledTimes(4);
+        expect(cluster.disconnect).toHaveBeenCalledTimes(1);
+      });
+
+      it('should handle worker exits with signal SIGKILL', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {};
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit', undefined, 'SIGKILL');
+
+        expect(cluster.fork).toBeCalledTimes(4);
+        expect(cluster.disconnect).toHaveBeenCalledTimes(1);
       });
 
       it('should handle worker start messages', async() => {
@@ -1101,13 +1163,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         query = {
           type: 'query',
           value: 'default_test_query',
+          context: undefined,
         };
         mediaType = 'default_test_mediatype';
         endCalledPromise = new Promise(resolve => response.onEnd = resolve);
       });
 
       it('should end the response with error message content when the query rejects', async() => {
-        query = { type: 'query', value: 'query_reject' };
+        query = { type: 'query', value: 'query_reject', context: undefined };
         await instance.writeQueryResult(await new QueryEngineFactoryBase().create(),
           new PassThrough(),
           new PassThrough(),
@@ -1216,7 +1279,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           false,
           true,
@@ -1268,7 +1331,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           true,
           true,
@@ -1296,7 +1359,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           false,
           true,
@@ -1315,7 +1378,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           'mediatype_throwerror',
           false,
           true,
@@ -1477,6 +1540,49 @@ describe('HttpServiceSparqlEndpoint', () => {
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
       });
+
+      it('should not override context entries by default', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
+
+        query.context = { overrideKey: 'overrideValue' };
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          false,
+          0);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
+      });
+
+      it('should override context entries if contextOverride is enabled', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
+
+        query.context = { overrideKey: 'overrideValue' };
+
+        instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4, contextOverride: true });
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          false,
+          0);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { overrideKey: 'overrideValue' });
+      });
     });
 
     describe('stopResponse', () => {
@@ -1586,6 +1692,27 @@ describe('HttpServiceSparqlEndpoint', () => {
           type: 'void',
           value: querystring.parse(exampleQueryString).update,
         });
+      });
+
+      it('should parse context from url if the content-type is application/x-www-form-urlencoded', () => {
+        const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a":"b"}';
+        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+
+        return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
+          type: 'query',
+          value: querystring.parse(exampleQueryString).query,
+          context: { a: 'b' },
+        });
+      });
+
+      it('should reject if the context is invalid and the content-type is application/x-www-form-urlencoded', () => {
+        const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a:"b"}';
+        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+
+        return expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrowError(`Invalid POST body with context received ('{"a:"b"}'): Unexpected token b in JSON at position 5`);
       });
 
       it('should reject if content-type is not application/[sparql-query|x-www-form-urlencoded]', () => {

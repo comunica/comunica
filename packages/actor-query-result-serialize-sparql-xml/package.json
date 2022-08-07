@@ -33,8 +33,7 @@
   "dependencies": {
     "@comunica/bus-query-result-serialize": "^2.3.0",
     "@comunica/types": "^2.3.0",
-    "@rdfjs/types": "*",
-    "xml": "^1.0.1"
+    "@rdfjs/types": "*"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

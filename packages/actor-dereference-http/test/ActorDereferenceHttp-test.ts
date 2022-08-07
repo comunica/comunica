@@ -10,6 +10,9 @@ import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
 
 const streamifyString = require('streamify-string');
 
+// TODO: Remove when targeting NodeJS 18+
+global.ReadableStream = global.ReadableStream || require('web-streams-ponyfill').ReadableStream;
+
 describe('ActorDereferenceHttp', () => {
   let bus: any;
   let mediatorHttp: any;
@@ -97,7 +100,7 @@ describe('ActorDereferenceHttp', () => {
         }
         const dummyBodyStream = streamifyString('DUMMY BODY');
         let body = action.input === 'https://www.google.com/noweb' ?
-          require('web-streams-node').toWebReadableStream(dummyBodyStream) :
+          require('readable-stream-node-to-web')(dummyBodyStream) :
           dummyBodyStream;
         body.cancel = jest.fn();
         if (action.input.includes('nobody')) {

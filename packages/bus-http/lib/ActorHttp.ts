@@ -2,8 +2,11 @@ import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@co
 import { Actor } from '@comunica/core';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
+// TODO: Remove when targeting NodeJS 18+
+global.ReadableStream = global.ReadableStream || require('web-streams-ponyfill').ReadableStream;
+
 const isStream = require('is-stream');
-const toWebReadableStream = require('web-streams-node').toWebReadableStream;
+const toWebReadableStream = require('readable-stream-node-to-web');
 
 /**
  * A base actor for listening to HTTP events.
