@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import type {
   IActionHttp,
   IActorHttpOutput,
@@ -48,6 +49,7 @@ export class ActorHttpCache extends ActorHttp {
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+    // Fetch data
     return await this.fetchWithCache(action);
   }
 
@@ -73,15 +75,13 @@ export class ActorHttpCache extends ActorHttp {
       } catch {
         // Do nothing if it is not storable
       }
-      console.log();
-      const res = new Response(body, init);
-      console.log(res);
-      return res;
+      return this.newResponse(body, init);
       // Something is in the cache
     }
     // Check if the response is stale
     const oldPolicy = cacheResult.policy;
-    const oldResponse = new Response(cacheResult.body, cacheResult.init);
+    const oldResponse = this.newResponse(cacheResult.body, cacheResult.init);
+
     const newRequestWithHashHeaders = requestToRequestWithHashHeaders(
       new Request(newRequest),
     );
@@ -95,7 +95,7 @@ export class ActorHttpCache extends ActorHttp {
       );
       // Fetch again with new headers
       const [ body, init ] = await this.fetchDocument(action);
-      const newResponse = new Response(body, init);
+      const newResponse = this.newResponse(body, init);
       const { policy, modified } = oldPolicy.revalidatedPolicy(
         requestToRequestWithHashHeaders(newRequest),
         responseToResponseWithHashHeaders(newResponse),
@@ -111,10 +111,15 @@ export class ActorHttpCache extends ActorHttp {
     return oldResponse;
   }
 
+  /**
+   * Fetches the document and splits it into parts
+   * @param action Fetch action
+   * @returns
+   */
   private async fetchDocument(action: IActionHttp): Promise<[bodyInit?: BodyInit, responseInit?: ResponseInit]> {
     const response = await this.actorHttpFetch.run(action);
     return [
-      await response.arrayBuffer(),
+      await response.text(),
       {
         headers: response.headers,
         status: response.status,
@@ -166,6 +171,15 @@ export class ActorHttpCache extends ActorHttp {
       );
     }
     return false;
+  }
+
+  private newResponse(body?: BodyInit, responseInit?: ResponseInit): Response {
+    const nodeStream = new Readable();
+    nodeStream.push(body);
+    nodeStream.push(null);
+    // @ts-expect-error The response must be a node-stream not a web stream for comunica's post processors
+    const newResponse = new Response(nodeStream, responseInit);
+    return newResponse;
   }
 }
 
