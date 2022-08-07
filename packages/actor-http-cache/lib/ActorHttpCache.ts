@@ -173,6 +173,10 @@ export class ActorHttpCache extends ActorHttp {
     return false;
   }
 
+  /**
+   * An alternative to `new Response()` that creates a response with a NodeJS stream
+   * NodeJS streams are required for comunica's post processors.
+   */
   private newResponse(body?: BodyInit, responseInit?: ResponseInit): Response {
     const nodeStream = new Readable();
     nodeStream.push(body);
