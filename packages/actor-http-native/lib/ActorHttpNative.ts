@@ -87,7 +87,7 @@ export class ActorHttpNative extends ActorHttp {
           httpResponse.destroy();
         }
         // Using setImmediate so error can be caught should it be thrown
-        setImmediate(() => {
+        setTimeout(() => {
           if (httpResponse) {
             // Expose fetch cancel promise
             httpResponse.cancel = () => {
