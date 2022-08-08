@@ -93,7 +93,7 @@ export default class Requester {
         return decoded;
       }
       // Error when no suitable decoder found
-      setImmediate(() => {
+      setTimeout(() => {
         response.emit('error', new Error(`Unsupported encoding: ${encoding}`));
       });
     }
