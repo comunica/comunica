@@ -5,8 +5,7 @@ import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extr
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator, wrap } from 'asynciterator';
+import { type AsyncIterator, TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
