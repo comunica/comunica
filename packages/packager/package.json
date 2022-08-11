@@ -29,9 +29,9 @@
     "bin/package.js"
   ],
   "dependencies": {
-    "@types/minimist": "^1.2.0",
-    "componentsjs": "^5.2.0",
-    "minimist": "^1.2.0"
+    "@types/minimist": "^1.2.2",
+    "componentsjs": "^5.3.0",
+    "minimist": "^1.2.6"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

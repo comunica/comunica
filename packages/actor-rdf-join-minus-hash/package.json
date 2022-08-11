@@ -35,7 +35,7 @@
     "@comunica/mediatortype-join-coefficients": "^2.3.0",
     "@comunica/types": "^2.3.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.4.2"
+    "asynciterator": "^3.6.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

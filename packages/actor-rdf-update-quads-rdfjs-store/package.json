@@ -35,9 +35,9 @@
     "@comunica/core": "^2.3.0",
     "@comunica/types": "^2.3.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.4.2",
-    "rdf-data-factory": "^1.0.4",
-    "rdf-string": "^1.5.0"
+    "asynciterator": "^3.6.1",
+    "rdf-data-factory": "^1.1.1",
+    "rdf-string": "^1.6.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

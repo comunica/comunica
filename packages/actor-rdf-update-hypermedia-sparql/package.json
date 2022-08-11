@@ -37,9 +37,9 @@
     "@comunica/core": "^2.3.0",
     "@comunica/types": "^2.3.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.4.2",
-    "fetch-sparql-endpoint": "^2.3.2",
-    "rdf-string-ttl": "^1.1.0",
+    "asynciterator": "^3.6.1",
+    "fetch-sparql-endpoint": "^2.4.1",
+    "rdf-string-ttl": "^1.2.0",
     "stream-to-string": "^1.2.0"
   },
   "scripts": {

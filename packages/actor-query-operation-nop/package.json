@@ -35,8 +35,8 @@
     "@comunica/bus-query-operation": "^2.3.0",
     "@comunica/core": "^2.3.0",
     "@comunica/types": "^2.3.0",
-    "asynciterator": "^3.4.2",
-    "sparqlalgebrajs": "^4.0.0"
+    "asynciterator": "^3.6.1",
+    "sparqlalgebrajs": "^4.0.3"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
