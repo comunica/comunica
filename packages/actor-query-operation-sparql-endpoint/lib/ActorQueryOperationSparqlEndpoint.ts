@@ -19,11 +19,12 @@ import type { IQueryOperationResult,
   IMetadata,
   IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { wrap } from 'asynciterator';
+import { wrap, AsyncIterator } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
+import LinkedList from './LinkedList';
 
 const BF = new BindingsFactory();
 const DF = new DataFactory();
@@ -143,32 +144,19 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const inputStream: Promise<EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
-    let cardinality = 0;
-    const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map(rawData => {
-        cardinality++;
-        return quads ?
-          rawData :
-          BF.bindings(Object.entries(rawData)
-            .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ]));
-      });
-    inputStream.then(
-      subStream => subStream.on('end', () => stream.emit('metadata', {
-        cardinality: { type: 'exact', value: cardinality },
-        canContainUndefs: true,
-        variables,
-      })),
-      () => {
-        // Do nothing
-      },
-    );
+
+    const stream: AsyncIterator<any> = wrap<any>(inputStream).map(rawData => quads ?
+        rawData :
+        BF.bindings(Object.entries(rawData)
+          .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ])));
+
+    const stream2 = new LazyCardinalityIterator(stream);
 
     const metadata: () => Promise<IMetadata<any>> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
-      () => new Promise((resolve, reject) => {
-        (<any> stream)._fillBuffer();
-        stream.on('error', reject);
-        stream.on('end', () => reject(new Error('No metadata was found')));
-        stream.on('metadata', resolve);
+      async () => ({
+        cardinality: { type: 'exact', value: await stream2.getCardinality() },
+        canContainUndefs: true,
+        variables,
       }),
     );
 
@@ -185,6 +173,110 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       metadata,
     };
   }
+}
+
+
+/**
+  An iterator that maintains an internal buffer of items.
+  This class serves as a base class for other iterators
+  with a typically complex item generation process.
+  @extends module:asynciterator.AsyncIterator
+*/
+export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
+  private _buffer?: LinkedList<T>;
+  private _cardinality?: Promise<number>;
+  private _count: number = 0;
+  private _buffering: boolean = true;
+
+  constructor(private _source: AsyncIterator<T>) {
+    super();
+    _source.on('readable', destinationSetReadable);
+    _source.on('end', destinationClose);
+    _source.on('error', destinationEmitError);
+    this.readable = _source.readable;
+  }
+
+  read(): T | null {
+    if (this._buffer) {
+      if (!this._buffer.empty)
+        return this._buffer.shift()!;
+      else if (!this._buffering)
+        this.close();
+
+      this.readable = false;
+      return null;
+    }
+
+    let item: T | null;
+    if ((item = this._source.read()) !== null)
+      this._count += 1;
+    else if (this._source.done)
+      this.close();
+    else
+      this.readable = false;
+
+    return item;
+  }
+
+  getCardinality(): Promise<number> {
+    if (this._cardinality)
+      return this._cardinality;
+
+    this._buffer = new LinkedList();
+    return this._cardinality = new Promise((resolve) => {
+      this._source.removeListener('readable', destinationSetReadable);
+
+      // TODO: Clean up these listeners
+      this._source.on('data', (data) => {
+        this._buffer!.push(data);
+        this._count += 1;
+        this.readable = true; 
+      });
+
+      this._source.removeListener('end', () => {
+        this._buffering = false;
+        this.readable = true;
+        resolve(this._count);
+      });
+    });
+  }
+}
+
+// class LazyCardinalityIterator<T> extends AsyncIterator<T> {
+  // private array?: T[];
+  // private cardinality?: number;
+  // // A flag specifically to handle when the cardinality is pending
+  // private pending?: Promise<null>;
+  
+  // constructor(private source: AsyncIterator<T>) {
+  //   super();
+    // source.on('readable', destinationSetReadable);
+    // source.on('end', destinationClose);
+    // source.on('error', destinationEmitError);
+    // this.readable = source.readable;
+  // }
+
+  // read(): T | null {
+  //   if (this.array) {
+  //     // In this case we have needed the cardinality at some point
+  //   }
+
+  //   return null;
+  // }
+// }
+
+const DESTINATION = Symbol('destination')
+
+type InternalSource<S> = AsyncIterator<S> & { [DESTINATION]: AsyncIterator<any> };
+
+function destinationSetReadable<S>(this: InternalSource<S>) {
+  this[DESTINATION]!.readable = true;
+}
+function destinationEmitError<S>(this: InternalSource<S>, error: Error) {
+  this[DESTINATION]!.emit('error', error);
+}
+function destinationClose<S>(this: InternalSource<S>) {
+  this[DESTINATION]!.close();
 }
 
 export interface IActorQueryOperationSparqlEndpointArgs
