@@ -131,10 +131,11 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const variable = this.generateVariable();
       const starEval = await this.getObjectsPredicateStarEval(
         operation.subject,
-        variable,
         predicate.path,
+        variable,
         operation.graph,
         context,
+        true,
       );
       const bindingsStream = starEval.bindingsStream.transform<Bindings>({
         filter: item => operation.object.equals(item.get(variable)),
@@ -162,21 +163,16 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     const pred = sVar ? ActorAbstractPath.FACTORY.createInv(predicate.path) : predicate.path;
     const starEval = await this.getObjectsPredicateStarEval(
       subject,
-      value,
       pred,
+      value,
       operation.graph,
       context,
+      true,
     );
-    const bindingsStream = starEval.bindingsStream.transform<Bindings>({
-      transform(item, next, push) {
-        push(item);
-        next();
-      },
-    });
     const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];
     return {
       type: 'bindings',
-      bindingsStream,
+      bindingsStream: starEval.bindingsStream,
       metadata: async() => ({ ...await starEval.metadata(), variables }),
     };
   }
