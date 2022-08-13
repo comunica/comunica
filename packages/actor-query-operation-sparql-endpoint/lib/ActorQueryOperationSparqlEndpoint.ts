@@ -145,7 +145,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
 
-    const stream: AsyncIterator<any> = wrap<any>(inputStream).map(rawData => quads ?
+    const stream = wrap<any>(inputStream).map(rawData => quads ?
         rawData :
         BF.bindings(Object.entries(rawData)
           .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ])));
@@ -163,18 +163,17 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (quads) {
       return <IQueryOperationResultQuads> {
         type: 'quads',
-        quadStream: stream,
+        quadStream: stream2 as AsyncIterator<any>,
         metadata,
       };
     }
     return <IQueryOperationResultBindings> {
       type: 'bindings',
-      bindingsStream: stream,
+      bindingsStream: stream2 as AsyncIterator<any>,
       metadata,
     };
   }
 }
-
 
 /**
   An iterator that maintains an internal buffer of items.
@@ -191,14 +190,13 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
   constructor(private _source: AsyncIterator<T>) {
     super();
     _source.on('readable', destinationSetReadable);
-    _source.on('end', destinationClose);
+    _source.on('end', destinationSetReadable);
     _source.on('error', destinationEmitError);
     (_source as InternalSource<T>)[DESTINATION] = this;
     this.readable = _source.readable;
   }
 
   read(): T | null {
-    console.log('read called')
     if (this._buffer) {
       if (!this._buffer.empty)
         return this._buffer.shift()!;
@@ -209,28 +207,25 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
       return null;
     }
 
-    let item: T | null;
-    if ((item = this._source.read()) !== null)
+    let item: T | null = null;
+    if (this._source.readable && (item = this._source.read()) !== null)
       this._count += 1;
-    else if (this._source.done)
-      this.close();
-    else
+    else {
       this.readable = false;
+      if (this._source.done)
+        this.close();
+    }
 
-    console.log('returning', item);
     return item;
   }
 
   getCardinality(): Promise<number> {
-    console.log('get cardinality called')
     if (this._cardinality)
       return this._cardinality;
 
     // TODO: See if we can just make this an if then close without a return because of the line below
-    if (this._source.done) {
+    if (this._source.done)
       this.close();
-      return this._cardinality = Promise.resolve(this._count);
-    }
 
     if (this.done)
       return this._cardinality = Promise.resolve(this._count);
@@ -242,57 +237,31 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
 
       // TODO: Clean up these listeners
       const onData = (data: any) => {
-        console.log('on data called', data);
         this._buffer!.push(data);
         this._count += 1;
         this.readable = true; 
       }
       const onEnd = () => {
         this._buffering = false;
-        this.readable = true;
-        console.log('ending with', this._count)
         this._source.removeListener('data', onData);
         this._source.removeListener('end', onEnd);
         resolve(this._count);
       }
 
       this._source.on('data', onData);
-
       this._source.on('end', onEnd);
     });
   }
 
   close() {
     this._source.removeListener('readable', destinationSetReadable);
-    this._source.removeListener('end', destinationClose);
+    this._source.removeListener('end', destinationSetReadable);
     this._source.removeListener('error', destinationEmitError);
     delete (this._source as any)[DESTINATION]
     this._source.destroy();
+    super.close();
   }
 }
-
-// class LazyCardinalityIterator<T> extends AsyncIterator<T> {
-  // private array?: T[];
-  // private cardinality?: number;
-  // // A flag specifically to handle when the cardinality is pending
-  // private pending?: Promise<null>;
-  
-  // constructor(private source: AsyncIterator<T>) {
-  //   super();
-    // source.on('readable', destinationSetReadable);
-    // source.on('end', destinationClose);
-    // source.on('error', destinationEmitError);
-    // this.readable = source.readable;
-  // }
-
-  // read(): T | null {
-  //   if (this.array) {
-  //     // In this case we have needed the cardinality at some point
-  //   }
-
-  //   return null;
-  // }
-// }
 
 const DESTINATION = Symbol('destination')
 
