@@ -193,10 +193,12 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
     _source.on('readable', destinationSetReadable);
     _source.on('end', destinationClose);
     _source.on('error', destinationEmitError);
+    (_source as InternalSource<T>)[DESTINATION] = this;
     this.readable = _source.readable;
   }
 
   read(): T | null {
+    console.log('read called')
     if (this._buffer) {
       if (!this._buffer.empty)
         return this._buffer.shift()!;
@@ -215,30 +217,57 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
     else
       this.readable = false;
 
+    console.log('returning', item);
     return item;
   }
 
   getCardinality(): Promise<number> {
+    console.log('get cardinality called')
     if (this._cardinality)
       return this._cardinality;
+
+    // TODO: See if we can just make this an if then close without a return because of the line below
+    if (this._source.done) {
+      this.close();
+      return this._cardinality = Promise.resolve(this._count);
+    }
+
+    if (this.done)
+      return this._cardinality = Promise.resolve(this._count);
+
 
     this._buffer = new LinkedList();
     return this._cardinality = new Promise((resolve) => {
       this._source.removeListener('readable', destinationSetReadable);
 
       // TODO: Clean up these listeners
-      this._source.on('data', (data) => {
+      const onData = (data: any) => {
+        console.log('on data called', data);
         this._buffer!.push(data);
         this._count += 1;
         this.readable = true; 
-      });
-
-      this._source.removeListener('end', () => {
+      }
+      const onEnd = () => {
         this._buffering = false;
         this.readable = true;
+        console.log('ending with', this._count)
+        this._source.removeListener('data', onData);
+        this._source.removeListener('end', onEnd);
         resolve(this._count);
-      });
+      }
+
+      this._source.on('data', onData);
+
+      this._source.on('end', onEnd);
     });
+  }
+
+  close() {
+    this._source.removeListener('readable', destinationSetReadable);
+    this._source.removeListener('end', destinationClose);
+    this._source.removeListener('error', destinationEmitError);
+    delete (this._source as any)[DESTINATION]
+    this._source.destroy();
   }
 }
 
