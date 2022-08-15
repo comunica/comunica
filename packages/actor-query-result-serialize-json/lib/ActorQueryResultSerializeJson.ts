@@ -74,7 +74,7 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
         data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
         data.push(null);
       } catch (error: unknown) {
-        setImmediate(() => data.emit('error', error));
+        setTimeout(() => data.emit('error', error));
       }
     }
 

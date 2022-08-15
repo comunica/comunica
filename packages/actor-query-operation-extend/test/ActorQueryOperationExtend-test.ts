@@ -161,7 +161,10 @@ describe('ActorQueryOperationExtend', () => {
 
       const op: any = { operation: example(faultyExpression), context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
+      await new Promise<void>((resolve, reject) => {
+        output.bindingsStream.on('error', () => resolve());
+        output.bindingsStream.on('data', reject);
+      });
       expect(warn).toBeCalledTimes(0);
     });
   });

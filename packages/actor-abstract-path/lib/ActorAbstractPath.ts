@@ -9,12 +9,15 @@ import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { BufferedIterator, MultiTransformIterator,
-  TransformIterator, EmptyIterator } from 'asynciterator';
+import {
+  BufferedIterator, MultiTransformIterator,
+  TransformIterator, EmptyIterator,
+} from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+import { PathVariableObjectIterator } from './PathVariableObjectIterator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -81,8 +84,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     graph: RDF.Variable,
     context: IActionContext,
   ): Promise<IPathResultStream> {
+    // TODO: refactor this with an iterator just like PathVariableObjectIterator so we handle backpressure correctly
     // Construct path to obtain all graphs where subject exists
-    const predVar = this.generateVariable(ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph));
+    const predVar = this.generateVariable(ActorAbstractPath.FACTORY
+      .createPath(subject, predicate, object, graph));
     const findGraphs = ActorAbstractPath.FACTORY.createUnion([
       ActorAbstractPath.FACTORY.createPattern(subject, predVar, object, graph),
       ActorAbstractPath.FACTORY.createPattern(object, predVar, subject, graph),
@@ -130,34 +135,39 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 
   /**
-     * Returns an iterator with Bindings of the query subject predicate* ?o
-     * If graph is a variable, it will also be in those bindings
-     * @param {Term} subject Term of where we start the predicate* search.
-     * @param {Variable} object Variable of the zeroOrMore-query.
-     * @param {Term} objectVal
-     * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
-     * @param {Term} graph The graph in which we search for the pattern. (Possibly a variable)
-     * @param {ActionContext} context
-     * @return {Promise<AsyncIterator<Bindings>} Iterator to where all bindings of query should have been pushed.
-     */
+   * Returns an iterator with Bindings of the query subject predicate* ?o or subject predicate+ ?o
+   * If graph is a variable, it will also be in those bindings
+   * @param {Term} subject Term of where we start the predicate* search.
+   * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
+   * @param {Variable} object Variable of the zeroOrMore-query.
+   * @param {Term} graph The graph in which we search for the pattern. (Possibly a variable)
+   * @param {ActionContext} context The context to pass to sub-opertations
+   * @param emitFirstSubject If the path operation is predicate*, otherwise it is predicate+.
+   * @return {Promise<AsyncIterator<Bindings>} Iterator to where all bindings of query should have been pushed.
+   */
   public async getObjectsPredicateStarEval(
     subject: RDF.Term,
-    object: RDF.Variable,
     predicate: Algebra.PropertyPathSymbol,
+    object: RDF.Variable,
     graph: RDF.Term,
     context: IActionContext,
+    emitFirstSubject: boolean,
   ): Promise<IPathResultStream> {
     if (graph.termType === 'Variable') {
       return this.predicateStarGraphVariable(subject, object, predicate, graph, context);
     }
 
-    const it = new BufferedIterator<RDF.Term>();
-    // We can safely ignore undefs because termHashes is empty
-    // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
-    const metadata = <IPathResultStream['metadata']> await this
-      .getObjectsPredicateStar(subject, predicate, graph, context, {}, it, { count: 0 });
+    const it = new PathVariableObjectIterator(
+      subject,
+      predicate,
+      graph,
+      context,
+      this.mediatorQueryOperation,
+      emitFirstSubject,
+    );
 
     const bindingsStream = it.transform<Bindings>({
+      autoStart: false,
       transform(item, next, push) {
         push(BF.bindings([[ object, item ]]));
         next();
@@ -166,7 +176,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     return {
       bindingsStream,
-      metadata,
+      metadata: () => new Promise(resolve => it.getProperty('metadata', (metadata: any) => resolve(metadata()))),
     };
   }
 

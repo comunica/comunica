@@ -97,16 +97,16 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       resultStream.on('end', () => {
         serializer.close();
         serializer.close();
-        setImmediate(() => data.push(null));
+        setTimeout(() => data.push(null));
       });
     } else {
       try {
         const result = await (<IQueryOperationResultBoolean> action).execute();
         serializer.add({ name: 'boolean', children: result.toString() });
         serializer.close();
-        setImmediate(() => data.push(null));
+        setTimeout(() => data.push(null));
       } catch (error: unknown) {
-        setImmediate(() => data.emit('error', error));
+        setTimeout(() => data.emit('error', error));
       }
     }
 

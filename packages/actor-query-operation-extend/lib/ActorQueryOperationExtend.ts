@@ -57,7 +57,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
-    const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
+    const bindingsStream = output.bindingsStream.transform<Bindings>({ autoStart: false, transform });
     return {
       type: 'bindings',
       bindingsStream,

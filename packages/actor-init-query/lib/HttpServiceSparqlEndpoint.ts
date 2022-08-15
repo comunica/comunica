@@ -201,6 +201,7 @@ export class HttpServiceSparqlEndpoint {
       const workerTimeouts: Record<number, NodeJS.Timeout> = {};
       worker.on('message', ({ type, queryId }) => {
         if (type === 'start') {
+          stderr.write(`Worker ${worker.process.pid} got assigned a new query (${queryId}).\n`);
           workerTimeouts[queryId] = setTimeout(() => {
             try {
               if (worker.isConnected()) {
@@ -213,6 +214,7 @@ export class HttpServiceSparqlEndpoint {
             delete workerTimeouts[queryId];
           }, this.timeout);
         } else if (type === 'end' && workerTimeouts[queryId]) {
+          stderr.write(`Worker ${worker.process.pid} has completed query ${queryId}.\n`);
           clearTimeout(workerTimeouts[queryId]);
           delete workerTimeouts[queryId];
         }
@@ -414,6 +416,14 @@ export class HttpServiceSparqlEndpoint {
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
+    // Log the start of the query execution
+    stdout.write(`[200] ${request.method} to ${request.url}\n`);
+    stdout.write(`      Requested media type: ${mediaType}\n`);
+    stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
+
+    // Send message to master process to indicate the start of an execution
+    process.send!({ type: 'start', queryId });
+
     // Determine context
     let context = {
       ...this.context,
@@ -454,18 +464,15 @@ export class HttpServiceSparqlEndpoint {
       }
     }
 
-    stdout.write(`[200] ${request.method} to ${request.url}\n`);
-    stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
+    // Write header of response
     response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
 
+    // Stop further processing for HEAD requests
     if (headOnly) {
       response.end();
       return;
     }
-
-    // Send message to master process to indicate the start of an execution
-    process.send!({ type: 'start', queryId });
 
     let eventEmitter: EventEmitter | undefined;
     try {
