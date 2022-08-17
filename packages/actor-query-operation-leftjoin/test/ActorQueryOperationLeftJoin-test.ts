@@ -223,8 +223,8 @@ describe('ActorQueryOperationLeftJoin', () => {
     });
   });
 
-  describe('comunica sparql', () => {
-    it('Does not support EXISTS sparql keyword', async() => {
+  describe('Comunica sparql regression test for #1029', () => {
+    it('Supports EXISTS sparql keyword', async() => {
       const store = new n3.Store();
       const subject = n3.DataFactory.namedNode('http://subject');
       const predicate = n3.DataFactory.namedNode('http://predicate');

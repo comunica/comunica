@@ -134,10 +134,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * Create an options object that can be used to construct a sparqlee synchronous evaluator.
    * @param context An action context.
-   * @param mediatorQueryOperation An optional query query operation mediator.
+   * @param mediatorQueryOperation An query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  public static getExpressionContext(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
   ISyncExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
@@ -148,10 +148,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * Create an options object that can be used to construct a sparqlee asynchronous evaluator.
    * @param context An action context.
-   * @param mediatorQueryOperation An optional query query operation mediator.
+   * @param mediatorQueryOperation An query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
    */
-  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
   IAsyncExpressionContext {
     const expressionContext: IAsyncExpressionContext = {
       ...this.getBaseExpressionContext(context),

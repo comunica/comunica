@@ -24,7 +24,8 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     // Will throw error for unsupported operators
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
-      const _ = new AsyncEvaluator(expr, ActorQueryOperation.getAsyncExpressionContext(context));
+      const _ = new AsyncEvaluator(expr, ActorQueryOperation.getAsyncExpressionContext(context,
+        this.mediatorQueryOperation));
     }
     return true;
   }
@@ -35,7 +36,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
+    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.

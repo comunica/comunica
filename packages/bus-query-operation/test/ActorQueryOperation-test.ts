@@ -77,31 +77,39 @@ describe('ActorQueryOperation', () => {
   });
 
   describe('#getExpressionContext', () => {
-    describe('without mediatorQueryOperation', () => {
-      it('should create an empty object for an empty contexts save for the bnode function', () => {
-        expect(ActorQueryOperation.getExpressionContext(new ActionContext()))
-          .toEqual({ bnode: expect.any(Function) });
-      });
+    let mediatorQueryOperation: any;
 
-      it('the bnode function should synchronously return a blank node', () => {
-        const context = ActorQueryOperation.getExpressionContext(new ActionContext());
-        const blankNode = context.bnode();
-        expect(blankNode).toBeDefined();
-        expect(blankNode).toHaveProperty('termType');
-        expect(blankNode.termType).toEqual('BlankNode');
-      });
+    beforeEach(() => {
+      mediatorQueryOperation = {
+        mediate: (arg: any) => Promise.resolve({
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
+          metadata: () => Promise.resolve({ cardinality: 0 }),
+          operated: arg,
+          type: 'bindings',
+          variables: [ 'a' ],
+        }),
+      };
     });
-  });
 
-  describe('#getAsyncExpressionContext', () => {
-    describe('without mediatorQueryOperation', () => {
-      it('should create an empty object for an empty contexts save for the bnode function', () => {
-        expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext()))
-          .toEqual({ bnode: expect.any(Function) });
-      });
+    it('should create an empty object for an empty context save for the bnode function', () => {
+      expect(ActorQueryOperation.getExpressionContext(new ActionContext(), mediatorQueryOperation))
+        .toEqual({ bnode: expect.any(Function),
+          extensionFunctionCreator: undefined,
+          baseIRI: undefined,
+          now: undefined });
+    });
 
+    it('the bnode function should synchronously return a blank node', () => {
+      const context = ActorQueryOperation.getExpressionContext(new ActionContext(), mediatorQueryOperation);
+      const blankNode = context.bnode();
+      expect(blankNode).toBeDefined();
+      expect(blankNode).toHaveProperty('termType');
+      expect(blankNode.termType).toEqual('BlankNode');
+    });
+
+    describe('#getAsyncExpressionContext', () => {
       it('the bnode function should asynchronously return a blank node', async() => {
-        const context = ActorQueryOperation.getAsyncExpressionContext(new ActionContext());
+        const context = ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation);
         const blankNodePromise = context.bnode();
         expect(blankNodePromise).toBeInstanceOf(Promise);
         const blankNode = await blankNodePromise;
@@ -115,27 +123,13 @@ describe('ActorQueryOperation', () => {
         expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext({
           [KeysInitQuery.queryTimestamp.name]: date,
           [KeysInitQuery.baseIRI.name]: 'http://base.org/',
-        }))).toEqual({
+        }), mediatorQueryOperation)).toEqual({
           now: date,
           bnode: expect.any(Function),
           baseIRI: 'http://base.org/',
+          exists: expect.any(Function),
+          extensionFunctionCreator: undefined,
         });
-      });
-    });
-
-    describe('with mediatorQueryOperation', () => {
-      let mediatorQueryOperation: any;
-
-      beforeEach(() => {
-        mediatorQueryOperation = {
-          mediate: (arg: any) => Promise.resolve({
-            bindingsStream: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ cardinality: 0 }),
-            operated: arg,
-            type: 'bindings',
-            variables: [ 'a' ],
-          }),
-        };
       });
 
       it('should create an object with a resolver', () => {

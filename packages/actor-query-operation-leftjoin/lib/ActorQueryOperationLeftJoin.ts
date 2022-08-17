@@ -36,7 +36,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
 
     // If the pattern contains an expression, filter the resulting stream
     if (operationOriginal.expression) {
-      const config = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
+      const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
       const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
       const bindingsStream = joined.bindingsStream
         .transform({
