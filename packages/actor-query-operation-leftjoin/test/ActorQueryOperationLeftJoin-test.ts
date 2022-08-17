@@ -1,16 +1,21 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import { QueryEngine } from '@comunica/query-sparql-rdfjs';
 import type { IQueryOperationResultBindings, Bindings, IJoinEntry } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
+import * as chai from 'chai';
+import * as n3 from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
 import { isExpressionError } from 'sparqlee';
-import { ActorQueryOperationLeftJoin } from '../lib/ActorQueryOperationLeftJoin';
+import { ActorQueryOperationLeftJoin } from '../lib';
 import '@comunica/jest';
+import 'mocha';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
+const sparql = new QueryEngine();
 
 describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
@@ -215,6 +220,69 @@ describe('ActorQueryOperationLeftJoin', () => {
           // Do nothing
         });
       });
+    });
+  });
+
+  describe('comunica sparql', () => {
+    it('Does not support EXISTS sparql keyword', async() => {
+      const store = new n3.Store();
+      const subject = n3.DataFactory.namedNode('http://subject');
+      const predicate = n3.DataFactory.namedNode('http://predicate');
+      const object = n3.DataFactory.namedNode('http://object');
+      const blank = n3.DataFactory.blankNode();
+      const spo = n3.DataFactory.quad(subject, predicate, object);
+      const bpo = n3.DataFactory.quad(blank, predicate, object);
+      store.addQuads([ spo, bpo ]);
+      const quadStream = await sparql.queryQuads(`
+      CONSTRUCT {
+        ?s ?p ?o.
+      }
+      WHERE { 
+        ?s ?p ?o.
+        OPTIONAL {
+          FILTER EXISTS {
+            ?s2 ?p ?o.
+            FILTER (?s != ?s2)
+          }
+        }
+      }
+      `,
+      { sources: [ store ]});
+      const result_quads = await quadStream.toArray();
+      chai.expect(result_quads).to.deep.equal([{
+        termType: 'Quad',
+        value: '',
+        graph: {
+          termType: 'DefaultGraph',
+          value: '',
+        },
+        subject: {
+          id: 'http://subject',
+        },
+        predicate: {
+          id: 'http://predicate',
+        },
+        object: {
+          id: 'http://object',
+        },
+      }, {
+        termType: 'Quad',
+        value: '',
+        graph: {
+          termType: 'DefaultGraph',
+          value: '',
+        },
+        subject: {
+          termType: 'BlankNode',
+          value: 'bc_0_n3-01',
+        },
+        predicate: {
+          id: 'http://predicate',
+        },
+        object: {
+          id: 'http://object',
+        },
+      }]);
     });
   });
 });
