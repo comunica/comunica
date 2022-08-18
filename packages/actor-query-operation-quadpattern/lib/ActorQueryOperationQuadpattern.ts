@@ -4,13 +4,11 @@ import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
-import type { BindingsStream,
-  IQueryOperationResult,
+import type { IQueryOperationResult,
   IActionContext, MetadataBindings,
   MetadataQuads, TermsOrder } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { QuadTermName } from 'rdf-terms';
 import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
@@ -237,38 +235,36 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data, elementVariables, variables);
 
     // Optionally filter, and construct bindings
-    const bindingsStream: BindingsStream = new TransformIterator(async() => {
-      let filteredOutput = result.data;
+    let filteredOutput = result.data;
 
-      // Detect duplicate variables in the pattern
-      const duplicateElementLinks: Record<string, string[]> | undefined = ActorQueryOperationQuadpattern
-        .getDuplicateElementLinks(pattern);
+    // Detect duplicate variables in the pattern
+    const duplicateElementLinks: Record<string, string[]> | undefined = ActorQueryOperationQuadpattern
+      .getDuplicateElementLinks(pattern);
 
-      // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
-      // But this is not the case when using union default graph semantics
-      if (pattern.graph.termType === 'Variable' && !unionDefaultGraph) {
-        filteredOutput = filteredOutput.filter(quad => quad.graph.termType !== 'DefaultGraph');
-      }
+    // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
+    // But this is not the case when using union default graph semantics
+    if (pattern.graph.termType === 'Variable' && !unionDefaultGraph) {
+      filteredOutput = filteredOutput.filter(quad => quad.graph.termType !== 'DefaultGraph');
+    }
 
-      // If there are duplicate variables in the search pattern,
-      // make sure that we filter out the triples that don't have equal values for those triple elements,
-      // as QPF ignores variable names.
-      if (duplicateElementLinks) {
-        filteredOutput = filteredOutput.filter(quad => {
-          // No need to check the graph, because an equal element already would have to be found in s, p, or o.
-          for (const element1 of TRIPLE_TERM_NAMES) {
-            for (const element2 of duplicateElementLinks[element1] || []) {
-              if (!(<any> quad)[element1].equals((<any> quad)[element2])) {
-                return false;
-              }
+    // If there are duplicate variables in the search pattern,
+    // make sure that we filter out the triples that don't have equal values for those triple elements,
+    // as QPF ignores variable names.
+    if (duplicateElementLinks) {
+      filteredOutput = filteredOutput.filter(quad => {
+        // No need to check the graph, because an equal element already would have to be found in s, p, or o.
+        for (const element1 of TRIPLE_TERM_NAMES) {
+          for (const element2 of duplicateElementLinks[element1] || []) {
+            if (!(<any> quad)[element1].equals((<any> quad)[element2])) {
+              return false;
             }
           }
-          return true;
-        });
-      }
+        }
+        return true;
+      });
+    }
 
-      return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, [])));
-    }, { autoStart: false });
+    const bindingsStream = filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, [])));
 
     return { type: 'bindings', bindingsStream, metadata };
   }
