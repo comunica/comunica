@@ -37,7 +37,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @param {RDF.Term} term An RDF term.
    * @return {any} If the term is a variable or blank node.
    */
-  public static isTermVariable(term: RDF.Term): any {
+  public static isTermVariable(term: RDF.Term): term is RDF.Variable {
     return term.termType === 'Variable';
   }
 
@@ -47,8 +47,15 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @param {RDF.BaseQuad} pattern A quad pattern.
    */
   public static getVariables(pattern: RDF.BaseQuad): RDF.Variable[] {
-    return <RDF.Variable[]> uniqTerms(getTerms(pattern)
-      .filter(ActorQueryOperationQuadpattern.isTermVariable));
+    // TODO: Optimise, this has lots of uneccessary repeated computations
+    const nestedVariables = getTerms(pattern)
+      .filter((term): term is RDF.BaseQuad => term.termType === 'Quad')
+      .flatMap(term => this.getVariables(term));
+
+    const currentVariables = getTerms(pattern)
+      .filter(ActorQueryOperationQuadpattern.isTermVariable);
+
+    return uniqTerms([...currentVariables, ...nestedVariables])
   }
 
   /**
@@ -220,6 +227,9 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         if (term.termType === 'Variable') {
           acc[key] = term.value;
         }
+        if (term.termType === 'Quad') {
+          // TODO: Recurse.
+        }
         return acc;
       },
       {});
@@ -228,6 +238,9 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       const variable: string = elementVariables[key];
       if (variable) {
         acc.push([ DF.variable(variable), term ]);
+      }
+      if () {
+        // TODO: Recurse
       }
       return acc;
     };
@@ -252,6 +265,8 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       // If there are duplicate variables in the search pattern,
       // make sure that we filter out the triples that don't have equal values for those triple elements,
       // as QPF ignores variable names.
+      // TODO: See if this can be pushed down to the the QPF actor specifically
+      // TODO: For now also do this for nested quads
       if (duplicateElementLinks) {
         filteredOutput = filteredOutput.filter(quad => {
           // No need to check the graph, because an equal element already would have to be found in s, p, or o.
