@@ -4,6 +4,7 @@ import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
+import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
@@ -19,8 +20,10 @@ const v = DF.variable('v');
 describe('FederatedQuadSource', () => {
   let mediator: any;
   let context: IActionContext;
+  let returnedIterators: AsyncIterator<any>[];
 
   beforeEach(() => {
+    returnedIterators = [];
     mediator = {
       mediate(action: any) {
         const type = action.context.get(KeysRdfResolveQuadPattern.source).type;
@@ -113,6 +116,8 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: false,
           otherMetadata: true,
         });
+        jest.spyOn(data, 'destroy');
+        returnedIterators.push(data);
         return Promise.resolve({ data });
       },
     };
@@ -216,6 +221,24 @@ describe('FederatedQuadSource', () => {
         DF.quad(
           DF.blankNode('s'),
           DF.blankNode('urn:comunica_skolem:source_1:p'),
+          DF.blankNode('o'),
+          DF.blankNode('g'),
+        ),
+      );
+    });
+
+    it('should deskolemize named nodes with the right id but not ones with the wrong id', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(
+          DF.namedNode('urn:comunica_skolem:source_0:s'),
+          DF.namedNode('urn:comunica_skolem:source_1:p'),
+          DF.namedNode('urn:comunica_skolem:source_0:o'),
+          DF.namedNode('urn:comunica_skolem:source_0:g'),
+        ), '0',
+      )).toEqualRdfQuad(
+        DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('urn:comunica_skolem:source_1:p'),
           DF.blankNode('o'),
           DF.blankNode('g'),
         ),
@@ -610,6 +633,21 @@ describe('FederatedQuadSource', () => {
       expect([ ...emptyPatterns.entries() ]).toEqual([
         [ subSource, []],
       ]);
+    });
+
+    it('destroyed before started should destroy the sub iterators', async() => {
+      const it = source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g'));
+      it.destroy();
+      await new Promise(setImmediate);
+      expect(returnedIterators[0].destroy).toHaveReturnedTimes(1);
+    });
+
+    it('destroyed before started should void proxyIt errors', async() => {
+      mediator.mediate = () => Promise.reject(new Error('ignored error'));
+
+      const it = source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g'));
+      it.destroy();
+      expect(returnedIterators.length).toEqual(0);
     });
   });
 

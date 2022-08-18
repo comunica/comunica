@@ -32,10 +32,10 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-join": "^2.3.0",
+    "@comunica/bus-query-operation": "^2.3.0",
     "@comunica/mediatortype-join-coefficients": "^2.3.0",
     "@comunica/types": "^2.3.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.4.2",
     "rdf-string": "^1.5.0"
   },
   "scripts": {
