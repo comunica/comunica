@@ -4,18 +4,17 @@ import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
-import type { BindingsStream,
-  IQueryOperationResult,
+import type { IQueryOperationResult,
   IActionContext, MetadataBindings,
   MetadataQuads, TermsOrder } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { QuadTermName } from 'rdf-terms';
-import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
+import { getTerms, QUAD_TERM_NAMES, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+import type { INestedElementVariables } from './Util';
+import { getElementVariables, getQuadBindings } from './Util';
 
 const BF = new BindingsFactory();
 const DF = new DataFactory();
@@ -56,7 +55,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const currentVariables = getTerms(pattern)
       .filter(ActorQueryOperationQuadpattern.isTermVariable);
 
-    return uniqTerms([...currentVariables, ...nestedVariables])
+    return uniqTerms([ ...currentVariables, ...nestedVariables ]);
   }
 
   /**
@@ -130,7 +129,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    */
   protected static getMetadata(
     data: AsyncIterator<RDF.Quad>,
-    elementVariables: Record<string, string>,
+    elementVariables: INestedElementVariables | undefined,
     variables: RDF.Variable[],
   ): () => Promise<MetadataBindings> {
     return () => new Promise<Record<string, any>>((resolve, reject) => {
@@ -150,7 +149,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
   protected static quadsMetadataToBindingsMetadata(
     metadataQuads: MetadataQuads,
-    elementVariables: Record<string, string>,
+    elementVariables: INestedElementVariables | undefined,
     variables: RDF.Variable[],
   ): MetadataBindings {
     return {
@@ -170,12 +169,12 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
   protected static quadsOrderToBindingsOrder(
     quadsOrder: TermsOrder<RDF.QuadTermName>,
-    elementVariables: Record<string, string>,
+    elementVariables: INestedElementVariables | undefined,
   ): TermsOrder<RDF.Variable> {
     const mappedVariables: Record<string, boolean> = {};
     return <TermsOrder<RDF.Variable>> quadsOrder.map(entry => {
       // Omit entries that do not map to a variable
-      const variableName = elementVariables[entry.term];
+      const variableName = elementVariables?.elementVariables?.[entry.term];
       if (!variableName) {
         return;
       }
@@ -223,67 +222,45 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const variables = ActorQueryOperationQuadpattern.getVariables(pattern);
 
     // Convenience datastructure for mapping quad elements to variables
-    const elementVariables: Record<string, string> = reduceTerms(pattern,
-      (acc: Record<string, string>, term: RDF.Term, key: QuadTermName) => {
-        if (term.termType === 'Variable') {
-          acc[key] = term.value;
-        }
-        if (term.termType === 'Quad') {
-          // TODO: Recurse.
-        }
-        return acc;
-      },
-      {});
-    const quadBindingsReducer = (acc: [RDF.Variable, RDF.Term][], term: RDF.Term, key: QuadTermName):
-    [RDF.Variable, RDF.Term][] => {
-      const variable: string = elementVariables[key];
-      if (variable) {
-        acc.push([ DF.variable(variable), term ]);
-      }
-      if () {
-        // TODO: Recurse
-      }
-      return acc;
-    };
+    const elementVariables = getElementVariables(pattern);
 
     // Create the metadata callback
+    // TODO: See if this metadata is still correct when quads are filtered out.
     const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data, elementVariables, variables);
 
     // Optionally filter, and construct bindings
-    // const bindingsStream: BindingsStream = new TransformIterator(async() => {
-      let filteredOutput = result.data;
+    let filteredOutput = result.data;
 
-      // Detect duplicate variables in the pattern
-      const duplicateElementLinks: Record<string, string[]> | undefined = ActorQueryOperationQuadpattern
-        .getDuplicateElementLinks(pattern);
+    // Detect duplicate variables in the pattern
+    const duplicateElementLinks: Record<string, string[]> | undefined = ActorQueryOperationQuadpattern
+      .getDuplicateElementLinks(pattern);
 
-      // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
-      // But this is not the case when using union default graph semantics
-      if (pattern.graph.termType === 'Variable' && !unionDefaultGraph) {
-        filteredOutput = filteredOutput.filter(quad => quad.graph.termType !== 'DefaultGraph');
-      }
+    // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
+    // But this is not the case when using union default graph semantics
+    if (pattern.graph.termType === 'Variable' && !unionDefaultGraph) {
+      filteredOutput = filteredOutput.filter(quad => quad.graph.termType !== 'DefaultGraph');
+    }
 
-      // If there are duplicate variables in the search pattern,
-      // make sure that we filter out the triples that don't have equal values for those triple elements,
-      // as QPF ignores variable names.
-      // TODO: See if this can be pushed down to the the QPF actor specifically
-      // TODO: For now also do this for nested quads
-      if (duplicateElementLinks) {
-        filteredOutput = filteredOutput.filter(quad => {
-          // No need to check the graph, because an equal element already would have to be found in s, p, or o.
-          for (const element1 of TRIPLE_TERM_NAMES) {
-            for (const element2 of duplicateElementLinks[element1] || []) {
-              if (!(<any> quad)[element1].equals((<any> quad)[element2])) {
-                return false;
-              }
+    // If there are duplicate variables in the search pattern,
+    // make sure that we filter out the triples that don't have equal values for those triple elements,
+    // as QPF ignores variable names.
+    // TODO: See if this can be pushed down to the the QPF actor specifically
+    // TODO: For now also do this for nested quads [this is probably easier to do after the bindings extraction]
+    if (duplicateElementLinks) {
+      filteredOutput = filteredOutput.filter(quad => {
+        // No need to check the graph, because an equal element already would have to be found in s, p, or o.
+        for (const element1 of TRIPLE_TERM_NAMES) {
+          for (const element2 of duplicateElementLinks[element1] || []) {
+            if (!(<any> quad)[element1].equals((<any> quad)[element2])) {
+              return false;
             }
           }
-          return true;
-        });
-      }
+        }
+        return true;
+      });
+    }
 
-    const bindingsStream = filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, [])));
-    // }, { autoStart: false });
+    const bindingsStream = filteredOutput.map(quad => getQuadBindings(quad, elementVariables));
 
     return { type: 'bindings', bindingsStream, metadata };
   }
