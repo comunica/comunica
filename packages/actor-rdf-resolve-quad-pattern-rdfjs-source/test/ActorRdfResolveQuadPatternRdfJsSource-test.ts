@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -142,6 +142,173 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
         .toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: false });
     });
+
+    describe('sparqlStar with a real store', () => {
+      it('should run with a real store', async() => {
+        const store = new Store();
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+        store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+        context = new ActionContext({
+          [KeysRdfResolveQuadPattern.source.name]: store,
+          [KeysInitQuery.sparqlStar.name]: true
+        });
+        const pattern: any = {
+          subject: DF.variable('s'),
+          predicate: DF.namedNode('p'),
+          object: DF.variable('o'),
+          graph: DF.variable('g'),
+        };
+        const { data } = await actor.run({ pattern, context });
+        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')),
+        ]);
+        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          .toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: false });
+      });
+
+      it('should run with a real store containing reified triples', async() => {
+        const store = new Store();
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+        store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
+          DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
+        )));
+        store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+          DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+        )));
+        context = new ActionContext({
+          [KeysRdfResolveQuadPattern.source.name]: store,
+          [KeysInitQuery.sparqlStar.name]: true
+        });
+        const pattern: any = {
+          subject: DF.variable('s'),
+          predicate: DF.namedNode('p'),
+          object: DF.variable('o'),
+          graph: DF.variable('g'),
+        };
+        const { data } = await actor.run({ pattern, context });
+        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')),
+          DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
+            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
+          )),
+        ]);
+        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
+      });
+
+      it('should run with a real store containing reified triples and pattern', async() => {
+        const store = new Store();
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+        store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
+          DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
+        )));
+        store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+          DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+        )));
+        context = new ActionContext({
+          [KeysRdfResolveQuadPattern.source.name]: store,
+          [KeysInitQuery.sparqlStar.name]: true
+        });
+        const pattern: any = {
+          subject: DF.variable('s'),
+          predicate: DF.namedNode('p'),
+          object: DF.quad(
+            DF.variable('s1'), DF.variable('p1'), DF.variable('o1')
+          ),
+          graph: DF.variable('g'),
+        };
+        const { data } = await actor.run({ pattern, context });
+        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+          DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
+            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
+          )),
+        ]);
+        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
+      });
+
+      it('should run with a real store containing reified triples and pattern - selecting by reified node', async() => {
+        const store = new Store();
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+        store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
+          DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
+        )));
+        store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+          DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+        )));
+        context = new ActionContext({
+          [KeysRdfResolveQuadPattern.source.name]: store,
+          [KeysInitQuery.sparqlStar.name]: true
+        });
+        const pattern: any = {
+          subject: DF.variable('s'),
+          predicate: DF.variable('p'),
+          object: DF.quad(
+            DF.variable('s1'), DF.namedNode('pbx'), DF.variable('o1')
+          ),
+          graph: DF.variable('g'),
+        };
+        const { data } = await actor.run({ pattern, context });
+        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+          DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+          ))
+        ]);
+        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
+      });
+
+      it('should run with a real store containing doubly reified triples and pattern', async() => {
+        const store = new Store();
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+        store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
+          DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
+        )));
+        store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+          DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+        )));
+        store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+          DF.namedNode('sb3'), DF.namedNode('pbx'), DF.quad(
+            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+          )
+        )));
+        context = new ActionContext({
+          [KeysRdfResolveQuadPattern.source.name]: store,
+          [KeysInitQuery.sparqlStar.name]: true
+        });
+        const pattern: any = {
+          subject: DF.variable('s'),
+          predicate: DF.variable('p'),
+          object: DF.quad(
+            DF.variable('s1'), DF.namedNode('pbx'), DF.quad(
+              DF.variable('s2'), DF.variable('pcx'), DF.variable('o2')
+            )
+          ),
+          graph: DF.variable('g'),
+        };
+        const { data } = await actor.run({ pattern, context });
+        // expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+        //   DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+        //     DF.namedNode('sb3'), DF.namedNode('pbx'), DF.quad(
+        //       DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+        //     )
+        //   ))
+        // ]);
+        // expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+        //   .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
+      });
+    })
 
     it('should use countQuads for metadata if available', async() => {
       source = <any> { countQuads: () => 123, match: () => new ArrayIterator([ 0, 1, 2 ]) };

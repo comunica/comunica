@@ -24,9 +24,9 @@ export class RdfJsQuadSource implements IQuadSource {
   }
 
   public static nullifyVariables(term?: RDF.Term, sparqlStar?: boolean): RDF.Term | undefined {
-    return (!term ||
+    return !term ||
       term.termType === 'Variable' ||
-      (sparqlStar && term.termType === 'Quad' && hasNestedVariable(term))) ?
+      (sparqlStar && term.termType === 'Quad' && hasNestedVariable(term)) ?
       undefined :
       term;
   }
