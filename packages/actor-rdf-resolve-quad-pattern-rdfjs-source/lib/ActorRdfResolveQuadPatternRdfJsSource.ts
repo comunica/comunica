@@ -28,6 +28,6 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
 
   protected async getSource(context: IActionContext): Promise<IQuadSource> {
     const source: any = <any> getContextSource(context);
-    return new RdfJsQuadSource('match' in source ? source : source.value);
+    return new RdfJsQuadSource('match' in source ? source : source.value, context);
   }
 }
