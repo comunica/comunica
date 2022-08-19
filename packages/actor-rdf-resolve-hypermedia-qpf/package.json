@@ -37,6 +37,7 @@
     "@comunica/bus-rdf-metadata-extract": "^2.3.0",
     "@comunica/bus-rdf-resolve-hypermedia": "^2.3.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.3.0",
+    "@comunica/context-entries": "^2.3.0",
     "@comunica/types": "^2.3.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.4.2",

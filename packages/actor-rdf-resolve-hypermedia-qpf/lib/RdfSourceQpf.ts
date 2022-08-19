@@ -3,14 +3,22 @@ import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { mapTerms, matchPattern } from 'rdf-terms';
+import { mapTerms, matchPattern, someTerms } from 'rdf-terms';
 const DF = new DataFactory();
+
+// TODO: Refactor this to share with the one in actor-rdf-resole-rdfjs
+function hasNestedVariable(quad: RDF.BaseQuad): boolean {
+  return someTerms(quad, term =>
+    term.termType === 'Variable' ||
+    (term.termType === 'Quad' && hasNestedVariable(term)));
+}
 
 /**
  * An RDF source that executes a quad pattern over a QPF interface and fetches its first page.
@@ -111,7 +119,15 @@ export class RdfSourceQpf implements IQuadSource {
       { uri: this.graphUri, term: graph },
     ];
     for (const entry of input) {
-      if (entry.uri && entry.term.termType !== 'Variable') {
+      if (entry.uri && entry.term.termType !== 'Variable' &&
+        // In sparqlStar mode, quads containing variables should not be converted
+        // to URIs
+        (
+          entry.term.termType !== 'Quad' ||
+          !this.context.get(KeysInitQuery.sparqlStar) ||
+          !hasNestedVariable(entry.term)
+        )
+      ) {
         entries[entry.uri] = termToString(entry.term);
       }
     }
@@ -161,16 +177,14 @@ export class RdfSourceQpf implements IQuadSource {
       // Therefore, we have to filter away all non-matching quads here.
       const actualDefaultGraph = DF.defaultGraph();
       let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data)
-        .transform({
-          filter(quad: RDF.Quad) {
-            if (matchPattern(quad, subject, predicate, object, graph)) {
-              return true;
-            }
+        .filter(
+          quad =>
+            matchPattern(quad, subject, predicate, object, graph) ||
             // Special case: if we are querying in the default graph, and we had an overridden default graph,
             // also accept that incoming triples may be defined in the actual default graph
-            return modifiedGraph && matchPattern(quad, subject, predicate, object, actualDefaultGraph);
-          },
-        });
+            (modifiedGraph && matchPattern(quad, subject, predicate, object, actualDefaultGraph)),
+        );
+
       if (modifiedGraph || graph.termType === 'Variable') {
         // Reverse-map the overridden default graph back to the actual default graph
         filteredOutput = this.reverseMapQuadsToDefaultGraph(filteredOutput);
