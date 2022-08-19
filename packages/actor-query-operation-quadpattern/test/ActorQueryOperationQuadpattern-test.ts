@@ -220,12 +220,35 @@ describe('ActorQueryOperationQuadpattern', () => {
       })).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g') ]);
     });
 
+    it('should get variables ?s, ?p, ?o, ?g from pattern <<?s1 ?p1 ?o1 ?g>> ?p ?o ?g', () => {
+      return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.Quad> {
+        graph: DF.variable('g'),
+        object: DF.variable('o'),
+        predicate: DF.variable('p'),
+        subject: DF.quad(DF.variable('s1'), DF.variable('p1'), DF.variable('o1'), DF.variable('g')),
+      })).toEqual([
+        DF.variable('p'),
+        DF.variable('o'),
+        DF.variable('g'),
+        DF.variable('s1'), DF.variable('p1'), DF.variable('o1'),
+      ]);
+    });
+
     it('should not get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
       return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.BaseQuad> {
         graph: DF.blankNode('g'),
         object: DF.blankNode('o'),
         predicate: DF.blankNode('p'),
         subject: DF.blankNode('s'),
+      })).toEqual([]);
+    });
+
+    it('should not get blank nodes _:s, _:p, _:o, _:g from pattern <<_:s1 <p1> _:o1>> _:p _:o _:g', () => {
+      return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.BaseQuad> {
+        graph: DF.blankNode('g'),
+        object: DF.blankNode('o'),
+        predicate: DF.blankNode('p'),
+        subject: DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.blankNode('o1')),
       })).toEqual([]);
     });
 
