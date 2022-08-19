@@ -104,6 +104,10 @@ export const KeysInitQuery = {
    */
   lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
   /**
+   * If SPARQL-star is enabled on the engine.
+   */
+  sparqlStar: new ActionContextKey<boolean>('@comunica/actor-init-query:sparqlStar'),
+  /**
    * The original query string.
    */
   queryString: new ActionContextKey<string>('@comunica/actor-init-query:queryString'),
