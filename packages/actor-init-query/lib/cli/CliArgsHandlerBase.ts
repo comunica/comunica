@@ -1,3 +1,4 @@
+/* eslint-disable import/no-nodejs-modules */
 import { exec } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import * as OS from 'os';
@@ -216,3 +217,5 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     }
   }
 }
+/* eslint-enable import/no-nodejs-modules */
+

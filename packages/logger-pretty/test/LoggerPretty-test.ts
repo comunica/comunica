@@ -5,6 +5,20 @@ describe('LoggerPretty', () => {
     process.stderr.write = jest.fn();
   });
 
+  it('should work on complex values', () => {
+    const logger = new LoggerPretty({ level: 'trace' });
+    logger.trace('bla', { foo: BigInt(1) });
+    return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+  });
+
+  it('should work on recursive struct', () => {
+    const logger = new LoggerPretty({ level: 'trace' });
+    const d: any = { foo: 'bar' };
+    d.rec = d;
+    logger.trace('bla', d);
+    return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+  });
+
   describe('a LoggerPretty instance on trace level', () => {
     let logger: LoggerPretty;
 

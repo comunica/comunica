@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
@@ -7,6 +6,7 @@ import type {
   IActionContext, IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
+import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
 /**

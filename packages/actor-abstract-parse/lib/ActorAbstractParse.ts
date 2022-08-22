@@ -1,5 +1,5 @@
-import type { Readable } from 'stream';
 import type { IAction, IActorOutput } from '@comunica/core';
+import type { Readable } from 'readable-stream';
 
 export type IParseMetadata = Record<string, any> | undefined;
 

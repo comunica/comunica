@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
@@ -8,6 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import { termToString } from 'rdf-string-ttl';
+import { Readable } from 'readable-stream';
 
 /**
  * A quad destination that represents a resource that is patchable via SPARQL Update.

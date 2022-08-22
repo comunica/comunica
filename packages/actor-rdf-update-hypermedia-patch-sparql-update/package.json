@@ -39,7 +39,8 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.4.2",
     "cross-fetch": "^3.0.5",
-    "rdf-string-ttl": "^1.1.0"
+    "rdf-string-ttl": "^1.1.0",
+    "readable-stream": "^4.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

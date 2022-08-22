@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import {
@@ -7,6 +6,7 @@ import {
 import type { Bindings, IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string-ttl';
+import { Readable } from 'readable-stream';
 
 /**
  * A comunica SPARQL TSV Query Result Serialize Actor.

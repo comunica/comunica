@@ -1,4 +1,3 @@
-import type { EventEmitter } from 'events';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
@@ -140,7 +139,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
    */
   public executeQuery(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[]):
   IQueryOperationResult {
-    const inputStream: Promise<EventEmitter> = quads ?
+    const inputStream: Promise<NodeJS.EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
     let cardinality = 0;
