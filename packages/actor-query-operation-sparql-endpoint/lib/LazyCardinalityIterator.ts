@@ -1,5 +1,5 @@
-import { AsyncIterator } from 'asynciterator';
-import LinkedList from './LinkedList';
+import { AsyncIterator, LinkedList } from 'asynciterator';
+
 /**
   An iterator that maintains an internal buffer of items.
   This class serves as a base class for other iterators
@@ -9,6 +9,7 @@ import LinkedList from './LinkedList';
 export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
   private _buffer?: LinkedList<T>;
   private _cardinality?: Promise<number>;
+  private _error: any;
   private _count = 0;
   private _buffering = true;
 
@@ -54,6 +55,9 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
       return this._cardinality;
     }
 
+    if (this._error)
+      return Promise.reject(this._error);
+
     if (this._source.done) {
       this.close();
     }
@@ -62,10 +66,15 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
       this._cardinality = Promise.resolve(this._count);
     } else {
       this._buffer = new LinkedList();
-      this._cardinality = new Promise(resolve => {
-        // TODO: See if this section should reject on error
+      this._cardinality = new Promise((resolve, reject) => {
         this._source.removeListener('readable', destinationSetReadable);
         this._source.removeListener('end', destinationSetReadable);
+
+        const clean = (): void => {
+          this._source.removeListener('data', onData);
+          this._source.removeListener('end', onEnd);
+          this._source.removeListener('error', onError);
+        }
 
         const onData = (data: T): void => {
           this._buffer!.push(data);
@@ -74,13 +83,18 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
         };
         const onEnd = (): void => {
           this._buffering = false;
-          this._source.removeListener('data', onData);
-          this._source.removeListener('end', onEnd);
+          clean();
           resolve(this._count);
         };
+        const onError = (err: any): void => {
+          this._buffering = false;
+          clean();
+          reject(err);
+        }
 
         this._source.on('data', onData);
         this._source.on('end', onEnd);
+        this._source.on('error', onError);
       });
     }
 
@@ -105,5 +119,6 @@ function destinationSetReadable<S>(this: InternalSource<S>): void {
   this[DESTINATION]!.readable = true;
 }
 function destinationEmitError<S>(this: InternalSource<S>, error: Error): void {
+  (this[DESTINATION]! as any)._error = error;
   this[DESTINATION]!.emit('error', error);
 }

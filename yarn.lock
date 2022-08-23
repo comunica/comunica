@@ -3455,6 +3455,11 @@ asynciterator@^3.2.0, asynciterator@^3.4.2:
   resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-3.4.2.tgz#2f82219a0d3ee97f33f9f586f8fb089ed2e6fc15"
   integrity sha512-/Mz31ZSFJFIFIf2LoOrVlSDyIzBKkXc3F9e5/4mspmvsP1njGK5V1mznLjaugRFhdmTswfJW5yOQqUKkvqH/mg==
 
+asynciterator@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-3.7.0.tgz#1d5e9c0208c4d71e6afb0d77072b642db33607d4"
+  integrity sha512-A5WdCg2PqcwoEIKXG3AyK58Vpq7lSfNsv8U6DLy6f9zfMNM7MHM0+1YNkQOe67NSDawzpkhuhdyG26wwGPAMvQ==
+
 asyncjoin@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.0.5.tgz#65b537ef97dc2d727ff43c91c1e60bc2eb8795ee"

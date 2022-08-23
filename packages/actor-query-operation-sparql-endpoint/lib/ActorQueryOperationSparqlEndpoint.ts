@@ -164,13 +164,13 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (quads) {
       return <IQueryOperationResultQuads> {
         type: 'quads',
-        quadStream: resultStream,
+        quadStream: <any> resultStream,
         metadata,
       };
     }
     return <IQueryOperationResultBindings> {
       type: 'bindings',
-      bindingsStream: <AsyncIterator<any>> resultStream,
+      bindingsStream: <any> resultStream,
       metadata,
     };
   }

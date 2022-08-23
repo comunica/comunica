@@ -414,7 +414,7 @@ this is a body`));
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       actor.endpointFetcher.fetchBindings = () => Promise.reject(new Error('MY ERROR'));
       return expect(new Promise((resolve, reject) => {
-        return actor.run(op).then(async output => (<any> output).bindingsStream.on('error', resolve));
+        return actor.run(op).then(output => (<any> output).bindingsStream.on('error', resolve));
       })).resolves.toEqual(new Error('MY ERROR'));
     });
 
