@@ -35,7 +35,7 @@
     "@comunica/actor-query-operation-union": "^2.3.0",
     "@comunica/bus-query-operation": "^2.3.0",
     "@comunica/types": "^2.3.0",
-    "asynciterator": "^3.4.2",
+    "asynciterator": "^3.7.0",
     "sparqlalgebrajs": "^4.0.0"
   },
   "scripts": {

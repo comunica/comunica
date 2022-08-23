@@ -34,7 +34,7 @@
     "@comunica/bindings-factory": "^2.2.0",
     "@comunica/bus-rdf-join": "^2.3.0",
     "@comunica/mediatortype-join-coefficients": "^2.3.0",
-    "asynciterator": "^3.4.2"
+    "asynciterator": "^3.7.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

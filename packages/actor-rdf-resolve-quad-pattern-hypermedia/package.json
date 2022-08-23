@@ -43,7 +43,7 @@
     "@comunica/types": "^2.3.0",
     "@rdfjs/types": "*",
     "@types/lru-cache": "^5.1.0",
-    "asynciterator": "^3.4.2",
+    "asynciterator": "^3.7.0",
     "lru-cache": "^6.0.0",
     "readable-stream": "^4.0.0",
     "sparqlalgebrajs": "^4.0.0"
