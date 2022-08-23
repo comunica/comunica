@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
@@ -7,6 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IQueryOperationResultBindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { Readable } from 'readable-stream';
 import type { IConverterSettings, ISchema } from 'sparqljson-to-tree';
 import { Converter } from 'sparqljson-to-tree';
 

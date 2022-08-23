@@ -9,6 +9,7 @@ module.exports = {
     libraryTarget: 'var',
     library: 'Comunica'
   },
+  mode: 'production',
   devtool: 'source-map',
   module: {
     rules: [
@@ -19,17 +20,7 @@ module.exports = {
       },
     ]
   },
-  resolve: {
-    fallback: {
-      buffer: require.resolve("buffer/"),
-      stream: require.resolve('stream-browserify'),
-      util: require.resolve("util/")
-    }
-  },
   plugins: [
-    new webpack.ProgressPlugin(),
-    new webpack.ProvidePlugin({
-      process: 'process/browser'
-    })
+    new webpack.ProgressPlugin()
   ]
 };

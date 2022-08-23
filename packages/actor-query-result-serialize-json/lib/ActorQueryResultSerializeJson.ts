@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
@@ -9,6 +8,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
+import { Readable } from 'readable-stream';
 
 /**
  * A comunica JSON Query Result Serialize Actor.

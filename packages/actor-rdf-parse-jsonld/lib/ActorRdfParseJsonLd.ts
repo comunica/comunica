@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
@@ -7,6 +6,7 @@ import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-en
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { JsonLdParser } from 'jsonld-streaming-parser';
+import type { Readable } from 'readable-stream';
 import { DocumentLoaderMediated } from './DocumentLoaderMediated';
 
 /**

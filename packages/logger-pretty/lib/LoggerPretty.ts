@@ -1,5 +1,5 @@
-import { inspect } from 'util';
 import { Logger } from '@comunica/types';
+import * as objectInspect from 'object-inspect';
 
 /**
  * A logger that pretty-prints everything.
@@ -43,7 +43,7 @@ export class LoggerPretty extends Logger {
   protected log(level: string, message: string, data?: any): void {
     if (Logger.getLevelOrdinal(level) >= this.levelOrdinal &&
       (!data || !('actor' in data) || !this.actors || this.actors[data.actor])) {
-      process.stderr.write(`[${new Date().toISOString()}]  ${level.toUpperCase()}: ${message} ${inspect(data)}\n`);
+      process.stderr.write(`[${new Date().toISOString()}]  ${level.toUpperCase()}: ${message} ${objectInspect(data)}\n`);
     }
   }
 }

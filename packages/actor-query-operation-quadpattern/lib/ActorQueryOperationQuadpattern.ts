@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTyped, ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
@@ -10,7 +10,6 @@ import type { BindingsStream,
   MetadataQuads, TermsOrder } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { QuadTermName } from 'rdf-terms';
 import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
@@ -237,7 +236,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data, elementVariables, variables);
 
     // Optionally filter, and construct bindings
-    const bindingsStream: BindingsStream = new TransformIterator(async() => {
+    const bindingsStream: BindingsStream = new ClosableTransformIterator(async() => {
       let filteredOutput = result.data;
 
       // Detect duplicate variables in the pattern
@@ -268,7 +267,10 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       }
 
       return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, [])));
-    }, { autoStart: false });
+    }, {
+      autoStart: false,
+      onClose: () => result.data.destroy(),
+    });
 
     return { type: 'bindings', bindingsStream, metadata };
   }

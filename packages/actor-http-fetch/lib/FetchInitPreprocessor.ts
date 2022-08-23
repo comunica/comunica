@@ -1,3 +1,4 @@
+/* eslint-disable import/no-nodejs-modules */
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 import { ActorHttp } from '@comunica/bus-http';
@@ -31,3 +32,4 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     return new AbortController();
   }
 }
+/* eslint-enable import/no-nodejs-modules */

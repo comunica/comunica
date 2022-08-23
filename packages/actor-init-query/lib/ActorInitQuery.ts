@@ -1,8 +1,9 @@
+/* eslint-disable import/no-nodejs-modules */
 import { readFileSync } from 'fs';
-import type { Readable } from 'stream';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ICliArgsHandler } from '@comunica/types';
+import type { Readable } from 'readable-stream';
 import yargs from 'yargs';
 import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
 import { ActorInitQueryBase } from './ActorInitQueryBase';
@@ -98,3 +99,4 @@ export class ActorInitQuery extends ActorInitQueryBase {
     return { stdout };
   }
 }
+/* eslint-enable import/no-nodejs-modules */
