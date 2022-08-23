@@ -1,4 +1,4 @@
-import { AsyncIterator, LinkedList } from 'asynciterator';
+import { AsyncIterator, LinkedList, DESTINATION } from 'asynciterator';
 
 /**
   An iterator that maintains an internal buffer of items.
@@ -111,8 +111,6 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
     super.close();
   }
 }
-
-const DESTINATION = Symbol('destination');
 
 type InternalSource<S> = AsyncIterator<S> & { [DESTINATION]: AsyncIterator<any> };
 
