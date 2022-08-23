@@ -56,7 +56,6 @@ describe('LazyCardinalityIterator', () => {
     });
   });
 
-
   describe('called on an iterator that emits an error', () => {
     let source: AsyncIterator<number>;
     let iterator: LazyCardinalityIterator<number>;
@@ -65,6 +64,7 @@ describe('LazyCardinalityIterator', () => {
       err = new Error('My error');
       source = new AsyncIterator();
       iterator = new LazyCardinalityIterator(source);
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       iterator.on('error', () => {});
       source.readable = true;
       source.read = () => {
@@ -73,20 +73,20 @@ describe('LazyCardinalityIterator', () => {
       };
     });
 
-    it('should reject #toArray() the promise of the iterator', async () => {
+    it('should reject #toArray() the promise of the iterator', async() => {
       await expect(iterator.toArray()).rejects.toEqual(err);
     });
 
-    it('should reject #toArray() the promise of the source', async () => {
+    it('should reject #toArray() the promise of the source', async() => {
       await expect(source.toArray()).rejects.toEqual(err);
     });
 
-    it('should reject #getCardinality() the promise', async () => {
+    it('should reject #getCardinality() the promise', async() => {
       await expect(iterator.getCardinality()).rejects.toEqual(err);
     });
   });
 
-  // describe('input MyIterator which emits 1, 0, errors and then closes', () => {
+  // Describe('input MyIterator which emits 1, 0, errors and then closes', () => {
   //   let iterator: LazyCardinalityIterator<number>;
   //   let source: AsyncIterator<number>;
 
@@ -97,7 +97,7 @@ describe('LazyCardinalityIterator', () => {
   //     }
 
   //     private i = 2;
-      
+
   //     read() {
   //       if (this.i > 0) {
   //         this.i--;
@@ -113,7 +113,6 @@ describe('LazyCardinalityIterator', () => {
   //     source = new MyIterator();
   //     iterator = new LazyCardinalityIterator(source);
   //   });
-
 
   //   it('x', async () => {
   //     expect(iterator.read()).toEqual(1);

@@ -9,7 +9,7 @@ import { AsyncIterator, LinkedList } from 'asynciterator';
 export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
   private _buffer?: LinkedList<T>;
   private _cardinality?: Promise<number>;
-  private _error: any;
+  private readonly _error: any;
   private _count = 0;
   private _buffering = true;
 
@@ -55,8 +55,9 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
       return this._cardinality;
     }
 
-    if (this._error)
+    if (this._error) {
       return Promise.reject(this._error);
+    }
 
     if (this._source.done) {
       this.close();
@@ -74,7 +75,7 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
           this._source.removeListener('data', onData);
           this._source.removeListener('end', onEnd);
           this._source.removeListener('error', onError);
-        }
+        };
 
         const onData = (data: T): void => {
           this._buffer!.push(data);
@@ -90,7 +91,7 @@ export class LazyCardinalityIterator<T> extends AsyncIterator<T> {
           this._buffering = false;
           clean();
           reject(err);
-        }
+        };
 
         this._source.on('data', onData);
         this._source.on('end', onEnd);
@@ -119,6 +120,6 @@ function destinationSetReadable<S>(this: InternalSource<S>): void {
   this[DESTINATION]!.readable = true;
 }
 function destinationEmitError<S>(this: InternalSource<S>, error: Error): void {
-  (this[DESTINATION]! as any)._error = error;
+  (<any> this[DESTINATION]!)._error = error;
   this[DESTINATION]!.emit('error', error);
 }
