@@ -86,42 +86,44 @@ describe('LazyCardinalityIterator', () => {
     });
   });
 
-  // Describe('input MyIterator which emits 1, 0, errors and then closes', () => {
-  //   let iterator: LazyCardinalityIterator<number>;
-  //   let source: AsyncIterator<number>;
+  describe('input MyIterator which emits 1, 0, errors and then closes', () => {
+    let iterator: LazyCardinalityIterator<number>;
+    let source: AsyncIterator<number>;
 
-  //   class MyIterator extends AsyncIterator<number> {
-  //     constructor() {
-  //       super();
-  //       this.readable = true;
-  //     }
+    class MyIterator extends AsyncIterator<number> {
+      public constructor() {
+        super();
+        this.readable = true;
+      }
 
-  //     private i = 2;
+      private i = 2;
 
-  //     read() {
-  //       if (this.i > 0) {
-  //         this.i--;
-  //         return this.i;
-  //       }
-  //       // this.emit('error', new Error('my error'));
-  //       this.emit('error', 'my error');
-  //       // this.close();
-  //       return null;
-  //     }
-  //   }
-  //   beforeEach(() => {
-  //     source = new MyIterator();
-  //     iterator = new LazyCardinalityIterator(source);
-  //   });
+      public read() {
+        if (this.i > 0) {
+          this.i--;
+          return this.i;
+        }
+        // This.emit('error', new Error('my error'));
+        this.emit('error', 'my error');
+        // This.close();
+        return null;
+      }
+    }
+    beforeEach(() => {
+      source = new MyIterator();
+      iterator = new LazyCardinalityIterator(source);
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      iterator.on('error', () => {});
+    });
 
-  //   it('x', async () => {
-  //     expect(iterator.read()).toEqual(1);
-  //     expect(iterator.read()).toEqual(0);
-  //     expect(iterator.read()).toEqual(null);
-  //     // expect(await iterator.toArray()).toEqual([ 2, 1 ]);
-  //     // expect(iterator.getCardinality()).rejects.toEqual('my error');
-  //   })
-  // });
+    it('should reject #getCardinality() the promise', async() => {
+      await expect(iterator.getCardinality()).rejects.toEqual('my error');
+    });
+
+    it('should reject #toArray() the promise', async() => {
+      await expect(iterator.toArray()).rejects.toEqual('my error');
+    });
+  });
 
   describe('input TransformIterator', () => {
     let iterator: LazyCardinalityIterator<number>;
