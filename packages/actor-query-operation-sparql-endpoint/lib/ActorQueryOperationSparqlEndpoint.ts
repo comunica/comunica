@@ -18,6 +18,7 @@ import type { IQueryOperationResult,
   IMetadata,
   IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
@@ -162,13 +163,13 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (quads) {
       return <IQueryOperationResultQuads> {
         type: 'quads',
-        quadStream: <any> resultStream,
+        quadStream: resultStream,
         metadata,
       };
     }
     return <IQueryOperationResultBindings> {
       type: 'bindings',
-      bindingsStream: <any> resultStream,
+      bindingsStream: <AsyncIterator<any>> resultStream,
       metadata,
     };
   }
