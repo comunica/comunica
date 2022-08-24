@@ -1,6 +1,33 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.4.0"></a>
+## [v2.4.0](https://github.com/comunica/comunica/compare/v2.2.1...v2.4.0) - 2022-08-24
+
+### Added
+* [Add logging on timeout handlers in HTTP service](https://github.com/comunica/comunica/commit/52728c5ea9e69bbce2bc5d1e363049e2d2f641d2)
+* [Emit metadata in SPARQL/JSON serializer](https://github.com/comunica/comunica/commit/4958206f6b042239efe2218ce268e4b981ce9e2c)
+* [Enable context overriding when running SPARQL endpoint](https://github.com/comunica/comunica/commit/4dd99fee904c64e9ef700eb5080197c4a03a36fa)
+
+### Changed
+* [Move away from Node.js built-ins to avoid polyfilling in tools such as Webpack](https://github.com/comunica/comunica/commit/b84898f73a1a2c1fc413b51b2facacfd6bb729e4)
+    * [Replace setImmediate by setTimeout](https://github.com/comunica/comunica/commit/ce52731ffa01962b5955f268bd71e83f0bf404ab)
+    * [Use performance.now instead of process.hrtime](https://github.com/comunica/comunica/commit/4ce3659c7d2b36905cf14dd366d99bdb62b4c0a4)
+    * [Avoid using htmlparser2 stream feature](https://github.com/comunica/comunica/commit/c18bc6d62e76e2a2f32c7512913a5a0890910402)
+    * [Remove xml dependencies](https://github.com/comunica/comunica/commit/1161105a184d82e502ce3dcc229952e09dbd7e46)
+    * [Remove dependency on web-streams-node](https://github.com/comunica/comunica/commit/1df323734cd702b67f75fab83f2d2eb2218c4998)
+* Performance improvements:
+    * [Update to AsyncIterator 3.7.0](https://github.com/comunica/comunica/commit/b16e18888b0e93821c76e01a6efd9bcb3c4f9523)
+    * [Rewrite */+ property paths with proper backpressure handling](https://github.com/comunica/comunica/commit/0ad833f8f32f7e3c2de1b22a0424da027656bf6a)
+
+### Fixed
+* [Fix propagation of iterator destroying in various places](https://github.com/comunica/comunica/commit/715b8acc122d28d09cbe28c02a1c7b8a7b82d024)
+* [Fix blocking operators delaying timeout start in HTTP service](https://github.com/comunica/comunica/commit/a6b2907780c1607eceb10e7f12ef6978f79e4aba)
+* [Fix halting when error occurs in extend operation](https://github.com/comunica/comunica/commit/58cfd99cc2d218b5fcf87a67112b3a27df9158eb)
+* [Avoid applying @babel/polyfill on the output code](https://github.com/comunica/comunica/commit/58dc932852a28fa757d3d891ac79a61c80c4a6f3)
+* [Close connections on uncaught exceptions in HTTP service workers](https://github.com/comunica/comunica/commit/300afb0d1e324dff121acd0fbd24b4eb37e201f5)
+* [Kill HTTP service master process if worker was forcefully killed](https://github.com/comunica/comunica/commit/f19ddb3ad0c30fd78c6f808e7152fe22f7a28c6c)
+
 <a name="v2.3.0"></a>
 ## [v2.3.0](https://github.com/comunica/comunica/compare/v2.2.1...v2.3.0) - 2022-06-29
 
