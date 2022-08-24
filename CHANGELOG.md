@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 <a name="v2.4.0"></a>
-## [v2.4.0](https://github.com/comunica/comunica/compare/v2.2.1...v2.4.0) - 2022-08-24
+## [v2.4.0](https://github.com/comunica/comunica/compare/v2.3.0...v2.4.0) - 2022-08-24
 
 ### Added
 * [Add logging on timeout handlers in HTTP service](https://github.com/comunica/comunica/commit/52728c5ea9e69bbce2bc5d1e363049e2d2f641d2)
