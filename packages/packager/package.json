@@ -1,6 +1,6 @@
 {
   "name": "@comunica/packager",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "main": "lib/index.js",
   "typings": "lib/index",

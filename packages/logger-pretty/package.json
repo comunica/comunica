@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-pretty",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A comunica logger that pretty-prints.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,7 +30,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/types": "^2.3.0",
+    "@comunica/types": "^2.4.0",
     "object-inspect": "^1.12.0"
   },
   "scripts": {
