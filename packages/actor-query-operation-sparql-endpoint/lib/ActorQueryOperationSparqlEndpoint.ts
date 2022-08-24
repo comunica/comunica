@@ -18,11 +18,13 @@ import type { IQueryOperationResult,
   IMetadata,
   IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
+import { LazyCardinalityIterator } from './LazyCardinalityIterator';
 
 const BF = new BindingsFactory();
 const DF = new DataFactory();
@@ -142,45 +144,32 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const inputStream: Promise<NodeJS.EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
-    let cardinality = 0;
-    const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map(rawData => {
-        cardinality++;
-        return quads ?
-          rawData :
-          BF.bindings(Object.entries(rawData)
-            .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ]));
-      });
-    inputStream.then(
-      subStream => subStream.on('end', () => stream.emit('metadata', {
-        cardinality: { type: 'exact', value: cardinality },
-        canContainUndefs: true,
-        variables,
-      })),
-      () => {
-        // Do nothing
-      },
-    );
+
+    const stream = wrap<any>(inputStream, { autoStart: false }).map(rawData => quads ?
+      rawData :
+      BF.bindings(Object.entries(rawData)
+        .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ])));
+
+    const resultStream = new LazyCardinalityIterator(stream);
 
     const metadata: () => Promise<IMetadata<any>> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
-      () => new Promise((resolve, reject) => {
-        (<any> stream)._fillBuffer();
-        stream.on('error', reject);
-        stream.on('end', () => reject(new Error('No metadata was found')));
-        stream.on('metadata', resolve);
+      async() => ({
+        cardinality: { type: 'exact', value: await resultStream.getCardinality() },
+        canContainUndefs: true,
+        variables,
       }),
     );
 
     if (quads) {
       return <IQueryOperationResultQuads> {
         type: 'quads',
-        quadStream: stream,
+        quadStream: resultStream,
         metadata,
       };
     }
     return <IQueryOperationResultBindings> {
       type: 'bindings',
-      bindingsStream: stream,
+      bindingsStream: <AsyncIterator<any>> resultStream,
       metadata,
     };
   }
