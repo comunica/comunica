@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SortIterator | Comunica</title>
+	<title>LazyCardinalityIterator | Comunica</title>
 	<meta name="description" content="Documentation for Comunica">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,19 +55,28 @@
 					<a href="../modules.html">Comunica</a>
 				</li>
 				<li>
-					<a href="../modules/actor_query_operation_orderby_sparqlee.html">actor-query-operation-orderby-sparqlee</a>
+					<a href="../modules/actor_query_operation_sparql_endpoint.html">actor-query-operation-sparql-endpoint</a>
 				</li>
 				<li>
-					<a href="actor_query_operation_orderby_sparqlee.SortIterator.html">SortIterator</a>
+					<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html">LazyCardinalityIterator</a>
 				</li>
 			</ul>
-			<h1>Class SortIterator&lt;T&gt;</h1>
+			<h1>Class LazyCardinalityIterator&lt;T&gt;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>An iterator that maintains an internal buffer of items.
+							This class serves as a base class for other iterators
+						with a typically complex item generation process.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<ul class="tsd-type-parameters">
@@ -80,10 +89,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">TransformIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>
+						<span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">SortIterator</span>
+								<span class="target">LazyCardinalityIterator</span>
 							</li>
 						</ul>
 					</li>
@@ -96,106 +105,85 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_boundPush" class="tsd-kind-icon">_bound<wbr>Push</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_createSource" class="tsd-kind-icon">_create<wbr>Source</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_destroySource" class="tsd-kind-icon">_destroy<wbr>Source</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_optional" class="tsd-kind-icon">_optional</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_properties" class="tsd-kind-icon">_properties</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_propertyCallbacks" class="tsd-kind-icon">_property<wbr>Callbacks</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_pushedCount" class="tsd-kind-icon">_pushed<wbr>Count</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_reading" class="tsd-kind-icon">_reading</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_source" class="tsd-kind-icon">_source</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_sourceStarted" class="tsd-kind-icon">_source<wbr>Started</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_state" class="tsd-kind-icon">_state</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#sort" class="tsd-kind-icon">sort</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#sorted" class="tsd-kind-icon">sorted</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#windowLength" class="tsd-kind-icon">window<wbr>Length</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#captureRejectionSymbol" class="tsd-kind-icon">capture<wbr>Rejection<wbr>Symbol</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#captureRejections" class="tsd-kind-icon">capture<wbr>Rejections</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#defaultMaxListeners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#errorMonitor" class="tsd-kind-icon">error<wbr>Monitor</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_buffer" class="tsd-kind-icon">_buffer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_buffering" class="tsd-kind-icon">_buffering</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_cardinality" class="tsd-kind-icon">_cardinality</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_count" class="tsd-kind-icon">_count</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_error" class="tsd-kind-icon">_error</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_properties" class="tsd-kind-icon">_properties</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_propertyCallbacks" class="tsd-kind-icon">_property<wbr>Callbacks</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_state" class="tsd-kind-icon">_state</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#captureRejectionSymbol" class="tsd-kind-icon">capture<wbr>Rejection<wbr>Symbol</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#captureRejections" class="tsd-kind-icon">capture<wbr>Rejections</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#defaultMaxListeners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#errorMonitor" class="tsd-kind-icon">error<wbr>Monitor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#closed" class="tsd-kind-icon">closed</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#destroyed" class="tsd-kind-icon">destroyed</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#done" class="tsd-kind-icon">done</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#ended" class="tsd-kind-icon">ended</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#maxBufferSize" class="tsd-kind-icon">max<wbr>Buffer<wbr>Size</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#readable" class="tsd-kind-icon">readable</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#source" class="tsd-kind-icon">source</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#closed" class="tsd-kind-icon">closed</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#destroyed" class="tsd-kind-icon">destroyed</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#done" class="tsd-kind-icon">done</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#ended" class="tsd-kind-icon">ended</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#readable" class="tsd-kind-icon">readable</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_begin" class="tsd-kind-icon">_begin</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_changeState" class="tsd-kind-icon">_change<wbr>State</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_closeWhenDone" class="tsd-kind-icon">_close<wbr>When<wbr>Done</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_completeClose" class="tsd-kind-icon">_complete<wbr>Close</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_destroy" class="tsd-kind-icon">_destroy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_end" class="tsd-kind-icon">_end</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_endAsync" class="tsd-kind-icon">_end<wbr>Async</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_fillBuffer" class="tsd-kind-icon">_fill<wbr>Buffer</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_fillBufferAsync" class="tsd-kind-icon">_fill<wbr>Buffer<wbr>Async</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_flush" class="tsd-kind-icon">_flush</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_init" class="tsd-kind-icon">_init</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_loadSourceAsync" class="tsd-kind-icon">_load<wbr>Source<wbr>Async</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_optionalTransform" class="tsd-kind-icon">_optional<wbr>Transform</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_push" class="tsd-kind-icon">_push</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_read" class="tsd-kind-icon">_read</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_readAndTransform" class="tsd-kind-icon">_read<wbr>And<wbr>Transform</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_toStringDetails" class="tsd-kind-icon">_to<wbr>String<wbr>Details</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_transform" class="tsd-kind-icon">_transform</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_validateSource" class="tsd-kind-icon">_validate<wbr>Source</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#addListener" class="tsd-kind-icon">add<wbr>Listener</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#append" class="tsd-kind-icon">append</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#clone" class="tsd-kind-icon">clone</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#close" class="tsd-kind-icon">close</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#copyProperties" class="tsd-kind-icon">copy<wbr>Properties</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#destroy" class="tsd-kind-icon">destroy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#emit" class="tsd-kind-icon">emit</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#eventNames" class="tsd-kind-icon">event<wbr>Names</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#filter" class="tsd-kind-icon">filter</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#forEach" class="tsd-kind-icon">for<wbr>Each</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#getMaxListeners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#getProperties" class="tsd-kind-icon">get<wbr>Properties</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#getProperty" class="tsd-kind-icon">get<wbr>Property</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#listenerCount" class="tsd-kind-icon">listener<wbr>Count</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#listeners" class="tsd-kind-icon">listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#map" class="tsd-kind-icon">map</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#off" class="tsd-kind-icon">off</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#on" class="tsd-kind-icon">on</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#once" class="tsd-kind-icon">once</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#prepend" class="tsd-kind-icon">prepend</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#prependListener" class="tsd-kind-icon">prepend<wbr>Listener</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#prependOnceListener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#range" class="tsd-kind-icon">range</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#rawListeners" class="tsd-kind-icon">raw<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#read" class="tsd-kind-icon">read</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#removeAllListeners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#removeListener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#setMaxListeners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#setProperties" class="tsd-kind-icon">set<wbr>Properties</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#setProperty" class="tsd-kind-icon">set<wbr>Property</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#skip" class="tsd-kind-icon">skip</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#surround" class="tsd-kind-icon">surround</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#take" class="tsd-kind-icon">take</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#toArray" class="tsd-kind-icon">to<wbr>Array</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#toString" class="tsd-kind-icon">to<wbr>String</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#transform" class="tsd-kind-icon">transform</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#uniq" class="tsd-kind-icon">uniq</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#listenerCount-1" class="tsd-kind-icon">listener<wbr>Count</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#on-1" class="tsd-kind-icon">on</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_orderby_sparqlee.SortIterator.html#once-1" class="tsd-kind-icon">once</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_changeState" class="tsd-kind-icon">_change<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_destroy" class="tsd-kind-icon">_destroy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_end" class="tsd-kind-icon">_end</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_endAsync" class="tsd-kind-icon">_end<wbr>Async</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_toStringDetails" class="tsd-kind-icon">_to<wbr>String<wbr>Details</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#addListener" class="tsd-kind-icon">add<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#append" class="tsd-kind-icon">append</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#clone" class="tsd-kind-icon">clone</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#close" class="tsd-kind-icon">close</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#copyProperties" class="tsd-kind-icon">copy<wbr>Properties</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#destroy" class="tsd-kind-icon">destroy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#emit" class="tsd-kind-icon">emit</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#eventNames" class="tsd-kind-icon">event<wbr>Names</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#filter" class="tsd-kind-icon">filter</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#forEach" class="tsd-kind-icon">for<wbr>Each</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getCardinality" class="tsd-kind-icon">get<wbr>Cardinality</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getMaxListeners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getProperties" class="tsd-kind-icon">get<wbr>Properties</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getProperty" class="tsd-kind-icon">get<wbr>Property</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#listenerCount" class="tsd-kind-icon">listener<wbr>Count</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#listeners" class="tsd-kind-icon">listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#map" class="tsd-kind-icon">map</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#off" class="tsd-kind-icon">off</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#on" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#once" class="tsd-kind-icon">once</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#prepend" class="tsd-kind-icon">prepend</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#prependListener" class="tsd-kind-icon">prepend<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#prependOnceListener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#range" class="tsd-kind-icon">range</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#rawListeners" class="tsd-kind-icon">raw<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#read" class="tsd-kind-icon">read</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#removeAllListeners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#removeListener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#setMaxListeners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#setProperties" class="tsd-kind-icon">set<wbr>Properties</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#setProperty" class="tsd-kind-icon">set<wbr>Property</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#skip" class="tsd-kind-icon">skip</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#surround" class="tsd-kind-icon">surround</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#take" class="tsd-kind-icon">take</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#toArray" class="tsd-kind-icon">to<wbr>Array</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#toString" class="tsd-kind-icon">to<wbr>String</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#transform" class="tsd-kind-icon">transform</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#uniq" class="tsd-kind-icon">uniq</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#listenerCount-1" class="tsd-kind-icon">listener<wbr>Count</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#on-1" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#once-1" class="tsd-kind-icon">once</a></li>
 							</ul>
 						</section>
 					</div>
@@ -207,14 +195,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Sort<wbr>Iterator&lt;T&gt;<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, sort<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, right<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Lazy<wbr>Cardinality<wbr>Iterator&lt;T&gt;<span class="tsd-signature-symbol">(</span>_source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides TransformIterator&lt;T, T&gt;.constructor</p>
+								<p>Overrides AsyncIterator&lt;T&gt;.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts#L10">packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L16">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -226,105 +214,63 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>source: <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-								<li>
-									<h5>sort: <span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, right<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, right<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-parameters-title">Parameters</h4>
-													<ul class="tsd-parameters">
-														<li>
-															<h5>left: <span class="tsd-signature-type">T</span></h5>
-														</li>
-														<li>
-															<h5>right: <span class="tsd-signature-type">T</span></h5>
-														</li>
-													</ul>
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
+									<h5>_source: <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_boundPush" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _bound<wbr>Push</h3>
-					<div class="tsd-signature tsd-kind-icon">_bound<wbr>Push<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_buffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> _buffer</h3>
+					<div class="tsd-signature tsd-kind-icon">_buffer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">LinkedList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._boundPush</p>
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:562</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>item: <span class="tsd-signature-type">T</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_createSource" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagOptional">Optional</span> _create<wbr>Source</h3>
-					<div class="tsd-signature tsd-kind-icon">_create<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">MaybePromise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._createSource</p>
-						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:559</li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L10">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_destroySource" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _destroy<wbr>Source</h3>
-					<div class="tsd-signature tsd-kind-icon">_destroy<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_buffering" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _buffering</h3>
+					<div class="tsd-signature tsd-kind-icon">_buffering<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._destroySource</p>
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:560</li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L14">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_optional" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _optional</h3>
-					<div class="tsd-signature tsd-kind-icon">_optional<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_cardinality" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> _cardinality</h3>
+					<div class="tsd-signature tsd-kind-icon">_cardinality<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._optional</p>
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:561</li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L11">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:11</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_count" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _count</h3>
+					<div class="tsd-signature tsd-kind-icon">_count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L13">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_error" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> _error</h3>
+					<div class="tsd-signature tsd-kind-icon">_error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L12">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -333,7 +279,7 @@
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagOptional">Optional</span> _properties</h3>
 					<div class="tsd-signature tsd-kind-icon">_properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._properties</p>
+						<p>Inherited from AsyncIterator._properties</p>
 						<ul>
 							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:64</li>
 						</ul>
@@ -352,7 +298,7 @@
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagOptional">Optional</span> _property<wbr>Callbacks</h3>
 					<div class="tsd-signature tsd-kind-icon">_property<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._propertyCallbacks</p>
+						<p>Inherited from AsyncIterator._propertyCallbacks</p>
 						<ul>
 							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:67</li>
 						</ul>
@@ -367,111 +313,13 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_pushedCount" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _pushed<wbr>Count</h3>
-					<div class="tsd-signature tsd-kind-icon">_pushed<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._pushedCount</p>
-						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:457</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_reading" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _reading</h3>
-					<div class="tsd-signature tsd-kind-icon">_reading<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._reading</p>
-						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:456</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_source" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagOptional">Optional</span> _source</h3>
-					<div class="tsd-signature tsd-kind-icon">_source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">InternalSource</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._source</p>
-						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:558</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_sourceStarted" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _source<wbr>Started</h3>
-					<div class="tsd-signature tsd-kind-icon">_source<wbr>Started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._sourceStarted</p>
-						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:458</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 					<a name="_state" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _state</h3>
 					<div class="tsd-signature tsd-kind-icon">_state<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator._state</p>
+						<p>Inherited from AsyncIterator._state</p>
 						<ul>
 							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:62</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="sort" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> sort</h3>
-					<div class="tsd-signature tsd-kind-icon">sort<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, right<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts#L7">packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts:7</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, right<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>left: <span class="tsd-signature-type">T</span></h5>
-											</li>
-											<li>
-												<h5>right: <span class="tsd-signature-type">T</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="sorted" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> sorted</h3>
-					<div class="tsd-signature tsd-kind-icon">sorted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts#L8">packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts:8</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="windowLength" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> window<wbr>Length</h3>
-					<div class="tsd-signature tsd-kind-icon">window<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts#L6">packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -480,7 +328,7 @@
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> capture<wbr>Rejection<wbr>Symbol</h3>
 					<div class="tsd-signature tsd-kind-icon">capture<wbr>Rejection<wbr>Symbol<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="actor_abstract_path.PathVariableObjectIterator.html#captureRejectionSymbol" class="tsd-signature-type" data-tsd-kind="Property">captureRejectionSymbol</a></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator.captureRejectionSymbol</p>
+						<p>Inherited from AsyncIterator.captureRejectionSymbol</p>
 						<ul>
 							<li>Defined in node_modules/@types/node/events.d.ts:38</li>
 						</ul>
@@ -491,7 +339,7 @@
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> capture<wbr>Rejections</h3>
 					<div class="tsd-signature tsd-kind-icon">capture<wbr>Rejections<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator.captureRejections</p>
+						<p>Inherited from AsyncIterator.captureRejections</p>
 						<ul>
 							<li>Defined in node_modules/@types/node/events.d.ts:44</li>
 						</ul>
@@ -507,7 +355,7 @@
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> default<wbr>Max<wbr>Listeners</h3>
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Max<wbr>Listeners<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator.defaultMaxListeners</p>
+						<p>Inherited from AsyncIterator.defaultMaxListeners</p>
 						<ul>
 							<li>Defined in node_modules/@types/node/events.d.ts:45</li>
 						</ul>
@@ -518,7 +366,7 @@
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> error<wbr>Monitor</h3>
 					<div class="tsd-signature tsd-kind-icon">error<wbr>Monitor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="actor_abstract_path.PathVariableObjectIterator.html#errorMonitor" class="tsd-signature-type" data-tsd-kind="Property">errorMonitor</a></div>
 					<aside class="tsd-sources">
-						<p>Inherited from TransformIterator.errorMonitor</p>
+						<p>Inherited from AsyncIterator.errorMonitor</p>
 						<ul>
 							<li>Defined in node_modules/@types/node/events.d.ts:37</li>
 						</ul>
@@ -643,52 +491,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
-					<a name="maxBufferSize" class="tsd-anchor"></a>
-					<h3>max<wbr>Buffer<wbr>Size</h3>
-					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> maxBufferSize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> maxBufferSize<span class="tsd-signature-symbol">(</span>maxBufferSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:472</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>The maximum number of items to preload in the internal buffer.
-										A <code>BufferedIterator</code> tries to fill its buffer as far as possible.
-									Set to <code>Infinity</code> to fully drain the source.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
-						</li>
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:473</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>The maximum number of items to preload in the internal buffer.
-										A <code>BufferedIterator</code> tries to fill its buffer as far as possible.
-									Set to <code>Infinity</code> to fully drain the source.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>maxBufferSize: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
 					<a name="readable" class="tsd-anchor"></a>
 					<h3>readable</h3>
 					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
@@ -739,97 +541,9 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
-					<a name="source" class="tsd-anchor"></a>
-					<h3>source</h3>
-					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> source<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">&gt;</span></li>
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> source<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:578</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>The source this iterator generates items from.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:579</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>The source this iterator generates items from.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>value: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_begin" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _begin</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_begin<span class="tsd-signature-symbol">(</span>done<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._begin</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:488</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Writes beginning items and opens iterator resources.
-										Should never be called before {@link BufferedIterator#_init};
-									typically, <code>_init</code> is responsible for calling <code>_begin</code>.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>done: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>To be called when initialization is complete</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 					<a name="_changeState" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _change<wbr>State</h3>
@@ -839,7 +553,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._changeState</p>
+								<p>Inherited from AsyncIterator._changeState</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:81</li>
 								</ul>
@@ -873,58 +587,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_closeWhenDone" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _close<wbr>When<wbr>Done</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_close<wbr>When<wbr>Done<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._closeWhenDone</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:619</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Closes the iterator when pending items are transformed.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_completeClose" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _complete<wbr>Close</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_complete<wbr>Close<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._completeClose</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:536</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Stops the iterator from generating new items,
-									switching from <code>CLOSING</code> state into <code>CLOSED</code> state.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>emits</dt>
-									<dd><p>module:asynciterator.AsyncIterator.end</p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 					<a name="_destroy" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _destroy</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
@@ -933,18 +595,30 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._destroy</p>
+								<p>Inherited from AsyncIterator._destroy</p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:537</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:148</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called by {@link module:asynciterator.AsyncIterator#destroy}.
+									Implementers can override this, but this should not be called directly.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>cause: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Error</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The reason why the iterator is destroyed.</p>
+									</div>
 								</li>
 								<li>
 									<h5>callback: <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A callback function with an optional error argument.</p>
+									</div>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
@@ -973,20 +647,32 @@
 					<a name="_end" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _end</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_end<span class="tsd-signature-symbol">(</span>destroy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">_end<span class="tsd-signature-symbol">(</span>destroy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._end</p>
+								<p>Inherited from AsyncIterator._end</p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:620</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:157</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Ends the iterator and cleans up.
+										Should never be called before {@link module:asynciterator.AsyncIterator#close};
+									typically, <code>close</code> is responsible for calling <code>_end</code>.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>emits</dt>
+									<dd><p>module:asynciterator.AsyncIterator.end</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>destroy: <span class="tsd-signature-type">boolean</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> destroy: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1002,7 +688,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._endAsync</p>
+								<p>Inherited from AsyncIterator._endAsync</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:162</li>
 								</ul>
@@ -1017,327 +703,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_fillBuffer" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _fill<wbr>Buffer</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_fill<wbr>Buffer<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._fillBuffer</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:517</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Fills the internal buffer until <code>this._maxBufferSize</code> items are present.
-									This method calls {@link BufferedIterator#_read} to fetch items.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>emits</dt>
-									<dd><p>module:asynciterator.AsyncIterator.readable</p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_fillBufferAsync" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _fill<wbr>Buffer<wbr>Async</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_fill<wbr>Buffer<wbr>Async<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._fillBufferAsync</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:521</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Schedules <code>_fillBuffer</code> asynchronously.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<a name="_flush" class="tsd-anchor"></a>
-					<h3>_flush</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">_flush<span class="tsd-signature-symbol">(</span>done<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Overrides TransformIterator._flush</p>
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts#L58">packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts:58</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>done: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_init" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _init</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_init<span class="tsd-signature-symbol">(</span>autoStart<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._init</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:480</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Initializing the iterator by calling {@link BufferedIterator#_begin}
-									and changing state from INIT to OPEN.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>autoStart: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Whether reading of items should immediately start after OPEN.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_loadSourceAsync" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _load<wbr>Source<wbr>Async</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_load<wbr>Source<wbr>Async<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._loadSourceAsync</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:584</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Initializes a source that was set through a promise</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_optionalTransform" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _optional<wbr>Transform</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_optional<wbr>Transform<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, done<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._optionalTransform</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:604</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Tries to transform the item;
-									if the transformation yields no items, pushes the original item.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>item: <span class="tsd-signature-type">T</span></h5>
-								</li>
-								<li>
-									<h5>done: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_push" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _push</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_push<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._push</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:510</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Adds an item to the internal buffer.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>emits</dt>
-									<dd><p>module:asynciterator.AsyncIterator.readable</p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>item: <span class="tsd-signature-type">T</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The item to add</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<a name="_read" class="tsd-anchor"></a>
-					<h3>_read</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">_read<span class="tsd-signature-symbol">(</span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, done<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Overrides TransformIterator._read</p>
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts#L21">packages/actor-query-operation-orderby-sparqlee/lib/SortIterator.ts:21</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>count: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>done: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_readAndTransform" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _read<wbr>And<wbr>Transform</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_read<wbr>And<wbr>Transform<span class="tsd-signature-symbol">(</span>next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, done<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._readAndTransform</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:599</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Reads a transforms an item</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>next: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-								<li>
-									<h5>done: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 					<a name="_toStringDetails" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _to<wbr>String<wbr>Details</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
@@ -1346,9 +711,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._toStringDetails</p>
+								<p>Inherited from AsyncIterator._toStringDetails</p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:550</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:206</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1360,130 +725,16 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_transform" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _transform</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_transform<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, done<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, push<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>i<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._transform</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:614</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Generates items based on the item from the source.
-										Implementers should add items through {@link BufferedIterator#_push}.
-									The default implementation pushes the source item as-is.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>item: <span class="tsd-signature-type">T</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The last read item from the source</p>
-									</div>
-								</li>
-								<li>
-									<h5>done: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>To be called when reading is complete</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-								<li>
-									<h5>push: <span class="tsd-signature-symbol">(</span>i<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A callback to push zero or more transformation results.</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>i<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-parameters-title">Parameters</h4>
-													<ul class="tsd-parameters">
-														<li>
-															<h5>i: <span class="tsd-signature-type">T</span></h5>
-														</li>
-													</ul>
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-					<a name="_validateSource" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _validate<wbr>Source</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">_validate<wbr>Source<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, allowDestination<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">InternalSource</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator._validateSource</p>
-								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:591</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Validates whether the given iterator can be used as a source.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> source: <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The source to validate</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> allowDestination: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Whether the source can already have a destination</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">InternalSource</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="addListener" class="tsd-anchor"></a>
 					<h3>add<wbr>Listener</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.addListener</p>
+								<p>Inherited from AsyncIterator.addListener</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:57</li>
 								</ul>
@@ -1515,7 +766,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1528,7 +779,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.append</p>
+								<p>Inherited from AsyncIterator.append</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:306</li>
 								</ul>
@@ -1562,7 +813,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.clone</p>
+								<p>Inherited from AsyncIterator.clone</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:344</li>
 								</ul>
@@ -1580,33 +831,20 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="close" class="tsd-anchor"></a>
 					<h3>close</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 						<li class="tsd-signature tsd-kind-icon">close<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.close</p>
+								<p>Overrides AsyncIterator.close</p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:529</li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L105">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:105</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Stops the iterator from generating new items
-										after a possible pending read operation has finished.
-										Already generated, pending, or terminating items can still be emitted.
-									After this, the iterator will end asynchronously.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>emits</dt>
-									<dd><p>module:asynciterator.AsyncIterator.end</p>
-									</dd>
-								</dl>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -1620,7 +858,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.copyProperties</p>
+								<p>Inherited from AsyncIterator.copyProperties</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:251</li>
 								</ul>
@@ -1658,7 +896,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.destroy</p>
+								<p>Inherited from AsyncIterator.destroy</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:141</li>
 								</ul>
@@ -1700,7 +938,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.emit</p>
+								<p>Inherited from AsyncIterator.emit</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:67</li>
 								</ul>
@@ -1727,7 +965,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.eventNames</p>
+								<p>Inherited from AsyncIterator.eventNames</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:72</li>
 								</ul>
@@ -1746,7 +984,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.filter</p>
+								<p>Inherited from AsyncIterator.filter</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:284</li>
 								</ul>
@@ -1801,7 +1039,7 @@
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.filter</p>
+								<p>Inherited from AsyncIterator.filter</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:285</li>
 								</ul>
@@ -1846,7 +1084,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.forEach</p>
+								<p>Inherited from AsyncIterator.forEach</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:122</li>
 								</ul>
@@ -1894,6 +1132,23 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getCardinality" class="tsd-anchor"></a>
+					<h3>get<wbr>Cardinality</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Cardinality<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L53">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:53</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="getMaxListeners" class="tsd-anchor"></a>
 					<h3>get<wbr>Max<wbr>Listeners</h3>
@@ -1903,7 +1158,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.getMaxListeners</p>
+								<p>Inherited from AsyncIterator.getMaxListeners</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:64</li>
 								</ul>
@@ -1921,7 +1176,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.getProperties</p>
+								<p>Inherited from AsyncIterator.getProperties</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:236</li>
 								</ul>
@@ -1950,7 +1205,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.getProperty</p>
+								<p>Inherited from AsyncIterator.getProperty</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:225</li>
 								</ul>
@@ -2014,7 +1269,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.listenerCount</p>
+								<p>Inherited from AsyncIterator.listenerCount</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:68</li>
 								</ul>
@@ -2038,7 +1293,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.listeners</p>
+								<p>Inherited from AsyncIterator.listeners</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:65</li>
 								</ul>
@@ -2062,7 +1317,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.map</p>
+								<p>Inherited from AsyncIterator.map</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:276</li>
 								</ul>
@@ -2103,12 +1358,12 @@
 					<a name="off" class="tsd-anchor"></a>
 					<h3>off</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">off<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">off<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.off</p>
+								<p>Inherited from AsyncIterator.off</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:61</li>
 								</ul>
@@ -2140,7 +1395,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2148,12 +1403,12 @@
 					<a name="on" class="tsd-anchor"></a>
 					<h3>on</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.on</p>
+								<p>Inherited from AsyncIterator.on</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:58</li>
 								</ul>
@@ -2185,7 +1440,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2193,12 +1448,12 @@
 					<a name="once" class="tsd-anchor"></a>
 					<h3>once</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">once<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">once<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.once</p>
+								<p>Inherited from AsyncIterator.once</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:59</li>
 								</ul>
@@ -2230,7 +1485,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2243,7 +1498,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.prepend</p>
+								<p>Inherited from AsyncIterator.prepend</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:299</li>
 								</ul>
@@ -2272,12 +1527,12 @@
 					<a name="prependListener" class="tsd-anchor"></a>
 					<h3>prepend<wbr>Listener</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">prepend<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">prepend<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.prependListener</p>
+								<p>Inherited from AsyncIterator.prependListener</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:70</li>
 								</ul>
@@ -2309,7 +1564,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2317,12 +1572,12 @@
 					<a name="prependOnceListener" class="tsd-anchor"></a>
 					<h3>prepend<wbr>Once<wbr>Listener</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">prepend<wbr>Once<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">prepend<wbr>Once<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.prependOnceListener</p>
+								<p>Inherited from AsyncIterator.prependOnceListener</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:71</li>
 								</ul>
@@ -2354,7 +1609,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2367,7 +1622,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.range</p>
+								<p>Inherited from AsyncIterator.range</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:336</li>
 								</ul>
@@ -2407,7 +1662,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.rawListeners</p>
+								<p>Inherited from AsyncIterator.rawListeners</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:66</li>
 								</ul>
@@ -2422,29 +1677,21 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="read" class="tsd-anchor"></a>
 					<h3>read</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 						<li class="tsd-signature tsd-kind-icon">read<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.read</p>
+								<p>Overrides AsyncIterator.read</p>
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:495</li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b16e188/packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts#L26">packages/actor-query-operation-sparql-endpoint/lib/LazyCardinalityIterator.ts:26</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Tries to read the next item from the iterator.
-										If the buffer is empty,
-									this method calls {@link BufferedIterator#_read} to fetch items.</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span></h4>
-							<p>The next item, or <code>null</code> if none is available</p>
 						</li>
 					</ul>
 				</section>
@@ -2452,12 +1699,12 @@
 					<a name="removeAllListeners" class="tsd-anchor"></a>
 					<h3>remove<wbr>All<wbr>Listeners</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>All<wbr>Listeners<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>All<wbr>Listeners<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.removeAllListeners</p>
+								<p>Inherited from AsyncIterator.removeAllListeners</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:62</li>
 								</ul>
@@ -2468,7 +1715,7 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> event: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2476,12 +1723,12 @@
 					<a name="removeListener" class="tsd-anchor"></a>
 					<h3>remove<wbr>Listener</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Listener<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.removeListener</p>
+								<p>Inherited from AsyncIterator.removeListener</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:60</li>
 								</ul>
@@ -2513,7 +1760,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2521,12 +1768,12 @@
 					<a name="setMaxListeners" class="tsd-anchor"></a>
 					<h3>set<wbr>Max<wbr>Listeners</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Max<wbr>Listeners<span class="tsd-signature-symbol">(</span>n<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Max<wbr>Listeners<span class="tsd-signature-symbol">(</span>n<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.setMaxListeners</p>
+								<p>Inherited from AsyncIterator.setMaxListeners</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:63</li>
 								</ul>
@@ -2537,7 +1784,7 @@
 									<h5>n: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-signature-type" data-tsd-kind="Class">SortIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-signature-type" data-tsd-kind="Class">LazyCardinalityIterator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2550,7 +1797,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.setProperties</p>
+								<p>Inherited from AsyncIterator.setProperties</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:243</li>
 								</ul>
@@ -2587,7 +1834,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.setProperty</p>
+								<p>Inherited from AsyncIterator.setProperty</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:231</li>
 								</ul>
@@ -2631,7 +1878,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.skip</p>
+								<p>Inherited from AsyncIterator.skip</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:321</li>
 								</ul>
@@ -2665,7 +1912,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.surround</p>
+								<p>Inherited from AsyncIterator.surround</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:314</li>
 								</ul>
@@ -2705,7 +1952,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.take</p>
+								<p>Inherited from AsyncIterator.take</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:328</li>
 								</ul>
@@ -2739,7 +1986,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.toArray</p>
+								<p>Inherited from AsyncIterator.toArray</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:212</li>
 								</ul>
@@ -2773,7 +2020,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.toString</p>
+								<p>Inherited from AsyncIterator.toString</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:201</li>
 								</ul>
@@ -2791,7 +2038,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.transform</p>
+								<p>Inherited from AsyncIterator.transform</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:268</li>
 								</ul>
@@ -2828,7 +2075,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.uniq</p>
+								<p>Inherited from AsyncIterator.uniq</p>
 								<ul>
 									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:292</li>
 								</ul>
@@ -2880,7 +2127,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.listenerCount</p>
+								<p>Inherited from AsyncIterator.listenerCount</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:26</li>
 								</ul>
@@ -2914,7 +2161,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.on</p>
+								<p>Inherited from AsyncIterator.on</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:23</li>
 								</ul>
@@ -2942,7 +2189,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.once</p>
+								<p>Inherited from AsyncIterator.once</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:21</li>
 								</ul>
@@ -2960,7 +2207,7 @@
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from TransformIterator.once</p>
+								<p>Inherited from AsyncIterator.once</p>
 								<ul>
 									<li>Defined in node_modules/@types/node/events.d.ts:22</li>
 								</ul>
@@ -2987,7 +2234,7 @@
 						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/actor_query_operation_orderby_sparqlee.html">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>sparqlee</a>
+						<a href="../modules/actor_query_operation_sparql_endpoint.html">actor-<wbr>query-<wbr>operation-<wbr>sparql-<wbr>endpoint</a>
 					</li>
 				</ul>
 			</nav>
@@ -2996,273 +2243,210 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-module">
-						<a href="../modules/actor_query_operation_orderby_sparqlee.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>sparqlee</a>
+						<a href="../modules/actor_query_operation_sparql_endpoint.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>sparql-<wbr>endpoint</a>
 						<ul>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="actor_query_operation_orderby_sparqlee.ActorQueryOperationOrderBySparqlee.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Order<wbr>BySparqlee</a>
+								<a href="actor_query_operation_sparql_endpoint.ActorQueryOperationSparqlEndpoint.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Sparql<wbr>Endpoint</a>
 							</li>
 							<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-								<a href="actor_query_operation_orderby_sparqlee.SortIterator.html" class="tsd-kind-icon">Sort<wbr>Iterator</a>
+								<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html" class="tsd-kind-icon">Lazy<wbr>Cardinality<wbr>Iterator</a>
 								<ul>
 									<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#constructor" class="tsd-kind-icon">constructor</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_boundPush" class="tsd-kind-icon">_bound<wbr>Push</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_createSource" class="tsd-kind-icon">_create<wbr>Source</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_destroySource" class="tsd-kind-icon">_destroy<wbr>Source</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_optional" class="tsd-kind-icon">_optional</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_properties" class="tsd-kind-icon">_properties</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_propertyCallbacks" class="tsd-kind-icon">_property<wbr>Callbacks</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_pushedCount" class="tsd-kind-icon">_pushed<wbr>Count</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_reading" class="tsd-kind-icon">_reading</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_source" class="tsd-kind-icon">_source</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_sourceStarted" class="tsd-kind-icon">_source<wbr>Started</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_state" class="tsd-kind-icon">_state</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#sort" class="tsd-kind-icon">sort</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_buffer" class="tsd-kind-icon">_buffer</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#sorted" class="tsd-kind-icon">sorted</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_buffering" class="tsd-kind-icon">_buffering</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#windowLength" class="tsd-kind-icon">window<wbr>Length</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_cardinality" class="tsd-kind-icon">_cardinality</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_count" class="tsd-kind-icon">_count</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_error" class="tsd-kind-icon">_error</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_properties" class="tsd-kind-icon">_properties</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_propertyCallbacks" class="tsd-kind-icon">_property<wbr>Callbacks</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_state" class="tsd-kind-icon">_state</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#captureRejectionSymbol" class="tsd-kind-icon">capture<wbr>Rejection<wbr>Symbol</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#captureRejectionSymbol" class="tsd-kind-icon">capture<wbr>Rejection<wbr>Symbol</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#captureRejections" class="tsd-kind-icon">capture<wbr>Rejections</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#captureRejections" class="tsd-kind-icon">capture<wbr>Rejections</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#defaultMaxListeners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#defaultMaxListeners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#errorMonitor" class="tsd-kind-icon">error<wbr>Monitor</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#errorMonitor" class="tsd-kind-icon">error<wbr>Monitor</a>
 									</li>
 									<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#closed" class="tsd-kind-icon">closed</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#closed" class="tsd-kind-icon">closed</a>
 									</li>
 									<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#destroyed" class="tsd-kind-icon">destroyed</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#destroyed" class="tsd-kind-icon">destroyed</a>
 									</li>
 									<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#done" class="tsd-kind-icon">done</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#done" class="tsd-kind-icon">done</a>
 									</li>
 									<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#ended" class="tsd-kind-icon">ended</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#ended" class="tsd-kind-icon">ended</a>
 									</li>
 									<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#maxBufferSize" class="tsd-kind-icon">max<wbr>Buffer<wbr>Size</a>
-									</li>
-									<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#readable" class="tsd-kind-icon">readable</a>
-									</li>
-									<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#source" class="tsd-kind-icon">source</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#readable" class="tsd-kind-icon">readable</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_begin" class="tsd-kind-icon">_begin</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_changeState" class="tsd-kind-icon">_change<wbr>State</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_changeState" class="tsd-kind-icon">_change<wbr>State</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_destroy" class="tsd-kind-icon">_destroy</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_closeWhenDone" class="tsd-kind-icon">_close<wbr>When<wbr>Done</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_end" class="tsd-kind-icon">_end</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_completeClose" class="tsd-kind-icon">_complete<wbr>Close</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_endAsync" class="tsd-kind-icon">_end<wbr>Async</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_destroy" class="tsd-kind-icon">_destroy</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#_toStringDetails" class="tsd-kind-icon">_to<wbr>String<wbr>Details</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_end" class="tsd-kind-icon">_end</a>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#addListener" class="tsd-kind-icon">add<wbr>Listener</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_endAsync" class="tsd-kind-icon">_end<wbr>Async</a>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#append" class="tsd-kind-icon">append</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_fillBuffer" class="tsd-kind-icon">_fill<wbr>Buffer</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_fillBufferAsync" class="tsd-kind-icon">_fill<wbr>Buffer<wbr>Async</a>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#clone" class="tsd-kind-icon">clone</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_flush" class="tsd-kind-icon">_flush</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#close" class="tsd-kind-icon">close</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_init" class="tsd-kind-icon">_init</a>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#copyProperties" class="tsd-kind-icon">copy<wbr>Properties</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_loadSourceAsync" class="tsd-kind-icon">_load<wbr>Source<wbr>Async</a>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#destroy" class="tsd-kind-icon">destroy</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_optionalTransform" class="tsd-kind-icon">_optional<wbr>Transform</a>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#emit" class="tsd-kind-icon">emit</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_push" class="tsd-kind-icon">_push</a>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#eventNames" class="tsd-kind-icon">event<wbr>Names</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#filter" class="tsd-kind-icon">filter</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#forEach" class="tsd-kind-icon">for<wbr>Each</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getCardinality" class="tsd-kind-icon">get<wbr>Cardinality</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getMaxListeners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getProperties" class="tsd-kind-icon">get<wbr>Properties</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#getProperty" class="tsd-kind-icon">get<wbr>Property</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#listenerCount" class="tsd-kind-icon">listener<wbr>Count</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#listeners" class="tsd-kind-icon">listeners</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#map" class="tsd-kind-icon">map</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#off" class="tsd-kind-icon">off</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#on" class="tsd-kind-icon">on</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#once" class="tsd-kind-icon">once</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#prepend" class="tsd-kind-icon">prepend</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#prependListener" class="tsd-kind-icon">prepend<wbr>Listener</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#prependOnceListener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#range" class="tsd-kind-icon">range</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#rawListeners" class="tsd-kind-icon">raw<wbr>Listeners</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_read" class="tsd-kind-icon">_read</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_readAndTransform" class="tsd-kind-icon">_read<wbr>And<wbr>Transform</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_toStringDetails" class="tsd-kind-icon">_to<wbr>String<wbr>Details</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_transform" class="tsd-kind-icon">_transform</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#_validateSource" class="tsd-kind-icon">_validate<wbr>Source</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#read" class="tsd-kind-icon">read</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#addListener" class="tsd-kind-icon">add<wbr>Listener</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#removeAllListeners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#append" class="tsd-kind-icon">append</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#removeListener" class="tsd-kind-icon">remove<wbr>Listener</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#clone" class="tsd-kind-icon">clone</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#setMaxListeners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#close" class="tsd-kind-icon">close</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#copyProperties" class="tsd-kind-icon">copy<wbr>Properties</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#destroy" class="tsd-kind-icon">destroy</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#emit" class="tsd-kind-icon">emit</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#eventNames" class="tsd-kind-icon">event<wbr>Names</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#setProperties" class="tsd-kind-icon">set<wbr>Properties</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#filter" class="tsd-kind-icon">filter</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#setProperty" class="tsd-kind-icon">set<wbr>Property</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#forEach" class="tsd-kind-icon">for<wbr>Each</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#skip" class="tsd-kind-icon">skip</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#getMaxListeners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#surround" class="tsd-kind-icon">surround</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#getProperties" class="tsd-kind-icon">get<wbr>Properties</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#take" class="tsd-kind-icon">take</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#toArray" class="tsd-kind-icon">to<wbr>Array</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#toString" class="tsd-kind-icon">to<wbr>String</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#getProperty" class="tsd-kind-icon">get<wbr>Property</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#transform" class="tsd-kind-icon">transform</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#listenerCount" class="tsd-kind-icon">listener<wbr>Count</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#listeners" class="tsd-kind-icon">listeners</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#map" class="tsd-kind-icon">map</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#off" class="tsd-kind-icon">off</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#on" class="tsd-kind-icon">on</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#once" class="tsd-kind-icon">once</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#prepend" class="tsd-kind-icon">prepend</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#prependListener" class="tsd-kind-icon">prepend<wbr>Listener</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#prependOnceListener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#range" class="tsd-kind-icon">range</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#rawListeners" class="tsd-kind-icon">raw<wbr>Listeners</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#read" class="tsd-kind-icon">read</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#removeAllListeners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#removeListener" class="tsd-kind-icon">remove<wbr>Listener</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#setMaxListeners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#setProperties" class="tsd-kind-icon">set<wbr>Properties</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#setProperty" class="tsd-kind-icon">set<wbr>Property</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#skip" class="tsd-kind-icon">skip</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#surround" class="tsd-kind-icon">surround</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#take" class="tsd-kind-icon">take</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#toArray" class="tsd-kind-icon">to<wbr>Array</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#toString" class="tsd-kind-icon">to<wbr>String</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#transform" class="tsd-kind-icon">transform</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#uniq" class="tsd-kind-icon">uniq</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#uniq" class="tsd-kind-icon">uniq</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#listenerCount-1" class="tsd-kind-icon">listener<wbr>Count</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#listenerCount-1" class="tsd-kind-icon">listener<wbr>Count</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#on-1" class="tsd-kind-icon">on</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#on-1" class="tsd-kind-icon">on</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
-										<a href="actor_query_operation_orderby_sparqlee.SortIterator.html#once-1" class="tsd-kind-icon">once</a>
+										<a href="actor_query_operation_sparql_endpoint.LazyCardinalityIterator.html#once-1" class="tsd-kind-icon">once</a>
 									</li>
 								</ul>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="../interfaces/actor_query_operation_orderby_sparqlee.IActorQueryOperationOrderBySparqleeArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Order<wbr>BySparqlee<wbr>Args</a>
+								<a href="../interfaces/actor_query_operation_sparql_endpoint.IActorQueryOperationSparqlEndpointArgs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Sparql<wbr>Endpoint<wbr>Args</a>
 							</li>
 						</ul>
 					</li>
