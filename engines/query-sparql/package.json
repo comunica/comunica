@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -51,7 +51,7 @@
     "@comunica/actor-hash-bindings-sha1": "^2.4.0",
     "@comunica/actor-http-fetch": "^2.4.0",
     "@comunica/actor-http-proxy": "^2.4.0",
-    "@comunica/actor-init-query": "^2.4.0",
+    "@comunica/actor-init-query": "^2.4.1",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^2.4.0",
     "@comunica/actor-optimize-query-operation-join-bgp": "^2.4.0",
     "@comunica/actor-optimize-query-operation-join-connected": "^2.4.0",
