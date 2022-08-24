@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.4.1"></a>
+## [v2.4.1](https://github.com/comunica/comunica/compare/v2.4.0...v2.4.1) - 2022-08-24
+
+### Fixed
+* [Make global process override conditional](https://github.com/comunica/comunica/commit/cbf47cc0e38294d0fadb244fb9fab7e922db941c)
+
 <a name="v2.4.0"></a>
 ## [v2.4.0](https://github.com/comunica/comunica/compare/v2.3.0...v2.4.0) - 2022-08-24
 
