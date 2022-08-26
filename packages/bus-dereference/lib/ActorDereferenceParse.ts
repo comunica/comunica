@@ -1,7 +1,8 @@
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
 import type { IActorArgs, IActorTest } from '@comunica/core';
-import { PassThrough, type Readable } from 'readable-stream';
+import type { Readable } from 'readable-stream';
+import { PassThrough } from 'readable-stream';
 import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference';
 import { ActorDereferenceBase, isHardError } from './ActorDereferenceBase';
 
@@ -67,7 +68,10 @@ export abstract class ActorDereferenceParse<
    * @param {Readable} data A data stream.
    * @return {Readable} The resulting data stream.
    */
-  protected handleDereferenceStreamErrors<L, T extends Readable>(action: IActionDereferenceParse<L>, data: T): T {
+  protected handleDereferenceStreamErrors<L extends IParseMetadata, T extends Readable>(
+    action: IActionDereferenceParse<L>,
+    data: T,
+  ): T {
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!isHardError(action.context)) {
       data.on('error', error => {
