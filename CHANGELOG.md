@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.4.2"></a>
+## [v2.4.2](https://github.com/comunica/comunica/compare/v2.4.1...v2.4.2) - 2022-08-26
+
+### Fixed
+* [Fix typings issue in ActorDereferenceParse#handleDereferenceStreamErrors](https://github.com/comunica/comunica/commit/2587e9d53c20512ada9c1ca59e942fcb7f777229)
+
 <a name="v2.4.1"></a>
 ## [v2.4.1](https://github.com/comunica/comunica/compare/v2.4.0...v2.4.1) - 2022-08-24
 

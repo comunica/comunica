@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-quads-hypermedia",
-  "version": "2.4.0",
+  "version": "2.4.2",
   "description": "A hypermedia rdf-update-quads actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-dereference-rdf": "^2.4.0",
+    "@comunica/bus-dereference-rdf": "^2.4.2",
     "@comunica/bus-http-invalidate": "^2.4.0",
     "@comunica/bus-rdf-metadata": "^2.4.0",
     "@comunica/bus-rdf-metadata-extract": "^2.4.0",

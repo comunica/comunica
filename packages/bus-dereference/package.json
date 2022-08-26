@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-dereference",
-  "version": "2.4.0",
+  "version": "2.4.2",
   "description": "A bus for dereferencing a path or URL into a (generic) stream.",
   "lsd:module": true,
   "main": "lib/index.js",
