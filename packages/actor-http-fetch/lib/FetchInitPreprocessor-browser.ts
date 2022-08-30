@@ -1,5 +1,7 @@
 /* eslint-disable unicorn/filename-case */
-/* eslint-enable unicorn/filename-case */
+
+import { ActorHttp } from '@comunica/bus-http';
+import { KeysHttp } from '@comunica/context-entries';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**
@@ -14,6 +16,11 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
         headers.delete('user-agent');
       }
       init.headers = headers;
+    }
+
+    // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
+    if (init?.headers && 'append' in init.headers) {
+      init.headers = ActorHttp.headersToHash(init.headers);
     }
 
     // Browsers don't yet support passing ReadableStream as body to requests, see
