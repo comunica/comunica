@@ -363,14 +363,12 @@ describe('RdfSourceSparql', () => {
         .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: true });
     });
 
-    it('should allow multiple _read calls on query bindings', () => {
+    it('should allow multiple read calls on query bindings', () => {
       const data = source.queryBindings('http://ex', '');
-      (<any> data)._read(1, () => {
-        // Do nothing
-      });
-      (<any> data)._read(1, () => {
-        // Do nothing
-      });
+      const r1 = data.read();
+      const r2 = data.read();
+      expect(r1).toEqual(null);
+      expect(r2).toEqual(null);
     });
 
     it('should return data for HTTP GET requests', async() => {

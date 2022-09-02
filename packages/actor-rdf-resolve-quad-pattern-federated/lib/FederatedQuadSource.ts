@@ -1,3 +1,4 @@
+import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActorRdfResolveQuadPatternOutput,
   IQuadSource,
@@ -9,7 +10,7 @@ import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -276,7 +277,19 @@ export class FederatedQuadSource implements IQuadSource {
     }));
 
     // Take the union of all source streams
-    const it = new TransformIterator(async() => new UnionIterator(await proxyIt), { autoStart: false });
+    const it = new ClosableTransformIterator(async() => new UnionIterator(await proxyIt), {
+      autoStart: false,
+      onClose() {
+        // Destroy the sub-iterators
+        proxyIt.then(proxyItResolved => {
+          for (const subIt of proxyItResolved) {
+            subIt.destroy();
+          }
+        }, () => {
+          // Void errors
+        });
+      },
+    });
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {

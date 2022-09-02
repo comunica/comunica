@@ -2,7 +2,8 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { ArrayIterator } from 'asynciterator';
+import type * as RDF from '@rdfjs/types';
+import { fromArray, wrap } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { QuadDestinationPatchSparqlUpdate } from '../lib/QuadDestinationPatchSparqlUpdate';
@@ -29,7 +30,7 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
 
   describe('insert', () => {
     it('should handle a valid insert', async() => {
-      await destination.insert(new ArrayIterator([
+      await destination.insert(fromArray([
         DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
         DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
       ]));
@@ -50,9 +51,31 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
 }`);
     });
 
+    it('should handle a valid Promisified insert', async() => {
+      await destination.insert(wrap(Promise.resolve(fromArray([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+      ]))));
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context,
+        init: {
+          headers: new Headers({ 'content-type': 'application/sparql-update' }),
+          method: 'PATCH',
+          body: expect.anything(),
+        },
+        input: 'abc',
+      });
+      expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
+        .toEqual(`INSERT DATA {
+  <ex:s1> <ex:p1> <ex:o1> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`);
+    });
+
     it('should throw on a server error', async() => {
       mediatorHttp.mediate = () => ({ status: 400 });
-      await expect(destination.insert(new ArrayIterator([]))).rejects
+      await expect(destination.insert(fromArray<RDF.Quad>([]))).rejects
         .toThrow('Could not update abc (HTTP status 400):\nempty response');
     });
 
@@ -62,14 +85,14 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         status: 200,
         body: { cancel },
       });
-      await destination.insert(new ArrayIterator([]));
+      await destination.insert(fromArray<RDF.Quad>([]));
       expect(cancel).toHaveBeenCalled();
     });
   });
 
   describe('delete', () => {
     it('should handle a valid delete', async() => {
-      await destination.delete(new ArrayIterator([
+      await destination.delete(fromArray<RDF.Quad>([
         DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
         DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
       ]));

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-nodejs-modules */
 import * as cluster from 'cluster';
 import type { EventEmitter } from 'events';
 import * as http from 'http';
@@ -661,3 +662,4 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   moduleRootPath: string;
   defaultConfigPath: string;
 }
+/* eslint-enable import/no-nodejs-modules */

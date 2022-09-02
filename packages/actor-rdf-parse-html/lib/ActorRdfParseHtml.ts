@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs,
   IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
@@ -14,6 +13,7 @@ import type { Actor, Bus, IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Parser } from 'htmlparser2';
+import { Readable } from 'readable-stream';
 
 /**
  * A comunica HTML RDF Parse Actor.

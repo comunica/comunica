@@ -1,3 +1,4 @@
+import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin,
   IActorRdfJoinOutputInner,
   IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
@@ -7,7 +8,6 @@ import {
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { TransformIterator } from 'asynciterator';
 import { BindingsIndex } from './BindingsIndex';
 
 /**
@@ -35,13 +35,19 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
        * Then we save these triples in `index` and use it to filter our A-stream.
        */
       const index: BindingsIndex = new BindingsIndex(commonVariables);
-      const bindingsStream = new TransformIterator(async() => {
+      const bindingsStream = new ClosableTransformIterator(async() => {
         await new Promise(resolve => {
           buffer.bindingsStream.on('data', data => index.add(data));
           buffer.bindingsStream.on('end', resolve);
         });
         return output.bindingsStream.filter(data => !index.contains(data));
-      }, { autoStart: false });
+      }, {
+        autoStart: false,
+        onClose() {
+          buffer.bindingsStream.destroy();
+          output.bindingsStream.destroy();
+        },
+      });
       return {
         result: {
           type: 'bindings',

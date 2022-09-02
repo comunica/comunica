@@ -414,7 +414,12 @@ this is a body`));
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       actor.endpointFetcher.fetchBindings = () => Promise.reject(new Error('MY ERROR'));
       return expect(new Promise((resolve, reject) => {
-        return actor.run(op).then(async output => (<any> output).bindingsStream.on('error', resolve));
+        return actor.run(op).then(output => {
+          (<any> output).bindingsStream.on('error', resolve);
+          // We need to add a 'data' listener to start the iterator
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          (<any> output).bindingsStream.on('data', () => {});
+        });
       })).resolves.toEqual(new Error('MY ERROR'));
     });
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-single",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A single rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,8 +31,8 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-join": "^2.3.0",
-    "@comunica/mediatortype-join-coefficients": "^2.3.0"
+    "@comunica/bus-rdf-join": "^2.4.0",
+    "@comunica/mediatortype-join-coefficients": "^2.4.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

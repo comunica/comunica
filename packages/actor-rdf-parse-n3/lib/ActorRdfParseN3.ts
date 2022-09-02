@@ -3,6 +3,7 @@ import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import type { IActionContext } from '@comunica/types';
 import { StreamParser } from 'n3';
+import type { Readable } from 'readable-stream';
 
 /**
  * An N3 RDF Parse actor that listens on the 'rdf-parse' bus.
@@ -34,7 +35,10 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
     action.data.on('error', error => data.emit('error', error));
-    const data = action.data.pipe(new StreamParser({ baseIRI: action.metadata?.baseIRI, format: mediaType }));
+    const data = <Readable><any>action.data.pipe(new StreamParser({
+      baseIRI: action.metadata?.baseIRI,
+      format: mediaType,
+    }));
     return {
       data,
       metadata: {
