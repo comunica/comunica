@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-cache",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "description": "A cache http actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -35,9 +35,9 @@
     "@types/http-cache-semantics": "^4.0.1"
   },
   "dependencies": {
-    "@comunica/bus-http": "^2.2.0",
-    "@comunica/bus-http-invalidate": "^2.2.0",
-    "@comunica/mediatortype-time": "^2.2.0",
+    "@comunica/bus-http": "^2.4.0",
+    "@comunica/bus-http-invalidate": "^2.4.0",
+    "@comunica/mediatortype-time": "^2.4.0",
     "cross-fetch": "^3.0.5",
     "http-cache-semantics": "^4.1.0"
   },

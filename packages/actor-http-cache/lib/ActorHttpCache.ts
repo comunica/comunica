@@ -1,3 +1,4 @@
+/* eslint import/no-nodejs-modules: ["error", {"allow": ["stream"]}] */
 import { Readable } from 'stream';
 import type {
   IActionHttp,

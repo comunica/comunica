@@ -166,7 +166,6 @@
     "@comunica/mediator-race": "^2.4.0",
     "@comunica/runner": "^2.4.0",
     "@comunica/runner-cli": "^2.4.0"
->>>>>>> ead42818468757f23a7837969e14b83cf19c4438
   },
   "scripts": {
     "build": "npm run build:ts",
