@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/filename-case */
+/* eslint-enable unicorn/filename-case */
 
 import { ActorHttp } from '@comunica/bus-http';
-import { KeysHttp } from '@comunica/context-entries';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**
