@@ -34,8 +34,8 @@ export class ActorHttpFetch extends ActorHttp {
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     // Prepare headers
-    const initHeaders = action.init ? action.init.headers || {} : {};
-    action.init = action.init ? action.init : {};
+    const initHeaders = action.init?.headers ?? {};
+    action.init = action.init ?? {};
     action.init.headers = new Headers(initHeaders);
     if (!action.init.headers.has('user-agent')) {
       action.init.headers.append('user-agent', this.userAgent);
