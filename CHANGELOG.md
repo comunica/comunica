@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.4.3"></a>
+## [v2.4.3](https://github.com/comunica/comunica/compare/v2.4.2...v2.4.3) - 2022-09-06
+
+### Fixed
+* [Add workaround for INSERT queries on Solid pods](https://github.com/comunica/comunica/commit/a0133b837ae8503b454bc14cc78896b0cd4d2e2e)
+* [Add polyfill for Buffer in webpack](https://github.com/comunica/comunica/commit/4d65094cb5ca407021a5c9d1c18d93d1a56f46c7)
+
 <a name="v2.4.2"></a>
 ## [v2.4.2](https://github.com/comunica/comunica/compare/v2.4.1...v2.4.2) - 2022-08-26
 
