@@ -4,6 +4,7 @@ import type {
   IActionHttp,
   IActorHttpOutput,
   IActorHttpArgs,
+  MediatorHttp,
 } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type {
@@ -11,6 +12,7 @@ import type {
   IActionHttpInvalidate,
   MediatorHttpInvalidate,
 } from '@comunica/bus-http-invalidate';
+import { KeysHttpCache } from '@comunica/context-entries';
 import type { IHttpCacheStorage } from '@comunica/http-cache-storage';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
@@ -27,13 +29,13 @@ import {
 export class ActorHttpCache extends ActorHttp {
   private readonly cacheStorage: IHttpCacheStorage;
   private readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
-  private readonly actorHttpFetch: ActorHttp;
+  private readonly mediatorHttp: MediatorHttp;
 
   public constructor(args: IActorHttpCacheArgs) {
     super(args);
     this.cacheStorage = args.cacheStorage;
     this.mediatorHttpInvalidate = args.mediatorHttpInvalidate;
-    this.actorHttpFetch = args.actorHttpFetch;
+    this.mediatorHttp = args.mediatorHttp;
     args.httpInvalidator.addInvalidateListener(
       ({ url }: IActionHttpInvalidate) =>
         url ?
@@ -46,7 +48,14 @@ export class ActorHttpCache extends ActorHttp {
     if (await this.has(new Request(action.input, action.init))) {
       return { time: 1 };
     }
-    return this.actorHttpFetch.test(action);
+    if (action.context.get(KeysHttpCache.doNotCheckHttpCache)) {
+      throw new Error(`Actor ${this.name} skipped as cache should not be checked.`);
+    }
+    const newAction = {
+      ...action,
+      context: action.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+    };
+    return await (await this.mediatorHttp.mediateActor(newAction)).test(newAction);
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
@@ -118,7 +127,10 @@ export class ActorHttpCache extends ActorHttp {
    * @returns
    */
   private async fetchDocument(action: IActionHttp): Promise<[bodyInit?: BodyInit, responseInit?: ResponseInit]> {
-    const response = await this.actorHttpFetch.run(action);
+    const response = await this.mediatorHttp.mediate({
+      ...action,
+      context: action.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+    });
     return [
       await response.text(),
       {
@@ -201,5 +213,5 @@ export interface IActorHttpCacheArgs extends IActorHttpArgs {
    */
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */
-  actorHttpFetch: ActorHttp;
+  mediatorHttp: MediatorHttp;
 }

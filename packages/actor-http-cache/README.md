@@ -28,14 +28,11 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:http/actors#cache",
-      "@type": "ActorHttpCache"
-    }
+      "@type": "ActorHttpCache",
+      "cacheStorage": { "@id": "urn:comunica:default:http/cache-storage#main" },
+      "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
+    },
   ]
 }
 ```
-
-### Config Parameters
-
-TODO: fill in parameters (this section can be removed if there are none)
-
-* `someParam`: Description of the param

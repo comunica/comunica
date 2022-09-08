@@ -64,6 +64,13 @@ export const KeysHttpProxy = {
   httpProxyHandler: new ActionContextKey<IProxyHandler>('@comunica/actor-http-proxy:httpProxyHandler'),
 };
 
+export const KeysHttpCache = {
+  /**
+   * Will skip the HTTP cache if this is set to true
+   */
+  doNotCheckHttpCache: new ActionContextKey<boolean>('@communica/actor-http-cache:do-not-check-http-cache'),
+};
+
 export const KeysInitQuery = {
   /**
    * Variables that have to be pre-bound to values in the query.

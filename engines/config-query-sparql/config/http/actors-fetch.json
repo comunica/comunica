@@ -14,7 +14,7 @@
       "@type": "ActorHttpCache",
       "cacheStorage": { "@id": "urn:comunica:default:http/cache-storage#main" },
       "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
-      "actorHttpFetch": { "@id": "urn:comunica:default:http/actors#fetch" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:http/actors#proxy",

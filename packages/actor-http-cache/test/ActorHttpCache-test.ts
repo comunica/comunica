@@ -1,4 +1,4 @@
-import type { ActorHttp, IActionHttp } from '@comunica/bus-http';
+import type { ActorHttp, IActionHttp, MediatorHttp } from '@comunica/bus-http';
 import type {
   ActorHttpInvalidateListenable,
   IActionHttpInvalidate,
@@ -6,7 +6,7 @@ import type {
   IInvalidateListener,
   MediatorHttpInvalidate,
 } from '@comunica/bus-http-invalidate';
-import { KeysHttp } from '@comunica/context-entries';
+import { KeysHttp, KeysHttpCache } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type { IHttpCacheStorage } from '@comunica/http-cache-storage';
 import { HttpCacheStorageLru } from '@comunica/http-cache-storage-lru';
@@ -32,7 +32,7 @@ describe('ActorHttpCache', () => {
     let mediatorHttpInvalidate: MediatorHttpInvalidate;
     let httpInvalidator: ActorHttpInvalidateListenable;
     let context: ActionContext;
-    let actorHttpFetch: ActorHttp;
+    let mediatorHttp: MediatorHttp;
 
     beforeEach(() => {
       const helpers = getHttpTestHelpers();
@@ -48,9 +48,14 @@ describe('ActorHttpCache', () => {
       };
       context = new ActionContext({});
       // @ts-expect-error
-      actorHttpFetch = {
-        test: jest.fn(async(action: IActionHttp): Promise<IMediatorTypeTime> => ({ time: Number.POSITIVE_INFINITY })),
-        run: jest.fn(async(action: IActionHttp): Promise<Response> => {
+      mediatorHttp = {
+        // @ts-expect-error
+        mediateActor: jest.fn(async(action: IActionHttp): Promise<ActorHttp> => ({
+          test: jest.fn(
+            async(action2: IActionHttp): Promise<IMediatorTypeTime> => ({ time: Number.POSITIVE_INFINITY }),
+          ),
+        })),
+        mediate: jest.fn(async(action: IActionHttp): Promise<Response> => {
           return fetch(action.input, action.init);
         }),
       };
@@ -61,7 +66,7 @@ describe('ActorHttpCache', () => {
         cacheStorage: new HttpCacheStorageLru({ max: 10 }),
         mediatorHttpInvalidate,
         httpInvalidator,
-        actorHttpFetch,
+        mediatorHttp,
       });
     });
 
@@ -116,7 +121,7 @@ describe('ActorHttpCache', () => {
           cacheStorage,
           mediatorHttpInvalidate,
           httpInvalidator,
-          actorHttpFetch,
+          mediatorHttp,
         });
         expect(cacheStorage.delete).toHaveBeenCalledWith(new Request(fo.plain.uri));
       });
@@ -134,7 +139,7 @@ describe('ActorHttpCache', () => {
           cacheStorage,
           mediatorHttpInvalidate,
           httpInvalidator,
-          actorHttpFetch,
+          mediatorHttp,
         });
         expect(cacheStorage.clear).toHaveBeenCalled();
       });
@@ -159,8 +164,11 @@ describe('ActorHttpCache', () => {
       it('performs a fetch when there is nothing in the cache.', async() => {
         const input = { input: fo.maxAge.request, context };
         await actor.fetchWithCache(input);
-        expect(actorHttpFetch.run).toHaveBeenCalledWith(input);
-        expect(actorHttpFetch.run).toHaveBeenCalledTimes(1);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input,
+          context: input.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
       });
 
       it('does not perform a fetch when the cache is not stale', async() => {
@@ -169,8 +177,11 @@ describe('ActorHttpCache', () => {
         expect(await matchResult1?.text()).toBe(fo.maxAge.body);
         const input2 = { input: fo.maxAge.request, context };
         const matchResult2 = await actor.fetchWithCache(input2);
-        expect(actorHttpFetch.run).toHaveBeenCalledWith(input2);
-        expect(actorHttpFetch.run).toHaveBeenCalledTimes(1);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input2,
+          context: input2.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
         expect(await matchResult2?.text()).toBe(fo.maxAge.body);
       });
 
@@ -178,20 +189,26 @@ describe('ActorHttpCache', () => {
         const input = { input: fo.plain.request, context };
         await actor.fetchWithCache(input);
         await actor.fetchWithCache(input);
-        expect(actorHttpFetch.run).toHaveBeenCalledWith(input);
-        expect(actorHttpFetch.run).toHaveBeenCalledTimes(2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input,
+          context: input.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ url: fo.plain.uri, context });
       });
 
       it('makes a request with the proper headers when an etag is present', async() => {
         const input1 = { input: fo.eTag.request, context };
         const matchResult1 = await actor.fetchWithCache(input1);
-        expect(actorHttpFetch.run).toHaveBeenCalledWith(input1);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input1,
+          context: input1.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
         expect(await matchResult1?.text()).toBe(fo.eTag.body);
         // @ts-expect-error
-        actorHttpFetch.run.mockClear();
+        mediatorHttp.mediate.mockClear();
         // @ts-expect-error
-        actorHttpFetch.run.mockResolvedValueOnce(
+        mediatorHttp.mediate.mockResolvedValueOnce(
           new Response('Distraction Body that should not be set', {
             status: 304,
             headers: {
@@ -201,7 +218,10 @@ describe('ActorHttpCache', () => {
         );
         const input2 = { input: fo.eTag.request, context };
         const matchResult2 = await actor.fetchWithCache(input2);
-        expect(actorHttpFetch.run).toHaveBeenCalledWith(input2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input2,
+          context: input2.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
         expect(await matchResult2?.text()).toBe(fo.eTag.body);
         fetch.mockClear();
         fetch.mockResolvedValueOnce(
@@ -214,7 +234,10 @@ describe('ActorHttpCache', () => {
         );
         const input3 = { input: fo.eTag.request, context };
         const matchResult3 = await actor.fetchWithCache(input3);
-        expect(actorHttpFetch.run).toHaveBeenCalledWith(input3);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input3,
+          context: input3.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
         expect(await matchResult3?.text()).toBe(
           'The body should be reset to this',
         );
