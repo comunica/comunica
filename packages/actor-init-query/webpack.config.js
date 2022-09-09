@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = {
   entry: [ path.resolve(__dirname, 'lib/index-browser.js') ],
@@ -26,6 +27,7 @@ module.exports = {
     }
   },
   plugins: [
+    new NodePolyfillPlugin({ includeAliases: ['Buffer'] }),
     new webpack.ProgressPlugin()
   ]
 };
