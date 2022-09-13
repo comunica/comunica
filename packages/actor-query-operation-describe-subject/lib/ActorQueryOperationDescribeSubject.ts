@@ -3,6 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { ActionContextKey } from '@comunica/core';
 import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResultQuads, IActionContext, IQueryOperationResult, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -78,6 +79,8 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
         type: Algebra.types.CONSTRUCT,
       });
     }
+
+    context = context.set(new ActionContextKey('@comunica/action-query-operation:root'), Algebra.types.DESCRIBE);
 
     // Evaluate the construct queries
     const outputs: IQueryOperationResultQuads[] = (await Promise.all(operations.map(
