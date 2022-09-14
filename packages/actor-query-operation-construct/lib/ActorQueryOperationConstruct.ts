@@ -48,7 +48,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
 
     // Check if the query if it's a DESCRIBE query
     let isDescribeOperator = false;
-    const describeQuery = context.get(new ActionContextKey('@comunica/action-query-operation:root'))!;
+    const describeQuery = context.get(new ActionContextKey('@comunica/action-query-operation:root'));
     if (describeQuery !== null) {
       isDescribeOperator = describeQuery === Algebra.types.DESCRIBE;
     }
