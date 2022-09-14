@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "2.4.1",
+  "version": "2.4.3",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -40,7 +40,7 @@
   "dependencies": {
     "@comunica/actor-context-preprocess-source-to-destination": "^2.4.0",
     "@comunica/actor-hash-bindings-sha1": "^2.4.0",
-    "@comunica/actor-init-query": "^2.4.1",
+    "@comunica/actor-init-query": "^2.4.3",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^2.4.0",
     "@comunica/actor-optimize-query-operation-join-bgp": "^2.4.0",
     "@comunica/actor-optimize-query-operation-join-connected": "^2.4.0",
