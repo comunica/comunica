@@ -47,10 +47,12 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     );
 
     // Check if the query if it's a DESCRIBE query
-    let isDescribeOperator = false;
-    const describeQuery = context.get(new ActionContextKey('@comunica/action-query-operation:root'));
-    if (describeQuery !== null) {
-      isDescribeOperator = describeQuery === Algebra.types.DESCRIBE;
+    let localizeBlankNodes = true;
+    const localizeBlankNodesFromContext = context.get(
+      new ActionContextKey('@comunica/actor-query-operation-construct:localizeBlankNodes'),
+    );
+    if (localizeBlankNodesFromContext !== null) {
+      localizeBlankNodes = <boolean> localizeBlankNodesFromContext;
     }
 
     // Construct triples using the result based on the pattern.
@@ -58,7 +60,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(
       operationOriginal.template,
       output.bindingsStream,
-      !isDescribeOperator,
+      localizeBlankNodes,
     );
 
     // Let the final metadata contain the estimated number of triples

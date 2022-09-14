@@ -80,7 +80,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       });
     }
 
-    context = context.set(new ActionContextKey('@comunica/action-query-operation:root'), Algebra.types.DESCRIBE);
+    context = context.set(new ActionContextKey('@comunica/actor-query-operation-construct:localizeBlankNodes'), false);
 
     // Evaluate the construct queries
     const outputs: IQueryOperationResultQuads[] = (await Promise.all(operations.map(
