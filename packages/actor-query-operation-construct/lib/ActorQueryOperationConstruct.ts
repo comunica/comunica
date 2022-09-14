@@ -4,13 +4,13 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import { ActionContextKey } from '@comunica/core';
 import type { IQueryOperationResultBindings, IActionContext, IQueryOperationResult,
   MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
+import { KeysQueryOperation } from './../../context-entries';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
 /**
@@ -48,9 +48,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
 
     // Check if the query if it's a DESCRIBE query
     let localizeBlankNodes = true;
-    const localizeBlankNodesFromContext = context.get(
-      new ActionContextKey('@comunica/actor-query-operation-construct:localizeBlankNodes'),
-    );
+    const localizeBlankNodesFromContext = context.get(KeysQueryOperation.blankNodeLocalization);
     if (localizeBlankNodesFromContext !== null) {
       localizeBlankNodes = <boolean> localizeBlankNodesFromContext;
     }
