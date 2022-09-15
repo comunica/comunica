@@ -3,13 +3,13 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResultQuads, IActionContext, IQueryOperationResult, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
-import { KeysQueryOperation } from './../../context-entries';
 const DF = new DataFactory<RDF.BaseQuad>();
 
 /**

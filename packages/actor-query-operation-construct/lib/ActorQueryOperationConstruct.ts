@@ -3,6 +3,7 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResultBindings, IActionContext, IQueryOperationResult,
   MetadataQuads } from '@comunica/types';
@@ -10,7 +11,6 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
-import { KeysQueryOperation } from './../../context-entries';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
 /**
