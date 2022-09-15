@@ -48,7 +48,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
 
     // Check if the query if it's a DESCRIBE query
     let localizeBlankNodes = true;
-    const localizeBlankNodesFromContext = context.get(KeysQueryOperation.blankNodeLocalization);
+    const localizeBlankNodesFromContext = context.get(KeysQueryOperation.localizeBlankNodes);
     if (localizeBlankNodesFromContext !== null) {
       localizeBlankNodes = <boolean> localizeBlankNodesFromContext;
     }

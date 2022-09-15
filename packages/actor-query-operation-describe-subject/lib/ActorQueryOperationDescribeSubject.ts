@@ -80,7 +80,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       });
     }
 
-    context = context.set(KeysQueryOperation.blankNodeLocalization, false);
+    context = context.set(KeysQueryOperation.localizeBlankNodes, false);
 
     // Evaluate the construct queries
     const outputs: IQueryOperationResultQuads[] = (await Promise.all(operations.map(

@@ -184,7 +184,7 @@ export const KeysQueryOperation = {
   /**
    * An indicator that the operator should apply blank node localization
    */
-  blankNodeLocalization: new ActionContextKey<boolean>('@comunica/actor-query-operation:localizeBlankNodes'),
+  localizeBlankNodes: new ActionContextKey<boolean>('@comunica/actor-query-operation:localizeBlankNodes'),
 };
 
 export const KeysRdfParseJsonLd = {
