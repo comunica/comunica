@@ -4,6 +4,7 @@
 jest.unmock('follow-redirects');
 
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
@@ -88,6 +89,136 @@ describe('System test: QuerySparql', () => {
           .toEqual([]);
         expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
           .toEqual([]);
+      });
+
+      describe('handle blank nodes with DESCRIBE queries', () => {
+        let store: Store;
+        let quads: RDF.Quad[];
+        const query = `DESCRIBE ?o  {
+          ?s ?p ?o .
+      }`;
+
+        beforeEach(() => {
+          engine = new QueryEngine();
+          store = new Store();
+        });
+
+        it('return consistent blank nodes with a data source that should return one blank node', async() => {
+          quads = [
+            DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+
+            DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+          ];
+          store.addQuads(quads);
+          const context = <any> { sources: [ store ]};
+
+          const blankNode = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+          const expectedResult = [
+            DF.quad(blankNode, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNode, DF.namedNode('h'), DF.namedNode('i')),
+          ];
+
+          const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('return consistent blank nodes with a data source that should return multiple blank nodes', async() => {
+          quads = [
+            DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('j')),
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('k')),
+
+            DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(DF.blankNode('j'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('j'), DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(DF.blankNode('k'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('k'), DF.namedNode('h'), DF.namedNode('i')),
+          ];
+          store.addQuads(quads);
+          const context = <any> { sources: [ store ]};
+
+          const blankNodeE = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+          const blankNodeJ = new BlankNodeScoped('bc_0_j', DF.namedNode('urn:comunica_skolem:source_0:j'));
+          const blankNodeK = new BlankNodeScoped('bc_0_k', DF.namedNode('urn:comunica_skolem:source_0:k'));
+          const expectedResult = [
+            DF.quad(blankNodeE, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNodeE, DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(blankNodeJ, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNodeJ, DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(blankNodeK, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNodeK, DF.namedNode('h'), DF.namedNode('i')),
+          ];
+
+          const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('return consistent blank nodes with a data source containing a nested blank node', async() => {
+          quads = [
+            DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+
+            DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.blankNode('g')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+
+            DF.quad(DF.blankNode('g'), DF.namedNode('i'), DF.namedNode('j')),
+          ];
+          store.addQuads(quads);
+          const context = <any> { sources: [ store ]};
+
+          const blankNodeE = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+          const blankNodeG = new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g'));
+          const expectedResult = [
+            DF.quad(blankNodeE, DF.namedNode('f'), blankNodeG),
+            DF.quad(blankNodeE, DF.namedNode('h'), DF.namedNode('i')),
+
+            DF.quad(blankNodeG, DF.namedNode('i'), DF.namedNode('j')),
+          ];
+
+          const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('return consistent blank nodes with a data source that should return one blank node and one named node',
+          async() => {
+            quads = [
+              DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+              DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+
+              DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
+              DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+
+              DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
+            ];
+            store.addQuads(quads);
+            const context = <any> { sources: [ store ]};
+
+            const blankNode = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+            const expectedResult = [
+              DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
+              DF.quad(blankNode, DF.namedNode('f'), DF.namedNode('g')),
+              DF.quad(blankNode, DF.namedNode('h'), DF.namedNode('i')),
+            ];
+
+            const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+            expect(result.length).toBe(expectedResult.length);
+            expect(result).toMatchObject(expectedResult);
+          });
       });
 
       describe('extension function', () => {

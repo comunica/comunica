@@ -3,6 +3,7 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResultBindings, IActionContext, IQueryOperationResult,
   MetadataQuads } from '@comunica/types';
@@ -45,10 +46,19 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       await this.mediatorQueryOperation.mediate({ operation, context }),
     );
 
+    // Check if the query if it's a DESCRIBE query
+    let localizeBlankNodes = true;
+    const localizeBlankNodesFromContext = context.get(KeysQueryOperation.localizeBlankNodes);
+    if (localizeBlankNodesFromContext !== null) {
+      localizeBlankNodes = <boolean> localizeBlankNodesFromContext;
+    }
+
     // Construct triples using the result based on the pattern.
+    // If it's a DESCRIBE query don't apply the blank node localisation.
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(
       operationOriginal.template,
       output.bindingsStream,
+      localizeBlankNodes,
     );
 
     // Let the final metadata contain the estimated number of triples
