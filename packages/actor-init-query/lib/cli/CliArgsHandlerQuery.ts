@@ -82,8 +82,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
         },
         localizeBlankNodes: {
           type: 'boolean',
-          describe: `Set the blank node localization.
-          If it is activated then each blank node occurence in the output will be threated as a new one.`,
+          describe: "If blank nodes should be localized per bindings entry",
         },
       })
       .check(args => {
