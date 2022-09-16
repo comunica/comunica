@@ -82,7 +82,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
         },
         localizeBlankNodes: {
           type: 'boolean',
-          describe: "If blank nodes should be localized per bindings entry",
+          describe: 'If blank nodes should be localized per bindings entry',
         },
       })
       .check(args => {
