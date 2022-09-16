@@ -46,7 +46,9 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       await this.mediatorQueryOperation.mediate({ operation, context }),
     );
 
-    // Check if the query if it's a DESCRIBE query
+    // Check if the we apply blank node localization
+    // Using the context, if this parameter is not provided
+    // the blank node localization will be apply
     const localizeBlankNodesFromContext = context.get(KeysQueryOperation.localizeBlankNodes);
     const localizeBlankNodes = localizeBlankNodesFromContext !== undefined ?
     <boolean> localizeBlankNodesFromContext :
