@@ -118,7 +118,8 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    *   "extensionFunctions": "@comunica/actor-init-query:extensionFunctions",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
    *   "explain": "@comunica/actor-init-query:explain",
-   *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph"
+   *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
+   *   "localizeBlankNodes": "@comunica/actor-query-operation:localizeBlankNodes"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;
