@@ -80,8 +80,12 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       });
     }
 
-    context = context.set(KeysQueryOperation.localizeBlankNodes, false);
-
+    // Set the blank node localization
+    // If it was not provided by the context it will set to false and added into the context
+    const localizeBlankNode = context.get(KeysQueryOperation.localizeBlankNodes);
+    context = context.set(KeysQueryOperation.localizeBlankNodes, localizeBlankNode !== undefined ?
+      <boolean> localizeBlankNode :
+      false);
     // Evaluate the construct queries
     const outputs: IQueryOperationResultQuads[] = (await Promise.all(operations.map(
       operation => this.mediatorQueryOperation.mediate({ operation, context }),

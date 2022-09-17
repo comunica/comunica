@@ -1,5 +1,5 @@
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
-import { KeysHttpMemento, KeysHttpProxy, KeysInitQuery } from '@comunica/context-entries';
+import { KeysHttpMemento, KeysHttpProxy, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
 
@@ -80,6 +80,10 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
             'physical',
           ],
         },
+        localizeBlankNodes: {
+          type: 'boolean',
+          describe: 'If blank nodes should be localized per bindings entry',
+        },
       })
       .check(args => {
         if (args.version || args.listformats) {
@@ -111,6 +115,11 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
     // Mark explain output
     if (args.explain) {
       context[KeysInitQuery.explain.name] = args.explain;
+    }
+
+    // Set the blank node localization
+    if (args.localizeBlankNodes) {
+      context[KeysQueryOperation.localizeBlankNodes.name] = args.localizeBlankNodes;
     }
   }
 }
