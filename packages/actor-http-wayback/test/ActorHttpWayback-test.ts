@@ -23,8 +23,8 @@ describe('ActorHttpWayback', () => {
         mediate(action: IActionHttp): Promise<IActorHttpOutput> {
           const httpNative = new ActorHttpNative({ name: 'actor-native', bus });
           return httpNative.run(action);
-        }
-      }
+        },
+      };
       actor = new ActorHttpWayback({ name: 'actor', bus, mediatorHttp });
       context = new ActionContext({
         [KeysHttp.recoverBrokenLinks.name]: true,
