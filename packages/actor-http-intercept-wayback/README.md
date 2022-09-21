@@ -1,8 +1,8 @@
-# Comunica Wayback Http Actor
+# Comunica Wayback Http Intercept Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-wayback.svg)](https://www.npmjs.com/package/@comunica/actor-http-wayback)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-intercept-wayback.svg)](https://www.npmjs.com/package/@comunica/actor-http-intercept-wayback)
 
-A comunica actor that recovers broken links using the WayBack machine
+A Comunica actor to intercept HTTP requests to recover broken links using the WayBack  Machine
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-http-wayback
+$ yarn add @comunica/actor-http-intercept-wayback
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-wayback/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-intercept-wayback/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:http/actors#wayback",
-      "@type": "ActorHttpWayback",
+      "@id": "urn:comunica:default:http-intercept/actors#wayback",
+      "@type": "ActorHttpInterceptWayback",
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
     }
   ]

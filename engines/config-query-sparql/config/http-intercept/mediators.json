@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-intercept/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:default:http-intercept/mediators#main",
+      "@type": "MediatorRace",
+      "bus": { "@id": "ActorHttpIntercept:_default_bus" }
+    }
+  ]
+}

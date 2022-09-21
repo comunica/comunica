@@ -1,5 +1,5 @@
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
-import { KeysHttpMemento, KeysHttpProxy, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysHttp, KeysHttpMemento, KeysHttpProxy, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
 
@@ -126,6 +126,11 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
     // Set the blank node localization
     if (args.localizeBlankNodes) {
       context[KeysQueryOperation.localizeBlankNodes.name] = args.localizeBlankNodes;
+    }
+
+    // Set recover broken links flag
+    if (args.recoverBrokenLinks) {
+      context[KeysHttp.recoverBrokenLinks.name] = args.recoverBrokenLinks;
     }
   }
 }

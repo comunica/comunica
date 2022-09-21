@@ -12,7 +12,7 @@
       "@id": "urn:comunica:default:dereference/actors#http",
       "@type": "ActorDereferenceHttp",
       "beforeActors": { "@id": "urn:comunica:default:dereference/actors#fallback" },
-      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http-intercept/mediators#main" }
     },
 
     {

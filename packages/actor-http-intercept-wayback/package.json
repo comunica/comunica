@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-http-wayback",
+  "name": "@comunica/actor-http-intercept-wayback",
   "version": "2.0.0",
-  "description": "A wayback http actor",
+  "description": "A wayback http-intercept actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-http-wayback"
+    "directory": "packages/actor-http-intercept-wayback"
   },
   "publishConfig": {
     "access": "public"
@@ -17,7 +17,7 @@
   "keywords": [
     "comunica",
     "actor",
-    "http",
+    "http-intercept",
     "wayback"
   ],
   "license": "MIT",
@@ -32,8 +32,11 @@
   ],
   "dependencies": {
     "@comunica/bus-http": "^2.4.0",
+    "@comunica/bus-http-intercept": "^2.0.0",
     "@comunica/context-entries": "^2.4.0",
-    "@comunica/mediatortype-time": "^2.4.0"
+    "@comunica/core": "^2.4.0",
+    "@comunica/types": "^2.4.0",
+    "stream-to-string": "^1.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
