@@ -16,11 +16,11 @@ import { Readable } from 'readable-stream';
  */
 export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadPattern {
   private readonly sourceType = 'stringSource';
-  private readonly parseMediator: MediatorRdfParseHandle;
+  private readonly mediatorRdfParse: MediatorRdfParseHandle;
 
   public constructor(args: IActorRdfResolveQuadPatternStringSource) {
     super(args);
-    this.parseMediator = args.mediatorRdfParse;
+    this.mediatorRdfParse = args.mediatorRdfParse;
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
@@ -57,7 +57,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
       handleMediaType: source.mediaType,
     };
 
-    const parserResult = await this.parseMediator.mediate(parseAction);
+    const parserResult = await this.mediatorRdfParse.mediate(parseAction);
     const quadAsyncIter: AsyncIterator<RDF.Quad> = wrap(parserResult.handle.data);
     return { data: quadAsyncIter };
   }
