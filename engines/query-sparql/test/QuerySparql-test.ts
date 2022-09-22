@@ -979,6 +979,70 @@ describe('System test: QuerySparql', () => {
     });
   });
 
+  describe('Comunica sparql regression test for #1029', () => {
+    it('Supports EXISTS sparql keyword', async() => {
+      const sparql = new QueryEngine();
+      const store = new n3.Store();
+      const subject = n3.DataFactory.namedNode('http://subject');
+      const predicate = n3.DataFactory.namedNode('http://predicate');
+      const object = n3.DataFactory.namedNode('http://object');
+      const blank = n3.DataFactory.blankNode();
+      const spo = n3.DataFactory.quad(subject, predicate, object);
+      const bpo = n3.DataFactory.quad(blank, predicate, object);
+      store.addQuads([ spo, bpo ]);
+      const quadStream = await sparql.queryQuads(`
+      CONSTRUCT {
+        ?s ?p ?o.
+      }
+      WHERE { 
+        ?s ?p ?o.
+        OPTIONAL {
+          FILTER EXISTS {
+            ?s2 ?p ?o.
+            FILTER (?s != ?s2)
+          }
+        }
+      }
+      `,
+      { sources: [ store ]});
+      const result_quads = await quadStream.toArray();
+      expect(result_quads).toEqual([{
+        termType: 'Quad',
+        value: '',
+        graph: {
+          termType: 'DefaultGraph',
+          value: '',
+        },
+        subject: {
+          id: 'http://subject',
+        },
+        predicate: {
+          id: 'http://predicate',
+        },
+        object: {
+          id: 'http://object',
+        },
+      }, {
+        termType: 'Quad',
+        value: '',
+        graph: {
+          termType: 'DefaultGraph',
+          value: '',
+        },
+        subject: {
+          termType: 'BlankNode',
+          value: 'bc_0_n3-01',
+        },
+        predicate: {
+          id: 'http://predicate',
+        },
+        object: {
+          id: 'http://object',
+        },
+      }]);
+    });
+  });
+
   describe('explain', () => {
     describe('a simple SPO on a raw RDF document', () => {
       it('explaining parsing', async() => {
