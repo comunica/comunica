@@ -7,9 +7,9 @@ import type {
 import type { IActorTest } from '@comunica/core';
 import type { ISerializeDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { AsyncIterator, wrap } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
+import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
-import arrayifyStream from 'arrayify-stream';
 
 /**
  * A comunica RDF Resolve Quad Pattern String Source RDF Resolve Quad Pattern Actor.
@@ -58,7 +58,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     };
 
     const parserResult = await this.parseMediator.mediate(parseAction);
-    let quadAsyncIter: AsyncIterator<RDF.Quad> = wrap(parserResult.handle.data);
+    const quadAsyncIter: AsyncIterator<RDF.Quad> = wrap(parserResult.handle.data);
     return { data: quadAsyncIter };
   }
 
@@ -69,7 +69,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     if (!(typeof datasouce.value === 'string')) {
       return false;
     }
-    return datasouce.type === this.sourceType && 'mediaType' in datasouce && <string> datasouce.value != '';
+    return datasouce.type === this.sourceType && 'mediaType' in datasouce && <string> datasouce.value !== '';
   }
 }
 
