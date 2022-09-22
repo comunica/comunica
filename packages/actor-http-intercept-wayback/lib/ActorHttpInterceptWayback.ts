@@ -6,7 +6,7 @@ import type {
   IActorHttpInterceptOutput,
 } from '@comunica/bus-http-intercept';
 import { ActorHttpIntercept } from '@comunica/bus-http-intercept';
-import { KeysHttp, KeysHttpProxy } from '@comunica/context-entries';
+import { KeysHttpInterceptWayback, KeysHttpProxy } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
 import { Request } from 'cross-fetch';
@@ -46,11 +46,11 @@ export class ActorHttpInterceptWayback extends ActorHttpIntercept {
   public async run(action: IActionHttpIntercept): Promise<IActorHttpInterceptOutput> {
     let result = await this.mediatorHttp.mediate(action);
 
-    if (result.status === 404 && action.context.get(KeysHttp.recoverBrokenLinks)) {
+    if (result.status === 404 && action.context.get(KeysHttpInterceptWayback.recoverBrokenLinks)) {
       let fallbackResult = await this.mediatorHttp.mediate({
         ...action,
         context: action.context
-          .set(KeysHttp.recoverBrokenLinks, false)
+          .set(KeysHttpInterceptWayback.recoverBrokenLinks, false)
           .set<IProxyHandler>(KeysHttpProxy.httpProxyHandler, { getProxy: getProxyHandler(action.context) }),
       });
 

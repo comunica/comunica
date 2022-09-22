@@ -1,5 +1,5 @@
 import type { MediatorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { KeysHttp, KeysHttpProxy } from '@comunica/context-entries';
+import { KeysHttpInterceptWayback, KeysHttpProxy } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
 import { Request } from 'cross-fetch';
@@ -48,7 +48,7 @@ describe('ActorHttpInterceptWayback', () => {
         };
         actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
         context = new ActionContext({
-          [KeysHttp.recoverBrokenLinks.name]: true,
+          [KeysHttpInterceptWayback.recoverBrokenLinks.name]: true,
         });
       });
 
@@ -59,12 +59,12 @@ describe('ActorHttpInterceptWayback', () => {
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.delete(KeysHttp.recoverBrokenLinks),
+          context: context.delete(KeysHttpInterceptWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          context: context.set(KeysHttpInterceptWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
       });
@@ -131,7 +131,7 @@ describe('ActorHttpInterceptWayback', () => {
         };
         actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
         context = new ActionContext({
-          [KeysHttp.recoverBrokenLinks.name]: true,
+          [KeysHttpInterceptWayback.recoverBrokenLinks.name]: true,
         });
       });
 
@@ -142,12 +142,12 @@ describe('ActorHttpInterceptWayback', () => {
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.delete(KeysHttp.recoverBrokenLinks),
+          context: context.delete(KeysHttpInterceptWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          context: context.set(KeysHttpInterceptWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
       });
@@ -213,7 +213,7 @@ describe('ActorHttpInterceptWayback', () => {
         };
         actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
         context = new ActionContext({
-          [KeysHttp.recoverBrokenLinks.name]: true,
+          [KeysHttpInterceptWayback.recoverBrokenLinks.name]: true,
         });
       });
 
@@ -224,12 +224,12 @@ describe('ActorHttpInterceptWayback', () => {
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.delete(KeysHttp.recoverBrokenLinks),
+          context: context.delete(KeysHttpInterceptWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          context: context.set(KeysHttpInterceptWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
       });
@@ -275,7 +275,7 @@ describe('ActorHttpInterceptWayback', () => {
         };
         actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
         context = new ActionContext({
-          [KeysHttp.recoverBrokenLinks.name]: true,
+          [KeysHttpInterceptWayback.recoverBrokenLinks.name]: true,
         });
       });
 
@@ -286,12 +286,12 @@ describe('ActorHttpInterceptWayback', () => {
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.delete(KeysHttp.recoverBrokenLinks),
+          context: context.delete(KeysHttpInterceptWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          context: context.set(KeysHttpInterceptWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
       });
@@ -337,7 +337,7 @@ describe('ActorHttpInterceptWayback', () => {
         };
         actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
         context = new ActionContext({
-          [KeysHttp.recoverBrokenLinks.name]: true,
+          [KeysHttpInterceptWayback.recoverBrokenLinks.name]: true,
         });
       });
 
@@ -348,12 +348,12 @@ describe('ActorHttpInterceptWayback', () => {
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.delete(KeysHttp.recoverBrokenLinks),
+          context: context.delete(KeysHttpInterceptWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
 
         await expect(actor.test({
-          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          context: context.set(KeysHttpInterceptWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         })).resolves.toEqual(true);
       });

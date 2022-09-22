@@ -1,5 +1,11 @@
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
-import { KeysHttp, KeysHttpMemento, KeysHttpProxy, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import {
+  KeysHttpInterceptWayback,
+  KeysHttpMemento,
+  KeysHttpProxy,
+  KeysInitQuery,
+  KeysQueryOperation,
+} from '@comunica/context-entries';
 import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
 
@@ -130,7 +136,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
 
     // Set recover broken links flag
     if (args.recoverBrokenLinks) {
-      context[KeysHttp.recoverBrokenLinks.name] = args.recoverBrokenLinks;
+      context[KeysHttpInterceptWayback.recoverBrokenLinks.name] = args.recoverBrokenLinks;
     }
   }
 }

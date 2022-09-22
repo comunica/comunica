@@ -3,7 +3,7 @@
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
 jest.unmock('follow-redirects');
 
-import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysHttpInterceptWayback, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -443,6 +443,38 @@ describe('System test: QuerySparql', () => {
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
+    });
+  });
+
+  // TODO: Re-enable this once https://github.com/RubenVerborgh/AsyncIterator/pull/45 is closed
+  // currently including this causes the test suite to block
+  // describe('rejecting on broken links', () => {
+  //   it('rejects without link recovery', async() => {
+  //     const result = <Promise<QueryBindings>> engine.query(`SELECT * WHERE {
+  //   <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
+  // }`, { sources: [ 'http://xmlns.com/foaf/spec/20140114.rdf' ]});
+  //     await expect(result.then(r => r.execute())).rejects.toThrowError();
+  //   });
+  // });
+
+  describe('foaf ontology broken link [using full key]', () => {
+    it('returns results with link recovery on [using full key]', async() => {
+      const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+    <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
+  }`, {
+        sources: [ 'http://xmlns.com/foaf/spec/20140114.rdf' ],
+        [KeysHttpInterceptWayback.recoverBrokenLinks.name]: true,
+      });
+      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+    });
+  });
+
+  describe('foaf ontology broken link [using shortcut key]', () => {
+    it('returns results with link recovery on [using shortcut key]', async() => {
+      const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+    <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
+  }`, { sources: [ 'http://xmlns.com/foaf/spec/20140114.rdf' ], recoverBrokenLinks: true });
+      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
     });
   });
 

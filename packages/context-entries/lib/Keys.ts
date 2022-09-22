@@ -26,6 +26,14 @@ export const KeysCore = {
   log: CONTEXT_KEY_LOGGER,
 };
 
+export const KeysHttpInterceptWayback = {
+  /**
+   * Use the WayBack machine to get the most recent representation of a file if a link is broken.
+   * @default false
+   */
+  recoverBrokenLinks: new ActionContextKey<boolean>('@comunica/bus-http-intercept-wayback:recover-broken-links'),
+};
+
 export const KeysHttp = {
   /**
    * Include credentials flags.
@@ -48,11 +56,6 @@ export const KeysHttp = {
    * but until the response is fully consumed.
    */
   httpBodyTimeout: new ActionContextKey<boolean>('@comunica/bus-http:http-body-timeout'),
-  /**
-   * Use the WayBack machine to get the most recent representation of a file if a link is broken.
-   * @default false
-   */
-  recoverBrokenLinks: new ActionContextKey<boolean>('@comunica/bus-http:recover-broken-links'),
 };
 
 export const KeysHttpMemento = {

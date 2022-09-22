@@ -2,6 +2,7 @@ import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import {
   KeysCore,
   KeysHttp,
+  KeysHttpInterceptWayback,
   KeysHttpMemento, KeysHttpProxy,
   KeysInitQuery, KeysQueryOperation,
   KeysRdfResolveQuadPattern, KeysRdfUpdateQuads,
@@ -571,7 +572,7 @@ LIMIT 100
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
-          [KeysHttp.recoverBrokenLinks.name]: true,
+          [KeysHttpInterceptWayback.recoverBrokenLinks.name]: true,
         });
       });
 
