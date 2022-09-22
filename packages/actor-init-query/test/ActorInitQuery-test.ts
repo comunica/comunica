@@ -571,7 +571,7 @@ LIMIT 100
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
-          [KeysHttp.recoverBrokenLinks.name]: true
+          [KeysHttp.recoverBrokenLinks.name]: true,
         });
       });
 

@@ -1,10 +1,10 @@
-jest.unmock('follow-redirects');
-import { ActorHttpNative } from '@comunica/actor-http-native';
 import type { MediatorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { KeysHttp, KeysHttpProxy } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext, IRequest } from '@comunica/types';
+import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
+import { Request } from 'cross-fetch';
 import { ActorHttpInterceptWayback } from '../lib/ActorHttpInterceptWayback';
+const stringToStream = require('streamify-string');
 
 describe('ActorHttpInterceptWayback', () => {
   let bus: any;
@@ -18,67 +18,355 @@ describe('ActorHttpInterceptWayback', () => {
     let context: IActionContext;
     let mediatorHttp: MediatorHttp;
 
-    beforeEach(() => {
-      // @ts-expect-error
-      mediatorHttp = {
-        mediate(action: IActionHttp): Promise<IActorHttpOutput> {
-          const httpNative = new ActorHttpNative({ name: 'actor-native', bus });
-          return httpNative.run(action);
-        },
-      };
-      actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
-      context = new ActionContext({
-        [KeysHttp.recoverBrokenLinks.name]: true,
+    describe('404 foaf, 200 wayback', () => {
+      beforeEach(() => {
+        // @ts-expect-error
+        mediatorHttp = {
+          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+            const { input, init } =
+              await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
+              action;
+
+            const request = new Request(input, init);
+
+            if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 404,
+                url: request.url,
+              };
+            }
+
+            if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 200,
+                url: request.url,
+              };
+            }
+
+            throw new Error('Unexpected URL');
+          },
+        };
+        actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
+        context = new ActionContext({
+          [KeysHttp.recoverBrokenLinks.name]: true,
+        });
+      });
+
+      it('should always test true', async() => {
+        await expect(actor.test({
+          context,
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.delete(KeysHttp.recoverBrokenLinks),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+      });
+
+      it('should return 200 on foaf when wayback machine is already the url', async() => {
+        const result = await actor.run({
+          context,
+          input: 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+      });
+
+      it('should return 200 on foaf', async() => {
+        const result = await actor.run({
+          context,
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+      });
+
+      it('should return 200 on foaf with existing proxy', async() => {
+        const result = await actor.run({
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
-    it('should always test true', async() => {
-      await expect(actor.test({
-        context,
-        input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-      })).resolves.toEqual(true);
+    describe('404 foaf with body, 200 wayback', () => {
+      beforeEach(() => {
+        // @ts-expect-error
+        mediatorHttp = {
+          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+            const { input, init } =
+              await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
+              action;
 
-      await expect(actor.test({
-        context: context.delete(KeysHttp.recoverBrokenLinks),
-        input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-      })).resolves.toEqual(true);
+            const request = new Request(input, init);
 
-      await expect(actor.test({
-        context: context.set(KeysHttp.recoverBrokenLinks, false),
-        input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-      })).resolves.toEqual(true);
-    });
+            if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> <unknown> {
+                status: 404,
+                body: stringToStream('page not found'),
+                url: request.url,
+              };
+            }
 
-    it('should return 200 on foaf when wayback machine is already the url', async() => {
-      const result = await actor.run({
-        context,
-        input: 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf',
+            if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 200,
+                url: request.url,
+              };
+            }
+
+            throw new Error('Unexpected URL');
+          },
+        };
+        actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
+        context = new ActionContext({
+          [KeysHttp.recoverBrokenLinks.name]: true,
+        });
       });
 
-      expect(result.status).toEqual(200);
-      expect(result.url.startsWith('http://wayback.archive-it.org/')).toEqual(true);
-      expect(result.url.endsWith('http://xmlns.com/foaf/spec/20140114.rdf')).toEqual(true);
-    });
+      it('should always test true', async() => {
+        await expect(actor.test({
+          context,
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
 
-    it('should return 200 on foaf', async() => {
-      const result = await actor.run({
-        context,
-        input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        await expect(actor.test({
+          context: context.delete(KeysHttp.recoverBrokenLinks),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
       });
 
-      expect(result.status).toEqual(200);
-      expect(result.url.startsWith('http://wayback.archive-it.org/')).toEqual(true);
-      expect(result.url.endsWith('http://xmlns.com/foaf/spec/20140114.rdf')).toEqual(true);
-    });
+      it('should return 200 on foaf when wayback machine is already the url', async() => {
+        const result = await actor.run({
+          context,
+          input: 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf',
+        });
 
-    it('should return 200 on foaf with existing proxy', async() => {
-      const result = await actor.run({
-        context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
-        input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
-      expect(result.status).toEqual(200);
-      expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+      it('should return 200 on foaf', async() => {
+        const result = await actor.run({
+          context,
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+      });
+
+      it('should return 200 on foaf with existing proxy', async() => {
+        const result = await actor.run({
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+      });
+    });
+
+    describe('200 foaf, 200 wayback', () => {
+      beforeEach(() => {
+        // @ts-expect-error
+        mediatorHttp = {
+          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+            const { input, init } =
+              await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
+              action;
+
+            const request = new Request(input, init);
+
+            if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 200,
+                url: request.url,
+              };
+            }
+
+            if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 200,
+                url: request.url,
+              };
+            }
+
+            throw new Error('Unexpected URL');
+          },
+        };
+        actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
+        context = new ActionContext({
+          [KeysHttp.recoverBrokenLinks.name]: true,
+        });
+      });
+
+      it('should always test true', async() => {
+        await expect(actor.test({
+          context,
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.delete(KeysHttp.recoverBrokenLinks),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+      });
+
+      it('should return foaf url when foaf is 200', async() => {
+        const result = await actor.run({
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+      });
+    });
+
+    describe('200 foaf, 404 wayback', () => {
+      beforeEach(() => {
+        // @ts-expect-error
+        mediatorHttp = {
+          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+            const { input, init } =
+              await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
+              action;
+
+            const request = new Request(input, init);
+
+            if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 200,
+                url: request.url,
+              };
+            }
+
+            if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 404,
+                url: request.url,
+              };
+            }
+
+            throw new Error('Unexpected URL');
+          },
+        };
+        actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
+        context = new ActionContext({
+          [KeysHttp.recoverBrokenLinks.name]: true,
+        });
+      });
+
+      it('should always test true', async() => {
+        await expect(actor.test({
+          context,
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.delete(KeysHttp.recoverBrokenLinks),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+      });
+
+      it('should return foaf url when foaf is 200', async() => {
+        const result = await actor.run({
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(200);
+        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+      });
+    });
+
+    describe('404 foaf, 404 wayback', () => {
+      beforeEach(() => {
+        // @ts-expect-error
+        mediatorHttp = {
+          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+            const { input, init } =
+              await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
+              action;
+
+            const request = new Request(input, init);
+
+            if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 404,
+                url: request.url,
+              };
+            }
+
+            if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> {
+                status: 404,
+                url: request.url,
+              };
+            }
+
+            throw new Error('Unexpected URL');
+          },
+        };
+        actor = new ActorHttpInterceptWayback({ name: 'actor', bus, mediatorHttp });
+        context = new ActionContext({
+          [KeysHttp.recoverBrokenLinks.name]: true,
+        });
+      });
+
+      it('should always test true', async() => {
+        await expect(actor.test({
+          context,
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.delete(KeysHttp.recoverBrokenLinks),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+
+        await expect(actor.test({
+          context: context.set(KeysHttp.recoverBrokenLinks, false),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        })).resolves.toEqual(true);
+      });
+
+      it('should return foaf url when wayback gives a 404', async() => {
+        const result = await actor.run({
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toEqual(404);
+        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+      });
     });
   });
 });

@@ -2802,6 +2802,13 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.1.tgz#20f18294f797f2209b5f65c8e3b5c8e8261d127c"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
 
+"@types/streamify-string@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/streamify-string/-/streamify-string-1.0.0.tgz#bd8e6e728e28802376268b9a137cb10c360fdc0a"
+  integrity sha512-HBb8gySatncIrzHYKYEMiU7FzXUxSurzIUyN4bLFWvT0URBNzX3fPC1re3b6vVvd+fkIeJUa7LPY8MMUenbJ7A==
+  dependencies:
+    "@types/node" "*"
+
 "@types/uritemplate@^0.3.4":
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/@types/uritemplate/-/uritemplate-0.3.4.tgz#c7a7f2b7e16b212baa69623183cde641659a4b97"

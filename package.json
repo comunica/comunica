@@ -20,6 +20,7 @@
     "@types/pollyjs__persister-fs": "^2.0.0",
     "@types/readable-stream": "^2.3.13",
     "@types/setup-polly-jest": "^0.5.0",
+    "@types/streamify-string": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "abort-controller": "^3.0.0",
