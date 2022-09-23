@@ -107,7 +107,10 @@ module.exports.depcheckTask = depcheckTask
 
 const ncu = require('npm-check-updates');
 async function updateTask(log) {
-  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
+  const packages = (await (log.packages || loadPackages())).filter(
+    package => package.location.startsWith(path.join(__dirname, '/packages')) ||
+      package.location.startsWith(path.join(__dirname, '/engines'))
+  );
 
   await iter.forEach(packages, { log })(async package => {
     const upgraded = await ncu.run({
