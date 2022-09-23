@@ -9,7 +9,7 @@ WORKDIR /var/www/@comunica/query-sparql/
 COPY --chown=node:node config config/
 COPY --chown=node:node lib/*.js lib/
 COPY --chown=node:node bin/*.js bin/
-COPY --chown=node:node engine-default.js package.json .
+COPY --chown=node:node engine-default.js package.json ./
 
 # Set the npm registry
 ARG NPM_REGISTRY=https://registry.npmjs.org/
