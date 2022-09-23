@@ -26,6 +26,6 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
       { operation: operation.input, context },
     );
     const { bindingsStream }: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(output);
-    return { type: 'boolean', execute: async () => (await bindingsStream.take(1).toArray()).length === 1 };
+    return { type: 'boolean', execute: async() => (await bindingsStream.take(1).toArray()).length === 1 };
   }
 }
