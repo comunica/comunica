@@ -9,12 +9,6 @@ export interface ISerializeDataSource {
   baseIri?: string;
 }
 
-export type IDataSource = string | RDF.Source | {
-  type?: string;
-  value: string | RDF.Source;
-  context?: IActionContext;
-  mediaType?: string;
-  baseIri?: string;
-};
+export type IDataSource = string | RDF.Source | ISerializeDataSource;
 
 export type DataSources = IDataSource[];

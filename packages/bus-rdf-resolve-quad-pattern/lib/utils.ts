@@ -22,6 +22,28 @@ export function getDataSourceType(dataSource: IDataSource): string | undefined {
 }
 
 /**
+ * Get the data source media type.
+ * @param dataSource A data source.
+ */
+export function getDataSourceMediaType(dataSource: IDataSource): string | undefined {
+  if (typeof dataSource === 'string') {
+    return undefined;
+  }
+  return 'mediaType' in dataSource ? dataSource.mediaType : undefined;
+}
+
+/**
+ * Get the data source media base IRI.
+ * @param dataSource A data source.
+ */
+export function getDataSourceBaseIri(dataSource: IDataSource): string | undefined {
+  if (typeof dataSource === 'string') {
+    return undefined;
+  }
+  return 'baseIri' in dataSource ? dataSource.baseIri : undefined;
+}
+
+/**
  * Get the data source value.
  * @param dataSource A data source.
  */

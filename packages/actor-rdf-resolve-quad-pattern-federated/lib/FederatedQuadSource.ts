@@ -4,7 +4,8 @@ import type {
   IQuadSource,
   MediatorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { getDataSourceContext, getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataSourceContext, getDataSourceType, getDataSourceValue,
+  getDataSourceMediaType, getDataSourceBaseIri } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
@@ -220,8 +221,12 @@ export class FederatedQuadSource implements IQuadSource {
 
       // Prepare the context for this specific source
       let context: IActionContext = getDataSourceContext(source, this.contextDefault);
+      // Here the problem
       context = context.set(KeysRdfResolveQuadPattern.source,
-        { type: getDataSourceType(source), value: getDataSourceValue(source) });
+        { type: getDataSourceType(source),
+          value: getDataSourceValue(source),
+          baseIri: getDataSourceBaseIri(source),
+          mediaType: getDataSourceMediaType(source) });
 
       let output: IActorRdfResolveQuadPatternOutput;
       // If any of the deskolemized blank nodes originate from another source,

@@ -1,7 +1,9 @@
 import { ActionContext } from '@comunica/core';
+import type { IDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { getDataSourceType, getDataSourceValue,
-  getDataSourceContext, isDataSourceRawType, getContextSourceFirst } from '..';
+  getDataSourceContext, isDataSourceRawType, getContextSourceFirst,
+  getDataSourceMediaType, getDataSourceBaseIri } from '..';
 
 describe('utils', () => {
   const rdfjsSource: RDF.Source = <any> { match: true };
@@ -64,6 +66,50 @@ describe('utils', () => {
     });
   });
 
+  describe('getDataSourceMediaType', () => {
+    it('should return undefined when a string data source is provided', () => {
+      return expect(getDataSourceMediaType('')).toBeUndefined();
+    });
+
+    it('should return undefined when no mediaType is provided', () => {
+      const datasource: IDataSource = {
+        value: '<a> <b> <c>',
+      };
+      return expect(getDataSourceMediaType(datasource)).toBeUndefined();
+    });
+
+    it('should return the right media type when it is provided', () => {
+      const mediaType = 'text/turtle';
+      const datasource: IDataSource = {
+        value: '<a> <b> <c>',
+        mediaType,
+      };
+      return expect(getDataSourceMediaType(datasource)).toBe(mediaType);
+    });
+  });
+
+  describe('getDataSourceBaseIri', () => {
+    it('should return undefined when a string data source is provided', () => {
+      return expect(getDataSourceBaseIri('')).toBeUndefined();
+    });
+
+    it('should return undefined when no baseIri is provided', () => {
+      const datasource: IDataSource = {
+        value: '<a> <b> <c>',
+      };
+      return expect(getDataSourceBaseIri(datasource)).toBeUndefined();
+    });
+
+    it('should return the right baseIri when it is provided', () => {
+      const baseIri = 'http://example.be';
+      const datasource: IDataSource = {
+        value: '<a> <b> <c>',
+        baseIri,
+      };
+      return expect(getDataSourceBaseIri(datasource)).toBe(baseIri);
+    });
+  });
+
   describe('getDataSourceContext', () => {
     const context = new ActionContext({ key: 'value' });
 
@@ -117,3 +163,4 @@ describe('utils', () => {
     });
   });
 });
+
