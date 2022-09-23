@@ -25,7 +25,7 @@
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "devDependencies": {
+  "dependencies": {
     "http-cache-semantics": "^4.1.0"
   }
 }
