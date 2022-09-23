@@ -1,17 +1,15 @@
-FROM node:16
+FROM node:18
 
-# Install location
-WORKDIR /usr/src/app
-
-# Run as default node user
-RUN chown node:node ./
 USER node
 
+# Install location
+WORKDIR /var/www/@comunica/query-sparql/
+
 # Copy the engine files (generated from package.json!files)
-COPY config ./config/
-COPY lib/*.js ./lib/
-COPY bin/*.js ./bin/
-COPY engine-default.js package.json ./
+COPY --chown=node:node config config/
+COPY --chown=node:node lib/*.js lib/
+COPY --chown=node:node bin/*.js bin/
+COPY --chown=node:node engine-default.js package.json .
 
 # Set the npm registry
 ARG NPM_REGISTRY=https://registry.npmjs.org/
