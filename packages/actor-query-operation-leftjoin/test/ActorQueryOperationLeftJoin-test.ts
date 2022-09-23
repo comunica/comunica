@@ -6,7 +6,7 @@ import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
 import { isExpressionError } from 'sparqlee';
-import { ActorQueryOperationLeftJoin } from '../lib';
+import { ActorQueryOperationLeftJoin } from '../lib/ActorQueryOperationLeftJoin';
 import '@comunica/jest';
 
 const DF = new DataFactory();
