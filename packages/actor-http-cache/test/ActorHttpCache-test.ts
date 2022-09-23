@@ -76,6 +76,15 @@ describe('ActorHttpCache', () => {
       ).toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
+    it('throws an error if tested with context.doNotCheckHttpCache = true', async() => {
+      await expect(
+        actor.test({
+          input: fo.plain.uri,
+          context: context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        }),
+      ).rejects.toThrowError();
+    });
+
     it('fetches the document and caches it', async() => {
       const result1 = await actor.run({
         input: fo.maxAge.uri,
@@ -145,7 +154,7 @@ describe('ActorHttpCache', () => {
       });
     });
 
-    // describe('put', () => {
+    // Describe('put', () => {
     //   it('puts a response that should be valid', async() => {
     //     await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.responseInit);
     //     const cachedResponse = await actor.fetchWithCache({ input: fo.maxAge.request, context });
@@ -252,9 +261,28 @@ describe('ActorHttpCache', () => {
           'The body should be reset to this',
         );
       });
+
+      it('does not cache a result if no-store is set', async() => {
+        const input = { input: fo.noStore.request, context };
+        const matchResult1 = await actor.run(input);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input,
+          context: input.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
+        expect(await matchResult1?.text()).toBe(fo.noStore.body);
+        // Should call again because it's not cached
+        // @ts-expect-error
+        mediatorHttp.mediate.mockClear();
+        const matchResult2 = await actor.run(input);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          ...input,
+          context: input.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+        });
+        expect(await matchResult2?.text()).toBe(fo.noStore.body);
+      });
     });
 
-    // describe('has', () => {
+    // Describe('has', () => {
     //   it('returns false when a request is not in the cache', async() => {
     //     expect(await actor.has(fo.plain.request)).toBe(false);
     //   });

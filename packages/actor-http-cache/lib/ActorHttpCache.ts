@@ -5,7 +5,6 @@ import type {
   MediatorHttp,
 } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
-import { Readable } from 'stream';
 
 import type {
   ActorHttpInvalidateListenable,
@@ -152,14 +151,18 @@ export class ActorHttpCache extends ActorHttp {
     // Node-fetch does not support body.tee, while it is mandatory according to the fetch and readablestream api.
     // If it doesn't exist, we monkey-patch it.
     if (response.body && !response.body.tee) {
-      response.body.tee = (): [ReadableStream, ReadableStream] => [
-        // @ts-ignore
-        Readable.from(response.body),
-        // @ts-ignore
-        Readable.from(response.body),
-      ];
+      response.body.tee = (): [ReadableStream, ReadableStream] => {
+        // eslint-disable-next-line import/no-nodejs-modules
+        const Readable = require('stream').Readable;
+        return [
+          Readable.from(response.body),
+          Readable.from(response.body),
+        ];
+      };
     }
 
+    // There almost will always be a body, so ignore next
+    /* istanbul ignore next */
     const [ bodyToRetrun, bodyToCache ] = response.body?.tee() || [ undefined, undefined ];
     const responseInit = {
       headers: response.headers,
