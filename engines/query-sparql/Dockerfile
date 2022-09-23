@@ -16,7 +16,7 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 RUN npm config set @comunica:registry $NPM_REGISTRY
 
 # Install the node module
-RUN npm install --only=production
+RUN npm install --omit=dev
 
 # Run base binary (generated from package.json!bin)
 ENTRYPOINT ["node", "./bin/query.js"]
