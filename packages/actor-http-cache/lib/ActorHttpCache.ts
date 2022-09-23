@@ -1,5 +1,3 @@
-/* eslint import/no-nodejs-modules: ["error", {"allow": ["stream"]}] */
-import { Readable } from 'stream';
 import type {
   IActionHttp,
   IActorHttpOutput,
@@ -7,6 +5,8 @@ import type {
   MediatorHttp,
 } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
+import { Readable } from 'stream';
+
 import type {
   ActorHttpInvalidateListenable,
   IActionHttpInvalidate,
@@ -15,13 +15,13 @@ import type {
 import { KeysHttpCache } from '@comunica/context-entries';
 import type { IHttpCacheStorage } from '@comunica/http-cache-storage';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
+import type {
+  Request as CacheRequest,
+  Response as CacheResponse,
+  RevalidationPolicy,
+} from 'http-cache-semantics';
 import 'cross-fetch/polyfill';
-import * as CachePolicy from 'http-cache-semantics';
-import {
-  requestToRequestWithHashHeaders,
-  responseToResponseWithHashHeaders,
-  addHashHeadersToObject,
-} from './headerConversionHelpers';
+import CachePolicy = require('http-cache-semantics');
 
 /**
  * A comunica Cache Http Actor.
@@ -45,7 +45,7 @@ export class ActorHttpCache extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
-    if (await this.has(new Request(action.input, action.init))) {
+    if (await this.cacheStorage.has(new Request(action.input, action.init))) {
       return { time: 1 };
     }
     if (action.context.get(KeysHttpCache.doNotCheckHttpCache)) {
@@ -72,131 +72,125 @@ export class ActorHttpCache extends ActorHttp {
    * @returns A Promise that resolves to the first Response that matches the
    * request and a boolean indicating if the value was from the cache or not
    */
-  public async fetchWithCache(
+  private async fetchWithCache(
     action: IActionHttp,
   ): Promise<Response> {
     const newRequest = new Request(action.input, action.init);
     const cacheResult = await this.cacheStorage.get(newRequest);
-    // Nothing is in the cache
+    // Request is not cached ===================================================
     if (!cacheResult) {
-      const [ body, init ] = await this.fetchDocument(action);
-      try {
-        await this.put(newRequest, body, init);
-      } catch {
-        // Do nothing if it is not storable
+      // Make Request
+      const response = await this.fetchDocument(action);
+      // Create a Cache Policy
+      const cachePolicy = this.newCachePolicy(newRequest, response);
+      if (!cachePolicy.storable()) {
+        return response;
       }
-      return this.newResponse(body, init);
-      // Something is in the cache
+      return await this.teeAndCacheResponse(newRequest, response, cachePolicy);
     }
-    // Check if the response is stale
-    const oldPolicy = cacheResult.policy;
-    const oldResponse = this.newResponse(cacheResult.body, cacheResult.init);
-
-    const newRequestWithHashHeaders = requestToRequestWithHashHeaders(
-      new Request(newRequest),
-    );
-    // If the response is stale
-    if (!oldPolicy.satisfiesWithoutRevalidation(newRequestWithHashHeaders)) {
-      // Invaidate the cache if it must be refreshed
-      await this.mediatorHttpInvalidate.mediate({ url: newRequest.url, context: action.context });
-      addHashHeadersToObject(
-        oldPolicy.revalidationHeaders(newRequestWithHashHeaders),
+    // The Request is cached ===================================================
+    // The Cache Policy is Satisfied -------------------------------------------
+    if (this.isPolicySatisfied(newRequest, cacheResult.policy)) {
+      return await this.teeAndCacheResponse(
         newRequest,
+        new Response(cacheResult.body, cacheResult.init),
+        cacheResult.policy,
       );
-      // Fetch again with new headers
-      const [ body, init ] = await this.fetchDocument(action);
-      const newResponse = this.newResponse(body, init);
-      const { policy, modified } = oldPolicy.revalidatedPolicy(
-        requestToRequestWithHashHeaders(newRequest),
-        responseToResponseWithHashHeaders(newResponse),
-      );
-      const response = modified ? newResponse : oldResponse;
-      await this.cacheStorage.set(
-        newRequest,
-        { policy, body, init },
-        policy.timeToLive(),
-      );
-      return response;
     }
-    return oldResponse;
+    // The Cache Policy is not satisfied ---------------------------------------
+    // Invalidate the cache
+    await this.mediatorHttpInvalidate.mediate({ url: newRequest.url, context: action.context });
+    const revalidationHeaders = this.getRevalidationHeaders(newRequest, cacheResult.policy);
+    const response = await this.fetchDocument({
+      ...action,
+      init: {
+        ...action.init,
+        headers: revalidationHeaders,
+      },
+    });
+    const { policy, modified } = this.getRevalidatedPolicy(newRequest, response, cacheResult.policy);
+    const finalResponse = modified ? response : new Response(cacheResult.body, cacheResult.init);
+    return await this.teeAndCacheResponse(newRequest, finalResponse, policy);
   }
 
-  /**
-   * Fetches the document and splits it into parts
-   * @param action Fetch action
-   * @returns
-   */
-  private async fetchDocument(action: IActionHttp): Promise<[bodyInit?: BodyInit, responseInit?: ResponseInit]> {
+  private async fetchDocument(action: IActionHttp): Promise<Response> {
     const response = await this.mediatorHttp.mediate({
       ...action,
       context: action.context.set(KeysHttpCache.doNotCheckHttpCache, true),
     });
-    return [
-      await response.text(),
-      {
-        headers: response.headers,
-        status: response.status,
-        statusText: response.statusText,
-      },
-    ];
+    return response;
   }
 
-  /**
-   * The put() method of the Cache interface allows key/value pairs to be added
-   * to the current Cache object.
-   * @param request The Request object or URL that you want to add to the cache.
-   * @param response The Response you want to match up to the request.
-   */
-  public async put(requestInfo: RequestInfo, body?: BodyInit, init?: ResponseInit): Promise<void> {
-    const request = new Request(requestInfo);
-    const response = new Response(body, init);
-    // Headers need to be converted to a hash because http-cache-semantics was
-    // built for an older version of headers.
-    const requestWithHashHeaders = requestToRequestWithHashHeaders(request);
-    const responseWithHashHeaders = responseToResponseWithHashHeaders(response);
-    const policy = new CachePolicy(
+  private newCachePolicy(request: Request, response: Response): CachePolicy {
+    // Conversions to make headers compatible
+    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
+    const responseWithHashHeaders = ActorHttpCache.responseToResponseWithHashHeaders(response);
+    return new CachePolicy(
       requestWithHashHeaders,
       responseWithHashHeaders,
     );
-    if (!policy.storable()) {
-      throw new TypeError(`${request.url} is not storable.`);
+  }
+
+  private isPolicySatisfied(request: Request, policy: CachePolicy): boolean {
+    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
+    return policy.satisfiesWithoutRevalidation(requestWithHashHeaders);
+  }
+
+  private getRevalidationHeaders(request: Request, policy: CachePolicy): Headers {
+    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
+    const hashRevalidationHeaders = policy.revalidationHeaders(requestWithHashHeaders);
+    return new Headers(<Record<string, string>> hashRevalidationHeaders);
+  }
+
+  private getRevalidatedPolicy(request: Request, response: Response, policy: CachePolicy): RevalidationPolicy {
+    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
+    const responseWithHashHeaders = ActorHttpCache.responseToResponseWithHashHeaders(response);
+    return policy.revalidatedPolicy(requestWithHashHeaders, responseWithHashHeaders);
+  }
+
+  private async teeAndCacheResponse(request: Request, response: Response, cachePolicy: CachePolicy): Promise<Response> {
+    // Node-fetch does not support body.tee, while it is mandatory according to the fetch and readablestream api.
+    // If it doesn't exist, we monkey-patch it.
+    if (response.body && !response.body.tee) {
+      response.body.tee = (): [ReadableStream, ReadableStream] => [
+        // @ts-ignore
+        Readable.from(response.body),
+        // @ts-ignore
+        Readable.from(response.body),
+      ];
     }
-    // Set the cache
+
+    const [ bodyToRetrun, bodyToCache ] = response.body?.tee() || [ undefined, undefined ];
+    const responseInit = {
+      headers: response.headers,
+      status: response.status,
+      statusText: response.statusText,
+    };
     await this.cacheStorage.set(
       request,
-      { policy, body, init },
-      policy.timeToLive(),
+      {
+        policy: cachePolicy,
+        body: bodyToCache,
+        init: responseInit,
+      },
+      cachePolicy.timeToLive(),
     );
+    return new Response(bodyToRetrun, responseInit);
   }
 
   /**
-   * Checks if there is a fresh response cached
-   * @param requestInfo The request mapped to the response
-   * @returns true if there is a fresh response cached
+   * ===========================================================================
+   * Hash Header Converters
+   * These exist because the cache semantics library only accepts old headers
+   * ===========================================================================
    */
-  public async has(requestInfo: RequestInfo): Promise<boolean> {
-    const request = new Request(requestInfo);
-    const cacheResult = await this.cacheStorage.get(new Request(request));
-    if (cacheResult) {
-      const { policy } = cacheResult;
-      return policy.satisfiesWithoutRevalidation(
-        requestToRequestWithHashHeaders(request),
-      );
-    }
-    return false;
+
+  public static requestToRequestWithHashHeaders(request: Request): CacheRequest {
+    return { ...request, headers: this.headersToHash(request.headers) };
   }
 
-  /**
-   * An alternative to `new Response()` that creates a response with a NodeJS stream
-   * NodeJS streams are required for comunica's post processors.
-   */
-  private newResponse(body?: BodyInit, responseInit?: ResponseInit): Response {
-    const nodeStream = new Readable();
-    nodeStream.push(body);
-    nodeStream.push(null);
-    // @ts-expect-error The response must be a node-stream not a web stream for comunica's post processors
-    const newResponse = new Response(nodeStream, responseInit);
-    return newResponse;
+  public static responseToResponseWithHashHeaders(response: Response): CacheResponse {
+    return { ...response, headers: this.headersToHash(response.headers) };
   }
 }
 

@@ -145,25 +145,25 @@ describe('ActorHttpCache', () => {
       });
     });
 
-    describe('put', () => {
-      it('puts a response that should be valid', async() => {
-        await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.responseInit);
-        const cachedResponse = await actor.fetchWithCache({ input: fo.maxAge.request, context });
-        expect(await cachedResponse?.text()).toBe(fo.maxAge.body);
-        expect(fetch).not.toHaveBeenCalled();
-      });
+    // describe('put', () => {
+    //   it('puts a response that should be valid', async() => {
+    //     await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.responseInit);
+    //     const cachedResponse = await actor.fetchWithCache({ input: fo.maxAge.request, context });
+    //     expect(await cachedResponse?.text()).toBe(fo.maxAge.body);
+    //     expect(fetch).not.toHaveBeenCalled();
+    //   });
 
-      it('throws an error when trying to add an invalid request', async() => {
-        await expect(
-          actor.put(fo.noStore.request, fo.noStore.body, fo.noStore.responseInit),
-        ).rejects.toThrow(`${fo.noStore.uri} is not storable.`);
-      });
-    });
+    //   it('throws an error when trying to add an invalid request', async() => {
+    //     await expect(
+    //       actor.put(fo.noStore.request, fo.noStore.body, fo.noStore.responseInit),
+    //     ).rejects.toThrow(`${fo.noStore.uri} is not storable.`);
+    //   });
+    // });
 
     describe('fetchWithCache', () => {
       it('performs a fetch when there is nothing in the cache.', async() => {
         const input = { input: fo.maxAge.request, context };
-        await actor.fetchWithCache(input);
+        await actor.run(input);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
           ...input,
           context: input.context.set(KeysHttpCache.doNotCheckHttpCache, true),
@@ -173,10 +173,10 @@ describe('ActorHttpCache', () => {
 
       it('does not perform a fetch when the cache is not stale', async() => {
         const input1 = { input: fo.maxAge.request, context };
-        const matchResult1 = await actor.fetchWithCache(input1);
+        const matchResult1 = await actor.run(input1);
         expect(await matchResult1?.text()).toBe(fo.maxAge.body);
         const input2 = { input: fo.maxAge.request, context };
-        const matchResult2 = await actor.fetchWithCache(input2);
+        const matchResult2 = await actor.run(input2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
           ...input2,
           context: input2.context.set(KeysHttpCache.doNotCheckHttpCache, true),
@@ -187,8 +187,8 @@ describe('ActorHttpCache', () => {
 
       it('performs a fetch when the cache is stale', async() => {
         const input = { input: fo.plain.request, context };
-        await actor.fetchWithCache(input);
-        await actor.fetchWithCache(input);
+        await actor.run(input);
+        await actor.run(input);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
           ...input,
           context: input.context.set(KeysHttpCache.doNotCheckHttpCache, true),
@@ -199,7 +199,7 @@ describe('ActorHttpCache', () => {
 
       it('makes a request with the proper headers when an etag is present', async() => {
         const input1 = { input: fo.eTag.request, context };
-        const matchResult1 = await actor.fetchWithCache(input1);
+        const matchResult1 = await actor.run(input1);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
           ...input1,
           context: input1.context.set(KeysHttpCache.doNotCheckHttpCache, true),
@@ -217,10 +217,15 @@ describe('ActorHttpCache', () => {
           }),
         );
         const input2 = { input: fo.eTag.request, context };
-        const matchResult2 = await actor.fetchWithCache(input2);
+        const matchResult2 = await actor.run(input2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
           ...input2,
           context: input2.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+          init: {
+            headers: new Headers({
+              'if-none-match': '123456',
+            }),
+          },
         });
         expect(await matchResult2?.text()).toBe(fo.eTag.body);
         fetch.mockClear();
@@ -233,10 +238,15 @@ describe('ActorHttpCache', () => {
           }),
         );
         const input3 = { input: fo.eTag.request, context };
-        const matchResult3 = await actor.fetchWithCache(input3);
+        const matchResult3 = await actor.run(input3);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
           ...input3,
           context: input3.context.set(KeysHttpCache.doNotCheckHttpCache, true),
+          init: {
+            headers: new Headers({
+              'if-none-match': '123456',
+            }),
+          },
         });
         expect(await matchResult3?.text()).toBe(
           'The body should be reset to this',
@@ -244,20 +254,20 @@ describe('ActorHttpCache', () => {
       });
     });
 
-    describe('has', () => {
-      it('returns false when a request is not in the cache', async() => {
-        expect(await actor.has(fo.plain.request)).toBe(false);
-      });
+    // describe('has', () => {
+    //   it('returns false when a request is not in the cache', async() => {
+    //     expect(await actor.has(fo.plain.request)).toBe(false);
+    //   });
 
-      it('returns true if the request is in the cache', async() => {
-        await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.response);
-        expect(await actor.has(fo.maxAge.request)).toBe(true);
-      });
+    //   it('returns true if the request is in the cache', async() => {
+    //     await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.response);
+    //     expect(await actor.has(fo.maxAge.request)).toBe(true);
+    //   });
 
-      it('returns false if the request is in the cache but it is stale', async() => {
-        await actor.put(fo.plain.request, fo.plain.body, fo.plain.responseInit);
-        expect(await actor.has(fo.plain.request)).toBe(false);
-      });
-    });
+    //   it('returns false if the request is in the cache but it is stale', async() => {
+    //     await actor.put(fo.plain.request, fo.plain.body, fo.plain.responseInit);
+    //     expect(await actor.has(fo.plain.request)).toBe(false);
+    //   });
+    // });
   });
 });
