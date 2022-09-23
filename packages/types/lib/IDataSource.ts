@@ -1,5 +1,5 @@
-import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { IActionContext } from './IActionContext';
 
 export type IDataSource = string | RDF.Source | {
   type?: string;

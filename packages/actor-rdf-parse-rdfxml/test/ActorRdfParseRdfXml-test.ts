@@ -4,8 +4,8 @@ import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseRdfXml } from '..';
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
 

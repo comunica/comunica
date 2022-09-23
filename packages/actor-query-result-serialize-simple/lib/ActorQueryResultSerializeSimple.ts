@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
@@ -6,6 +5,7 @@ import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-re
 import type { IActionContext, IQueryOperationResultBindings, IQueryOperationResultBoolean,
   IQueryOperationResultQuads, IQueryOperationResultVoid } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { Readable } from 'readable-stream';
 
 /**
  * A comunica Simple Sparql Serialize Actor.
@@ -57,7 +57,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
         data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
         data.push(null);
       } catch (error: unknown) {
-        setImmediate(() => data.emit('error', error));
+        setTimeout(() => data.emit('error', error));
       }
     } else {
       (<IQueryOperationResultVoid> action).execute()
@@ -65,7 +65,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
           data.push('ok\n');
           data.push(null);
         })
-        .catch(error => setImmediate(() => data.emit('error', error)));
+        .catch(error => setTimeout(() => data.emit('error', error)));
     }
 
     return { data };

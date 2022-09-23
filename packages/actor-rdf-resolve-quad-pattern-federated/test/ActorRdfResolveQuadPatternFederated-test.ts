@@ -1,10 +1,10 @@
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfResolveQuadPatternFederated } from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
-const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternFederated', () => {
@@ -118,7 +118,12 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
             .toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false });
-          expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([]);
+          expect(await arrayifyStream(output.data)).toBeRdfIsomorphic([
+            squad('s1', 'p1', 'o1'),
+            squad('s1', 'p1', 'o1'),
+            squad('s1', 'p1', 'o2'),
+            squad('s1', 'p1', 'o2'),
+          ]);
         });
     });
 

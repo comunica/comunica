@@ -4,6 +4,9 @@ about: If something is not working as expected or crashes
 
 ---
 
+<!-- If you want to prioritise this issue, consider placing a bounty, -->
+<!-- or becoming member of the Comunica Association: https://comunica.dev/association/ -->
+
 #### Issue type:
 
 - :bug: Bug <!--Don't change this issue type!-->

@@ -1,15 +1,17 @@
 import { PassThrough } from 'stream';
 import { ActionContext } from '@comunica/core';
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import 'cross-fetch/polyfill'; // Needed to load Headers
 import 'jest-rdf';
 import { Factory } from 'sparqlalgebrajs';
 import { RdfSourceSparql } from '../lib/RdfSourceSparql';
-
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 const DF = new DataFactory();
+
+// TODO: Remove when targeting NodeJS 18+
+global.ReadableStream = global.ReadableStream || require('web-streams-ponyfill').ReadableStream;
 
 describe('RdfSourceSparql', () => {
   const context = new ActionContext({});
@@ -137,7 +139,7 @@ describe('RdfSourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: require('web-streams-node').toWebReadableStream(query.indexOf('COUNT') > 0 ?
+            body: require('readable-stream-node-to-web')(query.indexOf('COUNT') > 0 ?
               streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,
@@ -361,14 +363,12 @@ describe('RdfSourceSparql', () => {
         .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: true });
     });
 
-    it('should allow multiple _read calls on query bindings', () => {
+    it('should allow multiple read calls on query bindings', () => {
       const data = source.queryBindings('http://ex', '');
-      (<any> data)._read(1, () => {
-        // Do nothing
-      });
-      (<any> data)._read(1, () => {
-        // Do nothing
-      });
+      const r1 = data.read();
+      const r2 = data.read();
+      expect(r1).toEqual(null);
+      expect(r2).toEqual(null);
     });
 
     it('should return data for HTTP GET requests', async() => {

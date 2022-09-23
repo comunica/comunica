@@ -1,10 +1,10 @@
-import type { Logger } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { IDataDestination } from './IDataDestination';
 import type { IDataSource } from './IDataSource';
 import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
 import type { QueryExplainMode } from './IQueryOperationResult';
+import type { Logger } from './Logger';
 
 /**
  * Query context when a string-based query was passed.
@@ -35,6 +35,8 @@ export interface IQueryContextCommon {
   lenient?: boolean;
   httpIncludeCredentials?: boolean;
   httpAuth?: string;
+  httpTimeout?: number;
+  httpBodyTimeout?: boolean;
   fetch?: typeof fetch;
   readOnly?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)

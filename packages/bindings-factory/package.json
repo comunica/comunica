@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bindings-factory",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "Bindings factory module for Comunica",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "@rdfjs/types": "*",
-    "immutable": "^3.8.2",
+    "immutable": "^4.0.0",
     "rdf-data-factory": "^1.1.0",
     "rdf-string": "^1.6.0"
   },

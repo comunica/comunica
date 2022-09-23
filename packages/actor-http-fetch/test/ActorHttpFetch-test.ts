@@ -7,7 +7,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
-import { mocked } from 'ts-jest/utils';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 const streamifyString = require('streamify-string');
 
@@ -15,7 +14,7 @@ const streamifyString = require('streamify-string');
 (<any> global).fetch = jest.fn((input: any, init: any) => {
   return Promise.resolve({
     status: input.url === 'https://www.google.com/' ? 200 : 404,
-    ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn() }},
+    ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
   });
 });
 
@@ -78,11 +77,11 @@ describe('ActorHttpFetch', () => {
     it('should run and pass a custom agent to node-fetch', async() => {
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
         .toBeInstanceOf(HttpsAgent);
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
         .toBeInstanceOf(HttpAgent);
     });
 
@@ -91,11 +90,11 @@ describe('ActorHttpFetch', () => {
 
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, context });
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent).toBeInstanceOf(Function);
 
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('https://www.google.com/')))
         .toBeInstanceOf(HttpsAgent);
-      expect((<any> mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
+      expect((<any> jest.mocked(fetch).mock.calls[0][1]).agent(new URL('http://www.google.com/')))
         .toBeInstanceOf(HttpAgent);
     });
 
@@ -337,6 +336,112 @@ describe('ActorHttpFetch', () => {
 
       expect(fetch).not.toHaveBeenCalled();
       expect(customFetch).toHaveBeenCalled();
+    });
+
+    it('should work with a large timeout', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      await expect(actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000 }),
+      })).resolves.toMatchObject({ status: 200 });
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should work with a large timeout with an error', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      const customFetch = jest.fn(async(_, _init) => {
+        throw new Error('foo');
+      });
+      await expect(actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.fetch.name]: customFetch, [KeysHttp.httpTimeout.name]: 100_000 }),
+      })).rejects.toBeInstanceOf(Error);
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should abort properly with a timeout', async() => {
+      jest.useFakeTimers();
+      const customFetch = jest.fn(async(_, init) => {
+        expect(init.signal.constructor.name).toEqual('AbortSignal');
+        expect(init.signal.aborted).toEqual(false);
+        jest.runAllTimers();
+        expect(init.signal.aborted).toEqual(true);
+        throw new Error('foo');
+      });
+      await expect(actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.fetch.name]: customFetch, [KeysHttp.httpTimeout.name]: 10 }),
+      })).rejects.toThrow('foo');
+      jest.useRealTimers();
+    });
+
+    it('should work with a large timeout including body if there is no body', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      await expect(actor.run({
+        input: <Request> { url: 'NOBODY' },
+        context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000, [KeysHttp.httpBodyTimeout.name]: true }),
+      })).resolves.toMatchObject({ status: 404 });
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should work with a large timeout including body if the body is consumed', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      const customFetch = jest.fn(async(_, _init) => {
+        const body = Readable.from('foo');
+        return Promise.resolve({
+          body,
+        });
+      });
+      const response = await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpTimeout.name]: 100_000,
+          [KeysHttp.httpBodyTimeout.name]: true,
+        }),
+      });
+      const body = <Readable><any> response.body;
+      for await (const chunk of body) {
+        // We just want to consume everything
+      }
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should work with a large timeout including body if the body is cancelled', async() => {
+      jest.spyOn(global, 'clearTimeout');
+      const customFetch = jest.fn(async(_, _init) => {
+        const body = Readable.from('foo');
+        return Promise.resolve({
+          body,
+        });
+      });
+      const response = await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpTimeout.name]: 100_000,
+          [KeysHttp.httpBodyTimeout.name]: true,
+        }),
+      });
+      await response.body?.cancel();
+      expect(clearTimeout).toHaveBeenCalled();
+    });
+
+    it('should abort properly with a timeout including body', async() => {
+      jest.useFakeTimers();
+      const response = await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: new ActionContext({ [KeysHttp.httpTimeout.name]: 20, [KeysHttp.httpBodyTimeout.name]: true }),
+      });
+      expect((<any> response.body).destroy).not.toHaveBeenCalled();
+      expect(response.body!.cancel).toBeTruthy();
+
+      jest.runAllTimers();
+      expect((<any> response.body).destroy).toHaveBeenCalledWith(
+        new Error(`HTTP timeout when reading the body of undefined.
+This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeout' options.`),
+      );
+      jest.useRealTimers();
     });
   });
 });

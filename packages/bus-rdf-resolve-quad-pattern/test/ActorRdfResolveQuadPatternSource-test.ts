@@ -1,8 +1,7 @@
 import { Bus } from '@comunica/core';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfResolveQuadPatternSource, getContextSourceUrl } from '..';
-
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfResolveQuadPatternSource', () => {
   const bus = new Bus({ name: 'bus' });

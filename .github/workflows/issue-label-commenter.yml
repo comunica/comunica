@@ -15,7 +15,7 @@ jobs:
         echo "$comments"
         CL=$(echo $comments | jq '. | length' )
         echo "::set-output name=comments_length::$CL"
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       if: steps.getCommentCount.outputs.comments_length == 0
     - uses: peaceiris/actions-label-commenter@v1
       if: steps.getCommentCount.outputs.comments_length == 0

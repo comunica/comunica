@@ -3,12 +3,12 @@ import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib/ActorQueryOperationGroup';
 import { GroupsState } from '../lib/GroupsState';
-const arrayifyStream = require('arrayify-stream');
 import '@comunica/jest';
 
 const DF = new DataFactory();
@@ -603,7 +603,7 @@ describe('ActorQueryOperationGroup', () => {
         mediatorQueryOperation: <any> myMediatorQueryOperation,
       });
 
-      await expect((async() => arrayifyStream(await actor.run(op)))())
+      await expect(async() => arrayifyStream((<any> await actor.run(op)).bindingsStream))
         .rejects
         .toBeTruthy();
     });

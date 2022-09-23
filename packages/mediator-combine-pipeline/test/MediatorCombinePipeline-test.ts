@@ -276,7 +276,7 @@ class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConca
 class DummyActorContextOutput extends DummyActor {
   public async run(action: IDummyAction): Promise<IDummyOutput> {
     return {
-      ...super.run(action),
+      ...await super.run(action),
       context: (<ActionContext> action.context).setRaw('id', this.id),
     };
   }

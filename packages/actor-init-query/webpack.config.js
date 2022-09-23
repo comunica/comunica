@@ -1,6 +1,6 @@
 const path = require('path');
-const ProgressPlugin = require('webpack').ProgressPlugin;
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const webpack = require('webpack');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = {
   entry: [ path.resolve(__dirname, 'lib/index-browser.js') ],
@@ -10,6 +10,7 @@ module.exports = {
     libraryTarget: 'var',
     library: 'Comunica'
   },
+  mode: 'production',
   devtool: 'source-map',
   module: {
     rules: [
@@ -20,8 +21,13 @@ module.exports = {
       },
     ]
   },
+  resolve: {
+    fallback: {
+      buffer: require.resolve("buffer/"),
+    }
+  },
   plugins: [
-    new NodePolyfillPlugin(),
-    new ProgressPlugin(),
+    new NodePolyfillPlugin({ includeAliases: ['Buffer'] }),
+    new webpack.ProgressPlugin()
   ]
 };

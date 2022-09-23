@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
@@ -9,6 +8,7 @@ import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { Readable } from 'readable-stream';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 
@@ -32,8 +32,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
   public constructor(cacheSize: number, context: IActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string, mediators: IMediatorArgs) {
-    super(cacheSize, subject, predicate, object, graph, firstUrl);
+    firstUrl: string, maxIterators: number, mediators: IMediatorArgs) {
+    super(cacheSize, subject, predicate, object, graph, firstUrl, maxIterators);
     this.context = context;
     this.forceSourceType = forceSourceType;
     this.mediatorDereferenceRdf = mediators.mediatorDereferenceRdf;
@@ -119,7 +119,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       // This for example allows SPARQL endpoints that error on service description fetching to still be source-forcible
       quads = new Readable();
       quads.read = () => {
-        quads.emit('error', error);
+        setTimeout(() => quads.emit('error', error));
         return null;
       };
       metadata = {};

@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type {
   IActionDereferenceRdf,
@@ -9,11 +8,12 @@ import type { IActionRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hype
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { Readable } from 'readable-stream';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 const DF = new DataFactory();
-const arrayifyStream = require('arrayify-stream');
 
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
@@ -84,7 +84,18 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
       };
-      source = new MediatedLinkedRdfSourcesAsyncRdfIterator(10, context, 'forcedType', s, p, o, g, 'first', mediators);
+      source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+        10,
+        context,
+        'forcedType',
+        s,
+        p,
+        o,
+        g,
+        'first',
+        64,
+        mediators,
+      );
     });
 
     describe('getLinkQueue', () => {
@@ -221,6 +232,11 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
       it('should delegate dereference errors to the source', async() => {
         const error = new Error('MediatedLinkedRdfSourcesAsyncRdfIterator dereference error');
+        mediatorRdfResolveHypermedia.mediate = ({ quads }: IActionRdfResolveHypermedia) =>
+          ({
+            dataset: 'MYDATASET',
+            source: { sourceContents: quads },
+          });
         mediatorDereferenceRdf.mediate = () => Promise.reject(error);
         const ret = await source.getSource({ url: 'startUrl' }, {});
         expect(ret).toEqual({
@@ -233,11 +249,20 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should ignore data errors', async() => {
+        mediatorRdfResolveHypermedia.mediate = ({ quads }: IActionRdfResolveHypermedia) =>
+          ({
+            dataset: 'MYDATASET',
+            source: { sourceContents: quads },
+          });
         mediatorMetadata.mediate = jest.fn(({ quads }: any) => {
           const data = new Readable();
-          (<any> data).on = (name: string, cb: any) => {
-            cb();
-          };
+          data._read = () => null;
+          data.on('newListener', (name: string) => {
+            if (name === 'error') {
+              setImmediate(() => data
+                .emit('error', new Error('MediatedLinkedRdfSourcesAsyncRdfIterator ignored error')));
+            }
+          });
           return Promise
             .resolve({
               data,
@@ -247,6 +272,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         });
 
         await source.getSource({ url: 'startUrl' }, {});
+        await new Promise(setImmediate);
       });
     });
   });

@@ -2,12 +2,12 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
 
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
-const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
@@ -161,7 +161,10 @@ describe('ActorQueryOperationExtend', () => {
 
       const op: any = { operation: example(faultyExpression), context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
+      await new Promise<void>((resolve, reject) => {
+        output.bindingsStream.on('error', () => resolve());
+        output.bindingsStream.on('data', reject);
+      });
       expect(warn).toBeCalledTimes(0);
     });
   });

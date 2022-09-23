@@ -51,6 +51,8 @@
     "IQueryableResultQuads",
     "IQueryableResultBoolean",
     "IQueryableResultVoid",
+    "PathVariableObjectIterator",
+    "ClosableTransformIterator",
 
     "RDF.Stream",
     "Omit",

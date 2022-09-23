@@ -4,10 +4,10 @@ import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings,
   IQueryOperationResultQuads } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSlice } from '../lib/ActorQueryOperationSlice';
-const arrayifyStream = require('arrayify-stream');
 import '@comunica/jest';
 
 const DF = new DataFactory();

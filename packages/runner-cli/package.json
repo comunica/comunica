@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner-cli",
-  "version": "2.0.3",
+  "version": "2.4.0",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -33,9 +33,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-init": "^2.0.1",
-    "@comunica/core": "^2.0.1",
-    "@comunica/runner": "^2.0.3"
+    "@comunica/core": "^2.4.0",
+    "@comunica/runner": "^2.4.0",
+    "@comunica/types": "^2.4.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

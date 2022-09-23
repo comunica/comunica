@@ -22,6 +22,7 @@ export interface IActionContext {
   setDefault: <V>(key: IActionContextKey<V>, value: V) => IActionContext;
   delete: <V>(key: IActionContextKey<V>) => IActionContext;
   get: <V>(key: IActionContextKey<V>) => V | undefined;
+  getSafe: <V>(key: IActionContextKey<V>) => V;
   has: <V>(key: IActionContextKey<V>) => boolean;
   merge: (...contexts: IActionContext[]) => IActionContext;
   keys: () => IActionContextKey<any>[];

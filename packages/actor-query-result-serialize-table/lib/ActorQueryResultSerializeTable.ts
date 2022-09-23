@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
@@ -11,6 +10,7 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { getTerms, QUAD_TERM_NAMES } from 'rdf-terms';
+import { Readable } from 'readable-stream';
 
 const DF = new DataFactory();
 const QUAD_TERM_NAMES_VARS = QUAD_TERM_NAMES.map(name => DF.variable(name));

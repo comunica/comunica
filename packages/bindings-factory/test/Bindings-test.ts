@@ -10,7 +10,7 @@ describe('Bindings', () => {
   let bindings: Bindings;
 
   beforeEach(() => {
-    bindings = new Bindings(DF, Map([
+    bindings = new Bindings(DF, Map<string, RDF.Term>([
       [ 'a', DF.namedNode('ex:a') ],
       [ 'b', DF.namedNode('ex:b') ],
       [ 'c', DF.namedNode('ex:c') ],
@@ -175,18 +175,18 @@ describe('Bindings', () => {
     });
 
     it('should be false for empty bindings', () => {
-      expect(bindings.equals(new Bindings(DF, Map([])))).toBeFalsy();
+      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([])))).toBeFalsy();
     });
 
     it('should be false for bindings with fewer keys', () => {
-      expect(bindings.equals(new Bindings(DF, Map([
+      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
       ])))).toBeFalsy();
     });
 
     it('should be false for bindings with more keys', () => {
-      expect(bindings.equals(new Bindings(DF, Map([
+      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
@@ -195,7 +195,7 @@ describe('Bindings', () => {
     });
 
     it('should be false for bindings with the same amount of keys, but unequal', () => {
-      expect(bindings.equals(new Bindings(DF, Map([
+      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
         [ 'a1', DF.namedNode('ex:a') ],
         [ 'b1', DF.namedNode('ex:b') ],
         [ 'c1', DF.namedNode('ex:c') ],
@@ -203,7 +203,7 @@ describe('Bindings', () => {
     });
 
     it('should be false for bindings with equal keys, but unequal values', () => {
-      expect(bindings.equals(new Bindings(DF, Map([
+      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b1') ],
         [ 'c', DF.namedNode('ex:c') ],
@@ -211,7 +211,7 @@ describe('Bindings', () => {
     });
 
     it('should be true for bindings with equal keys and values', () => {
-      expect(bindings.equals(new Bindings(DF, Map([
+      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
@@ -273,7 +273,7 @@ describe('Bindings', () => {
 
   describe('merge', () => {
     it('should merge distinct bindings', () => {
-      const bindingsOther = new Bindings(DF, Map([
+      const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'd', DF.namedNode('ex:d') ],
         [ 'e', DF.namedNode('ex:e') ],
         [ 'f', DF.namedNode('ex:f') ],
@@ -293,7 +293,7 @@ describe('Bindings', () => {
     });
 
     it('should merge overlapping compatible bindings', () => {
-      const bindingsOther = new Bindings(DF, Map([
+      const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'd', DF.namedNode('ex:d') ],
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
@@ -311,7 +311,7 @@ describe('Bindings', () => {
     });
 
     it('should return undefined on overlapping incompatible bindings', () => {
-      const bindingsOther = new Bindings(DF, Map([
+      const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:b') ],
       ]));
 
@@ -322,7 +322,7 @@ describe('Bindings', () => {
 
   describe('mergeWith', () => {
     it('should merge distinct bindings', () => {
-      const bindingsOther = new Bindings(DF, Map([
+      const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'd', DF.namedNode('ex:d') ],
         [ 'e', DF.namedNode('ex:e') ],
         [ 'f', DF.namedNode('ex:f') ],
@@ -345,7 +345,7 @@ describe('Bindings', () => {
     });
 
     it('should merge overlapping compatible bindings', () => {
-      const bindingsOther = new Bindings(DF, Map([
+      const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'd', DF.namedNode('ex:d') ],
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
@@ -366,7 +366,7 @@ describe('Bindings', () => {
     });
 
     it('should return undefined on overlapping incompatible bindings', () => {
-      const bindingsOther = new Bindings(DF, Map([
+      const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:b') ],
       ]));
 
@@ -387,7 +387,7 @@ describe('Bindings', () => {
 
   describe('toString', () => {
     it('should stringify empty bindings', () => {
-      expect(new Bindings(DF, Map()).toString()).toEqual(`{}`);
+      expect(new Bindings(DF, Map<string, RDF.Term>()).toString()).toEqual(`{}`);
     });
 
     it('should stringify non-empty bindings', () => {

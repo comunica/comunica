@@ -4,11 +4,17 @@ import { ActionContext } from '@comunica/core';
 import type { ISetupProperties } from '@comunica/runner';
 import { run } from '@comunica/runner';
 import type { IActionContext } from '@comunica/types';
+import type { Readable } from 'readable-stream';
 
 export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS.ReadStream,
   stdout: NodeJS.WriteStream, stderr: NodeJS.WriteStream, exit: (code?: number) => void, env: NodeJS.ProcessEnv,
   runnerUri?: string, properties?: ISetupProperties, context?: IActionContext): void {
-  run(configResourceUrl, { argv, env, stdin, context: context || new ActionContext() }, runnerUri, properties)
+  run(configResourceUrl, {
+    argv,
+    env,
+    stdin: <Readable><any> stdin,
+    context: context || new ActionContext(),
+  }, runnerUri, properties)
     .then((results: IActorOutputInit[]) => {
       results.forEach((result: IActorOutputInit) => {
         if (result.stdout) {

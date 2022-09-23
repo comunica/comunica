@@ -3,13 +3,12 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid, IQueryOperationResultBindings,
   IQueryOperationResultBoolean, IQueryOperationResultQuads } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import { mocked } from 'ts-jest/utils';
 import { ActorQueryOperationSparqlEndpoint } from '../lib/ActorQueryOperationSparqlEndpoint';
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 import 'jest-rdf';
@@ -372,8 +371,8 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
 
       await output.execute();
 
-      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
-      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
+      expect(jest.mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
+      expect(jest.mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
     });
 
     it('should run and error for a server error', async() => {
@@ -415,7 +414,12 @@ this is a body`));
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       actor.endpointFetcher.fetchBindings = () => Promise.reject(new Error('MY ERROR'));
       return expect(new Promise((resolve, reject) => {
-        return actor.run(op).then(async output => (<any> output).bindingsStream.on('error', resolve));
+        return actor.run(op).then(output => {
+          (<any> output).bindingsStream.on('error', resolve);
+          // We need to add a 'data' listener to start the iterator
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          (<any> output).bindingsStream.on('data', () => {});
+        });
       })).resolves.toEqual(new Error('MY ERROR'));
     });
 

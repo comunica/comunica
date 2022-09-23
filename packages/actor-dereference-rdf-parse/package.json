@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-rdf-parse",
-  "version": "2.0.2",
+  "version": "2.4.2",
   "description": "A parse dereference-rdf actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-dereference-rdf": "^2.0.2",
-    "@comunica/core": "^2.0.1"
+    "@comunica/bus-dereference": "^2.4.2",
+    "@comunica/bus-dereference-rdf": "^2.4.2",
+    "@comunica/bus-rdf-parse": "^2.4.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

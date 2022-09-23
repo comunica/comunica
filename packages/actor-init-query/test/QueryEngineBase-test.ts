@@ -9,6 +9,7 @@ import type {
   IQueryOperationResultBindings, IQueryOperationResultBoolean, IQueryOperationResultVoid, IQueryEngine,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
@@ -18,7 +19,6 @@ import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 import '@comunica/jest';
 import 'jest-rdf';
-const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();

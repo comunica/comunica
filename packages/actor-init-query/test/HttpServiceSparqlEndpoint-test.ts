@@ -41,8 +41,6 @@ jest.mock('fs', () => {
   return fs;
 });
 jest.useFakeTimers('legacy');
-// eslint-disable-next-line import/order
-import { mocked } from 'ts-jest/utils';
 
 const argsDefault = {
   moduleRootPath: 'moduleRootPath',
@@ -473,6 +471,148 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(http.createServer).toBeCalledTimes(1);
         expect(http.createServer).toHaveBeenLastCalledWith((<any> instance).handleRequest.bind());
       });
+
+      it('should end an open connection on shutdown messages', async() => {
+        let shutdownListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'message') {
+            shutdownListener = listener;
+          }
+        };
+
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connection
+        const response1 = new EventEmitter();
+        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+
+        // Send shutdown message
+        shutdownListener('shutdown');
+
+        expect((<any> response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        await new Promise(setImmediate);
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
+
+      it('should end multiple open connections on shutdown messages', async() => {
+        let shutdownListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'message') {
+            shutdownListener = listener;
+          }
+        };
+
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connections
+        const response1 = new EventEmitter();
+        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+        const response2 = new EventEmitter();
+        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response2);
+
+        // Send shutdown message
+        shutdownListener('shutdown');
+
+        await new Promise(setImmediate);
+        expect((<any> response1).end).toHaveBeenCalledTimes(1);
+        expect((<any> response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        expect((<any> response2).end).toHaveBeenCalledTimes(1);
+        expect((<any> response2).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
+
+      it('should end only actively open connections on shutdown messages', async() => {
+        let shutdownListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'message') {
+            shutdownListener = listener;
+          }
+        };
+
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connections
+        const response1 = new EventEmitter();
+        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+        const response2 = new EventEmitter();
+        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response2);
+        response2.emit('close');
+
+        // Send shutdown message
+        shutdownListener('shutdown');
+
+        expect((<any> response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        expect((<any> response2).end).not.toHaveBeenCalled();
+        await new Promise(setImmediate);
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not end open connections on non-shutdown messages', async() => {
+        let shutdownListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'message') {
+            shutdownListener = listener;
+          }
+        };
+
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connection
+        const response1 = new EventEmitter();
+        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+
+        // Send shutdown message
+        shutdownListener('non-shutdown');
+
+        expect((<any> response1).end).not.toHaveBeenCalled();
+        await new Promise(setImmediate);
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should end multiple open connections on uncaught exceptions', async() => {
+        let uncaughtExceptionListener: any;
+        (<any> process).on = (event: any, listener: any): void => {
+          if (event === 'uncaughtException') {
+            uncaughtExceptionListener = listener;
+          }
+        };
+
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connections
+        const response1 = new EventEmitter();
+        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+        const response2 = new EventEmitter();
+        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response2);
+
+        // Send shutdown message
+        uncaughtExceptionListener(new Error('sparql endpoint uncaught exception'));
+
+        await new Promise(setImmediate);
+        expect((<any> response1).end).toHaveBeenCalledTimes(1);
+        expect((<any> response1).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect((<any> response2).end).toHaveBeenCalledTimes(1);
+        expect((<any> response2).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('run as a master', () => {
@@ -499,12 +639,13 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker = new EventEmitter();
         (<any> dummyWorker).process = {};
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit');
 
         expect(cluster.fork).toBeCalledTimes(5);
+        expect(cluster.disconnect).not.toHaveBeenCalled();
       });
 
       it('should handle worker exits when exitedAfterDisconnect is true', async() => {
@@ -514,12 +655,42 @@ describe('HttpServiceSparqlEndpoint', () => {
         const dummyWorker = new EventEmitter();
         (<any> dummyWorker).exitedAfterDisconnect = true;
         (<any> dummyWorker).process = {};
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit');
 
         expect(cluster.fork).toBeCalledTimes(4);
+      });
+
+      it('should handle worker exits with code 9', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {};
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit', 9);
+
+        expect(cluster.fork).toBeCalledTimes(4);
+        expect(cluster.disconnect).toHaveBeenCalledTimes(1);
+      });
+
+      it('should handle worker exits with signal SIGKILL', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {};
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit', undefined, 'SIGKILL');
+
+        expect(cluster.fork).toBeCalledTimes(4);
+        expect(cluster.disconnect).toHaveBeenCalledTimes(1);
       });
 
       it('should handle worker start messages', async() => {
@@ -528,13 +699,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
         dummyWorker.send = jest.fn();
+        dummyWorker.isConnected = jest.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
-        dummyWorker.emit('message', 'start');
+        dummyWorker.emit('message', { type: 'start', queryId: 0 });
 
         expect(setTimeout).toHaveBeenCalledTimes(1);
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
@@ -552,20 +724,21 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
         dummyWorker.send = jest.fn();
+        dummyWorker.isConnected = jest.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
-        dummyWorker.emit('message', 'start');
+        dummyWorker.emit('message', { type: 'start', queryId: 0 });
 
         expect(setTimeout).toHaveBeenCalledTimes(1);
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
         expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate end event
-        dummyWorker.emit('message', 'end');
+        dummyWorker.emit('message', { type: 'end', queryId: 0 });
 
         expect(clearTimeout).toHaveBeenCalledTimes(1);
 
@@ -583,13 +756,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
         dummyWorker.send = jest.fn();
+        dummyWorker.isConnected = jest.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
-        dummyWorker.emit('message', 'start');
+        dummyWorker.emit('message', { type: 'start', queryId: 0 });
 
         expect(setTimeout).toHaveBeenCalledTimes(1);
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
@@ -610,9 +784,61 @@ describe('HttpServiceSparqlEndpoint', () => {
         await instance.run(stdout, stderr);
 
         // Simulate SIGINT event
-        (<any> mocked(process.once).mock.calls[0][1])();
+        (<any> jest.mocked(process.once).mock.calls[0][1])();
 
         expect(cluster.disconnect).toBeCalledTimes(1);
+      });
+
+      it('should catch worker shutdown errors', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.send = jest.fn(() => {
+          throw new Error('shutdown exception');
+        });
+        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.process = {
+          pid: 123,
+        };
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate start event
+        dummyWorker.emit('message', { type: 'start', queryId: 0 });
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
+        expect(dummyWorker.send).not.toHaveBeenCalled();
+
+        // Simulate timeout is passed
+        jest.runAllTimers();
+
+        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
+      });
+
+      it('should not send message to disconnected worker', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.send = jest.fn();
+        dummyWorker.isConnected = jest.fn(() => false);
+        dummyWorker.process = {
+          pid: 123,
+        };
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate start event
+        dummyWorker.emit('message', { type: 'start', queryId: 0 });
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
+        expect(dummyWorker.send).not.toHaveBeenCalled();
+
+        // Simulate timeout is passed
+        jest.runAllTimers();
+
+        expect(dummyWorker.send).not.toHaveBeenCalled();
       });
     });
 
@@ -645,7 +871,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(instance.writeQueryResult)
-            .toHaveBeenCalledWith(engine, stdout, stderr, request, response, undefined, null, false, true);
+            .toHaveBeenCalledWith(engine, stdout, stderr, request, response, undefined, null, false, true, 0);
         });
 
       it('should use the parsed query string when the request method equals GET'
@@ -661,7 +887,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             { type: 'query', value: 'test_query' },
             null,
             false,
-            true);
+            true,
+            0);
         });
 
       it('should set headonly and use the empty query string when the request method is HEAD and url parsing fails'
@@ -678,7 +905,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             undefined,
             null,
             true,
-            true);
+            true,
+            0);
         });
 
       it('should set headonly and use the parsed query string when the request method is HEAD'
@@ -694,7 +922,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             { type: 'query', value: 'test_query' },
             null,
             true,
-            true);
+            true,
+            0);
         });
 
       it('should call writeQueryResult with correct arguments if request method equals POST', async() => {
@@ -710,7 +939,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           null,
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose a mediaType if accept header is set', async() => {
@@ -730,7 +960,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           chosen,
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose the best matching mediaType when we can exactly match', async() => {
@@ -749,7 +980,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           'a/a',
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose the best matching mediaType when we can exactly match with out-of-order q', async() => {
@@ -768,7 +1000,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           'a/a',
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose the second best matching mediaType when we can exactly match', async() => {
@@ -787,7 +1020,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           'b/b',
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose the mediaType when the first is unknown', async() => {
@@ -806,7 +1040,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           'b/b',
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose a null media type if accept header is *', async() => {
@@ -824,7 +1059,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           null,
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose a null media type if accept header is */*', async() => {
@@ -842,7 +1078,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           null,
           false,
-          false);
+          false,
+          0);
       });
 
       it('should choose a null mediaType if accept header is not set', async() => {
@@ -860,7 +1097,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           { type: 'query', value: 'test_parseBody_result' },
           null,
           false,
-          false);
+          false,
+          0);
       });
 
       it('should only invalidate cache if invalidateCacheBeforeQuery is set to true', async() => {
@@ -925,13 +1163,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         query = {
           type: 'query',
           value: 'default_test_query',
+          context: undefined,
         };
         mediaType = 'default_test_mediatype';
         endCalledPromise = new Promise(resolve => response.onEnd = resolve);
       });
 
       it('should end the response with error message content when the query rejects', async() => {
-        query = { type: 'query', value: 'query_reject' };
+        query = { type: 'query', value: 'query_reject', context: undefined };
         await instance.writeQueryResult(await new QueryEngineFactoryBase().create(),
           new PassThrough(),
           new PassThrough(),
@@ -940,7 +1179,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           mediaType,
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBe('Rejected query');
         expect(response.writeHead).toHaveBeenLastCalledWith(400,
@@ -958,7 +1198,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             query,
             mediaType,
             false,
-            true);
+            true,
+            0);
 
           await expect(endCalledPromise).resolves.toBe(
             'The response for the given query could not be serialized for the requested media type\n',
@@ -976,7 +1217,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           mediaType,
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -996,7 +1238,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             query,
             mediaType,
             false,
-            true);
+            true,
+            0);
 
           await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
           expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1013,7 +1256,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           mediaType,
           true,
-          true);
+          true,
+          0);
 
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
@@ -1035,10 +1279,11 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           false,
-          true);
+          true,
+          0);
 
         // Check output
         await expect(endCalledPromise).resolves.toBeFalsy();
@@ -1086,10 +1331,11 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           true,
-          true);
+          true,
+          0);
 
         // Check output
         await expect(endCalledPromise).resolves.toBeFalsy();
@@ -1113,10 +1359,11 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           mediaType,
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1131,10 +1378,11 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          { type: 'query', value: '' },
+          { type: 'query', value: '', context: undefined },
           'mediatype_throwerror',
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBe(
           'The response for the given query could not be serialized for the requested media type\n',
@@ -1155,7 +1403,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           '',
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1176,7 +1425,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           '',
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1197,7 +1447,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           '',
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1219,69 +1470,15 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           '',
           false,
-          true);
+          true,
+          0);
 
         expect(process.send).toHaveBeenCalledTimes(1);
-        expect(process.send).toHaveBeenCalledWith('start');
+        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
 
         response.emit('close');
         expect(process.send).toHaveBeenCalledTimes(2);
-        expect(process.send).toHaveBeenCalledWith('end');
-      });
-
-      it('should handle shutdown messages', async() => {
-        let shutdownListener: any;
-        (<any> process).on = (event: any, listener: any): void => {
-          if (event === 'message') {
-            shutdownListener = listener;
-          }
-        };
-        const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ resultType: 'bindings' });
-
-        await instance.writeQueryResult(engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          query,
-          '',
-          false,
-          true);
-
-        expect(process.exit).not.toHaveBeenCalled();
-
-        shutdownListener('shutdown');
-
-        expect(process.exit).toHaveBeenCalledTimes(1);
-        expect(response.end).toHaveBeenCalledWith('!TIMED OUT!');
-      });
-
-      it('should ignore non-shutdown messages', async() => {
-        let shutdownListener: any;
-        (<any> process).on = (event: any, listener: any): void => {
-          if (event === 'message') {
-            shutdownListener = listener;
-          }
-        };
-        const engine = await new QueryEngineFactoryBase().create();
-        engine.query = () => ({ resultType: 'bindings' });
-
-        await instance.writeQueryResult(engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          query,
-          '',
-          false,
-          true);
-
-        expect(process.exit).not.toHaveBeenCalled();
-
-        shutdownListener('other');
-
-        expect(process.exit).not.toHaveBeenCalled();
+        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
       });
 
       it('should fallback to simple for updates if media type is falsy', async() => {
@@ -1296,7 +1493,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           '',
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1317,7 +1515,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           '',
           false,
-          true);
+          true,
+          0);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(engine.query).toHaveBeenCalledWith('default_test_query', { [KeysQueryOperation.readOnly.name]: true });
@@ -1335,10 +1534,54 @@ describe('HttpServiceSparqlEndpoint', () => {
           query,
           '',
           false,
-          false);
+          false,
+          0);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
+      });
+
+      it('should not override context entries by default', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
+
+        query.context = { overrideKey: 'overrideValue' };
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          false,
+          0);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
+      });
+
+      it('should override context entries if contextOverride is enabled', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = jest.fn(() => ({ resultType: 'bindings' }));
+
+        query.context = { overrideKey: 'overrideValue' };
+
+        instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4, contextOverride: true });
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          false,
+          0);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { overrideKey: 'overrideValue' });
       });
     });
 
@@ -1355,25 +1598,43 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should not error when eventEmitter is undefined', async() => {
-        instance.stopResponse(response);
+        instance.stopResponse(response, 0);
         response.emit('close');
       });
 
       it('should do nothing when no timeout or close event occurs', async() => {
-        instance.stopResponse(response, eventEmitter);
+        instance.stopResponse(response, 0, eventEmitter);
         // Not waiting for timeout to occur
 
         expect(eventEmitter.listeners('test').length).toEqual(1);
         expect(response.end).not.toHaveBeenCalled();
         expect(endListener).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
       });
 
       it('should remove event eventlisteners from eventEmitter when response is closed', async() => {
-        instance.stopResponse(response, eventEmitter);
+        instance.stopResponse(response, 0, eventEmitter);
         response.emit('close');
 
         expect(eventEmitter.listeners('test').length).toEqual(0);
         expect(response.end).toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should void error events', async() => {
+        instance.stopResponse(response, 0, eventEmitter);
+        response.emit('close');
+
+        eventEmitter.emit('error', new Error('Ignored stopResponse error'));
+      });
+
+      it('should exit when freshWorkerPerQuery is enabled', async() => {
+        instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4, freshWorkerPerQuery: true });
+
+        instance.stopResponse(response, 0, eventEmitter);
+        response.emit('close');
+
+        expect(process.exit).toHaveBeenCalledWith(15);
       });
     });
 
@@ -1431,6 +1692,27 @@ describe('HttpServiceSparqlEndpoint', () => {
           type: 'void',
           value: querystring.parse(exampleQueryString).update,
         });
+      });
+
+      it('should parse context from url if the content-type is application/x-www-form-urlencoded', () => {
+        const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a":"b"}';
+        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+
+        return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
+          type: 'query',
+          value: querystring.parse(exampleQueryString).query,
+          context: { a: 'b' },
+        });
+      });
+
+      it('should reject if the context is invalid and the content-type is application/x-www-form-urlencoded', () => {
+        const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a:"b"}';
+        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+
+        return expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrowError(`Invalid POST body with context received ('{"a:"b"}'): Unexpected token b in JSON at position 5`);
       });
 
       it('should reject if content-type is not application/[sparql-query|x-www-form-urlencoded]', () => {

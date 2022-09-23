@@ -6,10 +6,10 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinHash } from '../lib/ActorRdfJoinHash';
-const arrayifyStream = require('arrayify-stream');
 import '@comunica/jest';
 
 const DF = new DataFactory();
@@ -419,6 +419,7 @@ describe('ActorRdfJoinHash', () => {
           variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
         });
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
+        // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
           .toEqual(expected.map(bindingsToString).sort());

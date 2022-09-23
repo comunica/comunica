@@ -1,16 +1,16 @@
-import { PassThrough, Readable, Transform } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import {
   KeysCore,
   KeysHttp,
   KeysHttpMemento, KeysHttpProxy,
-  KeysInitQuery,
+  KeysInitQuery, KeysQueryOperation,
   KeysRdfResolveQuadPattern, KeysRdfUpdateQuads,
 } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler, IPhysicalQueryPlanLogger } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
+import { PassThrough, Readable, Transform } from 'readable-stream';
 import { Factory } from 'sparqlalgebrajs';
 import * as stringifyStream from 'stream-to-string';
 import { CliArgsHandlerBase } from '../lib';
@@ -206,7 +206,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
@@ -217,7 +217,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ '-v' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('Comunica Engine');
@@ -228,7 +228,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ '--version' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('Comunica Engine');
@@ -240,7 +240,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ '-v' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('Comunica Engine');
@@ -251,7 +251,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ '-h' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
@@ -262,7 +262,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ '--help' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
@@ -273,7 +273,7 @@ describe('ActorInitQuery', () => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ '--listformats' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain('mediaTypes');
@@ -283,7 +283,7 @@ describe('ActorInitQuery', () => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, queryString, '-t', 'testtype' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -291,11 +291,28 @@ describe('ActorInitQuery', () => {
           .toHaveBeenCalledWith(expect.anything(), 'testtype', expect.anything());
       });
 
+      it('handle the --localizeBlankNodes option', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, queryString, '--localizeBlankNodes', 'true' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysQueryOperation.localizeBlankNodes.name]: true,
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+        });
+      });
+
       it('handles the old inline context form', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ `{ "bla": true }`, 'Q' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -310,7 +327,7 @@ describe('ActorInitQuery', () => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -325,7 +342,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
@@ -336,7 +353,7 @@ describe('ActorInitQuery', () => {
         await expect(actor.run({
           argv: [ sourceHypermedia, 'INVALID' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).rejects.toThrowError('Invalid query');
       });
@@ -345,7 +362,7 @@ describe('ActorInitQuery', () => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -360,7 +377,7 @@ describe('ActorInitQuery', () => {
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
@@ -371,7 +388,7 @@ describe('ActorInitQuery', () => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-f', `${__dirname}/assets/all-100.sparql` ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -390,7 +407,7 @@ LIMIT 100
         const stderr = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-f' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
         expect(stderr).toContain('evaluates SPARQL queries');
@@ -401,7 +418,7 @@ LIMIT 100
         await expect(actor.run({
           argv: [ sourceHypermedia, '-f', `${__dirname}filedoesnotexist.sparql` ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).rejects.toThrowError('no such file or directory');
       });
@@ -410,7 +427,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceSparqlTagged, '-q', queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -425,7 +442,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceAuth, '-q', queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -445,7 +462,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceSparqlTaggedAuth, '-q', queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -466,7 +483,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceOther, '-q', queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -481,7 +498,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, sourceHypermedia, '-q', queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -496,7 +513,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceSparqlTagged, sourceSparqlTagged, '-q', queryString ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -514,7 +531,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ queryString, '-c', `${__dirname}/assets/config.json` ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -530,7 +547,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-d', dt.toISOString() ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -546,7 +563,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -561,7 +578,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-l', 'warn' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context: new ActionContext({
             log: 'LOGGER',
           }),
@@ -579,7 +596,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-b', baseIRI ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -596,7 +613,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '-p', proxy ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -612,7 +629,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--lenient' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -624,11 +641,70 @@ LIMIT 100
         });
       });
 
+      it('handles the --httpTimeout flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpTimeout=60' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysHttp.httpTimeout.name]: 60,
+        });
+      });
+
+      it('handles the --httpBodyTimeout flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpTimeout=60', '--httpBodyTimeout' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysHttp.httpTimeout.name]: 60,
+          [KeysHttp.httpBodyTimeout.name]: true,
+        });
+      });
+
+      it('--httpBodyTimeout flag requires --httpTimeout', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpBodyTimeout' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stderr);
+        expect(stderr).toContain(`The --httpBodyTimeout option requires the --httpTimeout option to be set`);
+      });
+
+      it('handles the --unionDefaultGraph flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--unionDefaultGraph' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysQueryOperation.unionDefaultGraph.name]: true,
+        });
+      });
+
       it('handles the destination --to option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context,
         })).stdout);
         expect(stdout).toContain(`{"a":"triple"}`);
@@ -656,7 +732,7 @@ LIMIT 100
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--bla', 'BLA' ],
           env: {},
-          stdin: new PassThrough(),
+          stdin: <Readable><any> new PassThrough(),
           context: new ActionContext({
             [KeysInitQuery.cliArgsHandlers.name]: [ cliArgsHandler ],
           }),
@@ -694,7 +770,12 @@ LIMIT 100
               name: 'actor',
               queryString },
           );
-          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough(), context })).stdout)
+          expect((await actorThis.run({
+            argv: [ 'S' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout)
             .toEqual('application/json');
         });
 
@@ -720,7 +801,12 @@ LIMIT 100
               name: 'actor',
               queryString },
           );
-          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough(), context })).stdout)
+          expect((await actorThis.run({
+            argv: [ 'S' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout)
             .toEqual('application/trig');
         });
 
@@ -746,7 +832,12 @@ LIMIT 100
               name: 'actor',
               queryString },
           );
-          expect((await actorThis.run({ argv: [ 'S' ], env: {}, stdin: new PassThrough(), context })).stdout)
+          expect((await actorThis.run({
+            argv: [ 'S' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout)
             .toEqual('simple');
         });
       });
@@ -756,7 +847,7 @@ LIMIT 100
           const stdout = await stringifyStream(<any> (await actorFixedQuery.run({
             argv: [ 'SOURCE' ],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
@@ -771,7 +862,7 @@ LIMIT 100
           const stdout = await stringifyStream(<any> (await actorFixedQuery.run({
             argv: [ 'SOURCE', '-i', 'graphql' ],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
@@ -786,7 +877,7 @@ LIMIT 100
           const stderr = await stringifyStream(<any> (await actorFixedQuery.run({
             argv: [],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stderr);
           expect(stderr).toContain('evaluates SPARQL queries');
@@ -813,7 +904,7 @@ LIMIT 100
           const stderr = await stringifyStream(<any> (await actorThis.run({
             argv: [],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stderr);
           expect(stderr).toContain('evaluates SPARQL queries');
@@ -826,7 +917,7 @@ LIMIT 100
           const stdout = await stringifyStream(<any> (await actorFixedQueryAndContext.run({
             argv: [],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
           expect(stdout).toContain(`{"a":"triple"}`);
@@ -843,7 +934,7 @@ LIMIT 100
           const stderr = await stringifyStream(<any> (await actorFixedContext.run({
             argv: [],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stderr);
           expect(stderr).toContain('evaluates SPARQL queries');
@@ -856,7 +947,7 @@ LIMIT 100
           const stdout = await stringifyStream(<any> (await actor.run({
             argv: [ 'SOURCE', '-q', queryString, '--explain', 'parsed' ],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
           expect(stdout).toContain(`{
@@ -914,7 +1005,7 @@ LIMIT 100
           const stdout = await stringifyStream(<any> (await actor.run({
             argv: [ 'SOURCE', '-q', queryString, '--explain', 'logical' ],
             env: {},
-            stdin: new PassThrough(),
+            stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
           expect(stdout).toContain(`{
@@ -973,7 +1064,7 @@ LIMIT 100
             const stdout = await stringifyStream(<any> (await actor.run({
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
-              stdin: new PassThrough(),
+              stdin: <Readable><any> new PassThrough(),
               context,
             })).stdout);
             expect(stdout).toContain(`{
@@ -1004,7 +1095,7 @@ LIMIT 100
             const stdout = await stringifyStream(<any> (await actor.run({
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
-              stdin: new PassThrough(),
+              stdin: <Readable><any> new PassThrough(),
               context,
             })).stdout);
             expect(stdout).toContain(`{
@@ -1035,7 +1126,7 @@ LIMIT 100
             const stdout = await stringifyStream(<any> (await actor.run({
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
-              stdin: new PassThrough(),
+              stdin: <Readable><any> new PassThrough(),
               context,
             })).stdout);
             expect(stdout).toContain(`{
@@ -1066,7 +1157,7 @@ LIMIT 100
             const stdout = await stringifyStream(<any> (await actor.run({
               argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
               env: {},
-              stdin: new PassThrough(),
+              stdin: <Readable><any> new PassThrough(),
               context,
             })).stdout);
             expect(stdout).toContain(`{

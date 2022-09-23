@@ -8,11 +8,11 @@ import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import 'jest-rdf';
+import arrayifyStream from 'arrayify-stream';
 import { MediatedQuadSource } from '..';
 import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
@@ -87,6 +87,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       actor = new ActorRdfResolveQuadPatternHypermedia({
         bus,
         cacheSize: 10,
+        maxIterators: 64,
         httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -224,6 +225,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         actor = new ActorRdfResolveQuadPatternHypermedia({
           bus,
           cacheSize: 0,
+          maxIterators: 64,
           httpInvalidator,
           mediatorMetadata,
           mediatorMetadataExtract,

@@ -3,8 +3,6 @@ import type * as RDF from '@rdfjs/types';
 import { getDataSourceType, getDataSourceValue,
   getDataSourceContext, isDataSourceRawType, getContextSourceFirst } from '..';
 
-const arrayifyStream = require('arrayify-stream');
-
 describe('utils', () => {
   const rdfjsSource: RDF.Source = <any> { match: true };
 

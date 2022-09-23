@@ -14,7 +14,6 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import 'jest-rdf';
 
-const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 export const bus = new Bus({ name: 'bus' });

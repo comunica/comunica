@@ -1,8 +1,8 @@
-import type { Readable } from 'stream';
 import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
+import type { Readable } from 'readable-stream';
 import 'cross-fetch/polyfill';
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
@@ -32,10 +32,10 @@ export class ActorHttpFetch extends ActorHttp {
     return { time: Number.POSITIVE_INFINITY };
   }
 
-  public run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     // Prepare headers
-    const initHeaders = action.init ? action.init.headers || {} : {};
-    action.init = action.init ? action.init : {};
+    const initHeaders = action.init?.headers ?? {};
+    action.init = action.init ?? {};
     action.init.headers = new Headers(initHeaders);
     if (!action.init.headers.has('user-agent')) {
       action.init.headers.append('user-agent', this.userAgent);
@@ -58,22 +58,64 @@ export class ActorHttpFetch extends ActorHttp {
       action.init.headers = ActorHttp.headersToHash(action.init.headers);
     }
 
-    // Perform request
-    const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
-      .context?.get(KeysHttp.fetch);
-    return (customFetch || fetch)(action.input, this.fetchInitPreprocessor.handle({
-      ...action.init,
-      ...action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
-    })).then(response => {
+    let requestInit = { ...action.init };
+
+    if (action.context.get(KeysHttp.includeCredentials)) {
+      requestInit.credentials = 'include';
+    }
+
+    const httpTimeout: number | undefined = action.context?.get(KeysHttp.httpTimeout);
+    let requestTimeout: NodeJS.Timeout | undefined;
+    let onTimeout: (() => void) | undefined;
+    if (httpTimeout !== undefined) {
+      const controller = await this.fetchInitPreprocessor.createAbortController();
+      requestInit.signal = controller.signal;
+      onTimeout = () => controller.abort();
+      requestTimeout = setTimeout(() => onTimeout!(), httpTimeout);
+    }
+
+    try {
+      requestInit = await this.fetchInitPreprocessor.handle(requestInit);
+
+      // Perform request
+      const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
+        .context?.get(KeysHttp.fetch);
+
+      const response = await (customFetch || fetch)(action.input, requestInit);
+
+      // We remove or update the timeout
+      if (requestTimeout !== undefined) {
+        const httpBodyTimeout = action.context?.get(KeysHttp.httpBodyTimeout) || false;
+        if (httpBodyTimeout && response.body) {
+          onTimeout = () => response.body?.cancel(new Error(`HTTP timeout when reading the body of ${response.url}.
+This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeout' options.`));
+          (<Readable><any>response.body).on('close', () => {
+            clearTimeout(requestTimeout);
+          });
+        } else {
+          clearTimeout(requestTimeout);
+        }
+      }
+
       // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
       // If it doesn't exist, we monkey-patch it.
       if (response.body && !response.body.cancel) {
         response.body.cancel = async(error?: Error) => {
-          (<Readable> <any> response.body).destroy(error);
+          (<Readable><any>response.body).destroy(error);
+          if (requestTimeout !== undefined) {
+            // We make sure to remove the timeout if it is still enabled
+            clearTimeout(requestTimeout);
+          }
         };
       }
+
       return response;
-    });
+    } catch (error: unknown) {
+      if (requestTimeout !== undefined) {
+        clearTimeout(requestTimeout);
+      }
+      throw error;
+    }
   }
 }
 

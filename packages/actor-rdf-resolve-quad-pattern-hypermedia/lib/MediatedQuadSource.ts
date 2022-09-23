@@ -20,13 +20,15 @@ export class MediatedQuadSource implements IQuadSource {
   public sourcesState: ISourcesState;
 
   private readonly cacheSize: number;
+  private readonly maxIterators: number;
 
   public constructor(cacheSize: number, context: IActionContext, firstUrl: string,
-    forceSourceType: string | undefined, mediators: IMediatorArgs) {
+    forceSourceType: string | undefined, maxIterators: number, mediators: IMediatorArgs) {
     this.cacheSize = cacheSize;
     this.context = context;
     this.firstUrl = firstUrl;
     this.forceSourceType = forceSourceType;
+    this.maxIterators = maxIterators;
     this.mediators = mediators;
   }
 
@@ -40,6 +42,7 @@ export class MediatedQuadSource implements IQuadSource {
       object,
       graph,
       this.firstUrl,
+      this.maxIterators,
       this.mediators,
     );
     if (!this.sourcesState) {

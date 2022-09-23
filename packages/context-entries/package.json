@@ -1,6 +1,6 @@
 {
   "name": "@comunica/context-entries",
-  "version": "2.0.1",
+  "version": "2.4.0",
   "description": "A collection of reusable Comunica context key definitions.",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -30,9 +30,11 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/core": "^2.0.1",
-    "@comunica/types": "^2.0.1",
-    "jsonld-context-parser": "^2.1.5"
+    "@comunica/core": "^2.4.0",
+    "@comunica/types": "^2.4.0",
+    "@rdfjs/types": "*",
+    "jsonld-context-parser": "^2.1.5",
+    "sparqlalgebrajs": "^4.0.2"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

@@ -5,12 +5,12 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
-const arrayifyStream = require('arrayify-stream');
 import '@comunica/jest';
 
 const DF = new DataFactory();

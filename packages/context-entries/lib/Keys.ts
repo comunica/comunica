@@ -39,6 +39,15 @@ export const KeysHttp = {
    * Fetch function implementation.
    */
   fetch: new ActionContextKey<typeof fetch>('@comunica/bus-http:fetch'),
+  /**
+   * HTTP request timeout in milliseconds.
+   */
+  httpTimeout: new ActionContextKey<number>('@comunica/bus-http:http-timeout'),
+  /**
+   * Makes the HTTP timeout not only apply until the response starts streaming in
+   * but until the response is fully consumed.
+   */
+  httpBodyTimeout: new ActionContextKey<boolean>('@comunica/bus-http:http-body-timeout'),
 };
 
 export const KeysHttpMemento = {
@@ -168,6 +177,14 @@ export const KeysQueryOperation = {
    * An indicator that the stream will be limited to the given number of elements afterwards.
    */
   limitIndicator: new ActionContextKey<number>('@comunica/bus-query-operation:limitIndicator'),
+  /**
+   * If the default graph should also contain the union of all named graphs.
+   */
+  unionDefaultGraph: new ActionContextKey<boolean>('@comunica/bus-query-operation:unionDefaultGraph'),
+  /**
+   * An indicator that the operator should apply blank node localization
+   */
+  localizeBlankNodes: new ActionContextKey<boolean>('@comunica/actor-query-operation:localizeBlankNodes'),
 };
 
 export const KeysRdfParseJsonLd = {

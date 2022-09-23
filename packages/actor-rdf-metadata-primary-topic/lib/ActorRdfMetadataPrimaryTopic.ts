@@ -1,8 +1,8 @@
-import { Readable } from 'stream';
 import type { IActionRdfMetadata, IActorRdfMetadataArgs, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
+import { Readable } from 'readable-stream';
 
 /**
  * An RDF Metadata Actor that splits off the metadata based on the existence of a 'foaf:primaryTopic' link.

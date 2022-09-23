@@ -17,12 +17,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   private readonly cacheSize: number;
   protected readonly firstUrl: string;
+  private readonly maxIterators: number;
 
   private started = false;
-  private currentIterator: AsyncIterator<RDF.Quad> | undefined;
+  private readonly currentIterators: AsyncIterator<RDF.Quad>[];
+  private iteratorsPendingCreation: number;
 
   public constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string) {
+    firstUrl: string, maxIterators: number) {
     super({ autoStart: true });
     this.cacheSize = cacheSize;
     this.subject = subject;
@@ -30,6 +32,23 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.object = object;
     this.graph = graph;
     this.firstUrl = firstUrl;
+    this.maxIterators = maxIterators;
+
+    if (this.maxIterators <= 0) {
+      throw new Error(`LinkedRdfSourcesAsyncRdfIterator.maxIterators must be larger than zero, but got ${this.maxIterators}`);
+    }
+
+    this.currentIterators = [];
+    this.iteratorsPendingCreation = 0;
+  }
+
+  protected _end(destroy?: boolean): void {
+    // Close all running iterators
+    for (const it of this.currentIterators) {
+      it.destroy();
+    }
+
+    super._end(destroy);
   }
 
   /**
@@ -106,29 +125,50 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       // Await the source to be set, and start the source iterator
       this.getSourceCached({ url: this.firstUrl }, {})
         .then(sourceState => {
-          this.setCurrentIterator(sourceState, true);
+          this.startIterator(sourceState, true);
           done();
         })
         .catch(error => {
           // We can safely ignore this error, since it handled in setSourcesState
           done();
         });
-    } else if (this.currentIterator) {
-      // If an iterator has been set, read from it.
-      while (count > 0) {
-        const read = this.currentIterator.read();
-        if (read !== null) {
-          count--;
-          this._push(read);
-        } else {
+    } else {
+      // Read from all current iterators
+      for (const iterator of this.currentIterators) {
+        while (count > 0) {
+          const read = iterator.read();
+          if (read !== null) {
+            count--;
+            this._push(read);
+          } else {
+            break;
+          }
+        }
+        if (count <= 0) {
           break;
         }
       }
-      done();
-    } else {
-      // This can occur during source loading.
-      done();
+
+      // Schedule new iterators if needed
+      if (count >= 0 && this.canStartNewIterator()) {
+        this.getSourceCached({ url: this.firstUrl }, {})
+          .then(sourceState => {
+            this.startIteratorsForNextUrls(sourceState.handledDatasets, false);
+            done();
+          })
+          .catch(error => this.destroy(error));
+      } else {
+        done();
+      }
     }
+  }
+
+  protected canStartNewIterator(): boolean {
+    return (this.currentIterators.length + this.iteratorsPendingCreation) < this.maxIterators && !this.readable;
+  }
+
+  protected areIteratorsRunning(): boolean {
+    return (this.currentIterators.length + this.iteratorsPendingCreation) > 0;
   }
 
   /**
@@ -137,28 +177,30 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param {ISourceState} startSource The start source state.
    * @param {boolean} emitMetadata If the metadata event should be emitted.
    */
-  protected setCurrentIterator(startSource: ISourceState, emitMetadata: boolean): void {
+  protected startIterator(startSource: ISourceState, emitMetadata: boolean): void {
     // Delegate the quad pattern query to the given source
-    this.currentIterator = startSource.source!
+    const iterator = startSource.source!
       .match(this.subject, this.predicate, this.object, this.graph);
+    this.currentIterators.push(iterator);
     let receivedMetadata = false;
 
     // Attach readers to the newly created iterator
-    (<any> this.currentIterator)._destination = this;
-    this.currentIterator.on('error', (error: Error) => this.destroy(error));
-    this.currentIterator.on('readable', () => this._fillBuffer());
-    this.currentIterator.on('end', () => {
-      this.currentIterator = undefined;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    (<any> iterator)._destination = this;
+    iterator.on('error', (error: Error) => this.destroy(error));
+    iterator.on('readable', () => this._fillBuffer());
+    iterator.on('end', () => {
+      this.currentIterators.splice(this.currentIterators.indexOf(iterator), 1);
 
       // If the metadata was already received, handle the next URL in the queue
       if (receivedMetadata) {
-        this.handleNextUrl(startSource);
+        this.startIteratorsForNextUrls(startSource.handledDatasets, true);
       }
     });
 
     // Listen for the metadata of the source
     // The metadata property is guaranteed to be set
-    this.currentIterator.getProperty('metadata', (metadata: Record<string, any>) => {
+    iterator.getProperty('metadata', (metadata: Record<string, any>) => {
       startSource.metadata = { ...startSource.metadata, ...metadata };
 
       // Emit metadata if needed
@@ -176,11 +218,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             linkQueue.push(nextUrl, startSource.link);
           }
 
-          // Handle the next queued URL if we don't have an active iterator (in which case it will be called later)
           receivedMetadata = true;
-          if (!this.currentIterator) {
-            this.handleNextUrl(startSource);
-          }
+          this.startIteratorsForNextUrls(startSource.handledDatasets, true);
         }).catch(error => this.destroy(error));
     });
   }
@@ -189,18 +228,31 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * Check if a next URL is in the queue.
    * If yes, start a new iterator.
    * If no, close this iterator.
-   * @param startSource
+   * @param handledDatasets
+   * @param canClose
    */
-  protected handleNextUrl(startSource: ISourceState): void {
+  protected startIteratorsForNextUrls(handledDatasets: Record<string, boolean>, canClose: boolean): void {
     this.getLinkQueue()
       .then(linkQueue => {
-        const nextLink = linkQueue.pop();
-        if (!nextLink) {
+        // Create as many new iterators as possible
+        while (this.canStartNewIterator() && !this.done) {
+          const nextLink = linkQueue.pop();
+          if (nextLink) {
+            this.iteratorsPendingCreation++;
+            this.getSourceCached(nextLink, handledDatasets)
+              .then(nextSourceState => {
+                this.iteratorsPendingCreation--;
+                this.startIterator(nextSourceState, false);
+              })
+              .catch(error => this.destroy(error));
+          } else {
+            break;
+          }
+        }
+
+        // Close, only if no other iterators are still running
+        if (canClose && linkQueue.isEmpty() && !this.areIteratorsRunning()) {
           this.close();
-        } else {
-          this.getSourceCached(nextLink, startSource.handledDatasets)
-            .then(nextSourceState => this.setCurrentIterator(nextSourceState, false))
-            .catch(error => this.destroy(error));
         }
       })
       .catch(error => this.destroy(error));

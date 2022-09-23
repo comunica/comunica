@@ -8,7 +8,8 @@ import type { MediatorQueryParse } from '@comunica/bus-query-parse';
 import type { MediatorQueryResultSerializeHandle,
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
-import type { IActorTest, Logger } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import type { Logger } from '@comunica/types';
 
 /**
  * A browser-safe comunica Query Init Actor.
@@ -110,11 +111,15 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    *   "lenient": "@comunica/actor-init-query:lenient",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
    *   "httpAuth": "@comunica/bus-http:auth",
+   *   "httpTimeout": "@comunica/bus-http:http-timeout",
+   *   "httpBodyTimeout": "@comunica/bus-http:http-body-timeout",
    *   "fetch": "@comunica/bus-http:fetch",
    *   "readOnly": "@comunica/bus-query-operation:readOnly",
    *   "extensionFunctions": "@comunica/actor-init-query:extensionFunctions",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
-   *   "explain": "@comunica/actor-init-query:explain"
+   *   "explain": "@comunica/actor-init-query:explain",
+   *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
+   *   "localizeBlankNodes": "@comunica/actor-query-operation:localizeBlankNodes"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;

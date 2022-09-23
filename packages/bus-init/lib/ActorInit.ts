@@ -1,6 +1,6 @@
-import type { Readable } from 'stream';
 import type { IAction, IActorOutput, IActorTest, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { Readable } from 'readable-stream';
 
 /**
  * A base actor for listening to init events.

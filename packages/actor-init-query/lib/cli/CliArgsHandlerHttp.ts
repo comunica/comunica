@@ -48,6 +48,16 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
           describe: 'Enable cache invalidation before each query execution',
           default: false,
         },
+        freshWorker: {
+          type: 'boolean',
+          describe: 'Kills the worker after each query execution',
+          default: false,
+        },
+        contextOverride: {
+          type: 'boolean',
+          describe: 'If the query context can be overridden through POST requests',
+          default: false,
+        },
       })
       .check(args => {
         if (args.version) {

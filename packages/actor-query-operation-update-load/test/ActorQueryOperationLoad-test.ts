@@ -1,10 +1,10 @@
 import { KeysInitQuery, KeysQueryOperation, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
-const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
 
 describe('ActorQueryOperationLoad', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-sparql-csv",
-  "version": "2.0.1",
+  "version": "2.4.0",
   "description": "A sparql-csv query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,11 +31,10 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.0.1",
-    "@comunica/bus-query-result-serialize": "^2.0.1",
-    "@comunica/core": "^2.0.1",
-    "@comunica/types": "^2.0.1",
-    "@rdfjs/types": "*"
+    "@comunica/bus-query-result-serialize": "^2.4.0",
+    "@comunica/types": "^2.4.0",
+    "@rdfjs/types": "*",
+    "readable-stream": "^4.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
