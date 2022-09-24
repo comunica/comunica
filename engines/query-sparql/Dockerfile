@@ -3,7 +3,7 @@ FROM node:18
 USER node
 
 # Install location
-WORKDIR /var/www/@comunica/query-sparql/
+WORKDIR /home/comunica/query-sparql/
 
 # Copy the engine files (generated from package.json!files)
 COPY --chown=node:node config config/
