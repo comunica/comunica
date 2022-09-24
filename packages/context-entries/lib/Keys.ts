@@ -7,7 +7,8 @@ import type { Bindings,
   DataSources,
   IDataSource,
   IDataDestination,
-  MetadataBindings } from '@comunica/types';
+  MetadataBindings,
+  IHttpCacheStorage } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -69,6 +70,10 @@ export const KeysHttpCache = {
    * Will skip the HTTP cache if this is set to true
    */
   doNotCheckHttpCache: new ActionContextKey<boolean>('@communica/actor-http-cache:do-not-check-http-cache'),
+  /**
+   * A storage object that can overwrites the default http cache
+   */
+  httpCacheStorage: new ActionContextKey<IHttpCacheStorage>('@communica/actor-http-cache:http-cache-storage'),
 };
 
 export const KeysInitQuery = {
