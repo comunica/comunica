@@ -3,10 +3,10 @@ import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { Readable } from 'readable-stream';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
 const streamifyArray = require('streamify-array');
 import 'jest-rdf';
+const streamifyString = require('streamify-string');
 
 const DF = new DataFactory();
 
@@ -16,7 +16,9 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
   const sourceMediaType = 'text/turtle';
   const sourceBaseIri = 'http://example.org/';
   let mockMediatorRdfParse: any; // Return always the same quadstream
+  let mockMediatorRdfQuadPattern: any; // Return always the same quadstream
   let spyMockMediatorRdfParse: any;
+  let spyMockMediatorRdfQuadPattern: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -44,7 +46,10 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
 
     beforeEach(() => {
       actor = new ActorRdfResolveQuadPatternStringSource(
-        { name: 'actor', bus, mediatorRdfParse: mockMediatorRdfParse },
+        { name: 'actor',
+          bus,
+          mediatorRdfParse: mockMediatorRdfParse,
+          mediatorRdfQuadPattern: mockMediatorRdfQuadPattern },
       );
     });
 
@@ -140,10 +145,20 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
           };
         },
       };
+      mockMediatorRdfQuadPattern = {
+        mediate(_arg: any) {
+          return {
+            // StreamifyArray has the side effect of comsuming the object hence the clone operation
+            data: streamifyArray(JSON.parse(JSON.stringify(expectedQuads))),
+          };
+        },
+      };
       spyMockMediatorRdfParse = jest.spyOn(mockMediatorRdfParse, 'mediate');
+      spyMockMediatorRdfQuadPattern = jest.spyOn(mockMediatorRdfQuadPattern, 'mediate');
       actor = new ActorRdfResolveQuadPatternStringSource({ name: 'actor',
         bus,
-        mediatorRdfParse: mockMediatorRdfParse });
+        mediatorRdfParse: mockMediatorRdfParse,
+        mediatorRdfQuadPattern: mockMediatorRdfQuadPattern });
     });
 
     it('should run', async() => {
@@ -164,12 +179,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         },
       };
 
-      const expectedTextStream = new Readable({ objectMode: true });
-      expectedTextStream._read = () => {
-        // Do nothing
-      };
-      expectedTextStream.push(<string>sourceValue);
-      expectedTextStream.push(null);
+      const expectedTextStream = streamifyString(<string> sourceValue);
       const expectedParseAction = {
         context,
         handle: {
@@ -182,9 +192,12 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
 
       const resp = await actor.run(op);
 
-      // JSON.stringify is a workaround for the textstream as jest return an object instead of a readable
-      expect(JSON.stringify(spyMockMediatorRdfParse.mock.calls[0][0]))
-        .toStrictEqual(JSON.stringify(expectedParseAction));
+      expect(spyMockMediatorRdfParse).toBeCalledWith(expect.objectContaining(expectedParseAction));
+
+      expect(spyMockMediatorRdfQuadPattern).toBeCalledWith(expect.objectContaining({
+        pattern: op.pattern,
+      }));
+
       expect(await resp.data.toArray()).toMatchObject(expectedQuads);
     });
   });
