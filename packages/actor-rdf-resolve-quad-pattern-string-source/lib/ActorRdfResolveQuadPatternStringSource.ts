@@ -5,7 +5,7 @@ import type { IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs, IAc
   MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { ISerializeDataSource } from '@comunica/types';
+import type { IDataSource, ISerializeDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { storeStream } from 'rdf-store-stream';
 const streamifyString = require('streamify-string');
@@ -54,8 +54,12 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
 
     const parserResult = await this.mediatorRdfParse.mediate(parseAction);
     const store = await storeStream(parserResult.handle.data);
+    const newSource: IDataSource = {
+      value: <RDF.Source> store,
+      type: 'rdfjsSource',
+    };
     action.context = action.context.delete(KeysRdfResolveQuadPattern.source);
-    action.context = action.context.set(KeysRdfResolveQuadPattern.source, <RDF.Source> store);
+    action.context = action.context.set(KeysRdfResolveQuadPattern.source, newSource);
 
     const resolveQuadAction: IActionRdfResolveQuadPattern = {
       pattern: action.pattern,
