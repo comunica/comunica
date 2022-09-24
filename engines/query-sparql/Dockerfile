@@ -1,9 +1,10 @@
 FROM node:18
 
-USER node
-
 # Install location
 WORKDIR /home/comunica/query-sparql/
+RUN chown -R node:node .
+
+USER node
 
 # Copy the engine files (generated from package.json!files)
 COPY --chown=node:node config config/
@@ -16,8 +17,7 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 RUN npm config set @comunica:registry $NPM_REGISTRY
 
 # Install the node module
-RUN echo $(whoami) && ls -al ./ && chown -R node:node /var/www/@comunica/query-sparql/
-RUN echo $(whoami) && npm install --omit=dev
+RUN npm install --omit=dev
 
 # Run base binary (generated from package.json!bin)
 ENTRYPOINT ["node", "./bin/query.js"]
