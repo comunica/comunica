@@ -16,7 +16,8 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 RUN npm config set @comunica:registry $NPM_REGISTRY
 
 # Install the node module
-RUN npm install --omit=dev
+RUN echo $(whoami) && ls -al ./ && chown -R node:node /var/www/@comunica/query-sparql/
+RUN echo $(whoami) && npm install --omit=dev
 
 # Run base binary (generated from package.json!bin)
 ENTRYPOINT ["node", "./bin/query.js"]
