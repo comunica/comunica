@@ -3,6 +3,7 @@ export * from './IActionContext';
 export * from './ICliArgsHandler';
 export * from './IDataDestination';
 export * from './IDataSource';
+export * from './IHttpCacheStorage';
 export * from './IJoinEntry';
 export * from './IMetadata';
 export * from './IPhysicalQueryPlanLogger';

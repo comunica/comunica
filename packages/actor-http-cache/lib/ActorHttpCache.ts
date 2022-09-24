@@ -12,8 +12,8 @@ import type {
   MediatorHttpInvalidate,
 } from '@comunica/bus-http-invalidate';
 import { KeysHttpCache } from '@comunica/context-entries';
-import type { IHttpCacheStorage } from '@comunica/http-cache-storage';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
+import type { IHttpCacheStorage } from '@comunica/types';
 import type {
   Request as CacheRequest,
   Response as CacheResponse,

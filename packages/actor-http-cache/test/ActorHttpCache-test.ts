@@ -8,9 +8,9 @@ import type {
 } from '@comunica/bus-http-invalidate';
 import { KeysHttp, KeysHttpCache } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import type { IHttpCacheStorage } from '@comunica/http-cache-storage';
 import { HttpCacheStorageLru } from '@comunica/http-cache-storage-lru';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
+import type { IHttpCacheStorage } from '@comunica/types';
 import { ActorHttpCache } from '../lib/ActorHttpCache';
 import type { FetchOptions } from './http-test-helper';
 import { getHttpTestHelpers } from './http-test-helper';
