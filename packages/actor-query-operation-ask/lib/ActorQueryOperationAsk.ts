@@ -25,20 +25,7 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(
       { operation: operation.input, context },
     );
-    const bindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(output);
-    const execute: () => Promise<boolean> = () => new Promise<boolean>((resolve, reject) => {
-      // Resolve to true if we find one element, and close immediately
-      bindings.bindingsStream.once('data', () => {
-        resolve(true);
-        bindings.bindingsStream.close();
-      });
-
-      // If we reach the end of the stream without finding anything, resolve to false
-      bindings.bindingsStream.on('end', () => resolve(false));
-
-      // Reject if an error occurs in the stream
-      bindings.bindingsStream.on('error', reject);
-    });
-    return { type: 'boolean', execute };
+    const { bindingsStream }: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(output);
+    return { type: 'boolean', execute: async() => (await bindingsStream.take(1).toArray()).length === 1 };
   }
 }
