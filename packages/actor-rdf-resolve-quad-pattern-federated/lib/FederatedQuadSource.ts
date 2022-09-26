@@ -221,7 +221,7 @@ export class FederatedQuadSource implements IQuadSource {
 
       // Prepare the context for this specific source
       let context: IActionContext = getDataSourceContext(source, this.contextDefault);
-      // Here the problem
+
       context = context.set(KeysRdfResolveQuadPattern.source,
         { type: getDataSourceType(source),
           value: getDataSourceValue(source),
