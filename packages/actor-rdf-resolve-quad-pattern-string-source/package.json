@@ -33,6 +33,7 @@
   "dependencies": {
     "@comunica/core": "^2.4.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.4.0",
+    "asynciterator": "^3.7.0",
     "@comunica/context-entries": "^2.4.0",
     "rdf-store-stream": "^1.3.0",
     "streamify-string": "^1.0.1",
