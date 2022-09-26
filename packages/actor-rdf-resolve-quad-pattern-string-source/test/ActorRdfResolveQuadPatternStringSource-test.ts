@@ -3,6 +3,7 @@ import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-patte
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
 const streamifyArray = require('streamify-array');
@@ -192,14 +193,14 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       };
 
       const resp: IActorRdfResolveQuadPatternOutput = await actor.run(op);
-
+      const respQuadIterator: AsyncIterator<RDF.Quad> = resp.data;
       expect(spyMockMediatorRdfParse).toBeCalledWith(expect.objectContaining(expectedParseAction));
 
       expect(spyMockMediatorRdfQuadPattern).toBeCalledWith(expect.objectContaining({
         pattern: op.pattern,
       }));
 
-      expect(await resp.data.toArray()).toMatchObject(expectedQuads);
+      expect(await respQuadIterator.toArray()).toMatchObject(expectedQuads);
     });
   });
 });
