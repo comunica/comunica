@@ -1,3 +1,4 @@
+import type { IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
@@ -190,7 +191,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         handleMediaType: sourceMediaType,
       };
 
-      const resp = await actor.run(op);
+      const resp: IActorRdfResolveQuadPatternOutput = await actor.run(op);
 
       expect(spyMockMediatorRdfParse).toBeCalledWith(expect.objectContaining(expectedParseAction));
 
