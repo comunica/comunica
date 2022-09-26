@@ -63,7 +63,8 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
       pattern: action.pattern,
       context: newContext,
     };
-    const rdfjsSourceResult: Promise<IActorRdfResolveQuadPatternOutput> = this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
+    const rdfjsSourceResult: Promise<IActorRdfResolveQuadPatternOutput> =
+     this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
     return rdfjsSourceResult;
   }
 
