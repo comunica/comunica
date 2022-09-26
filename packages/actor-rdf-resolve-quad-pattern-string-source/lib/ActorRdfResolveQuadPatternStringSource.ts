@@ -39,9 +39,8 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
     const source = <ISerializeDataSource>getContextSource(action.context);
-    // Create a temporary text stream for pushing all the text chunks
-    const textStream = streamifyString(<string> source.value);
 
+    const textStream = streamifyString(<string> source.value);
     const parseAction = {
       context: action.context,
       handle: {
@@ -58,14 +57,14 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
       value: <RDF.Source> store,
       type: 'rdfjsSource',
     };
-    action.context = action.context.delete(KeysRdfResolveQuadPattern.source);
-    action.context = action.context.set(KeysRdfResolveQuadPattern.source, newSource);
+    const newContext = action.context.set(KeysRdfResolveQuadPattern.source, newSource);
 
     const resolveQuadAction: IActionRdfResolveQuadPattern = {
       pattern: action.pattern,
-      context: action.context,
+      context: newContext,
     };
-    return this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
+    const rdfjsSourceResult: Promise<IActorRdfResolveQuadPatternOutput> = this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
+    return rdfjsSourceResult;
   }
 
   private isStringSource(datasouce: any): datasouce is ISerializeDataSource {
