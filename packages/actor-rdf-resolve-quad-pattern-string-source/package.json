@@ -38,9 +38,6 @@
     "streamify-string": "^1.0.1",
     "@comunica/bus-rdf-parse": "^2.4.0"
   },
-  "devDependencies": {
-    "asynciterator": "^3.7.0"
-  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
