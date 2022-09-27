@@ -20,8 +20,6 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
 
   public constructor(args: IActorRdfResolveQuadPatternStringSource) {
     super(args);
-    this.mediatorRdfParse = args.mediatorRdfParse;
-    this.mediatorRdfQuadPattern = args.mediatorRdfQuadPattern;
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
