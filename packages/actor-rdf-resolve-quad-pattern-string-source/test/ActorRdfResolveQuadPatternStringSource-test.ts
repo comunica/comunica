@@ -3,6 +3,7 @@ import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-patte
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
+import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
 const streamifyArray = require('streamify-array');
@@ -141,7 +142,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
           return {
             handle: {
               // StreamifyArray has the side effect of comsuming the object hence the clone operation
-              data: streamifyArray(JSON.parse(JSON.stringify(expectedQuads))),
+              data: wrap(streamifyArray(JSON.parse(JSON.stringify(expectedQuads)))),
             },
           };
         },
@@ -197,7 +198,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       expect(spyMockMediatorRdfQuadPattern).toBeCalledWith(expect.objectContaining({
         pattern: op.pattern,
       }));
-      expect(resp).toBeDefined();
+      expect(await resp.data.toArray()).toMatchObject(expectedQuads);
     });
   });
 });
