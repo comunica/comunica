@@ -14,7 +14,7 @@ const streamifyString = require('streamify-string');
  * A comunica RDF Resolve Quad Pattern String Source RDF Resolve Quad Pattern Actor.
  */
 export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadPattern {
-  private readonly sourceType = 'stringSource';
+  public static readonly sourceType = 'stringSource';
   private readonly mediatorRdfParse: MediatorRdfParseHandle;
   private readonly mediatorRdfQuadPattern: MediatorRdfResolveQuadPattern;
 
@@ -75,7 +75,8 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     if (!(typeof datasouce.value === 'string')) {
       return false;
     }
-    return datasouce.type === this.sourceType && 'mediaType' in datasouce && <string> datasouce.value !== '';
+    return datasouce.type === ActorRdfResolveQuadPatternStringSource.sourceType &&
+    'mediaType' in datasouce && <string> datasouce.value !== '';
   }
 }
 
