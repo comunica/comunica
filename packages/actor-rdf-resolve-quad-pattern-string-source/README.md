@@ -1,4 +1,4 @@
-# Comunica RDF Resolve Quad Pattern String Source RDF Resolve Quad Pattern Actor
+# Comunica String Source RDF Resolve Quad Pattern Actor
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-resolve-quad-pattern-rdf-resolve-quad-pattern-string-source.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-resolve-quad-pattern-rdf-resolve-quad-pattern-string-source)
 
