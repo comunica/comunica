@@ -27,9 +27,8 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     if (!source) {
       throw new Error(`Actor ${this.name} can only resolve quad pattern queries against a source.`);
     }
-    const datasouce = source.valueOf();
 
-    if (!this.isStringSource(datasouce)) {
+    if (!this.isStringSource(source.valueOf())) {
       throw new Error(`Actor ${this.name} can only resolve stringSource quad pattern`);
     }
     return true;
@@ -66,15 +65,15 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     return rdfjsSourceResult;
   }
 
-  private isStringSource(datasouce: any): datasouce is ISerializeDataSource {
-    if (!('type' in datasouce)) {
+  private isStringSource(datasource: any): datasource is ISerializeDataSource {
+    if (!('type' in datasource)) {
       return false;
     }
-    if (!(typeof datasouce.value === 'string')) {
+    if (!(typeof datasource.value === 'string')) {
       return false;
     }
-    return datasouce.type === ActorRdfResolveQuadPatternStringSource.sourceType &&
-    'mediaType' in datasouce && <string> datasouce.value !== '';
+    return datasource.type === ActorRdfResolveQuadPatternStringSource.sourceType &&
+    'mediaType' in datasource && <string> datasource.value !== '';
   }
 }
 
