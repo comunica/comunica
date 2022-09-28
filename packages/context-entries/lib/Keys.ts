@@ -50,6 +50,14 @@ export const KeysHttp = {
   httpBodyTimeout: new ActionContextKey<boolean>('@comunica/bus-http:http-body-timeout'),
 };
 
+export const KeysHttpWayback = {
+  /**
+   * Use the WayBack machine to get the most recent representation of a file if a link is broken.
+   * @default false
+   */
+  recoverBrokenLinks: new ActionContextKey<boolean>('@comunica/bus-http:recover-broken-links'),
+};
+
 export const KeysHttpMemento = {
   /**
    * The desired datetime for Memento datetime-negotiation.
