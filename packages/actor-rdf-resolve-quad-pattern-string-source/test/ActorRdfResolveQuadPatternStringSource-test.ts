@@ -142,7 +142,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
           return {
             handle: {
               // StreamifyArray has the side effect of comsuming the object hence the clone operation
-              data: wrap(streamifyArray(JSON.parse(JSON.stringify(expectedQuads)))),
+              data: streamifyArray(JSON.parse(JSON.stringify(expectedQuads))),
             },
           };
         },
@@ -151,7 +151,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         mediate(_arg: any) {
           return {
             // StreamifyArray has the side effect of comsuming the object hence the clone operation
-            data: streamifyArray(JSON.parse(JSON.stringify(expectedQuads))),
+            data: wrap(streamifyArray(JSON.parse(JSON.stringify(expectedQuads)))),
           };
         },
       };
