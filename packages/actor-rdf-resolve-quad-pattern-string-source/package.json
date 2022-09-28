@@ -38,9 +38,6 @@
     "@comunica/bus-rdf-parse": "^2.4.0",
     "readable-stream": "^4.0.0"
   },
-  "devDependencies": {
-    "lodash.clonedeep": "^4.5.0"
-  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
