@@ -114,6 +114,7 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    *   "httpTimeout": "@comunica/bus-http:http-timeout",
    *   "httpBodyTimeout": "@comunica/bus-http:http-body-timeout",
    *   "fetch": "@comunica/bus-http:fetch",
+   *   "recoverBrokenLinks": "@comunica/bus-http-wayback:recover-broken-links",
    *   "readOnly": "@comunica/bus-query-operation:readOnly",
    *   "extensionFunctions": "@comunica/actor-init-query:extensionFunctions",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",

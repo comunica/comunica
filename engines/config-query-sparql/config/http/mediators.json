@@ -1,11 +1,23 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld"
   ],
   "@graph": [
     {
       "@id": "urn:comunica:default:http/mediators#main",
+      "@type": "MediatorNumber",
+      "type": "min",
+      "field": "time",
+      "ignoreErrors": true,
+      "bus": {
+        "@id": "ActorHttp:_fallback_bus",
+        "@type": "cc:components/Bus.jsonld#Bus"
+      }
+    },
+    {
+      "@id": "urn:comunica:default:http/mediators#no-fallback",
       "@type": "MediatorNumber",
       "type": "min",
       "field": "time",
