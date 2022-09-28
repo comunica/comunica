@@ -7,9 +7,9 @@ import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
+const cloneDeep = require('lodash.clonedeep');
 const streamifyArray = require('streamify-array');
 import 'jest-rdf';
-const cloneDeep = require('lodash.clonedeep');
 
 const DF = new DataFactory();
 
@@ -152,7 +152,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         mediate(_arg: any) {
           return {
             // StreamifyArray has the side effect of comsuming the object hence the clone operation
-            data: wrap(streamifyArray(cloneDeep(expectedQuads)),),
+            data: wrap(streamifyArray(cloneDeep(expectedQuads))),
           };
         },
       };
