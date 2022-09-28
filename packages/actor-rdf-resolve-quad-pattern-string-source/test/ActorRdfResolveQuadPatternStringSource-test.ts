@@ -17,8 +17,8 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
   const sourceValue = '<ex:s> <ex:p> <ex:o>';
   const sourceMediaType = 'text/turtle';
   const sourceBaseIri = 'http://example.org/';
-  let mockMediatorRdfParse: any; // Return always the same quadstream
-  let mockMediatorRdfQuadPattern: any; // Return always the same quadstream
+  let mockMediatorRdfParse: any;
+  let mockMediatorRdfQuadPattern: any;
   let spyMockMediatorRdfParse: any;
   let spyMockMediatorRdfQuadPattern: any;
 
@@ -172,7 +172,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         predicate: DF.namedNode('p'),
         object: DF.variable('o'),
         graph: DF.variable('g'),
-      }; // It can be anything the mediator returned always the same triples
+      };
       const op: any = {
         context,
         pattern: {
@@ -182,7 +182,6 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       };
 
       const expectedTextStream = new Readable({ objectMode: true });
-      /* istanbul ignore next */
       expectedTextStream._read = () => {
         // Do nothing
       };
@@ -203,6 +202,10 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
 
       expect(JSON.stringify(spyMockMediatorRdfParse.mock.calls[0][0]))
         .toStrictEqual(JSON.stringify(expectedParseAction));
+
+      expect(spyMockMediatorRdfQuadPattern).toBeCalledWith(expect.objectContaining({
+        pattern: op.pattern,
+      }));
 
       expect(await resp.data.toArray()).toMatchObject(expectedQuads);
     });
