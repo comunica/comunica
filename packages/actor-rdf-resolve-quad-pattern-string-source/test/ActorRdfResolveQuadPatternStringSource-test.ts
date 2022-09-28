@@ -9,6 +9,7 @@ import { Readable } from 'readable-stream';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
 const streamifyArray = require('streamify-array');
 import 'jest-rdf';
+const cloneDeep = require('lodash.clonedeep');
 
 const DF = new DataFactory();
 
@@ -142,7 +143,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
           return {
             handle: {
               // StreamifyArray has the side effect of comsuming the object hence the clone operation
-              data: streamifyArray(JSON.parse(JSON.stringify(expectedQuads))),
+              data: streamifyArray(cloneDeep(expectedQuads)),
             },
           };
         },
@@ -151,7 +152,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         mediate(_arg: any) {
           return {
             // StreamifyArray has the side effect of comsuming the object hence the clone operation
-            data: wrap(streamifyArray(JSON.parse(JSON.stringify(expectedQuads)))),
+            data: wrap(streamifyArray(cloneDeep(expectedQuads)),),
           };
         },
       };
