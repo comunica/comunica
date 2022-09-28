@@ -104,7 +104,7 @@ describe('System test: QuerySparql', () => {
             { type: 'stringSource',
               value,
               mediaType: 'text/turtle',
-              baseIri: 'http://example.org/' },
+              baseIRI: 'http://example.org/' },
           ]};
 
           const expectedResult: RDF.Quad[] = [
@@ -128,7 +128,7 @@ describe('System test: QuerySparql', () => {
             { type: 'stringSource',
               value,
               mediaType: 'application/ld+json',
-              baseIri: 'http://example.org/' },
+              baseIRI: 'http://example.org/' },
           ]};
 
           const expectedResult: RDF.Quad[] = [
