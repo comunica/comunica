@@ -35,8 +35,8 @@
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.4.0",
     "@comunica/context-entries": "^2.4.0",
     "rdf-store-stream": "^1.3.0",
-    "streamify-string": "^1.0.1",
-    "@comunica/bus-rdf-parse": "^2.4.0"
+    "@comunica/bus-rdf-parse": "^2.4.0",
+    "@types/readable-stream": "2.3.13"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

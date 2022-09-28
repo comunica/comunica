@@ -5,10 +5,10 @@ import type { IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs, IAc
   MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IDataSource, ISerializeDataSource } from '@comunica/types';
+import type { ISerializeDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { storeStream } from 'rdf-store-stream';
-const streamifyString = require('streamify-string');
+import { Readable } from 'readable-stream';
 
 /**
  * A comunica RDF Resolve Quad Pattern String Source RDF Resolve Quad Pattern Actor.
@@ -37,8 +37,15 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
     const source = <ISerializeDataSource>getContextSource(action.context);
 
-    const textStream = streamifyString(<string> source.value);
-    const parseAction = {
+    const textStream = new Readable({ objectMode: true });
+    /* istanbul ignore next */
+    textStream._read = () => {
+      // Do nothing
+    };
+    textStream.push(<string>source.value);
+    textStream.push(null);
+
+    const parserResult = await this.mediatorRdfParse.mediate({
       context: action.context,
       handle: {
         metadata: { baseIRI: source.baseIri },
@@ -46,23 +53,16 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
         context: action.context,
       },
       handleMediaType: source.mediaType,
-    };
-
-    const parserResult = await this.mediatorRdfParse.mediate(parseAction);
-    const store = await storeStream(parserResult.handle.data);
-    const newSource: IDataSource = {
-      value: <RDF.Source> store,
-      type: 'rdfjsSource',
-    };
-    const newContext = action.context.set(KeysRdfResolveQuadPattern.source, newSource);
+    });
 
     const resolveQuadAction: IActionRdfResolveQuadPattern = {
       pattern: action.pattern,
-      context: newContext,
+      context: action.context.set(KeysRdfResolveQuadPattern.source, {
+        value: <RDF.Source> await storeStream(parserResult.handle.data),
+        type: 'rdfjsSource',
+      }),
     };
-    const rdfjsSourceResult: Promise<IActorRdfResolveQuadPatternOutput> =
-     this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
-    return rdfjsSourceResult;
+    return this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
   }
 
   private isStringSource(datasource: any): datasource is ISerializeDataSource {

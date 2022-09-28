@@ -5,10 +5,10 @@ import { Bus, ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { Readable } from 'readable-stream';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
 const streamifyArray = require('streamify-array');
 import 'jest-rdf';
-const streamifyString = require('streamify-string');
 
 const DF = new DataFactory();
 
@@ -181,7 +181,14 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         },
       };
 
-      const expectedTextStream = streamifyString(<string> sourceValue);
+      const expectedTextStream = new Readable({ objectMode: true });
+      /* istanbul ignore next */
+      expectedTextStream._read = () => {
+        // Do nothing
+      };
+      expectedTextStream.push(<string>sourceValue);
+      expectedTextStream.push(null);
+
       const expectedParseAction = {
         context,
         handle: {
@@ -193,11 +200,10 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       };
 
       const resp: IActorRdfResolveQuadPatternOutput = await actor.run(op);
-      expect(spyMockMediatorRdfParse).toBeCalledWith(expect.objectContaining(expectedParseAction));
 
-      expect(spyMockMediatorRdfQuadPattern).toBeCalledWith(expect.objectContaining({
-        pattern: op.pattern,
-      }));
+      expect(JSON.stringify(spyMockMediatorRdfParse.mock.calls[0][0]))
+        .toStrictEqual(JSON.stringify(expectedParseAction));
+
       expect(await resp.data.toArray()).toMatchObject(expectedQuads);
     });
   });
