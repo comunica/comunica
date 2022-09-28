@@ -141,7 +141,6 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         mediate(_arg: any) {
           return {
             handle: {
-              // StreamifyArray has the side effect of comsuming the object hence the clone operation
               data: streamifyArray([
                 DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.literal('c')),
                 DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:d'), DF.literal('e')),
@@ -153,7 +152,6 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       mockMediatorRdfQuadPattern = {
         mediate(_arg: any) {
           return {
-            // StreamifyArray has the side effect of comsuming the object hence the clone operation
             data: wrap(streamifyArray([
               DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.literal('c')),
               DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:d'), DF.literal('e')),
