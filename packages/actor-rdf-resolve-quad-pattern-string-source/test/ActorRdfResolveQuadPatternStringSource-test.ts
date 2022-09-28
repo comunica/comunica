@@ -166,7 +166,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
     it('should run', async() => {
       const context = new ActionContext({ name: 'context',
         [KeysRdfResolveQuadPattern.source.name]:
-      { type: 'stringSource', value: sourceValue, mediaType: sourceMediaType, baseIri: sourceBaseIri }});
+      { type: 'stringSource', value: sourceValue, mediaType: sourceMediaType, baseIRI: sourceBaseIri }});
       const pattern: any = {
         subject: DF.variable('s'),
         predicate: DF.namedNode('p'),

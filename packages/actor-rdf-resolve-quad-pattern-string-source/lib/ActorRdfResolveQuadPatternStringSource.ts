@@ -48,7 +48,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     const parserResult = await this.mediatorRdfParse.mediate({
       context: action.context,
       handle: {
-        metadata: { baseIRI: source.baseIri },
+        metadata: { baseIRI: source.baseIRI },
         data: textStream,
         context: action.context,
       },

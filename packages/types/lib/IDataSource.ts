@@ -6,7 +6,7 @@ export interface ISerializeDataSource {
   value: string | RDF.Source;
   context?: IActionContext;
   mediaType?: string;
-  baseIri?: string;
+  baseIRI?: string;
 }
 
 export type IDataSource = string | RDF.Source | ISerializeDataSource;
