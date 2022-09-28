@@ -5,7 +5,7 @@ import type { IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs, IAc
   MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { ISerializeDataSource } from '@comunica/types';
+import type { IDataSourceSerialized } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { storeStream } from 'rdf-store-stream';
 import { Readable } from 'readable-stream';
@@ -35,14 +35,14 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
   }
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
-    const source = <ISerializeDataSource>getContextSource(action.context);
+    const source = <IDataSourceSerialized>getContextSource(action.context);
 
     const textStream = new Readable({ objectMode: true });
     /* istanbul ignore next */
     textStream._read = () => {
       // Do nothing
     };
-    textStream.push(<string>source.value);
+    textStream.push(source.value);
     textStream.push(null);
 
     const parserResult = await this.mediatorRdfParse.mediate({
@@ -65,7 +65,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     return this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
   }
 
-  private isStringSource(datasource: any): datasource is ISerializeDataSource {
+  private isStringSource(datasource: any): datasource is IDataSourceSerialized {
     if (!('type' in datasource)) {
       return false;
     }
