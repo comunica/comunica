@@ -1,8 +1,12 @@
 import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
-import { getContextSource
-  , ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs, IActorRdfResolveQuadPatternOutput,
-  MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
+import {
+  getContextSource
+  , ActorRdfResolveQuadPattern
+} from '@comunica/bus-rdf-resolve-quad-pattern';
+import type {
+  IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs, IActorRdfResolveQuadPatternOutput,
+  MediatorRdfResolveQuadPattern
+} from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IDataSourceSerialized } from '@comunica/types';
@@ -27,7 +31,6 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     if (!source) {
       throw new Error(`Actor ${this.name} can only resolve quad pattern queries against a source.`);
     }
-
     if (!this.isStringSource(source.valueOf())) {
       throw new Error(`Actor ${this.name} can only resolve stringSource quad pattern`);
     }
@@ -58,7 +61,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     const resolveQuadAction: IActionRdfResolveQuadPattern = {
       pattern: action.pattern,
       context: action.context.set(KeysRdfResolveQuadPattern.source, {
-        value: <RDF.Source> await storeStream(parserResult.handle.data),
+        value: <RDF.Source>await storeStream(parserResult.handle.data),
         type: 'rdfjsSource',
       }),
     };
@@ -67,14 +70,14 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
 
   private isStringSource(datasource: any): datasource is IDataSourceSerialized {
     if (!('type' in datasource)) {
-      return false;
-    }
-    if (!(typeof datasource.value === 'string')) {
-      return false;
-    }
-    return datasource.type === ActorRdfResolveQuadPatternStringSource.sourceType &&
-    'mediaType' in datasource && <string> datasource.value !== '';
+      if (!(typeof datasource.value === 'string')) {
+        return false;
+      }
+      return 'mediaType' in datasource;
+    } 
+    return datasource.type === ActorRdfResolveQuadPatternStringSource.sourceType
   }
+
 }
 
 export interface IActorRdfResolveQuadPatternStringSource extends IActorRdfResolveQuadPatternArgs {

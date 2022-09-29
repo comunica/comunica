@@ -2,7 +2,7 @@ import type * as RDF from '@rdfjs/types';
 import type { IActionContext } from './IActionContext';
 
 export interface IDataSourceSerialized extends IDataSourceExpanded {
-  type: string;
+  type?: 'stringSource';
   value: string;
   mediaType: string;
   baseIRI?: string;

@@ -81,15 +81,6 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         .resolves.toBeTruthy();
     });
 
-    it('should no test on empty source', () => {
-      const emptySource = '';
-      return expect(actor.test({ pattern: <any> null,
-        context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]:
-            { type: 'stringSource', value: emptySource, mediaType: sourceMediaType }},
-        ) })).rejects.toBeTruthy();
-    });
-
     it('should not test on multiple sources', () => {
       return expect(actor.test(
         { context: new ActionContext(
@@ -107,24 +98,33 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
       return expect(actor.test({ pattern: <any> null,
         context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]: { type: 'foo', value: rdfSource, mediaType: sourceMediaType }},
+          { [KeysRdfResolveQuadPattern.source.name]: { type: 'foo', value: rdfSource}},
         ) })).rejects.toBeTruthy();
     });
 
-    it('should not test on source with no type', () => {
+    it('should test on source with no type and a mediatype', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
       return expect(actor.test({ pattern: <any> null,
         context: new ActionContext(
           { [KeysRdfResolveQuadPattern.source.name]: { value: 'stringSource', mediaType: sourceMediaType }},
+        ) })).resolves.toBeTruthy();
+    });
+
+    it('should not test on source with no type and no mediatype', () => {
+      const rdfSource: RDF.Source = { match: () => <any> null };
+      return expect(actor.test({ pattern: <any> null,
+        context: new ActionContext(
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'stringSource'}},
         ) })).rejects.toBeTruthy();
     });
 
-    it('should not test on a source value that is not a string', () => {
+
+    it('should not test on a source value that is not a string and no type', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
       return expect(actor.test({ pattern: <any> null,
         context: new ActionContext(
           { [KeysRdfResolveQuadPattern.source.name]:
-            { type: 'stringSource', value: rdfSource, mediaType: sourceMediaType }},
+            { value: rdfSource, mediaType: sourceMediaType }},
         ) })).rejects.toBeTruthy();
     });
   });
