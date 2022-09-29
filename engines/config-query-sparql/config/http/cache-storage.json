@@ -7,7 +7,7 @@
     {
       "@id": "urn:comunica:default:http/cache-storage#main",
       "@type": "HttpCacheStorageLru",
-      "args_max": 1000
+      "args_max": 1024
     }
   ]
 }
