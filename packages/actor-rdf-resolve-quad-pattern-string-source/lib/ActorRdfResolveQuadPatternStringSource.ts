@@ -1,11 +1,11 @@
 import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import {
   getContextSource
-  , ActorRdfResolveQuadPattern
+  , ActorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type {
   IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs, IActorRdfResolveQuadPatternOutput,
-  MediatorRdfResolveQuadPattern
+  MediatorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
@@ -61,7 +61,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     const resolveQuadAction: IActionRdfResolveQuadPattern = {
       pattern: action.pattern,
       context: action.context.set(KeysRdfResolveQuadPattern.source, {
-        value: <RDF.Source>await storeStream(parserResult.handle.data),
+        value: <RDF.Source> await storeStream(parserResult.handle.data),
         type: 'rdfjsSource',
       }),
     };
@@ -74,10 +74,9 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
         return false;
       }
       return 'mediaType' in datasource;
-    } 
-    return datasource.type === ActorRdfResolveQuadPatternStringSource.sourceType
+    }
+    return datasource.type === ActorRdfResolveQuadPatternStringSource.sourceType;
   }
-
 }
 
 export interface IActorRdfResolveQuadPatternStringSource extends IActorRdfResolveQuadPatternArgs {

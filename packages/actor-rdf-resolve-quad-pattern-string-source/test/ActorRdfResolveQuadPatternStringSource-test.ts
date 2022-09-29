@@ -98,7 +98,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
       return expect(actor.test({ pattern: <any> null,
         context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]: { type: 'foo', value: rdfSource}},
+          { [KeysRdfResolveQuadPattern.source.name]: { type: 'foo', value: rdfSource }},
         ) })).rejects.toBeTruthy();
     });
 
@@ -114,10 +114,9 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
       return expect(actor.test({ pattern: <any> null,
         context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]: { value: 'stringSource'}},
+          { [KeysRdfResolveQuadPattern.source.name]: { value: 'stringSource' }},
         ) })).rejects.toBeTruthy();
     });
-
 
     it('should not test on a source value that is not a string and no type', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
