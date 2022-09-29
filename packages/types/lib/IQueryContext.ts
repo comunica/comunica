@@ -37,6 +37,8 @@ export interface IQueryContextCommon {
   httpAuth?: string;
   httpTimeout?: number;
   httpBodyTimeout?: boolean;
+  httpRetryCount?: number;
+  httpRetryDelay?: number;
   fetch?: typeof fetch;
   readOnly?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)

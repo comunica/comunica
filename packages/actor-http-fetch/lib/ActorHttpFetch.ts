@@ -76,12 +76,50 @@ export class ActorHttpFetch extends ActorHttp {
 
     try {
       requestInit = await this.fetchInitPreprocessor.handle(requestInit);
+      let retryCount: number = action.context?.get(KeysHttp.httpRetryCount) ?? 0;
 
-      // Perform request
       const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
         .context?.get(KeysHttp.fetch);
 
-      const response = await (customFetch || fetch)(action.input, requestInit);
+      // Actual fetch respecting timeout and retry count.
+      const getResponse = async(): Promise<Response> => {
+        let lastError: unknown;
+        const retriesAllowed = retryCount > 0;
+
+        // When retry count is greater than 0, repeat fetch.
+        while (retryCount-- >= 0) {
+          try {
+            return await (customFetch || fetch)(action.input, requestInit);
+          } catch (error: unknown) {
+            lastError = error;
+            // If the fetch was aborted by timeout, we won't retry.
+            if (requestInit.signal?.aborted) {
+              throw error;
+            }
+
+            if (retryCount >= 0) {
+              // Wait for specified delay, before retrying.
+              await new Promise((resolve, reject) => {
+                setTimeout(resolve, action.context?.get(KeysHttp.httpRetryDelay) ?? 0);
+                // Cancel waiting, if timeout is reached.
+                requestInit.signal?.addEventListener('abort', () => {
+                  reject(new Error('Fetch aborted by timeout.'));
+                });
+              });
+            }
+          }
+        }
+        // The fetch was not successful. We through.
+        if (retriesAllowed) {
+          // Feedback the last error, if there were retry attempts.
+          throw new Error(`Number of fetch retries exceeded. Last error: ${String(lastError)}`);
+        } else {
+          throw lastError;
+        }
+      };
+
+      // Execute the fetch (with retries and timeouts, if applicable).
+      const response = await getResponse();
 
       // We remove or update the timeout
       if (requestTimeout !== undefined) {

@@ -443,5 +443,66 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
       );
       jest.useRealTimers();
     });
+
+    it('should retry with a delay', async() => {
+      let numberOfRetries = 0;
+      const customFetch = jest.fn(async(_, init) => {
+        if (numberOfRetries < 2) {
+          numberOfRetries++;
+          throw new Error('Retry count not reached.');
+        }
+        return {};
+      });
+
+      // Time delay time.
+      const start = Date.now();
+      await actor.run({
+        input: <Request> { url: 'ignored by custom fetch' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpRetryCount.name]: 2,
+          [KeysHttp.httpRetryDelay.name]: 100,
+        }),
+      });
+
+      const time = Date.now() - start;
+      expect(time).toBeGreaterThan(200);
+      expect(time).toBeLessThan(250);
+
+      expect(customFetch).toBeCalledTimes(3);
+    });
+
+    it('should abort, if retry count was exceeded', async() => {
+      const error = new Error('This fetch is supposed to fail and be retried.');
+      const customFetch = jest.fn(async(_, init) => {
+        throw error;
+      });
+
+      await expect(actor.run({
+        input: <Request> { url: 'ignored by custom fetch' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpRetryCount.name]: 2,
+        }),
+      })).rejects.toThrow(`Number of fetch retries exceeded. Last error: ${String(error)}`);
+
+      expect(customFetch).toBeCalledTimes(3);
+    });
+
+    it('should abort retry delay on timeout', async() => {
+      const customFetch = jest.fn(async(_, init) => {
+        throw new Error('This fetch is supposed to fail and be retried.');
+      });
+      await expect(actor.run({
+        input: <Request> { url: 'ignored by custom fetch' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpTimeout.name]: 50,
+          [KeysHttp.httpRetryCount.name]: 1,
+          [KeysHttp.httpRetryDelay.name]: 500,
+        }),
+      })).rejects.toThrow(`Fetch aborted by timeout.`);
+      expect(customFetch).toBeCalledTimes(1);
+    });
   });
 });

@@ -123,6 +123,14 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'Makes the HTTP timeout take into account the response body stream read',
         },
+        httpRetryCount: {
+          type: 'number',
+          describe: 'The number of retries to perform on failed fetch requests',
+        },
+        httpRetryDelay: {
+          type: 'number',
+          describe: 'The number of milliseconds to wait between fetch retries',
+        },
         unionDefaultGraph: {
           type: 'boolean',
           describe: 'If the default graph should also contain the union of all named graphs',
@@ -209,6 +217,19 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         throw new Error('The --httpBodyTimeout option requires the --httpTimeout option to be set');
       }
       context[KeysHttp.httpBodyTimeout.name] = args.httpBodyTimeout;
+    }
+
+    // Define HTTP retry count
+    if (args.httpRetryCount) {
+      context[KeysHttp.httpRetryCount.name] = args.httpRetryCount;
+    }
+
+    // Define HTTP delay between retries
+    if (args.httpRetryDelay) {
+      if (!args.httpRetryCount) {
+        throw new Error('The --httpRetryDelay option requires the --httpRetryCount option to be set');
+      }
+      context[KeysHttp.httpRetryDelay.name] = args.httpRetryDelay;
     }
 
     // Define union default graph
