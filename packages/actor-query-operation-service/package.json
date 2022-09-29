@@ -37,7 +37,7 @@
     "@comunica/core": "^2.4.0",
     "@comunica/types": "^2.4.0",
     "asynciterator": "^3.7.0",
-    "sparqlalgebrajs": "^4.0.0"
+    "sparqlalgebrajs": "^4.0.4"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

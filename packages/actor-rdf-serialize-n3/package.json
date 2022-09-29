@@ -33,7 +33,7 @@
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^2.4.0",
     "@comunica/types": "^2.4.0",
-    "n3": "^1.6.3"
+    "n3": "^1.16.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

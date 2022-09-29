@@ -38,8 +38,8 @@
     "@comunica/types": "^2.4.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.7.0",
-    "fetch-sparql-endpoint": "^3.0.0",
-    "rdf-string-ttl": "^1.1.0",
+    "fetch-sparql-endpoint": "^3.1.0",
+    "rdf-string-ttl": "^1.2.0",
     "stream-to-string": "^1.2.0"
   },
   "scripts": {

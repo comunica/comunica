@@ -33,7 +33,7 @@
   "dependencies": {
     "@comunica/bus-rdf-parse": "^2.4.0",
     "@comunica/types": "^2.4.0",
-    "rdfxml-streaming-parser": "^2.0.0"
+    "rdfxml-streaming-parser": "^2.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
