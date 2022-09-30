@@ -44,5 +44,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `mediatorRdfParse`: Mediator to parse the string source into an serialized Quad
-* `mediatorRdfResolveQuadPattern`: Mediator to convert to apply to apply the patterns into the serialized Quad
+* `mediatorRdfParse`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse).
+* `mediatorRdfResolveQuadPattern`: A mediator over the [RDF resolve quad pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
