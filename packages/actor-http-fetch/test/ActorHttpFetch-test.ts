@@ -499,7 +499,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
       expect(customFetch).toBeCalledTimes(1);
     });
 
-    it('should retry, when server replies with a 5xx response', async() => {
+    it('should retry, when server replies with an internal server error 5xx response', async() => {
       const response = new Response(undefined, { status: 503, statusText: 'currently not available' });
       const customFetch = jest.fn(async() => {
         return response;
@@ -510,7 +510,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
         context: new ActionContext({
           [KeysHttp.fetch.name]: customFetch,
           [KeysHttp.httpRetryCount.name]: 1,
-          [KeysHttp.httpRetryOn5xx.name]: true,
+          [KeysHttp.httpRetryOnServerError.name]: true,
         }),
       })).rejects.toThrow(`Server replied with response code ${response.status}: ${response.statusText}`);
 

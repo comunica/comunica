@@ -47,7 +47,7 @@ export class ActorHttpFetch extends ActorHttp {
     requestInit: RequestInit,
     retryCount: number,
     retryDelay: number,
-    throwOn500Response: boolean,
+    throwOnServerError: boolean,
   ): Promise<Response> {
     let lastError: unknown;
     // The retryCount is 0-based. Therefore, add 1 to triesLeft.
@@ -57,8 +57,8 @@ export class ActorHttpFetch extends ActorHttp {
     while (triesLeft-- > 0) {
       try {
         const response = await fetchFn(requestInput, requestInit);
-        // Check, if server sent a 5XX response.
-        if (throwOn500Response && response.status >= 500 && response.status < 600) {
+        // Check, if server sent a 5xx error response.
+        if (throwOnServerError && response.status >= 500 && response.status < 600) {
           throw new Error(`Server replied with response code ${response.status}: ${response.statusText}`);
         }
         return response;
@@ -137,13 +137,13 @@ export class ActorHttpFetch extends ActorHttp {
       // Number of retries to perform after a failed fetch.
       const retryCount: number = action.context?.get(KeysHttp.httpRetryCount) ?? 0;
       const retryDelay: number = action.context?.get(KeysHttp.httpRetryDelay) ?? 0;
-      const retryOn5xxResponse: boolean = action.context?.get(KeysHttp.httpRetryOn5xx) ?? false;
+      const retryOnSeverError: boolean = action.context?.get(KeysHttp.httpRetryOnServerError) ?? false;
       const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
         .context?.get(KeysHttp.fetch);
 
       // Execute the fetch (with retries and timeouts, if applicable).
       const response = await ActorHttpFetch.getResponse(
-        customFetch || fetch, action.input, requestInit, retryCount, retryDelay, retryOn5xxResponse,
+        customFetch || fetch, action.input, requestInit, retryCount, retryDelay, retryOnSeverError,
       );
 
       // We remove or update the timeout

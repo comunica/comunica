@@ -744,9 +744,9 @@ LIMIT 100
         expect(stderr).toContain(`The --httpRetryDelay option requires the --httpRetryCount option to be set`);
       });
 
-      it('handles the --httpRetryOn5xx flag', async() => {
+      it('handles the --httpRetryOnServerError flag', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryCount=2', '--httpRetryOn5xx' ],
+          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryCount=2', '--httpRetryOnServerError' ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -757,18 +757,18 @@ LIMIT 100
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysHttp.httpRetryCount.name]: 2,
-          [KeysHttp.httpRetryOn5xx.name]: true,
+          [KeysHttp.httpRetryOnServerError.name]: true,
         });
       });
 
-      it('handles --httpRetryOn5xx flag requiring --httpRetryCount', async() => {
+      it('handles --httpRetryOnServerError flag requiring --httpRetryCount', async() => {
         const stderr = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryOn5xx' ],
+          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryOnServerError' ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
-        expect(stderr).toContain(`The --httpRetryOn5xx option requires the --httpRetryCount option to be set`);
+        expect(stderr).toContain(`The --httpRetryOnServerError option requires the --httpRetryCount option to be set`);
       });
 
       it('handles the --unionDefaultGraph flag', async() => {

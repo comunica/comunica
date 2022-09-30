@@ -58,9 +58,9 @@ export const KeysHttp = {
    */
   httpRetryDelay: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay'),
   /**
-   * Retry fetch, if server replies with a 5xx response. Requires httpRetryCount to be set.
+   * Retry fetch, if server replies with a 5xx error response. Requires httpRetryCount to be set.
    */
-  httpRetryOn5xx: new ActionContextKey<number>('@comunica/bus-http:http-retry-on-5xx'),
+  httpRetryOnServerError: new ActionContextKey<number>('@comunica/bus-http:http-retry-on-server-error'),
 };
 
 export const KeysHttpWayback = {
