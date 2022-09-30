@@ -54,9 +54,13 @@ export const KeysHttp = {
    */
   httpRetryCount: new ActionContextKey<number>('@comunica/bus-http:http-retry-count'),
   /**
-   * Delay in milliseconds to wait between fetch retries.
+   * Delay in milliseconds to wait between fetch retries. Requires httpRetryCount to be set.
    */
   httpRetryDelay: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay'),
+  /**
+   * Retry fetch, if server replies with a 5xx response. Requires httpRetryCount to be set.
+   */
+  httpRetryOn5xx: new ActionContextKey<number>('@comunica/bus-http:http-retry-on-5xx'),
 };
 
 export const KeysHttpWayback = {

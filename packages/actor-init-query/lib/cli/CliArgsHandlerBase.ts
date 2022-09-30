@@ -131,6 +131,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'number',
           describe: 'The number of milliseconds to wait between fetch retries',
         },
+        httpRetryOn5xx: {
+          type: 'boolean',
+          describe: 'If fetch should be retried on 5xx server responses, instead of being resolved.',
+        },
         unionDefaultGraph: {
           type: 'boolean',
           describe: 'If the default graph should also contain the union of all named graphs',
@@ -230,6 +234,14 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         throw new Error('The --httpRetryDelay option requires the --httpRetryCount option to be set');
       }
       context[KeysHttp.httpRetryDelay.name] = args.httpRetryDelay;
+    }
+
+    // Define HTTP retry on 5xx server response
+    if (args.httpRetryOn5xx) {
+      if (!args.httpRetryCount) {
+        throw new Error('The --httpRetryOn5xx option requires the --httpRetryCount option to be set');
+      }
+      context[KeysHttp.httpRetryOn5xx.name] = args.httpRetryOn5xx;
     }
 
     // Define union default graph
