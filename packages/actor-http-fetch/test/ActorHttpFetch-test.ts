@@ -443,5 +443,78 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
       );
       jest.useRealTimers();
     });
+
+    it('should retry with a delay', async() => {
+      let numberOfRetries = 0;
+      const customFetch = jest.fn(async() => {
+        if (numberOfRetries < 2) {
+          numberOfRetries++;
+          throw new Error('Retry count not reached.');
+        }
+        return {};
+      });
+
+      await actor.run({
+        input: <Request> { url: 'ignored by custom fetch' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpRetryCount.name]: 2,
+          [KeysHttp.httpRetryDelay.name]: 100,
+        }),
+      });
+
+      expect(customFetch).toBeCalledTimes(3);
+    });
+
+    it('should abort, if retry count was exceeded', async() => {
+      const error = new Error('This fetch is supposed to fail and be retried.');
+      const customFetch = jest.fn(async() => {
+        throw error;
+      });
+
+      await expect(actor.run({
+        input: <Request> { url: 'ignored by custom fetch' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpRetryCount.name]: 2,
+        }),
+      })).rejects.toThrow(`Number of fetch retries (${2}) exceeded. Last error: ${String(error)}`);
+
+      expect(customFetch).toBeCalledTimes(3);
+    });
+
+    it('should abort retry delay on timeout', async() => {
+      const customFetch = jest.fn(async() => {
+        throw new Error('This fetch is supposed to fail and be retried.');
+      });
+      await expect(actor.run({
+        input: <Request> { url: 'ignored by custom fetch' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpTimeout.name]: 50,
+          [KeysHttp.httpRetryCount.name]: 1,
+          [KeysHttp.httpRetryDelay.name]: 500,
+        }),
+      })).rejects.toThrow(`Fetch aborted by timeout.`);
+      expect(customFetch).toBeCalledTimes(1);
+    });
+
+    it('should retry, when server replies with an internal server error 5xx response', async() => {
+      const response = new Response(undefined, { status: 503, statusText: 'currently not available' });
+      const customFetch = jest.fn(async() => {
+        return response;
+      });
+
+      await expect(actor.run({
+        input: <Request> { url: 'ignored by custom fetch' },
+        context: new ActionContext({
+          [KeysHttp.fetch.name]: customFetch,
+          [KeysHttp.httpRetryCount.name]: 1,
+          [KeysHttp.httpRetryOnServerError.name]: true,
+        }),
+      })).rejects.toThrow(`Server replied with response code ${response.status}: ${response.statusText}`);
+
+      expect(customFetch).toBeCalledTimes(2);
+    });
   });
 });

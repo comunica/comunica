@@ -32,6 +32,64 @@ export class ActorHttpFetch extends ActorHttp {
     return { time: Number.POSITIVE_INFINITY };
   }
 
+  /**
+   * Perform a fetch request, taking care of retries
+   * @param fetchFn
+   * @param requestInput Url or RequestInfo to pass to fetchFn
+   * @param requestInit RequestInit to pass to fetch function
+   * @param retryCount Maximum retries after which to abort
+   * @param retryDelay Time in milliseconds to wait between retries
+   * @returns a fetch `Response` object
+   */
+  private static async getResponse(
+    fetchFn: (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>,
+    requestInput: RequestInfo | URL,
+    requestInit: RequestInit,
+    retryCount: number,
+    retryDelay: number,
+    throwOnServerError: boolean,
+  ): Promise<Response> {
+    let lastError: unknown;
+    // The retryCount is 0-based. Therefore, add 1 to triesLeft.
+    let triesLeft = retryCount + 1;
+
+    // When retry count is greater than 0, repeat fetch.
+    while (triesLeft-- > 0) {
+      try {
+        const response = await fetchFn(requestInput, requestInit);
+        // Check, if server sent a 5xx error response.
+        if (throwOnServerError && response.status >= 500 && response.status < 600) {
+          throw new Error(`Server replied with response code ${response.status}: ${response.statusText}`);
+        }
+        return response;
+      } catch (error: unknown) {
+        lastError = error;
+        // If the fetch was aborted by timeout, we won't retry.
+        if (requestInit.signal?.aborted) {
+          throw error;
+        }
+
+        if (triesLeft > 0) {
+          // Wait for specified delay, before retrying.
+          await new Promise((resolve, reject) => {
+            setTimeout(resolve, retryDelay);
+            // Cancel waiting, if timeout is reached.
+            requestInit.signal?.addEventListener('abort', () => {
+              reject(new Error('Fetch aborted by timeout.'));
+            });
+          });
+        }
+      }
+    }
+    // The fetch was not successful. We throw.
+    if (retryCount > 0) {
+      // Feedback the last error, if there were retry attempts.
+      throw new Error(`Number of fetch retries (${retryCount}) exceeded. Last error: ${String(lastError)}`);
+    } else {
+      throw lastError;
+    }
+  }
+
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     // Prepare headers
     const initHeaders = action.init?.headers ?? {};
@@ -76,12 +134,17 @@ export class ActorHttpFetch extends ActorHttp {
 
     try {
       requestInit = await this.fetchInitPreprocessor.handle(requestInit);
-
-      // Perform request
+      // Number of retries to perform after a failed fetch.
+      const retryCount: number = action.context?.get(KeysHttp.httpRetryCount) ?? 0;
+      const retryDelay: number = action.context?.get(KeysHttp.httpRetryDelay) ?? 0;
+      const retryOnSeverError: boolean = action.context?.get(KeysHttp.httpRetryOnServerError) ?? false;
       const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
         .context?.get(KeysHttp.fetch);
 
-      const response = await (customFetch || fetch)(action.input, requestInit);
+      // Execute the fetch (with retries and timeouts, if applicable).
+      const response = await ActorHttpFetch.getResponse(
+        customFetch || fetch, action.input, requestInit, retryCount, retryDelay, retryOnSeverError,
+      );
 
       // We remove or update the timeout
       if (requestTimeout !== undefined) {

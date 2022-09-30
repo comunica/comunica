@@ -48,6 +48,19 @@ export const KeysHttp = {
    * but until the response is fully consumed.
    */
   httpBodyTimeout: new ActionContextKey<boolean>('@comunica/bus-http:http-body-timeout'),
+  /**
+   * Number of retries to make on failed network calls. This only takes effect
+   * on errors thrown during the initial fetch() call and not while streaming the body.
+   */
+  httpRetryCount: new ActionContextKey<number>('@comunica/bus-http:http-retry-count'),
+  /**
+   * Delay in milliseconds to wait between fetch retries. Requires httpRetryCount to be set.
+   */
+  httpRetryDelay: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay'),
+  /**
+   * Retry fetch, if server replies with a 5xx error response. Requires httpRetryCount to be set.
+   */
+  httpRetryOnServerError: new ActionContextKey<number>('@comunica/bus-http:http-retry-on-server-error'),
 };
 
 export const KeysHttpWayback = {
