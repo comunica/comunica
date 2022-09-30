@@ -18,9 +18,9 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
   const sourceMediaType = 'text/turtle';
   const sourceBaseIri = 'http://example.org/';
   let mockMediatorRdfParse: any;
-  let mockMediatorRdfQuadPattern: any;
+  let mockmediatorRdfResolveQuadPattern: any;
   let spyMockMediatorRdfParse: any;
-  let spyMockMediatorRdfQuadPattern: any;
+  let spyMockmediatorRdfResolveQuadPattern: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -51,7 +51,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         { name: 'actor',
           bus,
           mediatorRdfParse: mockMediatorRdfParse,
-          mediatorRdfQuadPattern: mockMediatorRdfQuadPattern },
+          mediatorRdfResolveQuadPattern: mockmediatorRdfResolveQuadPattern },
       );
     });
 
@@ -148,7 +148,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
           };
         },
       };
-      mockMediatorRdfQuadPattern = {
+      mockmediatorRdfResolveQuadPattern = {
         mediate(_arg: any) {
           return {
             data: wrap(streamifyArray([
@@ -159,11 +159,11 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
         },
       };
       spyMockMediatorRdfParse = jest.spyOn(mockMediatorRdfParse, 'mediate');
-      spyMockMediatorRdfQuadPattern = jest.spyOn(mockMediatorRdfQuadPattern, 'mediate');
+      spyMockmediatorRdfResolveQuadPattern = jest.spyOn(mockmediatorRdfResolveQuadPattern, 'mediate');
       actor = new ActorRdfResolveQuadPatternStringSource({ name: 'actor',
         bus,
         mediatorRdfParse: mockMediatorRdfParse,
-        mediatorRdfQuadPattern: mockMediatorRdfQuadPattern });
+        mediatorRdfResolveQuadPattern: mockmediatorRdfResolveQuadPattern });
     });
 
     it('should run', async() => {
@@ -206,7 +206,7 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
       expect(JSON.stringify(spyMockMediatorRdfParse.mock.calls[0][0]))
         .toStrictEqual(JSON.stringify(expectedParseAction));
 
-      expect(spyMockMediatorRdfQuadPattern).toBeCalledWith(expect.objectContaining({
+      expect(spyMockmediatorRdfResolveQuadPattern).toBeCalledWith(expect.objectContaining({
         pattern: op.pattern,
       }));
 

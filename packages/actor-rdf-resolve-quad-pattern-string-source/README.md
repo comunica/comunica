@@ -35,7 +35,7 @@ After installing, this package can be added to your engine's configuration as fo
       "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#string-source",
       "@type": "ActorRdfResolveQuadPatternStringSource",
       "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" },
-      "mediatorRdfQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" },
+      "mediatorRdfResolveQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" },
       "beforeActors": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#hypermedia" }
     }
   ]
@@ -44,5 +44,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `mediatorRdfParse`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse).
-* `mediatorRdfQuadPattern`: Mediator to convert to apply to apply the patterns into the serialized Quad
+* `mediatorRdfParse`: Mediator to parse the string source into an serialized Quad
+* `mediatorRdfResolveQuadPattern`: Mediator to convert to apply to apply the patterns into the serialized Quad

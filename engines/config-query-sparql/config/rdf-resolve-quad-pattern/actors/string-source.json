@@ -11,7 +11,7 @@
       "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#string-source",
       "@type": "ActorRdfResolveQuadPatternStringSource",
       "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" },
-      "mediatorRdfQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" }
+      "mediatorRdfResolveQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" }
     }
   ]
 }

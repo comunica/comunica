@@ -20,7 +20,7 @@ import { Readable } from 'readable-stream';
 export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadPattern {
   public static readonly sourceType = 'stringSource';
   private readonly mediatorRdfParse: MediatorRdfParseHandle;
-  private readonly mediatorRdfQuadPattern: MediatorRdfResolveQuadPattern;
+  private readonly mediatorRdfResolveQuadPattern: MediatorRdfResolveQuadPattern;
 
   public constructor(args: IActorRdfResolveQuadPatternStringSource) {
     super(args);
@@ -65,7 +65,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
         type: 'rdfjsSource',
       }),
     };
-    return this.mediatorRdfQuadPattern.mediate(resolveQuadAction);
+    return this.mediatorRdfResolveQuadPattern.mediate(resolveQuadAction);
   }
 
   private isStringSource(datasource: any): datasource is IDataSourceSerialized {
@@ -88,5 +88,5 @@ export interface IActorRdfResolveQuadPatternStringSource extends IActorRdfResolv
   /**
    * The rdf resolve quad pattern mediator.
    */
-  mediatorRdfQuadPattern: MediatorRdfResolveQuadPattern;
+  mediatorRdfResolveQuadPattern: MediatorRdfResolveQuadPattern;
 }
