@@ -1,6 +1,6 @@
 import { ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
-import { getDataSourceValue, getDataSourceType,
+import { getDataSourceType, getDataSourceValue,
   getDataSourceContext, isDataSourceRawType, getContextSourceFirst } from '..';
 
 describe('utils', () => {
