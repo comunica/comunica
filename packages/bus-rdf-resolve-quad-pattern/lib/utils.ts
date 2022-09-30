@@ -11,14 +11,6 @@ export function isDataSourceRawType(dataSource: IDataSource): dataSource is stri
 }
 
 /**
- * Get the data source value.
- * @param dataSource A data source.
- */
-export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
-  return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
-}
-
-/**
  * Get the data source type.
  * @param dataSource A data source.
  */
@@ -27,6 +19,14 @@ export function getDataSourceType(dataSource: IDataSource): string | undefined {
     return '';
   }
   return 'match' in dataSource ? 'rdfjsSource' : dataSource.type;
+}
+
+/**
+ * Get the data source value.
+ * @param dataSource A data source.
+ */
+export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
+  return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
 }
 
 /**
