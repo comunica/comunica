@@ -1,3 +1,5 @@
+import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
+import { ActionContext } from '@comunica/core';
 import type { IHttpCacheStorage, IHttpCacheStorageValue } from '@comunica/types';
 import * as LRU from 'lru-cache';
 
@@ -5,7 +7,12 @@ export class HttpCacheStorageLru implements IHttpCacheStorage {
   private readonly cache: LRU<string, IHttpCacheStorageValue>;
 
   public constructor(args: IHttpCacheLruArgs) {
-    this.cache = new LRU({ max: args.max });
+    this.cache = new LRU({
+      max: args.max,
+      async dispose(value, key) {
+        await args.mediatorHttpInvalidate.mediate({ url: key, context: new ActionContext() });
+      },
+    });
   }
 
   public async set(key: Request, value: IHttpCacheStorageValue, ttl?: number | undefined): Promise<void> {
@@ -30,5 +37,9 @@ export class HttpCacheStorageLru implements IHttpCacheStorage {
 }
 
 export interface IHttpCacheLruArgs {
+  /**
+   * Maximum items stored in the cache
+   */
   max: number;
+  mediatorHttpInvalidate: MediatorHttpInvalidate;
 }

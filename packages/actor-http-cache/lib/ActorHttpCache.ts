@@ -11,7 +11,7 @@ import type {
   IActionHttpInvalidate,
   MediatorHttpInvalidate,
 } from '@comunica/bus-http-invalidate';
-import { KeysHttpCache } from '@comunica/context-entries';
+import { KeysHttp, KeysHttpCache } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { IActionContext, IHttpCacheStorage } from '@comunica/types';
 import type {
@@ -48,7 +48,7 @@ export class ActorHttpCache extends ActorHttp {
 
   private getCacheStorage(context: IActionContext): IHttpCacheStorage {
     // Get Cache Storage
-    const cacheStorage = context.get<IHttpCacheStorage>(KeysHttpCache.httpCacheStorage) || this.cacheStorage;
+    const cacheStorage = context.get<IHttpCacheStorage>(KeysHttp.httpCacheStorage) || this.cacheStorage;
     // Store the cache as one that should be cleared upon invalidate
     this.cacheStoragesToInvalidate.add(cacheStorage);
     return cacheStorage;

@@ -63,7 +63,7 @@ describe('ActorHttpCache', () => {
       actor = new ActorHttpCache({
         name: 'actor',
         bus,
-        cacheStorage: new HttpCacheStorageLru({ max: 10 }),
+        cacheStorage: new HttpCacheStorageLru({ max: 10, mediatorHttpInvalidate }),
         mediatorHttpInvalidate,
         httpInvalidator,
         mediatorHttp,

@@ -49,6 +49,10 @@ export const KeysHttp = {
    * but until the response is fully consumed.
    */
   httpBodyTimeout: new ActionContextKey<boolean>('@comunica/bus-http:http-body-timeout'),
+  /**
+   * A storage object that can overwrites the default http cache
+   */
+  httpCacheStorage: new ActionContextKey<IHttpCacheStorage>('@communica/bus-http:cache-storage'),
 };
 
 export const KeysHttpMemento = {
@@ -70,10 +74,6 @@ export const KeysHttpCache = {
    * Will skip the HTTP cache if this is set to true
    */
   doNotCheckHttpCache: new ActionContextKey<boolean>('@communica/actor-http-cache:do-not-check-http-cache'),
-  /**
-   * A storage object that can overwrites the default http cache
-   */
-  httpCacheStorage: new ActionContextKey<IHttpCacheStorage>('@communica/actor-http-cache:http-cache-storage'),
 };
 
 export const KeysInitQuery = {

@@ -12,7 +12,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/comunica.git"
+    "url": "git+https://github.com/comunica/comunica.git",
+    "directory": "packages/http-cache-storage-lru"
   },
   "author": "Jackson Morgan",
   "license": "MIT",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/comunica/comunica#readme",
   "dependencies": {
+    "@comunica/core": "^2.4.0",
     "@comunica/types": "^2.4.0",
     "lru-cache": "^7.10.1"
   },
