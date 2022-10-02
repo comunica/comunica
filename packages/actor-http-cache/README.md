@@ -42,3 +42,4 @@ After installing, this package can be added to your engine's configuration as fo
  - `cacheStorage`: An implementation of the [HttpCacheStorage](https://github.com/comunica/comunica/tree/master/packages/types/lib/IHttpCacheStorage.ts) interface.
  - `mediatorHttpInvalidate`: An mediator to invalidate the cache
  - `mediatorHttp`: A mediator for making http requests
+ 
