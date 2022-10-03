@@ -91,6 +91,135 @@ describe('System test: QuerySparql', () => {
           .toEqual([]);
       });
 
+      describe('string source query', () => {
+        const query = 'CONSTRUCT WHERE { ?s ?p ?o }';
+
+        beforeEach(() => {
+          engine = new QueryEngine();
+        });
+
+        it('should return the valid result with a turtle data source', async() => {
+          const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource',
+              value,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with a json-ld data source', async() => {
+          const value = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }
+          `;
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource',
+              value,
+              mediaType: 'application/ld+json',
+              baseIRI: 'http://example.org/' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with no base IRI', async() => {
+          const value = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }`;
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource',
+              value,
+              mediaType: 'application/ld+json' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with multiple stringSource', async() => {
+          const value1 = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }`;
+          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
+            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with multiple sources', async() => {
+          const quads = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p5'), DF.namedNode('ex:o5')),
+          ];
+          const store = new Store();
+          store.addQuads(quads);
+
+          const value1 = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }`;
+          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
+            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+            store,
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p5'), DF.namedNode('ex:o5')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+      });
+
       describe('handle blank nodes with DESCRIBE queries', () => {
         let store: Store;
         let quads: RDF.Quad[];

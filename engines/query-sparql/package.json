@@ -147,6 +147,7 @@
     "@comunica/actor-rdf-resolve-quad-pattern-federated": "^2.4.0",
     "@comunica/actor-rdf-resolve-quad-pattern-hypermedia": "^2.4.2",
     "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source": "^2.4.0",
+    "@comunica/actor-rdf-resolve-quad-pattern-string-source": "^2.0.0",
     "@comunica/actor-rdf-serialize-jsonld": "^2.4.0",
     "@comunica/actor-rdf-serialize-n3": "^2.4.0",
     "@comunica/actor-rdf-update-hypermedia-patch-sparql-update": "^2.4.0",
