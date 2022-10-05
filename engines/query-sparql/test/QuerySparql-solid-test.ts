@@ -7,8 +7,10 @@ import {
 } from '@inrupt/solid-client-authn-core';
 import type { App } from '@solid/community-server';
 import { AppRunner, resolveModulePath } from '@solid/community-server';
+import 'jest-rdf';
 import fetch from 'node-fetch';
 import { QueryEngine } from '../lib/QueryEngine';
+const squad = require('rdf-quad');
 
 const config = [{
   podName: 'example',
@@ -16,8 +18,12 @@ const config = [{
   password: 'abc123',
 }];
 
+// Store global fetch to reset to after mock.
 // eslint-disable-next-line no-undef
-let mockedFetch: typeof globalThis.fetch;
+const globalFetch = globalThis.fetch;
+
+// Use an increased timeout, since the CSS server takes too much setup time.
+jest.setTimeout(40_000);
 
 function createApp() {
   return new AppRunner().create(
@@ -30,7 +36,7 @@ function createApp() {
     {
       port: 3_001,
       loggingLevel: 'off',
-      seededPodConfigJson: path.join(__dirname, 'configs', 'seed.json'),
+      seededPodConfigJson: path.join(__dirname, 'configs', 'solid-css-seed.json'),
     },
   );
 }
@@ -100,15 +106,18 @@ describe('System test: QuerySparql over Solid Pods', () => {
     // Build authenticated fetch
     authFetch = <any> await buildAuthenticatedFetch(<any>fetch, token.accessToken, { dpopKey: token.dpopKey });
 
-    // TODO: Mock this better
     // Override global fetch with auth fetch
     // @ts-expect-error
     // eslint-disable-next-line no-undef
-    globalThis.fetch = mockedFetch = jest.fn(authFetch);
+    globalThis.fetch = jest.fn(authFetch);
   });
 
   afterAll(async() => {
     await app.stop();
+
+    // Reset global fetch. This is probably redundant, as jest clears the DOM after each file.
+    // eslint-disable-next-line no-undef
+    globalThis.fetch = globalFetch;
   });
 
   describe('Querying data from a Pod', () => {
@@ -131,9 +140,10 @@ describe('System test: QuerySparql over Solid Pods', () => {
         const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
           sources: [ resource ],
         }).then(res => res.toArray());
-
-        expect(quads).toHaveLength(2);
-        expect(mockedFetch).toHaveBeenCalledTimes(1);
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 'ex:o1'),
+          squad('ex:s', 'ex:p', 'ex:o1.1'),
+        ]);
       });
 
       it('Should return 1 quads from when doing more restricted query', async() => {
@@ -142,7 +152,9 @@ describe('System test: QuerySparql over Solid Pods', () => {
           sources: [ resource ],
         }).then(res => res.toArray());
 
-        expect(quads).toHaveLength(1);
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 1),
+        ]);
       });
 
       it('Should return 2 quads from resource [Link Recovery Enabled]', async() => {
@@ -152,7 +164,10 @@ describe('System test: QuerySparql over Solid Pods', () => {
           recoverBrokenLinks: true,
         }).then(res => res.toArray());
 
-        expect(quads).toHaveLength(2);
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 'ex:o1'),
+          squad('ex:s', 'ex:p', 'ex:o1.1'),
+        ]);
       });
 
       it('Should return 1 quads from when doing more restricted query [Link Recovery Enabled]', async() => {
@@ -162,7 +177,9 @@ describe('System test: QuerySparql over Solid Pods', () => {
           recoverBrokenLinks: true,
         }).then(res => res.toArray());
 
-        expect(quads).toHaveLength(1);
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 1),
+        ]);
       });
     });
 
@@ -185,7 +202,10 @@ describe('System test: QuerySparql over Solid Pods', () => {
             sources: [ resource ],
           }).then(res => res.toArray());
 
-          expect(quads).toHaveLength(2);
+          expect(quads).toBeRdfIsomorphic([
+            squad('ex:s', 'ex:p', 'ex:o1'),
+            squad('ex:s', 'ex:p', 'ex:o1.1'),
+          ]);
         });
 
         it('Should return 1 quads from when doing more restricted query', async() => {
@@ -194,7 +214,9 @@ describe('System test: QuerySparql over Solid Pods', () => {
             sources: [ resource ],
           }).then(res => res.toArray());
 
-          expect(quads).toHaveLength(1);
+          expect(quads).toBeRdfIsomorphic([
+            squad('ex:s', 'ex:p', 1),
+          ]);
         });
 
         it('Should return 2 quads from resource [Link Recovery Enabled]', async() => {
@@ -204,7 +226,10 @@ describe('System test: QuerySparql over Solid Pods', () => {
             recoverBrokenLinks: true,
           }).then(res => res.toArray());
 
-          expect(quads).toHaveLength(2);
+          expect(quads).toBeRdfIsomorphic([
+            squad('ex:s', 'ex:p', 'ex:o1'),
+            squad('ex:s', 'ex:p', 'ex:o1.1'),
+          ]);
         });
 
         it('Should return 1 quads from when doing more restricted query [Link Recovery Enabled]', async() => {
@@ -214,45 +239,47 @@ describe('System test: QuerySparql over Solid Pods', () => {
             recoverBrokenLinks: true,
           }).then(res => res.toArray());
 
-          expect(quads).toHaveLength(1);
+          expect(quads).toBeRdfIsomorphic([
+            squad('ex:s', 'ex:p', 1),
+          ]);
         });
       });
 
     // TODO: Enable this once https://github.com/comunica/comunica-feature-solid/issues/43 is solved
-    // describe('A single resource containing <ex:s> <ex:p> <ex:o1> after deletion', () => {
-    //   // Create a new file in the Pod
-    //   beforeEach(async () => {
-    //     resource = `http://localhost:3001/${config[0].podName}/myContainer/myFile-${i++}.ttl`;
-    //     // Create test.ttl (did not exist before)
-    //     await engine.queryVoid(`INSERT DATA { <ex:s> <ex:p> <ex:o1> . <ex:s> <ex:p> <ex:o1.1> }`, {
-    //       sources: [resource],
-    //       destination: resource
-    //     });
+    // eslint-disable-next-line mocha/no-skipped-tests
+    describe.skip('A single resource containing <ex:s> <ex:p> <ex:o1> after deletion', () => {
+      // Create a new file in the Pod
+      beforeEach(async() => {
+        resource = `http://localhost:3001/${config[0].podName}/myContainer/myFile-${i++}.ttl`;
+        // Create test.ttl (did not exist before)
+        await engine.queryVoid(`INSERT DATA { <ex:s> <ex:p> <ex:o1> . <ex:s> <ex:p> <ex:o1.1> }`, {
+          sources: [ resource ],
+          destination: resource,
+        });
+        await engine.queryVoid(`DELETE DATA { <ex:s> <ex:p> <ex:o1.1> }`, {
+          sources: [ resource ],
+          destination: resource,
+        });
+      });
 
-    //     await engine.queryVoid(`DELETE DATA { <ex:s> <ex:p> <ex:o1.1> }`, {
-    //       sources: [resource],
-    //       destination: resource
-    //     });
-    //   });
+      it('Should return 1 quads from resource', async() => {
+        // Get data in resource file
+        const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
+          sources: [ resource ],
+        }).then(res => res.toArray());
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 1),
+        ]);
+      });
 
-    //   it('Should return 1 quads from resource', async () => {
-    //     // Get data in resource file
-    //     const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
-    //       sources: [resource]
-    //     }).then(res => res.toArray());
-
-    //     expect(quads).toHaveLength(1);
-    //   });
-
-    //   it('Should return 0 quads from when doing more restricted query', async () => {
-    //     // Get data in resource file
-    //     const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p 1 } WHERE { ?s ?p <ex:o1.1> }`, {
-    //       sources: [resource]
-    //     }).then(res => res.toArray());
-
-    //     expect(quads).toHaveLength(0);
-    //   });
-    // });
+      it('Should return 0 quads from when doing more restricted query', async() => {
+        // Get data in resource file
+        const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p 1 } WHERE { ?s ?p <ex:o1.1> }`, {
+          sources: [ resource ],
+        }).then(res => res.toArray());
+        expect(quads).toHaveLength(0);
+      });
+    });
 
     describe('A single resource containing <ex:s> <ex:p> <ex:o1> . <ex:s> <ex:p> <ex:o1.1> inserted separately', () => {
       // Create a new file in the Pod
@@ -271,14 +298,18 @@ describe('System test: QuerySparql over Solid Pods', () => {
       });
 
       // TODO: Enable this when https://github.com/comunica/comunica-feature-solid/issues/43 is closed
-      // it('Should return 2 quads from resource', async () => {
-      //   // Get data in resource file
-      //   const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
-      //     sources: [resource]
-      //   }).then(res => res.toArray());
+      // eslint-disable-next-line mocha/no-skipped-tests
+      it.skip('Should return 2 quads from resource', async() => {
+        // Get data in resource file
+        const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
+          sources: [ resource ],
+        }).then(res => res.toArray());
 
-      //   expect(quads).toHaveLength(2);
-      // });
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 'ex:o1'),
+          squad('ex:s', 'ex:p', 'ex:o1.1'),
+        ]);
+      });
 
       it('Should return 1 quads from when doing more restricted query', async() => {
         // Get data in resource file
@@ -286,7 +317,9 @@ describe('System test: QuerySparql over Solid Pods', () => {
           sources: [ resource ],
         }).then(res => res.toArray());
 
-        expect(quads).toHaveLength(1);
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 1),
+        ]);
       });
     });
   });
