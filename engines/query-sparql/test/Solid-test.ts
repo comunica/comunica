@@ -16,6 +16,9 @@ const config = [{
   password: 'abc123',
 }];
 
+// eslint-disable-next-line no-undef
+let mockedFetch: typeof globalThis.fetch;
+
 function createApp() {
   return new AppRunner().create(
     {
@@ -101,7 +104,7 @@ describe('System test: QuerySparql over Solid Pods', () => {
     // Override global fetch with auth fetch
     // @ts-expect-error
     // eslint-disable-next-line no-undef
-    globalThis.fetch = authFetch;
+    globalThis.fetch = mockedFetch = jest.fn(authFetch);
   });
 
   afterAll(async() => {
@@ -130,6 +133,7 @@ describe('System test: QuerySparql over Solid Pods', () => {
         }).then(res => res.toArray());
 
         expect(quads).toHaveLength(2);
+        expect(mockedFetch).toHaveBeenCalledTimes(1);
       });
 
       it('Should return 1 quads from when doing more restricted query', async() => {
