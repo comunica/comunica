@@ -28,6 +28,9 @@ jobs:
             .rdf-test-suite-cache
             .rdf-test-suite-ldf-cache
           key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Remove node 18 incompatible dependencies, if on node 18
+        if: ${{ matrix.node-version }} == '18.x'
+        run: yarn remove @inrupt/solid-client-authn-core @inrupt/solid-client-authn-node @solid/community-server -W
       - name: Install dependencies
         run: yarn install --pure-lockfile
       - name: Build project
