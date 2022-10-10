@@ -8,9 +8,12 @@
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
+    "@inrupt/solid-client-authn-core": "^1.12.2",
+    "@inrupt/solid-client-authn-node": "^1.12.2",
     "@pollyjs/adapter-node-http": "^6.0.4",
     "@pollyjs/core": "^6.0.0",
     "@pollyjs/persister-fs": "^6.0.0",
+    "@solid/community-server": "^5.0.0",
     "@strictsoftware/typedoc-plugin-monorepo": "^0.4.2",
     "@types/jest": "^27.0.0",
     "@types/node": "^14.0.0",
@@ -64,10 +67,7 @@
     "typedoc": "^0.21.0",
     "typescript": "^4.5.2",
     "webpack": "^5.64.4",
-    "webpack-cli": "^4.9.1",
-    "@inrupt/solid-client-authn-core": "^1.12.2",
-    "@inrupt/solid-client-authn-node": "^1.12.2",
-    "@solid/community-server": "^5.0.0"
+    "webpack-cli": "^4.9.1"
   },
   "pre-commit": [
     "build",
@@ -92,7 +92,8 @@
     "publish-bare": "lerna exec -- npm publish --silent",
     "publish-canary": "yarn run build && lerna version prerelease --preid alpha.$(.github/get-next-alpha-version.sh) --exact --ignore-scripts --force-publish --no-push --no-git-tag-version --yes && git update-index --assume-unchanged $(git ls-files | tr '\\n' ' ') && lerna publish from-package --no-git-reset --pre-dist-tag next --force-publish --no-push --no-git-tag-version --yes && git update-index --no-assume-unchanged $(git ls-files | tr '\\n' ' ') && git checkout .",
     "doc": "typedoc",
-    "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
+    "temp:remove_add_broken_node_18_dependencies": "if [ $( node -v | sed -r \"s/v([0-9]+).*/\\1/g\" ) = 18 ]; then yarn remove -W --ignore-scripts --ignore-engines @inrupt/solid-client-authn-core @inrupt/solid-client-authn-node @solid/community-server 2> /dev/null; else yarn add -DW --ignore-scripts @inrupt/solid-client-authn-core @inrupt/solid-client-authn-node @solid/community-server 2> /dev/null; fi",
+    "preinstall": "npm run temp:remove_add_broken_node_18_dependencies; node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
     "postinstall": "yarn run build && lerna run prepare",
     "version": "manual-git-changelog onversion",
     "depcheck": "lerna-script depcheckTask",
@@ -102,6 +103,5 @@
   },
   "resolutions": {
     "@rdfjs/types": "1.1.0"
-  },
-  "dependencies": {}
+  }
 }
