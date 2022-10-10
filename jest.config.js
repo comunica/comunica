@@ -2,7 +2,11 @@ module.exports = {
   transform: {
     '^.+\\.ts$': 'ts-jest'
   },
-  testRegex: '/test/.*-test.ts$',
+  testRegex: ['/test/.*-test.*.ts$'],
+  // TODO: Remove this condition, once solid-client-authn supports node 18.
+  testPathIgnorePatterns: process.versions.node.startsWith("18")
+    ? ['.*QuerySparql-solid-test.ts']
+    : [],
   moduleFileExtensions: [
     'ts',
     'js'
@@ -18,7 +22,11 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/mocks/',
-    'index.js'
+    'index.js',
+    // TODO: Remove this condition, once solid-client-authn supports node 18.
+    ...(process.versions.node.startsWith("18")
+    ? ["/engines/query-sparql/lib/QueryEngineFactory.ts"]
+    : []),
   ],
   testEnvironment: 'node',
   coverageThreshold: {
