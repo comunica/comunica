@@ -29,8 +29,25 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
   public readonly contextKeyShortcuts: Record<string, string>;
+  /** Array of `contextKeyShortcuts` appended to `contextKeyShortcuts` during construction. */
+  public readonly contextKeyShortcutsExtensions?: Record<string, string>[];
 
+  /**
+   * Create new ActorInitQueryBase object.
+   * @param args.contextKeyShortcutsExtensions Array of `contextKeyShortcuts` that are merged
+   *   with the `contextKeyShortcuts` field. This allows adding shortcuts to the defaults.
+   * @throws When duplicate keys are present in `args.contextKeyShortcuts`
+   *  and `args.contextKeyShortcutsExtensions`.
+   */
   public constructor(args: IActorInitQueryBaseArgs) {
+    // Add additional contextKeyShortcuts.
+    args.contextKeyShortcutsExtensions?.forEach(extensionShortcuts => {
+      // Throw, f there are duplicate keys that are to be added to `contextKeyShortcuts`.
+      if (Object.keys(args.contextKeyShortcuts).some(key => Object.keys(extensionShortcuts).includes(key))) {
+        throw new Error('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
+      }
+      args.contextKeyShortcuts = { ...args.contextKeyShortcuts, ...extensionShortcuts };
+    });
     super(args);
   }
 
@@ -127,4 +144,23 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    * }}
    */
   contextKeyShortcuts: Record<string, string>;
+
+  /**
+   * An array of `contextKeyShortcuts` that are to be appended to the (default) `contextKeyShortcuts`
+   * (which are by default injected by component.js).
+   *
+   * The appending happens in the constructor call. Conflicting keys will cause an error.
+   * If you extend `ActorInitQueryBase` and want to add custom shortcuts, do so as follows:
+   * ```
+   * public constructor(args: IActorInitQueryBaseArgs) {
+   *  if (!args.contextKeyShortcutsExtensions) {
+   *    args.contextKeyShortcutsExtensions = [];
+   *  }
+   *  args.contextKeyShortcutsExtensions.push(addedShortcuts);
+   *
+   *  super(args);
+   * }
+   * ```
+   */
+  contextKeyShortcutsExtensions?: Record<string, string>[];
 }
