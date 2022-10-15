@@ -2,7 +2,7 @@
 import { readFileSync } from 'fs';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { ICliArgsHandler } from '@comunica/types';
+import type { ICliArgsHandler, IQueryContextCommon } from '@comunica/types';
 import type { Readable } from 'readable-stream';
 import yargs from 'yargs';
 import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
@@ -15,14 +15,15 @@ const streamifyString = require('streamify-string');
 /**
  * A comunica Query Init Actor.
  */
-export class ActorInitQuery extends ActorInitQueryBase {
-  public constructor(args: IActorInitQueryBaseArgs) {
+export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryContextCommon>
+  extends ActorInitQueryBase<QueryContext> {
+  public constructor(args: IActorInitQueryBaseArgs<QueryContext>) {
     super(args);
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     // Wrap this actor in a query engine so we can conveniently execute queries
-    const queryEngine = new QueryEngineBase(this);
+    const queryEngine = new QueryEngineBase<QueryContext>(this);
 
     const cliArgsHandlers: ICliArgsHandler[] = [
       new CliArgsHandlerBase(action.context),

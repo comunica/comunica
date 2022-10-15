@@ -1,12 +1,12 @@
 import { Readable, Transform } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { Bus, ActionContext } from '@comunica/core';
+import { Bus, ActionContext, ActionContextKey } from '@comunica/core';
 import type {
   IPhysicalQueryPlanLogger,
   IActionContext, QueryStringContext, IQueryBindingsEnhanced, IQueryQuadsEnhanced,
-  QueryType, IQueryOperationResultQuads,
-  IQueryOperationResultBindings, IQueryOperationResultBoolean, IQueryOperationResultVoid, IQueryEngine,
+  QueryType, IQueryOperationResultQuads, IQueryOperationResultBindings,
+  IQueryOperationResultBoolean, IQueryOperationResultVoid, IQueryEngine, IQueryContextCommon,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -16,6 +16,7 @@ import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
+import type { IActorInitQueryBaseArgs } from '../lib/ActorInitQueryBase';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 import '@comunica/jest';
 import 'jest-rdf';
@@ -33,6 +34,7 @@ describe('ActorInitQueryBase', () => {
 describe('QueryEngineBase', () => {
   let bus: any;
   let logger: any;
+  let mediatorContextPreprocess: any;
   let mediatorOptimizeQueryOperation: any;
   let mediatorQueryOperation: any;
   let mediatorSparqlParse: any;
@@ -54,6 +56,9 @@ describe('QueryEngineBase', () => {
     logger = null;
     mediatorOptimizeQueryOperation = {
       mediate: (arg: any) => Promise.resolve(arg),
+    };
+    mediatorContextPreprocess = {
+      mediate: (action: any) => Promise.resolve(action),
     };
     mediatorQueryOperation = {};
     mediatorSparqlParse = {};
@@ -96,9 +101,6 @@ describe('QueryEngineBase', () => {
     let input: any;
     let actor: ActorInitQuery;
     let queryEngine: IQueryEngine;
-    const mediatorContextPreprocess: any = {
-      mediate: (action: any) => Promise.resolve(action),
-    };
 
     beforeEach(() => {
       jest.resetAllMocks();
@@ -206,7 +208,7 @@ describe('QueryEngineBase', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should allow a parsed query to be passd', () => {
+      it('should allow a parsed query to be passed', () => {
         return expect(queryEngine.query(translate('SELECT * WHERE { ?s ?p ?o }')))
           .resolves.toBeTruthy();
       });
@@ -362,12 +364,126 @@ describe('QueryEngineBase', () => {
     });
   });
 
+  describe('An QueryEngineBase instance with custom QueryContext', () => {
+    interface ICustomQueryContext1 extends IQueryContextCommon {
+      customField1: string;
+    }
+    interface ICustomQueryContext2 extends ICustomQueryContext1 {
+      customField2: string;
+    }
+    const KeysCustom1 = {
+      customField1: new ActionContextKey<string>('@comunica/actor-custom1:custom1'),
+    };
+    const KeysCustom2 = {
+      customField2: new ActionContextKey<string>('@comunica/actor-custom2:custom2'),
+    };
+    class ActorInitQueryCustom1<QueryContext extends ICustomQueryContext1> extends ActorInitQuery<QueryContext> {
+      public constructor(init: IActorInitQueryBaseArgs<QueryContext>) {
+        if (!init.contextKeyShortcutsExtensions) {
+          init.contextKeyShortcutsExtensions = [];
+        }
+        init.contextKeyShortcutsExtensions.push({ customField1: KeysCustom1.customField1.name });
+        super(init);
+      }
+    }
+    class ActorInitQueryCustom2<QueryContext extends ICustomQueryContext2 = ICustomQueryContext2>
+      extends ActorInitQueryCustom1<QueryContext> {
+      public constructor(init: IActorInitQueryBaseArgs<QueryContext>) {
+        if (!init.contextKeyShortcutsExtensions) {
+          init.contextKeyShortcutsExtensions = [];
+        }
+        init.contextKeyShortcutsExtensions.push({ customField2: KeysCustom2.customField2.name });
+        super(init);
+      }
+    }
+
+    let input: any;
+    let actor: ActorInitQueryCustom2;
+    let queryEngine: QueryEngineBase<ICustomQueryContext2>;
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+      input = new Readable({ objectMode: true });
+      input._read = () => {
+        const triple = { a: 'triple' };
+        input.push(triple);
+        input.push(null);
+      };
+      const factory = new Factory();
+      mediatorContextPreprocess.mediate = jest.fn(
+        (action: any) => Promise.resolve(action),
+      );
+      mediatorQueryOperation.mediate = jest.fn((action: any) => {
+        if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
+          (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
+            .logOperation(
+              'logicalOp',
+              'physicalOp',
+              {},
+              undefined,
+              'actor',
+              {},
+            );
+        }
+        return action.operation !== 'INVALID' ?
+          Promise.resolve({ type: 'bindings', bindingsStream: input }) :
+          Promise.reject(new Error('Invalid query'));
+      });
+      mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
+        Promise.resolve({ operation: action.query }) :
+        Promise.resolve({
+          baseIRI: action.query.includes('BASE') ? 'myBaseIRI' : null,
+          operation: factory.createProject(
+            factory.createBgp([
+              factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            ]),
+            [
+              DF.variable('s'),
+              DF.variable('p'),
+              DF.variable('o'),
+            ],
+          ),
+        });
+      const defaultQueryInputFormat = 'sparql';
+      actor = new ActorInitQueryCustom2(
+        { bus,
+          contextKeyShortcuts,
+          defaultQueryInputFormat,
+          logger,
+          mediatorContextPreprocess,
+          mediatorHttpInvalidate,
+          mediatorOptimizeQueryOperation,
+          mediatorQueryOperation,
+          mediatorQueryParse: mediatorSparqlParse,
+          mediatorQueryResultSerialize: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          name: 'actor' },
+      );
+      queryEngine = new QueryEngineBase<ICustomQueryContext2>(actor);
+    });
+
+    it('should query and pass custom context fields to action context', async() => {
+      const ctx: QueryStringContext & ICustomQueryContext2 = {
+        sources: [ 'dummy' ],
+        customField1: 'custom value 1',
+        customField2: 'custom value 2',
+      };
+
+      await expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+        .resolves.toBeTruthy();
+
+      expect(mediatorContextPreprocess.mediate).toHaveBeenCalledTimes(1);
+
+      const actionContext: IActionContext = mediatorContextPreprocess.mediate.mock.calls[0][0].context;
+      expect(actionContext.get(KeysCustom1.customField1)).toBe('custom value 1');
+      expect(actionContext.get(KeysCustom2.customField2)).toBe('custom value 2');
+    });
+  });
+
   describe('An QueryEngineBase instance for quads', () => {
     let actor: ActorInitQuery;
     let queryEngine: QueryEngineBase;
-    const mediatorContextPreprocess: any = {
-      mediate: (action: any) => Promise.resolve(action),
-    };
 
     beforeEach(() => {
       const input = new Readable({ objectMode: true });

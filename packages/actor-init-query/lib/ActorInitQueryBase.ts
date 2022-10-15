@@ -9,12 +9,13 @@ import type { MediatorQueryResultSerializeHandle,
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
 import type { IActorTest } from '@comunica/core';
-import type { Logger } from '@comunica/types';
+import type { IQueryContextCommon, Logger } from '@comunica/types';
 
 /**
  * A browser-safe comunica Query Init Actor.
  */
-export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBaseArgs {
+export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQueryContextCommon>
+  extends ActorInit implements IActorInitQueryBaseArgs<QueryContext> {
   public readonly mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorQueryParse: MediatorQueryParse;
@@ -28,9 +29,10 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
-  public readonly contextKeyShortcuts: Record<string, string>;
+  public readonly contextKeyShortcuts: Record<string, string> & Partial<Record<keyof QueryContext, string>>;
   /** Array of `contextKeyShortcuts` appended to `contextKeyShortcuts` during construction. */
-  public readonly contextKeyShortcutsExtensions?: Record<string, string>[];
+  public readonly contextKeyShortcutsExtensions?: (Record<string, string>
+  | Partial<Record<keyof Omit<QueryContext, keyof IQueryContextCommon>, string>>)[];
 
   /**
    * Create new ActorInitQueryBase object.
@@ -60,7 +62,8 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   }
 }
 
-export interface IActorInitQueryBaseArgs extends IActorInitArgs {
+export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommon = IQueryContextCommon>
+  extends IActorInitArgs {
   /**
    * The query operation optimize mediator
    */
@@ -143,8 +146,7 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    *   "localizeBlankNodes": "@comunica/actor-query-operation:localizeBlankNodes"
    * }}
    */
-  contextKeyShortcuts: Record<string, string>;
-
+  contextKeyShortcuts: Record<string, string> | Partial<Record<keyof QueryContext, string>>;
   /**
    * An array of `contextKeyShortcuts` that are to be appended to the (default) `contextKeyShortcuts`
    * (which are by default injected by component.js).
@@ -152,7 +154,7 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    * The appending happens in the constructor call. Conflicting keys will cause an error.
    * If you extend `ActorInitQueryBase` and want to add custom shortcuts, do so as follows:
    * ```
-   * public constructor(args: IActorInitQueryBaseArgs) {
+   * public constructor(args: IActorInitQueryBaseArgs<QueryContext>) {
    *  if (!args.contextKeyShortcutsExtensions) {
    *    args.contextKeyShortcutsExtensions = [];
    *  }
@@ -162,5 +164,7 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    * }
    * ```
    */
-  contextKeyShortcutsExtensions?: Record<string, string>[];
+  contextKeyShortcutsExtensions?: (Record<string, string>
+  | Partial<Record<keyof Omit<QueryContext, keyof IQueryContextCommon>, string>>)[];
+
 }
