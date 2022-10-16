@@ -614,67 +614,23 @@ describe('System test: QuerySparql', () => {
       });
     });
 
-    it('Supports EXISTS sparql keyword', async() => {
-      const sparql = new QueryEngine();
-      const store = new n3.Store();
-      const subject = n3.DataFactory.namedNode('http://subject');
+    // TODO: better name here before merge.
+    describe('Comunica sparql regression test for #1029', () => {
+      it('Supports EXISTS sparql keyword', async () => {
+        const store = new Store([
+          DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')),
+          DF.quad(DF.blankNode(), DF.namedNode('p'), DF.namedNode('o')),
+        ]);
 
-      const predicate = n3.DataFactory.namedNode('http://predicate');
-      const object = n3.DataFactory.namedNode('http://object');
-      const blank = n3.DataFactory.blankNode();
-      const spo = n3.DataFactory.quad(subject, predicate, object);
-      const bpo = n3.DataFactory.quad(blank, predicate, object);
-      store.addQuads([ spo, bpo ]);
-      const quadStream = await sparql.queryQuads(`
-      CONSTRUCT {
-        ?s ?p ?o.
-      }
-      WHERE { 
-        ?s ?p ?o.
-        OPTIONAL {
-          FILTER EXISTS {
-            ?s2 ?p ?o.
-            FILTER (?s != ?s2)
-          }
-        }
-      }
-      `,
-          { sources: [ store ]});
-      const result_quads = await quadStream.toArray();
-      expect(result_quads).toEqual([{
-        termType: 'Quad',
-        value: '',
-        graph: {
-          termType: 'DefaultGraph',
-          value: '',
-        },
-        subject: {
-          id: 'http://subject',
-        },
-        predicate: {
-          id: 'http://predicate',
-        },
-        object: {
-          id: 'http://object',
-        },
-      }, {
-        termType: 'Quad',
-        value: '',
-        graph: {
-          termType: 'DefaultGraph',
-          value: '',
-        },
-        subject: {
-          termType: 'BlankNode',
-          value: 'bc_0_n3-01',
-        },
-        predicate: {
-          id: 'http://predicate',
-        },
-        object: {
-          id: 'http://object',
-        },
-      }]);
+        const result = <QueryBindings> await engine.queryQuads(
+            `CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o. OPTIONAL {FILTER EXISTS {?s2 ?p ?o. FILTER (?s != ?s2)}}}`,
+            {sources: [store]}
+        );
+        expect((await arrayifyStream(await result.execute()))).toEqual([
+            {termType: 'Quad', value: '', graph: {termType: 'DefaultGraph', value: ''}, subject: {id: 's'},                                   predicate: {id: 'p'}, object: {id: 'o'}},
+            {termType: 'Quad', value: '', graph: {termType: 'DefaultGraph', value: ''}, subject: {termType: 'BlankNode',value: 'bc_0_n3-01'}, predicate: {id: 'p'}, object: {id: 'o'}}
+        ]);
+      });
     });
   });
 
