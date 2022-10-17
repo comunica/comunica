@@ -614,42 +614,42 @@ describe('System test: QuerySparql', () => {
       });
     });
 
-      // TODO: better name here before merge.
-      describe('Comunica sparql regression test for #1029', () => {
-          it('Supports EXISTS sparql keyword', async () => {
-              let s = DF.namedNode('s');
-              let p = DF.namedNode('p');
-              let o = DF.namedNode('o');
-              let b = DF.blankNode();
+    // TODO: better name here before merge.
+    describe('Comunica sparql regression test for #1029', () => {
+      it('Supports EXISTS sparql keyword', async() => {
+        const s = DF.namedNode('s');
+        const p = DF.namedNode('p');
+        const o = DF.namedNode('o');
+        const b = DF.blankNode();
 
-              let nodes = [DF.quad(s, p, o), DF.quad(b, p, o)];
+        const nodes = [ DF.quad(s, p, o), DF.quad(b, p, o) ];
 
-              const store = new Store(nodes);
+        const store = new Store(nodes);
 
-              const result = await engine.queryQuads(
-                  `CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o. OPTIONAL {FILTER EXISTS {?s2 ?p ?o. FILTER (?s != ?s2)}}}`,
-                  {sources: [store]}
-              );
-              expect(await arrayifyStream(result)).toEqual([
-                  {
-                      termType: 'Quad',
-                      value: '',
-                      graph: {termType: 'DefaultGraph', value: ''},
-                      subject: {id: 's'},
-                      predicate: {id: 'p'},
-                      object: {id: 'o'}
-                  },
-                  {
-                      termType: 'Quad',
-                      value: '',
-                      graph: {termType: 'DefaultGraph', value: ''},
-                      subject: {termType: 'BlankNode', value: 'bc_0_df_59_01'},
-                      predicate: {id: 'p'},
-                      object: {id: 'o'}
-                  }
-              ]);
-          });
+        const result = await engine.queryQuads(
+          `CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o. OPTIONAL {FILTER EXISTS {?s2 ?p ?o. FILTER (?s != ?s2)}}}`,
+          { sources: [ store ]},
+        );
+        expect(await arrayifyStream(result)).toEqual([
+          {
+            termType: 'Quad',
+            value: '',
+            graph: { termType: 'DefaultGraph', value: '' },
+            subject: { id: 's' },
+            predicate: { id: 'p' },
+            object: { id: 'o' },
+          },
+          {
+            termType: 'Quad',
+            value: '',
+            graph: { termType: 'DefaultGraph', value: '' },
+            subject: { termType: 'BlankNode', value: 'bc_0_df_59_01' },
+            predicate: { id: 'p' },
+            object: { id: 'o' },
+          },
+        ]);
       });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
