@@ -622,13 +622,18 @@ describe('System test: QuerySparql', () => {
         let o = DF.namedNode('o');
         let b = DF.blankNode();
 
-        const store = new Store([DF.quad(s, p, o), DF.quad(b, p, o)]);
+        let nodes = [DF.quad(s, p, o), DF.quad(b, p, o)];
+
+        const store = new Store(nodes);
 
         const result = await engine.queryQuads(
             `CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o. OPTIONAL {FILTER EXISTS {?s2 ?p ?o. FILTER (?s != ?s2)}}}`,
             {sources: [store]}
         );
-        expect(await arrayifyStream(result)).toEqual([DF.quad(s, p, o), DF.quad(b, p, o)]);
+        expect(await arrayifyStream(result)).toEqual([
+          {termType: 'Quad', value: '', graph: {termType: 'DefaultGraph', value: ''}, subject: {id: 's'},                                   predicate: {id: 'p'}, object: {id: 'o'}},
+          {termType: 'Quad', value: '', graph: {termType: 'DefaultGraph', value: ''}, subject: {termType: 'BlankNode',value: 'bc_0_df_59_01'}, predicate: {id: 'p'}, object: {id: 'o'}}
+        ]);
       });
     });
   });
