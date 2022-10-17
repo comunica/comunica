@@ -617,19 +617,18 @@ describe('System test: QuerySparql', () => {
     // TODO: better name here before merge.
     describe('Comunica sparql regression test for #1029', () => {
       it('Supports EXISTS sparql keyword', async () => {
-        const store = new Store([
-          DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')),
-          DF.quad(DF.blankNode(), DF.namedNode('p'), DF.namedNode('o')),
-        ]);
+        let s = DF.namedNode('s');
+        let p = DF.namedNode('p');
+        let o = DF.namedNode('o');
+        let b = DF.blankNode();
 
-        const result = <QueryBindings> await engine.queryQuads(
+        const store = new Store([DF.quad(s, p, o), DF.quad(b, p, o)]);
+
+        const result = await engine.queryQuads(
             `CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o. OPTIONAL {FILTER EXISTS {?s2 ?p ?o. FILTER (?s != ?s2)}}}`,
             {sources: [store]}
         );
-        expect((await arrayifyStream(await result.execute()))).toEqual([
-            {termType: 'Quad', value: '', graph: {termType: 'DefaultGraph', value: ''}, subject: {id: 's'},                                   predicate: {id: 'p'}, object: {id: 'o'}},
-            {termType: 'Quad', value: '', graph: {termType: 'DefaultGraph', value: ''}, subject: {termType: 'BlankNode',value: 'bc_0_n3-01'}, predicate: {id: 'p'}, object: {id: 'o'}}
-        ]);
+        expect(await arrayifyStream(result)).toEqual([DF.quad(s, p, o), DF.quad(b, p, o)]);
       });
     });
   });
