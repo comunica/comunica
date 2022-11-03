@@ -620,9 +620,9 @@ describe('System test: QuerySparql', () => {
         const s = DF.namedNode('s');
         const p = DF.namedNode('p');
         const o = DF.namedNode('o');
-        const b = DF.blankNode();
+        const s1 = DF.namedNode('s1');
 
-        const nodes = [ DF.quad(s, p, o), DF.quad(b, p, o) ];
+        const nodes = [ DF.quad(s, p, o), DF.quad(s1, p, o) ];
 
         const store = new Store(nodes);
 
@@ -631,22 +631,8 @@ describe('System test: QuerySparql', () => {
           { sources: [ store ]},
         );
         expect(await arrayifyStream(result)).toEqual([
-          {
-            termType: 'Quad',
-            value: '',
-            graph: { termType: 'DefaultGraph', value: '' },
-            subject: { id: 's' },
-            predicate: { id: 'p' },
-            object: { id: 'o' },
-          },
-          {
-            termType: 'Quad',
-            value: '',
-            graph: { termType: 'DefaultGraph', value: '' },
-            subject: { termType: 'BlankNode', value: 'bc_0_df_59_01' },
-            predicate: { id: 'p' },
-            object: { id: 'o' },
-          },
+            DF.quad(s, p, o),
+            DF.quad(s1, p, o)
         ]);
       });
     });
