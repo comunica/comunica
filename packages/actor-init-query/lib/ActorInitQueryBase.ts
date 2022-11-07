@@ -44,7 +44,7 @@ export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQuer
   public constructor(args: IActorInitQueryBaseArgs) {
     // Add additional contextKeyShortcuts.
     args.contextKeyShortcutsExtensions?.forEach(extensionShortcuts => {
-      // Throw, f there are duplicate keys that are to be added to `contextKeyShortcuts`.
+      // Throw, if there are duplicate keys that are to be added to `contextKeyShortcuts`.
       if (Object.keys(args.contextKeyShortcuts).some(key => Object.keys(extensionShortcuts).includes(key))) {
         throw new Error('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
       }
@@ -166,5 +166,4 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    */
   contextKeyShortcutsExtensions?: (Record<string, string>
   | Partial<Record<keyof Omit<QueryContext, keyof IQueryContextCommon>, string>>)[];
-
 }
