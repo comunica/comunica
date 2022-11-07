@@ -40,6 +40,7 @@ jest.mock('http', () => {
 jest.mock('fs', () => {
   return fs;
 });
+
 jest.useFakeTimers('legacy');
 
 const argsDefault = {
@@ -48,6 +49,16 @@ const argsDefault = {
 };
 
 describe('HttpServiceSparqlEndpoint', () => {
+  let originalCluster: typeof cluster;
+  beforeAll(() => {
+    originalCluster = { ...cluster };
+  });
+
+  afterAll(() => {
+    // eslint-disable-next-line no-import-assign
+    Object.assign(cluster, originalCluster);
+  });
+
   beforeEach(() => {
     process.exit = <any> jest.fn();
 
