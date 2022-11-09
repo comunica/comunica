@@ -4,7 +4,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
 import type { IDataSource } from './IDataSource';
-import type { QueryAlgebraContext, QueryStringContext } from './IQueryContext';
+import type { IQueryContextCommon, QueryAlgebraContext, QueryStringContext } from './IQueryContext';
 import type { IQueryExplained, QueryEnhanced, QueryExplainMode } from './IQueryOperationResult';
 
 export type QueryFormatType = string | Algebra.Operation;
@@ -14,7 +14,7 @@ export type QueryType = QueryEnhanced & { context?: IActionContext };
 /**
  * Base interface for a Comunica query engine.
  */
-export interface IQueryEngine extends
+export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryContextCommon> extends
   RDF.StringQueryable<RDF.AllMetadataSupport, QueryStringContext>,
   RDF.AlgebraQueryable<Algebra.Operation, RDF.AllMetadataSupport, QueryAlgebraContext>,
   RDF.StringSparqlQueryable<RDF.SparqlResultSupport, QueryStringContext>,
@@ -27,7 +27,7 @@ export interface IQueryEngine extends
    */
   queryBindings: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
   ) => Promise<BindingsStream>;
 
   /**
@@ -37,7 +37,7 @@ export interface IQueryEngine extends
    */
   queryQuads: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
   ) => Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>>;
 
   /**
@@ -47,7 +47,7 @@ export interface IQueryEngine extends
    */
   queryBoolean: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
   ) => Promise<boolean>;
 
   /**
@@ -57,7 +57,7 @@ export interface IQueryEngine extends
    */
   queryVoid: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
   ) => Promise<void>;
 
   /**
@@ -73,7 +73,7 @@ export interface IQueryEngine extends
    */
   query: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
   ) => Promise<QueryType>;
 
   /**
@@ -86,7 +86,7 @@ export interface IQueryEngine extends
    */
   explain: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context: QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
     explainMode: QueryExplainMode,
   ) => Promise<IQueryExplained>;
   /**

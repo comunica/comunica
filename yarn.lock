@@ -2550,11 +2550,12 @@
     node-fetch "^2.6.7"
     ts-guards "^0.5.1"
 
-"@solid/community-server@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@solid/community-server/-/community-server-5.0.0.tgz#19165d9248723b667040e62d7179346a55d54e16"
-  integrity sha512-nIQK2QZ/L8JLUxEwQuU2r6iZsTmVBiZ9BWxnWDJnKDHgTNK8AnW98heG3DZQSpXC0y0LlPhjMyj4ZMMlpOoO1Q==
+"@solid/community-server@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@solid/community-server/-/community-server-5.1.0.tgz#164b70dca51c4ba744f6d24183ed95ceee498b5b"
+  integrity sha512-i0ANCJeumuM6hm6/iYV8viMA3z69CWVpy5U3k+Sr1QUWDqIBM/HSpOwlmn9HI917qJeTxkAgnCPGYVTXl3WS1Q==
   dependencies:
+    "@comunica/context-entries" "^2.2.0"
     "@comunica/query-sparql" "^2.2.1"
     "@rdfjs/types" "^1.1.0"
     "@solid/access-token-verifier" "^2.0.3"

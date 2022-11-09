@@ -9,12 +9,13 @@ import type { MediatorQueryResultSerializeHandle,
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
 import type { IActorTest } from '@comunica/core';
-import type { Logger } from '@comunica/types';
+import type { IQueryContextCommon, Logger } from '@comunica/types';
 
 /**
  * A browser-safe comunica Query Init Actor.
  */
-export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBaseArgs {
+export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQueryContextCommon>
+  extends ActorInit implements IActorInitQueryBaseArgs<QueryContext> {
   public readonly mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorQueryParse: MediatorQueryParse;
@@ -28,9 +29,27 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
-  public readonly contextKeyShortcuts: Record<string, string>;
+  public readonly contextKeyShortcuts: Record<string, string> & Partial<Record<keyof QueryContext, string>>;
+  /** Array of `contextKeyShortcuts` appended to `contextKeyShortcuts` during construction. */
+  public readonly contextKeyShortcutsExtensions?: (Record<string, string>
+  | Partial<Record<keyof Omit<QueryContext, keyof IQueryContextCommon>, string>>)[];
 
+  /**
+   * Create new ActorInitQueryBase object.
+   * @param args.contextKeyShortcutsExtensions Array of `contextKeyShortcuts` that are merged
+   *   with the `contextKeyShortcuts` field. This allows adding shortcuts to the defaults.
+   * @throws When duplicate keys are present in `args.contextKeyShortcuts`
+   *  and `args.contextKeyShortcutsExtensions`.
+   */
   public constructor(args: IActorInitQueryBaseArgs) {
+    // Add additional contextKeyShortcuts.
+    args.contextKeyShortcutsExtensions?.forEach(extensionShortcuts => {
+      // Throw, if there are duplicate keys that are to be added to `contextKeyShortcuts`.
+      if (Object.keys(args.contextKeyShortcuts).some(key => Object.keys(extensionShortcuts).includes(key))) {
+        throw new Error('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
+      }
+      args.contextKeyShortcuts = { ...args.contextKeyShortcuts, ...extensionShortcuts };
+    });
     super(args);
   }
 
@@ -43,7 +62,8 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   }
 }
 
-export interface IActorInitQueryBaseArgs extends IActorInitArgs {
+export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommon = IQueryContextCommon>
+  extends IActorInitArgs {
   /**
    * The query operation optimize mediator
    */
@@ -126,5 +146,24 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    *   "localizeBlankNodes": "@comunica/actor-query-operation:localizeBlankNodes"
    * }}
    */
-  contextKeyShortcuts: Record<string, string>;
+  contextKeyShortcuts: Record<string, string> | Partial<Record<keyof QueryContext, string>>;
+  /**
+   * An array of `contextKeyShortcuts` that are to be appended to the (default) `contextKeyShortcuts`
+   * (which are by default injected by component.js).
+   *
+   * The appending happens in the constructor call. Conflicting keys will cause an error.
+   * If you extend `ActorInitQueryBase` and want to add custom shortcuts, do so as follows:
+   * ```
+   * public constructor(args: IActorInitQueryBaseArgs<QueryContext>) {
+   *  if (!args.contextKeyShortcutsExtensions) {
+   *    args.contextKeyShortcutsExtensions = [];
+   *  }
+   *  args.contextKeyShortcutsExtensions.push(addedShortcuts);
+   *
+   *  super(args);
+   * }
+   * ```
+   */
+  contextKeyShortcutsExtensions?: (Record<string, string>
+  | Partial<Record<keyof Omit<QueryContext, keyof IQueryContextCommon>, string>>)[];
 }

@@ -107,4 +107,52 @@ describe('ActorInitQueryBase', () => {
       });
     });
   });
+
+  describe('An ActorInitQueryBase instance with extended contextKeyShortcuts', () => {
+    it('should throw with duplicate shortcut extensions', async() => {
+      expect(() => new ActorInitQueryBase({
+        bus,
+        contextKeyShortcutsExtensions: [
+          { log: 'customKey' },
+        ],
+        contextKeyShortcuts,
+        defaultQueryInputFormat,
+        logger,
+        mediatorContextPreprocess,
+        mediatorHttpInvalidate,
+        mediatorOptimizeQueryOperation,
+        mediatorQueryOperation,
+        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      })).toThrow('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
+    });
+
+    it('should create context shortcuts with two additional keys', async() => {
+      const actor = new ActorInitQueryBase({
+        bus,
+        contextKeyShortcutsExtensions: [
+          { customField1: 'exampleShortcut1' },
+          { customField2: 'exampleShortcut2' },
+        ],
+        contextKeyShortcuts,
+        defaultQueryInputFormat,
+        logger,
+        mediatorContextPreprocess,
+        mediatorHttpInvalidate,
+        mediatorOptimizeQueryOperation,
+        mediatorQueryOperation,
+        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      });
+
+      expect(actor.contextKeyShortcuts.customField1).toBe('exampleShortcut1');
+      expect(actor.contextKeyShortcuts.customField2).toBe('exampleShortcut2');
+    });
+  });
 });
