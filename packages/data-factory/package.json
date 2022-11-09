@@ -28,7 +28,7 @@
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map/**/"
+    "lib/**/*.js.map"
   ],
   "dependencies": {
     "@rdfjs/types": "*"
