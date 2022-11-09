@@ -46,4 +46,5 @@ export interface IQueryContextCommon {
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
   extensionFunctions?: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
   explain?: QueryExplainMode;
+  recoverBrokenLinks?: boolean;
 }
