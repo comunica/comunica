@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.5.0"></a>
+## [v2.5.0](https://github.com/comunica/comunica/compare/v2.4.3...v2.5.0) - 2022-11-09
+
+### Added
+* [Enable engines to override context shortcuts and typings](https://github.com/comunica/comunica/commit/ca7e6cf64741ec5075673dbef0374c6d033d1b9a)
+* [Support string-based data sources, Closes #639](https://github.com/comunica/comunica/commit/af4343054cb3dbbed32296774981d929559a09fa)
+* [Add support for HTTP retries](https://github.com/comunica/comunica/commit/d36f0bb2e80bd0c7972b71c19b02fa52f04e772a)
+* [Add wayback HTTP actor](https://github.com/comunica/comunica/commit/ad0bbf5ea08fe4cb5cc9e2ce73bd3132eec35a86)
+
+### Changed
+* [Add USER to Dockerfile](https://github.com/comunica/comunica/commit/27335fb8acf59c5b9720b7ff4ac4ed31169177d4)
+* [Make QueryOperationAsk close the BindingsStream earlier](https://github.com/comunica/comunica/commit/33de86f086bf3be418545f07aa57f44d1461c28b)
+* [Expose localizeBlankNodes on the CLI](https://github.com/comunica/comunica/commit/146b41da2135033be72a6342ecf2313b381daff9)
+
+### Fixed
+* [Bump to asynciterator 3.8 with ESM packaging fix, Closes #1097](https://github.com/comunica/comunica/commit/24294150a4ad8d0f8b224014e97890bb7310c115)
+* [Include source map files in packed files](https://github.com/comunica/comunica/commit/1ddba2b57457ad4a630d4f9a8a30c23955e4f1fc)
+* [Fix invalid blank node skolemization in DESCRIBE queries](https://github.com/comunica/comunica/commit/efa0e9192f0a22d242744779f0286228de92959f)
+
 <a name="v2.4.3"></a>
 ## [v2.4.3](https://github.com/comunica/comunica/compare/v2.4.2...v2.4.3) - 2022-09-06
 

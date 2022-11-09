@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-sparql-xml",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "A sparql-xml query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^2.4.0",
-    "@comunica/types": "^2.4.0",
+    "@comunica/bus-query-result-serialize": "^2.5.0",
+    "@comunica/types": "^2.5.0",
     "@rdfjs/types": "*",
     "readable-stream": "^4.0.0"
   },

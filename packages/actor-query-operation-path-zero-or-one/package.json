@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-zero-or-one",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "A path-zero-or-one query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,10 +32,10 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-path": "^2.4.0",
-    "@comunica/bindings-factory": "^2.2.0",
-    "@comunica/bus-query-operation": "^2.4.0",
-    "@comunica/types": "^2.4.0",
+    "@comunica/actor-abstract-path": "^2.5.0",
+    "@comunica/bindings-factory": "^2.5.0",
+    "@comunica/bus-query-operation": "^2.5.0",
+    "@comunica/types": "^2.5.0",
     "asynciterator": "^3.8.0",
     "sparqlalgebrajs": "^4.0.0"
   },
