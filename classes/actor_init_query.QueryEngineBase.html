@@ -61,7 +61,7 @@
 					<a href="actor_init_query.QueryEngineBase.html">QueryEngineBase</a>
 				</li>
 			</ul>
-			<h1>Class QueryEngineBase</h1>
+			<h1>Class QueryEngineBase&lt;QueryContext&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -74,6 +74,14 @@
 						<p>Base implementation of a Comunica query engine.</p>
 					</div>
 				</div>
+			</section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>QueryContext<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a> = <a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a></h4>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
@@ -97,7 +105,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/types.IQueryEngine.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryEngine</a></li>
+					<li><a href="../interfaces/types.IQueryEngine.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryEngine</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -107,7 +115,7 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="actor_init_query.QueryEngineBase.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter"><a href="actor_init_query.QueryEngineBase.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
@@ -140,26 +148,32 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Query<wbr>Engine<wbr>Base<span class="tsd-signature-symbol">(</span>actorInitQuery<span class="tsd-signature-symbol">: </span><a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_init_query.QueryEngineBase.html" class="tsd-signature-type" data-tsd-kind="Class">QueryEngineBase</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Query<wbr>Engine<wbr>Base&lt;QueryContext&gt;<span class="tsd-signature-symbol">(</span>actorInitQuery<span class="tsd-signature-symbol">: </span><a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_init_query.QueryEngineBase.html" class="tsd-signature-type" data-tsd-kind="Class">QueryEngineBase</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L24">packages/actor-init-query/lib/QueryEngineBase.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L25">packages/actor-init-query/lib/QueryEngineBase.ts:25</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>QueryContext<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a> = <a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a></h4>
+								</li>
+							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>actorInitQuery: <a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a></h5>
+									<h5>actorInitQuery: <a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_init_query.QueryEngineBase.html" class="tsd-signature-type" data-tsd-kind="Class">QueryEngineBase</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_init_query.QueryEngineBase.html" class="tsd-signature-type" data-tsd-kind="Class">QueryEngineBase</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -169,10 +183,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="actorInitQuery" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> actor<wbr>Init<wbr>Query</h3>
-					<div class="tsd-signature tsd-kind-icon">actor<wbr>Init<wbr>Query<span class="tsd-signature-symbol">:</span> <a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a></div>
+					<div class="tsd-signature tsd-kind-icon">actor<wbr>Init<wbr>Query<span class="tsd-signature-symbol">:</span> <a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L22">packages/actor-init-query/lib/QueryEngineBase.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L23">packages/actor-init-query/lib/QueryEngineBase.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -183,14 +197,14 @@
 					<a name="explain" class="tsd-anchor"></a>
 					<h3>explain</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">explain&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a>, explainMode<span class="tsd-signature-symbol">: </span><a href="../modules/types.html#QueryExplainMode" class="tsd-signature-type" data-tsd-kind="Type alias">QueryExplainMode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.IQueryExplained.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryExplained</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">explain&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a>, explainMode<span class="tsd-signature-symbol">: </span><a href="../modules/types.html#QueryExplainMode" class="tsd-signature-type" data-tsd-kind="Type alias">QueryExplainMode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.IQueryExplained.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryExplained</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#explain">explain</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L93">packages/actor-init-query/lib/QueryEngineBase.ts:93</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L95">packages/actor-init-query/lib/QueryEngineBase.ts:95</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -213,7 +227,7 @@
 									</div>
 								</li>
 								<li>
-									<h5>context: <span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
+									<h5>context: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional query context.</p>
 									</div>
@@ -242,7 +256,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#getResultMediaTypeFormats">getResultMediaTypeFormats</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L258">packages/actor-init-query/lib/QueryEngineBase.ts:258</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L260">packages/actor-init-query/lib/QueryEngineBase.ts:260</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -272,7 +286,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#getResultMediaTypes">getResultMediaTypes</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L248">packages/actor-init-query/lib/QueryEngineBase.ts:248</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L250">packages/actor-init-query/lib/QueryEngineBase.ts:250</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -302,7 +316,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#invalidateHttpCache">invalidateHttpCache</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L299">packages/actor-init-query/lib/QueryEngineBase.ts:299</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L301">packages/actor-init-query/lib/QueryEngineBase.ts:301</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -335,14 +349,14 @@
 					<a name="query" class="tsd-anchor"></a>
 					<h3>query</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">query&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#QueryType" class="tsd-signature-type" data-tsd-kind="Type alias">QueryType</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">query&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#QueryType" class="tsd-signature-type" data-tsd-kind="Type alias">QueryType</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#query">query</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L74">packages/actor-init-query/lib/QueryEngineBase.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L76">packages/actor-init-query/lib/QueryEngineBase.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -365,7 +379,7 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional query context.</p>
 									</div>
@@ -380,14 +394,14 @@
 					<a name="queryBindings" class="tsd-anchor"></a>
 					<h3>query<wbr>Bindings</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">query<wbr>Bindings&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#BindingsStream" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Bindings&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#BindingsStream" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#queryBindings">queryBindings</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L28">packages/actor-init-query/lib/QueryEngineBase.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L29">packages/actor-init-query/lib/QueryEngineBase.ts:29</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -407,7 +421,7 @@
 									<h5>query: <span class="tsd-signature-type">QueryFormatTypeInner</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#BindingsStream" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -418,14 +432,14 @@
 					<a name="queryBoolean" class="tsd-anchor"></a>
 					<h3>query<wbr>Boolean</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">query<wbr>Boolean&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Boolean&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#queryBoolean">queryBoolean</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L42">packages/actor-init-query/lib/QueryEngineBase.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L43">packages/actor-init-query/lib/QueryEngineBase.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -445,7 +459,7 @@
 									<h5>query: <span class="tsd-signature-type">QueryFormatTypeInner</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -456,13 +470,13 @@
 					<a name="queryOfType" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> query<wbr>OfType</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">query<wbr>OfType&lt;QueryFormatTypeInner, QueryTypeOut&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span>, expectedType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryTypeOut</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">&quot;resultType&quot;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryTypeOut</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">&quot;execute&quot;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">query<wbr>OfType&lt;QueryFormatTypeInner, QueryTypeOut&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span>, expectedType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryTypeOut</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">&quot;resultType&quot;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryTypeOut</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">&quot;execute&quot;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L56">packages/actor-init-query/lib/QueryEngineBase.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L57">packages/actor-init-query/lib/QueryEngineBase.ts:57</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -480,7 +494,7 @@
 									<h5>query: <span class="tsd-signature-type">QueryFormatTypeInner</span></h5>
 								</li>
 								<li>
-									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span></h5>
+									<h5>context: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span></h5>
 								</li>
 								<li>
 									<h5>expectedType: <span class="tsd-signature-type">QueryTypeOut</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">&quot;resultType&quot;</span><span class="tsd-signature-symbol">]</span></h5>
@@ -494,13 +508,13 @@
 					<a name="queryOrExplain" class="tsd-anchor"></a>
 					<h3>query<wbr>OrExplain</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">query<wbr>OrExplain&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.IQueryExplained.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryExplained</a><span class="tsd-signature-symbol"> | </span><a href="../modules/types.html#QueryType" class="tsd-signature-type" data-tsd-kind="Type alias">QueryType</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">query<wbr>OrExplain&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.IQueryExplained.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryExplained</a><span class="tsd-signature-symbol"> | </span><a href="../modules/types.html#QueryType" class="tsd-signature-type" data-tsd-kind="Type alias">QueryType</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L110">packages/actor-init-query/lib/QueryEngineBase.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L112">packages/actor-init-query/lib/QueryEngineBase.ts:112</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -523,7 +537,7 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An optional query context.</p>
 									</div>
@@ -539,14 +553,14 @@
 					<a name="queryQuads" class="tsd-anchor"></a>
 					<h3>query<wbr>Quads</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">query<wbr>Quads&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ResultStream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Quads&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ResultStream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#queryQuads">queryQuads</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L35">packages/actor-init-query/lib/QueryEngineBase.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L36">packages/actor-init-query/lib/QueryEngineBase.ts:36</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -566,7 +580,7 @@
 									<h5>query: <span class="tsd-signature-type">QueryFormatTypeInner</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ResultStream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -577,14 +591,14 @@
 					<a name="queryVoid" class="tsd-anchor"></a>
 					<h3>query<wbr>Void</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">query<wbr>Void&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Void&lt;QueryFormatTypeInner&gt;<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryFormatTypeInner</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#queryVoid">queryVoid</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L49">packages/actor-init-query/lib/QueryEngineBase.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L50">packages/actor-init-query/lib/QueryEngineBase.ts:50</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -604,7 +618,7 @@
 									<h5>query: <span class="tsd-signature-type">QueryFormatTypeInner</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">QueryFormatTypeInner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><a href="../modules/types.html#QueryStringContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryStringContext</a><span class="tsd-signature-symbol"> : </span><a href="../modules/types.html#QueryAlgebraContext" class="tsd-signature-type" data-tsd-kind="Type alias">QueryAlgebraContext</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -622,7 +636,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/types.IQueryEngine.html">IQueryEngine</a>.<a href="../interfaces/types.IQueryEngine.html#resultToString">resultToString</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L271">packages/actor-init-query/lib/QueryEngineBase.ts:271</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L273">packages/actor-init-query/lib/QueryEngineBase.ts:273</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -666,7 +680,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L343">packages/actor-init-query/lib/QueryEngineBase.ts:343</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L345">packages/actor-init-query/lib/QueryEngineBase.ts:345</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -697,7 +711,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/QueryEngineBase.ts#L308">packages/actor-init-query/lib/QueryEngineBase.ts:308</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/QueryEngineBase.ts#L310">packages/actor-init-query/lib/QueryEngineBase.ts:310</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -741,7 +755,7 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="actor_init_query.ActorInitQuery.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Query</a>
 							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="actor_init_query.ActorInitQueryBase.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Query<wbr>Base</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
@@ -759,10 +773,10 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="actor_init_query.MemoryPhysicalQueryPlanLogger.html" class="tsd-kind-icon">Memory<wbr>Physical<wbr>Query<wbr>Plan<wbr>Logger</a>
 							</li>
-							<li class="current tsd-kind-class tsd-parent-kind-module">
+							<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="actor_init_query.QueryEngineBase.html" class="tsd-kind-icon">Query<wbr>Engine<wbr>Base</a>
 								<ul>
-									<li class=" tsd-kind-constructor tsd-parent-kind-class">
+									<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter">
 										<a href="actor_init_query.QueryEngineBase.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
@@ -815,7 +829,7 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="actor_init_query.QueryEngineFactoryBase.html" class="tsd-kind-icon">Query<wbr>Engine<wbr>Factory<wbr>Base</a>
 							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-kind-icon">IActor<wbr>Init<wbr>Query<wbr>Base<wbr>Args</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
@@ -850,7 +864,6 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">

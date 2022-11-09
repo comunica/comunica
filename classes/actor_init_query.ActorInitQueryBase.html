@@ -61,7 +61,7 @@
 					<a href="actor_init_query.ActorInitQueryBase.html">ActorInitQueryBase</a>
 				</li>
 			</ul>
-			<h1>Class ActorInitQueryBase</h1>
+			<h1>Class ActorInitQueryBase&lt;QueryContext&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -74,6 +74,14 @@
 						<p>A browser-safe comunica Query Init Actor.</p>
 					</div>
 				</div>
+			</section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>QueryContext<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a> = <a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a></h4>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
@@ -99,7 +107,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorInitQueryBaseArgs</a></li>
+					<li><a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorInitQueryBaseArgs</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -109,7 +117,7 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="actor_init_query.ActorInitQueryBase.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite"><a href="actor_init_query.ActorInitQueryBase.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -119,6 +127,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_init_query.ActorInitQueryBase.html#bus" class="tsd-kind-icon">bus</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_query.ActorInitQueryBase.html#context" class="tsd-kind-icon">context</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_query.ActorInitQueryBase.html#contextKeyShortcuts" class="tsd-kind-icon">context<wbr>Key<wbr>Shortcuts</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_query.ActorInitQueryBase.html#contextKeyShortcutsExtensions" class="tsd-kind-icon">context<wbr>Key<wbr>Shortcuts<wbr>Extensions</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_query.ActorInitQueryBase.html#defaultQueryInputFormat" class="tsd-kind-icon">default<wbr>Query<wbr>Input<wbr>Format</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_query.ActorInitQueryBase.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_query.ActorInitQueryBase.html#mediatorContextPreprocess" class="tsd-kind-icon">mediator<wbr>Context<wbr>Preprocess</a></li>
@@ -156,27 +165,44 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Actor<wbr>Init<wbr>Query<wbr>Base<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorInitQueryBaseArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Actor<wbr>Init<wbr>Query<wbr>Base&lt;QueryContext&gt;<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorInitQueryBaseArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L33">packages/actor-init-query/lib/ActorInitQueryBase.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L44">packages/actor-init-query/lib/ActorInitQueryBase.ts:44</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create new ActorInitQueryBase object.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>When duplicate keys are present in <code>args.contextKeyShortcuts</code>
+										and <code>args.contextKeyShortcutsExtensions</code>.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>QueryContext<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a> = <a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a></h4>
+								</li>
+							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>args: <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorInitQueryBaseArgs</a></h5>
+									<h5>args: <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-signature-type" data-tsd-kind="Interface">IActorInitQueryBaseArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_init_query.ActorInitQueryBase.html" class="tsd-signature-type" data-tsd-kind="Class">ActorInitQueryBase</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -191,7 +217,7 @@
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#beforeActors">beforeActors</a></p>
 						<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#beforeActors">beforeActors</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L25">packages/core/lib/Actor.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L25">packages/core/lib/Actor.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -208,7 +234,7 @@
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#bus">bus</a></p>
 						<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L24">packages/core/lib/Actor.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L24">packages/core/lib/Actor.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -224,7 +250,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#context">context</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L30">packages/actor-init-query/lib/ActorInitQueryBase.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L31">packages/actor-init-query/lib/ActorInitQueryBase.ts:31</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -236,16 +262,32 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="contextKeyShortcuts" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> context<wbr>Key<wbr>Shortcuts</h3>
-					<div class="tsd-signature tsd-kind-icon">context<wbr>Key<wbr>Shortcuts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">context<wbr>Key<wbr>Shortcuts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#contextKeyShortcuts">contextKeyShortcuts</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L31">packages/actor-init-query/lib/ActorInitQueryBase.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L32">packages/actor-init-query/lib/ActorInitQueryBase.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>A record of context shortcuts to full context keys (as defined in @comunica/context-entries).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="contextKeyShortcutsExtensions" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> context<wbr>Key<wbr>Shortcuts<wbr>Extensions</h3>
+					<div class="tsd-signature tsd-kind-icon">context<wbr>Key<wbr>Shortcuts<wbr>Extensions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Exclude</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">QueryContext</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">keyof </span><a href="../interfaces/types.IQueryContextCommon.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryContextCommon</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#contextKeyShortcutsExtensions">contextKeyShortcutsExtensions</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L34">packages/actor-init-query/lib/ActorInitQueryBase.ts:34</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of <code>contextKeyShortcuts</code> appended to <code>contextKeyShortcuts</code> during construction.</p>
 						</div>
 					</div>
 				</section>
@@ -256,7 +298,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#defaultQueryInputFormat">defaultQueryInputFormat</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L29">packages/actor-init-query/lib/ActorInitQueryBase.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L30">packages/actor-init-query/lib/ActorInitQueryBase.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -272,7 +314,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#logger">logger</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L27">packages/actor-init-query/lib/ActorInitQueryBase.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L28">packages/actor-init-query/lib/ActorInitQueryBase.ts:28</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -288,7 +330,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorContextPreprocess">mediatorContextPreprocess</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L24">packages/actor-init-query/lib/ActorInitQueryBase.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L25">packages/actor-init-query/lib/ActorInitQueryBase.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -304,7 +346,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorHttpInvalidate">mediatorHttpInvalidate</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L25">packages/actor-init-query/lib/ActorInitQueryBase.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L26">packages/actor-init-query/lib/ActorInitQueryBase.ts:26</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -320,7 +362,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorOptimizeQueryOperation">mediatorOptimizeQueryOperation</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L18">packages/actor-init-query/lib/ActorInitQueryBase.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L19">packages/actor-init-query/lib/ActorInitQueryBase.ts:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -336,7 +378,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorQueryOperation">mediatorQueryOperation</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L19">packages/actor-init-query/lib/ActorInitQueryBase.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L20">packages/actor-init-query/lib/ActorInitQueryBase.ts:20</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -352,7 +394,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorQueryParse">mediatorQueryParse</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L20">packages/actor-init-query/lib/ActorInitQueryBase.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L21">packages/actor-init-query/lib/ActorInitQueryBase.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -368,7 +410,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorQueryResultSerialize">mediatorQueryResultSerialize</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L21">packages/actor-init-query/lib/ActorInitQueryBase.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L22">packages/actor-init-query/lib/ActorInitQueryBase.ts:22</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -384,7 +426,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorQueryResultSerializeMediaTypeCombiner">mediatorQueryResultSerializeMediaTypeCombiner</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L22">packages/actor-init-query/lib/ActorInitQueryBase.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L23">packages/actor-init-query/lib/ActorInitQueryBase.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -400,7 +442,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#mediatorQueryResultSerializeMediaTypeFormatCombiner">mediatorQueryResultSerializeMediaTypeFormatCombiner</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L23">packages/actor-init-query/lib/ActorInitQueryBase.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L24">packages/actor-init-query/lib/ActorInitQueryBase.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -417,7 +459,7 @@
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#name">name</a></p>
 						<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L23">packages/core/lib/Actor.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L23">packages/core/lib/Actor.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -433,7 +475,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html">IActorInitQueryBaseArgs</a>.<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html#queryString">queryString</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L28">packages/actor-init-query/lib/ActorInitQueryBase.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L29">packages/actor-init-query/lib/ActorInitQueryBase.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -456,7 +498,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#deinitialize">deinitialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L106">packages/core/lib/Actor.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L106">packages/core/lib/Actor.ts:106</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -482,7 +524,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#getDefaultLogData">getDefaultLogData</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L112">packages/core/lib/Actor.ts:112</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L112">packages/core/lib/Actor.ts:112</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -521,7 +563,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#initialize">initialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L95">packages/core/lib/Actor.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L95">packages/core/lib/Actor.ts:95</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -547,7 +589,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#logDebug">logDebug</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L125">packages/core/lib/Actor.ts:125</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L125">packages/core/lib/Actor.ts:125</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -589,7 +631,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#logError">logError</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L146">packages/core/lib/Actor.ts:146</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L146">packages/core/lib/Actor.ts:146</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -631,7 +673,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#logFatal">logFatal</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L153">packages/core/lib/Actor.ts:153</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L153">packages/core/lib/Actor.ts:153</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -673,7 +715,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#logInfo">logInfo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L132">packages/core/lib/Actor.ts:132</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L132">packages/core/lib/Actor.ts:132</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -715,7 +757,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#logTrace">logTrace</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L118">packages/core/lib/Actor.ts:118</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L118">packages/core/lib/Actor.ts:118</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -757,7 +799,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#logWarn">logWarn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L139">packages/core/lib/Actor.ts:139</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L139">packages/core/lib/Actor.ts:139</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -799,7 +841,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#run">run</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L41">packages/actor-init-query/lib/ActorInitQueryBase.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L60">packages/actor-init-query/lib/ActorInitQueryBase.ts:60</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -831,7 +873,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#runObservable">runObservable</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L82">packages/core/lib/Actor.ts:82</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L82">packages/core/lib/Actor.ts:82</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -865,7 +907,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#test">test</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/actor-init-query/lib/ActorInitQueryBase.ts#L37">packages/actor-init-query/lib/ActorInitQueryBase.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/actor-init-query/lib/ActorInitQueryBase.ts#L56">packages/actor-init-query/lib/ActorInitQueryBase.ts:56</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -896,7 +938,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_init.ActorInit.html">ActorInit</a>.<a href="bus_init.ActorInit.html#getContextLogger">getContextLogger</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1ddba2b/packages/core/lib/Actor.ts#L51">packages/core/lib/Actor.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ca7e6cf/packages/core/lib/Actor.ts#L51">packages/core/lib/Actor.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -941,10 +983,10 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="actor_init_query.ActorInitQuery.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Query</a>
 							</li>
-							<li class="current tsd-kind-class tsd-parent-kind-module">
+							<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="actor_init_query.ActorInitQueryBase.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Query<wbr>Base</a>
 								<ul>
-									<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+									<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite">
 										<a href="actor_init_query.ActorInitQueryBase.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
@@ -958,6 +1000,9 @@
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_init_query.ActorInitQueryBase.html#contextKeyShortcuts" class="tsd-kind-icon">context<wbr>Key<wbr>Shortcuts</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="actor_init_query.ActorInitQueryBase.html#contextKeyShortcutsExtensions" class="tsd-kind-icon">context<wbr>Key<wbr>Shortcuts<wbr>Extensions</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_init_query.ActorInitQueryBase.html#defaultQueryInputFormat" class="tsd-kind-icon">default<wbr>Query<wbr>Input<wbr>Format</a>
@@ -1051,13 +1096,13 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="actor_init_query.MemoryPhysicalQueryPlanLogger.html" class="tsd-kind-icon">Memory<wbr>Physical<wbr>Query<wbr>Plan<wbr>Logger</a>
 							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="actor_init_query.QueryEngineBase.html" class="tsd-kind-icon">Query<wbr>Engine<wbr>Base</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="actor_init_query.QueryEngineFactoryBase.html" class="tsd-kind-icon">Query<wbr>Engine<wbr>Factory<wbr>Base</a>
 							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="../interfaces/actor_init_query.IActorInitQueryBaseArgs.html" class="tsd-kind-icon">IActor<wbr>Init<wbr>Query<wbr>Base<wbr>Args</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
@@ -1092,7 +1137,6 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
