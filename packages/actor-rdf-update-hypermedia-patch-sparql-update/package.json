@@ -38,7 +38,7 @@
     "@comunica/core": "^2.4.0",
     "@comunica/types": "^2.4.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.7.0",
+    "asynciterator": "^3.8.0",
     "cross-fetch": "^3.0.5",
     "rdf-string-ttl": "^1.1.0",
     "readable-stream": "^4.0.0"
