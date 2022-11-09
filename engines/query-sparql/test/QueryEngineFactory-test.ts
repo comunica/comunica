@@ -5,6 +5,9 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { QueryEngineFactory } from '../lib/QueryEngineFactory';
 
+// Use an increased timeout
+jest.setTimeout(30_000);
+
 const DF = new DataFactory();
 const queryEngineFactory = new QueryEngineFactory();
 

@@ -1,7 +1,9 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
-jest.unmock('follow-redirects');
+if (!global.window) {
+  jest.unmock('follow-redirects');
+}
 
 import { KeysHttpWayback, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
@@ -13,25 +15,17 @@ import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
-import { mockHttp } from './util';
+import { usePolly } from './util';
 
 const DF = new DataFactory();
 const factory = new Factory();
 
 describe('System test: QuerySparql', () => {
-  const pollyContext = mockHttp();
+  usePolly();
 
   let engine: QueryEngine;
-
   beforeEach(() => {
     engine = new QueryEngine();
-    pollyContext.polly.server.any().on('beforePersist', (req, recording) => {
-      recording.request.headers = recording.request.headers.filter(({ name }: any) => name !== 'user-agent');
-    });
-  });
-
-  afterEach(async() => {
-    await pollyContext.polly.flush();
   });
 
   describe('query', () => {
@@ -575,7 +569,8 @@ describe('System test: QuerySparql', () => {
     });
   });
 
-  describe('foaf ontology broken link [using full key]', () => {
+  // We skip these tests in browsers due to CORS issues
+  describe('foaf ontology broken link (no browser)', () => {
     it('returns results with link recovery on [using full key]', async() => {
       const result = <QueryBindings> await engine.query(`SELECT * WHERE {
     <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
@@ -585,9 +580,7 @@ describe('System test: QuerySparql', () => {
       });
       expect((await arrayifyStream(await result.execute())).length).toEqual(1);
     });
-  });
 
-  describe('foaf ontology broken link [using shortcut key]', () => {
     it('returns results with link recovery on [using shortcut key]', async() => {
       const result = <QueryBindings> await engine.query(`SELECT * WHERE {
     <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
