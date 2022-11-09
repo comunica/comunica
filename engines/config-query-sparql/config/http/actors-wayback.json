@@ -10,7 +10,7 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:http/actors#main",
+      "@id": "urn:comunica:default:http/actors#wayback",
       "@type": "ActorHttpWayback",
       "bus": { "@id": "ActorHttp:_fallback_bus" },
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#no-fallback" }
