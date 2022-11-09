@@ -27,7 +27,8 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
     "@comunica/bus-rdf-update-quads": "^2.4.0",

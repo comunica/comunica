@@ -26,7 +26,8 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
     "@comunica/bus-rdf-join": "^2.4.0",

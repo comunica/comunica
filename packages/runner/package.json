@@ -30,8 +30,10 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "lib/**/*.js.map",
     "bin/**/*.d.ts",
-    "bin/**/*.js"
+    "bin/**/*.js",
+    "bin/**/*.js.map"
   ],
   "dependencies": {
     "@comunica/bus-init": "^2.4.0",

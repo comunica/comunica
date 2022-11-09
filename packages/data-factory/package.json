@@ -27,7 +27,8 @@
   "homepage": "https://comunica.dev/",
   "files": [
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map/**/"
   ],
   "dependencies": {
     "@rdfjs/types": "*"

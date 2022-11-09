@@ -35,6 +35,7 @@
     "config",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "lib/**/*.js.map",
     "engine-default.js"
   ],
   "dependencies": {

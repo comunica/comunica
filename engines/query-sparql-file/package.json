@@ -39,8 +39,10 @@
     "config",
     "bin/**/*.d.ts",
     "bin/**/*.js",
+    "bin/**/*.js.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "lib/**/*.js.map",
     "engine-default.js",
     "engine-browser.js"
   ],
