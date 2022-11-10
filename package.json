@@ -51,7 +51,7 @@
     "karma-jasmine-html-reporter": "^2.0.0",
     "karma-sourcemap-loader": "^0.3.8",
     "karma-webpack": "^5.0.0",
-    "lerna": "^5.0.0",
+    "lerna": "^6.0.0",
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.0",
     "memory-streams": "^0.1.3",
