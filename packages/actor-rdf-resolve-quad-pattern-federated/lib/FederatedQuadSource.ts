@@ -1,4 +1,3 @@
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActorRdfResolveQuadPatternOutput,
   IQuadSource,
@@ -207,7 +206,7 @@ export class FederatedQuadSource implements IQuadSource {
       }
     };
 
-    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
+    const proxyIt: Promise<AsyncIterator<RDF.Quad>>[] = this.sources.map(async source => {
       const sourceId = this.getSourceId(source);
 
       // Deskolemize terms, so we send the original blank nodes to each source.
@@ -274,22 +273,10 @@ export class FederatedQuadSource implements IQuadSource {
       data.on('error', error => it.emit('error', error));
 
       return data;
-    }));
+    });
 
     // Take the union of all source streams
-    const it = new ClosableTransformIterator(async() => new UnionIterator(await proxyIt), {
-      autoStart: false,
-      onClose() {
-        // Destroy the sub-iterators
-        proxyIt.then(proxyItResolved => {
-          for (const subIt of proxyItResolved) {
-            subIt.destroy();
-          }
-        }, () => {
-          // Void errors
-        });
-      },
-    });
+    const it = new UnionIterator(proxyIt, { destroySources: true, autoStart: false });
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
