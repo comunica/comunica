@@ -53,6 +53,7 @@
     "IQueryableResultVoid",
     "PathVariableObjectIterator",
     "ClosableTransformIterator",
+    "BindingsStreamAdaptiveDestroy",
 
     "RDF.Stream",
     "Omit",

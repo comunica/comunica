@@ -269,3 +269,10 @@ export const KeysRdfUpdateQuads = {
    */
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
 };
+
+export const KeysRdfJoin = {
+  /**
+   * If adaptive joining must not be done.
+   */
+  skipAdaptiveJoin: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-join:skipAdaptiveJoin'),
+};
