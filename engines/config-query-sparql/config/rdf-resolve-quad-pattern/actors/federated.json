@@ -10,7 +10,8 @@
     {
       "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#federated",
       "@type": "ActorRdfResolveQuadPatternFederated",
-      "mediatorResolveQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" }
+      "mediatorResolveQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" },
+      "mediatorRdfMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" }
     }
   ]
 }

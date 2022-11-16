@@ -1,3 +1,5 @@
+import type { MediatorRdfMetadataAccumulate,
+  IActionRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type {
   IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternArgs,
   IQuadSource, MediatorRdfResolveQuadPattern,
@@ -16,12 +18,52 @@ import { FederatedQuadSource } from './FederatedQuadSource';
 export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatternSource
   implements IActorRdfResolveQuadPatternFederatedArgs {
   public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
+  public readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
   public readonly skipEmptyPatterns: boolean;
 
   protected readonly emptyPatterns: Map<IDataSource, RDF.Quad[]> = new Map();
 
   public constructor(args: IActorRdfResolveQuadPatternFederatedArgs) {
     super(args);
+
+    // TODO: remove this backwards-compatibility in the next major version, and make the param mandatory
+    if (!args.mediatorRdfMetadataAccumulate) {
+      this.mediatorRdfMetadataAccumulate = <any> {
+        async mediate(action: IActionRdfMetadataAccumulate) {
+          if (action.mode === 'initialize') {
+            return { metadata: { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false }};
+          }
+
+          const metadata = { ...action.accumulatedMetadata };
+          const subMetadata = action.appendingMetadata;
+          if (!subMetadata.cardinality || !Number.isFinite(subMetadata.cardinality.value)) {
+            // We're already at infinite, so ignore any later metadata
+            metadata.cardinality.type = 'estimate';
+            metadata.cardinality.value = Number.POSITIVE_INFINITY;
+          } else {
+            if (subMetadata.cardinality.type === 'estimate') {
+              metadata.cardinality.type = 'estimate';
+            }
+            metadata.cardinality.value += subMetadata.cardinality.value;
+          }
+          if (metadata.requestTime || subMetadata.requestTime) {
+            metadata.requestTime = metadata.requestTime || 0;
+            subMetadata.requestTime = subMetadata.requestTime || 0;
+            metadata.requestTime += subMetadata.requestTime;
+          }
+          if (metadata.pageSize || subMetadata.pageSize) {
+            metadata.pageSize = metadata.pageSize || 0;
+            subMetadata.pageSize = subMetadata.pageSize || 0;
+            metadata.pageSize += subMetadata.pageSize;
+          }
+          if (subMetadata.canContainUndefs) {
+            metadata.canContainUndefs = true;
+          }
+
+          return { metadata };
+        },
+      };
+    }
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
@@ -35,6 +77,7 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
   protected async getSource(context: IActionContext): Promise<IQuadSource> {
     return new FederatedQuadSource(
       this.mediatorResolveQuadPattern,
+      this.mediatorRdfMetadataAccumulate,
       context,
       this.emptyPatterns,
       this.skipEmptyPatterns,
@@ -47,6 +90,10 @@ export interface IActorRdfResolveQuadPatternFederatedArgs extends IActorRdfResol
    * The quad pattern resolve mediator.
    */
   mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
+  /**
+   * The RDF metadata accumulate mediator.
+   */
+  mediatorRdfMetadataAccumulate?: MediatorRdfMetadataAccumulate;
   /**
    * If quad patterns that are sub-patterns of empty quad patterns should be skipped.
    * This assumes that sources remain static during query evaluation.

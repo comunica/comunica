@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-rdf-resolve-quad-pattern-federated",
-  "version": "2.6.8",
-  "description": "A federated rdf-resolve-quad-pattern actor",
+  "name": "@comunica/actor-rdf-metadata-accumulate-requesttime",
+  "version": "2.5.0",
+  "description": "A requesttime rdf-metadata-accumulate actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-rdf-resolve-quad-pattern-federated"
+    "directory": "packages/actor-rdf-metadata-accumulate-requesttime"
   },
   "publishConfig": {
     "access": "public"
@@ -17,8 +17,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "rdf-resolve-quad-pattern",
-    "federated"
+    "rdf-metadata-accumulate",
+    "requesttime"
   ],
   "license": "MIT",
   "bugs": {
@@ -32,18 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.6.8",
-    "@comunica/bus-rdf-metadata-accumulate": "^2.5.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^2.6.8",
-    "@comunica/context-entries": "^2.6.8",
-    "@comunica/core": "^2.6.8",
-    "@comunica/data-factory": "^2.5.1",
-    "@comunica/types": "^2.6.8",
-    "@rdfjs/types": "*",
-    "asynciterator": "^3.8.0",
-    "rdf-data-factory": "^1.1.1",
-    "rdf-terms": "^1.9.1",
-    "sparqlalgebrajs": "^4.0.5"
+    "@comunica/core": "^2.5.0",
+    "@comunica/bus-rdf-metadata-accumulate": "^2.5.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
