@@ -17,6 +17,7 @@ import { parse } from '../__mocks__/url';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
+
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
 

@@ -9,6 +9,7 @@ import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
+
 const DF = new DataFactory();
 const v = DF.variable('v');
 

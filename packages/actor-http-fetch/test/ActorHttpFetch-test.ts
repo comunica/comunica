@@ -8,6 +8,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
+
 const streamifyString = require('streamify-string');
 
 // Mock fetch

@@ -9,10 +9,11 @@ import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationSparqlEndpoint } from '../lib/ActorQueryOperationSparqlEndpoint';
-const quad = require('rdf-quad');
-const streamifyString = require('streamify-string');
 import 'jest-rdf';
 import '@comunica/jest';
+
+const quad = require('rdf-quad');
+const streamifyString = require('streamify-string');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();

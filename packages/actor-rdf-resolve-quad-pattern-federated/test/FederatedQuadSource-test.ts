@@ -12,6 +12,7 @@ import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';
 
 const squad = require('rdf-quad');
+
 const factory = new Factory();
 const DF = new DataFactory<RDF.BaseQuad>();
 

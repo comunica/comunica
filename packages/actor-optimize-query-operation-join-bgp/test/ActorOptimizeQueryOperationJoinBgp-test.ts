@@ -4,6 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationJoinBgp } from '../lib/ActorOptimizeQueryOperationJoinBgp';
+
 const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationJoinBgp', () => {

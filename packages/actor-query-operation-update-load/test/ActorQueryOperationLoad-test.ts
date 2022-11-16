@@ -5,6 +5,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
+
 const DF = new DataFactory();
 
 describe('ActorQueryOperationLoad', () => {

@@ -8,6 +8,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDescribeSubject } from '../lib/ActorQueryOperationDescribeSubject';
+
 const DF = new DataFactory();
 
 describe('ActorQueryOperationDescribeSubject', () => {

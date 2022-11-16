@@ -2,6 +2,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
+
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 

@@ -5,6 +5,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
 import { Request } from 'cross-fetch';
 import { ActorHttpWayback } from '../lib';
+
 const stringToStream = require('streamify-string');
 
 describe('ActorHttpInterceptWayback', () => {

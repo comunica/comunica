@@ -10,6 +10,7 @@ import { TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
+
 const DF = new DataFactory();
 
 /**

@@ -13,6 +13,7 @@ import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
+
 const DF = new DataFactory();
 
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {

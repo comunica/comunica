@@ -1,5 +1,6 @@
 import { DataFactory } from 'rdf-data-factory';
 import { BlankNodeBindingsScoped } from '..';
+
 const DF = new DataFactory();
 
 describe('BlankNodeBindingsScoped', () => {

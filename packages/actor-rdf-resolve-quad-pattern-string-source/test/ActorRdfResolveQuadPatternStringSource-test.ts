@@ -7,8 +7,9 @@ import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
-const streamifyArray = require('streamify-array');
 import 'jest-rdf';
+
+const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 

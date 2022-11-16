@@ -10,6 +10,7 @@ import { AppRunner, resolveModulePath } from '@solid/community-server';
 import 'jest-rdf';
 import fetch from 'node-fetch';
 import { QueryEngine } from '../lib/QueryEngine';
+
 const squad = require('rdf-quad');
 
 const config = [{
