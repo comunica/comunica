@@ -9,8 +9,9 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationQuadpattern } from '../lib/ActorQueryOperationQuadpattern';
-const quad = require('rdf-quad');
 import '@comunica/jest';
+
+const quad = require('rdf-quad');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();

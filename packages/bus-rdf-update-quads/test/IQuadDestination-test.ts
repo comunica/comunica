@@ -1,4 +1,5 @@
 import { validateHttpResponse } from '../lib/IQuadDestination';
+
 const streamifyString = require('streamify-string');
 
 describe('validateHttpResponse', () => {

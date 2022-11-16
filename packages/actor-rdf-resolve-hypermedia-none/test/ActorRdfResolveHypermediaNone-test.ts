@@ -9,6 +9,7 @@ import { ActorRdfResolveHypermediaNone } from '../lib/ActorRdfResolveHypermediaN
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
+
 const DF = new DataFactory();
 const v = DF.variable('v');
 

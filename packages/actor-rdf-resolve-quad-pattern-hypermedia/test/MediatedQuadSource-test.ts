@@ -13,6 +13,7 @@ import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 
 const DF = new DataFactory();
 const quad = require('rdf-quad');
+
 const v = DF.variable('v');
 
 describe('MediatedQuadSource', () => {

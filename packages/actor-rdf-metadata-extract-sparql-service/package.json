@@ -34,7 +34,7 @@
   "dependencies": {
     "@comunica/bus-rdf-metadata-extract": "^2.5.0",
     "@comunica/core": "^2.5.0",
-    "relative-to-absolute-iri": "^1.0.5"
+    "relative-to-absolute-iri": "^1.0.7"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

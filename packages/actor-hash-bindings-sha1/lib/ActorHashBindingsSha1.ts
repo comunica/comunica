@@ -3,6 +3,7 @@ import { ActorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorTest } from '@comunica/core';
 import { sha1 } from 'hash.js';
 import { termToString } from 'rdf-string';
+
 const canonicalize = require('canonicalize');
 
 /**

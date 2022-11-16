@@ -12,7 +12,9 @@ import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import yargs from 'yargs';
+// eslint-disable-next-line import/no-useless-path-segments
 import { QueryEngineBase, QueryEngineFactoryBase } from '..';
+// eslint-disable-next-line import/no-useless-path-segments
 import type { IDynamicQueryEngineOptions } from '..';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';

@@ -38,7 +38,7 @@
   "dependencies": {
     "@comunica/bus-init": "^2.5.0",
     "@comunica/core": "^2.5.0",
-    "componentsjs": "^5.2.0"
+    "componentsjs": "^5.3.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -4,6 +4,7 @@ import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationMoveRewrite } from '../lib/ActorQueryOperationMoveRewrite';
+
 const DF = new DataFactory();
 const factory = new Factory();
 

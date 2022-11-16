@@ -10,6 +10,7 @@ import type { IQueryOperationResult,
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
+
 const BF = new BindingsFactory();
 const DF = new DataFactory();
 

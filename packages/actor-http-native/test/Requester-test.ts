@@ -1,5 +1,6 @@
 import * as url from 'url';
 import Requester from '../lib/Requester';
+
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
 
 describe('Requester', () => {

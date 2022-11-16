@@ -34,9 +34,9 @@
   "dependencies": {
     "@comunica/bus-query-parse": "^2.5.0",
     "@comunica/core": "^2.5.0",
-    "@types/sparqljs": "^3.0.0",
-    "sparqlalgebrajs": "^4.0.0",
-    "sparqljs": "^3.4.1"
+    "@types/sparqljs": "^3.1.3",
+    "sparqlalgebrajs": "^4.0.5",
+    "sparqljs": "^3.6.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -2,6 +2,7 @@ import type { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractHydraPagesize } from '../lib/ActorRdfMetadataExtractHydraPagesize';
+
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
 

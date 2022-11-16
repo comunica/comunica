@@ -3,6 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationClear } from '../lib/ActorQueryOperationClear';
+
 const DF = new DataFactory();
 
 describe('ActorQueryOperationClear', () => {

@@ -4,6 +4,7 @@ import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { mapTerms } from 'rdf-terms';
+
 const DF = new DataFactory();
 
 /**

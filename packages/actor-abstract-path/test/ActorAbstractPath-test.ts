@@ -3,6 +3,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorAbstractPath } from '../lib/ActorAbstractPath';
+
 const DF = new DataFactory();
 
 describe('ActorAbstractPath', () => {

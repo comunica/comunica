@@ -10,6 +10,7 @@ import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
+
 const DF = new DataFactory<RDF.BaseQuad>();
 
 /**

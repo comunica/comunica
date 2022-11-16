@@ -8,6 +8,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory, Store } from 'n3';
 import type { IActorRdfUpdateQuadsOutput } from '../lib';
 import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '../lib';
+
 const { quad, namedNode, blankNode } = DataFactory;
 
 describe('ActorRdfUpdateQuadsDestination', () => {

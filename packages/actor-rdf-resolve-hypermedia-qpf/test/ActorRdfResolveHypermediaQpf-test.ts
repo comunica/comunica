@@ -4,6 +4,7 @@ import { empty, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveHypermediaQpf } from '../lib/ActorRdfResolveHypermediaQpf';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
+
 const DF = new DataFactory();
 const v = DF.variable('v');
 
