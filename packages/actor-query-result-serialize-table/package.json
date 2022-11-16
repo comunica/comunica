@@ -35,9 +35,9 @@
     "@comunica/bus-query-result-serialize": "^2.5.0",
     "@comunica/types": "^2.5.0",
     "@rdfjs/types": "*",
-    "rdf-data-factory": "^1.1.0",
-    "rdf-terms": "^1.6.2",
-    "readable-stream": "^4.0.0"
+    "rdf-data-factory": "^1.1.1",
+    "rdf-terms": "^1.9.1",
+    "readable-stream": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

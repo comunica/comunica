@@ -40,9 +40,9 @@
     "@comunica/types": "^2.5.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
-    "rdf-data-factory": "^1.1.0",
-    "rdf-terms": "^1.6.2",
-    "sparqlalgebrajs": "^4.0.0"
+    "rdf-data-factory": "^1.1.1",
+    "rdf-terms": "^1.9.1",
+    "sparqlalgebrajs": "^4.0.5"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

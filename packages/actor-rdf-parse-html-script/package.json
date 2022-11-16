@@ -38,8 +38,8 @@
     "@comunica/core": "^2.5.0",
     "@comunica/types": "^2.5.0",
     "@rdfjs/types": "*",
-    "readable-stream": "^4.0.0",
-    "relative-to-absolute-iri": "^1.0.5"
+    "readable-stream": "^4.2.0",
+    "relative-to-absolute-iri": "^1.0.7"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

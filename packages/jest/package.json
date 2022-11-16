@@ -37,7 +37,7 @@
     "@comunica/bindings-factory": "^2.5.0",
     "@comunica/types": "^2.5.0",
     "@rdfjs/types": "*",
-    "arrayify-stream": "^2.0.0"
+    "arrayify-stream": "^2.0.1"
   },
   "scripts": {
     "build": "npm run build:ts",

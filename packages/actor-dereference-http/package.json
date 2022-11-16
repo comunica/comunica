@@ -35,8 +35,8 @@
     "@comunica/bus-dereference": "^2.5.0",
     "@comunica/bus-http": "^2.5.0",
     "@comunica/core": "^2.5.0",
-    "cross-fetch": "^3.0.5",
-    "relative-to-absolute-iri": "^1.0.5",
+    "cross-fetch": "^3.1.5",
+    "relative-to-absolute-iri": "^1.0.7",
     "stream-to-string": "^1.2.0"
   },
   "scripts": {

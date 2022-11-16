@@ -39,8 +39,8 @@
     "@comunica/types": "^2.5.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
-    "rdf-data-factory": "^1.1.0",
-    "sparqlalgebrajs": "^4.0.0",
+    "rdf-data-factory": "^1.1.1",
+    "sparqlalgebrajs": "^4.0.5",
     "sparqlee": "^2.1.0"
   },
   "scripts": {

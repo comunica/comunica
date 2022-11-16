@@ -37,8 +37,8 @@
     "@comunica/core": "^2.5.0",
     "@comunica/types": "^2.5.0",
     "@rdfjs/types": "*",
-    "htmlparser2": "^8.0.0",
-    "readable-stream": "^4.0.0"
+    "htmlparser2": "^8.0.1",
+    "readable-stream": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
