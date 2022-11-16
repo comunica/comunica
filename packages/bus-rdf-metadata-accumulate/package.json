@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-query-operation-path-zero-or-one",
+  "name": "@comunica/bus-rdf-metadata-accumulate",
   "version": "2.5.1",
-  "description": "A path-zero-or-one query-operation actor",
+  "description": "A comunica bus for rdf-metadata-accumulate events.",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-query-operation-path-zero-or-one"
+    "directory": "packages/bus-rdf-metadata-accumulate"
   },
   "publishConfig": {
     "access": "public"
@@ -16,9 +16,8 @@
   "sideEffects": false,
   "keywords": [
     "comunica",
-    "actor",
-    "query-operation",
-    "path-zero-or-one"
+    "bus",
+    "rdf-metadata-accumulate"
   ],
   "license": "MIT",
   "bugs": {
@@ -32,12 +31,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-path": "^2.5.1",
-    "@comunica/bindings-factory": "^2.5.1",
-    "@comunica/bus-query-operation": "^2.5.1",
-    "@comunica/types": "^2.5.1",
-    "asynciterator": "^3.8.0",
-    "sparqlalgebrajs": "^4.0.5"
+    "@comunica/core": "^2.5.1",
+    "@comunica/types": "^2.5.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-seq",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "A path-seq query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,10 +32,10 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-path": "^2.5.0",
-    "@comunica/bus-query-operation": "^2.5.0",
-    "@comunica/bus-rdf-join": "^2.5.0",
-    "@comunica/types": "^2.5.0",
+    "@comunica/actor-abstract-path": "^2.5.1",
+    "@comunica/bus-query-operation": "^2.5.1",
+    "@comunica/bus-rdf-join": "^2.5.1",
+    "@comunica/types": "^2.5.1",
     "sparqlalgebrajs": "^4.0.5"
   },
   "scripts": {

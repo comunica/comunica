@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-json",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "A json query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^2.5.0",
-    "@comunica/types": "^2.5.0",
+    "@comunica/bus-query-result-serialize": "^2.5.1",
+    "@comunica/types": "^2.5.1",
     "rdf-string": "^1.6.1",
     "readable-stream": "^4.2.0"
   },

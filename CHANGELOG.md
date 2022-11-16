@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.5.1"></a>
+## [v2.5.1](https://github.com/comunica/comunica/compare/v2.5.0...v2.5.1) - 2022-11-16
+
+### Fixed
+* [Add missing dependencies in file and rdfjs engines](https://github.com/comunica/comunica/commit/2261aa801acde5dcdde6597ccce54962284ab0f9)
+* [Rename wayback actor in config, Closes #1086](https://github.com/comunica/comunica/commit/4571140d7b51879f6b8896d9103518ad7a006e6c)
+* [Add localizeBlankNodes to IQueryContextCommon](https://github.com/comunica/comunica/commit/58d6eafffd4aea99d64631fd95cd6b51748ee2be)
+* [Fix incorrect files entry in data-factory](https://github.com/comunica/comunica/commit/bfefa770d8dbd06db9a04f7e76e3d556db2147b9)
+* [Add recoverBrokenLinks to IQueryContextCommon](https://github.com/comunica/comunica/commit/84f755c6c12f42db12a9f3f447bdbe90d56a79a5)
+
 <a name="v2.5.0"></a>
 ## [v2.5.0](https://github.com/comunica/comunica/compare/v2.4.3...v2.5.0) - 2022-11-09
 
