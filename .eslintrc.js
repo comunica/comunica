@@ -141,6 +141,7 @@ module.exports = {
     'import/no-default-export': 'off',
     'import/unambiguous': 'off',
     'import/extensions': 'off',
+    'import/first': 'off',
   },
   overrides: [
     {
