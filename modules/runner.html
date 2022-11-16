@@ -67,40 +67,328 @@
 		<div class="col-8 col-content">
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
-					<a href="#comunica-runner" id="comunica-runner" style="color: inherit; text-decoration: none;">
-						<h1>Comunica Runner</h1>
+					<a href="#componentsjs" id="componentsjs" style="color: inherit; text-decoration: none;">
+						<h1>Components.js</h1>
 					</a>
-					<p><a href="https://www.npmjs.com/package/@comunica/runner"><img src="https://badge.fury.io/js/%40comunica%2Frunner.svg" alt="npm version"></a></p>
-					<p>Runner module for Comunica actors on the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-init">Init bus</a>.</p>
-					<p>Related to <a href="https://github.com/comunica/comunica/tree/master/packages/runner-cli"><code>@comunica/runner-cli</code></a>, for running on the command line.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
-					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
-					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
-					<p><a href="https://comunica.dev/docs/modify/getting_started/custom_init/">Learn more about creating a custom init actor</a>.</p>
-					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
-						<h2>Install</h2>
+					<p><em>A semantic dependency injection framework</em></p>
+					<p><a href="https://github.com/LinkedSoftwareDependencies/Components.js/actions?query=workflow%3ACI"><img src="https://github.com/LinkedSoftwareDependencies/Components.js/workflows/CI/badge.svg" alt="Build status"></a>
+						<a href="https://coveralls.io/github/LinkedSoftwareDependencies/Components.js"><img src="https://coveralls.io/repos/github/LinkedSoftwareDependencies/Components.js/badge.svg" alt="Coverage Status"></a>
+						<a href="https://www.npmjs.com/package/componentsjs"><img src="https://badge.fury.io/js/componentsjs.svg" alt="npm version"></a>
+					<a href="https://zenodo.org/badge/latestdoi/90724301"><img src="https://zenodo.org/badge/90724301.svg" alt="DOI"></a></p>
+					<p>This repository contains the source code of Components.js.
+					Full documentation on its usage can be found at <a href="http://componentsjs.readthedocs.io/">http://componentsjs.readthedocs.io/</a>.</p>
+					<p>Interested in contributing to this project?
+					Have a look at this <a href="https://github.com/LinkedSoftwareDependencies/Components.js/blob/master/.github/CONTRIBUTING.md">contribution guide</a>.</p>
+					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+						<h2>Introduction</h2>
 					</a>
-					<pre><code class="language-bash"><span style="color: #000000">$ yarn add @comunica/runner</span>
+					<p>Components.js is a <a href="https://martinfowler.com/articles/injection.html">dependency injection</a> framework for <em>TypeScript</em> and <em>JavaScript</em> projects using JSON(-LD) files.</p>
+					<p>Instead of hard-wiring software components together, Components.js allows these components to be <em>instantiated</em> and <em>wired together</em> declaratively using <em>semantic configuration files</em>.
+					The advantage of these semantic configuration files is that software components can be uniquely and globally identified using <a href="https://www.w3.org/wiki/URI">URIs</a>.</p>
+					<p>Configurations can be written in any <a href="https://www.w3.org/RDF/">RDF</a> serialization, such as <a href="https://json-ld.org/">JSON-LD</a>.</p>
+					<p>This software is aimed for developers who want to build <em>modular</em> and <em>easily configurable</em> and <em>rewireable</em> JavaScript applications.</p>
+					<p>Get started with the TypeScript or JavaScript quick start guide below!</p>
+					<a href="#quick-start-typescript" id="quick-start-typescript" style="color: inherit; text-decoration: none;">
+						<h2>Quick Start (TypeScript)</h2>
+					</a>
+					<a href="#1-install-dependencies" id="1-install-dependencies" style="color: inherit; text-decoration: none;">
+						<h4>1. Install dependencies</h4>
+					</a>
+					<p>Components.js can be installed using npm:</p>
+					<pre><code class="language-bash"><span style="color: #000000">$ npm install componentsjs</span>
 </code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<p>Component and module files can be <em>automatically</em> generated using <a href="https://github.com/LinkedSoftwareDependencies/Components-Generator.js">Components-Generator.js</a>:</p>
+					<pre><code class="language-bash"><span style="color: #000000">$ npm install -D componentsjs-generator</span>
+</code></pre>
+					<a href="#2-mark-your-package-as-a-componentsjs-module" id="2-mark-your-package-as-a-componentsjs-module" style="color: inherit; text-decoration: none;">
+						<h4>2. Mark your package as a Components.js module</h4>
 					</a>
-					<p>See <a href="https://comunica.github.io/comunica/modules/runner.html#run-1"><code>run()</code></a></p>
+					<p><code>package.json</code>:</p>
+					<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;name&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;my-package&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;version&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;2.3.4&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;lsd:module&quot;</span><span style="color: #000000">: </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;scripts&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;build&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;npm run build:ts &amp;&amp; npm run build:components&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;build:ts&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;tsc&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;build:components&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;componentsjs-generator&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;prepare&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;npm run build&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p><code>&quot;lsd:module&quot;</code> will allow Components.js to find your module(s) when they are included from other packages.</p>
+					<p>The <code>&quot;scripts&quot;</code> entry will make sure that all required component files will be generated when building your package.</p>
+					<a href="#3-create-a-configuration-file-to-instantiate-our-class" id="3-create-a-configuration-file-to-instantiate-our-class" style="color: inherit; text-decoration: none;">
+						<h4>3. Create a configuration file to instantiate our class</h4>
+					</a>
+					<p>Assuming a TypeScript class that is exported from the package:</p>
+					<pre><code class="language-typescript"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyClass</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span><span style="color: #001080">name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000"> = </span><span style="color: #001080">name</span><span style="color: #000000">;  </span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p><code>config.jsonld</code>:</p>
+					<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@context&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^5.0.0/components/context.jsonld&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;https://linkedsoftwaredependencies.org/bundles/npm/my-package/^2.0.0/components/context.jsonld&quot;</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@id&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;urn:my-package:myInstance&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@type&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;MyClass&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;name&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;John&quot;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>This configuration is a semantic representation of the instantiation of <code>MyClass</code> with <code>name</code> set to <code>&quot;John&quot;</code>.</p>
+					<a href="#4-instantiate-from-config-file" id="4-instantiate-from-config-file" style="color: inherit; text-decoration: none;">
+						<h4>4. Instantiate from config file</h4>
+					</a>
+					<pre><code class="language-javascript"><span style="color: #000000">...</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ComponentsManager</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;componentsjs&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">manager</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">ComponentsManager</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">mainModulePath:</span><span style="color: #000000"> </span><span style="color: #001080">__dirname</span><span style="color: #000000">, </span><span style="color: #008000">// Path to your npm package&#039;s root</span>
+<span style="color: #000000">});</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">manager</span><span style="color: #000000">.</span><span style="color: #001080">configRegistry</span><span style="color: #000000">.</span><span style="color: #795E26">register</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;config.jsonld&#039;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">myInstance</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">manager</span><span style="color: #000000">.</span><span style="color: #795E26">instantiate</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;urn:my-package:myInstance&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">...</span>
+</code></pre>
+					<p><code>myInstance</code> is an instance of type <code>MyClass</code>, as defined in the config file.</p>
+					<a href="#quick-start-javascript" id="quick-start-javascript" style="color: inherit; text-decoration: none;">
+						<h2>Quick Start (JavaScript)</h2>
+					</a>
+					<a href="#1-install-dependencies-1" id="1-install-dependencies-1" style="color: inherit; text-decoration: none;">
+						<h4>1. Install dependencies</h4>
+					</a>
+					<p>Components.js can be installed using npm:</p>
+					<pre><code class="language-bash"><span style="color: #000000">$ npm install componentsjs</span>
+</code></pre>
+					<a href="#2-define-your-module-and-its-components" id="2-define-your-module-and-its-components" style="color: inherit; text-decoration: none;">
+						<h4>2. Define your module and its components</h4>
+					</a>
+					<p>Assuming a JavaScript class that is exported from the package:</p>
+					<pre><code class="language-typescript"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyClass</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">name</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span><span style="color: #001080">name</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000"> = </span><span style="color: #001080">name</span><span style="color: #000000">;  </span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p><code>module.jsonld</code>:</p>
+					<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@context&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^5.0.0/components/context.jsonld&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    { </span><span style="color: #0451A5">&quot;ex&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;http://example.org/&quot;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@id&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;ex:MyPackage&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@type&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;Module&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;requireName&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;my-package&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;components&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">    {</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;@id&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;ex:MyPackage/MyClass&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;@type&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;Class&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;requireElement&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;MyClass&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;parameters&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">        { </span><span style="color: #0451A5">&quot;@id&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;ex:MyPackage/MyClass#name&quot;</span><span style="color: #000000">, </span><span style="color: #0451A5">&quot;unique&quot;</span><span style="color: #000000">: </span><span style="color: #0000FF">true</span><span style="color: #000000"> }</span>
+<span style="color: #000000">      ],</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;constructorArguments&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">        { </span><span style="color: #0451A5">&quot;@id&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;ex:MyPackage/MyClass#name&quot;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">      ]</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  ]</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>The npm module <code>my-package</code> exports a class with the name <code>MyClass</code>.</p>
+					<p>The constructor of <code>MyClass</code> takes a single <code>name</code> argument.</p>
+					<a href="#3-create-a-configuration-file-to-instantiate-our-class-1" id="3-create-a-configuration-file-to-instantiate-our-class-1" style="color: inherit; text-decoration: none;">
+						<h4>3. Create a configuration file to instantiate our class</h4>
+					</a>
+					<p><code>config.jsonld</code>:</p>
+					<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@context&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^5.0.0/components/context.jsonld&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    {</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;ex&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;http://example.org/&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;name&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;ex:MyPackage/MyClass#name&quot;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@id&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;http://example.org/myInstance&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;@type&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;ex:MyPackage/MyClass&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;name&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;John&quot;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>This configuration is a semantic representation of the instantiation of <code>MyClass</code> with <code>name</code> set to <code>&quot;John&quot;</code>.</p>
+					<a href="#4-instantiate-from-config-file-1" id="4-instantiate-from-config-file-1" style="color: inherit; text-decoration: none;">
+						<h4>4. Instantiate from config file</h4>
+					</a>
+					<pre><code class="language-javascript"><span style="color: #000000">...</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ComponentsManager</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;componentsjs&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">manager</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">ComponentsManager</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">mainModulePath:</span><span style="color: #000000"> </span><span style="color: #001080">__dirname</span><span style="color: #000000">, </span><span style="color: #008000">// Path to your npm package&#039;s root</span>
+<span style="color: #000000">});</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">manager</span><span style="color: #000000">.</span><span style="color: #001080">configRegistry</span><span style="color: #000000">.</span><span style="color: #795E26">register</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;config.jsonld&#039;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">myInstance</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">manager</span><span style="color: #000000">.</span><span style="color: #795E26">instantiate</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;http://example.org/myInstance&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">...</span>
+</code></pre>
+					<p><code>myInstance</code> is an instance of type <code>MyClass</code>, as defined in the config file.</p>
+					<a href="#advanced-usage" id="advanced-usage" style="color: inherit; text-decoration: none;">
+						<h2>Advanced usage</h2>
+					</a>
+					<p>The <code>ComponentsManager</code> can be customized with the following options:</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">manager</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">ComponentsManager</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Absolute path to the package root from which module resolution should start.</span>
+<span style="color: #000000">    </span><span style="color: #001080">mainModulePath:</span><span style="color: #000000"> </span><span style="color: #001080">__dirname</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Callback for registering components and modules</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to an invocation of {@link ComponentRegistry.registerAvailableModules}.</span>
+<span style="color: #000000">    </span><span style="color: #795E26">moduleLoader</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">registry</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {},</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Callback for registering configurations.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to no config registrations.</span>
+<span style="color: #000000">    </span><span style="color: #795E26">configLoader</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">registry</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {},</span>
+<span style="color: #000000">    </span><span style="color: #008000">// A strategy for constructing instances.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to &lt;a href=&quot;runner.html#ConstructionStrategyCommonJs&quot;&gt;ConstructionStrategyCommonJs&lt;/a&gt;.</span>
+<span style="color: #000000">    </span><span style="color: #001080">constructionStrategy:</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConstructionStrategyCommonJs</span><span style="color: #000000">(),</span>
+<span style="color: #000000">    </span><span style="color: #008000">// If the error state should be dumped into `componentsjs-error-state.json` after failed instantiations.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to `true`.</span>
+<span style="color: #000000">    </span><span style="color: #001080">dumpErrorState:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #008000">// The logging level.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to `&#039;warn&#039;`.</span>
+<span style="color: #000000">    </span><span style="color: #001080">logLevel:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;warn&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #008000">// The module state.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to a newly created instance on the &lt;a href=&quot;../interfaces/actor_init_query.IHttpServiceSparqlEndpointArgs.html#mainModulePath&quot;&gt;mainModulePath&lt;/a&gt;.</span>
+<span style="color: #000000">    </span><span style="color: #001080">moduleState:</span><span style="color: #000000"> {},</span>
+<span style="color: #000000">    </span><span style="color: #008000">// If JSON-LD context validation should be skipped.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to `true`.</span>
+<span style="color: #000000">    </span><span style="color: #001080">skipContextValidation:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #008000">// If values for parameters should be type-checked.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Defaults to `true`.</span>
+<span style="color: #000000">    </span><span style="color: #001080">typeChecking:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
+</code></pre>
+					<a href="#cite" id="cite" style="color: inherit; text-decoration: none;">
+						<h2>Cite</h2>
+					</a>
+					<p>If you are using or extending Components.js as part of a scientific publication,
+					we would appreciate a citation of our <a href="https://linkedsoftwaredependencies.github.io/Article-System-Components/">article</a>.</p>
+					<pre><code class="language-bibtex">@article{taelman_swj_componentsjs_2022,
+  author = {Taelman, Ruben and Van Herwegen, Joachim and Vander Sande, Miel and Verborgh, Ruben},
+  title = {Components.js: Semantic Dependency Injection},
+  journal = {Semantic Web Journal},
+  year = {2022},
+  month = jan,
+  url = {https://linkedsoftwaredependencies.github.io/Article-System-Components/}
+}
+</code></pre>
+					<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+						<h2>License</h2>
+					</a>
+					<p>Components.js is written by <a href="http://www.rubensworks.net/">Ruben Taelman</a>.</p>
+					<p>This code is copyrighted by <a href="http://idlab.ugent.be/">Ghent University – imec</a>
+					and released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-external">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ArgumentConstructorHandlerArray" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Array</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ArgumentConstructorHandlerHash" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Hash</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ArgumentConstructorHandlerList" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>List</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ArgumentConstructorHandlerPrimitive" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Primitive</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ArgumentConstructorHandlerReference" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Reference</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ArgumentConstructorHandlerUndefined" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Undefined</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ArgumentConstructorHandlerValue" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Value</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ComponentRegistry" class="tsd-kind-icon">Component<wbr>Registry</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ComponentRegistryFinalizer" class="tsd-kind-icon">Component<wbr>Registry<wbr>Finalizer</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ComponentsManager" class="tsd-kind-icon">Components<wbr>Manager</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ComponentsManagerBuilder" class="tsd-kind-icon">Components<wbr>Manager<wbr>Builder</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConfigConstructor" class="tsd-kind-icon">Config<wbr>Constructor</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConfigConstructorPool" class="tsd-kind-icon">Config<wbr>Constructor<wbr>Pool</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConfigPreprocessorComponent" class="tsd-kind-icon">Config<wbr>Preprocessor<wbr>Component</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConfigPreprocessorComponentMapped" class="tsd-kind-icon">Config<wbr>Preprocessor<wbr>Component<wbr>Mapped</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConfigRegistry" class="tsd-kind-icon">Config<wbr>Registry</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConstructionStrategyCommonJs" class="tsd-kind-icon">Construction<wbr>Strategy<wbr>Common<wbr>Js</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConstructionStrategyCommonJsString" class="tsd-kind-icon">Construction<wbr>Strategy<wbr>Common<wbr>JsString</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConstructorArgumentsElementMappingHandlerCollectEntries" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Collect<wbr>Entries</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConstructorArgumentsElementMappingHandlerElements" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Elements</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConstructorArgumentsElementMappingHandlerFields" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Fields</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConstructorArgumentsElementMappingHandlerKeyValue" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Key<wbr>Value</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ConstructorArgumentsElementMappingHandlerList" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>List</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ErrorResourcesContext" class="tsd-kind-icon">Error<wbr>Resources<wbr>Context</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IArgumentConstructorHandler" class="tsd-kind-icon">IArgument<wbr>Constructor<wbr>Handler</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IArgumentsConstructor" class="tsd-kind-icon">IArguments<wbr>Constructor</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IComponentConfigPreprocessorHandleResponse" class="tsd-kind-icon">IComponent<wbr>Config<wbr>Preprocessor<wbr>Handle<wbr>Response</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IComponentConfigPreprocessorOptions" class="tsd-kind-icon">IComponent<wbr>Config<wbr>Preprocessor<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IComponentFinalizerOptions" class="tsd-kind-icon">IComponent<wbr>Finalizer<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IComponentLoaderRegistryOptions" class="tsd-kind-icon">IComponent<wbr>Loader<wbr>Registry<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IComponentsManagerBuilderOptions" class="tsd-kind-icon">IComponents<wbr>Manager<wbr>Builder<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IComponentsManagerOptions" class="tsd-kind-icon">IComponents<wbr>Manager<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConfigConstructorOptions" class="tsd-kind-icon">IConfig<wbr>Constructor<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConfigConstructorPool" class="tsd-kind-icon">IConfig<wbr>Constructor<wbr>Pool</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConfigLoaderRegistryOptions" class="tsd-kind-icon">IConfig<wbr>Loader<wbr>Registry<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConfigPreprocessor" class="tsd-kind-icon">IConfig<wbr>Preprocessor</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConfigPreprocessorTransform" class="tsd-kind-icon">IConfig<wbr>Preprocessor<wbr>Transform</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConstructionSettings" class="tsd-kind-icon">IConstruction<wbr>Settings</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConstructionStrategy" class="tsd-kind-icon">IConstruction<wbr>Strategy</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConstructorArgumentsElementMappingHandler" class="tsd-kind-icon">IConstructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IConstructorArgumentsMapper" class="tsd-kind-icon">IConstructor<wbr>Arguments<wbr>Mapper</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategyArrayOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Array<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategyCommonJsOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Common<wbr>JsOptions</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategyCommonJsStringOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Common<wbr>JsString<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategyHashOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Hash<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategyInstanceOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Instance<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategyPrimitiveOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Primitive<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategySupplierOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Supplier<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ICreationStrategyVariableOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Variable<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IErrorContext" class="tsd-kind-icon">IError<wbr>Context</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IInstancePoolOptions" class="tsd-kind-icon">IInstance<wbr>Pool<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IModuleState" class="tsd-kind-icon">IModule<wbr>State</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IParameterHandlerOptions" class="tsd-kind-icon">IParameter<wbr>Handler<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IPrefetchedDocumentLoaderOptions" class="tsd-kind-icon">IPrefetched<wbr>Document<wbr>Loader<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IRIS_DOAP" class="tsd-kind-icon">IRIS_<wbr>DOAP</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IRIS_OO" class="tsd-kind-icon">IRIS_<wbr>OO</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IRIS_OWL" class="tsd-kind-icon">IRIS_<wbr>OWL</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IRIS_RDF" class="tsd-kind-icon">IRIS_<wbr>RDF</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IRIS_RDFS" class="tsd-kind-icon">IRIS_<wbr>RDFS</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#IRIS_XSD" class="tsd-kind-icon">IRIS_<wbr>XSD</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#LogLevel" class="tsd-kind-icon">Log<wbr>Level</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ModuleStateBuilder" class="tsd-kind-icon">Module<wbr>State<wbr>Builder</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PREFIX_DOAP" class="tsd-kind-icon">PREFIX_<wbr>DOAP</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PREFIX_OM" class="tsd-kind-icon">PREFIX_<wbr>OM</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PREFIX_OO" class="tsd-kind-icon">PREFIX_<wbr>OO</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PREFIX_OWL" class="tsd-kind-icon">PREFIX_<wbr>OWL</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PREFIX_RDF" class="tsd-kind-icon">PREFIX_<wbr>RDF</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PREFIX_RDFS" class="tsd-kind-icon">PREFIX_<wbr>RDFS</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PREFIX_XSD" class="tsd-kind-icon">PREFIX_<wbr>XSD</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#ParameterHandler" class="tsd-kind-icon">Parameter<wbr>Handler</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#PrefetchedDocumentLoader" class="tsd-kind-icon">Prefetched<wbr>Document<wbr>Loader</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#RdfParser" class="tsd-kind-icon">Rdf<wbr>Parser</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#RdfParserOptions" class="tsd-kind-icon">Rdf<wbr>Parser<wbr>Options</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#RdfStreamIncluder" class="tsd-kind-icon">Rdf<wbr>Stream<wbr>Includer</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="runner.html#compileConfig" class="tsd-kind-icon">compile<wbr>Config</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-is-external"><a href="../classes/runner.GenericsContext.html" class="tsd-kind-icon">Generics<wbr>Context</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-is-external"><a href="../classes/runner.ParameterPropertyHandlerRange.html" class="tsd-kind-icon">Parameter<wbr>Property<wbr>Handler<wbr>Range</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/runner.Runner.html" class="tsd-kind-icon">Runner</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/runner.ILiteralAsTypeInterpretationResult.html" class="tsd-kind-icon">ILiteral<wbr>AsType<wbr>Interpretation<wbr>Result</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/runner.IParamValueConflict.html" class="tsd-kind-icon">IParam<wbr>Value<wbr>Conflict</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/runner.IParameterPropertyHandler.html" class="tsd-kind-icon">IParameter<wbr>Property<wbr>Handler</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/runner.ISetupProperties.html" class="tsd-kind-icon">ISetup<wbr>Properties</a></li>
 							</ul>
 						</section>
@@ -112,6 +400,384 @@
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ArgumentConstructorHandlerArray" class="tsd-anchor"></a>
+					<h3>Argument<wbr>Constructor<wbr>Handler<wbr>Array</h3>
+					Re-exports <a href="">ArgumentConstructorHandlerArray</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ArgumentConstructorHandlerHash" class="tsd-anchor"></a>
+					<h3>Argument<wbr>Constructor<wbr>Handler<wbr>Hash</h3>
+					Re-exports <a href="">ArgumentConstructorHandlerHash</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ArgumentConstructorHandlerList" class="tsd-anchor"></a>
+					<h3>Argument<wbr>Constructor<wbr>Handler<wbr>List</h3>
+					Re-exports <a href="">ArgumentConstructorHandlerList</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ArgumentConstructorHandlerPrimitive" class="tsd-anchor"></a>
+					<h3>Argument<wbr>Constructor<wbr>Handler<wbr>Primitive</h3>
+					Re-exports <a href="">ArgumentConstructorHandlerPrimitive</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ArgumentConstructorHandlerReference" class="tsd-anchor"></a>
+					<h3>Argument<wbr>Constructor<wbr>Handler<wbr>Reference</h3>
+					Re-exports <a href="">ArgumentConstructorHandlerReference</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ArgumentConstructorHandlerUndefined" class="tsd-anchor"></a>
+					<h3>Argument<wbr>Constructor<wbr>Handler<wbr>Undefined</h3>
+					Re-exports <a href="">ArgumentConstructorHandlerUndefined</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ArgumentConstructorHandlerValue" class="tsd-anchor"></a>
+					<h3>Argument<wbr>Constructor<wbr>Handler<wbr>Value</h3>
+					Re-exports <a href="">ArgumentConstructorHandlerValue</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ComponentRegistry" class="tsd-anchor"></a>
+					<h3>Component<wbr>Registry</h3>
+					Re-exports <a href="">ComponentRegistry</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ComponentRegistryFinalizer" class="tsd-anchor"></a>
+					<h3>Component<wbr>Registry<wbr>Finalizer</h3>
+					Re-exports <a href="">ComponentRegistryFinalizer</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ComponentsManager" class="tsd-anchor"></a>
+					<h3>Components<wbr>Manager</h3>
+					Re-exports <a href="">ComponentsManager</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ComponentsManagerBuilder" class="tsd-anchor"></a>
+					<h3>Components<wbr>Manager<wbr>Builder</h3>
+					Re-exports <a href="">ComponentsManagerBuilder</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConfigConstructor" class="tsd-anchor"></a>
+					<h3>Config<wbr>Constructor</h3>
+					Re-exports <a href="">ConfigConstructor</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConfigConstructorPool" class="tsd-anchor"></a>
+					<h3>Config<wbr>Constructor<wbr>Pool</h3>
+					Re-exports <a href="">ConfigConstructorPool</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConfigPreprocessorComponent" class="tsd-anchor"></a>
+					<h3>Config<wbr>Preprocessor<wbr>Component</h3>
+					Re-exports <a href="">ConfigPreprocessorComponent</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConfigPreprocessorComponentMapped" class="tsd-anchor"></a>
+					<h3>Config<wbr>Preprocessor<wbr>Component<wbr>Mapped</h3>
+					Re-exports <a href="">ConfigPreprocessorComponentMapped</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConfigRegistry" class="tsd-anchor"></a>
+					<h3>Config<wbr>Registry</h3>
+					Re-exports <a href="">ConfigRegistry</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConstructionStrategyCommonJs" class="tsd-anchor"></a>
+					<h3>Construction<wbr>Strategy<wbr>Common<wbr>Js</h3>
+					Re-exports <a href="">ConstructionStrategyCommonJs</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConstructionStrategyCommonJsString" class="tsd-anchor"></a>
+					<h3>Construction<wbr>Strategy<wbr>Common<wbr>JsString</h3>
+					Re-exports <a href="">ConstructionStrategyCommonJsString</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConstructorArgumentsElementMappingHandlerCollectEntries" class="tsd-anchor"></a>
+					<h3>Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Collect<wbr>Entries</h3>
+					Re-exports <a href="">ConstructorArgumentsElementMappingHandlerCollectEntries</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConstructorArgumentsElementMappingHandlerElements" class="tsd-anchor"></a>
+					<h3>Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Elements</h3>
+					Re-exports <a href="">ConstructorArgumentsElementMappingHandlerElements</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConstructorArgumentsElementMappingHandlerFields" class="tsd-anchor"></a>
+					<h3>Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Fields</h3>
+					Re-exports <a href="">ConstructorArgumentsElementMappingHandlerFields</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConstructorArgumentsElementMappingHandlerKeyValue" class="tsd-anchor"></a>
+					<h3>Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Key<wbr>Value</h3>
+					Re-exports <a href="">ConstructorArgumentsElementMappingHandlerKeyValue</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ConstructorArgumentsElementMappingHandlerList" class="tsd-anchor"></a>
+					<h3>Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>List</h3>
+					Re-exports <a href="">ConstructorArgumentsElementMappingHandlerList</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ErrorResourcesContext" class="tsd-anchor"></a>
+					<h3>Error<wbr>Resources<wbr>Context</h3>
+					Re-exports <a href="">ErrorResourcesContext</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IArgumentConstructorHandler" class="tsd-anchor"></a>
+					<h3>IArgument<wbr>Constructor<wbr>Handler</h3>
+					Re-exports <a href="">IArgumentConstructorHandler</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IArgumentsConstructor" class="tsd-anchor"></a>
+					<h3>IArguments<wbr>Constructor</h3>
+					Re-exports <a href="">IArgumentsConstructor</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IComponentConfigPreprocessorHandleResponse" class="tsd-anchor"></a>
+					<h3>IComponent<wbr>Config<wbr>Preprocessor<wbr>Handle<wbr>Response</h3>
+					Re-exports <a href="">IComponentConfigPreprocessorHandleResponse</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IComponentConfigPreprocessorOptions" class="tsd-anchor"></a>
+					<h3>IComponent<wbr>Config<wbr>Preprocessor<wbr>Options</h3>
+					Re-exports <a href="">IComponentConfigPreprocessorOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IComponentFinalizerOptions" class="tsd-anchor"></a>
+					<h3>IComponent<wbr>Finalizer<wbr>Options</h3>
+					Re-exports <a href="">IComponentFinalizerOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IComponentLoaderRegistryOptions" class="tsd-anchor"></a>
+					<h3>IComponent<wbr>Loader<wbr>Registry<wbr>Options</h3>
+					Re-exports <a href="">IComponentLoaderRegistryOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IComponentsManagerBuilderOptions" class="tsd-anchor"></a>
+					<h3>IComponents<wbr>Manager<wbr>Builder<wbr>Options</h3>
+					Re-exports <a href="">IComponentsManagerBuilderOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IComponentsManagerOptions" class="tsd-anchor"></a>
+					<h3>IComponents<wbr>Manager<wbr>Options</h3>
+					Re-exports <a href="">IComponentsManagerOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConfigConstructorOptions" class="tsd-anchor"></a>
+					<h3>IConfig<wbr>Constructor<wbr>Options</h3>
+					Re-exports <a href="">IConfigConstructorOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConfigConstructorPool" class="tsd-anchor"></a>
+					<h3>IConfig<wbr>Constructor<wbr>Pool</h3>
+					Re-exports <a href="">IConfigConstructorPool</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConfigLoaderRegistryOptions" class="tsd-anchor"></a>
+					<h3>IConfig<wbr>Loader<wbr>Registry<wbr>Options</h3>
+					Re-exports <a href="">IConfigLoaderRegistryOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConfigPreprocessor" class="tsd-anchor"></a>
+					<h3>IConfig<wbr>Preprocessor</h3>
+					Re-exports <a href="">IConfigPreprocessor</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConfigPreprocessorTransform" class="tsd-anchor"></a>
+					<h3>IConfig<wbr>Preprocessor<wbr>Transform</h3>
+					Re-exports <a href="">IConfigPreprocessorTransform</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConstructionSettings" class="tsd-anchor"></a>
+					<h3>IConstruction<wbr>Settings</h3>
+					Re-exports <a href="">IConstructionSettings</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConstructionStrategy" class="tsd-anchor"></a>
+					<h3>IConstruction<wbr>Strategy</h3>
+					Re-exports <a href="">IConstructionStrategy</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConstructorArgumentsElementMappingHandler" class="tsd-anchor"></a>
+					<h3>IConstructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler</h3>
+					Re-exports <a href="">IConstructorArgumentsElementMappingHandler</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IConstructorArgumentsMapper" class="tsd-anchor"></a>
+					<h3>IConstructor<wbr>Arguments<wbr>Mapper</h3>
+					Re-exports <a href="">IConstructorArgumentsMapper</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategyArrayOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Array<wbr>Options</h3>
+					Re-exports <a href="">ICreationStrategyArrayOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategyCommonJsOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Common<wbr>JsOptions</h3>
+					Re-exports <a href="">ICreationStrategyCommonJsOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategyCommonJsStringOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Common<wbr>JsString<wbr>Options</h3>
+					Re-exports <a href="">ICreationStrategyCommonJsStringOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategyHashOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Hash<wbr>Options</h3>
+					Re-exports <a href="">ICreationStrategyHashOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategyInstanceOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Instance<wbr>Options</h3>
+					Re-exports <a href="">ICreationStrategyInstanceOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategyPrimitiveOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Primitive<wbr>Options</h3>
+					Re-exports <a href="">ICreationStrategyPrimitiveOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategySupplierOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Supplier<wbr>Options</h3>
+					Re-exports <a href="">ICreationStrategySupplierOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ICreationStrategyVariableOptions" class="tsd-anchor"></a>
+					<h3>ICreation<wbr>Strategy<wbr>Variable<wbr>Options</h3>
+					Re-exports <a href="">ICreationStrategyVariableOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IErrorContext" class="tsd-anchor"></a>
+					<h3>IError<wbr>Context</h3>
+					Re-exports <a href="">IErrorContext</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IInstancePoolOptions" class="tsd-anchor"></a>
+					<h3>IInstance<wbr>Pool<wbr>Options</h3>
+					Re-exports <a href="">IInstancePoolOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IModuleState" class="tsd-anchor"></a>
+					<h3>IModule<wbr>State</h3>
+					Re-exports <a href="">IModuleState</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IParameterHandlerOptions" class="tsd-anchor"></a>
+					<h3>IParameter<wbr>Handler<wbr>Options</h3>
+					Re-exports <a href="">IParameterHandlerOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IPrefetchedDocumentLoaderOptions" class="tsd-anchor"></a>
+					<h3>IPrefetched<wbr>Document<wbr>Loader<wbr>Options</h3>
+					Re-exports <a href="">IPrefetchedDocumentLoaderOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IRIS_DOAP" class="tsd-anchor"></a>
+					<h3>IRIS_<wbr>DOAP</h3>
+					Re-exports <a href="">IRIS_DOAP</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IRIS_OO" class="tsd-anchor"></a>
+					<h3>IRIS_<wbr>OO</h3>
+					Re-exports <a href="">IRIS_OO</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IRIS_OWL" class="tsd-anchor"></a>
+					<h3>IRIS_<wbr>OWL</h3>
+					Re-exports <a href="">IRIS_OWL</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IRIS_RDF" class="tsd-anchor"></a>
+					<h3>IRIS_<wbr>RDF</h3>
+					Re-exports <a href="">IRIS_RDF</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IRIS_RDFS" class="tsd-anchor"></a>
+					<h3>IRIS_<wbr>RDFS</h3>
+					Re-exports <a href="">IRIS_RDFS</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="IRIS_XSD" class="tsd-anchor"></a>
+					<h3>IRIS_<wbr>XSD</h3>
+					Re-exports <a href="">IRIS_XSD</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="LogLevel" class="tsd-anchor"></a>
+					<h3>Log<wbr>Level</h3>
+					Re-exports <a href="">LogLevel</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ModuleStateBuilder" class="tsd-anchor"></a>
+					<h3>Module<wbr>State<wbr>Builder</h3>
+					Re-exports <a href="">ModuleStateBuilder</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PREFIX_DOAP" class="tsd-anchor"></a>
+					<h3>PREFIX_<wbr>DOAP</h3>
+					Re-exports <a href="">PREFIX_DOAP</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PREFIX_OM" class="tsd-anchor"></a>
+					<h3>PREFIX_<wbr>OM</h3>
+					Re-exports <a href="">PREFIX_OM</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PREFIX_OO" class="tsd-anchor"></a>
+					<h3>PREFIX_<wbr>OO</h3>
+					Re-exports <a href="">PREFIX_OO</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PREFIX_OWL" class="tsd-anchor"></a>
+					<h3>PREFIX_<wbr>OWL</h3>
+					Re-exports <a href="">PREFIX_OWL</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PREFIX_RDF" class="tsd-anchor"></a>
+					<h3>PREFIX_<wbr>RDF</h3>
+					Re-exports <a href="">PREFIX_RDF</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PREFIX_RDFS" class="tsd-anchor"></a>
+					<h3>PREFIX_<wbr>RDFS</h3>
+					Re-exports <a href="">PREFIX_RDFS</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PREFIX_XSD" class="tsd-anchor"></a>
+					<h3>PREFIX_<wbr>XSD</h3>
+					Re-exports <a href="">PREFIX_XSD</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="ParameterHandler" class="tsd-anchor"></a>
+					<h3>Parameter<wbr>Handler</h3>
+					Re-exports <a href="">ParameterHandler</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="PrefetchedDocumentLoader" class="tsd-anchor"></a>
+					<h3>Prefetched<wbr>Document<wbr>Loader</h3>
+					Re-exports <a href="">PrefetchedDocumentLoader</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="RdfParser" class="tsd-anchor"></a>
+					<h3>Rdf<wbr>Parser</h3>
+					Re-exports <a href="">RdfParser</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="RdfParserOptions" class="tsd-anchor"></a>
+					<h3>Rdf<wbr>Parser<wbr>Options</h3>
+					Re-exports <a href="">RdfParserOptions</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="RdfStreamIncluder" class="tsd-anchor"></a>
+					<h3>Rdf<wbr>Stream<wbr>Includer</h3>
+					Re-exports <a href="">RdfStreamIncluder</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="compileConfig" class="tsd-anchor"></a>
+					<h3>compile<wbr>Config</h3>
+					Re-exports <a href="">compileConfig</a>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -126,7 +792,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/eecd67d/packages/runner/lib/Setup.ts#L28">packages/runner/lib/Setup.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ade1186/packages/runner/lib/Setup.ts#L28">packages/runner/lib/Setup.ts:28</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -170,7 +836,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/eecd67d/packages/runner/lib/Setup.ts#L52">packages/runner/lib/Setup.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ade1186/packages/runner/lib/Setup.ts#L52">packages/runner/lib/Setup.ts:52</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -219,7 +885,7 @@
 					<li class=" ">
 						<a href="../modules.html">Modules</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class="current tsd-kind-module tsd-is-external">
 						<a href="runner.html">runner</a>
 					</li>
 				</ul>
@@ -228,11 +894,251 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-module">
+					<li class="current tsd-kind-module tsd-is-external">
 						<a href="runner.html" class="tsd-kind-icon">runner</a>
 						<ul>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ArgumentConstructorHandlerArray" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Array</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ArgumentConstructorHandlerHash" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Hash</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ArgumentConstructorHandlerList" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>List</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ArgumentConstructorHandlerPrimitive" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Primitive</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ArgumentConstructorHandlerReference" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Reference</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ArgumentConstructorHandlerUndefined" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Undefined</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ArgumentConstructorHandlerValue" class="tsd-kind-icon">Argument<wbr>Constructor<wbr>Handler<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ComponentRegistry" class="tsd-kind-icon">Component<wbr>Registry</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ComponentRegistryFinalizer" class="tsd-kind-icon">Component<wbr>Registry<wbr>Finalizer</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ComponentsManager" class="tsd-kind-icon">Components<wbr>Manager</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ComponentsManagerBuilder" class="tsd-kind-icon">Components<wbr>Manager<wbr>Builder</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConfigConstructor" class="tsd-kind-icon">Config<wbr>Constructor</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConfigConstructorPool" class="tsd-kind-icon">Config<wbr>Constructor<wbr>Pool</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConfigPreprocessorComponent" class="tsd-kind-icon">Config<wbr>Preprocessor<wbr>Component</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConfigPreprocessorComponentMapped" class="tsd-kind-icon">Config<wbr>Preprocessor<wbr>Component<wbr>Mapped</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConfigRegistry" class="tsd-kind-icon">Config<wbr>Registry</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConstructionStrategyCommonJs" class="tsd-kind-icon">Construction<wbr>Strategy<wbr>Common<wbr>Js</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConstructionStrategyCommonJsString" class="tsd-kind-icon">Construction<wbr>Strategy<wbr>Common<wbr>JsString</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConstructorArgumentsElementMappingHandlerCollectEntries" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Collect<wbr>Entries</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConstructorArgumentsElementMappingHandlerElements" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Elements</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConstructorArgumentsElementMappingHandlerFields" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Fields</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConstructorArgumentsElementMappingHandlerKeyValue" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>Key<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ConstructorArgumentsElementMappingHandlerList" class="tsd-kind-icon">Constructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler<wbr>List</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ErrorResourcesContext" class="tsd-kind-icon">Error<wbr>Resources<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IArgumentConstructorHandler" class="tsd-kind-icon">IArgument<wbr>Constructor<wbr>Handler</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IArgumentsConstructor" class="tsd-kind-icon">IArguments<wbr>Constructor</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IComponentConfigPreprocessorHandleResponse" class="tsd-kind-icon">IComponent<wbr>Config<wbr>Preprocessor<wbr>Handle<wbr>Response</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IComponentConfigPreprocessorOptions" class="tsd-kind-icon">IComponent<wbr>Config<wbr>Preprocessor<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IComponentFinalizerOptions" class="tsd-kind-icon">IComponent<wbr>Finalizer<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IComponentLoaderRegistryOptions" class="tsd-kind-icon">IComponent<wbr>Loader<wbr>Registry<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IComponentsManagerBuilderOptions" class="tsd-kind-icon">IComponents<wbr>Manager<wbr>Builder<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IComponentsManagerOptions" class="tsd-kind-icon">IComponents<wbr>Manager<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConfigConstructorOptions" class="tsd-kind-icon">IConfig<wbr>Constructor<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConfigConstructorPool" class="tsd-kind-icon">IConfig<wbr>Constructor<wbr>Pool</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConfigLoaderRegistryOptions" class="tsd-kind-icon">IConfig<wbr>Loader<wbr>Registry<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConfigPreprocessor" class="tsd-kind-icon">IConfig<wbr>Preprocessor</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConfigPreprocessorTransform" class="tsd-kind-icon">IConfig<wbr>Preprocessor<wbr>Transform</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConstructionSettings" class="tsd-kind-icon">IConstruction<wbr>Settings</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConstructionStrategy" class="tsd-kind-icon">IConstruction<wbr>Strategy</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConstructorArgumentsElementMappingHandler" class="tsd-kind-icon">IConstructor<wbr>Arguments<wbr>Element<wbr>Mapping<wbr>Handler</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IConstructorArgumentsMapper" class="tsd-kind-icon">IConstructor<wbr>Arguments<wbr>Mapper</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategyArrayOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Array<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategyCommonJsOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Common<wbr>JsOptions</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategyCommonJsStringOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Common<wbr>JsString<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategyHashOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Hash<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategyInstanceOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Instance<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategyPrimitiveOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Primitive<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategySupplierOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Supplier<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ICreationStrategyVariableOptions" class="tsd-kind-icon">ICreation<wbr>Strategy<wbr>Variable<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IErrorContext" class="tsd-kind-icon">IError<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IInstancePoolOptions" class="tsd-kind-icon">IInstance<wbr>Pool<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IModuleState" class="tsd-kind-icon">IModule<wbr>State</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IParameterHandlerOptions" class="tsd-kind-icon">IParameter<wbr>Handler<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IPrefetchedDocumentLoaderOptions" class="tsd-kind-icon">IPrefetched<wbr>Document<wbr>Loader<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IRIS_DOAP" class="tsd-kind-icon">IRIS_<wbr>DOAP</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IRIS_OO" class="tsd-kind-icon">IRIS_<wbr>OO</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IRIS_OWL" class="tsd-kind-icon">IRIS_<wbr>OWL</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IRIS_RDF" class="tsd-kind-icon">IRIS_<wbr>RDF</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IRIS_RDFS" class="tsd-kind-icon">IRIS_<wbr>RDFS</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#IRIS_XSD" class="tsd-kind-icon">IRIS_<wbr>XSD</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#LogLevel" class="tsd-kind-icon">Log<wbr>Level</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ModuleStateBuilder" class="tsd-kind-icon">Module<wbr>State<wbr>Builder</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PREFIX_DOAP" class="tsd-kind-icon">PREFIX_<wbr>DOAP</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PREFIX_OM" class="tsd-kind-icon">PREFIX_<wbr>OM</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PREFIX_OO" class="tsd-kind-icon">PREFIX_<wbr>OO</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PREFIX_OWL" class="tsd-kind-icon">PREFIX_<wbr>OWL</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PREFIX_RDF" class="tsd-kind-icon">PREFIX_<wbr>RDF</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PREFIX_RDFS" class="tsd-kind-icon">PREFIX_<wbr>RDFS</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PREFIX_XSD" class="tsd-kind-icon">PREFIX_<wbr>XSD</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#ParameterHandler" class="tsd-kind-icon">Parameter<wbr>Handler</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#PrefetchedDocumentLoader" class="tsd-kind-icon">Prefetched<wbr>Document<wbr>Loader</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#RdfParser" class="tsd-kind-icon">Rdf<wbr>Parser</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#RdfParserOptions" class="tsd-kind-icon">Rdf<wbr>Parser<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#RdfStreamIncluder" class="tsd-kind-icon">Rdf<wbr>Stream<wbr>Includer</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="runner.html#compileConfig" class="tsd-kind-icon">compile<wbr>Config</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-is-external">
+								<a href="../classes/runner.GenericsContext.html" class="tsd-kind-icon">Generics<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-is-external">
+								<a href="../classes/runner.ParameterPropertyHandlerRange.html" class="tsd-kind-icon">Parameter<wbr>Property<wbr>Handler<wbr>Range</a>
+							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/runner.Runner.html" class="tsd-kind-icon">Runner</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/runner.ILiteralAsTypeInterpretationResult.html" class="tsd-kind-icon">ILiteral<wbr>AsType<wbr>Interpretation<wbr>Result</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/runner.IParamValueConflict.html" class="tsd-kind-icon">IParam<wbr>Value<wbr>Conflict</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/runner.IParameterPropertyHandler.html" class="tsd-kind-icon">IParameter<wbr>Property<wbr>Handler</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/runner.ISetupProperties.html" class="tsd-kind-icon">ISetup<wbr>Properties</a>
