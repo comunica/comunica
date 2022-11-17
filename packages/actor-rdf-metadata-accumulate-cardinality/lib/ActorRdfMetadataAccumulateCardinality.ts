@@ -2,7 +2,7 @@ import type { IActionRdfMetadataAccumulate, IActorRdfMetadataAccumulateOutput,
   IActorRdfMetadataAccumulateArgs } from '@comunica/bus-rdf-metadata-accumulate';
 import { ActorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { IActorTest } from '@comunica/core';
-import type * as RDF from '@rdfjs/types';
+import type { QueryResultCardinality } from '@comunica/types';
 
 /**
  * A comunica Cardinality RDF Metadata Accumulate Actor.
@@ -23,7 +23,22 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
     }
 
     // Otherwise, attempt to update existing value
-    const cardinality: RDF.QueryResultCardinality = { ...action.accumulatedMetadata.cardinality };
+    const cardinality: QueryResultCardinality = { ...action.accumulatedMetadata.cardinality };
+
+    if (cardinality.dataset) {
+      if (action.appendingMetadata.cardinality.dataset &&
+        cardinality.dataset !== action.appendingMetadata.cardinality.dataset) {
+        // If the accumulated cardinality is dataset-wide,
+        // and the appending cardinality refers to another dataset,
+        // remove the dataset scopes.
+        delete cardinality.dataset;
+      } else {
+        // If the accumulated cardinality is dataset-wide,
+        // and the appending cardinality refers to a dataset subset,
+        // keep the accumulated cardinality unchanged.
+        return { metadata: { cardinality }};
+      }
+    }
 
     if (!action.appendingMetadata.cardinality || !Number.isFinite(action.appendingMetadata.cardinality.value)) {
       // We're already at infinite, so ignore any later metadata
@@ -34,6 +49,10 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
         cardinality.type = 'estimate';
       }
       cardinality.value += action.appendingMetadata.cardinality.value;
+    }
+
+    if (cardinality.dataset && action.appendingMetadata.cardinality.dataset) {
+      delete cardinality.dataset;
     }
 
     return { metadata: { cardinality }};

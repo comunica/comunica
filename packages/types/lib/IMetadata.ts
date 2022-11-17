@@ -8,7 +8,7 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
   /**
    * An estimate of the number of bindings in the source.
    */
-  cardinality: RDF.QueryResultCardinality;
+  cardinality: QueryResultCardinality;
   /**
    * If any of the bindings could contain an undefined variable binding.
    * If this is false, then all variables are guaranteed to have a defined bound value in the bindingsStream.
@@ -57,3 +57,11 @@ export type MetadataBindings = IMetadata<RDF.Variable> & {
   variables: RDF.Variable[];
 };
 export type MetadataQuads = IMetadata<RDF.QuadTermName>;
+
+export type QueryResultCardinality = RDF.QueryResultCardinality & {
+  /**
+   * If this field is set, this means that the cardinality is defined across this whole dataset.
+   * If this field is not set, then the cardinality is only defined for the current stream.
+   */
+  dataset?: string;
+};
