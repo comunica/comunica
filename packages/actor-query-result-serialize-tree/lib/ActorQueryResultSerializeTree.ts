@@ -33,7 +33,7 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
    */
   public static bindingsStreamToGraphQl(bindingsStream: BindingsStream,
     context: IActionContext | Record<string, any> | undefined,
-    converterSettings?: IConverterSettings): Promise<string> {
+    converterSettings?: IConverterSettings): Promise<any> {
     const actionContext: IActionContext = ActionContext.ensureActionContext(context);
     return new Promise((resolve, reject) => {
       const bindingsArray: Record<string, RDF.Term>[] = [];
