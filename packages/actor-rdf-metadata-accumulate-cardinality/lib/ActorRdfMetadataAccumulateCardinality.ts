@@ -51,10 +51,6 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
       cardinality.value += action.appendingMetadata.cardinality.value;
     }
 
-    if (cardinality.dataset && action.appendingMetadata.cardinality.dataset) {
-      delete cardinality.dataset;
-    }
-
     return { metadata: { cardinality }};
   }
 }

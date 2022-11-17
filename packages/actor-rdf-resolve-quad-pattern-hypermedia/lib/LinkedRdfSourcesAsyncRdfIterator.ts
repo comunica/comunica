@@ -223,7 +223,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       startSource.metadata = startSource.metadata
         .then(previousMetadata => (async() => {
           if (firstPage) {
-            return previousMetadata;
+            return metadata;
           }
           return this.accumulateMetadata(previousMetadata, metadata);
         })()
