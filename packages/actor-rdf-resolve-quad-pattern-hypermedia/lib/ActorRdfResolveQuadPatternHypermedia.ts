@@ -1,6 +1,8 @@
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadataAccumulate,
+  MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -26,6 +28,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   public readonly mediatorMetadata: MediatorRdfMetadata;
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   public readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   public readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   public readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
@@ -43,6 +46,18 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
       this.httpInvalidator.addInvalidateListener(
         ({ url }: IActionHttpInvalidate) => url ? cache.delete(url) : cache.clear(),
       );
+    }
+
+    // TODO: remove this backwards-compatibility in the next major version, and make the param mandatory
+    if (!args.mediatorMetadataAccumulate) {
+      this.mediatorMetadataAccumulate = <any>{
+        async mediate(action: IActionRdfMetadataAccumulate) {
+          if (action.mode === 'initialize') {
+            return { metadata: {}};
+          }
+          return { metadata: { ...action.accumulatedMetadata, ...action.appendingMetadata }};
+        },
+      };
     }
   }
 
@@ -73,6 +88,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
         {
           mediatorMetadata: this.mediatorMetadata,
           mediatorMetadataExtract: this.mediatorMetadataExtract,
+          mediatorMetadataAccumulate: this.mediatorMetadataAccumulate,
           mediatorDereferenceRdf: this.mediatorDereferenceRdf,
           mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
           mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
@@ -128,6 +144,10 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends IActorRdfReso
    * The metadata extract mediator
    */
   mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  /**
+   * The metadata accumulate mediator
+   */
+  mediatorMetadataAccumulate?: MediatorRdfMetadataAccumulate;
   /**
    * The hypermedia resolve mediator
    */

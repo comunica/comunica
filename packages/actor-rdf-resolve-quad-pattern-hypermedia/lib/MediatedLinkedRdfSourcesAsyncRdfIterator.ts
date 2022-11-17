@@ -1,12 +1,13 @@
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import type { ILink,
   MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { IActionContext, IAggregatedStore } from '@comunica/types';
+import type { IActionContext, IAggregatedStore, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
@@ -22,6 +23,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   private readonly mediatorMetadata: MediatorRdfMetadata;
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  private readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   private readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   private readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   private readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
@@ -41,6 +43,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.mediatorDereferenceRdf = mediators.mediatorDereferenceRdf;
     this.mediatorMetadata = mediators.mediatorMetadata;
     this.mediatorMetadataExtract = mediators.mediatorMetadataExtract;
+    this.mediatorMetadataAccumulate = mediators.mediatorMetadataAccumulate;
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
     this.mediatorRdfResolveHypermediaLinks = mediators.mediatorRdfResolveHypermediaLinks;
     this.mediatorRdfResolveHypermediaLinksQueue = mediators.mediatorRdfResolveHypermediaLinksQueue;
@@ -177,7 +180,19 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       handledDatasets[dataset] = true;
     }
 
-    return { link, source, metadata, handledDatasets };
+    return { link, source, metadata: Promise.resolve(<MetadataQuads>metadata), handledDatasets };
+  }
+
+  protected async accumulateMetadata(
+    accumulatedMetadata: MetadataQuads,
+    appendingMetadata: MetadataQuads,
+  ): Promise<MetadataQuads> {
+    return <MetadataQuads> (await this.mediatorMetadataAccumulate.mediate({
+      mode: 'append',
+      accumulatedMetadata,
+      appendingMetadata,
+      context: this.context,
+    })).metadata;
   }
 }
 
@@ -185,6 +200,7 @@ export interface IMediatorArgs {
   mediatorDereferenceRdf: MediatorDereferenceRdf;
   mediatorMetadata: MediatorRdfMetadata;
   mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;

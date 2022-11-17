@@ -28,6 +28,8 @@
     "ccqs:config/rdf-join-selectivity/actors.json",
     "ccqs:config/rdf-join-selectivity/mediators.json",
 
+    "ccqs:config/rdf-metadata-accumulate/mediators.json",
+
     "ccqs:config/rdf-resolve-quad-pattern/actors-rdfjs.json",
     "ccqs:config/rdf-resolve-quad-pattern/mediators.json",
     "ccqs:config/rdf-serialize/actors.json",
