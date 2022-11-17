@@ -193,9 +193,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * Start a new iterator for the given source.
    * Once the iterator is done, it will either determine a new source, or it will close the linked iterator.
    * @param {ISourceState} startSource The start source state.
-   * @param {boolean} emitMetadata If the metadata event should be emitted.
+   * @param {boolean} firstPage If this is the first iterator that is being started.
    */
-  protected startIterator(startSource: ISourceState, emitMetadata: boolean): void {
+  protected startIterator(startSource: ISourceState, firstPage: boolean): void {
     // Delegate the quad pattern query to the given source
     const iterator = startSource.source!
       .match(this.subject, this.predicate, this.object, this.graph);
@@ -221,13 +221,18 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     iterator.getProperty('metadata', (metadata: MetadataQuads) => {
       // Accumulate the metadata object
       startSource.metadata = startSource.metadata
-        .then(previousMetadata => this.accumulateMetadata(previousMetadata, metadata)
+        .then(previousMetadata => (async() => {
+          if (firstPage) {
+            return previousMetadata;
+          }
+          return this.accumulateMetadata(previousMetadata, metadata);
+        })()
           .then(accumulatedMetadata => {
             // Also merge fields that were not explicitly accumulated
             const returnMetadata = { ...previousMetadata, ...accumulatedMetadata };
 
             // Emit metadata if needed
-            if (emitMetadata) {
+            if (firstPage) {
               this.setProperty('metadata', returnMetadata);
             }
 
