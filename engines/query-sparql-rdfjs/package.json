@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -95,7 +95,7 @@
     "@comunica/actor-query-result-serialize-sparql-xml": "^2.5.1",
     "@comunica/actor-query-result-serialize-stats": "^2.5.1",
     "@comunica/actor-query-result-serialize-table": "^2.5.1",
-    "@comunica/actor-query-result-serialize-tree": "^2.5.1",
+    "@comunica/actor-query-result-serialize-tree": "^2.5.2",
     "@comunica/actor-rdf-join-entries-sort-cardinality": "^2.5.1",
     "@comunica/actor-rdf-join-inner-hash": "^2.5.1",
     "@comunica/actor-rdf-join-inner-multi-bind": "^2.5.1",

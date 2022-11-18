@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-tree",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "A tree query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",

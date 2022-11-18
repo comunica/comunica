@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.5.2"></a>
+## [v2.5.2](https://github.com/comunica/comunica/compare/v2.5.1...v2.5.2) - 2022-11-18
+
+### Fixed
+* [Fix broken bindingsStreamToGraphQL export](https://github.com/comunica/comunica/commit/3030ed3c1d24a52a80fb61df9c27e7c0861b72b1)
+* [Fix incorrect bindingsStreamToGraphQl return type](https://github.com/comunica/comunica/commit/78a203c67882041fa8ca4fd28e78191c659cb1bf)
+
 <a name="v2.5.1"></a>
 ## [v2.5.1](https://github.com/comunica/comunica/compare/v2.5.0...v2.5.1) - 2022-11-16
 
