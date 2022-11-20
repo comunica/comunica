@@ -26,15 +26,15 @@ import CachePolicy = require('http-cache-semantics');
  * A comunica Cache Http Actor.
  */
 export class ActorHttpCache extends ActorHttp {
-  private readonly cacheStorage: IHttpCacheStorage;
+  private readonly cacheStorage: IHttpCacheStorage<ReadableStream<Uint8Array>>;
   private readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
   private readonly mediatorHttp: MediatorHttp;
-  private readonly cacheStoragesToInvalidate: Set<IHttpCacheStorage> =
+  private readonly cacheStoragesToInvalidate: Set<IHttpCacheStorage<ReadableStream<Uint8Array>>> =
     new Set();
 
   public constructor(args: IActorHttpCacheArgs) {
     super(args);
-    this.cacheStorage = args.cacheStorage;
+    this.cacheStorage = <IHttpCacheStorage<ReadableStream<Uint8Array>>> args.cacheStorage;
     this.cacheStoragesToInvalidate.add(this.cacheStorage);
     this.mediatorHttpInvalidate = args.mediatorHttpInvalidate;
     this.mediatorHttp = args.mediatorHttp;
@@ -47,10 +47,10 @@ export class ActorHttpCache extends ActorHttp {
     );
   }
 
-  private getCacheStorage(context: IActionContext): IHttpCacheStorage {
+  private getCacheStorage(context: IActionContext): IHttpCacheStorage<ReadableStream<Uint8Array>> {
     // Get Cache Storage
     const cacheStorage =
-      context.get<IHttpCacheStorage>(KeysHttp.httpCacheStorage) ||
+      context.get<IHttpCacheStorage<ReadableStream<Uint8Array>>>(KeysHttp.httpCacheStorage) ||
       this.cacheStorage;
     // Store the cache as one that should be cleared upon invalidate
     this.cacheStoragesToInvalidate.add(cacheStorage);
@@ -207,7 +207,7 @@ export class ActorHttpCache extends ActorHttp {
     request: Request,
     response: Response,
     cachePolicy: CachePolicy,
-    cacheStorage: IHttpCacheStorage,
+    cacheStorage: IHttpCacheStorage<ReadableStream<Uint8Array>>,
   ): Promise<Response> {
     const [ bodyToRetrun, bodyToCache ] = response.body?.tee() || [
       undefined,
@@ -257,6 +257,9 @@ export interface IActorHttpCacheArgs extends IActorHttpArgs {
   /**
    * A storage object to be used by the cache
    */
+  // TODO: This should be `IHttpCacheStorage<ReadableStream<Unit8Array>>`,
+  // but Components.js cannot recognize ReadableStream. Replace when Components.js
+  // has a fix
   cacheStorage: IHttpCacheStorage;
   mediatorHttpInvalidate: MediatorHttpInvalidate;
   /* eslint-disable max-len */

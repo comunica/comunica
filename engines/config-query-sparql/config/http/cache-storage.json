@@ -1,14 +1,21 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/http-cache-storage-lru/^0.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/http-cache-storage-lru/^0.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-cache/^2.0.0/components/context.jsonld"
   ],
   "@graph": [
     {
       "@id": "urn:comunica:default:http/cache-storage#main",
-      "@type": "HttpCacheStorageLru",
-      "args_max": 1024,
-      "args_mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" }
+      "@type": "HttpCacheStorageStream",
+      "args_mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
+      "args_maxBufferSize": 10000,
+      "args_bufferCache": {
+        "@id": "urn:comunica:default:http/cache-storage#buffer",
+        "@type": "HttpCacheStorageLru",
+        "args_max": 1024,
+        "args_mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" }
+      }
     }
   ]
 }

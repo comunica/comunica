@@ -1,4 +1,6 @@
-import type { ActorHttp, IActionHttp, MediatorHttp } from '@comunica/bus-http';
+import { Readable } from 'stream';
+import { ActorHttp } from '@comunica/bus-http';
+import type { IActionHttp, MediatorHttp } from '@comunica/bus-http';
 import type {
   ActorHttpInvalidateListenable,
   IActionHttpInvalidate,
@@ -12,6 +14,7 @@ import { HttpCacheStorageLru } from '@comunica/http-cache-storage-lru';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { IHttpCacheStorage } from '@comunica/types';
 import { ActorHttpCache } from '../lib/ActorHttpCache';
+import { HttpCacheStorageStream } from '../lib/HttpCacheStorageStream';
 import type { FetchOptions } from './http-test-helper';
 import { getHttpTestHelpers } from './http-test-helper';
 
@@ -33,6 +36,7 @@ describe('ActorHttpCache', () => {
     let httpInvalidator: ActorHttpInvalidateListenable;
     let context: ActionContext;
     let mediatorHttp: MediatorHttp;
+    let cacheStorageStream: HttpCacheStorageStream;
 
     beforeEach(() => {
       const helpers = getHttpTestHelpers();
@@ -60,10 +64,16 @@ describe('ActorHttpCache', () => {
         }),
       };
 
+      cacheStorageStream = new HttpCacheStorageStream({
+        bufferCache: new HttpCacheStorageLru({ max: 10, mediatorHttpInvalidate }),
+        mediatorHttpInvalidate,
+        maxBufferSize: 10_000,
+      });
+
       actor = new ActorHttpCache({
         name: 'actor',
         bus,
-        cacheStorage: new HttpCacheStorageLru({ max: 10, mediatorHttpInvalidate }),
+        cacheStorage: cacheStorageStream,
         mediatorHttpInvalidate,
         httpInvalidator,
         mediatorHttp,
@@ -154,21 +164,6 @@ describe('ActorHttpCache', () => {
       });
     });
 
-    // Describe('put', () => {
-    //   it('puts a response that should be valid', async() => {
-    //     await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.responseInit);
-    //     const cachedResponse = await actor.fetchWithCache({ input: fo.maxAge.request, context });
-    //     expect(await cachedResponse?.text()).toBe(fo.maxAge.body);
-    //     expect(fetch).not.toHaveBeenCalled();
-    //   });
-
-    //   it('throws an error when trying to add an invalid request', async() => {
-    //     await expect(
-    //       actor.put(fo.noStore.request, fo.noStore.body, fo.noStore.responseInit),
-    //     ).rejects.toThrow(`${fo.noStore.uri} is not storable.`);
-    //   });
-    // });
-
     describe('fetchWithCache', () => {
       it('performs a fetch when there is nothing in the cache.', async() => {
         const input = { input: fo.maxAge.request, context };
@@ -216,9 +211,13 @@ describe('ActorHttpCache', () => {
         expect(await matchResult1?.text()).toBe(fo.eTag.body);
         // @ts-expect-error
         mediatorHttp.mediate.mockClear();
+        const mockedStream1 = Readable.from('Distraction Body that should not be set');
+        // @ts-expect-error
+        ActorHttp.normalizeResponseBody(mockedStream1);
         // @ts-expect-error
         mediatorHttp.mediate.mockResolvedValueOnce(
-          new Response('Distraction Body that should not be set', {
+          // @ts-expect-error
+          new Response(mockedStream1, {
             status: 304,
             headers: {
               etag: '123456',
@@ -238,8 +237,14 @@ describe('ActorHttpCache', () => {
         });
         expect(await matchResult2?.text()).toBe(fo.eTag.body);
         fetch.mockClear();
+        // @ts-expect-error
+        mediatorHttp.mediate.mockClear();
+        const mockedStream2 = Readable.from('The body should be reset to this');
+        // @ts-expect-error
+        ActorHttp.normalizeResponseBody(mockedStream2);
         fetch.mockResolvedValueOnce(
-          new Response('The body should be reset to this', {
+          // @ts-expect-error
+          new Response(mockedStream2, {
             status: 200,
             headers: {
               etag: '7890',
@@ -280,22 +285,23 @@ describe('ActorHttpCache', () => {
         });
         expect(await matchResult2?.text()).toBe(fo.noStore.body);
       });
+
+      it('returns an undefined body when no body is present', async() => {
+        // @ts-expect-error
+        mediatorHttp.mediate.mockClear();
+        // @ts-expect-error
+        mediatorHttp.mediate.mockResolvedValueOnce(
+          new Response(undefined, {
+            status: 200,
+            headers: {
+              etag: '123456',
+            },
+          }),
+        );
+        const input = { input: fo.plain.request, context };
+        const response = await actor.run(input);
+        expect(response.body).toBe(null);
+      });
     });
-
-    // Describe('has', () => {
-    //   it('returns false when a request is not in the cache', async() => {
-    //     expect(await actor.has(fo.plain.request)).toBe(false);
-    //   });
-
-    //   it('returns true if the request is in the cache', async() => {
-    //     await actor.put(fo.maxAge.request, fo.maxAge.body, fo.maxAge.response);
-    //     expect(await actor.has(fo.maxAge.request)).toBe(true);
-    //   });
-
-    //   it('returns false if the request is in the cache but it is stale', async() => {
-    //     await actor.put(fo.plain.request, fo.plain.body, fo.plain.responseInit);
-    //     expect(await actor.has(fo.plain.request)).toBe(false);
-    //   });
-    // });
   });
 });

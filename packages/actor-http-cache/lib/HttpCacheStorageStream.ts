@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import { PassThrough, Readable } from 'stream';
+import { ActorHttp } from '@comunica/bus-http';
 import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
 import { ActionContext } from '@comunica/core';
 import type {
@@ -9,8 +10,11 @@ import type {
 import type * as CachePolicy from 'http-cache-semantics';
 import { v4 } from 'uuid';
 
+// TODO: This should be `IHttpCacheStorage<ReadableStream<Uint8Array>>`,
+// but Components.js cannot recognize ReadableStream. Replace when Components.js
+// has a fix
 export class HttpCacheStorageStream
-implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
+implements IHttpCacheStorage {
   private readonly bufferCache: IHttpCacheStorage<Buffer>;
   private readonly maxBufferSize: number;
   private readonly mediatorHttpInvalidate?: MediatorHttpInvalidate;
@@ -78,6 +82,8 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
       passThrough = incompleteStreamInfo.stream.pipe(passThrough, { end: false });
       // @ts-expect-error In actuality, this is a NodeJS.Readable
       incompleteStreamInfo.stream.on('end', () => passThrough.emit('end'));
+      // @ts-expect-error In actuality, this is a NodeJS.Readable
+      ActorHttp.normalizeResponseBody(passThrough);
       return {
         // @ts-expect-error Passthrough is a type of NodeJS.Readable
         body: passThrough,
@@ -97,6 +103,8 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
       };
     }
     const newStream = Readable.from(cacheValue.body);
+    // @ts-expect-error Passthrough is a type of NodeJS.Readable
+    ActorHttp.normalizeResponseBody(newStream);
     return {
       policy: cacheValue.policy,
       init: cacheValue.init,
@@ -135,7 +143,10 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
 }
 
 interface IHttpCacheStorageStreamArgs {
-  bufferCache: IHttpCacheStorage<Buffer>;
+  // TODO: This should be `IHttpCacheStorage<Buffer>`,
+  // but Components.js cannot recognize Buffer. Replace when Components.js
+  // has a fix
+  bufferCache: IHttpCacheStorage;
   maxBufferSize: number;
   mediatorHttpInvalidate?: MediatorHttpInvalidate;
 }

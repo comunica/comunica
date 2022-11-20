@@ -97,34 +97,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
         }
       }
 
-      // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
-      // If it doesn't exist, we monkey-patch it.
-      if (response.body && !response.body.cancel) {
-        response.body.cancel = async(error?: Error) => {
-          (<Readable><any>response.body).destroy(error);
-          if (requestTimeout !== undefined) {
-            // We make sure to remove the timeout if it is still enabled
-            clearTimeout(requestTimeout);
-          }
-        };
-      }
-
-      // Node-fetch does not support body.tee, while it is mandatory according to the fetch and readablestream api.
-      // If it doesn't exist, we monkey-patch it.
-      if (response.body && !response.body.tee) {
-        response.body.tee = (): [ReadableStream, ReadableStream] => {
-          // eslint-disable-next-line import/no-nodejs-modules
-          const stream = require('stream');
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          const stream1 = response.body.pipe(new stream.PassThrough());
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          const stream2 = response.body.pipe(new stream.PassThrough());
-          return [ stream1, stream2 ];
-        };
-      }
-
+      ActorHttp.normalizeResponseBody(response.body, requestTimeout);
       return response;
     } catch (error: unknown) {
       if (requestTimeout !== undefined) {

@@ -1,5 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { Readable } from 'readable-stream';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 // TODO: Remove when targeting NodeJS 18+
@@ -59,6 +60,37 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
       hash[key] = value;
     });
     return hash;
+  }
+
+  /**
+   * Normalize the response body by adding methods to it if they are missing
+   * @param body The response body
+   * @param requestTimeout Optional timeout used for the cancel funtion
+   */
+  public static normalizeResponseBody(body?: Response['body'], requestTimeout?: NodeJS.Timeout): void {
+    // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
+    // If it doesn't exist, we monkey-patch it.
+    if (body && !body.cancel) {
+      body.cancel = async(error?: Error) => {
+        (<Readable><any>body).destroy(error);
+        if (requestTimeout !== undefined) {
+          // We make sure to remove the timeout if it is still enabled
+          clearTimeout(requestTimeout);
+        }
+      };
+    }
+
+    // Node-fetch does not support body.tee, while it is mandatory according to the fetch and readablestream api.
+    // If it doesn't exist, we monkey-patch it.
+    if (body && !body.tee) {
+      body.tee = (): [ReadableStream, ReadableStream] => {
+        // eslint-disable-next-line import/no-nodejs-modules
+        const stream = require('stream');
+        const stream1 = (<Readable><any> body).pipe(new stream.PassThrough());
+        const stream2 = (<Readable><any> body).pipe(new stream.PassThrough());
+        return [ stream1, stream2 ];
+      };
+    }
   }
 }
 

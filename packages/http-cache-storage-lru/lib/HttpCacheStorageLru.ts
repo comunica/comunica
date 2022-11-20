@@ -3,7 +3,10 @@ import { ActionContext } from '@comunica/core';
 import type { IHttpCacheStorage, IHttpCacheStorageValue } from '@comunica/types';
 import * as LRU from 'lru-cache';
 
-export class HttpCacheStorageLru implements IHttpCacheStorage<Buffer> {
+// TODO: This should be `IHttpCacheStorage<Buffer>`,
+// but Components.js cannot recognize Buffer. Replace when Components.js
+// has a fix
+export class HttpCacheStorageLru implements IHttpCacheStorage {
   private readonly cache: LRU<string, IHttpCacheStorageValue<Buffer>>;
 
   public constructor(args: IHttpCacheLruArgs) {

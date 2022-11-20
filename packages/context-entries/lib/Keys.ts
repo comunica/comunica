@@ -52,7 +52,9 @@ export const KeysHttp = {
   /**
    * A storage object that can overwrites the default http cache
    */
-  httpCacheStorage: new ActionContextKey<IHttpCacheStorage>('@communica/bus-http:cache-storage'),
+  httpCacheStorage: new ActionContextKey<
+  IHttpCacheStorage<ReadableStream<Uint8Array>>
+  >('@communica/bus-http:cache-storage'),
 };
 
 export const KeysHttpMemento = {

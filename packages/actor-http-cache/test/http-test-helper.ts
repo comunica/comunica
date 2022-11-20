@@ -1,4 +1,7 @@
 /* istanbul ignore file */
+import { Readable } from 'stream';
+import { ActorHttp } from '@comunica/bus-http';
+
 /**
  * Define all the mock fetch request and responses here
  */
@@ -69,7 +72,11 @@ export function getHttpTestHelpers() {
       if (!fetchOption) {
         throw new Error('Test specified unknown fetch option');
       }
-      return new Response(fetchOption.body, fetchOption.responseInit);
+      const bodyStream = Readable.from(Buffer.from(fetchOption.body));
+      // @ts-expect-error
+      const response = new Response(bodyStream, fetchOption.responseInit);
+      ActorHttp.normalizeResponseBody(response.body);
+      return response;
     },
   );
 

@@ -1,4 +1,5 @@
-import { Readable, PassThrough } from 'stream';
+import { Readable } from 'stream';
+import { ActorHttp } from '@comunica/bus-http';
 import type {
   IActionHttpInvalidate,
   IActorHttpInvalidateOutput,
@@ -23,12 +24,7 @@ describe('HttpCacheStorageStream', () => {
   function createStream() {
     const createdStream = <Readable & ReadableStream> <unknown> new Readable();
     // Add the tee method to the Node Stream
-    createdStream.tee = (): [ReadableStream, ReadableStream] => {
-      const stream1 = stream.pipe(new PassThrough());
-      const stream2 = stream.pipe(new PassThrough());
-      // @ts-expect-error
-      return [ stream1, stream2 ];
-    };
+    ActorHttp.normalizeResponseBody(createdStream);
     return createdStream;
   }
 
