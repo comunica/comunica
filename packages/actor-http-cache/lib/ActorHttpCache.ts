@@ -29,7 +29,8 @@ export class ActorHttpCache extends ActorHttp {
   private readonly cacheStorage: IHttpCacheStorage;
   private readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
   private readonly mediatorHttp: MediatorHttp;
-  private readonly cacheStoragesToInvalidate: Set<IHttpCacheStorage> = new Set();
+  private readonly cacheStoragesToInvalidate: Set<IHttpCacheStorage> =
+    new Set();
 
   public constructor(args: IActorHttpCacheArgs) {
     super(args);
@@ -39,16 +40,18 @@ export class ActorHttpCache extends ActorHttp {
     this.mediatorHttp = args.mediatorHttp;
     args.httpInvalidator.addInvalidateListener(
       ({ url }: IActionHttpInvalidate) =>
-        Promise.all([ ...this.cacheStoragesToInvalidate ].map(async cacheStorage =>
-          url ?
-            cacheStorage.delete(new Request(url)) :
-            cacheStorage.clear())),
+        Promise.all(
+          [ ...this.cacheStoragesToInvalidate ].map(asynccacheStorage =>
+            url ? this.cacheStorage.delete(new Request(url)) : this.cacheStorage.clear()),
+        ),
     );
   }
 
   private getCacheStorage(context: IActionContext): IHttpCacheStorage {
     // Get Cache Storage
-    const cacheStorage = context.get<IHttpCacheStorage>(KeysHttp.httpCacheStorage) || this.cacheStorage;
+    const cacheStorage =
+      context.get<IHttpCacheStorage>(KeysHttp.httpCacheStorage) ||
+      this.cacheStorage;
     // Store the cache as one that should be cleared upon invalidate
     this.cacheStoragesToInvalidate.add(cacheStorage);
     return cacheStorage;
@@ -56,7 +59,9 @@ export class ActorHttpCache extends ActorHttp {
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
     if (action.context.get(KeysHttpCache.doNotCheckHttpCache)) {
-      throw new Error(`Actor ${this.name} skipped as cache should not be checked.`);
+      throw new Error(
+        `Actor ${this.name} skipped as cache should not be checked.`,
+      );
     }
     const cacheStorage = this.getCacheStorage(action.context);
     if (await cacheStorage.has(new Request(action.input, action.init))) {
@@ -66,7 +71,9 @@ export class ActorHttpCache extends ActorHttp {
       ...action,
       context: action.context.set(KeysHttpCache.doNotCheckHttpCache, true),
     };
-    return await (await this.mediatorHttp.mediateActor(newAction)).test(newAction);
+    return await (
+      await this.mediatorHttp.mediateActor(newAction)
+    ).test(newAction);
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
@@ -83,9 +90,7 @@ export class ActorHttpCache extends ActorHttp {
    * @returns A Promise that resolves to the first Response that matches the
    * request and a boolean indicating if the value was from the cache or not
    */
-  private async fetchWithCache(
-    action: IActionHttp,
-  ): Promise<Response> {
+  private async fetchWithCache(action: IActionHttp): Promise<Response> {
     const cacheStorage = this.getCacheStorage(action.context);
     const newRequest = new Request(action.input, action.init);
     const cacheResult = await cacheStorage.get(newRequest);
@@ -98,7 +103,12 @@ export class ActorHttpCache extends ActorHttp {
       if (!cachePolicy.storable()) {
         return response;
       }
-      return await this.teeAndCacheResponse(newRequest, response, cachePolicy, cacheStorage);
+      return await this.teeAndCacheResponse(
+        newRequest,
+        response,
+        cachePolicy,
+        cacheStorage,
+      );
     }
     // The Request is cached ===================================================
     // The Cache Policy is Satisfied -------------------------------------------
@@ -112,8 +122,14 @@ export class ActorHttpCache extends ActorHttp {
     }
     // The Cache Policy is not satisfied ---------------------------------------
     // Invalidate the cache
-    await this.mediatorHttpInvalidate.mediate({ url: newRequest.url, context: action.context });
-    const revalidationHeaders = this.getRevalidationHeaders(newRequest, cacheResult.policy);
+    await this.mediatorHttpInvalidate.mediate({
+      url: newRequest.url,
+      context: action.context,
+    });
+    const revalidationHeaders = this.getRevalidationHeaders(
+      newRequest,
+      cacheResult.policy,
+    );
     const response = await this.fetchDocument({
       ...action,
       init: {
@@ -121,9 +137,20 @@ export class ActorHttpCache extends ActorHttp {
         headers: revalidationHeaders,
       },
     });
-    const { policy, modified } = this.getRevalidatedPolicy(newRequest, response, cacheResult.policy);
-    const finalResponse = modified ? response : new Response(cacheResult.body, cacheResult.init);
-    return await this.teeAndCacheResponse(newRequest, finalResponse, policy, cacheStorage);
+    const { policy, modified } = this.getRevalidatedPolicy(
+      newRequest,
+      response,
+      cacheResult.policy,
+    );
+    const finalResponse = modified ?
+      response :
+      new Response(cacheResult.body, cacheResult.init);
+    return await this.teeAndCacheResponse(
+      newRequest,
+      finalResponse,
+      policy,
+      cacheStorage,
+    );
   }
 
   private async fetchDocument(action: IActionHttp): Promise<Response> {
@@ -136,29 +163,44 @@ export class ActorHttpCache extends ActorHttp {
 
   private newCachePolicy(request: Request, response: Response): CachePolicy {
     // Conversions to make headers compatible
-    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
-    const responseWithHashHeaders = ActorHttpCache.responseToResponseWithHashHeaders(response);
-    return new CachePolicy(
-      requestWithHashHeaders,
-      responseWithHashHeaders,
-    );
+    const requestWithHashHeaders =
+      ActorHttpCache.requestToRequestWithHashHeaders(request);
+    const responseWithHashHeaders =
+      ActorHttpCache.responseToResponseWithHashHeaders(response);
+    return new CachePolicy(requestWithHashHeaders, responseWithHashHeaders);
   }
 
   private isPolicySatisfied(request: Request, policy: CachePolicy): boolean {
-    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
+    const requestWithHashHeaders =
+      ActorHttpCache.requestToRequestWithHashHeaders(request);
     return policy.satisfiesWithoutRevalidation(requestWithHashHeaders);
   }
 
-  private getRevalidationHeaders(request: Request, policy: CachePolicy): Headers {
-    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
-    const hashRevalidationHeaders = policy.revalidationHeaders(requestWithHashHeaders);
-    return new Headers(<Record<string, string>> hashRevalidationHeaders);
+  private getRevalidationHeaders(
+    request: Request,
+    policy: CachePolicy,
+  ): Headers {
+    const requestWithHashHeaders =
+      ActorHttpCache.requestToRequestWithHashHeaders(request);
+    const hashRevalidationHeaders = policy.revalidationHeaders(
+      requestWithHashHeaders,
+    );
+    return new Headers(<Record<string, string>>hashRevalidationHeaders);
   }
 
-  private getRevalidatedPolicy(request: Request, response: Response, policy: CachePolicy): RevalidationPolicy {
-    const requestWithHashHeaders = ActorHttpCache.requestToRequestWithHashHeaders(request);
-    const responseWithHashHeaders = ActorHttpCache.responseToResponseWithHashHeaders(response);
-    return policy.revalidatedPolicy(requestWithHashHeaders, responseWithHashHeaders);
+  private getRevalidatedPolicy(
+    request: Request,
+    response: Response,
+    policy: CachePolicy,
+  ): RevalidationPolicy {
+    const requestWithHashHeaders =
+      ActorHttpCache.requestToRequestWithHashHeaders(request);
+    const responseWithHashHeaders =
+      ActorHttpCache.responseToResponseWithHashHeaders(response);
+    return policy.revalidatedPolicy(
+      requestWithHashHeaders,
+      responseWithHashHeaders,
+    );
   }
 
   private async teeAndCacheResponse(
@@ -167,22 +209,13 @@ export class ActorHttpCache extends ActorHttp {
     cachePolicy: CachePolicy,
     cacheStorage: IHttpCacheStorage,
   ): Promise<Response> {
-    // Node-fetch does not support body.tee, while it is mandatory according to the fetch and readablestream api.
-    // If it doesn't exist, we monkey-patch it.
-    if (response.body && !response.body.tee) {
-      response.body.tee = (): [ReadableStream, ReadableStream] => {
-        // eslint-disable-next-line import/no-nodejs-modules
-        const Readable = require('stream').Readable;
-        return [
-          Readable.from(response.body),
-          Readable.from(response.body),
-        ];
-      };
-    }
+    const [ bodyToRetrun, bodyToCache ] = response.body?.tee() || [
+      undefined,
+      undefined,
+    ];
 
-    // There almost will always be a body, so ignore next
-    /* istanbul ignore next */
-    const [ bodyToRetrun, bodyToCache ] = response.body?.tee() || [ undefined, undefined ];
+    // Consume the incoming stream
+
     const responseInit = {
       headers: response.headers,
       status: response.status,
@@ -207,11 +240,15 @@ export class ActorHttpCache extends ActorHttp {
    * ===========================================================================
    */
 
-  public static requestToRequestWithHashHeaders(request: Request): CacheRequest {
+  public static requestToRequestWithHashHeaders(
+    request: Request,
+  ): CacheRequest {
     return { ...request, headers: this.headersToHash(request.headers) };
   }
 
-  public static responseToResponseWithHashHeaders(response: Response): CacheResponse {
+  public static responseToResponseWithHashHeaders(
+    response: Response,
+  ): CacheResponse {
     return { ...response, headers: this.headersToHash(response.headers) };
   }
 }

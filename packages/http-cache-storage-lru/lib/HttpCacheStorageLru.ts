@@ -3,8 +3,8 @@ import { ActionContext } from '@comunica/core';
 import type { IHttpCacheStorage, IHttpCacheStorageValue } from '@comunica/types';
 import * as LRU from 'lru-cache';
 
-export class HttpCacheStorageLru implements IHttpCacheStorage {
-  private readonly cache: LRU<string, IHttpCacheStorageValue>;
+export class HttpCacheStorageLru implements IHttpCacheStorage<Buffer> {
+  private readonly cache: LRU<string, IHttpCacheStorageValue<Buffer>>;
 
   public constructor(args: IHttpCacheLruArgs) {
     this.cache = new LRU({
@@ -15,11 +15,11 @@ export class HttpCacheStorageLru implements IHttpCacheStorage {
     });
   }
 
-  public async set(key: Request, value: IHttpCacheStorageValue, ttl?: number | undefined): Promise<void> {
+  public async set(key: Request, value: IHttpCacheStorageValue<Buffer>, ttl?: number | undefined): Promise<void> {
     this.cache.set(key.url, value);
   }
 
-  public async get(key: Request): Promise<IHttpCacheStorageValue | undefined> {
+  public async get(key: Request): Promise<IHttpCacheStorageValue<Buffer> | undefined> {
     return this.cache.get(key.url);
   }
 

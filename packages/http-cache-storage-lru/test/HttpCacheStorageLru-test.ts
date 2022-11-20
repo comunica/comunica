@@ -23,10 +23,10 @@ describe('HttpCacheStorageLru', () => {
     const request = new Request('https://example.com/');
     const response = new Response('Test Body');
     const policy = new CachePolicy({ headers: {}}, { headers: {}});
-    await cache.set(request, { body: await response.text(), policy });
+    await cache.set(request, { body: Buffer.from(await response.arrayBuffer()), policy });
     const retrieved = await cache.get(request);
     expect(retrieved?.policy).toEqual(policy);
-    expect(retrieved?.body).toEqual('Test Body');
+    expect(retrieved?.body?.toString()).toEqual('Test Body');
     expect(await cache.delete(new Request('https://otherExample.com'))).toBe(false);
     await cache.clear();
     expect(await cache.has(request)).toBe(false);
@@ -36,11 +36,11 @@ describe('HttpCacheStorageLru', () => {
     const cache = new HttpCacheStorageLru({ max: 1, mediatorHttpInvalidate });
 
     const request1 = new Request('https://example.com/1');
-    const value1 = { body: 'test1', policy: new CachePolicy({ headers: {}}, { headers: {}}) };
+    const value1 = { body: Buffer.from('test1'), policy: new CachePolicy({ headers: {}}, { headers: {}}) };
     await cache.set(request1, value1);
 
     const request2 = new Request('https://example.com/2');
-    const value2 = { body: 'test2', policy: new CachePolicy({ headers: {}}, { headers: {}}) };
+    const value2 = { body: Buffer.from('test2'), policy: new CachePolicy({ headers: {}}, { headers: {}}) };
     await cache.set(request2, value2);
 
     expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ url: request1.url, context: new ActionContext() });
