@@ -10,7 +10,9 @@ export class HttpCacheStorageLru implements IHttpCacheStorage<Buffer> {
     this.cache = new LRU({
       max: args.max,
       async dispose(value, key) {
-        await args.mediatorHttpInvalidate.mediate({ url: key, context: new ActionContext() });
+        if (args.mediatorHttpInvalidate) {
+          await args.mediatorHttpInvalidate.mediate({ url: key, context: new ActionContext() });
+        }
       },
     });
   }
@@ -41,5 +43,5 @@ export interface IHttpCacheLruArgs {
    * Maximum items stored in the cache
    */
   max: number;
-  mediatorHttpInvalidate: MediatorHttpInvalidate;
+  mediatorHttpInvalidate?: MediatorHttpInvalidate;
 }

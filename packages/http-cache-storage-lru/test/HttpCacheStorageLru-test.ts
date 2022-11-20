@@ -45,4 +45,18 @@ describe('HttpCacheStorageLru', () => {
 
     expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ url: request1.url, context: new ActionContext() });
   });
+
+  it('doesn\'t error when not httpInvalidate is provided', async() => {
+    const cache = new HttpCacheStorageLru({ max: 1 });
+
+    const request1 = new Request('https://example.com/1');
+    const value1 = { body: Buffer.from('test1'), policy: new CachePolicy({ headers: {}}, { headers: {}}) };
+    await cache.set(request1, value1);
+
+    const request2 = new Request('https://example.com/2');
+    const value2 = { body: Buffer.from('test2'), policy: new CachePolicy({ headers: {}}, { headers: {}}) };
+    await cache.set(request2, value2);
+
+    expect(mediatorHttpInvalidate.mediate).not.toHaveBeenCalled();
+  });
 });

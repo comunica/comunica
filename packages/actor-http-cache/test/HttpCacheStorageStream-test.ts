@@ -5,6 +5,7 @@ import type {
   MediatorHttpInvalidate,
 } from '@comunica/bus-http-invalidate';
 import 'cross-fetch/polyfill';
+import { ActionContext } from '@comunica/core';
 import * as CachePolicy from 'http-cache-semantics';
 import { HttpCacheStorageLru } from '../../http-cache-storage-lru';
 import { HttpCacheStorageStream } from '../lib/HttpCacheStorageStream';
@@ -51,6 +52,7 @@ describe('HttpCacheStorageStream', () => {
         mediatorHttpInvalidate,
       }),
       maxBufferSize: 1_000,
+      mediatorHttpInvalidate,
     });
   });
 
@@ -230,5 +232,24 @@ describe('HttpCacheStorageStream', () => {
     });
     await cache.clear();
     expect(await cache.has(exampleRequest)).toBe(false);
+  });
+
+  it('Calls http invalidate when a value is discarded', async() => {
+    await cache.set(exampleRequest, { policy: examplePolicy, body: cacheStream });
+    await cache.delete(exampleRequest);
+    expect(mediatorHttpInvalidate.mediate)
+      .toHaveBeenCalledWith({ url: exampleRequest.url, context: new ActionContext() });
+  });
+
+  it('doesn\'t error when not httpInvalidate is provided', async() => {
+    cache = new HttpCacheStorageStream({
+      bufferCache: new HttpCacheStorageLru({
+        max: 100,
+      }),
+      maxBufferSize: 1_000,
+    });
+    await cache.set(exampleRequest, { policy: examplePolicy, body: cacheStream });
+    await cache.delete(exampleRequest);
+    expect(mediatorHttpInvalidate.mediate).not.toHaveBeenCalled();
   });
 });

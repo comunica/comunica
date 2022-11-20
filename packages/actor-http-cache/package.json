@@ -34,6 +34,7 @@
     "@comunica/bus-http": "^2.4.0",
     "@comunica/bus-http-invalidate": "^2.4.0",
     "@comunica/context-entries": "^2.4.0",
+    "@comunica/core": "^2.4.0",
     "@comunica/mediatortype-time": "^2.4.0",
     "@comunica/types": "^2.4.0",
     "@types/http-cache-semantics": "^4.0.1",

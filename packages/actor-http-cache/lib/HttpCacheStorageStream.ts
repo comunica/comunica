@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import { PassThrough, Readable } from 'stream';
+import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
+import { ActionContext } from '@comunica/core';
 import type {
   IHttpCacheStorage,
   IHttpCacheStorageValue,
@@ -11,6 +13,7 @@ export class HttpCacheStorageStream
 implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
   private readonly bufferCache: IHttpCacheStorage<Buffer>;
   private readonly maxBufferSize: number;
+  private readonly mediatorHttpInvalidate?: MediatorHttpInvalidate;
 
   private incompleteStreams: Record<string, {
     policy: CachePolicy;
@@ -23,6 +26,7 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
   public constructor(args: IHttpCacheStorageStreamArgs) {
     this.bufferCache = args.bufferCache;
     this.maxBufferSize = args.maxBufferSize;
+    this.mediatorHttpInvalidate = args.mediatorHttpInvalidate;
   }
 
   public async set(
@@ -105,10 +109,14 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
     const wasInIncompleteStream = Boolean(this.incompleteStreams[key.url]);
     delete this.incompleteStreams[key.url];
     const wasInBufferCache = await this.bufferCache.delete(key);
+    await this.invalidate(key.url);
     return wasInIncompleteStream || wasInBufferCache;
   }
 
   public async clear(): Promise<void> {
+    await Promise.all(Object.keys(this.incompleteStreams).map(async key => {
+      await this.invalidate(key);
+    }));
     this.incompleteStreams = {};
     await this.bufferCache.clear();
   }
@@ -118,9 +126,16 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
     const isInBufferCache = await this.bufferCache.has(key);
     return isInIncompleteStream || isInBufferCache;
   }
+
+  private async invalidate(key: string): Promise<void> {
+    if (this.mediatorHttpInvalidate) {
+      await this.mediatorHttpInvalidate.mediate({ url: key, context: new ActionContext() });
+    }
+  }
 }
 
 interface IHttpCacheStorageStreamArgs {
   bufferCache: IHttpCacheStorage<Buffer>;
   maxBufferSize: number;
+  mediatorHttpInvalidate?: MediatorHttpInvalidate;
 }
