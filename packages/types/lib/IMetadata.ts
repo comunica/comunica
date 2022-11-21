@@ -5,6 +5,8 @@ import type * as RDF from '@rdfjs/types';
  * This interface still allows other non-standard metadata entries to be added.
  */
 export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermName> extends Record<string, any> {
+  state: IMetadataValidationState;
+
   /**
    * An estimate of the number of bindings in the source.
    */
@@ -65,3 +67,9 @@ export type QueryResultCardinality = RDF.QueryResultCardinality & {
    */
   dataset?: string;
 };
+
+export interface IMetadataValidationState {
+  valid: boolean;
+  invalidate: () => void;
+  addInvalidateListener: (listener: () => void) => void;
+}

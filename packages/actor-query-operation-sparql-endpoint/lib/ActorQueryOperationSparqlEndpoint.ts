@@ -11,6 +11,7 @@ import {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResult,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
@@ -154,6 +155,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
     const metadata: () => Promise<IMetadata<any>> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
       async() => ({
+        state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: await resultStream.getCardinality() },
         canContainUndefs: true,
         variables,

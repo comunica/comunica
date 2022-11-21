@@ -1,6 +1,7 @@
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -231,10 +232,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             // Also merge fields that were not explicitly accumulated
             const returnMetadata = { ...previousMetadata, ...accumulatedMetadata };
 
-            // Emit metadata if needed
-            if (firstPage) {
-              this.setProperty('metadata', returnMetadata);
-            }
+            // Create new metadata state
+            returnMetadata.state = new MetadataValidationState();
+
+            // Emit metadata, and invalidate any metadata that was set before
+            const metadataToInvalidate = this.getProperty<MetadataQuads>('metadata');
+            this.setProperty('metadata', returnMetadata);
+            metadataToInvalidate?.state.invalidate();
 
             // Determine next urls, which will eventually become a next-next source.
             this.getSourceLinks(returnMetadata)

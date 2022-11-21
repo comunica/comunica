@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-query-operation-values",
-  "version": "2.6.8",
-  "description": "A values query-operation actor",
+  "name": "@comunica/metadata",
+  "version": "2.5.0",
+  "description": "Metadata helpers for Comunica",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-query-operation-values"
+    "directory": "packages/metadata"
   },
   "publishConfig": {
     "access": "public"
@@ -16,9 +16,7 @@
   "sideEffects": false,
   "keywords": [
     "comunica",
-    "actor",
-    "query-operation",
-    "values"
+    "metadata"
   ],
   "license": "MIT",
   "bugs": {
@@ -29,17 +27,13 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map"
+    "lib/**/*.js.map",
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
+    "bin/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bindings-factory": "^2.5.1",
-    "@comunica/bus-query-operation": "^2.6.8",
-    "@comunica/core": "^2.6.8",
-    "@comunica/metadata": "^2.5.0",
-    "@comunica/types": "^2.6.8",
-    "asynciterator": "^3.8.0",
-    "rdf-data-factory": "^1.1.1",
-    "sparqlalgebrajs": "^4.0.5"
+    "@comunica/types": "^2.5.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

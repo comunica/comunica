@@ -16,6 +16,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+import { MetadataValidationState } from '@comunica/metadata';
 
 const DF = new DataFactory();
 
@@ -194,17 +195,35 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
-    // Metadata promise that will be chained and accumulated for every source
-    let metadataPromise: Promise<MetadataQuads> = this.mediatorRdfMetadataAccumulate
-      .mediate({ mode: 'initialize', context: this.contextDefault })
-      .catch(error => {
-        it.emit('error', error);
-        return { metadata: {}};
-      })
-      .then(result => <MetadataQuads> result.metadata);
-    let remainingSources = this.sources.length;
+    // A function that is called every time metadata is found,
+    // and will accumulate all metadata if the metadata from all sources have been defined.
+    const tryAccumulatingMetadata = async(): Promise<void> => {
+      // Only accumulate when the metadata of all sources have been defined
+      if (accumulatingMetadata.size === this.sources.length) {
+        // Accumulate metadata using mediator
+        let accumulatedMetadata: MetadataQuads = <MetadataQuads> (await this.mediatorRdfMetadataAccumulate
+          .mediate({ mode: 'initialize', context: this.contextDefault })).metadata;
+        for (const appendingMetadata of accumulatingMetadata.values()) {
+          accumulatedMetadata = <MetadataQuads> (await this.mediatorRdfMetadataAccumulate
+            .mediate({
+              mode: 'append',
+              accumulatedMetadata,
+              appendingMetadata,
+              context: this.contextDefault,
+            })).metadata;
+        }
+        // Create new metadata state
+        accumulatedMetadata.state = new MetadataValidationState();
+
+        // Emit metadata, and invalidate any metadata that was set before
+        const metadataToInvalidate = it.getProperty<MetadataQuads>('metadata');
+        it.setProperty('metadata', accumulatedMetadata);
+        metadataToInvalidate?.state.invalidate();
+      }
+    };
 
     // Immediately start sub-iterators for each source, so that their metadata can be collected.
+    const accumulatingMetadata: Map<string, MetadataQuads> = new Map();
     const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
       const sourceId = this.getSourceId(source);
 
@@ -238,34 +257,33 @@ export class FederatedQuadSource implements IQuadSource {
       }
 
       // Handle the metadata from this source
-      output.data.getProperty('metadata', (appendingMetadata: MetadataQuads) => {
-        // Save empty patterns
-        if (this.skipEmptyPatterns &&
-          !appendingMetadata.cardinality.value &&
-          pattern &&
-          !this.isSourceEmpty(source, pattern)) {
-          this.emptyPatterns.get(source)!.push(pattern);
-        }
+      const addMetadataPropertyListener = (): void => {
+        output.data.getProperty('metadata', (subMetadata: MetadataQuads) => {
+          accumulatingMetadata.set(sourceId, subMetadata);
 
-        // Accumulate metadata
-        metadataPromise = metadataPromise
-          .then(accumulatedMetadata => this.mediatorRdfMetadataAccumulate
-            .mediate({ mode: 'append', accumulatedMetadata, appendingMetadata, context: this.contextDefault })
-            .catch(error => {
-              it.emit('error', error);
-              return { metadata: {}};
-            })
-            .then(result => {
-              remainingSources--;
+          // Save empty patterns
+          if (this.skipEmptyPatterns &&
+            !subMetadata.cardinality.value &&
+            pattern &&
+            !this.isSourceEmpty(source, pattern)) {
+            this.emptyPatterns.get(source)!.push(pattern);
+          }
 
-              // Emit metadata if we're at the last source
-              if (!remainingSources) {
-                it.setProperty('metadata', result.metadata);
-              }
+          // Accumulate metadata
+          tryAccumulatingMetadata()
+            .catch(error => it.emit('error', error));
 
-              return <MetadataQuads> result.metadata;
-            }));
-      });
+          // Re-accumulate metadata if this metadata changes
+          subMetadata.state.addInvalidateListener(() => {
+            // Remove this source's metadata in the array
+            accumulatingMetadata.delete(sourceId);
+
+            // Listen to new metadata property changes
+            addMetadataPropertyListener();
+          });
+        });
+      };
+      addMetadataPropertyListener();
 
       // Determine the data stream from this source
       const data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));

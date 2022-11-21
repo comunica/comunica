@@ -6,6 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
+import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IQueryOperationResultBindings, MetadataBindings,
   IPhysicalQueryPlanLogger, Bindings, IActionContext, IJoinEntry, IJoinEntryWithMetadata,
@@ -201,6 +202,7 @@ export abstract class ActorRdfJoin
     }
 
     return {
+      state: new MetadataValidationState(),
       ...partialMetadata,
       cardinality: {
         type: cardinalityJoined.type,

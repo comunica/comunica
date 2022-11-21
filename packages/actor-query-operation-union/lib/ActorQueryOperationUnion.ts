@@ -4,6 +4,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { BindingsStream,
   IQueryOperationResultBindings,
   IActionContext,
@@ -60,9 +61,16 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     }
 
     const metadataBase: MetadataQuads = {
+      state: new MetadataValidationState(),
       cardinality,
       canContainUndefs: metadatas.some(metadata => metadata.canContainUndefs),
     };
+
+    // Propagate metadata invalidations
+    const invalidateListener = (): void => metadataBase.state.invalidate();
+    for (const metadata of metadatas) {
+      metadata.state.addInvalidateListener(invalidateListener);
+    }
 
     // Union variables
     if (bindings) {
