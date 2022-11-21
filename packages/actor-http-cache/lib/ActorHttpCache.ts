@@ -34,7 +34,7 @@ export class ActorHttpCache extends ActorHttp {
 
   public constructor(args: IActorHttpCacheArgs) {
     super(args);
-    this.cacheStorage = <IHttpCacheStorage<ReadableStream<Uint8Array>>> args.cacheStorage;
+    this.cacheStorage = args.cacheStorage;
     this.cacheStoragesToInvalidate.add(this.cacheStorage);
     this.mediatorHttpInvalidate = args.mediatorHttpInvalidate;
     this.mediatorHttp = args.mediatorHttp;
@@ -257,10 +257,7 @@ export interface IActorHttpCacheArgs extends IActorHttpArgs {
   /**
    * A storage object to be used by the cache
    */
-  // TODO: This should be `IHttpCacheStorage<ReadableStream<Unit8Array>>`,
-  // but Components.js cannot recognize ReadableStream. Replace when Components.js
-  // has a fix
-  cacheStorage: IHttpCacheStorage;
+  cacheStorage: IHttpCacheStorage<ReadableStream<Uint8Array>>;
   mediatorHttpInvalidate: MediatorHttpInvalidate;
   /* eslint-disable max-len */
   /**

@@ -10,11 +10,8 @@ import type {
 import type * as CachePolicy from 'http-cache-semantics';
 import { v4 } from 'uuid';
 
-// TODO: This should be `IHttpCacheStorage<ReadableStream<Uint8Array>>`,
-// but Components.js cannot recognize ReadableStream. Replace when Components.js
-// has a fix
 export class HttpCacheStorageStream
-implements IHttpCacheStorage {
+implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
   private readonly bufferCache: IHttpCacheStorage<Buffer>;
   private readonly maxBufferSize: number;
   private readonly mediatorHttpInvalidate?: MediatorHttpInvalidate;
@@ -143,10 +140,7 @@ implements IHttpCacheStorage {
 }
 
 interface IHttpCacheStorageStreamArgs {
-  // TODO: This should be `IHttpCacheStorage<Buffer>`,
-  // but Components.js cannot recognize Buffer. Replace when Components.js
-  // has a fix
-  bufferCache: IHttpCacheStorage;
+  bufferCache: IHttpCacheStorage<Buffer>;
   maxBufferSize: number;
   mediatorHttpInvalidate?: MediatorHttpInvalidate;
 }

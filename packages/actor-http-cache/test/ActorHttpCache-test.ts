@@ -117,7 +117,7 @@ describe('ActorHttpCache', () => {
     });
 
     describe('invalidate cache', () => {
-      let cacheStorage: IHttpCacheStorage;
+      let cacheStorage: IHttpCacheStorage<ReadableStream<Uint8Array>>;
 
       beforeEach(() => {
         // @ts-expect-error
