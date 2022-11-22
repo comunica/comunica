@@ -180,7 +180,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       handledDatasets[dataset] = true;
     }
 
-    return { link, source, metadata: Promise.resolve(<MetadataQuads>metadata), handledDatasets };
+    return { link, source, metadata: <MetadataQuads> metadata, handledDatasets };
   }
 
   protected async accumulateMetadata(

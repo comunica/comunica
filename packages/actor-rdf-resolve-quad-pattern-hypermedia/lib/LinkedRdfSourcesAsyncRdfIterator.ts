@@ -15,7 +15,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected readonly predicate: RDF.Term;
   protected readonly object: RDF.Term;
   protected readonly graph: RDF.Term;
-  protected nextSource: ISourceState | undefined;
 
   private readonly cacheSize: number;
   protected readonly firstUrl: string;
@@ -24,6 +23,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private started = false;
   private readonly currentIterators: AsyncIterator<RDF.Quad>[];
   private iteratorsPendingCreation: number;
+  private accumulatedMetadata: Promise<MetadataQuads | undefined>;
 
   public constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string, maxIterators: number) {
@@ -42,6 +42,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
     this.currentIterators = [];
     this.iteratorsPendingCreation = 0;
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    this.accumulatedMetadata = Promise.resolve(undefined);
   }
 
   protected _end(destroy?: boolean): void {
@@ -220,17 +222,19 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     // Listen for the metadata of the source
     // The metadata property is guaranteed to be set
     iterator.getProperty('metadata', (metadata: MetadataQuads) => {
+      metadata = { ...startSource.metadata, ...metadata };
+
       // Accumulate the metadata object
-      startSource.metadata = startSource.metadata
+      this.accumulatedMetadata = this.accumulatedMetadata
         .then(previousMetadata => (async() => {
-          if (firstPage) {
+          if (!previousMetadata) {
             return metadata;
           }
           return this.accumulateMetadata(previousMetadata, metadata);
         })()
           .then(accumulatedMetadata => {
             // Also merge fields that were not explicitly accumulated
-            const returnMetadata = { ...previousMetadata, ...accumulatedMetadata };
+            const returnMetadata = { ...metadata, ...accumulatedMetadata };
 
             // Create new metadata state
             returnMetadata.state = new MetadataValidationState();
@@ -326,9 +330,9 @@ export interface ISourceState {
    */
   source?: IQuadSource;
   /**
-   * The source's metadata, which may be accumulated across multiple links.
+   * The source's initial metadata.
    */
-  metadata: Promise<MetadataQuads>;
+  metadata: MetadataQuads;
   /**
    * All dataset identifiers that have been passed for this source.
    */

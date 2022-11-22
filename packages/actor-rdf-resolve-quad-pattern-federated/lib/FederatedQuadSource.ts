@@ -8,6 +8,7 @@ import type {
 import { getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -16,7 +17,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { MetadataValidationState } from '@comunica/metadata';
 
 const DF = new DataFactory();
 
