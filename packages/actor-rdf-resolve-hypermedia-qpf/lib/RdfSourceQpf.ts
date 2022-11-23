@@ -176,7 +176,7 @@ export class RdfSourceQpf implements IQuadSource {
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
       const actualDefaultGraph = DF.defaultGraph();
-      let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data)
+      let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data, { autoStart: false })
         .filter(
           quad =>
             matchPattern(quad, subject, predicate, object, graph) ||

@@ -266,48 +266,49 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
         expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
           .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
       });
-
-      it('should run with a real store containing doubly reified triples and pattern', async() => {
-        const store = new Store();
-        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
-        store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
-        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
-        store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-          DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
-        )));
-        store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-          DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
-        )));
-        store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-          DF.namedNode('sb3'), DF.namedNode('pbx'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
-          )
-        )));
-        context = new ActionContext({
-          [KeysRdfResolveQuadPattern.source.name]: store,
-          [KeysInitQuery.sparqlStar.name]: true
-        });
-        const pattern: any = {
-          subject: DF.variable('s'),
-          predicate: DF.variable('p'),
-          object: DF.quad(
-            DF.variable('s1'), DF.namedNode('pbx'), DF.quad(
-              DF.variable('s2'), DF.variable('pcx'), DF.variable('o2')
-            )
-          ),
-          graph: DF.variable('g'),
-        };
-        const { data } = await actor.run({ pattern, context });
-        // expect(await arrayifyStream(data)).toEqualRdfQuadArray([
-        //   DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-        //     DF.namedNode('sb3'), DF.namedNode('pbx'), DF.quad(
-        //       DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
-        //     )
-        //   ))
-        // ]);
-        // expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-        //   .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
-      });
+  
+  // TODO: Re-enable once https://github.com/rdfjs/N3.js/issues/304 is solved
+  //     it('should run with a real store containing doubly reified triples and pattern', async() => {
+  //       const store = new Store();
+  //       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+  //       store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+  //       store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+  //       store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
+  //         DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3')
+  //       )));
+  //       store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+  //         DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+  //       )));
+  //       store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+  //         DF.namedNode('sb3'), DF.namedNode('pbx'), DF.quad(
+  //           DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+  //         )
+  //       )));
+  //       context = new ActionContext({
+  //         [KeysRdfResolveQuadPattern.source.name]: store,
+  //         [KeysInitQuery.sparqlStar.name]: true
+  //       });
+  //       const pattern: any = {
+  //         subject: DF.variable('s'),
+  //         predicate: DF.variable('p'),
+  //         object: DF.quad(
+  //           DF.variable('s1'), DF.namedNode('pbx'), DF.quad(
+  //             DF.variable('s2'), DF.variable('pcx'), DF.variable('o2')
+  //           )
+  //         ),
+  //         graph: DF.variable('g'),
+  //       };
+  //       const { data } = await actor.run({ pattern, context });
+  //       // expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+  //       //   DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
+  //       //     DF.namedNode('sb3'), DF.namedNode('pbx'), DF.quad(
+  //       //       DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3')
+  //       //     )
+  //       //   ))
+  //       // ]);
+  //       // expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+  //       //   .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false });
+  //     });
     })
 
     it('should use countQuads for metadata if available', async() => {
