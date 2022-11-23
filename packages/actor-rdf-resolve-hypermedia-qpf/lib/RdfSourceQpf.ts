@@ -11,6 +11,7 @@ import { TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern, someTerms } from 'rdf-terms';
+
 const DF = new DataFactory();
 
 // TODO: Refactor this to share with the one in actor-rdf-resole-rdfjs
