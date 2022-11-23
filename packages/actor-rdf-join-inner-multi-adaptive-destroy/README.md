@@ -22,13 +22,15 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-adaptive-destroy/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-adaptive-destroy/^2.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-multi-adaptive-destroy",
-      "@type": "ActorRdfJoinInnerMultiAdaptiveDestroy"
+      "@type": "ActorRdfJoinInnerMultiAdaptiveDestroy",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }
     }
   ]
 }
@@ -36,6 +38,5 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-TODO: fill in parameters (this section can be removed if there are none)
-
-* `someParam`: Description of the param
+* `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `mediatorJoin`: A mediator over the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join).

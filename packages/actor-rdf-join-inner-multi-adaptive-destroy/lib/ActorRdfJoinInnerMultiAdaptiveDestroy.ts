@@ -10,6 +10,7 @@ import { KeysRdfJoin } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import { BindingsStreamAdaptiveDestroy } from './BindingsStreamAdaptiveDestroy';
+import { IJoinEntry } from '@comunica/types';
 
 /**
  * A comunica Inner Multi Adaptive Destroy RDF Join Actor.
@@ -18,7 +19,7 @@ export class ActorRdfJoinInnerMultiAdaptiveDestroy extends ActorRdfJoin {
   public readonly mediatorJoin: MediatorRdfJoin;
   public readonly timeout: number;
 
-  public constructor(args: IActorRdfJoinArgs) {
+  public constructor(args: IActorRdfJoinInnerMultiAdaptiveDestroyArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'multi-adaptive-destroy',
@@ -36,6 +37,17 @@ export class ActorRdfJoinInnerMultiAdaptiveDestroy extends ActorRdfJoin {
     return super.run(action);
   }
 
+  protected cloneEntries(entries: IJoinEntry[]): IJoinEntry[] {
+    return entries.map(entry => ({
+      operation: entry.operation,
+      output: {
+        ...entry.output,
+        // Clone stream, as we'll also need it later
+        bindingsStream: entry.output.bindingsStream.clone(),
+      },
+    }));
+  }
+
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Disable adaptive joins in recursive calls to this bus, to avoid infinite recursion on this actor.
     const subContext = action.context.set(KeysRdfJoin.skipAdaptiveJoin, true);
@@ -43,14 +55,7 @@ export class ActorRdfJoinInnerMultiAdaptiveDestroy extends ActorRdfJoin {
     // Execute the join with the metadata we have now
     const firstOutput = await this.mediatorJoin.mediate({
       type: action.type,
-      entries: action.entries.map(entry => ({
-        operation: entry.operation,
-        output: {
-          ...entry.output,
-          // Clone stream, as we'll also need it later
-          bindingsStream: entry.output.bindingsStream.clone(),
-        },
-      })),
+      entries: this.cloneEntries(action.entries),
       context: subContext,
     });
 
@@ -63,7 +68,7 @@ export class ActorRdfJoinInnerMultiAdaptiveDestroy extends ActorRdfJoin {
             // Restart the join with the latest metadata
             (await this.mediatorJoin.mediate({
               type: action.type,
-              entries: action.entries,
+              entries: this.cloneEntries(action.entries),
               context: subContext,
             })).bindingsStream
           ,

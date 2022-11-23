@@ -38,6 +38,8 @@ export class BindingsStreamAdaptiveDestroy extends TransformIterator<Bindings> {
         this.source.destroy();
 
         // Start a new iterator
+        this.timeoutHandle = undefined;
+        this._source = undefined;
         this._createSource = this.delayedSource;
         this._loadSourceAsync();
       }
@@ -56,6 +58,7 @@ export class BindingsStreamAdaptiveDestroy extends TransformIterator<Bindings> {
       const pushedBefore = this.pushedBindings.get(bindingsKey);
       if (pushedBefore) {
         this.pushedBindings.set(bindingsKey, pushedBefore - 1);
+      } else {
         super._push(item);
       }
     }
@@ -63,6 +66,8 @@ export class BindingsStreamAdaptiveDestroy extends TransformIterator<Bindings> {
 
   protected _end(destroy: boolean): void {
     super._end(destroy);
-    clearTimeout(this.timeoutHandle);
+    if (this.timeoutHandle) {
+      clearTimeout(this.timeoutHandle);
+    }
   }
 }
