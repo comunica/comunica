@@ -11732,7 +11732,7 @@ rdf-string@^1.5.0, rdf-string@^1.6.0, rdf-string@^1.6.1:
     "@rdfjs/types" "*"
     rdf-data-factory "^1.1.0"
 
-rdf-terms@^1.7.0, rdf-terms@^1.9.0, rdf-terms@^1.9.1:
+rdf-terms@^1.6.2, rdf-terms@^1.7.0, rdf-terms@^1.9.0, rdf-terms@^1.9.1:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/rdf-terms/-/rdf-terms-1.9.1.tgz#5f66a773d4b2fe6e071ebc8a2985beff7e0dfd7f"
   integrity sha512-GrE8CbQSvuVEFRCywMu6VOgV1AFE6X+nFYcAhEc5pwYKI13bUvz4voiVufQiy3V8rzQKu21Sgl+dS2qcJavy7w==
