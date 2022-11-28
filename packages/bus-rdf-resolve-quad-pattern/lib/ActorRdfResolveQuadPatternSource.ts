@@ -58,9 +58,11 @@ export interface IQuadSource {
   /**
    * Returns a (possibly lazy) stream that processes all quads matching the pattern.
    *
-   * The returned stream MUST expose the property 'metadata'.
+   * The returned stream MUST expose the property 'metadata' of type `MetadataQuads`.
    * The implementor is reponsible for handling cases where 'metadata'
    * is being called without the stream being in flow-mode.
+   * This metadata object can become invalidated (see `metadata.state`),
+   * in which case the 'metadata' property must and will be updated.
    *
    * @param {RDF.Term} subject   The exact subject to match, variable is wildcard.
    * @param {RDF.Term} predicate The exact predicate to match, variable is wildcard.

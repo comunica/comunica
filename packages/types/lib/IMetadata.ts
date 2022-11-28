@@ -5,6 +5,9 @@ import type * as RDF from '@rdfjs/types';
  * This interface still allows other non-standard metadata entries to be added.
  */
 export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermName> extends Record<string, any> {
+  /**
+   * The validity state of this metadata object.
+   */
   state: IMetadataValidationState;
 
   /**
@@ -68,8 +71,25 @@ export type QueryResultCardinality = RDF.QueryResultCardinality & {
   dataset?: string;
 };
 
+/**
+ * Represents the validity of a metadata object.
+ */
 export interface IMetadataValidationState {
+  /**
+   * If the metadata object is valid.
+   *
+   * If it is invalid, the metadata values should be considered outdated, and a new version should be requested.
+   */
   valid: boolean;
+  /**
+   * Mark the metadta object as invalid.
+   *
+   * This will set the `valid` field to false, and invoke the invalidation listeners.
+   */
   invalidate: () => void;
+  /**
+   * Add an listener that will be invoked when the metadata object becomes invalid.
+   * @param listener An invalidation listener.
+   */
   addInvalidateListener: (listener: () => void) => void;
 }

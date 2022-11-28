@@ -25,11 +25,18 @@ export interface IQueryOperationResultStream<
 > extends IQueryOperationResultBase {
   /**
    * Callback that returns a promise that resolves to the metadata about the stream.
+   *
    * This can contain things like the estimated number of total stream elements,
    * or the order in which the bindings appear.
+   *
    * This callback can be invoked multiple times.
-   * The actors that return this metadata will make sure that multiple calls properly cache this promise.
+   * Each invocation can return a different metadata object,
+   * if the previous one would have become invalidated (see `metadata.state`).
+   * The actors that return this metadata will make sure that multiple calls properly cache this promise,
+   * and that the cached object is properly invalidated if needed.
    * Metadata will not be collected until this callback is invoked.
+   *
+   * This callback should resolve quickly, so it is safe to call and immediately `await` it.
    */
   metadata: () => Promise<M>;
 }
