@@ -1,6 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -25,6 +26,7 @@ describe('ActorQueryOperationPathAlt', () => {
           BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
         ]),
         metadata: () => Promise.resolve({
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 3 },
           canContainUndefs: false,
           variables: [ DF.variable('a') ],
@@ -88,6 +90,7 @@ describe('ActorQueryOperationPathAlt', () => {
       context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 6 },
         canContainUndefs: false,
         variables: [ DF.variable('a') ],

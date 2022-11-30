@@ -204,13 +204,16 @@ export class FederatedQuadSource implements IQuadSource {
         let accumulatedMetadata: MetadataQuads = <MetadataQuads> (await this.mediatorRdfMetadataAccumulate
           .mediate({ mode: 'initialize', context: this.contextDefault })).metadata;
         for (const appendingMetadata of accumulatingMetadata.values()) {
-          accumulatedMetadata = <MetadataQuads> (await this.mediatorRdfMetadataAccumulate
-            .mediate({
-              mode: 'append',
-              accumulatedMetadata,
-              appendingMetadata,
-              context: this.contextDefault,
-            })).metadata;
+          accumulatedMetadata = {
+            ...appendingMetadata,
+            ...(await this.mediatorRdfMetadataAccumulate
+              .mediate({
+                mode: 'append',
+                accumulatedMetadata,
+                appendingMetadata,
+                context: this.contextDefault,
+              })).metadata,
+          };
         }
         // Create new metadata state
         accumulatedMetadata.state = new MetadataValidationState();
@@ -224,7 +227,7 @@ export class FederatedQuadSource implements IQuadSource {
 
     // Immediately start sub-iterators for each source, so that their metadata can be collected.
     const accumulatingMetadata: Map<string, MetadataQuads> = new Map();
-    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
+    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async(source, sourceIndex) => {
       const sourceId = this.getSourceId(source);
 
       // Deskolemize terms, so we send the original blank nodes to each source.
@@ -250,8 +253,11 @@ export class FederatedQuadSource implements IQuadSource {
           .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
         // Return the default metadata
-        output.data.setProperty('metadata', (await this.mediatorRdfMetadataAccumulate
-          .mediate({ mode: 'initialize', context: this.contextDefault })).metadata);
+        output.data.setProperty('metadata', {
+          state: new MetadataValidationState(),
+          ...(await this.mediatorRdfMetadataAccumulate
+            .mediate({ mode: 'initialize', context: this.contextDefault })).metadata,
+        });
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
@@ -259,11 +265,11 @@ export class FederatedQuadSource implements IQuadSource {
       // Handle the metadata from this source
       const addMetadataPropertyListener = (): void => {
         output.data.getProperty('metadata', (subMetadata: MetadataQuads) => {
-          accumulatingMetadata.set(sourceId, subMetadata);
+          accumulatingMetadata.set(`${sourceIndex}`, subMetadata);
 
           // Save empty patterns
           if (this.skipEmptyPatterns &&
-            !subMetadata.cardinality.value &&
+            !subMetadata.cardinality?.value &&
             pattern &&
             !this.isSourceEmpty(source, pattern)) {
             this.emptyPatterns.get(source)!.push(pattern);
@@ -274,9 +280,9 @@ export class FederatedQuadSource implements IQuadSource {
             .catch(error => it.emit('error', error));
 
           // Re-accumulate metadata if this metadata changes
-          subMetadata.state.addInvalidateListener(() => {
+          subMetadata.state?.addInvalidateListener(() => {
             // Remove this source's metadata in the array
-            accumulatingMetadata.delete(sourceId);
+            accumulatingMetadata.delete(`${sourceIndex}`);
 
             // Listen to new metadata property changes
             addMetadataPropertyListener();

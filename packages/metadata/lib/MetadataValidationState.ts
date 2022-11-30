@@ -13,10 +13,8 @@ export class MetadataValidationState implements IMetadataValidationState {
 
   public invalidate(): void {
     this.valid = false;
-    setTimeout(() => {
-      for (const invalidateListener of this.invalidateListeners) {
-        invalidateListener();
-      }
-    });
+    for (const invalidateListener of this.invalidateListeners) {
+      invalidateListener();
+    }
   }
 }

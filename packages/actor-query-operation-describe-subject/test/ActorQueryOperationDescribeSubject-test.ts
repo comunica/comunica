@@ -2,6 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -23,6 +24,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
           const patterns = [ ...arg.operation.input.input[0].patterns, ...arg.operation.input.input[1].patterns ];
           return {
             metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
               cardinality: {
                 type: 'estimate',
                 value: arg.operation.input.input[0].patterns.length + arg.operation.input.input[1].patterns.length,
@@ -38,6 +40,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         }
         return {
           metadata: () => Promise.resolve({
+            state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: arg.operation.input.patterns.length },
           }),
           quadStream: new ArrayIterator(arg.operation.input.patterns.map(
@@ -96,7 +99,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
       };
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
+          .toEqual({ state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 2 },
+            canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('a'), DF.namedNode('__predicate'), DF.namedNode('__object')),
@@ -116,7 +121,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
       };
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false });
+          .toEqual({ state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 3 },
+            canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('dummy')),
@@ -137,7 +144,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
       };
       return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false });
+          .toEqual({ state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 4 },
+            canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('c'), DF.namedNode('__predicate'), DF.namedNode('__object')),
@@ -162,7 +171,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
 
       const result = actor.run(op).then(async(output: IQueryOperationResultQuads) => {
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: false });
+          .toEqual({ state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 4 },
+            canContainUndefs: false });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           DF.quad(DF.namedNode('c'), DF.namedNode('__predicate'), DF.namedNode('__object')),

@@ -3,6 +3,8 @@ import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { MetadataValidationState } from '@comunica/metadata';
+import type { MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -43,7 +45,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
       return {
         link,
         handledDatasets: { [link.url]: true },
-        metadata: { requestedPage },
+        metadata: <any>{ requestedPage },
         source: <any> {
           match() {
             const it = new ArrayIterator<RDF.Quad>([], { autoStart: false });
@@ -59,7 +61,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     return {
       link,
       handledDatasets: { [link.url]: true },
-      metadata: { requestedPage, firstPageToken: true, next: `P${requestedPage + 1}` },
+      metadata: <any>{ requestedPage, firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
         match: () => {
           const it = new ArrayIterator<RDF.Quad>([ ...this.data[requestedPage] ], { autoStart: false });
@@ -71,6 +73,13 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
         },
       },
     };
+  }
+
+  protected async accumulateMetadata(
+    accumulatedMetadata: MetadataQuads,
+    appendingMetadata: MetadataQuads,
+  ): Promise<MetadataQuads> {
+    return { ...accumulatedMetadata, next: undefined, ...appendingMetadata };
   }
 }
 
@@ -110,7 +119,7 @@ class DummyMetaOverride extends Dummy {
       return {
         link,
         handledDatasets: { [link.url]: true },
-        metadata: { requestedPage },
+        metadata: <any>{ requestedPage },
         source: <any> {
           match() {
             const it = new ArrayIterator<RDF.Quad>([], { autoStart: false });
@@ -123,7 +132,7 @@ class DummyMetaOverride extends Dummy {
     return {
       link,
       handledDatasets: { [link.url]: true },
-      metadata: { firstPageToken: true, next: `P${requestedPage + 1}` },
+      metadata: <any>{ firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
         match: () => {
           const quads = new ArrayIterator<RDF.Quad>([ ...this.data[requestedPage] ], { autoStart: false });
@@ -141,7 +150,7 @@ class DummyMetaOverrideEarly extends Dummy {
     return {
       link,
       handledDatasets: { [link.url]: true },
-      metadata: { firstPageToken: true },
+      metadata: <any>{ firstPageToken: true },
       source: <any> {
         match() {
           const slowReadable = new Readable();
@@ -163,7 +172,7 @@ class DummyMetaOverrideLate extends Dummy {
     return {
       link,
       handledDatasets: { [link.url]: true },
-      metadata: { firstPageToken: true },
+      metadata: <any>{ firstPageToken: true },
       source: <any> {
         match() {
           const quads = new ArrayIterator<RDF.Quad>([], { autoStart: false });
@@ -192,7 +201,7 @@ class DummyError extends Dummy {
     return {
       link,
       handledDatasets: { [link.url]: true },
-      metadata: { next: 'NEXT' },
+      metadata: <any>{ next: 'NEXT' },
       source: <any> {
         match() {
           const quads = new ArrayIterator<RDF.Quad>([], { autoStart: false });
@@ -234,6 +243,16 @@ class DummyErrorLinkQueueLater extends Dummy {
   }
 }
 
+// Dummy class with a rejecting accumulateMetadata
+class DummyErrorAccumulate extends Dummy {
+  protected accumulateMetadata(
+    accumulatedMetadata: MetadataQuads,
+    appendingMetadata: MetadataQuads,
+  ): Promise<MetadataQuads> {
+    return Promise.reject(new Error('accumulateMetadata error'));
+  }
+}
+
 describe('LinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A LinkedRdfSourcesAsyncRdfIterator instance with negative maxIterators', () => {
     const data = [[]];
@@ -264,6 +283,34 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
     });
 
+    it('handles metadata for a single page before consuming data', async() => {
+      const data = [[
+        [ 'a', 'b', 'c' ],
+        [ 'd', 'e', 'f' ],
+        [ 'g', 'h', 'i' ],
+      ]];
+      const quads = toTerms(data);
+      const it = new Dummy(quads, v, v, v, v, 'first');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+
+      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+        state: expect.any(MetadataValidationState),
+        firstPageToken: true,
+        next: 'P1',
+        requestedPage: 0,
+        subseq: true,
+      });
+
+      await new Promise<void>(resolve => {
+        const result: any = [];
+        it.on('data', d => result.push(d));
+        it.on('end', () => {
+          expect(result).toEqual(quads.flat());
+          resolve();
+        });
+      });
+    });
+
     it('handles metadata for a single page after consuming data', async() => {
       const data = [[
         [ 'a', 'b', 'c' ],
@@ -284,37 +331,11 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+        state: expect.any(MetadataValidationState),
         firstPageToken: true,
-        next: 'P1',
-        requestedPage: 0,
+        next: undefined,
+        requestedPage: 1,
         subseq: true,
-      });
-    });
-
-    it('handles metadata for a single page before consuming data', async() => {
-      const data = [[
-        [ 'a', 'b', 'c' ],
-        [ 'd', 'e', 'f' ],
-        [ 'g', 'h', 'i' ],
-      ]];
-      const quads = toTerms(data);
-      const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
-
-      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
-        firstPageToken: true,
-        next: 'P1',
-        requestedPage: 0,
-        subseq: true,
-      });
-
-      await new Promise<void>(resolve => {
-        const result: any = [];
-        it.on('data', d => result.push(d));
-        it.on('end', () => {
-          expect(result).toEqual(quads.flat());
-          resolve();
-        });
       });
     });
 
@@ -328,6 +349,30 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual([]);
         done();
+      });
+    });
+
+    it('handles metadata for a single empty page before consuming data', async() => {
+      const data = [[]];
+      const quads = toTerms(data);
+      const it = new Dummy(quads, v, v, v, v, 'first');
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+
+      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+        state: expect.any(MetadataValidationState),
+        firstPageToken: true,
+        next: 'P1',
+        requestedPage: 0,
+        subseq: true,
+      });
+
+      await new Promise<void>(resolve => {
+        const result: any = [];
+        it.on('data', d => result.push(d));
+        it.on('end', () => {
+          expect(result).toEqual(quads.flat());
+          resolve();
+        });
       });
     });
 
@@ -347,33 +392,11 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+        state: expect.any(MetadataValidationState),
         firstPageToken: true,
-        next: 'P1',
-        requestedPage: 0,
+        next: undefined,
+        requestedPage: 1,
         subseq: true,
-      });
-    });
-
-    it('handles metadata for a single empty page before consuming data', async() => {
-      const data = [[]];
-      const quads = toTerms(data);
-      const it = new Dummy(quads, v, v, v, v, 'first');
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
-
-      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
-        firstPageToken: true,
-        next: 'P1',
-        requestedPage: 0,
-        subseq: true,
-      });
-
-      await new Promise<void>(resolve => {
-        const result: any = [];
-        it.on('data', d => result.push(d));
-        it.on('end', () => {
-          expect(result).toEqual(quads.flat());
-          resolve();
-        });
       });
     });
 
@@ -536,17 +559,15 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           [ 'g', 'h', '3' ],
         ],
       ]).flat());
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(10);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(8);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { P1: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { P2: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(9, { P2: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(10, { P2: true }, true);
     });
 
     it('destroys currentIterators when closed', async() => {
@@ -724,6 +745,17 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           // Do nothing
         });
       })).rejects.toThrow(new Error('DummyErrorLinkQueueLater'));
+    });
+
+    it('delegates error events from accumulateMetadata', async() => {
+      const it = new DummyErrorAccumulate([[], []], v, v, v, v, 'first');
+      await expect(new Promise((resolve, reject) => {
+        it.on('error', reject);
+        it.on('end', resolve);
+        it.on('data', () => {
+          // Do nothing
+        });
+      })).rejects.toThrow(new Error('accumulateMetadata error'));
     });
   });
 });

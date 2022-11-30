@@ -6,6 +6,7 @@ import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@com
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -97,6 +98,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
               ]),
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
@@ -122,6 +124,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
               ]),
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
@@ -147,6 +150,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
               ]),
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 30,
@@ -178,6 +182,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
               ]),
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
@@ -203,6 +208,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
               ]),
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
@@ -228,6 +234,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
               ]),
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 30,
@@ -253,6 +260,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
               ]),
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 40,
@@ -283,6 +291,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
                 pageSize: 100,
                 requestTime: 10,
@@ -306,6 +315,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 2 },
                 canContainUndefs: false,
                 variables: [ DF.variable('a'), DF.variable('c') ],
@@ -327,6 +337,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
                 ]),
               ]),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 2 },
                 pageSize: 100,
                 requestTime: 30,
@@ -379,6 +390,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 40 },
         canContainUndefs: false,
         variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b') ],
@@ -406,6 +418,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 80 },
         canContainUndefs: false,
         variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b'), DF.variable('d') ],

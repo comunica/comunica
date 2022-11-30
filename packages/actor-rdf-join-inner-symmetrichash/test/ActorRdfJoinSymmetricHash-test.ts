@@ -4,6 +4,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -68,6 +69,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
                 canContainUndefs: false,
                 variables: variables0,
@@ -80,6 +82,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
                 canContainUndefs: false,
                 variables: variables1,
@@ -106,6 +109,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
                 canContainUndefs: true,
                 variables: [],
@@ -118,6 +122,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
                 canContainUndefs: false,
                 variables: [],
@@ -141,6 +146,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
                 canContainUndefs: false,
                 variables: [],
@@ -153,6 +159,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
                 canContainUndefs: true,
                 variables: [],
@@ -176,6 +183,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
                 canContainUndefs: true,
                 variables: [],
@@ -188,6 +196,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
                 canContainUndefs: true,
                 variables: [],
@@ -223,6 +232,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
     it('should return an empty stream for empty input', () => {
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
           variables: [],
@@ -248,6 +258,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
       variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
           variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
@@ -279,6 +290,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
       variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
           variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
@@ -386,6 +398,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
           ]),
         ];
         expect(await output.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
           variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],

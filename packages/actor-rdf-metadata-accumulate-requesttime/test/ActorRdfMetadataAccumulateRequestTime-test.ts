@@ -1,11 +1,14 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateRequestTime } from '../lib/ActorRdfMetadataAccumulateRequestTime';
 
 describe('ActorRdfMetadataAccumulateRequestTime', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('An ActorRdfMetadataAccumulateRequestTime instance', () => {
@@ -15,12 +18,47 @@ describe('ActorRdfMetadataAccumulateRequestTime', () => {
       actor = new ActorRdfMetadataAccumulateRequestTime({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
+    describe('test', () => {
+      it('should always pass', async() => {
+        await expect(actor.test({ context, mode: 'initialize' })).resolves.toBeTruthy();
+      });
     });
 
-    it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
+    describe('run', () => {
+      it('should handle initialization', async() => {
+        expect(await actor.run({ context, mode: 'initialize' }))
+          .toEqual({ metadata: {}});
+      });
+
+      it('should handle appending with two entries', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { requestTime: 2 },
+          appendingMetadata: <any> { requestTime: 3 },
+        })).toEqual({ metadata: { requestTime: 5 }});
+      });
+
+      it('should handle appending with undefined entries', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> {},
+          appendingMetadata: <any> { requestTime: 3 },
+        })).toEqual({ metadata: { requestTime: 3 }});
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { requestTime: 2 },
+          appendingMetadata: <any> {},
+        })).toEqual({ metadata: { requestTime: 2 }});
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> {},
+          appendingMetadata: <any> {},
+        })).toEqual({ metadata: {}});
+      });
     });
   });
 });

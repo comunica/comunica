@@ -106,7 +106,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
         });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false, variables: []});
+          .toMatchObject({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false, variables: []});
       });
     });
   });

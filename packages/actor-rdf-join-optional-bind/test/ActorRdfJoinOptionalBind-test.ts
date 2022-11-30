@@ -5,6 +5,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -61,6 +62,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           return {
             bindingsStream: new ArrayIterator(data, { autoStart: false }),
             metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: data.length },
               canContainUndefs: false,
               variables: [ DF.variable('bound') ],
@@ -98,6 +100,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           },
           [
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
@@ -105,6 +108,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
@@ -138,6 +142,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           },
           [
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
@@ -145,6 +150,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a'), DF.variable('b'), DF.variable('d') ],
             },
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
@@ -178,6 +184,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           },
           [
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
@@ -185,6 +192,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
@@ -213,6 +221,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           },
           [
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
@@ -220,6 +229,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
@@ -248,6 +258,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           },
           [
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
@@ -255,6 +266,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
             {
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
@@ -286,6 +298,7 @@ describe('ActorRdfJoinOptionalBind', () => {
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
                   variables: [ DF.variable('a') ],
@@ -312,6 +325,7 @@ describe('ActorRdfJoinOptionalBind', () => {
                   ]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
                   variables: [ DF.variable('a'), DF.variable('b') ],
@@ -344,6 +358,7 @@ describe('ActorRdfJoinOptionalBind', () => {
           ]),
         ]);
         expect(await result.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 7.2 },
           canContainUndefs: true,
           variables: [ DF.variable('a'), DF.variable('b') ],
@@ -356,11 +371,13 @@ describe('ActorRdfJoinOptionalBind', () => {
           context: new ActionContext({
             a: 'b',
             [KeysQueryOperation.joinLeftMetadata.name]: {
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a'), DF.variable('b') ],
@@ -373,11 +390,13 @@ describe('ActorRdfJoinOptionalBind', () => {
           context: new ActionContext({
             a: 'b',
             [KeysQueryOperation.joinLeftMetadata.name]: {
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a'), DF.variable('b') ],
@@ -390,11 +409,13 @@ describe('ActorRdfJoinOptionalBind', () => {
           context: new ActionContext({
             a: 'b',
             [KeysQueryOperation.joinLeftMetadata.name]: {
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a') ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
               variables: [ DF.variable('a'), DF.variable('b') ],

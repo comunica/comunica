@@ -2,6 +2,7 @@ import { Readable } from 'stream';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
@@ -61,7 +62,11 @@ describe('ActorRdfResolveHypermediaNone', () => {
       await expect(new Promise((resolve, reject) => {
         const stream = source.match(v, v, v, v);
         stream.getProperty('metadata', resolve);
-      })).resolves.toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: false });
+      })).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'exact', value: 2 },
+        canContainUndefs: false,
+      });
       expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),

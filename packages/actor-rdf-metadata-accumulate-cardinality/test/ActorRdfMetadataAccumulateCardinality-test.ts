@@ -1,11 +1,14 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateCardinality } from '../lib/ActorRdfMetadataAccumulateCardinality';
 
 describe('ActorRdfMetadataAccumulateCardinality', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext();
   });
 
   describe('An ActorRdfMetadataAccumulateCardinality instance', () => {
@@ -15,12 +18,86 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
       actor = new ActorRdfMetadataAccumulateCardinality({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
+    describe('test', () => {
+      it('should always pass', async() => {
+        await expect(actor.test({ context, mode: 'initialize' })).resolves.toBeTruthy();
+      });
     });
 
-    it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
+    describe('run', () => {
+      it('should handle initialization', async() => {
+        expect(await actor.run({ context, mode: 'initialize' }))
+          .toEqual({ metadata: { cardinality: { type: 'exact', value: 0 }}});
+      });
+
+      it('should handle appending with exact cardinalities', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'exact', value: 2 }},
+          appendingMetadata: <any> { cardinality: { type: 'exact', value: 3 }},
+        })).toEqual({ metadata: { cardinality: { type: 'exact', value: 5 }}});
+      });
+
+      it('should handle appending with estimate cardinalities', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
+          appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3 }},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
+      });
+
+      it('should handle appending with exact and estimate cardinalities', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'exact', value: 2 }},
+          appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3 }},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
+          appendingMetadata: <any> { cardinality: { type: 'exact', value: 3 }},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
+      });
+
+      it('should handle appending with undefined cardinality', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
+          appendingMetadata: <any> {},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
+      });
+
+      it('should handle appending with infinite cardinality', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
+          appendingMetadata: <any> { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
+      });
+
+      it('should handle appending with dataset-wide cardinality', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
+          appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3 }},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }}});
+      });
+
+      it('should handle appending with different dataset-wide cardinalities', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
+          appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'def' }},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 203 }}});
+      });
     });
   });
 });

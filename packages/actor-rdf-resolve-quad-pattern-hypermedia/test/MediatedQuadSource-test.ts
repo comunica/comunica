@@ -2,6 +2,7 @@ import type { MediatorDereferenceRdf, IActionDereferenceRdf,
   IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -79,7 +80,7 @@ describe('MediatedQuadSource', () => {
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]);
-        expect(await metaPromise).toEqual({ firstMeta: true, a: 1 });
+        expect(await metaPromise).toEqual({ state: expect.any(MetadataValidationState), firstMeta: true, a: 1 });
       });
 
       it('should set the first source after the first match call', async() => {
@@ -95,7 +96,10 @@ describe('MediatedQuadSource', () => {
         source.sourcesState.sources.set('firstUrl', Promise.resolve({
           link: { url: 'firstUrl' },
           handledDatasets: {},
-          metadata: { a: 2 },
+          metadata: { state: new MetadataValidationState(),
+            cardinality: { type: 'exact', value: 0 },
+            canContainUndefs: false,
+            a: 2 },
           source: {
             match() {
               const it = new ArrayIterator([
@@ -122,7 +126,10 @@ describe('MediatedQuadSource', () => {
         source.sourcesState.sources.set('firstUrl', Promise.resolve({
           link: { url: 'firstUrl' },
           handledDatasets: {},
-          metadata: { a: 2 },
+          metadata: { state: new MetadataValidationState(),
+            cardinality: { type: 'exact', value: 0 },
+            canContainUndefs: false,
+            a: 2 },
           source: {
             match() {
               const it = new ArrayIterator([
@@ -142,7 +149,13 @@ describe('MediatedQuadSource', () => {
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]);
-        expect(await metaPromise).toEqual({ firstMeta: true, a: 2 });
+        expect(await metaPromise).toEqual({
+          state: expect.any(MetadataValidationState),
+          canContainUndefs: false,
+          cardinality: { type: 'exact', value: 0 },
+          firstMeta: true,
+          a: 2,
+        });
       });
 
       it('should match three chained sources', async() => {

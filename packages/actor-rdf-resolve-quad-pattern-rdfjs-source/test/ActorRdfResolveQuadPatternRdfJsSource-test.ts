@@ -2,6 +2,7 @@ import { Readable } from 'stream';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -140,7 +141,9 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
         DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')),
       ]);
       expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'exact', value: 2 },
+          canContainUndefs: false,
+          state: expect.any(MetadataValidationState) });
     });
 
     it('should use countQuads for metadata if available', async() => {
@@ -154,7 +157,9 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       };
       const { data } = await actor.run({ pattern, context });
       expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 123 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'exact', value: 123 },
+          canContainUndefs: false,
+          state: expect.any(MetadataValidationState) });
     });
 
     it('should use match for metadata if countQuads is not available', async() => {
@@ -168,7 +173,9 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       };
       const { data } = await actor.run({ pattern, context });
       expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'exact', value: 3 },
+          canContainUndefs: false,
+          state: expect.any(MetadataValidationState) });
     });
 
     it('should delegate its error event', async() => {

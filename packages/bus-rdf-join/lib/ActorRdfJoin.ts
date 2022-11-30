@@ -201,8 +201,15 @@ export abstract class ActorRdfJoin
       cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
     }
 
+    // Propagate metadata invalidations
+    const state = new MetadataValidationState();
+    const invalidateListener = (): void => state.invalidate();
+    for (const metadata of metadatas) {
+      metadata.state.addInvalidateListener(invalidateListener);
+    }
+
     return {
-      state: new MetadataValidationState(),
+      state,
       ...partialMetadata,
       cardinality: {
         type: cardinalityJoined.type,

@@ -4,6 +4,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IPhysicalQueryPlanLogger, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -83,6 +84,7 @@ describe('ActorRdfJoin', () => {
             bindingsStream: <any>null,
             type: 'bindings',
             metadata: async() => ({
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 10 },
               canContainUndefs: false,
               variables: variables0,
@@ -95,6 +97,7 @@ describe('ActorRdfJoin', () => {
             bindingsStream: <any>null,
             type: 'bindings',
             metadata: async() => ({
+              state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 5 },
               canContainUndefs: false,
               variables: variables1,
@@ -130,16 +133,28 @@ describe('ActorRdfJoin', () => {
   describe('overlappingVariables', () => {
     it('should return an empty array if there is no overlap', () => {
       expect(ActorRdfJoin.overlappingVariables([
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: [],
+        },
       ])).toEqual([]);
       expect(ActorRdfJoin.overlappingVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('c'), DF.variable('d') ],
@@ -150,11 +165,13 @@ describe('ActorRdfJoin', () => {
     it('should return a correct array if there is overlap', () => {
       expect(ActorRdfJoin.overlappingVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('d') ],
@@ -163,11 +180,13 @@ describe('ActorRdfJoin', () => {
 
       expect(ActorRdfJoin.overlappingVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
@@ -176,11 +195,13 @@ describe('ActorRdfJoin', () => {
 
       expect(ActorRdfJoin.overlappingVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('c'), DF.variable('b') ],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
@@ -193,11 +214,13 @@ describe('ActorRdfJoin', () => {
     it('should join variables', () => {
       expect(ActorRdfJoin.joinVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [],
@@ -206,11 +229,13 @@ describe('ActorRdfJoin', () => {
 
       expect(ActorRdfJoin.joinVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('c'), DF.variable('d') ],
@@ -226,11 +251,13 @@ describe('ActorRdfJoin', () => {
     it('should deduplicate the result', () => {
       expect(ActorRdfJoin.joinVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('b'), DF.variable('d') ],
@@ -239,11 +266,13 @@ describe('ActorRdfJoin', () => {
 
       expect(ActorRdfJoin.joinVariables([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           canContainUndefs: false,
           variables: [ DF.variable('b'), DF.variable('a') ],
@@ -349,7 +378,7 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should handle entries', async() => {
-      expect(await ActorRdfJoin.getMetadatas(action.entries)).toEqual([
+      expect(await ActorRdfJoin.getMetadatas(action.entries)).toMatchObject([
         { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
         { cardinality: { type: 'estimate', value: 5 }, canContainUndefs: false, variables: []},
       ]);
@@ -360,15 +389,27 @@ describe('ActorRdfJoin', () => {
     it('should calculate initial request times', async() => {
       expect(ActorRdfJoin.getRequestInitialTimes([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           pageSize: 10,
           requestTime: 10,
           canContainUndefs: false,
           variables: [],
         },
-        { cardinality: { type: 'estimate', value: 10 }, pageSize: 10, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 10 }, requestTime: 10, canContainUndefs: false, variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          pageSize: 10,
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          requestTime: 10,
+          canContainUndefs: false,
+          variables: []},
       ])).toEqual([
         0,
         0,
@@ -382,15 +423,27 @@ describe('ActorRdfJoin', () => {
     it('should calculate item request times', async() => {
       expect(ActorRdfJoin.getRequestItemTimes([
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           pageSize: 10,
           requestTime: 10,
           canContainUndefs: false,
           variables: [],
         },
-        { cardinality: { type: 'estimate', value: 10 }, pageSize: 10, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 10 }, requestTime: 10, canContainUndefs: false, variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          pageSize: 10,
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          requestTime: 10,
+          canContainUndefs: false,
+          variables: []},
       ])).toEqual([
         1,
         0,
@@ -408,11 +461,14 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should return partial metadata if it is fully valid', async() => {
+      const state = new MetadataValidationState();
       expect(await instance.constructResultMetadata([], [], action.context, {
+        state,
         cardinality: { type: 'estimate', value: 10 },
         canContainUndefs: true,
         pageSize: 100,
       })).toEqual({
+        state,
         cardinality: { type: 'estimate', value: 10 },
         canContainUndefs: true,
         pageSize: 100,
@@ -422,25 +478,46 @@ describe('ActorRdfJoin', () => {
 
     it('should return not use empty partial metadata', async() => {
       expect(await instance.constructResultMetadata([], [
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: true, variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: true,
+          variables: []},
       ], action.context, {})).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 20 * 0.8 },
         canContainUndefs: true,
         variables: [],
       });
       expect(await instance.constructResultMetadata([], [
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: true, variables: []},
-        { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: true, variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: true,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: true,
+          variables: []},
       ], action.context, {})).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 20 * 0.8 },
         canContainUndefs: true,
         variables: [],
       });
       expect(await instance.constructResultMetadata([], [
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false, variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: false,
+          variables: []},
       ], action.context, {})).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 20 * 0.8 },
         canContainUndefs: false,
         variables: [],
@@ -449,9 +526,16 @@ describe('ActorRdfJoin', () => {
 
     it('should combine exact cardinalities', async() => {
       expect(await instance.constructResultMetadata([], [
-        { cardinality: { type: 'exact', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'exact', value: 2 }, canContainUndefs: true, variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 10 },
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          canContainUndefs: true,
+          variables: []},
       ], action.context, {})).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 20 * 0.8 },
         canContainUndefs: true,
         variables: [],
@@ -460,9 +544,16 @@ describe('ActorRdfJoin', () => {
 
     it('should combine exact and estimate cardinalities', async() => {
       expect(await instance.constructResultMetadata([], [
-        { cardinality: { type: 'estimate', value: 10 }, canContainUndefs: false, variables: []},
-        { cardinality: { type: 'exact', value: 2 }, canContainUndefs: true, variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          canContainUndefs: true,
+          variables: []},
       ], action.context, {})).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 20 * 0.8 },
         canContainUndefs: true,
         variables: [],
@@ -471,17 +562,46 @@ describe('ActorRdfJoin', () => {
 
     it('should join variables', async() => {
       expect(await instance.constructResultMetadata([], [
-        { cardinality: { type: 'exact', value: 10 }, canContainUndefs: false, variables: [ DF.variable('a') ]},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 10 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a') ]},
         {
+          state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 2 },
           canContainUndefs: true,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
       ], action.context, {})).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 20 * 0.8 },
         canContainUndefs: true,
         variables: [ DF.variable('a'), DF.variable('b') ],
       });
+    });
+
+    it('should handle metadata invalidation', async() => {
+      const state1 = new MetadataValidationState();
+      const metadataOut = await instance.constructResultMetadata([], [
+        { state: state1,
+          cardinality: { type: 'estimate', value: 10 },
+          canContainUndefs: false,
+          variables: []},
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: true,
+          variables: []},
+      ], action.context, {});
+      expect(metadataOut.state.valid).toBeTruthy();
+
+      const invalidateLister = jest.fn();
+      metadataOut.state.addInvalidateListener(invalidateLister);
+      expect(invalidateLister).not.toHaveBeenCalled();
+
+      // After invoking this, we expect the returned metadata to also be invalidated
+      state1.invalidate();
+      expect(metadataOut.state.valid).toBeFalsy();
+      expect(invalidateLister).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -528,11 +648,13 @@ describe('ActorRdfJoin', () => {
 
     it('should return a value if both metadata objects are present', () => {
       action.entries[0].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: false,
         variables: [],
       });
       action.entries[1].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: false,
         variables: [],
@@ -542,6 +664,7 @@ describe('ActorRdfJoin', () => {
 
     it('should fail on undefs in left stream', () => {
       action.entries[0].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
@@ -552,6 +675,7 @@ describe('ActorRdfJoin', () => {
 
     it('should fail on undefs in right stream', () => {
       action.entries[1].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
@@ -562,11 +686,13 @@ describe('ActorRdfJoin', () => {
 
     it('should fail on undefs in left and right stream', () => {
       action.entries[0].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
       });
       action.entries[1].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
@@ -581,6 +707,7 @@ describe('ActorRdfJoin', () => {
 
     it('should handle undefs in left stream', () => {
       action.entries[0].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
@@ -596,6 +723,7 @@ describe('ActorRdfJoin', () => {
 
     it('should handle undefs in right stream', () => {
       action.entries[1].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
@@ -611,11 +739,13 @@ describe('ActorRdfJoin', () => {
 
     it('should handle undefs in left and right stream', () => {
       action.entries[0].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
       });
       action.entries[1].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
@@ -641,22 +771,28 @@ describe('ActorRdfJoin', () => {
       const runOutput = await instance.run(action);
       const innerOutput = (await instance.getOutput(action)).result;
       expect((<any> runOutput).dummy).toEqual(innerOutput.dummy);
-      expect(await runOutput.metadata()).toEqual(await innerOutput.metadata());
+      expect(await runOutput.metadata()).toEqual({
+        ...await innerOutput.metadata(),
+        state: expect.any(MetadataValidationState),
+      });
     });
 
     it('calculates cardinality if metadata is supplied', async() => {
       action.entries[0].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         canContainUndefs: true,
         variables: [],
       });
       action.entries[1].output.metadata = () => Promise.resolve({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 10 },
         canContainUndefs: true,
         variables: [],
       });
       await instance.run(action).then(async(result: any) => {
         return expect(await result.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 40 },
           canContainUndefs: true,
           variables: [],

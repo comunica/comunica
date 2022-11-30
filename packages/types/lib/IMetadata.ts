@@ -89,6 +89,10 @@ export interface IMetadataValidationState {
   invalidate: () => void;
   /**
    * Add an listener that will be invoked when the metadata object becomes invalid.
+   *
+   * No expensive operations should be done in these listeners, only other invalidations.
+   * If other operations should be done, those should be scheduled in next ticks.
+   *
    * @param listener An invalidation listener.
    */
   addInvalidateListener: (listener: () => void) => void;

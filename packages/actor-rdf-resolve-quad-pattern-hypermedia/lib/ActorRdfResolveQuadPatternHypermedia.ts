@@ -1,8 +1,8 @@
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
-import type { IActionRdfMetadataAccumulate,
-  MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
+import type { MediatorRdfMetadataAccumulate,
+  IActionRdfMetadataAccumulateAppend } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -51,10 +51,8 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     // TODO: remove this backwards-compatibility in the next major version, and make the param mandatory
     if (!args.mediatorMetadataAccumulate) {
       this.mediatorMetadataAccumulate = <any>{
-        async mediate(action: IActionRdfMetadataAccumulate) {
-          if (action.mode === 'initialize') {
-            return { metadata: {}};
-          }
+        async mediate(action: IActionRdfMetadataAccumulateAppend) {
+          // 'initialize' mode is not used in this actor, so we can assume 'append'.
           return { metadata: { ...action.accumulatedMetadata, ...action.appendingMetadata }};
         },
       };

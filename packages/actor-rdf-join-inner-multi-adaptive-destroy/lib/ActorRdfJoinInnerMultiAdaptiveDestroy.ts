@@ -8,9 +8,8 @@ import {
 } from '@comunica/bus-rdf-join';
 import { KeysRdfJoin } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
+import type { IQueryOperationResultBindings, MetadataBindings, IJoinEntry } from '@comunica/types';
 import { BindingsStreamAdaptiveDestroy } from './BindingsStreamAdaptiveDestroy';
-import { IJoinEntry } from '@comunica/types';
 
 /**
  * A comunica Inner Multi Adaptive Destroy RDF Join Actor.

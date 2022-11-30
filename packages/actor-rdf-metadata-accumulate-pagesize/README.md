@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-metadata-accumulate-pagesize.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-metadata-accumulate-pagesize)
 
-A comunica PageSize RDF Metadata Accumulate Actor.
+An [RDF Metadata Accumulate](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-accumulate) actor that
+handles the `pageSize` field.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

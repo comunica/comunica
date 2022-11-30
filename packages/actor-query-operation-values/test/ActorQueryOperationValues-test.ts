@@ -55,7 +55,7 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': DF.namedNode('v1') }];
       const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({
+        expect(await output.metadata()).toMatchObject({
           cardinality: { type: 'exact', value: 1 },
           canContainUndefs: false,
           variables: [ DF.variable('v') ],
@@ -74,7 +74,7 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': DF.namedNode('v1') }, { '?v': DF.namedNode('v2') }];
       const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({
+        expect(await output.metadata()).toMatchObject({
           cardinality: { type: 'exact', value: 2 },
           canContainUndefs: false,
           variables: [ DF.variable('v') ],
@@ -99,7 +99,7 @@ describe('ActorQueryOperationValues', () => {
       ];
       const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({
+        expect(await output.metadata()).toMatchObject({
           cardinality: { type: 'exact', value: 2 },
           canContainUndefs: false,
           variables: [ DF.variable('v'), DF.variable('w') ],
@@ -126,7 +126,7 @@ describe('ActorQueryOperationValues', () => {
       ];
       const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({
+        expect(await output.metadata()).toMatchObject({
           cardinality: { type: 'exact', value: 2 },
           canContainUndefs: true,
           variables: [ DF.variable('v'), DF.variable('w') ],

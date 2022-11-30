@@ -1,6 +1,8 @@
+import type { IActionRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -19,18 +21,23 @@ const DF = new DataFactory<RDF.BaseQuad>();
 const v = DF.variable('v');
 
 describe('FederatedQuadSource', () => {
-  let mediator: any;
+  let mediatorResolveQuadPattern: any;
+  let mediatorRdfMetadataAccumulate: any;
   let context: IActionContext;
   let returnedIterators: AsyncIterator<any>[];
 
   beforeEach(() => {
     returnedIterators = [];
-    mediator = {
+    mediatorResolveQuadPattern = {
       mediate(action: any) {
         const type = action.context.get(KeysRdfResolveQuadPattern.source).type;
         if (type === 'emptySource') {
           const data = new ArrayIterator([], { autoStart: false });
-          data.setProperty('metadata', { cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
+          data.setProperty('metadata', {
+            state: new MetadataValidationState(),
+            cardinality: { type: 'estimate', value: 0 },
+            canContainUndefs: false,
+          });
           return Promise.resolve({ data });
         }
         if (type === 'nonEmptySourceNoMeta') {
@@ -47,6 +54,7 @@ describe('FederatedQuadSource', () => {
             squad('s1', 'p1', 'o2'),
           ], { autoStart: false });
           data.setProperty('metadata', {
+            state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
             canContainUndefs: false,
           });
@@ -58,6 +66,7 @@ describe('FederatedQuadSource', () => {
             squad('_:s2', '_:p2', '_:o2'),
           ], { autoStart: false });
           data.setProperty('metadata', {
+            state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
             canContainUndefs: false,
           });
@@ -75,6 +84,7 @@ describe('FederatedQuadSource', () => {
             return squad('_:s1', '_:p1', '_:o1');
           };
           data.setProperty('metadata', {
+            state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
             canContainUndefs: false,
           });
@@ -90,6 +100,7 @@ describe('FederatedQuadSource', () => {
             squad('s3', 'p1', 'o2', 'g2'),
           ], { autoStart: false });
           data.setProperty('metadata', {
+            state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 6 },
             canContainUndefs: false,
           });
@@ -101,6 +112,7 @@ describe('FederatedQuadSource', () => {
             squad('s1', 'p1', 'o2'),
           ], { autoStart: false });
           data.setProperty('metadata', {
+            state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 2 },
             canContainUndefs: true,
           });
@@ -111,6 +123,7 @@ describe('FederatedQuadSource', () => {
           squad('s1', 'p1', 'o2'),
         ], { autoStart: false });
         data.setProperty('metadata', {
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 2 },
           requestTime: 10,
           pageSize: 100,
@@ -120,6 +133,41 @@ describe('FederatedQuadSource', () => {
         jest.spyOn(data, 'destroy');
         returnedIterators.push(data);
         return Promise.resolve({ data });
+      },
+    };
+    mediatorRdfMetadataAccumulate = <any> {
+      async mediate(action: IActionRdfMetadataAccumulate) {
+        if (action.mode === 'initialize') {
+          return { metadata: { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false }};
+        }
+
+        const metadata = { ...action.accumulatedMetadata };
+        const subMetadata = action.appendingMetadata;
+        if (!subMetadata.cardinality || !Number.isFinite(subMetadata.cardinality.value)) {
+          // We're already at infinite, so ignore any later metadata
+          metadata.cardinality.type = 'estimate';
+          metadata.cardinality.value = Number.POSITIVE_INFINITY;
+        } else {
+          if (subMetadata.cardinality.type === 'estimate') {
+            metadata.cardinality.type = 'estimate';
+          }
+          metadata.cardinality.value += subMetadata.cardinality.value;
+        }
+        if (metadata.requestTime || subMetadata.requestTime) {
+          metadata.requestTime = metadata.requestTime || 0;
+          subMetadata.requestTime = subMetadata.requestTime || 0;
+          metadata.requestTime += subMetadata.requestTime;
+        }
+        if (metadata.pageSize || subMetadata.pageSize) {
+          metadata.pageSize = metadata.pageSize || 0;
+          subMetadata.pageSize = subMetadata.pageSize || 0;
+          metadata.pageSize += subMetadata.pageSize;
+        }
+        if (subMetadata.canContainUndefs) {
+          metadata.canContainUndefs = true;
+        }
+
+        return { metadata };
       },
     };
     context = new ActionContext({
@@ -133,11 +181,23 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should be a FederatedQuadSource constructor', () => {
-      expect(new FederatedQuadSource(mediator, context, new Map(), true)).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        context,
+        new Map(),
+        true,
+      )).toBeInstanceOf(FederatedQuadSource);
     });
 
     it('should be a FederatedQuadSource constructor with optional bufferSize argument', () => {
-      expect(new FederatedQuadSource(mediator, context, new Map(), true)).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        context,
+        new Map(),
+        true,
+      )).toBeInstanceOf(FederatedQuadSource);
     });
   });
 
@@ -456,7 +516,13 @@ describe('FederatedQuadSource', () => {
       subSource = {};
       emptyPatterns = new Map();
       emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
-      source = new FederatedQuadSource(mediator, context, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        context,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return an AsyncIterator', () => {
@@ -496,7 +562,13 @@ describe('FederatedQuadSource', () => {
       subSource = {};
       emptyPatterns = new Map();
       emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
-      source = new FederatedQuadSource(mediator, context, emptyPatterns, false);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        context,
+        emptyPatterns,
+        false,
+      );
     });
 
     describe('when calling isSourceEmpty', () => {
@@ -530,7 +602,13 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = new Map();
       contextEmpty = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: []});
-      source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return an empty AsyncIterator', async() => {
@@ -541,6 +619,11 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false });
+    });
+
+    it('should reject when mediatorRdfMetadataAccumulate rejects', async() => {
+      mediatorRdfMetadataAccumulate.mediate = () => Promise.reject(new Error(`mediatorRdfMetadataAccumulate error in FederatedQuadSource-test`));
+      await expect(arrayifyStream(source.match(v, v, v, v))).rejects.toThrow(`mediatorRdfMetadataAccumulate error in FederatedQuadSource-test`);
     });
   });
 
@@ -554,7 +637,13 @@ describe('FederatedQuadSource', () => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
       contextSingleEmpty = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return an empty AsyncIterator', async() => {
@@ -564,7 +653,11 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
+        .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'estimate', value: 0 },
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -594,7 +687,13 @@ describe('FederatedQuadSource', () => {
       subSource = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
       contextSingle = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
-      source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingle,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -615,6 +714,7 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2 },
           requestTime: 10,
           pageSize: 100,
@@ -644,7 +744,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('destroyed before started should void proxyIt errors', async() => {
-      mediator.mediate = () => Promise.reject(new Error('ignored error'));
+      mediatorResolveQuadPattern.mediate = () => Promise.reject(new Error('ignored error'));
 
       const it = source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g'));
       it.destroy();
@@ -662,7 +762,13 @@ describe('FederatedQuadSource', () => {
       subSource = { type: 'graphs', value: 'I will contain named graphs' };
       emptyPatterns = new Map();
       contextSingle = new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [ subSource ]});
-      source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingle,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -693,7 +799,11 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 6 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
+        .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'estimate', value: 6 },
+          canContainUndefs: false,
+        });
     });
   });
 
@@ -714,7 +824,13 @@ describe('FederatedQuadSource', () => {
           subSource2,
         ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -737,10 +853,12 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2 },
           requestTime: 10,
           pageSize: 100,
           canContainUndefs: false,
+          otherMetadata: true,
         });
     });
 
@@ -779,7 +897,13 @@ describe('FederatedQuadSource', () => {
           subSource2,
         ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return an empty AsyncIterator for the default graph', async() => {
@@ -795,7 +919,11 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
+        .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'estimate', value: 0 },
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -835,7 +963,13 @@ describe('FederatedQuadSource', () => {
             subSource,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
@@ -851,7 +985,11 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
+        .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'estimate', value: 0 },
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -885,7 +1023,13 @@ describe('FederatedQuadSource', () => {
             { type: 'emptySource', value: 'I will be empty' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, false);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        false,
+      );
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
@@ -901,7 +1045,11 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
+        .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'estimate', value: 0 },
+          canContainUndefs: false,
+        });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -934,7 +1082,13 @@ describe('FederatedQuadSource', () => {
             subSource2,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -961,10 +1115,12 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 4 },
           requestTime: 20,
           pageSize: 200,
           canContainUndefs: false,
+          otherMetadata: true,
         });
     });
 
@@ -980,6 +1136,11 @@ describe('FederatedQuadSource', () => {
         [ subSource1, []],
         [ subSource2, []],
       ]);
+    });
+
+    it('should reject when mediatorRdfMetadataAccumulate rejects', async() => {
+      mediatorRdfMetadataAccumulate.mediate = () => Promise.reject(new Error(`mediatorRdfMetadataAccumulate error in FederatedQuadSource-test`));
+      await expect(arrayifyStream(source.match(v, v, v, v))).rejects.toThrow(`mediatorRdfMetadataAccumulate error in FederatedQuadSource-test`);
     });
   });
 
@@ -997,7 +1158,13 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
@@ -1024,10 +1191,12 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           requestTime: 10,
           pageSize: 100,
           canContainUndefs: false,
+          otherMetadata: true,
         });
     });
   });
@@ -1046,7 +1215,13 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
@@ -1073,6 +1248,7 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           canContainUndefs: false,
         });
@@ -1093,7 +1269,13 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
@@ -1120,10 +1302,12 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           requestTime: 10,
           pageSize: 100,
           canContainUndefs: false,
+          otherMetadata: true,
         });
     });
   });
@@ -1142,7 +1326,13 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
@@ -1169,6 +1359,7 @@ describe('FederatedQuadSource', () => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           canContainUndefs: false,
         });
@@ -1193,7 +1384,13 @@ describe('FederatedQuadSource', () => {
             subSource2,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should return a non-empty AsyncIterator', async() => {
@@ -1439,17 +1636,25 @@ describe('FederatedQuadSource', () => {
             subSource2,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should emit metadata with canContainUndefs true', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 4 },
           pageSize: 100,
           requestTime: 10,
           canContainUndefs: true,
+          otherMetadata: true,
         });
     });
   });
@@ -1472,17 +1677,25 @@ describe('FederatedQuadSource', () => {
             subSource2,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should emit metadata with canContainUndefs true', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
         .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 4 },
           pageSize: 100,
           requestTime: 10,
           canContainUndefs: true,
+          otherMetadata: true,
         });
     });
   });
@@ -1505,13 +1718,23 @@ describe('FederatedQuadSource', () => {
             subSource2,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should emit metadata with canContainUndefs true', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: { type: 'estimate', value: 4 }, canContainUndefs: true });
+        .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'estimate', value: 4 },
+          canContainUndefs: true,
+        });
     });
   });
 
@@ -1530,7 +1753,13 @@ describe('FederatedQuadSource', () => {
             subSource1,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(
+        mediatorResolveQuadPattern,
+        mediatorRdfMetadataAccumulate,
+        contextSingleEmpty,
+        emptyPatterns,
+        true,
+      );
     });
 
     it('should emit an error', async() => {
