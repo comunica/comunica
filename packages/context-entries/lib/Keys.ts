@@ -116,6 +116,11 @@ export const KeysInitQuery = {
    */
   baseIRI: new ActionContextKey<string>('@comunica/actor-init-query:baseIRI'),
   /**
+   * Object structure used to cache overloads in sparqlee
+   * (It's here because keeping it across sparqlee evaluators provides a performance increase.)
+   */
+  overloadCache: new ActionContextKey<string>('@comunica/actor-init-query:overloadCache'),
+  /**
    * A timestamp representing the current time.
    *                 This is required for certain SPARQL operations such as NOW().
    */
