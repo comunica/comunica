@@ -34,10 +34,8 @@
   "dependencies": {
     "@comunica/bus-rdf-parse": "^2.5.1",
     "@comunica/core": "^2.5.1",
-    "arrayify-stream": "^2.0.1",
-    "shaclc-parse": "^1.0.0",
-    "streamify-array": "^1.0.1",
-    "stringify-stream": "^1.0.5"
+    "asynciterator": "^3.8.0",
+    "shaclc-parse": "^1.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
