@@ -28,7 +28,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     }
     if (!this.isW3CRecommended && context.get(KeysRdfParse.parseNonRecommendedFormats) !== true) {
       throw new Error(
-        `Received media type ${mediaType} which is not W3C recommended. Enable the 'parseNonRecommendedFormats' for this to be parsed.`
+        `Received media type ${mediaType} which is not W3C recommended. Enable the 'parseNonRecommendedFormats' for this to be parsed.`,
       );
     }
     return await this.testHandleChecked(action, context);

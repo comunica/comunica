@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
+import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
@@ -59,7 +59,7 @@ describe('ActorRdfParseShaclc', () => {
 
     it('when constructed with optional mediaTypePriorities should set the mediaTypePriorities', () => {
       expect(new ActorRdfParseShaclc(
-        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {} },
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}},
       ).mediaTypePriorities).toEqual({});
     });
 
@@ -98,7 +98,7 @@ describe('ActorRdfParseShaclc', () => {
   describe('An ActorRdfParseShaclc instance', () => {
     let actor: ActorRdfParseShaclc;
     let input: Readable;
-    // let inputGraphs: Readable;
+    // Let inputGraphs: Readable;
     let inputLinkHeader: Readable;
     let inputSkipped: Readable;
 
@@ -198,8 +198,16 @@ describe('ActorRdfParseShaclc', () => {
           context,
         })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
-            quad('http://example.org/test#TestShape', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/shacl#NodeShape'),
-            quad('http://example.org/basic-shape-iri', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/2002/07/owl#Ontology'),
+            quad(
+              'http://example.org/test#TestShape',
+              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+              'http://www.w3.org/ns/shacl#NodeShape'
+              ),
+            quad(
+              'http://example.org/basic-shape-iri',
+               'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                'http://www.w3.org/2002/07/owl#Ontology'
+                ),
           ]));
       });
     });
@@ -251,8 +259,16 @@ describe('ActorRdfParseShaclc', () => {
             output.handle.data.read();
             output.handle.data.read();
             expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
-              quad('http://example.org/test#TestShape', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/shacl#NodeShape'),
-            quad('http://example.org/basic-shape-iri', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/2002/07/owl#Ontology'),
+              quad(
+                'http://example.org/test#TestShape', 
+              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
+              'http://www.w3.org/ns/shacl#NodeShape'
+              ),
+              quad(
+                'http://example.org/basic-shape-iri', 
+              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
+              'http://www.w3.org/2002/07/owl#Ontology'
+              ),
             ]);
           });
       });
@@ -267,8 +283,16 @@ describe('ActorRdfParseShaclc', () => {
             output.handle.data.read();
             output.handle.data.read();
             expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
-              quad('http://example.org/test#TestShape', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/shacl#NodeShape'),
-              quad('http://example.org/basic-shape-iri', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/2002/07/owl#Ontology'),
+              quad(
+                'http://example.org/test#TestShape', 
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
+                'http://www.w3.org/ns/shacl#NodeShape'
+                ),
+              quad(
+                'http://example.org/basic-shape-iri', 
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
+                'http://www.w3.org/2002/07/owl#Ontology'
+                ),
             ]);
           });
       });

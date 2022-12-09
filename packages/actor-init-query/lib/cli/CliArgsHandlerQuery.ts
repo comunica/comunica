@@ -99,8 +99,8 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
         },
         parseNonRecommendedFormats: {
           type: 'boolean',
-          describe: 'Parse non W3C recommended RDF formats such as SHACL Compact Syntax'
-        }
+          describe: 'Parse non W3C recommended RDF formats such as SHACL Compact Syntax',
+        },
       })
       .check(args => {
         if (args.version || args.listformats) {

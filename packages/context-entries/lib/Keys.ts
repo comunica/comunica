@@ -213,7 +213,7 @@ export const KeysRdfParse = {
    * @range {boolean}
    */
   parseNonRecommendedFormats: new ActionContextKey<boolean>('@comunica/actor-rdf-parse:parseNonRecommendedFormats'),
-}
+};
 
 export const KeysRdfParseJsonLd = {
   /**
