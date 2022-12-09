@@ -589,6 +589,34 @@ describe('System test: QuerySparql', () => {
     });
   });
 
+  // TODO: re-enable this once blocking error is fixed
+  // describe('SHACL compact syntax [parseNonRecommendedFormats disabled]', () => {
+  //   it('errors when parseNonRecommendedFormats is not enabled', async() => {
+  //     const result = (new QueryEngine()).query(`SELECT * WHERE {
+  //   ?s a <http://www.w3.org/2002/07/owl#Ontology>.
+  // }`, {
+  //       sources: [
+  //         'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+  //           'tests/valid/basic-shape-iri.shaclc',
+  //       ],
+  //     });
+  //     await expect(result).rejects.toThrowError();
+  //   });
+  // });
+
+  describe('SHACL compact syntax [parseNonRecommendedFormats enabled]', () => {
+    it('handles the query when parseNonRecommendedFormats is enabled', async() => {
+      const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+    ?s a <http://www.w3.org/2002/07/owl#Ontology>.
+  }`, { sources: [
+        'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+          'tests/valid/basic-shape-iri.shaclc',
+      ],
+      parseNonRecommendedFormats: true });
+      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+    });
+  });
+
   describe('update', () => {
     describe('without sources on destination RDFJS Store', () => {
       it('with direct insert', async() => {
