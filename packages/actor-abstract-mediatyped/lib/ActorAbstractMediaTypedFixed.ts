@@ -1,3 +1,4 @@
+import { KeysRdfParse } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 import type { IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
 import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped';
@@ -6,6 +7,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
   public readonly mediaTypePriorities: Record<string, number>;
   public readonly mediaTypeFormats: Record<string, string>;
   public readonly priorityScale: number;
+  public readonly isW3CRecommended: boolean;
 
   public constructor(args: IActorArgsMediaTypedFixed<HI, HT, HO>) {
     super(args);
@@ -17,11 +19,17 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     }
     this.mediaTypePriorities = Object.freeze(this.mediaTypePriorities);
     this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
+    this.isW3CRecommended = args.isW3CRecommended !== false;
   }
 
   public async testHandle(action: HI, mediaType: string, context: IActionContext): Promise<HT> {
     if (!(mediaType in this.mediaTypePriorities)) {
       throw new Error(`Unrecognized media type: ${mediaType}`);
+    }
+    if (!this.isW3CRecommended && context.get(KeysRdfParse.parseNonRecommendedFormats) !== true) {
+      throw new Error(
+        `Received media type ${mediaType} which is not W3C recommended. Enable the 'parseNonRecommendedFormats' for this to be parsed.`
+      );
     }
     return await this.testHandleChecked(action, context);
   }
@@ -71,4 +79,9 @@ export interface IActorArgsMediaTypedFixed<HI, HT, HO> extends IActorArgsMediaTy
    * @range {double}
    */
   priorityScale?: number;
+  /**
+   * Whether the mediaType is recommended by the W3C.
+   * @range {boolean}
+   */
+  isW3CRecommended?: boolean;
 }

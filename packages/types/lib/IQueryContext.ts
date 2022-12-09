@@ -48,4 +48,5 @@ export interface IQueryContextCommon {
   explain?: QueryExplainMode;
   recoverBrokenLinks?: boolean;
   localizeBlankNodes?: boolean;
+  parseNonRecommendedFormats?: boolean;
 }

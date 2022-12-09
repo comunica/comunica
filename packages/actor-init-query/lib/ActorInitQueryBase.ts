@@ -143,7 +143,8 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
-   *   "localizeBlankNodes": "@comunica/actor-query-operation:localizeBlankNodes"
+   *   "localizeBlankNodes": "@comunica/actor-query-operation:localizeBlankNodes",
+   *   "parseNonRecommendedFormats": "@comunica/actor-rdf-parse:parseNonRecommendedFormats"
    * }}
    */
   contextKeyShortcuts: Record<string, string> | Partial<Record<keyof QueryContext, string>>;
