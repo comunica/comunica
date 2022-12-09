@@ -140,23 +140,6 @@ describe('ActorRdfParseShaclc', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should test on text/shaclc', async() => {
-        await expect(actor
-          .test({
-            handle: { data: input, context },
-            handleMediaType: 'text/shaclc',
-            context,
-          }))
-          .resolves.toBeTruthy();
-        await expect(actor
-          .test({
-            handle: { data: input, metadata: { baseIRI: '' }, context },
-            handleMediaType: 'text/shaclc',
-            context,
-          }))
-          .resolves.toBeTruthy();
-      });
-
       it('should not test on bla+json when processing html', () => {
         return expect(actor.test({
           handle: { data: input, metadata: { baseIRI: '' }, context },
@@ -201,13 +184,13 @@ describe('ActorRdfParseShaclc', () => {
             quad(
               'http://example.org/test#TestShape',
               'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-              'http://www.w3.org/ns/shacl#NodeShape'
-              ),
+              'http://www.w3.org/ns/shacl#NodeShape',
+            ),
             quad(
               'http://example.org/basic-shape-iri',
-               'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-                'http://www.w3.org/2002/07/owl#Ontology'
-                ),
+              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+              'http://www.w3.org/2002/07/owl#Ontology',
+            ),
           ]));
       });
     });
@@ -260,14 +243,14 @@ describe('ActorRdfParseShaclc', () => {
             output.handle.data.read();
             expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
               quad(
-                'http://example.org/test#TestShape', 
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
-              'http://www.w3.org/ns/shacl#NodeShape'
+                'http://example.org/test#TestShape',
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                'http://www.w3.org/ns/shacl#NodeShape',
               ),
               quad(
-                'http://example.org/basic-shape-iri', 
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
-              'http://www.w3.org/2002/07/owl#Ontology'
+                'http://example.org/basic-shape-iri',
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                'http://www.w3.org/2002/07/owl#Ontology',
               ),
             ]);
           });
@@ -284,15 +267,15 @@ describe('ActorRdfParseShaclc', () => {
             output.handle.data.read();
             expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
               quad(
-                'http://example.org/test#TestShape', 
-                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
-                'http://www.w3.org/ns/shacl#NodeShape'
-                ),
+                'http://example.org/test#TestShape',
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                'http://www.w3.org/ns/shacl#NodeShape',
+              ),
               quad(
-                'http://example.org/basic-shape-iri', 
-                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 
-                'http://www.w3.org/2002/07/owl#Ontology'
-                ),
+                'http://example.org/basic-shape-iri',
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                'http://www.w3.org/2002/07/owl#Ontology',
+              ),
             ]);
           });
       });
