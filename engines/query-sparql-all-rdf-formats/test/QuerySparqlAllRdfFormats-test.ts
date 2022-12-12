@@ -8,13 +8,10 @@ if (!global.window) {
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { usePolly } from './util';
-
-const DF = new DataFactory();
-const factory = new Factory();
+import { KeysRdfParse } from '@comunica/context-entries';
+const stringifyStream = require('stream-to-string');
 
 describe('System test: QuerySparql', () => {
   usePolly();
@@ -76,6 +73,26 @@ describe('System test: QuerySparql', () => {
       ],
       parseNonRecommendedFormats: true });
       expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+    });
+  });
+
+  describe('SHACL compact syntax [parseNonRecommendedFormats enabled]', () => {
+    it('handles the query when parseNonRecommendedFormats is enabled', async() => {
+      const result = <QueryBindings> await engine.query(`CONSTRUCT WHERE {
+    ?s ?p ?o
+  }`, { sources: [
+        'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+          'tests/valid/basic-shape-iri.shaclc',
+      ],
+      parseNonRecommendedFormats: true
+    });
+
+    const { data } = await engine.resultToString(result,
+      'text/shaclc', { [KeysRdfParse.parseNonRecommendedFormats.name]: true });
+      
+    expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
+    'shape <http://example.org/test#TestShape> {\n' +
+    '}\n');
     });
   });
 });
