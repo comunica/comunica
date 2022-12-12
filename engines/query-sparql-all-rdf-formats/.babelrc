@@ -1,0 +1,12 @@
+{
+  presets: [
+    ["@babel/preset-env"],
+  ],
+  env: {
+    module: {
+      presets: [
+        ["@babel/preset-env", { modules: false }],
+      ],
+    },
+  },
+}

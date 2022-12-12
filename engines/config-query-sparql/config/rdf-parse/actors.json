@@ -6,8 +6,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-shaclc/^2.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^2.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -37,11 +36,6 @@
       "@id": "urn:comunica:default:rdf-parse/actors#html",
       "@type": "ActorRdfParseHtml",
       "priorityScale": 0.2
-    },
-    {
-      "@id": "urn:comunica:default:rdf-parse/actors#shaclc",
-      "@type": "ActorRdfParseShaclc",
-      "priorityScale": 0.1
     }
   ]
 }
