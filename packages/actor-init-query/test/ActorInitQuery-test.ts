@@ -5,6 +5,7 @@ import {
   KeysHttpMemento, KeysHttpProxy,
   KeysHttpWayback,
   KeysInitQuery, KeysQueryOperation,
+  KeysRdfParse,
   KeysRdfResolveQuadPattern, KeysRdfUpdateQuads,
 } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -573,6 +574,22 @@ LIMIT 100
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
           [KeysHttpWayback.recoverBrokenLinks.name]: true,
+        });
+      });
+
+      it('handles the --parseNonRecommendedFormats option', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--parseNonRecommendedFormats' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
+          [KeysRdfParse.parseNonRecommendedFormats.name]: true,
         });
       });
 
