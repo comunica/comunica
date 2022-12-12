@@ -33,7 +33,9 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^2.5.1",
-    "@comunica/core": "^2.5.1",
+    "@comunica/types": "^2.5.1",
+    "asynciterator": "^3.8.0",
+    "readable-stream": "^4.2.0",
     "shaclc-write": "^1.0.0"
   },
   "scripts": {

@@ -1,13 +1,13 @@
+import type { IActionRdfSerialize,
+  IActorRdfSerializeFixedMediaTypesArgs,
+  IActorRdfSerializeOutput } from '@comunica/bus-rdf-serialize';
 import {
-  ActorRdfSerializeFixedMediaTypes, 
-  IActionRdfSerialize, 
-  IActorRdfSerializeFixedMediaTypesArgs, 
-  IActorRdfSerializeOutput,
+  ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
-import { IActionContext } from '@comunica/types';
-import { write } from 'shaclc-write';
+import type { IActionContext } from '@comunica/types';
 import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
+import { write } from 'shaclc-write';
 
 /**
  * A comunica SHACL Compact Syntax RDF Serialize Actor.
@@ -32,7 +32,6 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
     // TODO: Get prefixes (from somewhere)
     const { text } = await wrap(action.quadStream).toArray().then(quads => write(quads, { errorOnUnused: true }));
 
-
     const data = new Readable();
     data._read = () => {
       // Do nothing
@@ -43,7 +42,7 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
 
     return {
       data,
-      triples: true
+      triples: true,
     };
   }
 }
