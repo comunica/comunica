@@ -86,9 +86,9 @@ describe('ActorRdfSerializeShaclc', () => {
         const output: any = await actor
           .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context });
         expect(await stringifyStream(output.handle.data)).toEqual(
-          'BASE <http://example.org/basic-shape-iri>\n\n' + 
+          'BASE <http://example.org/basic-shape-iri>\n\n' +
           'shape <http://example.org/test#TestShape> {\n' +
-          '}\n'
+          '}\n',
         );
       });
 
