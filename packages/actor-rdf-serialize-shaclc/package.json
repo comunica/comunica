@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-shaclc",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A shaclc rdf-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
