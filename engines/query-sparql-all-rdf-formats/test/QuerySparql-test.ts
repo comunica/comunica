@@ -5,13 +5,9 @@ if (!global.window) {
   jest.unmock('follow-redirects');
 }
 
-import { KeysHttpWayback, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
-import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
