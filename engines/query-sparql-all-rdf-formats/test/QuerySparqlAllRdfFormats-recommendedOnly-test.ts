@@ -5,9 +5,7 @@ if (!global.window) {
   jest.unmock('follow-redirects');
 }
 
-import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
@@ -26,18 +24,18 @@ describe('System test: QuerySparql', () => {
 
   describe('query', () => {
   // TODO: re-enable this once blocking error is fixed
-  describe('SHACL compact syntax [parseNonRecommendedFormats disabled]', () => {
-    it('errors when parseNonRecommendedFormats is not enabled', async() => {
-      const result = (new QueryEngine()).query(`SELECT * WHERE {
+    describe('SHACL compact syntax [parseNonRecommendedFormats disabled]', () => {
+      it('errors when parseNonRecommendedFormats is not enabled', async() => {
+        const result = (new QueryEngine()).query(`SELECT * WHERE {
     ?s a <http://www.w3.org/2002/07/owl#Ontology>.
   }`, {
-        sources: [
-          'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+          sources: [
+            'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
             'tests/valid/basic-shape-iri.shaclc',
-        ],
+          ],
+        });
+        await expect(result).rejects.toThrowError();
       });
-      await expect(result).rejects.toThrowError();
     });
   });
-});
 });
