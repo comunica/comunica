@@ -12556,6 +12556,14 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
+shaclc-parse@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/shaclc-parse/-/shaclc-parse-1.0.0.tgz#8305058a599cc9996d1c054dc88fc4cec347e0ca"
+  integrity sha512-AXaZrkfQTBA7Zng9eK6R2AcyW5T8mKWel2J8G9TB8Fe+vcmP8Pit2vOIATmzjOUOSn+NNFRDr9GIh8cfINoqog==
+  dependencies:
+    "@rdfjs/types" "^1.1.0"
+    n3 "^1.16.3"
+
 shallow-clone@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/shallow-clone/-/shallow-clone-3.0.1.tgz#8f2981ad92531f55035b01fb230769a40e02efa3"
