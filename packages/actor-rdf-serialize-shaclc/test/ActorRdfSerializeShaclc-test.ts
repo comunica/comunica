@@ -92,6 +92,20 @@ describe('ActorRdfSerializeShaclc', () => {
         );
       });
 
+      it('should run and return correct output even after multiple _read() calls', async() => {
+        const output: any = await actor
+          .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context });
+
+        expect(output.handle.data._read()).toEqual(undefined);
+        expect(output.handle.data._read()).toEqual(undefined);
+
+        expect(await stringifyStream(output.handle.data)).toEqual(
+          'BASE <http://example.org/basic-shape-iri>\n\n' +
+          'shape <http://example.org/test#TestShape> {\n' +
+          '}\n',
+        );
+      });
+
       it('should run and output triples for text/turtle', async() => {
         expect((<any> (await actor.run({ handle: { quadStream, context }, handleMediaType: 'text/turtle', context })))
           .handle.triples).toBeTruthy();
