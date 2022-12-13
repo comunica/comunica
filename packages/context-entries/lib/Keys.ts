@@ -1,5 +1,6 @@
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
-import type { Bindings,
+import type {
+  Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
@@ -7,7 +8,8 @@ import type { Bindings,
   DataSources,
   IDataSource,
   IDataDestination,
-  MetadataBindings } from '@comunica/types';
+  MetadataBindings, FunctionArgumentsCache,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -119,7 +121,9 @@ export const KeysInitQuery = {
    * Object structure used to cache overloads in sparqlee
    * (It's here because keeping it across sparqlee evaluators provides a performance increase.)
    */
-  overloadCache: new ActionContextKey<string>('@comunica/actor-init-query:overloadCache'),
+  functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
+    '@comunica/actor-init-query:functionArgumentsCache',
+  ),
   /**
    * A timestamp representing the current time.
    *                 This is required for certain SPARQL operations such as NOW().

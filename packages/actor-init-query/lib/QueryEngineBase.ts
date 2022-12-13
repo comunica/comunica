@@ -139,7 +139,8 @@ implements IQueryEngine<QueryContext> {
       .setDefault(KeysInitQuery.queryTimestamp, new Date())
       .setDefault(KeysRdfResolveQuadPattern.sourceIds, new Map())
       // Set the default logger if none is provided
-      .setDefault(KeysCore.log, this.actorInitQuery.logger);
+      .setDefault(KeysCore.log, this.actorInitQuery.logger)
+      .setDefault(KeysInitQuery.functionArgumentsCache, {});
 
     // Pre-processing the context
     actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;

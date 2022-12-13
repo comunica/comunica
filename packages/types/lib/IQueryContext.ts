@@ -15,7 +15,7 @@ export type QueryStringContext = RDF.QueryStringContext & RDF.QuerySourceContext
  */
 export type QueryAlgebraContext = RDF.QueryAlgebraContext & RDF.QuerySourceContext<SourceType> & IQueryContextCommon;
 
-export type OverLoadCache = Record<string, { func?: any; cache?: OverLoadCache }>;
+export type FunctionArgumentsCache = Record<string, { func?: any; cache?: FunctionArgumentsCache }>;
 
 /**
  * Common query context interface
@@ -46,7 +46,7 @@ export interface IQueryContextCommon {
   readOnly?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
-  functionArgumentsCache?: OverLoadCache;
+  functionArgumentsCache?: FunctionArgumentsCache;
   extensionFunctions?: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
   explain?: QueryExplainMode;
   recoverBrokenLinks?: boolean;
