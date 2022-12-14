@@ -141,6 +141,7 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    *   "readOnly": "@comunica/bus-query-operation:readOnly",
    *   "extensionFunctions": "@comunica/actor-init-query:extensionFunctions",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
+   *   "functionArgumentsCache": "@comunica/actor-init-query:functionArgumentsCache",
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
    *   "localizeBlankNodes": "@comunica/actor-query-operation:localizeBlankNodes"

@@ -118,8 +118,7 @@ export const KeysInitQuery = {
    */
   baseIRI: new ActionContextKey<string>('@comunica/actor-init-query:baseIRI'),
   /**
-   * Object structure used to cache overloads in sparqlee
-   * (It's here because keeping it across sparqlee evaluators provides a performance increase.)
+   * Object to cache function argument overload resolutions. Defaults to an object that is used between query execution.
    */
   functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
     '@comunica/actor-init-query:functionArgumentsCache',

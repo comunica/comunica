@@ -484,6 +484,30 @@ describe('System test: QuerySparql', () => {
           });
         });
       });
+      describe('functionArgumentsCache', () => {
+        it('is used', async() => {
+          // The query provided is completly arbitrerry and should not change the results of this test.
+          const query = `SELECT (strlen(?x) AS ?len) WHERE {
+            ?s ?p ?x
+          }
+          `;
+          const stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
+          const store = new Store();
+          const quads = [
+            DF.quad(DF.namedNode(':a'), DF.namedNode(':p'), DF.literal('apple', stringType)) ];
+          store.addQuads(quads);
+
+          const context = <any> { sources: [ store ]};
+          const functionArgumentsCache = {};
+          context.functionArgumentsCache = functionArgumentsCache;
+
+          const bindingsStream = await engine.queryBindings(query, context);
+          expect((await bindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
+            quads.map(q => String(q.object.value.length)),
+          );
+          expect(Object.keys(functionArgumentsCache)).toContain('strlen');
+        });
+      });
     });
 
     describe('simple SPS', () => {
