@@ -63,16 +63,15 @@ describe('System test: QuerySparql', () => {
     });
   });
 
-    it('handles the query with SHACL copact syntax as a source', async() => {
-      const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+  it('handles the query with SHACL copact syntax as a source', async() => {
+    const result = <QueryBindings> await engine.query(`SELECT * WHERE {
     ?s a <http://www.w3.org/2002/07/owl#Ontology>.
   }`, { sources: [
-        'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+      'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
           'tests/valid/basic-shape-iri.shaclc',
-      ],
-       });
-      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
-    });
+    ]});
+    expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+  });
 
   it('correctly serializes construct query on a shape in .shaclc as shaclc', async() => {
     const result = <QueryBindings> await engine.query(`CONSTRUCT WHERE {
@@ -80,12 +79,10 @@ describe('System test: QuerySparql', () => {
   }`, { sources: [
       'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
           'tests/valid/basic-shape-iri.shaclc',
-    ],
-    });
+    ]});
 
     const { data } = await engine.resultToString(result,
-      'text/shaclc'
-    );
+      'text/shaclc');
 
     expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
     'shape <http://example.org/test#TestShape> {\n' +
@@ -101,8 +98,7 @@ describe('System test: QuerySparql', () => {
     ]});
 
     const { data } = await engine.resultToString(result,
-      'text/shaclc'
-    );
+      'text/shaclc');
 
     expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
     'shape <http://example.org/test#TestShape> {\n' +
