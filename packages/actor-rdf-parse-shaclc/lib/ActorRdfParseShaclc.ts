@@ -22,7 +22,6 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
    *   \ @defaultNested {{
    *       "text/shaclc": "http://www.w3.org/ns/formats/Shaclc"
    *     }} mediaTypeFormats
-   *   \ @defaultNested {false} isW3CRecommended
    */
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);

@@ -21,7 +21,6 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
    *   \ @defaultNested {{
    *       "text/shaclc": "http://www.w3.org/ns/formats/Shaclc"
    *     }} mediaTypeFormats
-   *   \ @defaultNested {false} isW3CRecommended
    */
   public constructor(args: IActorRdfSerializeFixedMediaTypesArgs) {
     super(args);

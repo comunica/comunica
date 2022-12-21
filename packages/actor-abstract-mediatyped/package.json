@@ -32,7 +32,6 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/context-entries": "^2.5.1",
     "@comunica/core": "^2.5.1",
     "@comunica/types": "^2.5.1"
   },

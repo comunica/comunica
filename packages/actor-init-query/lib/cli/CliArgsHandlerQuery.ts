@@ -5,7 +5,6 @@ import {
   KeysHttpWayback,
   KeysInitQuery,
   KeysQueryOperation,
-  KeysRdfParse,
 } from '@comunica/context-entries';
 import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
@@ -97,10 +96,6 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
           describe: 'Use the WayBack machine to recover broken links',
           default: false,
         },
-        parseNonRecommendedFormats: {
-          type: 'boolean',
-          describe: 'Parse non W3C recommended RDF formats such as SHACL Compact Syntax',
-        },
       })
       .check(args => {
         if (args.version || args.listformats) {
@@ -142,11 +137,6 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
     // Set recover broken links flag
     if (args.recoverBrokenLinks) {
       context[KeysHttpWayback.recoverBrokenLinks.name] = args.recoverBrokenLinks;
-    }
-
-    // Set parseNonRecommendedFormats flag
-    if (args.parseNonRecommendedFormats) {
-      context[KeysRdfParse.parseNonRecommendedFormats.name] = args.parseNonRecommendedFormats;
     }
   }
 }
