@@ -5,7 +5,6 @@ if (!global.window) {
   jest.unmock('follow-redirects');
 }
 
-import { KeysRdfParse } from '@comunica/context-entries';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
@@ -64,18 +63,16 @@ describe('System test: QuerySparql', () => {
     });
   });
 
-  describe('SHACL compact syntax [parseNonRecommendedFormats enabled]', () => {
-    it('handles the query when parseNonRecommendedFormats is enabled', async() => {
+    it('handles the query with SHACL copact syntax as a source', async() => {
       const result = <QueryBindings> await engine.query(`SELECT * WHERE {
     ?s a <http://www.w3.org/2002/07/owl#Ontology>.
   }`, { sources: [
         'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
           'tests/valid/basic-shape-iri.shaclc',
       ],
-      parseNonRecommendedFormats: true });
+       });
       expect((await arrayifyStream(await result.execute())).length).toEqual(1);
     });
-  });
 
   it('correctly serializes construct query on a shape in .shaclc as shaclc', async() => {
     const result = <QueryBindings> await engine.query(`CONSTRUCT WHERE {
@@ -84,11 +81,11 @@ describe('System test: QuerySparql', () => {
       'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
           'tests/valid/basic-shape-iri.shaclc',
     ],
-    parseNonRecommendedFormats: true });
+    });
 
     const { data } = await engine.resultToString(result,
-      'text/shaclc',
-      { [KeysRdfParse.parseNonRecommendedFormats.name]: true });
+      'text/shaclc'
+    );
 
     expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
     'shape <http://example.org/test#TestShape> {\n' +
@@ -104,8 +101,8 @@ describe('System test: QuerySparql', () => {
     ]});
 
     const { data } = await engine.resultToString(result,
-      'text/shaclc',
-      { [KeysRdfParse.parseNonRecommendedFormats.name]: true });
+      'text/shaclc'
+    );
 
     expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
     'shape <http://example.org/test#TestShape> {\n' +
