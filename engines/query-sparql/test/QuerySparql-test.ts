@@ -5,9 +5,9 @@ if (!global.window) {
   jest.unmock('follow-redirects');
 }
 
-import { KeysHttpWayback, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysHttpWayback, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { QueryBindings, QueryStringContext } from '@comunica/types';
+import type { QueryBindings, QueryStringContext, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
@@ -485,18 +485,25 @@ describe('System test: QuerySparql', () => {
         });
       });
       describe('functionArgumentsCache', () => {
-        it('is used', async() => {
-          // The query provided is completly arbitrerry and should not change the results of this test.
-          const query = `SELECT (strlen(?x) AS ?len) WHERE {
+        let query: string;
+        let stringType: RDF.NamedNode;
+        let quads: RDF.Quad[];
+        let store: Store;
+        beforeAll(() => {
+          // The query provided is completely arbitrary and should not change the results of this test
+          // besides the value in the cache.
+          query = `SELECT (strlen(?x) AS ?len) WHERE {
             ?s ?p ?x
           }
           `;
-          const stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
-          const store = new Store();
-          const quads = [
+          stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
+          store = new Store();
+          quads = [
             DF.quad(DF.namedNode(':a'), DF.namedNode(':p'), DF.literal('apple', stringType)) ];
           store.addQuads(quads);
+        });
 
+        it('is used when provided', async() => {
           const context = <any> { sources: [ store ]};
           const functionArgumentsCache = {};
           context.functionArgumentsCache = functionArgumentsCache;
@@ -506,6 +513,41 @@ describe('System test: QuerySparql', () => {
             quads.map(q => String(q.object.value.length)),
           );
           expect(Object.keys(functionArgumentsCache)).toContain('strlen');
+        });
+
+        it('is used when defaulted', async() => {
+          const alternativeEngine = new QueryEngine();
+          const context = <any> { sources: [ store ]};
+
+          // This combersom way is needed because evaluating with mock with isCalledWith gives you the refference
+          // to the cache and will make it seem like it was filled in from the beginning.
+          const original_function = (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate;
+          const emptyCacheMock = jest.fn((arg: { context: IActionContext }) => {
+            expect(arg.context.get(KeysInitQuery.functionArgumentsCache)).toEqual({});
+            return original_function(arg);
+          });
+          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = emptyCacheMock;
+
+          // Evaluate query once
+          const firstBindingsStream = await alternativeEngine.queryBindings(query, context);
+          expect((await firstBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
+            quads.map(q => String(q.object.value.length)),
+          );
+
+          const fullCacheMock = jest.fn((arg: { context: IActionContext }) => {
+            expect(arg.context.get(KeysInitQuery.functionArgumentsCache)).not.toBeUndefined();
+            expect(Object.keys(arg.context.get(KeysInitQuery.functionArgumentsCache)!)).toContain('strlen');
+            return original_function(arg);
+          });
+          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = fullCacheMock;
+          // Evaluate query a second time
+          const secondBindingsStream = await alternativeEngine.queryBindings(query, context);
+          expect((await secondBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
+            quads.map(q => String(q.object.value.length)),
+          );
+
+          // Reset the function again!
+          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = original_function;
         });
       });
     });
