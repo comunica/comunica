@@ -118,7 +118,8 @@ export const KeysInitQuery = {
    */
   baseIRI: new ActionContextKey<string>('@comunica/actor-init-query:baseIRI'),
   /**
-   * Object to cache function argument overload resolutions. Defaults to an object that is reused across query executions.
+   * Object to cache function argument overload resolutions.
+   * Defaults to an object that is reused across query executions.
    */
   functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
     '@comunica/actor-init-query:functionArgumentsCache',
