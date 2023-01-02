@@ -7,7 +7,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseShaclc } from '../lib/ActorRdfParseShaclc';
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
 const streamifyString = require('streamify-string');
 
 describe('ActorRdfParseShaclc', () => {
@@ -110,7 +109,7 @@ describe('ActorRdfParseShaclc', () => {
         },
         mediaTypeFormats: {},
         name: 'actor' });
-      input = stringToStream(`BASE <http://example.org/basic-shape-iri>
+      input = streamifyString(`BASE <http://example.org/basic-shape-iri>
       PREFIX ex: <http://example.org/ex#>
 
       shape <http://example.org/test#TestShape> {
@@ -119,11 +118,11 @@ describe('ActorRdfParseShaclc', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        inputLinkHeader = stringToStream(`{
+        inputLinkHeader = streamifyString(`{
           "@id": "http://www.example.org/",
           "term": "value"
         }`);
-        inputSkipped = stringToStream(`{
+        inputSkipped = streamifyString(`{
           "@id": "http://www.example.org/",
           "skipped": "value"
         }`);
@@ -249,7 +248,7 @@ describe('ActorRdfParseShaclc', () => {
 
       describe('text/shaclc-ext', () => {
         beforeEach(() => {
-          input = stringToStream('BASE <http://example.org/basic-shape-iri>\n' +
+          input = streamifyString('BASE <http://example.org/basic-shape-iri>\n' +
           'shape <http://example.org/test#TestShape>;\n' +
           '<http://example.org/p> <http://example.org/p> {\n' +
           '}');
