@@ -13,6 +13,8 @@ export class ActorDereferenceRdfParse extends ActorDereferenceRdf {
    *   "turtle":   "text/turtle",
    *   "shaclc":   "text/shaclc",
    *   "shc":      "text/shaclc",
+   *   "shaclce":   "text/shaclc-ext",
+   *   "shce":      "text/shaclc-ext",
    *   "nt":       "application/n-triples",
    *   "ntriples": "application/n-triples",
    *   "nq":       "application/n-quads",

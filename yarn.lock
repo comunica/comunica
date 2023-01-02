@@ -1249,6 +1249,15 @@
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
 
+"@jeswr/prefixcc@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@jeswr/prefixcc/-/prefixcc-1.2.1.tgz#db4290930fd8f623204199075c6c710c47637faa"
+  integrity sha512-kBBXbqsaeh3Irp416h/RbelqJgIOp6X/OJJlYmLyr/9qlBYKTKSCuEv5/xjZ0Yf8Yec+QFRYBaOQ2JkMBSH7KA==
+  dependencies:
+    cross-fetch "^3.1.5"
+  optionalDependencies:
+    fsevents "^2.3.2"
+
 "@jridgewell/gen-mapping@^0.1.0":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.1.1.tgz#e5d2e450306a9491e3bd77e323e38d7aff315996"
@@ -11948,6 +11957,16 @@ readable-stream@^4.0.0, readable-stream@^4.1.0, readable-stream@^4.2.0:
     events "^3.3.0"
     process "^0.11.10"
 
+readable-stream@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-4.3.0.tgz#0914d0c72db03b316c9733bb3461d64a3cc50cba"
+  integrity sha512-MuEnA0lbSi7JS8XM+WNJlWZkHAAdm7gETHdFK//Q/mChGyj2akEFtdLZh32jSdkWGbRwCW9pn6g3LWDdDeZnBQ==
+  dependencies:
+    abort-controller "^3.0.0"
+    buffer "^6.0.3"
+    events "^3.3.0"
+    process "^0.11.10"
+
 readable-stream@~1.0.2:
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
@@ -12556,19 +12575,20 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-shaclc-parse@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/shaclc-parse/-/shaclc-parse-1.0.1.tgz#1aadae2b6f2c05da1311c4c596fd5a081c4bddf9"
-  integrity sha512-iUO4K1+9E7vhg+2eyshS6GwnAafWSOh21krvainjyNdSzy6GpvggZjwTlBYPSnz2meBy+Nsw7z+NES5GR5gYIw==
+shaclc-parse@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/shaclc-parse/-/shaclc-parse-1.2.1.tgz#3e280ea4730eea92f00524c09e63b219f256a910"
+  integrity sha512-P1qwRWiQPcTooYNLK2a02VGQGrEw6PM7T4quii3aqTGkVoWpMl+Qsq/TnW6csDPxrnqxsiNAM/xSAmqGq3SSvQ==
   dependencies:
     "@rdfjs/types" "^1.1.0"
     n3 "^1.16.3"
 
-shaclc-write@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/shaclc-write/-/shaclc-write-1.1.0.tgz#1ae6203dd32af71b20009e20fd86bf1cb1da2588"
-  integrity sha512-ggNqAkXohgIu4Qp7vebrz8obmih71g45AShzLz6hOCvHIZDA5mpBoo97hxLehGv24WktJMXHTZjqnB9bawheEQ==
+shaclc-write@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/shaclc-write/-/shaclc-write-1.4.1.tgz#bcce7020cdb2fa7163b2b799c45e6581cfb84751"
+  integrity sha512-w8vu/w/UYMrEiCZ9NY5gxiBQ6NYN7+xO5xuNNwb3g24INWWok62zrm5wvCw7ttDJd9v/iZ/z3FcXCs7FaKUJWw==
   dependencies:
+    "@jeswr/prefixcc" "^1.2.1"
     n3 "^1.16.3"
     rdf-string-ttl "^1.3.2"
 

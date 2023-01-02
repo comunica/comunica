@@ -106,10 +106,12 @@ describe('ActorRdfParseShaclc', () => {
       actor = new ActorRdfParseShaclc({ bus,
         mediaTypePriorities: {
           'text/shaclc': 1,
+          'text/shaclc-ext': 0.5,
         },
         mediaTypeFormats: {},
         name: 'actor' });
       input = stringToStream(`BASE <http://example.org/basic-shape-iri>
+      PREFIX ex: <http://example.org/ex#>
 
       shape <http://example.org/test#TestShape> {
       }`);
@@ -174,24 +176,36 @@ describe('ActorRdfParseShaclc', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should run', () => {
-        return actor.run({
+      it('should run', async() => {
+        const output: any = await actor.run({
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'text/shaclc',
           context,
-        })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
-            quad(
-              'http://example.org/test#TestShape',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-              'http://www.w3.org/ns/shacl#NodeShape',
-            ),
-            quad(
-              'http://example.org/basic-shape-iri',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-              'http://www.w3.org/2002/07/owl#Ontology',
-            ),
-          ]));
+        });
+
+        const prefixes: Record<string, string> = {};
+        output.handle.data.on('prefix', (prefix: string, iri: string) => { prefixes[prefix] = iri; });
+
+        expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
+          quad(
+            'http://example.org/test#TestShape',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'http://www.w3.org/ns/shacl#NodeShape',
+          ),
+          quad(
+            'http://example.org/basic-shape-iri',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'http://www.w3.org/2002/07/owl#Ontology',
+          ),
+        ]);
+
+        expect(prefixes).toEqual({
+          rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+          rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+          ex: 'http://example.org/ex#',
+        });
       });
     });
 
@@ -203,6 +217,7 @@ describe('ActorRdfParseShaclc', () => {
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'text/shaclc': 1,
+          'text/shaclc-ext': 0.5,
         }});
       });
 
@@ -230,6 +245,49 @@ describe('ActorRdfParseShaclc', () => {
         return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'text/shaclc': 0,
         }});
+      });
+
+      describe('text/shaclc-ext', () => {
+        beforeEach(() => {
+          input = stringToStream('BASE <http://example.org/basic-shape-iri>\n' +
+          'shape <http://example.org/test#TestShape>;\n' +
+          '<http://example.org/p> <http://example.org/p> {\n' +
+          '}');
+        });
+
+        it('should run on extended syntax with text/shaclc-ext', async() => {
+          const output: any = await actor.run({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'text/shaclc-ext',
+            context,
+          });
+          expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
+            quad(
+              'http://example.org/test#TestShape',
+              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+              'http://www.w3.org/ns/shacl#NodeShape',
+            ),
+            quad(
+              'http://example.org/test#TestShape',
+              'http://example.org/p',
+              'http://example.org/p',
+            ),
+            quad(
+              'http://example.org/basic-shape-iri',
+              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+              'http://www.w3.org/2002/07/owl#Ontology',
+            ),
+          ]);
+        });
+
+        it('should reject on extended syntax with text/shaclc mediatype', async() => {
+          const output: any = await actor.run({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'text/shaclc',
+            context,
+          });
+          await expect(() => arrayifyStream(output.handle.data)).rejects.toThrowError();
+        });
       });
 
       it('should not have duplicate results on multiple read calls', () => {
