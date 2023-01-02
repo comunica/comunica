@@ -30,8 +30,6 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
 
   public async runHandle(action: IActionRdfSerialize, mediaType: string, context: IActionContext):
   Promise<IActorRdfSerializeOutput> {
-    // TODO: Get prefixes (from somewhere)
-
     const data = new Readable();
     data._read = () => {
       // Do nothing
