@@ -24,7 +24,6 @@ module.exports = {
     '/mocks/',
     'index.js',
     '/engines/query-sparql/test/util.ts',
-    '/engines/query-sparql-all-rdf-formats/test/util.ts',
     // TODO: Remove this condition, once solid-client-authn supports node 18.
     ...(process.versions.node.startsWith("18")
     ? ["/engines/query-sparql/lib/QueryEngineFactory.ts"]
