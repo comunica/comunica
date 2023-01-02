@@ -5,9 +5,9 @@ import {
   ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
 import type { IActionContext } from '@comunica/types';
-import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import { write } from 'shaclc-write';
+import arrayifyStream from 'arrayify-stream';
 
 /**
  * A comunica SHACL Compact Syntax RDF Serialize Actor.
@@ -39,7 +39,7 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
 
     try {
       const { text } = await write(
-        await wrap(action.quadStream).toArray(),
+        await arrayifyStream(action.quadStream),
         { errorOnUnused: true, extendedSyntax: mediaType === 'text/shaclc-ext' },
       );
       data.push(text);
