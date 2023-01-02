@@ -160,6 +160,7 @@
     "@comunica/actor-rdf-update-quads-hypermedia": "^2.5.1",
     "@comunica/actor-rdf-update-quads-rdfjs-store": "^2.5.1",
     "@comunica/bus-http-invalidate": "^2.5.1",
+    "@comunica/config-query-sparql": "^2.5.1",
     "@comunica/bus-query-operation": "^2.5.1",
     "@comunica/core": "^2.5.1",
     "@comunica/logger-void": "^2.5.1",
