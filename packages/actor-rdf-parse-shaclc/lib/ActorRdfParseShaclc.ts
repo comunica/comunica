@@ -7,10 +7,9 @@ import {
   ActorRdfParseFixedMediaTypes,
 } from '@comunica/bus-rdf-parse';
 import type { IActionContext } from '@comunica/types';
-import type { Quad } from '@rdfjs/types';
-import { WrappingIterator } from 'asynciterator';
 import { parse } from 'shaclc-parse';
 import streamToString = require('stream-to-string');
+import { PrefixWrappingIterator } from './PrefixWrappingIterator';
 
 /**
  * A comunica SHACL Compact Syntax RDF Parse Actor.
@@ -39,27 +38,5 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
       ),
       metadata: { triples: true },
     };
-  }
-}
-
-class PrefixWrappingIterator extends WrappingIterator<Quad> {
-  private prefixes?: Record<string, string>;
-  public constructor(source: Promise<Quad[] & { prefixes: Record<string, string> }> | undefined) {
-    super(source?.then(src => {
-      this.prefixes = src.prefixes;
-      return src;
-    }));
-  }
-
-  public read(): Quad | null {
-    // On the first read where the prefixes are available, emit them
-    if (this.prefixes) {
-      for (const args of Object.entries(this.prefixes)) {
-        this.emit('prefix', ...args);
-      }
-      delete this.prefixes;
-    }
-
-    return super.read();
   }
 }
