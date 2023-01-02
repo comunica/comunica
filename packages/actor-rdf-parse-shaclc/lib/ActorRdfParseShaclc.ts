@@ -10,6 +10,7 @@ import type { IActionContext } from '@comunica/types';
 import type { Quad } from '@rdfjs/types';
 import { WrappingIterator } from 'asynciterator';
 import { parse } from 'shaclc-parse';
+import streamToString = require('stream-to-string');
 
 /**
  * A comunica SHACL Compact Syntax RDF Parse Actor.
@@ -34,7 +35,7 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
   Promise<IActorRdfParseOutput> {
     return {
       data: <any> new PrefixWrappingIterator(
-        toString(action.data).then(str => parse(str, { extendedSyntax: mediaType === 'text/shaclc-ext' })),
+        streamToString(action.data).then(str => parse(str, { extendedSyntax: mediaType === 'text/shaclc-ext' })),
       ),
       metadata: { triples: true },
     };
@@ -61,15 +62,4 @@ class PrefixWrappingIterator extends WrappingIterator<Quad> {
 
     return super.read();
   }
-}
-
-function toString(stream: NodeJS.ReadableStream): Promise<string> {
-  return new Promise((res, rej) => {
-    let str = '';
-    stream.on('data', chunk => {
-      str += chunk;
-    });
-    stream.on('end', () => res(str));
-    stream.on('error', rej);
-  });
 }
