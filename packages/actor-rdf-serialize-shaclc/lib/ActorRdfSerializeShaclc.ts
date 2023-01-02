@@ -16,10 +16,12 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
   /**
    * @param args -
    *   \ @defaultNested {{
-   *       "text/shaclc": 1.0
+   *       "text/shaclc": 1.0,
+   *       "text/shaclc-ext": 0.5
    *     }} mediaTypePriorities
    *   \ @defaultNested {{
-   *       "text/shaclc": "http://www.w3.org/ns/formats/Shaclc"
+   *       "text/shaclc": "http://www.w3.org/ns/formats/Shaclc",
+   *       "text/shaclc-ext": "http://www.w3.org/ns/formats/ShaclcExtended"
    *     }} mediaTypeFormats
    */
   public constructor(args: IActorRdfSerializeFixedMediaTypesArgs) {
@@ -36,7 +38,10 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
     };
 
     try {
-      const { text } = await wrap(action.quadStream).toArray().then(quads => write(quads, { errorOnUnused: true }));
+      const { text } = await write(
+        await wrap(action.quadStream).toArray(),
+        { errorOnUnused: true, extendedSyntax: mediaType === 'text/shaclc-ext' },
+      );
       data.push(text);
     } catch (error: unknown) {
       // Push the error into the stream

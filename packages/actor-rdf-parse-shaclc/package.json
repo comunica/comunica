@@ -35,7 +35,7 @@
     "@comunica/bus-rdf-parse": "^2.5.1",
     "@comunica/types": "^2.5.1",
     "asynciterator": "^3.8.0",
-    "shaclc-parse": "^1.0.1"
+    "shaclc-parse": "^1.2.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

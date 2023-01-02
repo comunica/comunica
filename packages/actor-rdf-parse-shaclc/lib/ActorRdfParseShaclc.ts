@@ -17,10 +17,12 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
   /**
    * @param args -
    *   \ @defaultNested {{
-   *       "text/shaclc": 1.0
+   *       "text/shaclc": 1.0,
+   *       "text/shaclc-ext": 0.5
    *     }} mediaTypePriorities
    *   \ @defaultNested {{
-   *       "text/shaclc": "http://www.w3.org/ns/formats/Shaclc"
+   *       "text/shaclc": "http://www.w3.org/ns/formats/Shaclc",
+   *       "text/shaclc-ext": "http://www.w3.org/ns/formats/ShaclcExtended"
    *     }} mediaTypeFormats
    */
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
@@ -29,7 +31,11 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
-    return { data: <any> wrap(toString(action.data).then(str => parse(str))), metadata: { triples: true }};
+    return {
+      data: <any> wrap(toString(action.data)
+        .then(str => parse(str, { extendedSyntax: mediaType === 'text/shaclc-ext' }))),
+      metadata: { triples: true },
+    };
   }
 }
 
