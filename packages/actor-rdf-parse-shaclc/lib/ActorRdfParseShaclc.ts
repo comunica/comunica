@@ -7,7 +7,8 @@ import {
   ActorRdfParseFixedMediaTypes,
 } from '@comunica/bus-rdf-parse';
 import type { IActionContext } from '@comunica/types';
-import { wrap } from 'asynciterator';
+import type { Quad } from '@rdfjs/types';
+import { WrappingIterator } from 'asynciterator';
 import { parse } from 'shaclc-parse';
 
 /**
@@ -32,10 +33,33 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
   Promise<IActorRdfParseOutput> {
     return {
-      data: <any> wrap(toString(action.data)
-        .then(str => parse(str, { extendedSyntax: mediaType === 'text/shaclc-ext' }))),
+      data: <any> new PrefixWrappingIterator(
+        toString(action.data).then(str => parse(str, { extendedSyntax: mediaType === 'text/shaclc-ext' })),
+      ),
       metadata: { triples: true },
     };
+  }
+}
+
+class PrefixWrappingIterator extends WrappingIterator<Quad> {
+  private prefixes?: Record<string, string>;
+  public constructor(source: Promise<Quad[] & { prefixes: Record<string, string> }> | undefined) {
+    super(source?.then(src => {
+      this.prefixes = src.prefixes;
+      return src;
+    }));
+  }
+
+  public read(): Quad | null {
+    // On the first read where the prefixes are available, emit them
+    if (this.prefixes) {
+      for (const args of Object.entries(this.prefixes)) {
+        this.emit('prefix', ...args);
+      }
+      delete this.prefixes;
+    }
+
+    return super.read();
   }
 }
 

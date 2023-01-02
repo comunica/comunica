@@ -111,6 +111,7 @@ describe('ActorRdfParseShaclc', () => {
         mediaTypeFormats: {},
         name: 'actor' });
       input = stringToStream(`BASE <http://example.org/basic-shape-iri>
+      PREFIX ex: <http://example.org/ex#>
 
       shape <http://example.org/test#TestShape> {
       }`);
@@ -175,24 +176,36 @@ describe('ActorRdfParseShaclc', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should run', () => {
-        return actor.run({
+      it('should run', async() => {
+        const output: any = await actor.run({
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'text/shaclc',
           context,
-        })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
-            quad(
-              'http://example.org/test#TestShape',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-              'http://www.w3.org/ns/shacl#NodeShape',
-            ),
-            quad(
-              'http://example.org/basic-shape-iri',
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-              'http://www.w3.org/2002/07/owl#Ontology',
-            ),
-          ]));
+        });
+
+        const prefixes: Record<string, string> = {};
+        output.handle.data.on('prefix', (prefix: string, iri: string) => { prefixes[prefix] = iri; });
+
+        expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
+          quad(
+            'http://example.org/test#TestShape',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'http://www.w3.org/ns/shacl#NodeShape',
+          ),
+          quad(
+            'http://example.org/basic-shape-iri',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'http://www.w3.org/2002/07/owl#Ontology',
+          ),
+        ]);
+
+        expect(prefixes).toEqual({
+          rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+          rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+          ex: 'http://example.org/ex#',
+        });
       });
     });
 
