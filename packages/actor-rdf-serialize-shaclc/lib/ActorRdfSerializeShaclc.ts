@@ -5,9 +5,9 @@ import {
   ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { Readable } from 'readable-stream';
 import { write } from 'shaclc-write';
-import arrayifyStream from 'arrayify-stream';
 
 /**
  * A comunica SHACL Compact Syntax RDF Serialize Actor.
