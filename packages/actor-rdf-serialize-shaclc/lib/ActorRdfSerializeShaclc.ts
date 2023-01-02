@@ -41,12 +41,14 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
         { errorOnUnused: true, extendedSyntax: mediaType === 'text/shaclc-ext' },
       );
       data.push(text);
+      data.push(null);
     } catch (error: unknown) {
       // Push the error into the stream
-      data.push(error);
+      data._read = () => {
+        data.emit('error', error);
+      };
     }
-    data.push(null);
-
+  
     return {
       data,
       triples: true,
