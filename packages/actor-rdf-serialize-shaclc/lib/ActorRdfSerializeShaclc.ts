@@ -48,7 +48,7 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
         data.emit('error', error);
       };
     }
-  
+
     return {
       data,
       triples: true,
