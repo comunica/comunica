@@ -36,9 +36,14 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
     };
 
     try {
+      const prefixes: Record<string, string> = {};
+      action.quadStream.on('prefix', (prefix, iri) => {
+        prefixes[prefix] = iri;
+      });
+
       const { text } = await write(
         await arrayifyStream(action.quadStream),
-        { errorOnUnused: true, extendedSyntax: mediaType === 'text/shaclc-ext' },
+        { errorOnUnused: true, extendedSyntax: mediaType === 'text/shaclc-ext', prefixes },
       );
       data.push(text);
       data.push(null);

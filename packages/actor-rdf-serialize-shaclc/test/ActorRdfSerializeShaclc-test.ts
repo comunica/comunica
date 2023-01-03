@@ -98,6 +98,26 @@ describe('ActorRdfSerializeShaclc', () => {
         );
       });
 
+      it('should include prefixes when the prefix event occurs', async() => {
+        let first = false;
+        quadStream = quadStream.map((elem: any) => {
+          if (!first) {
+            quadStream.emit('prefix', 'ext', 'http://example.org/test#');
+            first = true;
+          }
+          return elem;
+        });
+
+        const output: any = await actor
+          .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context });
+        expect(await stringifyStream(output.handle.data)).toEqual(
+          'BASE <http://example.org/basic-shape-iri>\n' +
+          'PREFIX ext: <http://example.org/test#>\n\n' +
+          'shape ext:TestShape {\n' +
+          '}\n',
+        );
+      });
+
       describe('text/shaclc-ext', () => {
         beforeEach(() => {
           quadStream = union([ quadStream, fromArray([ quad(
