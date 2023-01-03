@@ -38,7 +38,7 @@ const DF = new DataFactory();
 describe('TermTransformer', () => {
   let termTransformer: TermTransformer;
   beforeEach(() => {
-    termTransformer = new TermTransformer(getDefaultSharedContext().superTypeProvider, true);
+    termTransformer = new TermTransformer(getDefaultSharedContext().superTypeProvider);
   });
 
   function simpleLiteralCreator(value: string, dataType?: string, language?: string): RDF.Literal {
@@ -273,95 +273,6 @@ describe('TermTransformer', () => {
       expect(res.strValue).toBeUndefined();
       expect(res.str()).toEqual('');
       expect(res.typedValue.toString()).toEqual('undefined');
-    });
-  });
-
-  describe('legacy literal transformer', () => {
-    let legacyTermTransformer: TermTransformer;
-    beforeEach(() => {
-      legacyTermTransformer = new TermTransformer(getDefaultSharedContext().superTypeProvider, false);
-    });
-
-    it('string', () => {
-      for (const dt of [ DT.XSD_ANY_URI,
-        DT.XSD_NORMALIZED_STRING,
-        DT.XSD_TOKEN,
-        DT.XSD_LANGUAGE,
-        DT.XSD_NM_TOKEN,
-        DT.XSD_NAME,
-        DT.XSD_ENTITY,
-        DT.XSD_ID,
-        DT.XSD_ID_REF,
-        DT.XSD_STRING ]) {
-        expect(legacyTermTransformer.transformLiteral(DF.literal('foo', DF.namedNode(dt))))
-          .toEqual(new E.StringLiteral('foo', dt));
-      }
-    });
-
-    it('langString', () => {
-      expect(legacyTermTransformer.transformLiteral(DF.literal('foo', 'en')))
-        .toEqual(new E.LangStringLiteral('foo', 'en'));
-    });
-
-    it('integer', () => {
-      for (const dt of [ DT.XSD_NON_POSITIVE_INTEGER,
-        DT.XSD_NEGATIVE_INTEGER,
-        DT.XSD_LONG,
-        DT.XSD_INT,
-        DT.XSD_SHORT,
-        DT.XSD_BYTE,
-        DT.XSD_NON_NEGATIVE_INTEGER,
-        DT.XSD_POSITIVE_INTEGER,
-        DT.XSD_UNSIGNED_LONG,
-        DT.XSD_UNSIGNED_INT,
-        DT.XSD_UNSIGNED_SHORT,
-        DT.XSD_UNSIGNED_BYTE,
-        DT.XSD_INTEGER ]) {
-        expect(legacyTermTransformer.transformLiteral(DF.literal('1', DF.namedNode(dt))))
-          .toEqual(new E.IntegerLiteral(1, dt, '1'));
-      }
-    });
-
-    it('double', () => {
-      expect(legacyTermTransformer.transformLiteral(double('1.00')))
-        .toEqual(new E.DoubleLiteral(1, DT.XSD_DOUBLE, '1.00'));
-    });
-
-    it('boolean', () => {
-      expect(legacyTermTransformer.transformLiteral(boolean('1')))
-        .toEqual(new E.BooleanLiteral(true, '1'));
-    });
-
-    it('dateTime', () => {
-      for (const dt of [ DT.XSD_DATE_TIME, DT.XSD_DATE_TIME_STAMP ]) {
-        expect(legacyTermTransformer.transformLiteral(DF.literal('2000-01-01T00:00:00', DF.namedNode(dt))))
-          .toEqual(new E.DateTimeLiteral(new Date('2000-01-01T00:00:00'), '2000-01-01T00:00:00', dt));
-      }
-    });
-
-    it('invalid literals', () => {
-      for (const dt of [
-        DT.XSD_INTEGER, DT.XSD_DECIMAL, DT.XSD_FLOAT, DT.XSD_DOUBLE, DT.XSD_BOOLEAN, DT.XSD_DATE_TIME,
-      ]) {
-        const res = legacyTermTransformer.transformLiteral(DF.literal('foo', DF.namedNode(dt)));
-        expect(res.mainSparqlType).toEqual('nonlexical');
-        expect(res.dataType).toEqual('SPARQL_NON_LEXICAL');
-        expect(res.strValue).toEqual('foo');
-      }
-    });
-
-    it('without data type literal', () => {
-      expect(legacyTermTransformer.transformLiteral(simpleLiteralCreator('foo')))
-        .toEqual(new E.StringLiteral('foo'));
-
-      expect(legacyTermTransformer.transformLiteral(simpleLiteralCreator('foo', '')))
-        .toEqual(new E.StringLiteral('foo'));
-
-      expect(legacyTermTransformer.transformLiteral(simpleLiteralCreator('foo', undefined, 'en')))
-        .toEqual(new E.LangStringLiteral('foo', 'en'));
-
-      expect(legacyTermTransformer.transformLiteral(simpleLiteralCreator('foo', '', 'en')))
-        .toEqual(new E.LangStringLiteral('foo', 'en'));
     });
   });
 });

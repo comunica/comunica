@@ -271,9 +271,9 @@ const STRDT = {
   arity: 2,
   overloads: declare(C.RegularOperator.STRDT).set(
     [ TypeURL.XSD_STRING, 'namedNode' ],
-    ({ superTypeProvider, enableExtendedXsdTypes }) => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
+    ({ superTypeProvider }) => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
       const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
-      return new TermTransformer(superTypeProvider, enableExtendedXsdTypes).transformLiteral(lit);
+      return new TermTransformer(superTypeProvider).transformLiteral(lit);
     },
   ).collect(),
 };

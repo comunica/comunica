@@ -21,7 +21,7 @@ describe('exists', () => {
     // Called 2 times (once by sync and once by async)
     // We will check if async truly cals only once.
     // We need to double this because of the type system tests
-    expect(hookMock).toBeCalledTimes(4);
+    expect(hookMock).toBeCalledTimes(2);
     expect(evaluated.asyncResult).toEqual(DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
   });
   it('rus with mock existence hooks and async calls but once', async() => {
@@ -37,7 +37,7 @@ describe('exists', () => {
       },
     });
     // We need to double this because of the type system tests
-    expect(hookMock).toBeCalledTimes(2);
+    expect(hookMock).toBeCalledTimes(1);
     expect(evaluated.asyncResult).toEqual(DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
   });
 });

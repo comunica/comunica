@@ -1,7 +1,5 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-
-import type { MainSparqlType, MainNumericSparqlType } from '../util/Consts';
 import * as C from '../util/Consts';
 import { TypeAlias, TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -68,23 +66,19 @@ export function isLiteralTermExpression(expr: TermExpression): Literal<any> | un
 }
 export class Literal<T extends { toString: () => string }> extends Term {
   public termType: 'literal' = 'literal';
-  public readonly mainSparqlType: MainSparqlType;
   /**
    * @param typedValue internal representation of this literal's value
    * @param dataType a string representing the datatype. Can be of type @see LiteralTypes or any URI
    * @param strValue the string value of this literal. In other words, the string representing the RDF.literal value.
    * @param language the language, mainly for language enabled strings like RDF_LANG_STRING
-   * @param mainSparqlType the type used by sparql's main functions
    */
   public constructor(
     public typedValue: T,
     public dataType: string,
     public strValue?: string,
     public language?: string,
-    mainSparqlType?: MainSparqlType,
   ) {
     super();
-    this.mainSparqlType = mainSparqlType || 'other';
   }
 
   public toRDF(): RDF.Literal {
@@ -100,15 +94,13 @@ export class Literal<T extends { toString: () => string }> extends Term {
 }
 
 export abstract class NumericLiteral extends Literal<number> {
-  public readonly mainSparqlType: MainNumericSparqlType;
   protected constructor(
     public typedValue: number,
     dataType: string,
     public strValue?: string,
     public language?: string,
-    mainSparqlType?: MainNumericSparqlType,
   ) {
-    super(typedValue, dataType, strValue, language, mainSparqlType);
+    super(typedValue, dataType, strValue, language);
   }
 
   protected abstract specificFormatter(val: number): string;
@@ -138,7 +130,7 @@ export class IntegerLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_INTEGER, strValue, language, 'integer');
+    super(typedValue, dataType || TypeURL.XSD_INTEGER, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -153,7 +145,7 @@ export class DecimalLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_DECIMAL, strValue, language, 'decimal');
+    super(typedValue, dataType || TypeURL.XSD_DECIMAL, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -168,7 +160,7 @@ export class FloatLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_FLOAT, strValue, language, 'float');
+    super(typedValue, dataType || TypeURL.XSD_FLOAT, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -183,7 +175,7 @@ export class DoubleLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_DOUBLE, strValue, language, 'double');
+    super(typedValue, dataType || TypeURL.XSD_DOUBLE, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -215,7 +207,7 @@ export class DoubleLiteral extends NumericLiteral {
 
 export class BooleanLiteral extends Literal<boolean> {
   public constructor(public typedValue: boolean, public strValue?: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_BOOLEAN, strValue, undefined, 'boolean');
+    super(typedValue, dataType || TypeURL.XSD_BOOLEAN, strValue);
   }
 
   public coerceEBV(): boolean {
@@ -227,13 +219,13 @@ export class DateTimeLiteral extends Literal<Date> {
   // StrValue is mandatory here because toISOString will always add
   // milliseconds, even if they were not present.
   public constructor(public typedValue: Date, public strValue: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_DATE_TIME, strValue, undefined, 'dateTime');
+    super(typedValue, dataType || TypeURL.XSD_DATE_TIME, strValue);
   }
 }
 
 export class LangStringLiteral extends Literal<string> {
   public constructor(public typedValue: string, public language: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.RDF_LANG_STRING, typedValue, language, 'langString');
+    super(typedValue, dataType || TypeURL.RDF_LANG_STRING, typedValue, language);
   }
 
   public coerceEBV(): boolean {
@@ -251,7 +243,7 @@ export class StringLiteral extends Literal<string> {
    * @param dataType Should be type that implements XSD_STRING
    */
   public constructor(public typedValue: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_STRING, typedValue, undefined, 'string');
+    super(typedValue, dataType || TypeURL.XSD_STRING, typedValue);
   }
 
   public coerceEBV(): boolean {
@@ -284,7 +276,7 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
     strValue?: string,
     language?: string,
   ) {
-    super({ toString: () => 'undefined' }, TypeAlias.SPARQL_NON_LEXICAL, strValue, language, 'nonlexical');
+    super({ toString: () => 'undefined' }, TypeAlias.SPARQL_NON_LEXICAL, strValue, language);
   }
 
   public coerceEBV(): boolean {

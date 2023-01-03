@@ -1,22 +1,25 @@
-import type * as LRUCache from 'lru-cache';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type * as E from '../expressions';
 import { isLiteralTermExpression } from '../expressions';
 import type { KnownLiteralTypes } from '../util/Consts';
 import { TypeURL } from '../util/Consts';
-import type { ISuperTypeProvider, OverrideType,
-  GeneralSuperTypeDict } from '../util/TypeHandling';
+import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling';
 import {
-  superTypeDictTable,
+  asGeneralType,
+  asKnownLiteralType,
+  asOverrideType,
   getSuperTypes,
-  asKnownLiteralType, asOverrideType, asGeneralType,
+  superTypeDictTable,
 } from '../util/TypeHandling';
-import type { ExperimentalArgumentType } from './Core';
+import type { ArgumentType } from './Core';
 import { double, float, string } from './Helpers';
 
 export type SearchStack = OverloadTree[];
 export type ImplementationFunction = (sharedContext: ICompleteSharedContext) => E.SimpleApplication;
-export type OverLoadCache = LRUCache<string, ImplementationFunction | undefined>;
+interface IFunctionArgumentsCacheObj {
+  func?: ImplementationFunction; cache?: FunctionArgumentsCache;
+}
+export type FunctionArgumentsCache = Record<string, IFunctionArgumentsCacheObj>;
 /**
  * Maps argument types on their specific implementation in a tree like structure.
  * When adding any functionality to this class, make sure you add it to SpecialFunctions as well.
@@ -38,7 +41,7 @@ export class OverloadTree {
     this.promotionCount = undefined;
   }
 
-  private getSubtree(overrideType: ExperimentalArgumentType): OverloadTree | undefined {
+  private getSubtree(overrideType: ArgumentType): OverloadTree | undefined {
     const generalType = asGeneralType(overrideType);
     if (generalType) {
       return this.generalOverloads[generalType];
@@ -54,7 +57,7 @@ export class OverloadTree {
   /**
    * Get the implementation for the types that exactly match @param args .
    */
-  public getImplementationExact(args: ExperimentalArgumentType[]): ImplementationFunction | undefined {
+  public getImplementationExact(args: ArgumentType[]): ImplementationFunction | undefined {
     // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
     let node: OverloadTree | undefined = this;
     for (const expression of args) {
@@ -66,25 +69,27 @@ export class OverloadTree {
     return node.implementation;
   }
 
-  private getOverloadCacheIdentifier(args: E.TermExpression[]): string {
-    return this.identifier + args.map(term => {
-      const literalExpression = isLiteralTermExpression(term);
-      return literalExpression ? literalExpression.dataType : term.termType;
-    }).join('');
-  }
-
   /**
    * Searches in a depth first way for the best matching overload. considering this a the tree's root.
    * @param args:
-   * @param overloadCache
+   * @param functionArgumentsCache
    * @param superTypeProvider
    */
-  public search(args: E.TermExpression[], superTypeProvider: ISuperTypeProvider, overloadCache: OverLoadCache):
-  ImplementationFunction | undefined {
-    const identifier = this.getOverloadCacheIdentifier(args);
-    if (overloadCache.has(identifier)) {
-      return overloadCache.get(identifier);
+  public search(args: E.TermExpression[], superTypeProvider: ISuperTypeProvider,
+    functionArgumentsCache: FunctionArgumentsCache):
+    ImplementationFunction | undefined {
+    let cacheIter = functionArgumentsCache[this.identifier];
+    let searchIndex = 0;
+    while (searchIndex < args.length && cacheIter?.cache) {
+      const term = args[searchIndex];
+      const literalExpression = isLiteralTermExpression(term);
+      cacheIter = cacheIter.cache[literalExpression ? literalExpression.dataType : term.termType];
+      searchIndex++;
     }
+    if (searchIndex === args.length && cacheIter) {
+      return cacheIter.func;
+    }
+
     // SearchStack is a stack of all node's that need to be checked for implementation.
     // It provides an easy way to keep order in our search.
     const searchStack: { node: OverloadTree; index: number }[] = [];
@@ -102,7 +107,7 @@ export class OverloadTree {
       // We check the implementation because it would be possible a path is created but not implemented.
       // ex: f(double, double, double) and f(term, term). and calling f(double, double).
       if (index === args.length && node.implementation) {
-        overloadCache.set(identifier, node.implementation);
+        this.addToCache(functionArgumentsCache, args, node.implementation);
         return node.implementation;
       }
       searchStack.push(...node.getSubTreeWithArg(args[index], superTypeProvider).map(item =>
@@ -110,74 +115,92 @@ export class OverloadTree {
     }
     // Calling a function with one argument but finding no implementation should return no implementation.
     // Not even the one with no arguments.
-    overloadCache.set(identifier, undefined);
+    this.addToCache(functionArgumentsCache, args);
     return undefined;
+  }
+
+  private addToCache(functionArgumentsCache: FunctionArgumentsCache, args: E.TermExpression[],
+    func?: ImplementationFunction | undefined): void {
+    function getDefault(lruCache: FunctionArgumentsCache, key: string): IFunctionArgumentsCacheObj {
+      if (!(key in lruCache)) {
+        lruCache[key] = { };
+      }
+      return lruCache[key]!;
+    }
+    let cache = getDefault(functionArgumentsCache, this.identifier);
+    for (const term of args) {
+      const literalExpression = isLiteralTermExpression(term);
+      const key = literalExpression ? literalExpression.dataType : term.termType;
+      cache.cache = {};
+      cache = getDefault(cache.cache, key);
+    }
+    cache.func = func;
   }
 
   /**
    * Adds an overload to the tree structure considering this as the tree's root.
-   * @param ExperimentalArgumentTypes a list of ExperimentalArgumentTypes that would need to be provided in
+   * @param argumentTypes a list of argumentTypes that would need to be provided in
    * the same order to get the implementation.
    * @param func the implementation for this overload.
    */
-  public addOverload(ExperimentalArgumentTypes: ExperimentalArgumentType[], func: ImplementationFunction): void {
-    this._addOverload([ ...ExperimentalArgumentTypes ], func, 0);
+  public addOverload(argumentTypes: ArgumentType[], func: ImplementationFunction): void {
+    this._addOverload([ ...argumentTypes ], func, 0);
   }
 
-  private _addOverload(ExperimentalArgumentTypes: ExperimentalArgumentType[],
+  private _addOverload(argumentTypes: ArgumentType[],
     func: ImplementationFunction, promotionCount: number): void {
-    const [ experimentalArgumentType, ..._experimentalArgumentTypes ] = ExperimentalArgumentTypes;
-    if (!experimentalArgumentType) {
+    const [ argumentType, ..._argumentTypes ] = argumentTypes;
+    if (!argumentType) {
       if (this.promotionCount === undefined || promotionCount <= this.promotionCount) {
         this.promotionCount = promotionCount;
         this.implementation = func;
       }
       return;
     }
-    let nextTree = this.getSubtree(experimentalArgumentType);
+    let nextTree = this.getSubtree(argumentType);
     if (!nextTree) {
       const newNode = new OverloadTree(this.identifier, this.depth + 1);
-      const generalType = asGeneralType(experimentalArgumentType);
+      const generalType = asGeneralType(argumentType);
       if (generalType) {
         this.generalOverloads[generalType] = newNode;
       }
-      const overrideType = asOverrideType(experimentalArgumentType);
+      const overrideType = asOverrideType(argumentType);
       if (overrideType) {
         this.literalOverLoads.push([ overrideType, newNode ]);
       }
       nextTree = newNode;
     }
-    nextTree._addOverload(_experimentalArgumentTypes, func, promotionCount);
+    nextTree._addOverload(_argumentTypes, func, promotionCount);
     // Defined by https://www.w3.org/TR/xpath-31/#promotion .
     // e.g. When a function takes a string, it can also accept a XSD_ANY_URI if it's cast first.
     // TODO: When promoting decimal type a cast needs to be preformed.
-    if (experimentalArgumentType === TypeURL.XSD_STRING) {
+    if (argumentType === TypeURL.XSD_STRING) {
       this.addPromotedOverload(TypeURL.XSD_ANY_URI, func, arg =>
-        string(arg.str()), _experimentalArgumentTypes, promotionCount);
+        string(arg.str()), _argumentTypes, promotionCount);
     }
     // TODO: in case of decimal a round needs to happen.
-    if (experimentalArgumentType === TypeURL.XSD_DOUBLE) {
+    if (argumentType === TypeURL.XSD_DOUBLE) {
       this.addPromotedOverload(TypeURL.XSD_FLOAT, func, arg =>
-        double((<E.NumericLiteral>arg).typedValue), _experimentalArgumentTypes, promotionCount);
+        double((<E.NumericLiteral>arg).typedValue), _argumentTypes, promotionCount);
       this.addPromotedOverload(TypeURL.XSD_DECIMAL, func, arg =>
-        double((<E.NumericLiteral>arg).typedValue), _experimentalArgumentTypes, promotionCount);
+        double((<E.NumericLiteral>arg).typedValue), _argumentTypes, promotionCount);
     }
-    if (experimentalArgumentType === TypeURL.XSD_FLOAT) {
+    if (argumentType === TypeURL.XSD_FLOAT) {
       this.addPromotedOverload(TypeURL.XSD_DECIMAL, func, arg =>
-        float((<E.NumericLiteral>arg).typedValue), _experimentalArgumentTypes, promotionCount);
+        float((<E.NumericLiteral>arg).typedValue), _argumentTypes, promotionCount);
     }
   }
 
   private addPromotedOverload(typeToPromote: OverrideType, func: ImplementationFunction,
     conversionFunction: (arg: E.TermExpression) => E.TermExpression,
-    ExperimentalArgumentTypes: ExperimentalArgumentType[], promotionCount: number): void {
+    argumentTypes: ArgumentType[], promotionCount: number): void {
     let nextTree = this.getSubtree(typeToPromote);
     if (!nextTree) {
       const newNode = new OverloadTree(this.identifier, this.depth + 1);
       this.literalOverLoads.push([ typeToPromote, newNode ]);
       nextTree = newNode;
     }
-    nextTree._addOverload(ExperimentalArgumentTypes, funcConf => args => func(funcConf)([
+    nextTree._addOverload(argumentTypes, funcConf => args => func(funcConf)([
       ...args.slice(0, this.depth),
       conversionFunction(args[this.depth]),
       ...args.slice(this.depth + 1, args.length),

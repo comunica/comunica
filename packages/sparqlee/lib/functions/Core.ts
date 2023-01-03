@@ -4,8 +4,7 @@ import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
-import type { LegacyTree } from './LegacyTree';
-import type { ImplementationFunction, OverloadTree, OverLoadCache } from './OverloadTree';
+import type { ImplementationFunction, OverloadTree, FunctionArgumentsCache } from './OverloadTree';
 
 export interface IEvalSharedContext extends ICompleteSharedContext{
   args: E.Expression[];
@@ -25,17 +24,16 @@ export type EvalContextSync = IEvalContext<E.TermExpression, RDF.BlankNode>;
 
 // Function and operator arguments are 'flattened' in the SPARQL spec.
 // If the argument is a literal, the datatype often also matters.
-export type ExperimentalArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
-export type ArgumentType = 'term' | E.TermType | C.MainSparqlType;
+export type ArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
 
 export interface IOverloadedDefinition {
   arity: number | number[];
-  overloads: { experimentalTree: OverloadTree; tree: LegacyTree };
+  overloads: OverloadTree;
 }
 
 export abstract class BaseFunction<Operator> {
   public arity: number | number[];
-  private readonly overloads: { experimentalTree: OverloadTree; tree: LegacyTree };
+  private readonly overloads: OverloadTree;
 
   protected constructor(public operator: Operator, definition: IOverloadedDefinition) {
     this.arity = definition.arity;
@@ -50,7 +48,7 @@ export abstract class BaseFunction<Operator> {
   public apply = (args: E.TermExpression[], context: ICompleteSharedContext):
   E.TermExpression => {
     const concreteFunction =
-      this.monomorph(args, context.superTypeProvider, context.overloadCache, context.enableExtendedXsdTypes) ||
+      this.monomorph(args, context.superTypeProvider, context.functionArgumentsCache) ||
       this.handleInvalidTypes(args);
     return concreteFunction(context)(args);
   };
@@ -69,10 +67,8 @@ export abstract class BaseFunction<Operator> {
    * terms.
    */
   private monomorph(args: E.TermExpression[], superTypeProvider: ISuperTypeProvider,
-    overloadCache: OverLoadCache, experimental: boolean): ImplementationFunction | undefined {
-    return experimental ?
-      this.overloads.experimentalTree.search(args, superTypeProvider, overloadCache) :
-      this.overloads.tree.search(args);
+    functionArgumentsCache: FunctionArgumentsCache): ImplementationFunction | undefined {
+    return this.overloads.search(args, superTypeProvider, functionArgumentsCache);
   }
 }
 

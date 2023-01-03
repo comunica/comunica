@@ -45,7 +45,6 @@ describe('evaluation of \'=\'', () => {
         type: 'sync',
         config: {
           getSuperType: unknownType => TypeURL.XSD_INTEGER,
-          enableExtendedXsdTypes: true,
         },
       },
       testTable: `         

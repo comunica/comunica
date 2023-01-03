@@ -24,12 +24,12 @@ describe('evaluators', () => {
       });
 
       it('has proper default extended XSD type support', () => {
-        const evaluator = new SyncEvaluator(parse('1 + 1'), { enableExtendedXsdTypes: true });
+        const evaluator = new SyncEvaluator(parse('1 + 1'));
         expect(evaluator.evaluate(BF.bindings())).toEqual(two);
       });
 
       it('has proper extended XSD type support', () => {
-        const evaluator = new SyncEvaluator(parse('1 + "1"^^<http://example.com>'), { enableExtendedXsdTypes: true });
+        const evaluator = new SyncEvaluator(parse('1 + "1"^^<http://example.com>'));
         expect(() => evaluator.evaluate(BF.bindings())).toThrow(Err.InvalidArgumentTypes);
       });
     });
@@ -62,12 +62,12 @@ describe('evaluators', () => {
       });
 
       it('has proper default extended XSD type support', async() => {
-        const evaluator = new AsyncEvaluator(parse('1 + 1'), { enableExtendedXsdTypes: true });
+        const evaluator = new AsyncEvaluator(parse('1 + 1'));
         expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
       });
 
       it('has proper extended XSD type support', async() => {
-        const evaluator = new AsyncEvaluator(parse('1 + "1"^^<http://example.com>'), { enableExtendedXsdTypes: true });
+        const evaluator = new AsyncEvaluator(parse('1 + "1"^^<http://example.com>'));
         await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
       });
     });

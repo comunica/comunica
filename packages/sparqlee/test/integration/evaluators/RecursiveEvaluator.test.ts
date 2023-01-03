@@ -16,12 +16,11 @@ describe('recursive evaluators', () => {
   describe('SyncRecursiveEvaluator', () => {
     const evaluator = new SyncRecursiveEvaluator({
       now: new Date(),
-      overloadCache: new LRUCache(),
+      functionArgumentsCache: {},
       superTypeProvider: {
         cache: new LRUCache(),
         discoverer: _ => 'term',
       },
-      enableExtendedXsdTypes: false,
     });
 
     it('is able to evaluate operator', () => {
@@ -44,12 +43,11 @@ describe('recursive evaluators', () => {
     it('is able to evaluate existence if configured', () => {
       const customEvaluator = new SyncRecursiveEvaluator({
         now: new Date(),
-        overloadCache: new LRUCache(),
+        functionArgumentsCache: {},
         superTypeProvider: {
           cache: new LRUCache(),
           discoverer: _ => 'term',
         },
-        enableExtendedXsdTypes: false,
         exists: _ => true,
       });
 
@@ -82,12 +80,11 @@ describe('recursive evaluators', () => {
     it('is able to evaluate aggregates if configured', () => {
       const customEvaluator = new SyncRecursiveEvaluator({
         now: new Date(),
-        overloadCache: new LRUCache(),
+        functionArgumentsCache: {},
         superTypeProvider: {
           cache: new LRUCache(),
           discoverer: _ => 'term',
         },
-        enableExtendedXsdTypes: false,
         aggregate: _ => DF.literal('42'),
       });
 
@@ -117,12 +114,11 @@ describe('recursive evaluators', () => {
   describe('AsyncRecursiveEvaluator', () => {
     const evaluator = new AsyncRecursiveEvaluator({
       now: new Date(),
-      overloadCache: new LRUCache(),
+      functionArgumentsCache: {},
       superTypeProvider: {
         cache: new LRUCache(),
         discoverer: _ => 'term',
       },
-      enableExtendedXsdTypes: false,
     });
 
     it('is able to evaluate operator', async() => {
@@ -145,12 +141,11 @@ describe('recursive evaluators', () => {
     it('is able to evaluate existence if configured', async() => {
       const customEvaluator = new AsyncRecursiveEvaluator({
         now: new Date(),
-        overloadCache: new LRUCache(),
+        functionArgumentsCache: {},
         superTypeProvider: {
           cache: new LRUCache(),
           discoverer: _ => 'term',
         },
-        enableExtendedXsdTypes: false,
         exists: async _ => true,
       });
 
@@ -183,12 +178,11 @@ describe('recursive evaluators', () => {
     it('is able to evaluate aggregates if configured', async() => {
       const customEvaluator = new AsyncRecursiveEvaluator({
         now: new Date(),
-        overloadCache: new LRUCache(),
+        functionArgumentsCache: {},
         superTypeProvider: {
           cache: new LRUCache(),
           discoverer: _ => 'term',
         },
-        enableExtendedXsdTypes: false,
         aggregate: async _ => DF.literal('42'),
       });
 

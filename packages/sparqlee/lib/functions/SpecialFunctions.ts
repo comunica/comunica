@@ -325,7 +325,7 @@ const notInSPARQL: ISpecialDefinition = {
  * This OverloadTree with the constant function will handle both type promotion and subtype-substitution
  */
 const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1(() => expr => expr)
-  .collect().experimentalTree;
+  .collect();
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-concat
@@ -333,11 +333,11 @@ const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1((
 const concat: ISpecialDefinition = {
   arity: Number.POSITIVE_INFINITY,
   async applyAsync(context: EvalContextAsync): PTerm {
-    const { args, mapping, evaluate, overloadCache, superTypeProvider } = context;
+    const { args, mapping, evaluate, functionArgumentsCache, superTypeProvider } = context;
     const pLits: Promise<E.Literal<string>>[] = args
       .map(async expr => evaluate(expr, mapping))
       .map(async pTerm => {
-        const operation = concatTree.search([ await pTerm ], superTypeProvider, overloadCache);
+        const operation = concatTree.search([ await pTerm ], superTypeProvider, functionArgumentsCache);
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
         }
@@ -351,11 +351,11 @@ const concat: ISpecialDefinition = {
   },
 
   applySync(context: EvalContextSync): Term {
-    const { args, mapping, evaluate, superTypeProvider, overloadCache } = context;
+    const { args, mapping, evaluate, superTypeProvider, functionArgumentsCache } = context;
     const lits = args
       .map(expr => evaluate(expr, mapping))
       .map(pTerm => {
-        const operation = concatTree.search([ pTerm ], superTypeProvider, overloadCache);
+        const operation = concatTree.search([ pTerm ], superTypeProvider, functionArgumentsCache);
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
         }
@@ -381,7 +381,7 @@ function langAllEqual(lits: E.Literal<string>[]): boolean {
 /**
  * This OverloadTree with the constant function will handle both type promotion and subtype-substitution
  */
-const bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).collect().experimentalTree;
+const bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).collect();
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-bnode
@@ -393,14 +393,14 @@ const BNODE: ISpecialDefinition = {
     return args.length === 0 || args.length === 1;
   },
   async applyAsync(context: EvalContextAsync): PTerm {
-    const { args, mapping, evaluate, superTypeProvider, overloadCache } = context;
+    const { args, mapping, evaluate, superTypeProvider, functionArgumentsCache } = context;
     const input = args.length === 1 ?
       await evaluate(args[0], mapping) :
       undefined;
 
     let strInput: string | undefined;
     if (input) {
-      const operation = bnodeTree.search([ input ], superTypeProvider, overloadCache);
+      const operation = bnodeTree.search([ input ], superTypeProvider, functionArgumentsCache);
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
       }
@@ -416,14 +416,14 @@ const BNODE: ISpecialDefinition = {
     return BNODE_(strInput);
   },
   applySync(context: EvalContextSync): Term {
-    const { args, mapping, evaluate, superTypeProvider, overloadCache } = context;
+    const { args, mapping, evaluate, superTypeProvider, functionArgumentsCache } = context;
     const input = args.length === 1 ?
       evaluate(args[0], mapping) :
       undefined;
 
     let strInput: string | undefined;
     if (input) {
-      const operation = bnodeTree.search([ input ], superTypeProvider, overloadCache);
+      const operation = bnodeTree.search([ input ], superTypeProvider, functionArgumentsCache);
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
       }

@@ -63,8 +63,7 @@ export function getDefaultSharedContext(): ICompleteSharedContext {
       cache: new LRUCache(),
       discoverer: () => 'term',
     },
-    overloadCache: new LRUCache(),
-    enableExtendedXsdTypes: false,
+    functionArgumentsCache: {},
   };
 }
 

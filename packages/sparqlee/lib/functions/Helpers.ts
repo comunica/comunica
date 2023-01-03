@@ -5,15 +5,12 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type { Literal, NumericLiteral } from '../expressions';
+import type { Literal } from '../expressions';
 import * as E from '../expressions';
-import { DecimalLiteral, DoubleLiteral, FloatLiteral, IntegerLiteral } from '../expressions';
-import type { MainNumericSparqlType } from '../util/Consts';
 import * as C from '../util/Consts';
-import { TypeAlias, TypeURL } from '../util/Consts';
+import { TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
-import type { ExperimentalArgumentType } from './Core';
-import { LegacyTree } from './LegacyTree';
+import type { ArgumentType } from './Core';
 import type { ImplementationFunction } from './OverloadTree';
 import { OverloadTree } from './OverloadTree';
 
@@ -27,41 +24,28 @@ export function declare(identifier: string): Builder {
 
 export class Builder {
   private readonly overloadTree: OverloadTree;
-  private readonly legacyTree: LegacyTree;
   private collected: boolean;
 
   public constructor(identifier: string) {
     this.overloadTree = new OverloadTree(identifier);
-    this.legacyTree = new LegacyTree();
     this.collected = false;
   }
 
-  public collect(): { experimentalTree: OverloadTree; tree: LegacyTree } {
+  public collect(): OverloadTree {
     if (this.collected) {
       // Only 1 time allowed because we can't copy a tree. (And we don't need this).
       throw new Error('Builders can only be collected once!');
     }
     this.collected = true;
-    return { experimentalTree: this.overloadTree, tree: this.legacyTree };
+    return this.overloadTree;
   }
 
-  public set(argTypes: ExperimentalArgumentType[], func: ImplementationFunction): Builder {
+  public set(argTypes: ArgumentType[], func: ImplementationFunction): Builder {
     this.overloadTree.addOverload(argTypes, func);
-    this.legacyTree.addOverload(argTypes, func);
     return this;
   }
 
-  /**
-   * A legacy function should be set only after all other functions are set
-   * @param argTypes
-   * @param func
-   */
-  public setLegacy(argTypes: ExperimentalArgumentType[], func: ImplementationFunction): Builder {
-    this.legacyTree.addLegacyOverload(argTypes, func);
-    return this;
-  }
-
-  public copy({ from, to }: { from: ExperimentalArgumentType[]; to: ExperimentalArgumentType[] }): Builder {
+  public copy({ from, to }: { from: ArgumentType[]; to: ArgumentType[] }): Builder {
     const impl = this.overloadTree.getImplementationExact(from);
     if (!impl) {
       throw new Err.UnexpectedError(
@@ -72,39 +56,39 @@ export class Builder {
     return this.set(to, impl);
   }
 
-  public onUnary<T extends Term>(type: ExperimentalArgumentType, op: (context: ICompleteSharedContext) =>
+  public onUnary<T extends Term>(type: ArgumentType, op: (context: ICompleteSharedContext) =>
   (val: T) => Term): Builder {
     return this.set([ type ], context => ([ val ]: [T]) => op(context)(val));
   }
 
-  public onUnaryTyped<T>(type: ExperimentalArgumentType,
+  public onUnaryTyped<T>(type: ArgumentType,
     op: (context: ICompleteSharedContext) => (val: T) => Term): Builder {
     return this.set([ type ], context => ([ val ]: [E.Literal<T>]) => op(context)(val.typedValue));
   }
 
-  public onBinary<L extends Term, R extends Term>(types: ExperimentalArgumentType[],
+  public onBinary<L extends Term, R extends Term>(types: ArgumentType[],
     op: (context: ICompleteSharedContext) => (left: L, right: R) => Term): Builder {
     return this.set(types, context => ([ left, right ]: [L, R]) => op(context)(left, right));
   }
 
-  public onBinaryTyped<L, R>(types: ExperimentalArgumentType[],
+  public onBinaryTyped<L, R>(types: ArgumentType[],
     op: (context: ICompleteSharedContext) => (left: L, right: R) => Term): Builder {
     return this.set(types, context =>
       ([ left, right ]: [E.Literal<L>, E.Literal<R>]) => op(context)(left.typedValue, right.typedValue));
   }
 
-  public onTernaryTyped<A1, A2, A3>(types: ExperimentalArgumentType[],
+  public onTernaryTyped<A1, A2, A3>(types: ArgumentType[],
     op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3) => Term): Builder {
     return this.set(types, context => ([ a1, a2, a3 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) =>
       op(context)(a1.typedValue, a2.typedValue, a3.typedValue));
   }
 
-  public onTernary<A1 extends Term, A2 extends Term, A3 extends Term>(types: ExperimentalArgumentType[],
+  public onTernary<A1 extends Term, A2 extends Term, A3 extends Term>(types: ArgumentType[],
     op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3) => Term): Builder {
     return this.set(types, context => ([ a1, a2, a3 ]: [A1, A2, A3]) => op(context)(a1, a2, a3));
   }
 
-  public onQuaternaryTyped<A1, A2, A3, A4>(types: ExperimentalArgumentType[],
+  public onQuaternaryTyped<A1, A2, A3, A4>(types: ArgumentType[],
     op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term): Builder {
     return this.set(types, context =>
       ([ a1, a2, a3, a4 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>, E.Literal<A4>]) =>
@@ -186,34 +170,6 @@ export class Builder {
       .invalidLexicalForm([ C.TypeAlias.SPARQL_NON_LEXICAL ], 1);
   }
 
-  private static readonly legacyArithmeticPromotion: Record<MainNumericSparqlType,
-  Record<MainNumericSparqlType, (num: number) => NumericLiteral>> = {
-    integer: {
-      integer: num => new IntegerLiteral(num),
-      decimal: num => new DecimalLiteral(num),
-      float: num => new FloatLiteral(num),
-      double: num => new DoubleLiteral(num),
-    },
-    decimal: {
-      integer: num => new DecimalLiteral(num),
-      decimal: num => new DecimalLiteral(num),
-      float: num => new FloatLiteral(num),
-      double: num => new DoubleLiteral(num),
-    },
-    float: {
-      integer: num => new FloatLiteral(num),
-      decimal: num => new FloatLiteral(num),
-      float: num => new FloatLiteral(num),
-      double: num => new DoubleLiteral(num),
-    },
-    double: {
-      integer: num => new DoubleLiteral(num),
-      decimal: num => new DoubleLiteral(num),
-      float: num => new DoubleLiteral(num),
-      double: num => new DoubleLiteral(num),
-    },
-  };
-
   /**
    * !!! Be aware when using this function, it will create different overloads with different return types !!!
    * Arithmetic operators take 2 numeric arguments, and return a single numerical
@@ -235,12 +191,7 @@ export class Builder {
       .onBinary([ TypeURL.XSD_FLOAT, TypeURL.XSD_FLOAT ], context => (left, right) =>
         float(evalHelper(context)(left, right)))
       .onBinary([ TypeURL.XSD_DOUBLE, TypeURL.XSD_DOUBLE ], context => (left, right) =>
-        double(evalHelper(context)(left, right)))
-      .setLegacy([ TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NUMERIC ], (context: ICompleteSharedContext) =>
-        ([ left, right ]: [NumericLiteral, NumericLiteral]) =>
-          Builder.legacyArithmeticPromotion[left.mainSparqlType][right.mainSparqlType](
-            op(context)(left.typedValue, right.typedValue),
-          ));
+        double(evalHelper(context)(left, right)));
   }
 
   public numberTest(test: (context: ICompleteSharedContext) => (left: number, right: number) => boolean): Builder {
@@ -296,7 +247,7 @@ export class Builder {
       .invalidLexicalForm([ C.TypeAlias.SPARQL_NON_LEXICAL, C.TypeAlias.SPARQL_NUMERIC ], 1);
   }
 
-  public invalidLexicalForm(types: ExperimentalArgumentType[], index: number): Builder {
+  public invalidLexicalForm(types: ArgumentType[], index: number): Builder {
     return this.set(types, () => (args: Term[]): E.TermExpression => {
       throw new Err.InvalidLexicalForm(args[index - 1].toRDF());
     });

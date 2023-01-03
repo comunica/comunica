@@ -1,96 +1,8 @@
 import type * as LRUCache from 'lru-cache';
 import type { TermType } from '../expressions';
 import { asTermType } from '../expressions';
-import type { ArgumentType } from '../functions';
 import type { KnownLiteralTypes } from './Consts';
 import { TypeAlias, TypeURL } from './Consts';
-
-export interface IMainTypeHolder {
-  types: (ArgumentType)[];
-  prio: number;
-}
-
-/**
- * This function return a list of ArgumentTypes and the priority this list has.
- * This priority can be matched with other values returned by this function.
- * This function needs to be in line with the @see extensionTableInput.
- * @param typeURL This will most likely be a @see ExperimentalArgumentType
- */
-export function mainSparqlType(typeURL: string): IMainTypeHolder {
-  // We transform to StringLiteral when we detect a simple literal being used.
-  // Original issue regarding this behaviour: https://github.com/w3c/sparql-12/issues/112
-  switch (typeURL) {
-    case 'term': return { types: [ 'term' ], prio: 0 };
-    case 'namedNode': return { types: [ 'namedNode' ], prio: 1 };
-    case 'literal': return { types: [ 'literal' ], prio: 1 };
-    case 'blankNode': return { types: [ 'blankNode' ], prio: 1 };
-    case TypeAlias.SPARQL_NON_LEXICAL: return { types: [ 'nonlexical' ], prio: 2 };
-    case '':
-    case TypeURL.XSD_ANY_URI:
-    case TypeURL.XSD_NORMALIZED_STRING:
-    case TypeURL.XSD_TOKEN:
-    case TypeURL.XSD_LANGUAGE:
-    case TypeURL.XSD_NM_TOKEN:
-    case TypeURL.XSD_NAME:
-    case TypeURL.XSD_ENTITY:
-    case TypeURL.XSD_ID:
-    case TypeURL.XSD_ID_REF:
-    case TypeURL.XSD_STRING: return { types: [ 'string' ], prio: superTypeDictTable[TypeURL.XSD_STRING].__depth + 2 };
-
-    case TypeURL.RDF_LANG_STRING: return {
-      types: [ 'langString' ],
-      prio: superTypeDictTable[TypeURL.RDF_LANG_STRING].__depth + 2,
-    };
-
-    case TypeURL.XSD_DATE_TIME_STAMP:
-    case TypeURL.XSD_DATE_TIME: return {
-      types: [ 'dateTime' ],
-      prio: superTypeDictTable[TypeURL.XSD_DATE_TIME].__depth + 2,
-    };
-
-    case TypeURL.XSD_BOOLEAN: return {
-      types: [ 'boolean' ],
-      prio: superTypeDictTable[TypeURL.XSD_BOOLEAN].__depth + 2,
-    };
-
-    case TypeURL.XSD_DECIMAL: return {
-      types: [ 'decimal', 'integer' ],
-      prio: superTypeDictTable[TypeURL.XSD_DECIMAL].__depth + 2,
-    };
-    case TypeURL.XSD_FLOAT: return { types: [ 'float' ], prio: superTypeDictTable[TypeURL.XSD_FLOAT].__depth + 2 };
-    case TypeURL.XSD_DOUBLE: return { types: [ 'double' ], prio: superTypeDictTable[TypeURL.XSD_DOUBLE].__depth + 2 };
-
-    case TypeURL.XSD_NON_POSITIVE_INTEGER:
-    case TypeURL.XSD_NEGATIVE_INTEGER:
-    case TypeURL.XSD_LONG:
-    case TypeURL.XSD_INT:
-    case TypeURL.XSD_SHORT:
-    case TypeURL.XSD_BYTE:
-    case TypeURL.XSD_NON_NEGATIVE_INTEGER:
-    case TypeURL.XSD_POSITIVE_INTEGER:
-    case TypeURL.XSD_UNSIGNED_LONG:
-    case TypeURL.XSD_UNSIGNED_INT:
-    case TypeURL.XSD_UNSIGNED_SHORT:
-    case TypeURL.XSD_UNSIGNED_BYTE:
-    case TypeURL.XSD_INTEGER: return {
-      types: [ 'integer' ],
-      prio: superTypeDictTable[TypeURL.XSD_INTEGER].__depth + 2,
-    };
-    case TypeAlias.SPARQL_STRINGLY: return {
-      types: [ 'string', 'langString' ],
-      prio: superTypeDictTable[TypeAlias.SPARQL_STRINGLY].__depth + 2,
-    };
-    case TypeAlias.SPARQL_NUMERIC: return {
-      types: [ 'decimal', 'float', 'integer', 'double' ],
-      prio: superTypeDictTable[TypeAlias.SPARQL_NUMERIC].__depth + 2,
-    };
-    default: return { types: [ 'other' ], prio: 2 };
-  }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// ------------------------------------- experimental code -------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
 
 export type OverrideType = KnownLiteralTypes | 'term';
 
@@ -100,8 +12,6 @@ export type OverrideType = KnownLiteralTypes | 'term';
  * e.g. when saying something like string -> stringly -> anyUri -> term.
  * This would make substitution on types that promote to each other possible. We and the specs don't want that!
  * A DAG will be created based on this. Make sure it doesn't have any cycles!
- *
- * This needs to be in line with the @see mainSparqlType function.
  */
 export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
   // Datetime types

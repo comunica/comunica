@@ -1,4 +1,3 @@
-import type { ArgumentType } from '../../../lib/functions';
 import type { KnownLiteralTypes } from '../../../lib/util/Consts';
 import { TypeAlias, TypeURL } from '../../../lib/util/Consts';
 import type { OverrideType } from '../../../lib/util/TypeHandling';
@@ -8,7 +7,6 @@ import {
   asTypeAlias,
   isInternalSubType,
   isSubTypeOf,
-  mainSparqlType,
 } from '../../../lib/util/TypeHandling';
 import { getDefaultSharedContext } from '../../util/utils';
 
@@ -81,55 +79,6 @@ describe('TypeHandling', () => {
       ];
       expect(testArray.every(([ baseType, argumentType ]) =>
         !isSubTypeOf(baseType, argumentType, getDefaultSharedContext().superTypeProvider))).toBeTruthy();
-    });
-  });
-
-  describe('has mainSparqlType function', () => {
-    it('returns the correct type', () => {
-      const testArray: [string, ArgumentType[]][] = [
-        [ 'term', [ 'term' ]],
-        [ 'namedNode', [ 'namedNode' ]],
-        [ 'blankNode', [ 'blankNode' ]],
-        [ 'literal', [ 'literal' ]],
-        [ TypeAlias.SPARQL_NON_LEXICAL, [ 'nonlexical' ]],
-        [ '', [ 'string' ]],
-        [ TypeURL.XSD_ANY_URI, [ 'string' ]],
-        [ TypeURL.XSD_NORMALIZED_STRING, [ 'string' ]],
-        [ TypeURL.XSD_TOKEN, [ 'string' ]],
-        [ TypeURL.XSD_LANGUAGE, [ 'string' ]],
-        [ TypeURL.XSD_NM_TOKEN, [ 'string' ]],
-        [ TypeURL.XSD_NAME, [ 'string' ]],
-        [ TypeURL.XSD_ENTITY, [ 'string' ]],
-        [ TypeURL.XSD_ID, [ 'string' ]],
-        [ TypeURL.XSD_ID_REF, [ 'string' ]],
-        [ TypeURL.XSD_STRING, [ 'string' ]],
-        [ TypeURL.RDF_LANG_STRING, [ 'langString' ]],
-        [ TypeURL.XSD_DATE_TIME_STAMP, [ 'dateTime' ]],
-        [ TypeURL.XSD_DATE_TIME, [ 'dateTime' ]],
-        [ TypeURL.XSD_BOOLEAN, [ 'boolean' ]],
-        [ TypeURL.XSD_DECIMAL, [ 'decimal', 'integer' ]],
-        [ TypeURL.XSD_FLOAT, [ 'float' ]],
-        [ TypeURL.XSD_DOUBLE, [ 'double' ]],
-        [ TypeURL.XSD_NON_POSITIVE_INTEGER, [ 'integer' ]],
-        [ TypeURL.XSD_NEGATIVE_INTEGER, [ 'integer' ]],
-        [ TypeURL.XSD_LONG, [ 'integer' ]],
-        [ TypeURL.XSD_INT, [ 'integer' ]],
-        [ TypeURL.XSD_SHORT, [ 'integer' ]],
-        [ TypeURL.XSD_BYTE, [ 'integer' ]],
-        [ TypeURL.XSD_NON_NEGATIVE_INTEGER, [ 'integer' ]],
-        [ TypeURL.XSD_POSITIVE_INTEGER, [ 'integer' ]],
-        [ TypeURL.XSD_UNSIGNED_LONG, [ 'integer' ]],
-        [ TypeURL.XSD_UNSIGNED_INT, [ 'integer' ]],
-        [ TypeURL.XSD_UNSIGNED_SHORT, [ 'integer' ]],
-        [ TypeURL.XSD_UNSIGNED_BYTE, [ 'integer' ]],
-        [ TypeURL.XSD_INTEGER, [ 'integer' ]],
-        [ TypeAlias.SPARQL_STRINGLY, [ 'string', 'langString' ]],
-        [ TypeAlias.SPARQL_NUMERIC, [ 'decimal', 'float', 'integer', 'double' ]],
-        [ 'http://example.com', [ 'other' ]],
-      ];
-      for (const [ typeUrl, argumentType ] of testArray) {
-        expect(mainSparqlType(typeUrl).types).toEqual(argumentType);
-      }
     });
   });
 });
