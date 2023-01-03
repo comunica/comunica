@@ -7,7 +7,7 @@ if (!global.window) {
 
 import { KeysHttpWayback, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { QueryBindings, QueryStringContext, IActionContext } from '@comunica/types';
+import type { IActionContext, QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
@@ -484,6 +484,7 @@ describe('System test: QuerySparql', () => {
           });
         });
       });
+
       describe('functionArgumentsCache', () => {
         let query: string;
         let stringType: RDF.NamedNode;
@@ -519,14 +520,18 @@ describe('System test: QuerySparql', () => {
           const alternativeEngine = new QueryEngine();
           const context = <any> { sources: [ store ]};
 
-          // This combersom way is needed because evaluating with mock with isCalledWith gives you the refference
+          // This cumbersome way is needed because evaluating with mock with isCalledWith gives you the reference
           // to the cache and will make it seem like it was filled in from the beginning.
           const original_function = (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate;
-          const emptyCacheMock = jest.fn((arg: { context: IActionContext }) => {
-            expect(arg.context.get(KeysInitQuery.functionArgumentsCache)).toEqual({});
-            return original_function(arg);
-          });
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = emptyCacheMock;
+          let firstFuncArgCache: object | undefined;
+          let secondFuncArgCache: object | undefined;
+          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = jest.fn(
+            (arg: { context: IActionContext }) => {
+              firstFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
+              expect(firstFuncArgCache).toEqual({});
+              return original_function(arg);
+            },
+          );
 
           // Evaluate query once
           const firstBindingsStream = await alternativeEngine.queryBindings(query, context);
@@ -534,17 +539,21 @@ describe('System test: QuerySparql', () => {
             quads.map(q => String(q.object.value.length)),
           );
 
-          const fullCacheMock = jest.fn((arg: { context: IActionContext }) => {
-            expect(arg.context.get(KeysInitQuery.functionArgumentsCache)).not.toBeUndefined();
-            expect(Object.keys(arg.context.get(KeysInitQuery.functionArgumentsCache)!)).toContain('strlen');
-            return original_function(arg);
-          });
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = fullCacheMock;
+          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = jest.fn(
+            (arg: { context: IActionContext }) => {
+              secondFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
+              expect(secondFuncArgCache).not.toBeUndefined();
+              expect(Object.keys(secondFuncArgCache!)).toContain('strlen');
+              return original_function(arg);
+            },
+          );
           // Evaluate query a second time
           const secondBindingsStream = await alternativeEngine.queryBindings(query, context);
           expect((await secondBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
             quads.map(q => String(q.object.value.length)),
           );
+
+          expect(firstFuncArgCache).toBe(secondFuncArgCache);
 
           // Reset the function again!
           (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = original_function;
