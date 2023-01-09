@@ -1,0 +1,47 @@
+{
+  "name": "@comunica/actor-rdf-resolve-quad-pattern-string-source",
+  "version": "2.5.1",
+  "description": "A rdf-resolve-quad-pattern-string-source actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-resolve-quad-pattern-string-source"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-resolve-quad-pattern",
+    "rdf-resolve-quad-pattern-string-source"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/bus-rdf-parse": "^2.5.1",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^2.5.1",
+    "@comunica/context-entries": "^2.5.1",
+    "@comunica/core": "^2.5.1",
+    "rdf-store-stream": "^1.3.1",
+    "readable-stream": "^4.2.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

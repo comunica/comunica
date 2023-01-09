@@ -5,6 +5,7 @@ import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
+
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
 const streamifyString = require('streamify-string');

@@ -8,6 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
 
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
+
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 

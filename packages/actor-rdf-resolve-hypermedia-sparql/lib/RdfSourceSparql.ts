@@ -10,6 +10,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { getTerms, getVariables, mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';
+
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 const VAR_COUNT = DF.variable('count');

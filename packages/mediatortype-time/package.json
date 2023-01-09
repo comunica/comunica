@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediatortype-time",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "A comunica mediator type for the 'time' parameter.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -27,10 +27,11 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.4.0"
+    "@comunica/core": "^2.5.1"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

@@ -6,6 +6,7 @@ import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseXmlRdfa } from '..';
+
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
 

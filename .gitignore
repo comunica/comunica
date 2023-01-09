@@ -2,6 +2,7 @@ node_modules
 .rdf-test-suite-cache
 .rdf-test-suite-ldf-cache
 .idea
+.vscode
 lerna-debug.log
 yarn-error.log
 .eslintcache

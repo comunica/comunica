@@ -1,6 +1,6 @@
 {
   "name": "@comunica/packager",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -26,12 +26,14 @@
   },
   "homepage": "https://comunica.dev/",
   "files": [
-    "bin/package.js"
+    "bin/package.d.ts",
+    "bin/package.js",
+    "bin/package.js.map"
   ],
   "dependencies": {
-    "@types/minimist": "^1.2.0",
-    "componentsjs": "^5.2.0",
-    "minimist": "^1.2.0"
+    "@types/minimist": "^1.2.2",
+    "componentsjs": "^5.3.2",
+    "minimist": "^1.2.7"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

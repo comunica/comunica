@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-fallback",
-  "version": "2.4.2",
+  "version": "2.5.1",
   "description": "A fallback dereference actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -28,11 +28,12 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-dereference": "^2.4.2",
-    "@comunica/core": "^2.4.0"
+    "@comunica/bus-dereference": "^2.5.1",
+    "@comunica/core": "^2.5.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

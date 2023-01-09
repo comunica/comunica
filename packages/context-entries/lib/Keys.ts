@@ -55,6 +55,27 @@ export const KeysHttp = {
   httpCacheStorage: new ActionContextKey<
   IHttpCacheStorage<ReadableStream<Uint8Array>>
   >('@communica/bus-http:cache-storage'),
+  /**
+   * Number of retries to make on failed network calls. This only takes effect
+   * on errors thrown during the initial fetch() call and not while streaming the body.
+   */
+  httpRetryCount: new ActionContextKey<number>('@comunica/bus-http:http-retry-count'),
+  /**
+   * Delay in milliseconds to wait between fetch retries. Requires httpRetryCount to be set.
+   */
+  httpRetryDelay: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay'),
+  /**
+   * Retry fetch, if server replies with a 5xx error response. Requires httpRetryCount to be set.
+   */
+  httpRetryOnServerError: new ActionContextKey<number>('@comunica/bus-http:http-retry-on-server-error'),
+};
+
+export const KeysHttpWayback = {
+  /**
+   * Use the WayBack machine to get the most recent representation of a file if a link is broken.
+   * @default false
+   */
+  recoverBrokenLinks: new ActionContextKey<boolean>('@comunica/bus-http:recover-broken-links'),
 };
 
 export const KeysHttpMemento = {
@@ -195,6 +216,10 @@ export const KeysQueryOperation = {
    * If the default graph should also contain the union of all named graphs.
    */
   unionDefaultGraph: new ActionContextKey<boolean>('@comunica/bus-query-operation:unionDefaultGraph'),
+  /**
+   * An indicator that the operator should apply blank node localization
+   */
+  localizeBlankNodes: new ActionContextKey<boolean>('@comunica/actor-query-operation:localizeBlankNodes'),
 };
 
 export const KeysRdfParseJsonLd = {

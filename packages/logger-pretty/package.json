@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-pretty",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "A comunica logger that pretty-prints.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -27,11 +27,12 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/types": "^2.4.0",
-    "object-inspect": "^1.12.0"
+    "@comunica/types": "^2.5.1",
+    "object-inspect": "^1.12.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

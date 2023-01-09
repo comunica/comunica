@@ -1,6 +1,49 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.5.2"></a>
+## [v2.5.2](https://github.com/comunica/comunica/compare/v2.5.1...v2.5.2) - 2022-11-18
+
+### Fixed
+* [Fix broken bindingsStreamToGraphQL export](https://github.com/comunica/comunica/commit/3030ed3c1d24a52a80fb61df9c27e7c0861b72b1)
+* [Fix incorrect bindingsStreamToGraphQl return type](https://github.com/comunica/comunica/commit/78a203c67882041fa8ca4fd28e78191c659cb1bf)
+
+<a name="v2.5.1"></a>
+## [v2.5.1](https://github.com/comunica/comunica/compare/v2.5.0...v2.5.1) - 2022-11-16
+
+### Fixed
+* [Add missing dependencies in file and rdfjs engines](https://github.com/comunica/comunica/commit/2261aa801acde5dcdde6597ccce54962284ab0f9)
+* [Rename wayback actor in config, Closes #1086](https://github.com/comunica/comunica/commit/4571140d7b51879f6b8896d9103518ad7a006e6c)
+* [Add localizeBlankNodes to IQueryContextCommon](https://github.com/comunica/comunica/commit/58d6eafffd4aea99d64631fd95cd6b51748ee2be)
+* [Fix incorrect files entry in data-factory](https://github.com/comunica/comunica/commit/bfefa770d8dbd06db9a04f7e76e3d556db2147b9)
+* [Add recoverBrokenLinks to IQueryContextCommon](https://github.com/comunica/comunica/commit/84f755c6c12f42db12a9f3f447bdbe90d56a79a5)
+
+<a name="v2.5.0"></a>
+## [v2.5.0](https://github.com/comunica/comunica/compare/v2.4.3...v2.5.0) - 2022-11-09
+
+### Added
+* [Enable engines to override context shortcuts and typings](https://github.com/comunica/comunica/commit/ca7e6cf64741ec5075673dbef0374c6d033d1b9a)
+* [Support string-based data sources, Closes #639](https://github.com/comunica/comunica/commit/af4343054cb3dbbed32296774981d929559a09fa)
+* [Add support for HTTP retries](https://github.com/comunica/comunica/commit/d36f0bb2e80bd0c7972b71c19b02fa52f04e772a)
+* [Add wayback HTTP actor](https://github.com/comunica/comunica/commit/ad0bbf5ea08fe4cb5cc9e2ce73bd3132eec35a86)
+
+### Changed
+* [Add USER to Dockerfile](https://github.com/comunica/comunica/commit/27335fb8acf59c5b9720b7ff4ac4ed31169177d4)
+* [Make QueryOperationAsk close the BindingsStream earlier](https://github.com/comunica/comunica/commit/33de86f086bf3be418545f07aa57f44d1461c28b)
+* [Expose localizeBlankNodes on the CLI](https://github.com/comunica/comunica/commit/146b41da2135033be72a6342ecf2313b381daff9)
+
+### Fixed
+* [Bump to asynciterator 3.8 with ESM packaging fix, Closes #1097](https://github.com/comunica/comunica/commit/24294150a4ad8d0f8b224014e97890bb7310c115)
+* [Include source map files in packed files](https://github.com/comunica/comunica/commit/1ddba2b57457ad4a630d4f9a8a30c23955e4f1fc)
+* [Fix invalid blank node skolemization in DESCRIBE queries](https://github.com/comunica/comunica/commit/efa0e9192f0a22d242744779f0286228de92959f)
+
+<a name="v2.4.3"></a>
+## [v2.4.3](https://github.com/comunica/comunica/compare/v2.4.2...v2.4.3) - 2022-09-06
+
+### Fixed
+* [Add workaround for INSERT queries on Solid pods](https://github.com/comunica/comunica/commit/a0133b837ae8503b454bc14cc78896b0cd4d2e2e)
+* [Add polyfill for Buffer in webpack](https://github.com/comunica/comunica/commit/4d65094cb5ca407021a5c9d1c18d93d1a56f46c7)
+
 <a name="v2.4.2"></a>
 ## [v2.4.2](https://github.com/comunica/comunica/compare/v2.4.1...v2.4.2) - 2022-08-26
 

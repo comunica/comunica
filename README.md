@@ -18,6 +18,10 @@
 <a href="https://gitter.im/comunica/core-dev"><img src="https://img.shields.io/gitter/room/comunica/Lobby.svg?style=plastic&label=Dev-Chat" alt="Gitter Dev chat"></a>
 </p>
 
+<p align="center">
+  <a href="https://comunica.github.io/comunica/"><img src="https://img.shields.io/badge/doc-code_documentation-blueviolet"/></a>
+</p>
+
 **[Learn more about Comunica on our website](https://comunica.dev/).**
 
 Comunica is an open-source project that is used by [many other projects](https://github.com/comunica/comunica/network/dependents),

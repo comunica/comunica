@@ -3,6 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDrop } from '../lib/ActorQueryOperationDrop';
+
 const DF = new DataFactory();
 
 describe('ActorQueryOperationDrop', () => {

@@ -6,8 +6,10 @@ import 'cross-fetch/polyfill'; // Needed to load Headers
 import 'jest-rdf';
 import { Factory } from 'sparqlalgebrajs';
 import { RdfSourceSparql } from '../lib/RdfSourceSparql';
+
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
+
 const DF = new DataFactory();
 
 // TODO: Remove when targeting NodeJS 18+

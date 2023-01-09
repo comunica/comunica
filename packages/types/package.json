@@ -1,6 +1,6 @@
 {
   "name": "@comunica/types",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "Typings module for Comunica",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -27,14 +27,16 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "lib/**/*.js.map",
     "bin/**/*.d.ts",
-    "bin/**/*.js"
+    "bin/**/*.js",
+    "bin/**/*.js.map"
   ],
   "dependencies": {
     "@rdfjs/types": "*",
-    "@types/yargs": "^17.0.2",
-    "asynciterator": "^3.7.0",
-    "sparqlalgebrajs": "^4.0.0"
+    "@types/yargs": "^17.0.13",
+    "asynciterator": "^3.8.0",
+    "sparqlalgebrajs": "^4.0.5"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -6,6 +6,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathInv } from '../lib/ActorQueryOperationPathInv';
 import '@comunica/jest';
+
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 

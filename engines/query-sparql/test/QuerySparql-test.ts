@@ -1,9 +1,12 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
-jest.unmock('follow-redirects');
+if (!global.window) {
+  jest.unmock('follow-redirects');
+}
 
-import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysHttpWayback, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
@@ -12,25 +15,19 @@ import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
-import { mockHttp } from './util';
+import { usePolly } from './util';
+
+const stringifyStream = require('stream-to-string');
 
 const DF = new DataFactory();
 const factory = new Factory();
 
 describe('System test: QuerySparql', () => {
-  const pollyContext = mockHttp();
+  usePolly();
 
   let engine: QueryEngine;
-
   beforeEach(() => {
     engine = new QueryEngine();
-    pollyContext.polly.server.any().on('beforePersist', (req, recording) => {
-      recording.request.headers = recording.request.headers.filter(({ name }: any) => name !== 'user-agent');
-    });
-  });
-
-  afterEach(async() => {
-    await pollyContext.polly.flush();
   });
 
   describe('query', () => {
@@ -88,6 +85,265 @@ describe('System test: QuerySparql', () => {
           .toEqual([]);
         expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
           .toEqual([]);
+      });
+
+      describe('string source query', () => {
+        const query = 'CONSTRUCT WHERE { ?s ?p ?o }';
+
+        beforeEach(() => {
+          engine = new QueryEngine();
+        });
+
+        it('should return the valid result with a turtle data source', async() => {
+          const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource',
+              value,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with a json-ld data source', async() => {
+          const value = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }
+          `;
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource',
+              value,
+              mediaType: 'application/ld+json',
+              baseIRI: 'http://example.org/' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with no base IRI', async() => {
+          const value = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }`;
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource',
+              value,
+              mediaType: 'application/ld+json' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with multiple stringSource', async() => {
+          const value1 = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }`;
+          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
+            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('should return the valid result with multiple sources', async() => {
+          const quads = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p5'), DF.namedNode('ex:o5')),
+          ];
+          const store = new Store();
+          store.addQuads(quads);
+
+          const value1 = `{
+            "@id":"ex:s",
+            "ex:p":{"@id":"ex:o"},
+            "ex:p2":{"@id":"ex:o2"}
+          }`;
+          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
+          const context: QueryStringContext = { sources: [
+            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
+            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+            store,
+          ]};
+
+          const expectedResult: RDF.Quad[] = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p5'), DF.namedNode('ex:o5')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
+          ];
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+      });
+
+      describe('handle blank nodes with DESCRIBE queries', () => {
+        let store: Store;
+        let quads: RDF.Quad[];
+        const query = `DESCRIBE ?o  {
+          ?s ?p ?o .
+      }`;
+
+        beforeEach(() => {
+          engine = new QueryEngine();
+          store = new Store();
+        });
+
+        it('return consistent blank nodes with a data source that should return one blank node', async() => {
+          quads = [
+            DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+
+            DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+          ];
+          store.addQuads(quads);
+          const context = <any> { sources: [ store ]};
+
+          const blankNode = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+          const expectedResult = [
+            DF.quad(blankNode, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNode, DF.namedNode('h'), DF.namedNode('i')),
+          ];
+
+          const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('return consistent blank nodes with a data source that should return multiple blank nodes', async() => {
+          quads = [
+            DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('j')),
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('k')),
+
+            DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(DF.blankNode('j'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('j'), DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(DF.blankNode('k'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('k'), DF.namedNode('h'), DF.namedNode('i')),
+          ];
+          store.addQuads(quads);
+          const context = <any> { sources: [ store ]};
+
+          const blankNodeE = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+          const blankNodeJ = new BlankNodeScoped('bc_0_j', DF.namedNode('urn:comunica_skolem:source_0:j'));
+          const blankNodeK = new BlankNodeScoped('bc_0_k', DF.namedNode('urn:comunica_skolem:source_0:k'));
+          const expectedResult = [
+            DF.quad(blankNodeE, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNodeE, DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(blankNodeJ, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNodeJ, DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(blankNodeK, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNodeK, DF.namedNode('h'), DF.namedNode('i')),
+          ];
+
+          const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('return consistent blank nodes with a data source containing a nested blank node', async() => {
+          quads = [
+            DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+
+            DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.blankNode('g')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+
+            DF.quad(DF.blankNode('g'), DF.namedNode('i'), DF.namedNode('j')),
+          ];
+          store.addQuads(quads);
+          const context = <any> { sources: [ store ]};
+
+          const blankNodeE = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+          const blankNodeG = new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g'));
+          const expectedResult = [
+            DF.quad(blankNodeE, DF.namedNode('f'), blankNodeG),
+            DF.quad(blankNodeE, DF.namedNode('h'), DF.namedNode('i')),
+
+            DF.quad(blankNodeG, DF.namedNode('i'), DF.namedNode('j')),
+          ];
+
+          const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+          expect(result.length).toBe(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
+        it('return consistent blank nodes with a data source that should return one blank node and one named node',
+          async() => {
+            quads = [
+              DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+
+              DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+
+              DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
+              DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+
+              DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
+            ];
+            store.addQuads(quads);
+            const context = <any> { sources: [ store ]};
+
+            const blankNode = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+            const expectedResult = [
+              DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
+              DF.quad(blankNode, DF.namedNode('f'), DF.namedNode('g')),
+              DF.quad(blankNode, DF.namedNode('h'), DF.namedNode('i')),
+            ];
+
+            const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+
+            expect(result.length).toBe(expectedResult.length);
+            expect(result).toMatchObject(expectedResult);
+          });
       });
 
       describe('extension function', () => {
@@ -276,6 +532,50 @@ describe('System test: QuerySparql', () => {
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(20);
       });
+
+      describe('SHACL Compact Syntax Serialisation', () => {
+        it('handles the query with SHACL compact syntax as a source', async() => {
+          const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+    ?s a <http://www.w3.org/2002/07/owl#Ontology>.
+  }`, { sources: [
+            'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+          'tests/valid/basic-shape-iri.shaclc',
+          ]});
+          expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+        });
+
+        it('correctly serializes construct query on a shape in .shaclc as shaclc', async() => {
+          const result = <QueryBindings> await engine.query(`CONSTRUCT WHERE {
+    ?s ?p ?o
+  }`, { sources: [
+            'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+          'tests/valid/basic-shape-iri.shaclc',
+          ]});
+
+          const { data } = await engine.resultToString(result,
+            'text/shaclc');
+
+          expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
+    'shape <http://example.org/test#TestShape> {\n' +
+    '}\n');
+        });
+
+        it('correctly serializes construct query on a shape in .ttl as shaclc', async() => {
+          const result = <QueryBindings> await engine.query(`CONSTRUCT WHERE {
+    ?s ?p ?o
+  }`, { sources: [
+            'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
+          'tests/valid/basic-shape-iri.ttl',
+          ]});
+
+          const { data } = await engine.resultToString(result,
+            'text/shaclc');
+
+          expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
+    'shape <http://example.org/test#TestShape> {\n' +
+    '}\n');
+        });
+      });
     });
 
     describe('simple SPO on a TPF entrypoint', () => {
@@ -312,6 +612,26 @@ describe('System test: QuerySparql', () => {
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
+    });
+  });
+
+  // We skip these tests in browsers due to CORS issues
+  describe('foaf ontology broken link (no browser)', () => {
+    it('returns results with link recovery on [using full key]', async() => {
+      const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+    <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
+  }`, {
+        sources: [ 'http://xmlns.com/foaf/spec/20140114.rdf' ],
+        [KeysHttpWayback.recoverBrokenLinks.name]: true,
+      });
+      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+    });
+
+    it('returns results with link recovery on [using shortcut key]', async() => {
+      const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+    <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
+  }`, { sources: [ 'http://xmlns.com/foaf/spec/20140114.rdf' ], recoverBrokenLinks: true });
+      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
     });
   });
 

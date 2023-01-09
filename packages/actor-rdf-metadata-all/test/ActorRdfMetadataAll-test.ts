@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfMetadataAll } from '../lib/ActorRdfMetadataAll';
+
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
 

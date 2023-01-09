@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-n3",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "A n3 rdf-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -28,12 +28,13 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-serialize": "^2.4.0",
-    "@comunica/types": "^2.4.0",
-    "n3": "^1.6.3"
+    "@comunica/bus-rdf-serialize": "^2.5.1",
+    "@comunica/types": "^2.5.1",
+    "n3": "^1.16.3"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

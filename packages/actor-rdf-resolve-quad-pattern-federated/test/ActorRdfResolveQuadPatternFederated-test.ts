@@ -5,6 +5,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfResolveQuadPatternFederated } from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
+
 const squad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternFederated', () => {

@@ -37,10 +37,15 @@ export interface IQueryContextCommon {
   httpAuth?: string;
   httpTimeout?: number;
   httpBodyTimeout?: boolean;
+  httpRetryCount?: number;
+  httpRetryDelay?: number;
+  httpRetryOnServerError?: boolean;
   fetch?: typeof fetch;
   readOnly?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
   extensionFunctions?: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
   explain?: QueryExplainMode;
+  recoverBrokenLinks?: boolean;
+  localizeBlankNodes?: boolean;
 }

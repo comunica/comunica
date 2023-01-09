@@ -1,6 +1,6 @@
 {
   "name": "@comunica/config-query-sparql",
-  "version": "2.2.0",
+  "version": "2.5.1",
   "description": "default configuration files for Comunica SPARQL",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,8 @@
     "components",
     "config",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

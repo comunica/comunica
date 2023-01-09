@@ -7,8 +7,8 @@ import type {
 } from '@comunica/bus-http-invalidate';
 import 'cross-fetch/polyfill';
 import { ActionContext } from '@comunica/core';
+import { HttpCacheStorageLru } from '@comunica/http-cache-storage-lru';
 import * as CachePolicy from 'http-cache-semantics';
-import { HttpCacheStorageLru } from '../../http-cache-storage-lru';
 import { HttpCacheStorageStream } from '../lib/HttpCacheStorageStream';
 import { testStream } from './testStream';
 

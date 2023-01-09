@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
-  "version": "2.4.2",
+  "version": "2.5.1",
   "description": "A hypermedia rdf-resolve-quad-pattern actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -28,25 +28,26 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-dereference-rdf": "^2.4.2",
-    "@comunica/bus-http-invalidate": "^2.4.0",
-    "@comunica/bus-rdf-metadata": "^2.4.0",
-    "@comunica/bus-rdf-metadata-extract": "^2.4.0",
-    "@comunica/bus-rdf-resolve-hypermedia": "^2.4.0",
-    "@comunica/bus-rdf-resolve-hypermedia-links": "^2.4.0",
-    "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^2.4.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^2.4.0",
-    "@comunica/core": "^2.4.0",
-    "@comunica/types": "^2.4.0",
+    "@comunica/bus-dereference-rdf": "^2.5.1",
+    "@comunica/bus-http-invalidate": "^2.5.1",
+    "@comunica/bus-rdf-metadata": "^2.5.1",
+    "@comunica/bus-rdf-metadata-extract": "^2.5.1",
+    "@comunica/bus-rdf-resolve-hypermedia": "^2.5.1",
+    "@comunica/bus-rdf-resolve-hypermedia-links": "^2.5.1",
+    "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^2.5.1",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^2.5.1",
+    "@comunica/core": "^2.5.1",
+    "@comunica/types": "^2.5.1",
     "@rdfjs/types": "*",
-    "@types/lru-cache": "^5.1.0",
-    "asynciterator": "^3.7.0",
+    "@types/lru-cache": "^5.1.1",
+    "asynciterator": "^3.8.0",
     "lru-cache": "^6.0.0",
-    "readable-stream": "^4.0.0",
-    "sparqlalgebrajs": "^4.0.0"
+    "readable-stream": "^4.2.0",
+    "sparqlalgebrajs": "^4.0.5"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

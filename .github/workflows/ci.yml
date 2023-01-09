@@ -28,6 +28,10 @@ jobs:
             .rdf-test-suite-cache
             .rdf-test-suite-ldf-cache
           key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Setup firefox
+        uses: browser-actions/setup-firefox@latest
+        with:
+          firefox-version: 'latest'
       - name: Install dependencies
         run: yarn install --pure-lockfile
       - name: Build project
@@ -35,7 +39,9 @@ jobs:
       - name: Run depcheck
         run: yarn run depcheck
       - name: Run tests
-        run: yarn run test-ci
+        run: yarn run test:ci
+      - name: Run browser tests
+        run: yarn run test:browser
       - name: Submit coverage results
         uses: coverallsapp/github-action@master
         with:

@@ -59,6 +59,7 @@
 
     "RDF.Stream",
     "Omit",
+    "Partial",
     "MediateMediaTyped",
     "IActorDereferenceOutput",
     "Factory",

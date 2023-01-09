@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-proxy",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "A proxy http actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -28,13 +28,14 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-http": "^2.4.0",
-    "@comunica/context-entries": "^2.4.0",
-    "@comunica/mediatortype-time": "^2.4.0",
-    "@comunica/types": "^2.4.0"
+    "@comunica/bus-http": "^2.5.1",
+    "@comunica/context-entries": "^2.5.1",
+    "@comunica/mediatortype-time": "^2.5.1",
+    "@comunica/types": "^2.5.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

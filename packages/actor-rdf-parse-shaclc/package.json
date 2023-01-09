@@ -1,0 +1,47 @@
+{
+  "name": "@comunica/actor-rdf-parse-shaclc",
+  "version": "2.0.0",
+  "description": "A shaclc rdf-parse actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-parse-shaclc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-parse",
+    "shaclc"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/bus-rdf-parse": "^2.5.1",
+    "@comunica/types": "^2.5.1",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.8.0",
+    "shaclc-parse": "^1.3.0",
+    "stream-to-string": "^1.2.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

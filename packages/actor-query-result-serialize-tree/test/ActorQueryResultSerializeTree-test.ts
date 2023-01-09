@@ -6,7 +6,7 @@ import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorQueryResultSerializeTree } from '..';
+import { ActorQueryResultSerializeTree, bindingsStreamToGraphQl } from '..';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -20,6 +20,12 @@ describe('ActorQueryResultSerializeTree', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
+  });
+
+  describe('The bindingsStreamToGraphQl function', () => {
+    it('should be a function', () => {
+      expect(bindingsStreamToGraphQl).toBeInstanceOf(Function);
+    });
   });
 
   describe('The ActorQueryResultSerializeTree module', () => {

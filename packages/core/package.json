@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,11 +32,12 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/types": "^2.4.0",
-    "immutable": "^4.0.0"
+    "@comunica/types": "^2.5.1",
+    "immutable": "^4.1.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

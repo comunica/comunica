@@ -13,6 +13,7 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
+
 const DF = new DataFactory();
 
 /**

@@ -4,6 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseN3 } from '../lib/ActorRdfParseN3';
+
 const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseN3', () => {
