@@ -189,7 +189,7 @@ describe('ActorHttpCache', () => {
       expect(await result2.text()).toBe(fo.maxAge.body);
     });
 
-    it('has an item return 1 if an item is in the cache', async() => {
+    it('has an item return infinity even if an item is in the cache', async() => {
       await actor.run({
         input: fo.maxAge.uri,
         context: new ActionContext({ [KeysHttp.fetch.name]: fetch }),
@@ -197,7 +197,7 @@ describe('ActorHttpCache', () => {
       expect(await actor.test({
         input: fo.maxAge.uri,
         context: new ActionContext({ [KeysHttp.fetch.name]: fetch }),
-      })).toEqual({ time: 1 });
+      })).toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
     describe('invalidate cache', () => {

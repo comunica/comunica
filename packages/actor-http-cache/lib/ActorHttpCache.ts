@@ -63,34 +63,11 @@ export class ActorHttpCache extends ActorHttp {
         `Actor ${this.name} skipped as cache should not be checked.`,
       );
     }
-    const cacheStorage = this.getCacheStorage(action.context);
-    if (await cacheStorage.has(new Request(action.input, action.init))) {
-      return { time: 1 };
-    }
-    const newAction = {
-      ...action,
-      context: action.context.set(KeysHttpCache.doNotCheckHttpCache, true),
-    };
-    return await (
-      await this.mediatorHttp.mediateActor(newAction)
-    ).test(newAction);
+    return { time: Number.POSITIVE_INFINITY };
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     // Fetch data
-    return await this.fetchWithCache(action);
-  }
-
-  /**
-   * Fetches a request from the cache or from the web if it is not present in
-   * the cache.
-   * @param request The Request for which you are attempting to find responses
-   * in the Cache. This can be a Request object or a URL.
-   * @param options An object that sets options for the match operation.
-   * @returns A Promise that resolves to the first Response that matches the
-   * request and a boolean indicating if the value was from the cache or not
-   */
-  private async fetchWithCache(action: IActionHttp): Promise<Response> {
     const cacheStorage = this.getCacheStorage(action.context);
     const newRequest = new Request(action.input, action.init);
     const cacheResult = await cacheStorage.get(newRequest);
@@ -103,7 +80,7 @@ export class ActorHttpCache extends ActorHttp {
       if (!cachePolicy.storable()) {
         return response;
       }
-      return await this.teeAndCacheResponse(
+      return await this.cloneAndCacheResponse(
         newRequest,
         response,
         cachePolicy,
@@ -113,7 +90,7 @@ export class ActorHttpCache extends ActorHttp {
     // The Request is cached ===================================================
     // The Cache Policy is Satisfied -------------------------------------------
     if (this.isPolicySatisfied(newRequest, cacheResult.policy)) {
-      return await this.teeAndCacheResponse(
+      return await this.cloneAndCacheResponse(
         newRequest,
         new Response(cacheResult.body, cacheResult.init),
         cacheResult.policy,
@@ -145,7 +122,7 @@ export class ActorHttpCache extends ActorHttp {
     const finalResponse = modified ?
       response :
       new Response(cacheResult.body, cacheResult.init);
-    return await this.teeAndCacheResponse(
+    return await this.cloneAndCacheResponse(
       newRequest,
       finalResponse,
       policy,
@@ -203,7 +180,7 @@ export class ActorHttpCache extends ActorHttp {
     );
   }
 
-  private async teeAndCacheResponse(
+  private async cloneAndCacheResponse(
     request: Request,
     response: Response,
     cachePolicy: CachePolicy,

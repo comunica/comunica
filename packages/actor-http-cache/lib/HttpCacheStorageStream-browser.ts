@@ -1,9 +1,7 @@
-/**
- * This file will only execute in a NodeJS environment, so nodejs modules are
- * allowed. For the browser version of this file, see HttpCacheStorageStream-browser.ts
- */
-// eslint-disable-next-line import/no-nodejs-modules
-import { PassThrough, Readable } from 'stream';
+/* eslint-disable unicorn/filename-case */
+/* eslint-enable unicorn/filename-case */
+
+import { EventEmitter } from 'events';
 import { ActorHttp } from '@comunica/bus-http';
 import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
 import { ActionContext } from '@comunica/core';
@@ -13,6 +11,28 @@ import type {
 } from '@comunica/types';
 import type * as CachePolicy from 'http-cache-semantics';
 
+/**
+ * Merges multiple Uint8 Arrays into one
+ * @param arrays Uint8Arrays
+ * @returns a single Uint8Array
+ */
+function mergeUintArrays(arrays: Uint8Array[]): Uint8Array {
+  // Get the total length of all arrays.
+  let length = 0;
+  arrays.forEach(item => {
+    length += item.length;
+  });
+
+  // Create a new array with total length and merge all source arrays.
+  const mergedArray = new Uint8Array(length);
+  let offset = 0;
+  arrays.forEach(item => {
+    mergedArray.set(item, offset);
+    offset += item.length;
+  });
+  return mergedArray;
+}
+
 export class HttpCacheStorageStream
 implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
   private readonly bufferCache: IHttpCacheStorage<Buffer>;
@@ -21,7 +41,7 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
   private currentSessionId = 0;
 
   /**
-   * A mapping between a streamId and information about an incomplete stream
+   * A mapping between a URL and information about an incomplete stream
    * An incomplete stream is a stream that has not yet received all of its packages
    * As pacakges come in, they are stored in buffers. If a cache needs an incomplete
    * stream a new stream will be created by combining the buffers and the still-
@@ -32,7 +52,7 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
     init?: ResponseInit;
     buffers: Uint8Array[];
     streamId: number;
-    stream: NodeJS.ReadableStream;
+    stream: EventEmitter;
   }> = {};
 
   public constructor(args: IHttpCacheStorageStreamArgs) {
@@ -43,35 +63,56 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
 
   public async set(
     key: Request,
-    value: IHttpCacheStorageValue<ReadableStream<Uint8Array>>,
+    storageValue: IHttpCacheStorageValue<ReadableStream<Uint8Array>>,
     ttl?: number | undefined,
   ): Promise<void> {
-    if (!value.body) {
-      await this.bufferCache.set(key, { policy: value.policy }, ttl);
+    if (!storageValue.body) {
+      await this.bufferCache.set(key, { policy: storageValue.policy }, ttl);
       return;
     }
-    // In actuality, the body is a NodeJS.Readable
-    const body = <NodeJS.ReadableStream><unknown>value.body;
+    const body = storageValue.body;
     const streamId = this.currentSessionId++;
+    const bodyEventEmitter = new EventEmitter();
+    const bodyReader = body.getReader();
+    // Make this stream into an event emitter
+    bodyReader.read().then(async function readStream2({ done, value }): Promise<void> {
+      if (done) {
+        bodyEventEmitter.emit('end');
+      } else {
+        bodyEventEmitter.emit('data', value);
+        return bodyReader.read().then(readStream2);
+      }
+    }).catch(error => {
+      // Remove the stream from incompleteStreams if it errrors
+      if (this.incompleteStreams[key.url] && this.incompleteStreams[key.url].streamId === streamId) {
+        delete this.incompleteStreams[key.url];
+      }
+    });
+
     this.incompleteStreams[key.url] = {
-      policy: value.policy,
-      init: value.init,
+      policy: storageValue.policy,
+      init: storageValue.init,
       buffers: [],
       streamId,
-      stream: body,
+      stream: bodyEventEmitter,
     };
-    body.on('data', (chunk: any) => {
+
+    bodyEventEmitter.on('data', (chunk: any) => {
       if (this.incompleteStreams[key.url] && this.incompleteStreams[key.url].streamId === streamId) {
         this.incompleteStreams[key.url].buffers.push(chunk);
       }
     });
-    body.on('end', async() => {
+    bodyEventEmitter.on('end', async() => {
       if (!this.incompleteStreams[key.url] || this.incompleteStreams[key.url].streamId !== streamId) {
         return;
       }
-      const combinedBuffer = Buffer.concat(this.incompleteStreams[key.url].buffers);
+      const combinedBuffer = mergeUintArrays(this.incompleteStreams[key.url].buffers);
       if (combinedBuffer.byteLength <= this.maxBufferSize) {
-        await this.bufferCache.set(key, { policy: value.policy, body: combinedBuffer, init: value.init }, ttl);
+        await this.bufferCache.set(key, {
+          policy: storageValue.policy,
+          body: Buffer.from(combinedBuffer),
+          init: storageValue.init,
+        }, ttl);
       }
       delete this.incompleteStreams[key.url];
     });
@@ -83,15 +124,23 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
     if (this.incompleteStreams[key.url]) {
       // Construct a stream from a partial buffer
       const incompleteStreamInfo = this.incompleteStreams[key.url];
-      let passThrough = new PassThrough();
-      const currentBufferStream = Readable.from(Buffer.concat(incompleteStreamInfo.buffers));
-      passThrough = currentBufferStream.pipe(passThrough, { end: false });
-      passThrough = incompleteStreamInfo.stream.pipe(passThrough, { end: false });
-      incompleteStreamInfo.stream.on('end', () => passThrough.emit('end'));
-      // NormalizeResponseBody is able to handle a NodeJS.ReadableStream but requires a ReadableStream type
-      ActorHttp.normalizeResponseBody(<ReadableStream<Uint8Array>><unknown>passThrough);
+      const newStream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          incompleteStreamInfo.buffers.forEach(buffer => {
+            controller.enqueue(buffer);
+          });
+          incompleteStreamInfo.stream.on('data', chunk => {
+            controller.enqueue(chunk);
+          });
+          incompleteStreamInfo.stream.on('end', () => {
+            controller.close();
+          });
+        },
+      });
+
+      ActorHttp.normalizeResponseBody(newStream);
       return {
-        body: <ReadableStream<Uint8Array>><unknown>passThrough,
+        body: newStream,
         policy: incompleteStreamInfo.policy,
         init: incompleteStreamInfo.init,
       };
@@ -107,12 +156,17 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
         init: cacheValue.init,
       };
     }
-    const newStream = Readable.from(cacheValue.body);
-    ActorHttp.normalizeResponseBody(<ReadableStream<Uint8Array>><unknown>newStream);
+    const newStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(cacheValue.body);
+        controller.close();
+      },
+    });
+    ActorHttp.normalizeResponseBody(newStream);
     return {
       policy: cacheValue.policy,
       init: cacheValue.init,
-      body: <ReadableStream<Uint8Array>><unknown>newStream,
+      body: newStream,
     };
   }
 

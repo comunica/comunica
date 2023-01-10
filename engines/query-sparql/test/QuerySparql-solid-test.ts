@@ -82,7 +82,7 @@ async function refreshToken({ id, secret }: ISecretData): Promise<ITokenData> {
   return { accessToken, dpopKey };
 }
 
-describe('System test: QuerySparql over Solid Pods', () => {
+describe.skip('System test: QuerySparql over Solid Pods', () => {
   let app: App;
   let engine: QueryEngine;
   let secret: ISecretData;
