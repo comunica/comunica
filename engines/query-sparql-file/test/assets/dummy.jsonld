@@ -1,0 +1,5 @@
+{
+  "@context": "https://schema.org",
+  "predicate1": "value 1",
+  "predicate2": "value 2"
+}

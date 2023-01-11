@@ -1,5 +1,5 @@
 import { accessSync, createReadStream, constants } from 'fs';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import type { IActorTest } from '@comunica/core';
@@ -21,6 +21,11 @@ export class ActorDereferenceFile extends ActorDereference {
     return true;
   }
 
+  private static isURI(str: string): boolean {
+    const URIRegex = /\w[\w+.-]*:.*/u;
+    return URIRegex.exec(str) !== null;
+  }
+
   public async run({ url }: IActionDereference): Promise<IActorDereferenceOutput> {
     const requestTimeStart = Date.now();
     return {
@@ -28,7 +33,7 @@ export class ActorDereferenceFile extends ActorDereference {
       // This should always be after the creation of the read stream
       requestTime: Date.now() - requestTimeStart,
       exists: true,
-      url,
+      url: ActorDereferenceFile.isURI(url) ? url : pathToFileURL(url).href,
     };
   }
 }
