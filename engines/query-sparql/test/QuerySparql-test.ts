@@ -630,7 +630,7 @@ describe('System test: QuerySparql', () => {
           `CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o. OPTIONAL {FILTER EXISTS {?s2 ?p ?o. FILTER (?s != ?s2)}}}`,
           { sources: [ store ]},
         );
-        expect(await arrayifyStream(result)).toEqual([
+        expect(await arrayifyStream(result)).toEqualRdfQuadArray([
             DF.quad(s, p, o),
             DF.quad(s1, p, o)
         ]);
