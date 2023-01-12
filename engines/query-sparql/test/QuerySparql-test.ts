@@ -614,8 +614,7 @@ describe('System test: QuerySparql', () => {
       });
     });
 
-    // TODO: better name here before merge.
-    describe('Comunica sparql regression test for #1029', () => {
+    describe('filter expression inside an optional', () => {
       it('Supports EXISTS sparql keyword', async() => {
         const s = DF.namedNode('s');
         const p = DF.namedNode('p');
@@ -630,7 +629,7 @@ describe('System test: QuerySparql', () => {
           `CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o. OPTIONAL {FILTER EXISTS {?s2 ?p ?o. FILTER (?s != ?s2)}}}`,
           { sources: [ store ]},
         );
-        expect(await arrayifyStream(result)).toEqual([
+        expect(await arrayifyStream(result)).toEqualRdfQuadArray([
           DF.quad(s, p, o),
           DF.quad(s1, p, o),
         ]);
