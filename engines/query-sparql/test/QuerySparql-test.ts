@@ -631,8 +631,8 @@ describe('System test: QuerySparql', () => {
           { sources: [ store ]},
         );
         expect(await arrayifyStream(result)).toEqual([
-            DF.quad(s, p, o),
-            DF.quad(s1, p, o)
+          DF.quad(s, p, o),
+          DF.quad(s1, p, o),
         ]);
       });
     });

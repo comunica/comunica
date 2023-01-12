@@ -945,6 +945,18 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
+"@comunica/actor-query-operation-leftjoin@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@comunica/actor-query-operation-leftjoin/-/actor-query-operation-leftjoin-2.5.1.tgz#60cdc8b8c7af33f54a9bfe78500df83bc2430313"
+  integrity sha512-Zj34DosMbWJw/I0hlRI3MMuy6FCXf98jW2RMA3ExiAGw9ZBhc6bA1BZ828Oz30/8PDduhaR4aAJA9R4gXJc4sw==
+  dependencies:
+    "@comunica/bus-query-operation" "^2.5.1"
+    "@comunica/bus-rdf-join" "^2.5.1"
+    "@comunica/core" "^2.5.1"
+    "@comunica/types" "^2.5.1"
+    sparqlalgebrajs "^4.0.5"
+    sparqlee "^2.1.0"
+
 "@dabh/diagnostics@^2.0.2":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@dabh/diagnostics/-/diagnostics-2.0.3.tgz#7f7e97ee9a725dffc7808d93668cc984e1dc477a"
@@ -2881,11 +2893,6 @@
   integrity sha512-dYCSlUtCGXuP2axeKD5l1vj/04iNXW8TLXryDa0uA8u8EsNE68jn27ZLg7jAPV+qJAlk1wC4WtRdIoZXvuUl0A==
   dependencies:
     "@types/node" "*"
-
-"@types/chai@^4.3.3":
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.3.tgz#3c90752792660c4b562ad73b3fbd68bf3bc7ae07"
-  integrity sha512-hC7OMnszpxhZPduX+m+nrx+uFoLkWOMiR4oa/AZF3MuSETYTZmFfJAHqZEM8MVlvfG7BEUcgvtwoCTxBp6hm3g==
 
 "@types/eslint-scope@^3.7.3":
   version "3.7.4"
