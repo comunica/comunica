@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/comunica/comunica#readme",
   "dependencies": {
+    "@comunica/bus-http-invalidate": "^2.5.1",
     "@comunica/core": "^2.4.0",
     "@comunica/types": "^2.4.0",
     "lru-cache": "^7.10.1"

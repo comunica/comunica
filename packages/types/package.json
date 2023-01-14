@@ -33,6 +33,7 @@
     "bin/**/*.js.map"
   ],
   "dependencies": {
+    "@types/http-cache-semantics": "^4.0.1",
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.13",
     "asynciterator": "^3.8.0",

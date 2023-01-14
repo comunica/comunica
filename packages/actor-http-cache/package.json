@@ -38,7 +38,6 @@
     "@comunica/mediatortype-time": "^2.4.0",
     "@comunica/types": "^2.4.0",
     "@types/http-cache-semantics": "^4.0.1",
-    "cloneable-readable": "^3.0.0",
     "cross-fetch": "^3.0.5",
     "eventemitter3": "^5.0.0",
     "http-cache-semantics": "^4.1.0"
