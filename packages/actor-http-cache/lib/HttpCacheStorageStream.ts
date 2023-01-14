@@ -41,6 +41,10 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
     this.mediatorHttpInvalidate = args.mediatorHttpInvalidate;
   }
 
+  private getRequestKey(request: Request): string {
+    return `${request.method}-${request.url}`;
+  }
+
   public async set(
     key: Request,
     value: IHttpCacheStorageValue<ReadableStream<Uint8Array>>,
@@ -53,7 +57,8 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
     // In actuality, the body is a NodeJS.Readable
     const body = <NodeJS.ReadableStream><unknown>value.body;
     const streamId = this.currentSessionId++;
-    this.incompleteStreams[key.url] = {
+    const requestKey = this.getRequestKey(key);
+    this.incompleteStreams[requestKey] = {
       policy: value.policy,
       init: value.init,
       buffers: [],
@@ -61,28 +66,29 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
       stream: body,
     };
     body.on('data', (chunk: any) => {
-      if (this.incompleteStreams[key.url] && this.incompleteStreams[key.url].streamId === streamId) {
-        this.incompleteStreams[key.url].buffers.push(chunk);
+      if (this.incompleteStreams[requestKey] && this.incompleteStreams[requestKey].streamId === streamId) {
+        this.incompleteStreams[requestKey].buffers.push(chunk);
       }
     });
     body.on('end', async() => {
-      if (!this.incompleteStreams[key.url] || this.incompleteStreams[key.url].streamId !== streamId) {
+      if (!this.incompleteStreams[requestKey] || this.incompleteStreams[requestKey].streamId !== streamId) {
         return;
       }
-      const combinedBuffer = Buffer.concat(this.incompleteStreams[key.url].buffers);
+      const combinedBuffer = Buffer.concat(this.incompleteStreams[requestKey].buffers);
       if (combinedBuffer.byteLength <= this.maxBufferSize) {
         await this.bufferCache.set(key, { policy: value.policy, body: combinedBuffer, init: value.init }, ttl);
       }
-      delete this.incompleteStreams[key.url];
+      delete this.incompleteStreams[requestKey];
     });
   }
 
   public async get(
     key: Request,
   ): Promise<IHttpCacheStorageValue<ReadableStream<Uint8Array>> | undefined> {
-    if (this.incompleteStreams[key.url]) {
+    const requestKey = this.getRequestKey(key);
+    if (this.incompleteStreams[requestKey]) {
       // Construct a stream from a partial buffer
-      const incompleteStreamInfo = this.incompleteStreams[key.url];
+      const incompleteStreamInfo = this.incompleteStreams[requestKey];
       let passThrough = new PassThrough();
       const currentBufferStream = Readable.from(Buffer.concat(incompleteStreamInfo.buffers));
       passThrough = currentBufferStream.pipe(passThrough, { end: false });
@@ -117,10 +123,11 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
   }
 
   public async delete(key: Request): Promise<boolean> {
-    const wasInIncompleteStream = Boolean(this.incompleteStreams[key.url]);
-    delete this.incompleteStreams[key.url];
+    const requestKey = this.getRequestKey(key);
+    const wasInIncompleteStream = Boolean(this.incompleteStreams[requestKey]);
+    delete this.incompleteStreams[requestKey];
     const wasInBufferCache = await this.bufferCache.delete(key);
-    await this.invalidate(key.url);
+    await this.invalidate(requestKey);
     return wasInIncompleteStream || wasInBufferCache;
   }
 
@@ -133,7 +140,8 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
   }
 
   public async has(key: Request): Promise<boolean> {
-    return Boolean(this.incompleteStreams[key.url]) || await this.bufferCache.has(key);
+    const requestKey = this.getRequestKey(key);
+    return Boolean(this.incompleteStreams[requestKey]) || await this.bufferCache.has(key);
   }
 
   private async invalidate(key: string): Promise<void> {

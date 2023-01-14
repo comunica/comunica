@@ -40,6 +40,7 @@
     "@types/http-cache-semantics": "^4.0.1",
     "cloneable-readable": "^3.0.0",
     "cross-fetch": "^3.0.5",
+    "eventemitter3": "^5.0.0",
     "http-cache-semantics": "^4.1.0"
   },
   "scripts": {

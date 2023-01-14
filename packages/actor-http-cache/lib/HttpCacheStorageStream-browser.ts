@@ -1,7 +1,6 @@
 /* eslint-disable unicorn/filename-case */
 /* eslint-enable unicorn/filename-case */
 
-import { EventEmitter } from 'events';
 import { ActorHttp } from '@comunica/bus-http';
 import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
 import { ActionContext } from '@comunica/core';
@@ -9,6 +8,7 @@ import type {
   IHttpCacheStorage,
   IHttpCacheStorageValue,
 } from '@comunica/types';
+import { EventEmitter } from 'eventemitter3';
 import type * as CachePolicy from 'http-cache-semantics';
 
 /**

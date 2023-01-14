@@ -67,19 +67,25 @@ export class ActorHttpCache extends ActorHttp {
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+    console.log(1);
+    console.log((new Error('hello')).stack);
     // Fetch data
     const cacheStorage = this.getCacheStorage(action.context);
     const newRequest = new Request(action.input, action.init);
     const cacheResult = await cacheStorage.get(newRequest);
+    console.log(2);
     // Request is not cached ===================================================
     if (!cacheResult) {
+      console.log(3);
       // Make Request
       const response = await this.fetchDocument(action);
       // Create a Cache Policy
+      console.log(4);
       const cachePolicy = this.newCachePolicy(newRequest, response);
       if (!cachePolicy.storable()) {
         return response;
       }
+      console.log(5);
       return await this.cloneAndCacheResponse(
         newRequest,
         response,
@@ -89,7 +95,9 @@ export class ActorHttpCache extends ActorHttp {
     }
     // The Request is cached ===================================================
     // The Cache Policy is Satisfied -------------------------------------------
+    console.log(6);
     if (this.isPolicySatisfied(newRequest, cacheResult.policy)) {
+      console.log(7);
       return await this.cloneAndCacheResponse(
         newRequest,
         new Response(cacheResult.body, cacheResult.init),
@@ -99,14 +107,17 @@ export class ActorHttpCache extends ActorHttp {
     }
     // The Cache Policy is not satisfied ---------------------------------------
     // Invalidate the cache
+    console.log(8);
     await this.mediatorHttpInvalidate.mediate({
       url: newRequest.url,
       context: action.context,
     });
+    console.log(9);
     const revalidationHeaders = this.getRevalidationHeaders(
       newRequest,
       cacheResult.policy,
     );
+    console.log(10);
     const response = await this.fetchDocument({
       ...action,
       init: {
@@ -114,6 +125,7 @@ export class ActorHttpCache extends ActorHttp {
         headers: revalidationHeaders,
       },
     });
+    console.log(11);
     const { policy, modified } = this.getRevalidatedPolicy(
       newRequest,
       response,
@@ -122,6 +134,7 @@ export class ActorHttpCache extends ActorHttp {
     const finalResponse = modified ?
       response :
       new Response(cacheResult.body, cacheResult.init);
+    console.log(12);
     return await this.cloneAndCacheResponse(
       newRequest,
       finalResponse,
@@ -207,6 +220,7 @@ export class ActorHttpCache extends ActorHttp {
       },
       cachePolicy.timeToLive(),
     );
+    ActorHttp.normalizeResponseBody(bodyToRetrun);
     return new Response(bodyToRetrun, responseInit);
   }
 
