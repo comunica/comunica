@@ -127,13 +127,15 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
     const wasInIncompleteStream = Boolean(this.incompleteStreams[requestKey]);
     delete this.incompleteStreams[requestKey];
     const wasInBufferCache = await this.bufferCache.delete(key);
-    await this.invalidate(requestKey);
+    await this.invalidate(key.url);
     return wasInIncompleteStream || wasInBufferCache;
   }
 
   public async clear(): Promise<void> {
     await Promise.all(Object.keys(this.incompleteStreams).map(async key => {
-      await this.invalidate(key);
+      const splitKey = key.split('-');
+      splitKey.shift();
+      await this.invalidate(splitKey.join(''));
     }));
     this.incompleteStreams = {};
     await this.bufferCache.clear();

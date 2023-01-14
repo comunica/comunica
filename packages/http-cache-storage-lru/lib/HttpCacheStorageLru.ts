@@ -11,7 +11,12 @@ export class HttpCacheStorageLru implements IHttpCacheStorage<Buffer> {
       max: args.max,
       async dispose(value, key) {
         if (args.mediatorHttpInvalidate) {
-          await args.mediatorHttpInvalidate.mediate({ url: key, context: new ActionContext() });
+          const splitKey = key.split('-');
+          splitKey.shift();
+          await args.mediatorHttpInvalidate.mediate({
+            url: splitKey.join(''),
+            context: new ActionContext(),
+          });
         }
       },
     });
