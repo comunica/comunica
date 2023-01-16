@@ -55,7 +55,7 @@ implements IHttpCacheStorage<ReadableStream<Uint8Array>> {
       return;
     }
     // In actuality, the body is a NodeJS.Readable
-    const body = <NodeJS.ReadableStream><unknown>value.body;
+    const body = ActorHttp.toNodeReadable(value.body);
     const streamId = this.currentSessionId++;
     const requestKey = this.getRequestKey(key);
     this.incompleteStreams[requestKey] = {
