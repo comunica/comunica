@@ -1,7 +1,5 @@
 name: "Assign new PR"
-on:
-  issues:
-    types: [opened, edited]
+on: [pull_request]
 
 jobs:
   triage:
