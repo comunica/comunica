@@ -26,8 +26,8 @@ module.exports = {
     '/engines/query-sparql/test/util.ts',
     // TODO: Remove this condition, once solid-client-authn supports node 18.
     ...(Number(process.versions.node.substring(0, 2)) >= 18
-     ? ["/engines/query-sparql/lib/QueryEngineFactory.ts"]
-     : []),
+    ? ["/engines/query-sparql/lib/QueryEngineFactory.ts"]
+    : []),
   ],
   testEnvironment: 'node',
   coverageThreshold: {
