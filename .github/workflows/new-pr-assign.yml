@@ -1,5 +1,7 @@
 name: "Assign new PR"
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, reopened]
 
 jobs:
   triage:
@@ -7,5 +9,5 @@ jobs:
     steps:
     - uses: delivery-much/actions-assigner@v1
       with:
-        token: "${{ secrets.PAT }}"
+        token: ${{ secrets.GH_TOKEN }}
         team-reviewers: core
