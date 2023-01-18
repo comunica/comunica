@@ -1,0 +1,13 @@
+name: "Assign new PR"
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: delivery-much/actions-assigner@v1
+      with:
+        token: ${{ secrets.GH_TOKEN }}
+        team-reviewers: core

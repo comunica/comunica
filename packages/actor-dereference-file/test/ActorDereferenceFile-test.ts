@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
@@ -69,7 +70,22 @@ describe('ActorDereferenceFile', () => {
         {
           data: expect.anything(),
           exists: true,
-          url: p,
+          url: `file://${p}`,
+        },
+      );
+    });
+
+    it('should run for relative paths', async() => {
+      // Relative paths are considered to start from the directory that `node` is ran in
+      // for tests it will be the root of the repo
+      const p = path.join(path.relative(process.cwd(), __dirname), 'dummy.ttl');
+      const result = await actor.run({ url: p, context });
+      expect(await streamToString(result.data)).toEqual(fs.readFileSync(p).toString());
+      expect(result).toMatchObject<Partial<IActorDereferenceOutput>>(
+        {
+          data: expect.anything(),
+          exists: true,
+          url: pathToFileURL(p).href,
         },
       );
     });
