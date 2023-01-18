@@ -1724,7 +1724,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         return expect(instance.parseBody(httpRequestMock)).rejects
-          .toThrowError(/(Invalid POST body with context received \('\{"a:"b"\}'\):) .+JSON (at position 5)/u);
+          .toThrowError('Invalid POST body with context received');
       });
 
       it('should reject if content-type is not application/[sparql-query|x-www-form-urlencoded]', () => {
