@@ -78,7 +78,7 @@ export class OverloadTree {
   public search(args: E.TermExpression[], superTypeProvider: ISuperTypeProvider,
     functionArgumentsCache: FunctionArgumentsCache):
     ImplementationFunction | undefined {
-    let cacheIter = functionArgumentsCache[this.identifier];
+    let cacheIter: IFunctionArgumentsCacheObj | undefined = functionArgumentsCache[this.identifier];
     let searchIndex = 0;
     while (searchIndex < args.length && cacheIter?.cache) {
       const term = args[searchIndex];
@@ -86,7 +86,7 @@ export class OverloadTree {
       cacheIter = cacheIter.cache[literalExpression ? literalExpression.dataType : term.termType];
       searchIndex++;
     }
-    if (searchIndex === args.length && cacheIter) {
+    if (searchIndex === args.length && cacheIter?.func) {
       return cacheIter.func;
     }
 
@@ -115,7 +115,6 @@ export class OverloadTree {
     }
     // Calling a function with one argument but finding no implementation should return no implementation.
     // Not even the one with no arguments.
-    this.addToCache(functionArgumentsCache, args);
     return undefined;
   }
 
@@ -131,7 +130,7 @@ export class OverloadTree {
     for (const term of args) {
       const literalExpression = isLiteralTermExpression(term);
       const key = literalExpression ? literalExpression.dataType : term.termType;
-      cache.cache = {};
+      cache.cache = cache.cache || {};
       cache = getDefault(cache.cache, key);
     }
     cache.func = func;

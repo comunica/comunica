@@ -106,11 +106,30 @@ describe('OverloadTree', () => {
     expect(innerSpy).toHaveBeenCalled();
   });
 
-  it('will cache an undefined function', () => {
+  it('searches the cache arity aware', () => {
+    const apple = new StringLiteral('apple');
+    const one = new IntegerLiteral(1);
+    const two = new IntegerLiteral(2);
+    expect(sharedContext.functionArgumentsCache.substr).toBeUndefined();
+    expect(regularFunctions.substr.apply([ apple, one, two ], sharedContext).str()).toBe('ap');
+
+    expect(sharedContext.functionArgumentsCache.substr).toBeDefined();
+    const interestCache = sharedContext.functionArgumentsCache.substr
+      .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
+    expect(interestCache.func).toBeUndefined();
+    expect(interestCache.cache![TypeURL.XSD_INTEGER]).toBeDefined();
+
+    expect(regularFunctions.substr.apply([ apple, one ], sharedContext).str()).toBe(String('apple'));
+    const interestCacheNew = sharedContext.functionArgumentsCache.substr
+      .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
+    expect(interestCacheNew).toBeDefined();
+    expect(interestCacheNew.cache![TypeURL.XSD_INTEGER]).toBeDefined();
+  });
+
+  it('will not cache an undefined function', () => {
     const cache: FunctionArgumentsCache = {};
     const args = [ new StringLiteral('some str') ];
     emptyTree.search(args, sharedContext.superTypeProvider, cache);
-    expect(cache[emptyID]).not.toBeUndefined();
-    expect(cache[emptyID].cache![TypeURL.XSD_STRING]!.func).toBeUndefined();
+    expect(cache[emptyID]).toBeUndefined();
   });
 });
