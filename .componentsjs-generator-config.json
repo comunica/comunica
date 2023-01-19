@@ -44,6 +44,9 @@
     "Response",
     "RequestInfo",
     "RequestInit",
+    "BodyInit",
+    "Buffer",
+    "ReadableStream",
 
 
     "IQueryableResultStream",

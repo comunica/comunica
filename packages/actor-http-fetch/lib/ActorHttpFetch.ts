@@ -52,7 +52,6 @@ export class ActorHttpFetch extends ActorHttp {
     let lastError: unknown;
     // The retryCount is 0-based. Therefore, add 1 to triesLeft.
     let triesLeft = retryCount + 1;
-
     // When retry count is greater than 0, repeat fetch.
     while (triesLeft-- > 0) {
       try {
@@ -68,7 +67,6 @@ export class ActorHttpFetch extends ActorHttp {
         if (requestInit.signal?.aborted) {
           throw error;
         }
-
         if (triesLeft > 0) {
           // Wait for specified delay, before retrying.
           await new Promise((resolve, reject) => {
@@ -102,7 +100,6 @@ export class ActorHttpFetch extends ActorHttp {
     if (authString) {
       action.init.headers.append('Authorization', `Basic ${Buffer.from(authString).toString('base64')}`);
     }
-
     // Log request
     this.logInfo(action.context, `Requesting ${typeof action.input === 'string' ?
       action.input :
@@ -110,18 +107,15 @@ export class ActorHttpFetch extends ActorHttp {
       headers: ActorHttp.headersToHash(new Headers(action.init!.headers)),
       method: action.init!.method || 'GET',
     }));
-
     // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
     if (action.init?.headers && 'append' in action.init.headers && action.context.has(KeysHttp.fetch)) {
       action.init.headers = ActorHttp.headersToHash(action.init.headers);
     }
-
     let requestInit = { ...action.init };
 
     if (action.context.get(KeysHttp.includeCredentials)) {
       requestInit.credentials = 'include';
     }
-
     const httpTimeout: number | undefined = action.context?.get(KeysHttp.httpTimeout);
     let requestTimeout: NodeJS.Timeout | undefined;
     let onTimeout: (() => void) | undefined;
@@ -131,7 +125,6 @@ export class ActorHttpFetch extends ActorHttp {
       onTimeout = () => controller.abort();
       requestTimeout = setTimeout(() => onTimeout!(), httpTimeout);
     }
-
     try {
       requestInit = await this.fetchInitPreprocessor.handle(requestInit);
       // Number of retries to perform after a failed fetch.
@@ -140,12 +133,10 @@ export class ActorHttpFetch extends ActorHttp {
       const retryOnSeverError: boolean = action.context?.get(KeysHttp.httpRetryOnServerError) ?? false;
       const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
         .context?.get(KeysHttp.fetch);
-
       // Execute the fetch (with retries and timeouts, if applicable).
       const response = await ActorHttpFetch.getResponse(
         customFetch || fetch, action.input, requestInit, retryCount, retryDelay, retryOnSeverError,
       );
-
       // We remove or update the timeout
       if (requestTimeout !== undefined) {
         const httpBodyTimeout = action.context?.get(KeysHttp.httpBodyTimeout) || false;
@@ -159,19 +150,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
           clearTimeout(requestTimeout);
         }
       }
-
-      // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
-      // If it doesn't exist, we monkey-patch it.
-      if (response.body && !response.body.cancel) {
-        response.body.cancel = async(error?: Error) => {
-          (<Readable><any>response.body).destroy(error);
-          if (requestTimeout !== undefined) {
-            // We make sure to remove the timeout if it is still enabled
-            clearTimeout(requestTimeout);
-          }
-        };
-      }
-
+      ActorHttp.normalizeResponseBody(response.body, requestTimeout);
       return response;
     } catch (error: unknown) {
       if (requestTimeout !== undefined) {

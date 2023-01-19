@@ -1,0 +1,35 @@
+{
+  "name": "@comunica/http-cache-storage-lru",
+  "version": "0.0.1",
+  "description": "An implementation of the web Cache API using LRU",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/comunica.git",
+    "directory": "packages/http-cache-storage-lru"
+  },
+  "author": "Jackson Morgan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://github.com/comunica/comunica#readme",
+  "dependencies": {
+    "@comunica/bus-http-invalidate": "^2.5.1",
+    "@comunica/core": "^2.4.0",
+    "@comunica/types": "^2.4.0",
+    "lru-cache": "^7.10.1"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ]
+}
