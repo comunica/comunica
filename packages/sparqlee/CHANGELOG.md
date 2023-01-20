@@ -1,5 +1,19 @@
 # Changelog
 
+<a name="v2.2.0"></a>
+## [v2.2.0](https://github.com/comunica/sparqlee/compare/v2.1.0...v2.2.0) - 2023-01-20
+
+### Changed
+* [Use the new flexible type system as default](https://github.com/comunica/sparqlee/commit/206df0eaf03c7c70068ad9383585f34a9494d257)
+* [Support both upper and lower case operator names](https://github.com/comunica/sparqlee/commit/bb04a82c657ea70a033be832c80428fe06972fee)
+* [Makes timezone formatting as duration more robust](https://github.com/comunica/sparqlee/commit/e2cc58b5f0fe480d0896417fbd68943046514591)
+* [Bump sparqlalgebrajs with improved support for unary "+"](https://github.com/comunica/sparqlee/commit/ef5efd943b0557f5cf160d8d7b456e233f79272d)
+
+### Fixes
+* [Fixes a wrong exception thrown in AsyncRecursiveEvaluator](https://github.com/comunica/sparqlee/commit/07dd255449bfcd5e6ab9cae1329dd566e8a0b561)
+* [Fix float/double cast of NaN/INF](https://github.com/comunica/sparqlee/commit/cfb4dc6f0872ea497c46c7c731246fb164518e56)
+* [Fix and test isURI and URI function support](https://github.com/comunica/sparqlee/commit/860775660d85664e1bec550dad8fb54f8a0a65d8)
+
 <a name="v2.1.0"></a>
 ## [v2.1.0](https://github.com/comunica/sparqlee/compare/v2.0.1...v2.1.0) - 2022-05-12
 
