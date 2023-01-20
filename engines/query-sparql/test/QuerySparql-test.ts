@@ -527,13 +527,12 @@ describe('System test: QuerySparql', () => {
           const original_function = (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate;
           let firstFuncArgCache: object | undefined;
           let secondFuncArgCache: object | undefined;
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = jest.fn(
+          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate =
             (arg: { context: IActionContext }) => {
               firstFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
               expect(firstFuncArgCache).toEqual({});
               return original_function(arg);
-            },
-          );
+            };
 
           // Evaluate query once
           const firstBindingsStream = await alternativeEngine.queryBindings(query, context);
@@ -541,14 +540,13 @@ describe('System test: QuerySparql', () => {
             quads.map(q => String(q.object.value.length)),
           );
 
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = jest.fn(
+          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate =
             (arg: { context: IActionContext }) => {
               secondFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
               expect(secondFuncArgCache).not.toBeUndefined();
               expect(Object.keys(secondFuncArgCache!)).toContain('strlen');
               return original_function(arg);
-            },
-          );
+            };
           // Evaluate query a second time
           const secondBindingsStream = await alternativeEngine.queryBindings(query, context);
           expect((await secondBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
