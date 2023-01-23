@@ -319,7 +319,7 @@ export class FederatedQuadSource implements IQuadSource {
     if (this.sources.length === 0) {
       this.mediatorRdfMetadataAccumulate
         .mediate({ mode: 'initialize', context: this.contextDefault })
-        .then(result => it.setProperty('metadata', result.metadata))
+        .then(result => it.setProperty('metadata', { state: new MetadataValidationState(), ...result.metadata }))
         .catch(error => it.emit('error', error));
     }
 

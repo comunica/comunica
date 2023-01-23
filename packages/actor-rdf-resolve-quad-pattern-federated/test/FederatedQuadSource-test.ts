@@ -618,7 +618,11 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 0 cardinality', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false });
+        .resolves.toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'exact', value: 0 },
+          canContainUndefs: false,
+        });
     });
 
     it('should reject when mediatorRdfMetadataAccumulate rejects', async() => {
