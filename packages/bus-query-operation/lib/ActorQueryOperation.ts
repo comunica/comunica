@@ -2,15 +2,14 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type {
-  IQueryOperationResult,
+import type { IQueryOperationResult,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
   IQueryOperationResultQuads,
   IQueryOperationResultVoid,
   Bindings,
   IMetadata, IActionContext,
-} from '@comunica/types';
+  FunctionArgumentsCache } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
@@ -113,6 +112,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
     const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
     const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
+    const functionArgumentsCache: FunctionArgumentsCache = context.get(KeysInitQuery.functionArgumentsCache) || {};
 
     // Handle two variants of providing extension functions
     if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
@@ -128,7 +128,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
       extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
     }
 
-    return { now, baseIRI, extensionFunctionCreator };
+    return { now, baseIRI, extensionFunctionCreator, functionArgumentsCache };
   }
 
   /**
@@ -221,6 +221,7 @@ export interface IBaseExpressionContext {
   baseIRI?: string;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>
   ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
+  functionArgumentsCache?: FunctionArgumentsCache;
 }
 
 export interface ISyncExpressionContext extends IBaseExpressionContext {

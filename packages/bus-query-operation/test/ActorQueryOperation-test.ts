@@ -1,6 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { FunctionArgumentsCache } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -78,9 +79,9 @@ describe('ActorQueryOperation', () => {
 
   describe('#getExpressionContext', () => {
     describe('without mediatorQueryOperation', () => {
-      it('should create an empty object for an empty contexts save for the bnode function', () => {
-        expect(ActorQueryOperation.getExpressionContext(new ActionContext()))
-          .toEqual({ bnode: expect.any(Function) });
+      it('should create an object for an empty contexts save for the bnode function', () => {
+        expect(ActorQueryOperation.getExpressionContext(new ActionContext()).bnode)
+          .toEqual(expect.any(Function));
       });
 
       it('the bnode function should synchronously return a blank node', () => {
@@ -95,9 +96,9 @@ describe('ActorQueryOperation', () => {
 
   describe('#getAsyncExpressionContext', () => {
     describe('without mediatorQueryOperation', () => {
-      it('should create an empty object for an empty contexts save for the bnode function', () => {
-        expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext()))
-          .toEqual({ bnode: expect.any(Function) });
+      it('should create an object for an empty contexts save for the bnode function', () => {
+        expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext()).bnode)
+          .toEqual(expect.any(Function));
       });
 
       it('the bnode function should asynchronously return a blank node', async() => {
@@ -112,13 +113,16 @@ describe('ActorQueryOperation', () => {
 
       it('should create an non-empty object for a filled context', () => {
         const date = new Date();
+        const functionArgumentsCache: FunctionArgumentsCache = { apple: {}};
         expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext({
           [KeysInitQuery.queryTimestamp.name]: date,
           [KeysInitQuery.baseIRI.name]: 'http://base.org/',
+          [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
         }))).toEqual({
           now: date,
           bnode: expect.any(Function),
           baseIRI: 'http://base.org/',
+          functionArgumentsCache,
         });
       });
     });

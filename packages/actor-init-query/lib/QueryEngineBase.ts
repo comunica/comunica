@@ -2,13 +2,15 @@ import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { IActionContext, IPhysicalQueryPlanLogger,
+import type {
+  IActionContext, IPhysicalQueryPlanLogger,
   IQueryOperationResult,
   IQueryEngine, IQueryExplained,
   QueryFormatType,
   QueryType, QueryExplainMode, BindingsStream,
   QueryAlgebraContext, QueryStringContext, IQueryBindingsEnhanced,
-  IQueryQuadsEnhanced, QueryEnhanced, IQueryContextCommon } from '@comunica/types';
+  IQueryQuadsEnhanced, QueryEnhanced, IQueryContextCommon, FunctionArgumentsCache,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -21,9 +23,11 @@ import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 export class QueryEngineBase<QueryContext extends IQueryContextCommon = IQueryContextCommon>
 implements IQueryEngine<QueryContext> {
   private readonly actorInitQuery: ActorInitQueryBase;
+  private readonly defaultFunctionArgumentsCache: FunctionArgumentsCache;
 
   public constructor(actorInitQuery: ActorInitQueryBase<QueryContext>) {
     this.actorInitQuery = actorInitQuery;
+    this.defaultFunctionArgumentsCache = {};
   }
 
   public async queryBindings<QueryFormatTypeInner extends QueryFormatType>(
@@ -139,7 +143,8 @@ implements IQueryEngine<QueryContext> {
       .setDefault(KeysInitQuery.queryTimestamp, new Date())
       .setDefault(KeysRdfResolveQuadPattern.sourceIds, new Map())
       // Set the default logger if none is provided
-      .setDefault(KeysCore.log, this.actorInitQuery.logger);
+      .setDefault(KeysCore.log, this.actorInitQuery.logger)
+      .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache);
 
     // Pre-processing the context
     actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;
