@@ -44,5 +44,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
+* `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
 * `mediatorRdfParse`: A mediator over the [RDF Parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse).
 * `mediatorRdfResolveQuadPattern`: A mediator over the [RDF resolve quad pattern bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern).
