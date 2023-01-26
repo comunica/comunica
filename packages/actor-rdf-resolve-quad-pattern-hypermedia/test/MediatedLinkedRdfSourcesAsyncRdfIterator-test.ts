@@ -95,6 +95,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         g,
         'first',
         64,
+        undefined,
         mediators,
       );
     });

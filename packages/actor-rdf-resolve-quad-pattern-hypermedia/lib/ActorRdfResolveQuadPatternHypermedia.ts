@@ -33,6 +33,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   public readonly cache?: LRUCache<string, MediatedQuadSource>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
   public readonly maxIterators: number;
+  public readonly aggregateStore: boolean;
 
   public constructor(args: IActorRdfResolveQuadPatternHypermediaArgs) {
     super(args);
@@ -69,6 +70,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
         url,
         getDataSourceType(contextSource),
         this.maxIterators,
+        this.aggregateStore,
         {
           mediatorMetadata: this.mediatorMetadata,
           mediatorMetadataExtract: this.mediatorMetadataExtract,
@@ -108,6 +110,13 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends IActorRdfReso
    * @default {64}
    */
   maxIterators: number;
+  /**
+   * If all discovered quads across all links from a seed source should be indexed in an aggregated store,
+   * to speed up later calls.
+   * This should only be used for sources without filter factor.
+   * @default {false}
+   */
+  aggregateStore: boolean;
   /**
    * The RDF dereference mediator
    */

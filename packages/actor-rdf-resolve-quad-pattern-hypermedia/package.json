@@ -47,6 +47,7 @@
     "asynciterator": "^3.8.0",
     "lru-cache": "^6.0.0",
     "readable-stream": "^4.2.0",
+    "rdf-streaming-store": "^1.0.0",
     "sparqlalgebrajs": "^4.0.5"
   },
   "scripts": {

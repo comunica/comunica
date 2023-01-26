@@ -11,6 +11,7 @@ import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
+import type { StreamingStoreMetadata } from './StreamingStoreMetadata';
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources
@@ -28,11 +29,13 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly context: IActionContext;
   private readonly forceSourceType?: string;
   private readonly handledUrls: Record<string, boolean>;
+  private readonly aggregatedStore: StreamingStoreMetadata | undefined;
   private linkQueue: Promise<ILinkQueue> | undefined;
 
   public constructor(cacheSize: number, context: IActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string, maxIterators: number, mediators: IMediatorArgs) {
+    firstUrl: string, maxIterators: number, aggregatedStore: StreamingStoreMetadata | undefined,
+    mediators: IMediatorArgs) {
     super(cacheSize, subject, predicate, object, graph, firstUrl, maxIterators);
     this.context = context;
     this.forceSourceType = forceSourceType;
@@ -43,6 +46,16 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.mediatorRdfResolveHypermediaLinks = mediators.mediatorRdfResolveHypermediaLinks;
     this.mediatorRdfResolveHypermediaLinksQueue = mediators.mediatorRdfResolveHypermediaLinksQueue;
     this.handledUrls = { [firstUrl]: true };
+    this.aggregatedStore = aggregatedStore;
+  }
+
+  protected _end(destroy?: boolean): void {
+    this.aggregatedStore?.end();
+    super._end(destroy);
+  }
+
+  protected shouldStoreSourcesStates(): boolean {
+    return this.aggregatedStore === undefined;
   }
 
   public getLinkQueue(): Promise<ILinkQueue> {
@@ -124,6 +137,9 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       };
       metadata = {};
     }
+
+    // Aggregate all discovered quads into a store.
+    this.aggregatedStore?.import(quads);
 
     // Determine the source
     const { source, dataset } = await this.mediatorRdfResolveHypermedia.mediate({

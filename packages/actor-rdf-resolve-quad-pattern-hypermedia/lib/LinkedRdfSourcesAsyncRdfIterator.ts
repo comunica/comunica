@@ -108,8 +108,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       return source;
     }
     source = this.getSource(link, handledDatasets);
-    this.sourcesState!.sources.set(link.url, source);
+    if (link.url === this.firstUrl || this.shouldStoreSourcesStates()) {
+      this.sourcesState!.sources.set(link.url, source);
+    }
     return source;
+  }
+
+  protected shouldStoreSourcesStates(): boolean {
+    return true;
   }
 
   public _read(count: number, done: () => void): void {

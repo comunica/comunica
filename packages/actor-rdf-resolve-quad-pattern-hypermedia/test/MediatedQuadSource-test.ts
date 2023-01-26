@@ -1,6 +1,8 @@
-import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
+import type { MediatorDereferenceRdf, IActionDereferenceRdf,
+  IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import 'jest-rdf';
@@ -47,7 +49,7 @@ describe('MediatedQuadSource', () => {
     let source: MediatedQuadSource;
 
     beforeEach(() => {
-      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', 64, mediators);
+      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', 64, false, mediators);
     });
 
     describe('match', () => {
@@ -167,6 +169,77 @@ describe('MediatedQuadSource', () => {
           quad('s22', 'p22', 'o22'),
           quad('s13', 'p13', 'o13'),
           quad('s23', 'p23', 'o23'),
+        ]);
+      });
+    });
+  });
+
+  describe('A MediatedQuadSource instance with aggregated store', () => {
+    let source: MediatedQuadSource;
+
+    beforeEach(() => {
+      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', 64, true, mediators);
+    });
+
+    describe('match', () => {
+      it('should match three chained sources when queried multiple times', async() => {
+        let i = 0;
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ links: [{ url: `next${i}` }]});
+        mediatorRdfResolveHypermedia.mediate = (args: any) => {
+          if (i < 3) {
+            i++;
+          }
+          return Promise.resolve({
+            dataset: `MYDATASET${i}`,
+            source: {
+              match() {
+                const it = new ArrayIterator([
+                  quad(`s1${i}`, `p1${i}`, `o1${i}`),
+                  quad(`s2${i}`, `p2${i}`, `o2${i}`),
+                ], { autoStart: false });
+                it.setProperty('metadata', { firstMeta: true });
+                return it;
+              },
+            },
+          });
+        };
+        let j = 0;
+        mediatorDereferenceRdf.mediate = async({ url }: IActionDereferenceRdf) => {
+          if (j < 3) {
+            j++;
+          }
+          const data: IActorDereferenceRdfOutput = {
+            data: <any> new ArrayIterator<RDF.Quad>([
+              quad(`s1${j}`, `p1${j}`, `o1${j}`),
+              quad(`s2${j}`, `p2${j}`, `o2${j}`),
+            ], { autoStart: false }),
+            metadata: { triples: true },
+            exists: true,
+            requestTime: 0,
+            url,
+          };
+          // @ts-expect-error
+          data.data.setProperty('metadata', { firstMeta: true });
+          return data;
+        };
+        expect(await arrayifyStream(source.match(v, v, undefined!, v))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(await arrayifyStream(source.match(v, v, undefined!, v))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(await arrayifyStream(source.match(DF.namedNode('s11'), v, undefined!, v))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
         ]);
       });
     });
