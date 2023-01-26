@@ -110,6 +110,7 @@
 					<ul>
 						<li><code>cacheSize</code>: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.</li>
 						<li><code>maxIterators</code>: The maximum number of links that can be followed in parallel, defaults to 64.</li>
+						<li><code>aggregateStore</code>: If all discovered quads across all links from a seed source should be indexed in an aggregated store, to speed up later calls. This should only be used for sources without filter factor. Defaults to false.</li>
 						<li><code>httpInvalidator</code>: An optional actor that listens to HTTP invalidation events.</li>
 						<li><code>mediatorDereferenceRdf</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf">RDF Dereference bus</a>.</li>
 						<li><code>mediatorMetadata</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata bus</a>.</li>
@@ -131,6 +132,7 @@
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_resolve_quad_pattern_hypermedia.LinkedRdfSourcesAsyncRdfIterator.html" class="tsd-kind-icon">Linked<wbr>Rdf<wbr>Sources<wbr>Async<wbr>Rdf<wbr>Iterator</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_resolve_quad_pattern_hypermedia.MediatedLinkedRdfSourcesAsyncRdfIterator.html" class="tsd-kind-icon">Mediated<wbr>Linked<wbr>Rdf<wbr>Sources<wbr>Async<wbr>Rdf<wbr>Iterator</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_resolve_quad_pattern_hypermedia.MediatedQuadSource.html" class="tsd-kind-icon">Mediated<wbr>Quad<wbr>Source</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html" class="tsd-kind-icon">Streaming<wbr>Store<wbr>Metadata</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -175,6 +177,9 @@
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/actor_rdf_resolve_quad_pattern_hypermedia.MediatedQuadSource.html" class="tsd-kind-icon">Mediated<wbr>Quad<wbr>Source</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html" class="tsd-kind-icon">Streaming<wbr>Store<wbr>Metadata</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.IActorRdfResolveQuadPatternHypermediaArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Hypermedia<wbr>Args</a>
