@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-empty",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "A multi-empty rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-join": "^2.5.1",
-    "@comunica/mediatortype-join-coefficients": "^2.5.1",
-    "@comunica/types": "^2.5.1",
+    "@comunica/bus-rdf-join": "^2.6.0",
+    "@comunica/mediatortype-join-coefficients": "^2.6.0",
+    "@comunica/types": "^2.6.0",
     "asynciterator": "^3.8.0"
   },
   "scripts": {

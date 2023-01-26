@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.0"></a>
+## [v2.6.0](https://github.com/comunica/comunica/compare/v2.5.2...v2.6.0) - 2023-01-26
+
+### Added
+* [Add SHACLC parser and serializer](https://github.com/comunica/comunica/commit/38f5499d709f32fc8285ed68c02a72fafe4586ca)
+* [Allow hypermedia actor to aggregate link queue in an index](https://github.com/comunica/comunica/commit/dfad5aba52972f5e85debb3452f663c927e7bec5)
+
+### Changed
+* [Use sparqlee's new type system](https://github.com/comunica/comunica/commit/cca85ecec92a3cdbdf478d86f3195d96b8f03b2a)
+
+### Fixed
+* [Fix invalid baseIRI when querying local files](https://github.com/comunica/comunica/commit/052371323d2dbc061d8dfc2ff4623994906d6c50)
+* [Fix errors in Node 19](https://github.com/comunica/comunica/commit/96bdbec53778e821348c928ae0921901a4ffee70)
+
 <a name="v2.5.2"></a>
 ## [v2.5.2](https://github.com/comunica/comunica/compare/v2.5.1...v2.5.2) - 2022-11-18
 

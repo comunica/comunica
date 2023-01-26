@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-void",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "A comunica void-based logger.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/types": "^2.5.1"
+    "@comunica/types": "^2.6.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

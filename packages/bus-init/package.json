@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-init",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "A comunica bus for 'init' events.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.5.1",
+    "@comunica/core": "^2.6.0",
     "readable-stream": "^4.2.0"
   },
   "scripts": {
