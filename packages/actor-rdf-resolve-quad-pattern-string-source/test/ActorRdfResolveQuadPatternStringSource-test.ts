@@ -1,4 +1,6 @@
-import type { IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { IActionRdfParseHandle } from '@comunica/bus-rdf-parse';
+import type { IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
@@ -6,16 +8,19 @@ import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
+import { Factory, type Algebra } from 'sparqlalgebrajs';
 import { ActorRdfResolveQuadPatternStringSource } from '../lib/ActorRdfResolveQuadPatternStringSource';
 import 'jest-rdf';
 
 const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
+const AF = new Factory(DF);
 
 describe('ActorRdfResolveQuadPatternStringSource', () => {
   let bus: any;
-  const sourceValue = '<ex:s> <ex:p> <ex:o>';
+  const cacheSize = 100;
+  const sourceValue = 's0 <ex:p1> <ex:o1>. s0 <ex:p2> <ex:o2>.';
   const sourceMediaType = 'text/turtle';
   const sourceBaseIri = 'http://example.org/';
   let mockMediatorRdfParse: any;
@@ -44,12 +49,13 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
     });
   });
 
-  describe('The test method of an ActorRdfResolveQuadPatternRdfJsSource instance', () => {
+  describe('The test method of an ActorRdfResolveQuadPatternStringSource instance', () => {
     let actor: ActorRdfResolveQuadPatternStringSource;
 
     beforeEach(() => {
       actor = new ActorRdfResolveQuadPatternStringSource(
         { name: 'actor',
+          cacheSize,
           bus,
           mediatorRdfParse: mockMediatorRdfParse,
           mediatorRdfResolveQuadPattern: mockmediatorRdfResolveQuadPattern },
@@ -58,41 +64,49 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
 
     it('should test', () => {
       return expect(actor.test({ pattern: <any> null,
-        context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]:
-            { type: 'stringSource', value: sourceValue, mediaType: sourceMediaType, baseIri: sourceBaseIri }},
-        ) }))
-        .resolves.toBeTruthy();
+        context: new ActionContext({ [KeysRdfResolveQuadPattern.source.name]: {
+          type: ActorRdfResolveQuadPatternStringSource.sourceType,
+          value: sourceValue,
+          mediaType: sourceMediaType,
+          baseIri: sourceBaseIri,
+        }}) })).resolves.toBeTruthy();
     });
 
-    it('should test on invalid source', () => {
+    it('should not test on invalid source', () => {
       return expect(actor.test({ pattern: <any> null,
-        context: new ActionContext(
-          { foo: { type: 'stringSource', value: sourceValue, mediaType: sourceMediaType, baseIri: sourceBaseIri }},
-        ) }))
-        .rejects.toBeTruthy();
+        context: new ActionContext({ foo: {
+          type: ActorRdfResolveQuadPatternStringSource.sourceType,
+          value: sourceValue,
+          mediaType: sourceMediaType,
+          baseIri: sourceBaseIri,
+        }}) })).rejects.toBeTruthy();
     });
 
     it('should test when there is no baseIri', () => {
       return expect(actor.test({ pattern: <any> null,
-        context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]:
-            { type: 'stringSource', value: sourceValue, mediaType: sourceMediaType }},
-        ) }))
-        .resolves.toBeTruthy();
+        context: new ActionContext({ [KeysRdfResolveQuadPattern.source.name]: {
+          type: ActorRdfResolveQuadPatternStringSource.sourceType,
+          value: sourceValue,
+          mediaType: sourceMediaType,
+        }}) })).resolves.toBeTruthy();
     });
 
     it('should not test on multiple sources', () => {
-      return expect(actor.test(
-        { context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.sources.name]:
-            [{ type: 'stringSource', value: sourceValue, mediaType: sourceMediaType, baseIri: sourceBaseIri },
-              { type: 'stringSource', value: sourceValue, mediaType: sourceMediaType, baseIri: sourceBaseIri },
-            ]},
-        ),
-        pattern: <any> null },
-      ))
-        .rejects.toBeTruthy();
+      return expect(actor.test({ context: new ActionContext({ [KeysRdfResolveQuadPattern.sources.name]: [
+        {
+          type: ActorRdfResolveQuadPatternStringSource.sourceType,
+          value: sourceValue,
+          mediaType: sourceMediaType,
+          baseIri: sourceBaseIri,
+        },
+        {
+          type: ActorRdfResolveQuadPatternStringSource.sourceType,
+          value: sourceValue,
+          mediaType: sourceMediaType,
+          baseIri: sourceBaseIri,
+        },
+      ]}),
+      pattern: <any> null })).rejects.toBeTruthy();
     });
 
     it('should not test on the wrong source type', () => {
@@ -106,16 +120,17 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
     it('should test on source with no type and a mediatype', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
       return expect(actor.test({ pattern: <any> null,
-        context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]: { value: 'stringSource', mediaType: sourceMediaType }},
-        ) })).resolves.toBeTruthy();
+        context: new ActionContext({ [KeysRdfResolveQuadPattern.source.name]: {
+          value: ActorRdfResolveQuadPatternStringSource.sourceType,
+          mediaType: sourceMediaType,
+        }}) })).resolves.toBeTruthy();
     });
 
     it('should not test on source with no type and no mediatype', () => {
       const rdfSource: RDF.Source = { match: () => <any> null };
       return expect(actor.test({ pattern: <any> null,
         context: new ActionContext(
-          { [KeysRdfResolveQuadPattern.source.name]: { value: 'stringSource' }},
+          { [KeysRdfResolveQuadPattern.source.name]: { value: ActorRdfResolveQuadPatternStringSource.sourceType }},
         ) })).rejects.toBeTruthy();
     });
 
@@ -129,89 +144,99 @@ describe('ActorRdfResolveQuadPatternStringSource', () => {
     });
   });
 
-  describe('The run method of an ActorRdfResolveQuadPatternRdfJsSource instance', () => {
+  describe('The run method of an ActorRdfResolveQuadPatternStringSource instance', () => {
     let actor: ActorRdfResolveQuadPatternStringSource;
-    const expectedQuads: RDF.Quad[] = [
-      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.literal('c')),
-      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:d'), DF.literal('e')),
+
+    // The function here attempts to simulate the generation of different blank node identifiers on subsequent
+    // parses of a string source, to make sure the actor caches the first parse result and uses it for subsequent
+    // patterns. Otherwise the blank nodes will have different identifiers for different patterns, and queries
+    // with multiple patterns will fail to produce results.
+    const parserOutput = (parseCount: number) => [
+      DF.quad(DF.blankNode(`s${parseCount}`), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+      DF.quad(DF.blankNode(`s${parseCount}`), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
     ];
+
+    const pattern: Algebra.Pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const expectedQuads: RDF.Quad[] = parserOutput(0);
+
+    const source = {
+      type: ActorRdfResolveQuadPatternStringSource.sourceType,
+      value: sourceValue,
+      mediaType: sourceMediaType,
+      baseIRI: sourceBaseIri,
+    };
 
     beforeEach(() => {
       mockMediatorRdfParse = {
-        mediate(_arg: any) {
+        parseCount: 0,
+        mediate(_arg: IActionRdfParseHandle) {
           return {
             handle: {
-              data: streamifyArray([
-                DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.literal('c')),
-                DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:d'), DF.literal('e')),
-              ]),
+              data: streamifyArray(parserOutput(this.parseCount++)),
             },
           };
         },
       };
       mockmediatorRdfResolveQuadPattern = {
-        mediate(_arg: any) {
+        mediate(_arg: IActionRdfResolveQuadPattern) {
+          const contextSource: Record<string, any> = _arg.context.getSafe<any>(KeysRdfResolveQuadPattern.source);
+          const rdfSource: RDF.Source = contextSource.value;
           return {
-            data: wrap(streamifyArray([
-              DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.literal('c')),
-              DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:d'), DF.literal('e')),
-            ])),
+            data: wrap(rdfSource.match()),
           };
         },
       };
       spyMockMediatorRdfParse = jest.spyOn(mockMediatorRdfParse, 'mediate');
       spyMockmediatorRdfResolveQuadPattern = jest.spyOn(mockmediatorRdfResolveQuadPattern, 'mediate');
       actor = new ActorRdfResolveQuadPatternStringSource({ name: 'actor',
+        cacheSize,
         bus,
         mediatorRdfParse: mockMediatorRdfParse,
         mediatorRdfResolveQuadPattern: mockmediatorRdfResolveQuadPattern });
     });
 
-    it('should run', async() => {
-      const context = new ActionContext({ name: 'context',
-        [KeysRdfResolveQuadPattern.source.name]:
-      { type: 'stringSource', value: sourceValue, mediaType: sourceMediaType, baseIRI: sourceBaseIri }});
-      const pattern: any = {
-        subject: DF.variable('s'),
-        predicate: DF.namedNode('p'),
-        object: DF.variable('o'),
-        graph: DF.variable('g'),
-      };
-      const op: any = {
-        context,
-        pattern: {
+    it('should produce expected results more than once', async() => {
+      for (let execution = 0; execution < 2; execution++) {
+        const context = new ActionContext({
+          name: 'context',
+          [KeysRdfResolveQuadPattern.source.name]: source,
+        });
+
+        const op: IActionRdfResolveQuadPattern = { context, pattern };
+
+        const expectedTextStream = new Readable({ objectMode: true });
+        expectedTextStream._read = () => {
+          // Do nothing
+        };
+        expectedTextStream.push(<string>sourceValue);
+        expectedTextStream.push(null);
+
+        const expectedParseAction = {
           context,
-          pattern,
-        },
-      };
+          handle: {
+            metadata: { baseIRI: sourceBaseIri },
+            data: expectedTextStream,
+            context,
+          },
+          handleMediaType: sourceMediaType,
+        };
 
-      const expectedTextStream = new Readable({ objectMode: true });
-      expectedTextStream._read = () => {
-        // Do nothing
-      };
-      expectedTextStream.push(<string>sourceValue);
-      expectedTextStream.push(null);
+        const resp: IActorRdfResolveQuadPatternOutput = await actor.run(op);
+        const data = await resp.data.toArray();
 
-      const expectedParseAction = {
-        context,
-        handle: {
-          metadata: { baseIRI: sourceBaseIri },
-          data: expectedTextStream,
-          context,
-        },
-        handleMediaType: sourceMediaType,
-      };
+        if (execution === 0) {
+          expect(JSON.stringify(spyMockMediatorRdfParse.mock.calls[0][0]))
+            .toStrictEqual(JSON.stringify(expectedParseAction));
+        } else {
+          expect(spyMockMediatorRdfParse).toHaveBeenCalledTimes(1);
+        }
 
-      const resp: IActorRdfResolveQuadPatternOutput = await actor.run(op);
+        expect(spyMockmediatorRdfResolveQuadPattern).toBeCalledWith(expect.objectContaining({
+          pattern: op.pattern,
+        }));
 
-      expect(JSON.stringify(spyMockMediatorRdfParse.mock.calls[0][0]))
-        .toStrictEqual(JSON.stringify(expectedParseAction));
-
-      expect(spyMockmediatorRdfResolveQuadPattern).toBeCalledWith(expect.objectContaining({
-        pattern: op.pattern,
-      }));
-
-      expect(await resp.data.toArray()).toMatchObject(expectedQuads);
+        expect(data).toMatchObject(expectedQuads);
+      }
     });
   });
 });
