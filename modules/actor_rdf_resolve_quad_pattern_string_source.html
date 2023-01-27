@@ -108,6 +108,7 @@
 						<h3>Config Parameters</h3>
 					</a>
 					<ul>
+						<li><code>cacheSize</code>: The maximum number of parsed stores in the LRU cache, set to 0 to disable, defaults to 100.</li>
 						<li><code>mediatorRdfParse</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse">RDF Parse bus</a>.</li>
 						<li><code>mediatorRdfResolveQuadPattern</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern">RDF resolve quad pattern bus</a>.</li>
 					</ul>
@@ -121,14 +122,256 @@
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_resolve_quad_pattern_string_source.ActorRdfResolveQuadPatternStringSource.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>String<wbr>Source</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../classes/actor_rdf_resolve_quad_pattern_string_source.export_.html" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.IActorRdfResolveQuadPatternStringSource.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>String<wbr>Source</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.DeprecatedOptions.html" class="tsd-kind-icon">Deprecated<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.Entry.html" class="tsd-kind-icon">Entry</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.FetchOptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.FetcherFetchOptions.html" class="tsd-kind-icon">Fetcher<wbr>Fetch<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.FetcherOptions.html" class="tsd-kind-icon">Fetcher<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.GetOptions.html" class="tsd-kind-icon">Get<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.HasOptions.html" class="tsd-kind-icon">Has<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.IActorRdfResolveQuadPatternStringSourceArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>String<wbr>Source<wbr>Args</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.LimitedByCount.html" class="tsd-kind-icon">Limited<wbr>ByCount</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.LimitedBySize.html" class="tsd-kind-icon">Limited<wbr>BySize</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.LimitedByTTL.html" class="tsd-kind-icon">Limited<wbr>ByTTL</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.PeekOptions.html" class="tsd-kind-icon">Peek<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.SetOptions.html" class="tsd-kind-icon">Set<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.SharedOptions.html" class="tsd-kind-icon">Shared<wbr>Options</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#DisposeReason" class="tsd-kind-icon">Dispose<wbr>Reason</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#Disposer" class="tsd-kind-icon">Disposer</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#Fetcher" class="tsd-kind-icon">Fetcher</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#LRUMilliseconds" class="tsd-kind-icon">LRUMilliseconds</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#MaybeMaxEntrySizeLimit" class="tsd-kind-icon">Maybe<wbr>Max<wbr>Entry<wbr>Size<wbr>Limit</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#Options" class="tsd-kind-icon">Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#SafetyBounds" class="tsd-kind-icon">Safety<wbr>Bounds</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_string_source.html#SizeCalculator" class="tsd-kind-icon">Size<wbr>Calculator</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+					<a name="DisposeReason" class="tsd-anchor"></a>
+					<h3>Dispose<wbr>Reason</h3>
+					<div class="tsd-signature tsd-kind-icon">Dispose<wbr>Reason<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;evict&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;set&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;delete&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:279</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+					<a name="Disposer" class="tsd-anchor"></a>
+					<h3>Disposer</h3>
+					<div class="tsd-signature tsd-kind-icon">Disposer&lt;K, V&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">K</span>, reason<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">DisposeReason</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:282</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>K</h4>
+						</li>
+						<li>
+							<h4>V</h4>
+						</li>
+					</ul>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-external">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">K</span>, reason<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">DisposeReason</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>value: <span class="tsd-signature-type">V</span></h5>
+											</li>
+											<li>
+												<h5>key: <span class="tsd-signature-type">K</span></h5>
+											</li>
+											<li>
+												<h5>reason: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">DisposeReason</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+					<a name="Fetcher" class="tsd-anchor"></a>
+					<h3>Fetcher</h3>
+					<div class="tsd-signature tsd-kind-icon">Fetcher&lt;K, V&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">K</span>, staleValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, options<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">FetcherOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:287</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>K</h4>
+						</li>
+						<li>
+							<h4>V</h4>
+						</li>
+					</ul>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-external">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">K</span>, staleValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, options<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">FetcherOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>key: <span class="tsd-signature-type">K</span></h5>
+											</li>
+											<li>
+												<h5>staleValue: <span class="tsd-signature-type">V</span></h5>
+											</li>
+											<li>
+												<h5>options: <a href="" class="tsd-signature-type" data-tsd-kind="Interface">FetcherOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+					<a name="LRUMilliseconds" class="tsd-anchor"></a>
+					<h3>LRUMilliseconds</h3>
+					<div class="tsd-signature tsd-kind-icon">LRUMilliseconds<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:278</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+					<a name="MaybeMaxEntrySizeLimit" class="tsd-anchor"></a>
+					<h3>Maybe<wbr>Max<wbr>Entry<wbr>Size<wbr>Limit</h3>
+					<div class="tsd-signature tsd-kind-icon">Maybe<wbr>Max<wbr>Entry<wbr>Size<wbr>Limit&lt;K, V&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>maxEntrySize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>sizeCalculation<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">SizeCalculator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:324</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>K</h4>
+						</li>
+						<li>
+							<h4>V</h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+					<a name="Options" class="tsd-anchor"></a>
+					<h3>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Options&lt;K, V&gt;<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type" data-tsd-kind="Interface">SharedOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">DeprecatedOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">SafetyBounds</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">MaybeMaxEntrySizeLimit</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:516</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>K</h4>
+						</li>
+						<li>
+							<h4>V</h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+					<a name="SafetyBounds" class="tsd-anchor"></a>
+					<h3>Safety<wbr>Bounds</h3>
+					<div class="tsd-signature tsd-kind-icon">Safety<wbr>Bounds&lt;K, V&gt;<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type" data-tsd-kind="Interface">LimitedByCount</a><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">LimitedBySize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">LimitedByTTL</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:447</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>K</h4>
+						</li>
+						<li>
+							<h4>V</h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+					<a name="SizeCalculator" class="tsd-anchor"></a>
+					<h3>Size<wbr>Calculator</h3>
+					<div class="tsd-signature tsd-kind-icon">Size<wbr>Calculator&lt;K, V&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-resolve-quad-pattern-string-source/node_modules/lru-cache/index.d.ts:281</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>K</h4>
+						</li>
+						<li>
+							<h4>V</h4>
+						</li>
+					</ul>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-external">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>value: <span class="tsd-signature-type">V</span></h5>
+											</li>
+											<li>
+												<h5>key: <span class="tsd-signature-type">K</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
 					</div>
 				</section>
 			</section>
@@ -154,8 +397,74 @@
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/actor_rdf_resolve_quad_pattern_string_source.ActorRdfResolveQuadPatternStringSource.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>String<wbr>Source</a>
 							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../classes/actor_rdf_resolve_quad_pattern_string_source.export_.html" class="tsd-kind-icon">export&#61;</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.DeprecatedOptions.html" class="tsd-kind-icon">Deprecated<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.Entry.html" class="tsd-kind-icon">Entry</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.FetchOptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.FetcherFetchOptions.html" class="tsd-kind-icon">Fetcher<wbr>Fetch<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.FetcherOptions.html" class="tsd-kind-icon">Fetcher<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.GetOptions.html" class="tsd-kind-icon">Get<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.HasOptions.html" class="tsd-kind-icon">Has<wbr>Options</a>
+							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.IActorRdfResolveQuadPatternStringSource.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>String<wbr>Source</a>
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.IActorRdfResolveQuadPatternStringSourceArgs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>String<wbr>Source<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.LimitedByCount.html" class="tsd-kind-icon">Limited<wbr>ByCount</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.LimitedBySize.html" class="tsd-kind-icon">Limited<wbr>BySize</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.LimitedByTTL.html" class="tsd-kind-icon">Limited<wbr>ByTTL</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.PeekOptions.html" class="tsd-kind-icon">Peek<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.SetOptions.html" class="tsd-kind-icon">Set<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_string_source.SharedOptions.html" class="tsd-kind-icon">Shared<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#DisposeReason" class="tsd-kind-icon">Dispose<wbr>Reason</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#Disposer" class="tsd-kind-icon">Disposer</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#Fetcher" class="tsd-kind-icon">Fetcher</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#LRUMilliseconds" class="tsd-kind-icon">LRUMilliseconds</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#MaybeMaxEntrySizeLimit" class="tsd-kind-icon">Maybe<wbr>Max<wbr>Entry<wbr>Size<wbr>Limit</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#Options" class="tsd-kind-icon">Options</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#SafetyBounds" class="tsd-kind-icon">Safety<wbr>Bounds</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-external">
+								<a href="actor_rdf_resolve_quad_pattern_string_source.html#SizeCalculator" class="tsd-kind-icon">Size<wbr>Calculator</a>
 							</li>
 						</ul>
 					</li>
