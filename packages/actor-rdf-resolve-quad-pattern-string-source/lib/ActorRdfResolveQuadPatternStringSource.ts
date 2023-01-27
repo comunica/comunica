@@ -8,7 +8,7 @@ import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataSource, IDataSourceSerialized } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import LRUCache = require('lru-cache');
+import * as LRUCache from 'lru-cache';
 import { storeStream } from 'rdf-store-stream';
 import { Readable } from 'readable-stream';
 
@@ -43,11 +43,17 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
 
   public run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
     const source = <IDataSourceSerialized>getContextSource(action.context)!;
-    const rdfSourcePromise: Promise<RDF.Source> = this.cache?.get(source) ?? this.getRdfSource(action.context, source);
-    if (this.cache && !this.cache.has(source)) {
-      this.cache.set(source, rdfSourcePromise);
+    // A source should only be parsed once (see getRdfSource comment), so if it has been parsed,
+    // that earlier result should be used. Note: if the object is identical value-wise, but is not
+    // the same exact object, it will get parsed again and saved in the cache as its own entry!
+    let rdfSourcePromise = this.cache?.get(source);
+    if (!rdfSourcePromise) {
+      rdfSourcePromise = this.getRdfSource(action.context, source);
+      if (this.cache) {
+        this.cache.set(source, rdfSourcePromise);
+      }
     }
-    return new Promise((resolve, reject) => rdfSourcePromise
+    return new Promise((resolve, reject) => rdfSourcePromise!
       .then(rdfSource => {
         const resolveQuadAction: IActionRdfResolveQuadPattern = {
           pattern: action.pattern,
@@ -60,6 +66,15 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
       }).catch(reject));
   }
 
+  /**
+   * Parses the string data source through the RDF parse bus, returning the RDF source.
+   * Parsing a source with blank nodes may produce different identifiers for the same nodes
+   * on different parses, for example if the source gets parsed separately for each pattern
+   * in a query. Consequently, a single source should only be parsed once, and the parse result cached.
+   * @param context The run action context
+   * @param source The source from the run action context
+   * @returns Parsed RDF source that can be passed to quad pattern resolve mediator as an rdfjsSource
+   */
   protected async getRdfSource(context: IActionContext, source: IDataSourceSerialized): Promise<RDF.Source> {
     const textStream = new Readable({ objectMode: true });
     /* istanbul ignore next */
@@ -80,9 +95,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
     };
 
     const parseResult = await this.mediatorRdfParse.mediate(parseAction);
-    const rdfStore = await storeStream(parseResult.handle.data);
-
-    return rdfStore;
+    return await storeStream(parseResult.handle.data);
   }
 
   private isStringSource(datasource: any): datasource is IDataSourceSerialized {
@@ -98,7 +111,7 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
 
 export interface IActorRdfResolveQuadPatternStringSourceArgs extends IActorRdfResolveQuadPatternArgs {
   /**
-   * The maximum number of entries in the LRU cache, set to 0 to disable.
+   * The maximum number of parsed stores in the LRU cache, set to 0 to disable.
    * @range {integer}
    * @default {100}
    */
