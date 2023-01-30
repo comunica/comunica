@@ -49,9 +49,19 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.aggregatedStore = aggregatedStore;
   }
 
-  protected _end(destroy?: boolean): void {
+  public close(): void {
+    // Mark the aggregated store as ended once we trigger the closing of this iterator.
+    // We don't override _end, because that would mean that we have to wait
+    // until the buffer of this iterator must be fully consumed, which will not always be the case.
     this.aggregatedStore?.end();
-    super._end(destroy);
+
+    super.close();
+  }
+
+  protected canStartNewIterator(): boolean {
+    // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
+    // We need this because there are cases where these running iterators will be consumed before this linked iterator.
+    return (this.aggregatedStore && this.aggregatedStore.runningIterators.size > 0) || super.canStartNewIterator();
   }
 
   protected shouldStoreSourcesStates(): boolean {

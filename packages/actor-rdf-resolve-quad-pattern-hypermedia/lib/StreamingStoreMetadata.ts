@@ -8,6 +8,8 @@ import { StreamingStore } from 'rdf-streaming-store';
  * A StreamingStore that returns an AsyncIterator with a valid MetadataQuads property.
  */
 export class StreamingStoreMetadata extends StreamingStore {
+  public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
+
   public match(
     subject?: RDF.Term | null,
     predicate?: RDF.Term | null,
@@ -26,6 +28,12 @@ export class StreamingStoreMetadata extends StreamingStore {
       canContainUndefs: false,
     };
     iterator.setProperty('metadata', metadata);
+
+    // Store all running iterators until they end
+    this.runningIterators.add(iterator);
+    iterator.on('end', () => {
+      this.runningIterators.delete(iterator);
+    });
 
     return iterator;
   }
