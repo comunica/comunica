@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.1"></a>
+## [v2.6.1](https://github.com/comunica/comunica/compare/v2.6.0...v2.6.1) - 2023-01-30
+
+### Fixed
+* [Fix aggregated hypermedia store halting if initial stream not fully consumed](https://github.com/comunica/comunica/commit/14d9938373dd48682e76ef0ef487721d806e617c)
+* [Cache parsed sources in string source actor](https://github.com/comunica/comunica/commit/4a0992d5f757c356c2ba6662b8b512c712bdc0c8)
+
 <a name="v2.6.0"></a>
 ## [v2.6.0](https://github.com/comunica/comunica/compare/v2.5.2...v2.6.0) - 2023-01-26
 

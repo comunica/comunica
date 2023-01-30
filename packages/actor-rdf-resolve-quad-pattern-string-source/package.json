@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-string-source",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "A rdf-resolve-quad-pattern-string-source actor",
   "lsd:module": true,
   "main": "lib/index.js",
