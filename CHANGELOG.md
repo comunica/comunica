@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.2"></a>
+## [v2.6.2](https://github.com/comunica/comunica/compare/v2.6.1...v2.6.2) - 2023-01-31
+
+### Fixed
+* [Fix shaclc parser not being able to pipe](https://github.com/comunica/comunica/commit/2b6f38e3cf1446ea59a678ef327934cc74bfe310)
+
 <a name="v2.6.1"></a>
 ## [v2.6.1](https://github.com/comunica/comunica/compare/v2.6.0...v2.6.1) - 2023-01-30
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-file",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -142,7 +142,7 @@
     "@comunica/actor-rdf-parse-jsonld": "^2.6.0",
     "@comunica/actor-rdf-parse-n3": "^2.6.0",
     "@comunica/actor-rdf-parse-rdfxml": "^2.6.0",
-    "@comunica/actor-rdf-parse-shaclc": "^2.6.0",
+    "@comunica/actor-rdf-parse-shaclc": "^2.6.2",
     "@comunica/actor-rdf-parse-xml-rdfa": "^2.6.0",
     "@comunica/actor-rdf-resolve-hypermedia-links-next": "^2.6.0",
     "@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo": "^2.6.0",
