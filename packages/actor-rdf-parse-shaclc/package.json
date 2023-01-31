@@ -37,7 +37,8 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
     "shaclc-parse": "^1.3.0",
-    "stream-to-string": "^1.2.0"
+    "stream-to-string": "^1.2.0",
+    "readable-stream": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
