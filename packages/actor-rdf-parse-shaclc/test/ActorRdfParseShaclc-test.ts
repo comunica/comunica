@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import { type Readable, PassThrough } from 'stream';
 import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
@@ -323,6 +323,33 @@ describe('ActorRdfParseShaclc', () => {
             output.handle.data.read();
             output.handle.data.read();
             expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
+              quad(
+                'http://example.org/test#TestShape',
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                'http://www.w3.org/ns/shacl#NodeShape',
+              ),
+              quad(
+                'http://example.org/basic-shape-iri',
+                'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                'http://www.w3.org/2002/07/owl#Ontology',
+              ),
+            ]);
+          });
+      });
+
+      it('should be able to pipe data', () => {
+        return actor.run({
+          handle: { data: input, context },
+          handleMediaType: 'text/shaclc',
+          context,
+        })
+          .then(async(output: any) => {
+            // Create a new readable
+            const readable = new PassThrough({ objectMode: true });
+
+            output.handle.data.pipe(readable);
+
+            expect(await arrayifyStream(readable)).toEqualRdfQuadArray([
               quad(
                 'http://example.org/test#TestShape',
                 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
