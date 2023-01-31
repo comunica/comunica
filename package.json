@@ -110,6 +110,6 @@
   },
   "resolutions": {
     "@rdfjs/types": "1.1.0",
-    "typescript": "4.7.4"
+    "typescript": "4.9.5"
   }
 }
