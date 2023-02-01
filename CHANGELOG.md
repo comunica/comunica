@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.3"></a>
+## [v2.6.3](https://github.com/comunica/comunica/compare/v2.6.2...v2.6.3) - 2023-02-01
+
+### Fixed
+* [Fix aggregated hypermedia store halting if initial stream is destroyed](https://github.com/comunica/comunica/commit/587fbf178073b5a56d7e90ed5023f135aa7787d6)
+
 <a name="v2.6.2"></a>
 ## [v2.6.2](https://github.com/comunica/comunica/compare/v2.6.1...v2.6.2) - 2023-01-31
 
