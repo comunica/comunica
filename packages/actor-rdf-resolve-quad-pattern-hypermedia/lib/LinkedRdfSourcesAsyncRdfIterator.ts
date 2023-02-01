@@ -230,6 +230,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     });
   }
 
+  protected isRunning(): boolean {
+    return !this.done;
+  }
+
   /**
    * Check if a next URL is in the queue.
    * If yes, start a new iterator.
@@ -241,7 +245,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.getLinkQueue()
       .then(linkQueue => {
         // Create as many new iterators as possible
-        while (this.canStartNewIterator() && !this.done) {
+        while (this.canStartNewIterator() && this.isRunning()) {
           const nextLink = linkQueue.pop();
           if (nextLink) {
             this.iteratorsPendingCreation++;

@@ -58,10 +58,15 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     super.close();
   }
 
-  protected canStartNewIterator(): boolean {
+  protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
     return (this.aggregatedStore && this.aggregatedStore.runningIterators.size > 0) || super.canStartNewIterator();
+  }
+
+  protected override isRunning(): boolean {
+    // Same as above
+    return (this.aggregatedStore && this.aggregatedStore.runningIterators.size > 0) || !this.done;
   }
 
   protected shouldStoreSourcesStates(): boolean {
