@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.4"></a>
+## [v2.6.4](https://github.com/comunica/comunica/compare/v2.6.3...v2.6.4) - 2023-02-02
+
+### Fixed
+* [Fix aggregated hypermedia store not closing with LIMIT](https://github.com/comunica/comunica/commit/9be52343c02ad8d34971dc250c871fbb6e991c1e)
+
 <a name="v2.6.3"></a>
 ## [v2.6.3](https://github.com/comunica/comunica/compare/v2.6.2...v2.6.3) - 2023-02-01
 
