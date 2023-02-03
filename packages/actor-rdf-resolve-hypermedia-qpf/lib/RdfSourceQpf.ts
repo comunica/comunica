@@ -203,10 +203,10 @@ export class RdfSourceQpf implements IQuadSource {
   protected getPatternId(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
     /* eslint-disable id-length */
     return JSON.stringify({
-      s: subject.termType === 'Variable' ? '' : termToString(subject),
-      p: predicate.termType === 'Variable' ? '' : termToString(predicate),
-      o: object.termType === 'Variable' ? '' : termToString(object),
-      g: graph.termType === 'Variable' ? '' : termToString(graph),
+      s: subject.termType === 'Variable' ? '' : _termToString(subject),
+      p: predicate.termType === 'Variable' ? '' : _termToString(predicate),
+      o: object.termType === 'Variable' ? '' : _termToString(object),
+      g: graph.termType === 'Variable' ? '' : _termToString(graph),
     });
     /* eslint-enable id-length */
   }
@@ -225,4 +225,11 @@ export class RdfSourceQpf implements IQuadSource {
       return quads.clone();
     }
   }
+}
+
+function _termToString(term: RDF.Term): string {
+  return term.termType === 'DefaultGraph' ?
+    // Any character that cannot be present in a URL will do
+    '|' :
+    termToString(term);
 }
