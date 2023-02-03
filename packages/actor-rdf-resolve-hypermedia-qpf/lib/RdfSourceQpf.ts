@@ -113,9 +113,9 @@ export class RdfSourceQpf implements IQuadSource {
     ];
     for (const entry of input) {
       if (entry.uri && entry.term.termType !== 'Variable') {
-        entries[entry.uri] = entry.term.termType === 'DefaultGraph'
-          ? 'http://www.w3.org/ns/sparql-service-description#defaultGraph'
-          : termToString(entry.term);
+        entries[entry.uri] = entry.term.termType === 'DefaultGraph' ?
+          'http://www.w3.org/ns/sparql-service-description#defaultGraph' :
+          termToString(entry.term);
       }
     }
     return searchForm.getUri(entries);
