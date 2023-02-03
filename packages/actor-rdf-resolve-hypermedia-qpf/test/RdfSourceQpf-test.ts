@@ -530,5 +530,26 @@ describe('RdfSourceQpf with a custom default graph', () => {
         quad('s1-', 'actualDefaultGraph', 'o1'),
       ]);
     });
+
+    it('should correctly correctly cache the default graph [defaultGraph=DEFAULT_GRAPH]', async() => {
+      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, DF.defaultGraph()))).toBeRdfIsomorphic([
+      ]);
+
+      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, v))).toBeRdfIsomorphic([
+        quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
+      ]);
+    });
+
+    it('should correctly correctly cache the default graph [defaultGraph=undefined]', async() => {
+      // @ts-expect-error
+      delete source.defaultGraph;
+
+      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, DF.defaultGraph()))).toBeRdfIsomorphic([
+      ]);
+
+      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, v))).toBeRdfIsomorphic([
+        quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
+      ]);
+    });
   });
 });
