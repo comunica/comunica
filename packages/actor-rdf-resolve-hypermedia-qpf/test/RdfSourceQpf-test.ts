@@ -198,6 +198,24 @@ describe('RdfSourceQpf', () => {
         .toEqual('S,P,O,G');
     });
 
+    it('should create a valid fragment URI with materialized terms with default graph', () => {
+      return expect(source.createFragmentUri(metadata.searchForms.values[0],
+        DF.namedNode('S'),
+        DF.namedNode('P'),
+        DF.namedNode('O'),
+        DF.defaultGraph()))
+        .toEqual('S,P,O,http://www.w3.org/ns/sparql-service-description#defaultGraph');
+    });
+
+    it('should create a valid fragment URI with materialized terms with variable graph', () => {
+      return expect(source.createFragmentUri(metadata.searchForms.values[0],
+        DF.namedNode('S'),
+        DF.namedNode('P'),
+        DF.namedNode('O'),
+        v))
+        .toEqual('S,P,O,_');
+    });
+
     it('should create a valid fragment URI with only a few materialized terms', () => {
       return expect(source.createFragmentUri(metadata.searchForms.values[0],
         v,
