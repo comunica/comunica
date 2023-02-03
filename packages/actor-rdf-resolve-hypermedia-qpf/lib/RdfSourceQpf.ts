@@ -6,7 +6,7 @@ import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator, wrap } from 'asynciterator';
+import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
@@ -137,58 +137,49 @@ export class RdfSourceQpf implements IQuadSource {
       return cached;
     }
 
-    const quads = new TransformIterator(async() => {
-      let url: string = this.createFragmentUri(this.searchForm, subject, predicate, object, graph);
-      const dereferenceRdfOutput = await this.mediatorDereferenceRdf.mediate({ context: this.context, url });
-      url = dereferenceRdfOutput.url;
+    const url: string = this.createFragmentUri(this.searchForm, subject, predicate, object, graph);
 
-      // Determine the metadata and emit it
-      const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-        { context: this.context,
-          url,
-          quads: dereferenceRdfOutput.data,
-          triples: dereferenceRdfOutput.metadata?.triples },
-      );
-      const metadataExtractPromise = this.mediatorMetadataExtract
-        .mediate({
-          context: this.context,
-          url,
-          metadata: rdfMetadataOuput.metadata,
-          requestTime: dereferenceRdfOutput.requestTime,
-        })
-        .then(({ metadata }) => quads
-          .setProperty('metadata', { ...metadata, canContainUndefs: false }));
-
-      // The server is free to send any data in its response (such as metadata),
-      // including quads that do not match the given matter.
-      // Therefore, we have to filter away all non-matching quads here.
-      const actualDefaultGraph = DF.defaultGraph();
-      let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data)
-        .transform({
-          filter(quad: RDF.Quad) {
-            if (matchPattern(quad, subject, predicate, object, graph)) {
-              return true;
-            }
-            // Special case: if we are querying in the default graph, and we had an overridden default graph,
-            // also accept that incoming triples may be defined in the actual default graph
-            return modifiedGraph && matchPattern(quad, subject, predicate, object, actualDefaultGraph);
+    const data = this.mediatorDereferenceRdf.mediate({ context: this.context, url })
+      .then(async dereferenceRdfOutput => {
+        // Determine the metadata and emit it
+        console.log(1)
+        const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
+          {
+            context: this.context,
+            url,
+            quads: dereferenceRdfOutput.data,
+            triples: dereferenceRdfOutput.metadata?.triples,
           },
-        });
-      if (modifiedGraph || graph.termType === 'Variable') {
-        // Reverse-map the overridden default graph back to the actual default graph
-        filteredOutput = this.reverseMapQuadsToDefaultGraph(filteredOutput);
-      }
-
-      // Swallow error events, as they will be emitted in the metadata stream as well,
-      // and therefore thrown async next.
-      filteredOutput.on('error', () => {
-        // Do nothing
+        );
+        console.log(2)
+        const { metadata } = await this.mediatorMetadataExtract
+          .mediate({
+            context: this.context,
+            url,
+            metadata: rdfMetadataOutput.metadata,
+            requestTime: dereferenceRdfOutput.requestTime,
+          });
+          console.log(3)
+        quads.setProperty('metadata', { ...metadata, canContainUndefs: false });
+        return dereferenceRdfOutput.data;
       });
-      // Ensures metadata event is emitted before end-event
-      await metadataExtractPromise;
 
-      return filteredOutput;
-    }, { autoStart: false });
+    let quads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(data, { autoStart: false })
+      .filter(quad => matchPattern(quad, subject, predicate, object, graph) ||
+      // Special case: if we are querying in the default graph, and we had an overridden default graph,
+      // also accept that incoming triples may be defined in the actual default graph
+      (modifiedGraph && matchPattern(quad, subject, predicate, object, DF.defaultGraph())));
+
+    if (modifiedGraph || graph.termType === 'Variable') {
+      // Reverse-map the overridden default graph back to the actual default graph
+      quads = this.reverseMapQuadsToDefaultGraph(quads);
+    }
+
+    // Swallow error events, as they will be emitted in the metadata stream as well,
+    // and therefore thrown async next.
+    // quads.on('error', () => {
+    //   // Do nothing
+    // });
 
     this.cacheQuads(quads, subject, predicate, object, graph);
     return this.getCachedQuads(subject, predicate, object, graph)!;

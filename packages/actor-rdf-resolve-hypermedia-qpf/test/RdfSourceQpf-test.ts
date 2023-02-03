@@ -315,6 +315,7 @@ describe('RdfSourceQpf', () => {
     it('should delegate errors from the RDF dereference stream', () => {
       const quads = new Readable();
       quads._read = () => {
+        console.log('_read called')
         quads.emit('error', error);
       };
       mediatorDereferenceRdf.mediate = (args: any) => Promise.resolve({
@@ -333,11 +334,12 @@ describe('RdfSourceQpf', () => {
         output.on('data', reject);
         output.on('end', reject);
       });
-    });
+    }, 1000);
 
     it('should delegate errors from the metadata split stream', () => {
       const quads = new Readable();
       quads._read = () => {
+        console.log('-'.repeat(100), '_read called')
         quads.emit('error', error);
       };
       mediatorMetadata.mediate = () => Promise.resolve({
@@ -354,8 +356,13 @@ describe('RdfSourceQpf', () => {
         });
         output.on('data', reject);
         output.on('end', reject);
+        // @ts-ignore
+        console.log(output._readable)
+        console.log(output.read())
+        // @ts-ignore
+        console.log(output._readable)
       });
-    });
+    }, 1000);
 
     it('should ignore errors from the metadata extract mediator', async() => {
       mediatorMetadataExtract.mediate = () => Promise.reject(new Error('abc'));

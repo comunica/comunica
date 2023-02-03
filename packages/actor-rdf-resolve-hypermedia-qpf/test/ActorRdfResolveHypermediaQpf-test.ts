@@ -1,6 +1,6 @@
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext, Bus } from '@comunica/core';
-import { empty, TransformIterator } from 'asynciterator';
+import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveHypermediaQpf } from '../lib/ActorRdfResolveHypermediaQpf';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
@@ -101,7 +101,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
   describe('#createSource', () => {
     it('should create an RdfSourceQpf', () => {
       const context = {};
-      const quads = empty();
+      const quads = new ArrayIterator([], { autoStart: false });
       const source = actor.createSource(metadata, context, quads);
       expect(source).toBeInstanceOf(RdfSourceQpf);
       expect(source.mediatorMetadata).toBe(mediatorMetadata);
