@@ -4,7 +4,6 @@ import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { ActionContext, Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory as N3DF } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 
@@ -532,7 +531,7 @@ describe('RdfSourceQpf with a custom default graph', () => {
       ]);
     });
 
-    it('should correctly correctly cache the default graph [rdf-data-factory, defaultGraph=DEFAULT_GRAPH]', async() => {
+    it('should correctly correctly cache the default graph [defaultGraph=DEFAULT_GRAPH]', async() => {
       expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, DF.defaultGraph()))).toBeRdfIsomorphic([
       ]);
 
@@ -541,32 +540,11 @@ describe('RdfSourceQpf with a custom default graph', () => {
       ]);
     });
 
-    it('should correctly correctly cache the default graph [n3 DataFactory, defaultGraph=DEFAULT_GRAPH]', async() => {
-      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, N3DF.defaultGraph()))).toBeRdfIsomorphic([
-      ]);
-
-      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, v))).toBeRdfIsomorphic([
-        quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
-      ]);
-    });
-
-    it('should correctly correctly cache the default graph [rdf-data-factory, defaultGraph=undefined]', async() => {
+    it('should correctly correctly cache the default graph [defaultGraph=undefined]', async() => {
       // @ts-expect-error
       delete source.defaultGraph;
 
       expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, DF.defaultGraph()))).toBeRdfIsomorphic([
-      ]);
-
-      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, v))).toBeRdfIsomorphic([
-        quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
-      ]);
-    });
-
-    it('should correctly correctly cache the default graph [n3 DataFactory, defaultGraph=undefined]', async() => {
-      // @ts-expect-error
-      delete source.defaultGraph;
-
-      expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, N3DF.defaultGraph()))).toBeRdfIsomorphic([
       ]);
 
       expect(await arrayifyStream(source.match(v, DF.namedNode('p3'), v, v))).toBeRdfIsomorphic([
