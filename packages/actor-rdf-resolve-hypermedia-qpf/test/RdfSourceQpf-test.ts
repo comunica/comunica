@@ -223,13 +223,52 @@ describe('RdfSourceQpf', () => {
       expect(await metadataPromise).toBe(metadata);
     });
 
-    it('should return a copy of the initial quads for the empty pattern with the default graph', async() => {
+    it('[TPF] should return a copy of the initial quads for the empty pattern with the default graph', async() => {
+      metadata = {
+        searchForms: {
+          values: [
+            {
+              getUri: (entries: any) => `${entries.s || '_'},${entries.p || '_'},${entries.o || '_'}`,
+              mappings: {
+                o: 'O',
+                p: 'P',
+                s: 'S',
+              },
+            },
+          ],
+        },
+      };
+
+      source = new RdfSourceQpf(
+        mediatorMetadata,
+        mediatorMetadataExtract,
+        mediatorDereferenceRdf,
+        's',
+        'p',
+        'o',
+        undefined,
+        metadata,
+        new ActionContext(),
+        streamifyArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+        ]),
+      );
+
       expect(await arrayifyStream(source.match(
         v, v, v, DF.defaultGraph(),
       )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
+        ]);
+    });
+
+    it('[QPF] should not return any quads if defaultGraph URI is not provided', async() => {
+      expect(await arrayifyStream(source.match(
+        v, v, v, DF.defaultGraph(),
+      )))
+        .toBeRdfIsomorphic([
         ]);
     });
 
