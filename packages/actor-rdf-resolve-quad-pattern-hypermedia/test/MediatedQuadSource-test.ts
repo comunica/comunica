@@ -80,13 +80,13 @@ describe('MediatedQuadSource', () => {
 
       it('should set the first source after the first match call', async() => {
         source.match(v, v, v, v);
-        expect((<any> (await source.sourcesState.sources.get('firstUrl'))).metadata).toEqual({ a: 1 });
-        expect((<any> (await source.sourcesState.sources.get('firstUrl'))).source).toBeTruthy();
+        expect(((await source.sourcesState.sources.get('firstUrl')))!.metadata).toEqual({ a: 1 });
+        expect(((await source.sourcesState.sources.get('firstUrl')))!.source).toBeTruthy();
       });
 
       it('should allow a custom first source to be set', async() => {
         source.sourcesState = {
-          sources: new LRUCache<string, Promise<ISourceState>>(10),
+          sources: new LRUCache<string, Promise<ISourceState>>({ max: 10 }),
         };
         source.sourcesState.sources.set('firstUrl', Promise.resolve({
           link: { url: 'firstUrl' },
@@ -113,7 +113,7 @@ describe('MediatedQuadSource', () => {
 
       it('should allow a custom first source to be set and emit a metadata event', async() => {
         source.sourcesState = {
-          sources: new LRUCache<string, Promise<ISourceState>>(10),
+          sources: new LRUCache<string, Promise<ISourceState>>({ max: 10 }),
         };
         source.sourcesState.sources.set('firstUrl', Promise.resolve({
           link: { url: 'firstUrl' },
