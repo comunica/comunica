@@ -1071,5 +1071,33 @@ describe('ActorQueryOperationGroup', () => {
       expect(await output.metadata())
         .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('g') ]});
     });
+
+    it('should return before executing the grouping', async() => {
+      const spy = jest.spyOn(GroupsState.prototype, 'collectResults');
+
+      const { op, actor } = constructCase({
+        inputBindings: [
+          BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('bbb') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('ccc') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
+        ],
+        groupVariables: [ 'x' ],
+        inputVariables: [ 'x', 'y', 'z' ],
+        inputOp: simpleXYZinput,
+        aggregates: [],
+      });
+
+      const output = <any> await actor.run(op);
+      expect(spy).not.toHaveBeenCalled();
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('bbb') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('ccc') ]]),
+      ]);
+      expect(spy).toHaveBeenCalled();
+      expect(await output.metadata()).toMatchObject({ variables: [ DF.variable('x') ]});
+    });
   });
 });

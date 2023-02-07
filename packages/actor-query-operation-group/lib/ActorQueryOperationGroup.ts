@@ -2,8 +2,8 @@ import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryOperationResult } from '@comunica/types';
-import { ArrayIterator } from 'asynciterator';
+import type { BindingsStream, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from 'sparqlee';
 import { GroupsState } from './GroupsState';
@@ -46,9 +46,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
     const sparqleeConfig = ActorQueryOperation.getAsyncExpressionContext(context);
 
-    // Return a new promise that completes when the stream has ended or when
-    // an error occurs
-    return new Promise((resolve, reject) => {
+    // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
+    const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
       const groups = new GroupsState(hashFunction, operation, sparqleeConfig);
 
       // Phase 2: Collect aggregator results
@@ -57,12 +56,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // of the grouping variables merged with the aggregate variables
       output.bindingsStream.on('end', async() => {
         try {
-          const bindingsStream = new ArrayIterator(await groups.collectResults(), { autoStart: false });
-          resolve({
-            type: 'bindings',
-            bindingsStream,
-            metadata: async() => ({ ...await output.metadata(), variables }),
-          });
+          const bindingsStreamInner = new ArrayIterator(await groups.collectResults(), { autoStart: false });
+          resolve(bindingsStreamInner);
         } catch (error: unknown) {
           reject(error);
         }
@@ -77,7 +72,13 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       output.bindingsStream.on('data', bindings => {
         groups.consumeBindings(bindings).catch(reject);
       });
-    });
+    }), { autoStart: false });
+
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: async() => ({ ...await output.metadata(), variables }),
+    };
   }
 }
 
