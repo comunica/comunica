@@ -91,7 +91,6 @@ export interface IActorRdfResolveHypermediaQpfArgs extends IActorRdfResolveHyper
   objectUri: string;
   /**
    * The URI that should be interpreted as graph URI
-   * @default {http://www.w3.org/ns/sparql-service-description#graph}
    */
   graphUri?: string;
 }
