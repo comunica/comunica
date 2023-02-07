@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.5"></a>
+## [v2.6.5](https://github.com/comunica/comunica/compare/v2.6.4...v2.6.5) - 2023-02-07
+
+### Fixed
+* [Fix group operator only returning stream after completion](https://github.com/comunica/comunica/commit/2f4948e3ad5a0a5287f3afcaa731ad8113f30eaf)
+* [Fix incorrect caching of QPF requests on default graph](https://github.com/comunica/comunica/commit/f901b604ecc687b5118360bfef5e6021cae03df7)
+
 <a name="v2.6.4"></a>
 ## [v2.6.4](https://github.com/comunica/comunica/compare/v2.6.3...v2.6.4) - 2023-02-02
 
