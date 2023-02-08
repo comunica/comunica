@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-n3",
-  "version": "2.6.0",
+  "version": "2.6.6",
   "description": "A n3 rdf-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",

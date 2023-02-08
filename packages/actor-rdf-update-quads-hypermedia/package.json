@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-quads-hypermedia",
-  "version": "2.6.0",
+  "version": "2.6.6",
   "description": "A hypermedia rdf-update-quads actor",
   "lsd:module": true,
   "main": "lib/index.js",

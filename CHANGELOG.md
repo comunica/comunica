@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.6"></a>
+## [v2.6.6](https://github.com/comunica/comunica/compare/v2.6.5...v2.6.6) - 2023-02-08
+
+### Fixed
+* [Prefer piping in serializers to maintain backpressure, #759](https://github.com/comunica/comunica/commit/7e5470d52489297158ad74624499416add214b3b)
+
+### Changed
+* [Update dependency lru-cache to v7](https://github.com/comunica/comunica/commit/ac21be0fdbfcf7c6892b62fa6794b8b436b0a466)
+* [Don't lookup default graph when none available in QPF](https://github.com/comunica/comunica/commit/22dc9b99ddbf77b365f29ebf06173c29d0e47334)
+
 <a name="v2.6.5"></a>
 ## [v2.6.5](https://github.com/comunica/comunica/compare/v2.6.4...v2.6.5) - 2023-02-07
 

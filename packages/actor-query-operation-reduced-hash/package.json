@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-reduced-hash",
-  "version": "2.6.0",
+  "version": "2.6.6",
   "description": "A reduced-hash query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
