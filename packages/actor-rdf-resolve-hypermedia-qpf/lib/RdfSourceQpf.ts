@@ -128,11 +128,18 @@ export class RdfSourceQpf implements IQuadSource {
       if (this.defaultGraph) {
         modifiedGraph = true;
         graph = this.defaultGraph;
-      } else if (this.graphUri && !this.defaultGraph) {
+      } else if (Object.keys(this.searchForm.mappings).length === 4 && !this.defaultGraph) {
         // If the sd:defaultGraph is not declared on a QPF endpoint,
         // then the default graph must be empty.
         const quads = new ArrayIterator([], { autoStart: false });
-        quads.setProperty('metadata', { canContainUndefs: false });
+        quads.setProperty('metadata', {
+          requestTime: 0,
+          cardinality: { type: 'exact', value: 0 },
+          first: null,
+          next: null,
+          last: null,
+          canContainUndefs: false
+        });
         return quads;
       }
     }
