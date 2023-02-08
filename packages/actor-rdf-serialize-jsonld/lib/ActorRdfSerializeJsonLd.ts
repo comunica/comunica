@@ -31,9 +31,17 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
 
   public async runHandle(action: IActionRdfSerialize, mediaType: string, context: IActionContext):
   Promise<IActorRdfSerializeOutput> {
-    const data: NodeJS.ReadableStream = <any> new JsonLdSerializer(
+    const writer = new JsonLdSerializer(
       { space: ' '.repeat(this.jsonStringifyIndentSpaces) },
-    ).import(action.quadStream);
+    );
+    let data: NodeJS.ReadableStream;
+    if ('pipe' in action.quadStream) {
+      // Prefer piping if possible, to maintain backpressure
+      action.quadStream.on('error', error => writer.emit('error', error));
+      data = (<any> action.quadStream).pipe(writer);
+    } else {
+      data = <any> writer.import(action.quadStream);
+    }
     return { data };
   }
 }

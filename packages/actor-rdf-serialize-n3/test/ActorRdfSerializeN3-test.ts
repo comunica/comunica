@@ -6,6 +6,7 @@ import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
+const streamifyArray = require('streamify-array');
 
 describe('ActorRdfSerializeN3', () => {
   let bus: any;
@@ -33,6 +34,7 @@ describe('ActorRdfSerializeN3', () => {
   describe('An ActorRdfSerializeN3 instance', () => {
     let actor: ActorRdfSerializeN3;
     let quadStream: any;
+    let quadStreamPipeable: any;
     let quadsError: any;
 
     beforeEach(() => {
@@ -48,6 +50,10 @@ describe('ActorRdfSerializeN3', () => {
     describe('for serializing', () => {
       beforeEach(() => {
         quadStream = new ArrayIterator([
+          quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
+          quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+        ]);
+        quadStreamPipeable = streamifyArray([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
@@ -73,6 +79,16 @@ describe('ActorRdfSerializeN3', () => {
       it('should run', async() => {
         const output: any = await actor
           .run({ handle: { quadStream, context }, handleMediaType: 'text/turtle', context });
+        expect(await stringifyStream(output.handle.data)).toEqual(
+          `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
+    <http://example.org/d> <http://example.org/e>.
+`,
+        );
+      });
+
+      it('should run on a pipeable stream', async() => {
+        const output: any = await actor
+          .run({ handle: { quadStream: quadStreamPipeable, context }, handleMediaType: 'text/turtle', context });
         expect(await stringifyStream(output.handle.data)).toEqual(
           `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.

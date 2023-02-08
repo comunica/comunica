@@ -34,7 +34,15 @@ export class ActorRdfSerializeN3 extends ActorRdfSerializeFixedMediaTypes {
 
   public async runHandle(action: IActionRdfSerialize, mediaType: string, context: IActionContext):
   Promise<IActorRdfSerializeOutput> {
-    const data: NodeJS.ReadableStream = <any> new StreamWriter({ format: mediaType }).import(action.quadStream);
+    const writer = new StreamWriter({ format: mediaType });
+    let data: NodeJS.ReadableStream;
+    if ('pipe' in action.quadStream) {
+      // Prefer piping if possible, to maintain backpressure
+      action.quadStream.on('error', error => writer.emit('error', error));
+      data = (<any> action.quadStream).pipe(writer);
+    } else {
+      data = <any> writer.import(action.quadStream);
+    }
     return { data,
       triples: mediaType === 'text/turtle' ||
       mediaType === 'application/n-triples' ||

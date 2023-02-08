@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -5,6 +6,7 @@ import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
+const streamifyArray = require('streamify-array');
 
 describe('ActorRdfSerializeJsonLd', () => {
   let bus: any;
@@ -33,6 +35,7 @@ describe('ActorRdfSerializeJsonLd', () => {
   describe('An ActorRdfSerializeJsonLd instance configured with two spaces', () => {
     let actor: ActorRdfSerializeJsonLd;
     let quadStream: any;
+    let quadStreamPipeable: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus,
@@ -48,6 +51,10 @@ describe('ActorRdfSerializeJsonLd', () => {
     describe('for parsing', () => {
       beforeEach(() => {
         quadStream = new ArrayIterator([
+          quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
+          quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+        ]);
+        quadStreamPipeable = streamifyArray([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
@@ -74,6 +81,32 @@ describe('ActorRdfSerializeJsonLd', () => {
 `,
           ));
       });
+    });
+
+    it('should run on a pipeable stream', () => {
+      return actor.run({
+        handle: { quadStream: quadStreamPipeable, context },
+        handleMediaType: 'application/ld+json',
+        context,
+      })
+        .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
+          `[
+  {
+    "@id": "http://example.org/a",
+    "http://example.org/b": [
+      {
+        "@id": "http://example.org/c"
+      }
+    ],
+    "http://example.org/d": [
+      {
+        "@id": "http://example.org/e"
+      }
+    ]
+  }
+]
+`,
+        ));
     });
 
     it('should run with multiple array entries', () => {
@@ -123,6 +156,7 @@ describe('ActorRdfSerializeJsonLd', () => {
   describe('An ActorRdfSerializeJsonLd instance', () => {
     let actor: ActorRdfSerializeJsonLd;
     let quadStream: any;
+    let quadsError: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus,
@@ -141,6 +175,8 @@ describe('ActorRdfSerializeJsonLd', () => {
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
+        quadsError = new Readable();
+        quadsError._read = () => quadsError.emit('error', new Error('SerializeJsonLd'));
       });
 
       it('should test on application/json', () => {
@@ -167,6 +203,13 @@ describe('ActorRdfSerializeJsonLd', () => {
           .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual('[{"@id":' +
             '"http://example.org/a","http://example.org/b":[{"@id":"http://example.org/c"}],"http://example.org/d":' +
             '[{"@id":"http://example.org/e"}]}]'));
+      });
+
+      it('should forward stream errors', async() => {
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: { quadStream: quadsError, context }, handleMediaType: 'application/ld+json', context },
+        )))
+          .handle.data)).rejects.toBeTruthy();
       });
     });
 
