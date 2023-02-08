@@ -53,14 +53,14 @@ export class RdfSourceQpf implements IQuadSource {
     }
     this.searchForm = searchForm;
     this.defaultGraph = metadata.defaultGraph ? DF.namedNode(metadata.defaultGraph) : undefined;
-    if (initialQuads) {
-      let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);
-      if (this.defaultGraph) {
-        wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
-      }
-      wrappedQuads.setProperty('metadata', metadata);
-      this.cacheQuads(wrappedQuads, DF.variable(''), DF.variable(''), DF.variable(''), DF.variable(''));
-    }
+    // if (initialQuads) {
+    //   let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);
+    //   if (this.defaultGraph) {
+    //     wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
+    //   }
+    //   wrappedQuads.setProperty('metadata', metadata);
+    //   this.cacheQuads(wrappedQuads, DF.variable(''), DF.variable(''), DF.variable(''), DF.variable(''));
+    // }
   }
 
   /**
@@ -120,6 +120,7 @@ export class RdfSourceQpf implements IQuadSource {
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
+    console.log('matching', subject, predicate, object, graph)
     // If we are querying the default graph,
     // and the source has an overridden value for the default graph (such as QPF can provide),
     // we override the graph parameter with that value.
@@ -154,8 +155,10 @@ export class RdfSourceQpf implements IQuadSource {
           metadata: rdfMetadataOuput.metadata,
           requestTime: dereferenceRdfOutput.requestTime,
         })
-        .then(({ metadata }) => quads
-          .setProperty('metadata', { ...metadata, canContainUndefs: false }));
+        .then(({ metadata }) => {
+          console.log('setting metadata for url', url, metadata)
+          quads.setProperty('metadata', { ...metadata, canContainUndefs: false })
+        });
 
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.
@@ -182,8 +185,11 @@ export class RdfSourceQpf implements IQuadSource {
       filteredOutput.on('error', () => {
         // Do nothing
       });
+
+      console.log('waiting for metadata')
       // Ensures metadata event is emitted before end-event
       await metadataExtractPromise;
+      console.log('-'.repeat(100), 'waited for metadata')
 
       return filteredOutput;
     }, { autoStart: false });
@@ -214,6 +220,7 @@ export class RdfSourceQpf implements IQuadSource {
   protected cacheQuads(quads: AsyncIterator<RDF.Quad>,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): void {
     const patternId = this.getPatternId(subject, predicate, object, graph);
+    console.log('caching', patternId)
     this.cachedQuads[patternId] = quads.clone();
   }
 
@@ -222,6 +229,7 @@ export class RdfSourceQpf implements IQuadSource {
     const patternId = this.getPatternId(subject, predicate, object, graph);
     const quads = this.cachedQuads[patternId];
     if (quads) {
+      console.log('restoring', patternId)
       return quads.clone();
     }
   }

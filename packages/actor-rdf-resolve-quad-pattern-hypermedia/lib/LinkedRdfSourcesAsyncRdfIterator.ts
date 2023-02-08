@@ -207,6 +207,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     // Listen for the metadata of the source
     // The metadata property is guaranteed to be set
     iterator.getProperty('metadata', (metadata: Record<string, any>) => {
+      console.log('calling getSourceLinks from startsource', startSource)
       startSource.metadata = { ...startSource.metadata, ...metadata };
 
       // Emit metadata if needed

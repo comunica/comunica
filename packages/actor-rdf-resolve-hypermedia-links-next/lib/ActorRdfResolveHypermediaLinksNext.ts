@@ -14,6 +14,7 @@ export class ActorRdfResolveHypermediaLinksNext extends ActorRdfResolveHypermedi
   }
 
   public async test(action: IActionRdfResolveHypermediaLinks): Promise<IActorTest> {
+    console.log('testing next', action.metadata, action.metadata.next)
     if (!action.metadata.next) {
       throw new Error(`Actor ${this.name} requires a 'next' metadata entry.`);
     }
