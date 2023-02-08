@@ -6,7 +6,7 @@ import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator, wrap } from 'asynciterator';
+import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
@@ -124,9 +124,24 @@ export class RdfSourceQpf implements IQuadSource {
     // and the source has an overridden value for the default graph (such as QPF can provide),
     // we override the graph parameter with that value.
     let modifiedGraph = false;
-    if (this.defaultGraph && graph.termType === 'DefaultGraph') {
-      modifiedGraph = true;
-      graph = this.defaultGraph;
+    if (graph.termType === 'DefaultGraph') {
+      if (this.defaultGraph) {
+        modifiedGraph = true;
+        graph = this.defaultGraph;
+      } else if (Object.keys(this.searchForm.mappings).length === 4 && !this.defaultGraph) {
+        // If the sd:defaultGraph is not declared on a QPF endpoint,
+        // then the default graph must be empty.
+        const quads = new ArrayIterator([], { autoStart: false });
+        quads.setProperty('metadata', {
+          requestTime: 0,
+          cardinality: { type: 'exact', value: 0 },
+          first: null,
+          next: null,
+          last: null,
+          canContainUndefs: false,
+        });
+        return quads;
+      }
     }
 
     // Try to emit from cache
