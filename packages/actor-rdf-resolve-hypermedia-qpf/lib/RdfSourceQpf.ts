@@ -138,7 +138,7 @@ export class RdfSourceQpf implements IQuadSource {
           first: null,
           next: null,
           last: null,
-          canContainUndefs: false
+          canContainUndefs: false,
         });
         return quads;
       }
