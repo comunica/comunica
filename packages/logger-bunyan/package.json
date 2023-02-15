@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-bunyan",
-  "version": "2.6.0",
+  "version": "2.6.7",
   "description": "A comunica bunyan-based logger.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/types": "^2.6.0",
+    "@comunica/types": "^2.6.7",
     "@types/bunyan": "^1.8.8",
     "bunyan": "^1.8.15"
   },

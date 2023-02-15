@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-jsonld",
-  "version": "2.6.6",
+  "version": "2.6.7",
   "description": "A jsonld rdf-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-serialize": "^2.6.0",
-    "@comunica/types": "^2.6.0",
+    "@comunica/bus-rdf-serialize": "^2.6.7",
+    "@comunica/types": "^2.6.7",
     "jsonld-streaming-serializer": "^2.0.1"
   },
   "scripts": {
