@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-table",
-  "version": "2.6.0",
+  "version": "2.6.7",
   "description": "A table query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^2.6.0",
-    "@comunica/types": "^2.6.0",
+    "@comunica/bus-query-result-serialize": "^2.6.7",
+    "@comunica/types": "^2.6.7",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^1.1.1",
     "rdf-terms": "^1.9.1",

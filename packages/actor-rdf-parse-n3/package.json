@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-n3",
-  "version": "2.6.0",
+  "version": "2.6.7",
   "description": "A N3 RDF Parse actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,8 +30,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^2.6.0",
-    "@comunica/types": "^2.6.0",
+    "@comunica/bus-rdf-parse": "^2.6.7",
+    "@comunica/types": "^2.6.7",
     "n3": "^1.16.3"
   },
   "scripts": {

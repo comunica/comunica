@@ -16,15 +16,18 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
   private readonly defaultQueryInputFormat: string | undefined;
   private readonly queryString: string | undefined;
   private readonly context: string | undefined;
+  private readonly allowNoSources: boolean | undefined;
 
   public constructor(
     defaultQueryInputFormat: string | undefined,
     queryString: string | undefined,
     context: string | undefined,
+    allowNoSources: boolean | undefined,
   ) {
     this.defaultQueryInputFormat = defaultQueryInputFormat;
     this.queryString = queryString;
     this.context = context;
+    this.allowNoSources = allowNoSources;
   }
 
   public populateYargs(argumentsBuilder: Argv<any>): Argv<any> {
@@ -101,7 +104,11 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
         if (args.version || args.listformats) {
           return true;
         }
-        if (!this.queryString ?
+        if (this.allowNoSources) {
+          if (!this.queryString && !(args.query || args.file) && args.sources.length === 0) {
+            throw new Error('A query must be provided');
+          }
+        } else if (!this.queryString ?
           !(args.query || args.file) && args.sources.length < (args.context ? 1 : 2) :
           args.sources.length < (args.context ? 0 : 1)) {
           throw new Error('At least one source and query must be provided');
