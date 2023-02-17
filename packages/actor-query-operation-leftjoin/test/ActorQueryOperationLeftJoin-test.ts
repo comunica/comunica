@@ -99,6 +99,22 @@ describe('ActorQueryOperationLeftJoin', () => {
       });
     });
 
+    it('should correctly extract variables', async() => {
+      const expression = {
+        expressionType: 'term',
+        term: DF.variable('Lorem'),
+        type: 'expression',
+        args: [{
+          expressionType: 'term',
+          term: DF.literal('nonemptystring'),
+          type: 'expression',
+        }],
+      };
+      // @ts-expect-error
+      const variables = actor.getVariables(expression);
+      expect(variables.size).toEqual(1);
+    });
+
     it('should correctly handle truthy expressions', async() => {
       const expression = {
         expressionType: 'term',

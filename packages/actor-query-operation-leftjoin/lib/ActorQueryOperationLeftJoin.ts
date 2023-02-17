@@ -3,7 +3,9 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
+import type { Term } from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { Expression } from 'sparqlalgebrajs/lib/algebra';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
@@ -32,6 +34,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         output: ActorQueryOperation.getSafeBindings(output),
         operation,
       }));
+    const variables = operationOriginal.expression ? [ ...this.getVariables(operationOriginal.expression) ] : [];
     const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
 
     // If the pattern contains an expression, filter the resulting stream
@@ -42,6 +45,15 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         .transform({
           autoStart: false,
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
+            const keysArefulfilled = variables.length > 0 ?
+              variables.every(variable => bindings.has(variable.value)) :
+              true;
+
+            if (!keysArefulfilled) {
+              push(bindings);
+              return done();
+            }
+
             try {
               const result = await evaluator.evaluateAsEBV(bindings);
               if (result) {
@@ -67,6 +79,27 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     }
 
     return joined;
+  }
+
+  private getVariables(expression: Expression, stack: Set<Term> = new Set()): Set<Term> {
+    if (expression.type !== 'expression') {
+      return new Set();
+    }
+
+    if (expression.term && expression.term.termType === 'Variable') {
+      stack.add(expression.term);
+    }
+
+    if (expression.args) {
+      for (const argument of expression.args) {
+        if (argument.args) {
+          for (const term of this.getVariables(argument, stack)) {
+            stack.add(term);
+          }
+        }
+      }
+    }
+    return stack;
   }
 }
 
