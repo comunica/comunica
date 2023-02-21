@@ -5,7 +5,6 @@ import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, BindingsStream } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 
 /**
  * A comunica LeftJoin Query Operation Actor.
@@ -34,14 +33,18 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         operation,
       }));
 
-    if (typeof operationOriginal.expression !== undefined) {
+    if (operationOriginal.expression) {
       const { variables: variables0 } = await entries[0].output.metadata();
       const { variables: variables1 } = await entries[1].output.metadata();
-      const variables = [...variables0, ...variables1];
+      const variables = [ ...variables0, ...variables1 ];
       const config = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
-      const evaluator = new AsyncEvaluator(operationOriginal.expression!, config);
+      const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
 
-      const validateExpressions = async(bindings: Bindings, done: () => void, push: (item: Bindings) => void, bindingsStream: BindingsStream) => {
+      const validateExpressions = async(
+        bindings: Bindings, done: () => void,
+        push: (item: Bindings) => void,
+        bindingsStream: BindingsStream,
+      ): Promise<void> => {
         try {
           const result = await evaluator.evaluateAsEBV(bindings);
           if (result) {
@@ -61,19 +64,11 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
           }
         }
         done();
-      }
+      };
 
-      const filteredBindingsStreamLeft: BindingsStream = new ClosableTransformIterator(entries[0].output.bindingsStream.transform({
+      const filteredBindingsStreamLeft: BindingsStream = entries[0].output.bindingsStream.transform({
         autoStart: false,
-        transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => validateExpressions(bindings, done, push, filteredBindingsStreamLeft)
-      }), {
-        autoStart: false,
-        onClose: () => entries[0].output.bindingsStream.close()
-      })
-
-      const filteredBindingsStreamRight: BindingsStream = new ClosableTransformIterator(entries[1].output.bindingsStream.transform({
-        autoStart: false,
-        transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
+        async transform(bindings: Bindings, done: () => void, push: (item: Bindings) => void) {
           const keysArefulfilled = variables.length > 0 ?
             variables.every(variable => bindings.has(variable.value)) :
             true;
@@ -83,15 +78,21 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
             return done();
           }
 
-          return validateExpressions(bindings, done, push, filteredBindingsStreamRight);
-        }
-      }), {
-        autoStart: false,
-        onClose: () => entries[1].output.bindingsStream.close()
-      })
+          return validateExpressions(bindings, done, push, filteredBindingsStreamLeft);
+        },
+      });
 
-      entries[0].output.bindingsStream = filteredBindingsStreamLeft
-      entries[1].output.bindingsStream = filteredBindingsStreamRight
+      const filteredBindingsStreamRight: BindingsStream = entries[1].output.bindingsStream.transform({
+        autoStart: false,
+        transform: async(
+          bindings: Bindings,
+          done: () => void,
+          push: (item: Bindings) => void,
+        ) => validateExpressions(bindings, done, push, filteredBindingsStreamRight),
+      });
+
+      entries[0].output.bindingsStream = filteredBindingsStreamLeft;
+      entries[1].output.bindingsStream = filteredBindingsStreamRight;
     }
 
     return this.mediatorJoin.mediate({ type: 'optional', entries, context });
