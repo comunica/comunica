@@ -14,11 +14,15 @@ export type QueryType = QueryEnhanced & { context?: IActionContext };
 /**
  * Base interface for a Comunica query engine.
  */
-export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryContextCommon> extends
-  RDF.StringQueryable<RDF.AllMetadataSupport, QueryStringContext>,
-  RDF.AlgebraQueryable<Algebra.Operation, RDF.AllMetadataSupport, QueryAlgebraContext>,
-  RDF.StringSparqlQueryable<RDF.SparqlResultSupport, QueryStringContext>,
-  RDF.AlgebraSparqlQueryable<Algebra.Operation, RDF.SparqlResultSupport, QueryAlgebraContext> {
+export interface IQueryEngine<
+  // TODO: In the next major update, remove QueryContext arg, as we have enough with the other args.
+  QueryContext extends IQueryContextCommon = IQueryContextCommon,
+  QueryStringContextInner extends RDF.QueryStringContext = QueryStringContext,
+  QueryAlgebraContextInner extends RDF.QueryAlgebraContext = QueryAlgebraContext> extends
+  RDF.StringQueryable<RDF.AllMetadataSupport, QueryStringContextInner>,
+  RDF.AlgebraQueryable<Algebra.Operation, RDF.AllMetadataSupport, QueryAlgebraContextInner>,
+  RDF.StringSparqlQueryable<RDF.SparqlResultSupport, QueryStringContextInner>,
+  RDF.AlgebraSparqlQueryable<Algebra.Operation, RDF.SparqlResultSupport, QueryAlgebraContextInner> {
 
   /**
    * Query the bindings results of a SELECT query.
@@ -27,7 +31,7 @@ export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryC
    */
   queryBindings: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ) => Promise<BindingsStream>;
 
   /**
@@ -37,7 +41,7 @@ export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryC
    */
   queryQuads: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ) => Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>>;
 
   /**
@@ -47,7 +51,7 @@ export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryC
    */
   queryBoolean: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ) => Promise<boolean>;
 
   /**
@@ -57,7 +61,7 @@ export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryC
    */
   queryVoid: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ) => Promise<void>;
 
   /**
@@ -73,7 +77,7 @@ export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryC
    */
   query: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ) => Promise<QueryType>;
 
   /**
@@ -86,7 +90,7 @@ export interface IQueryEngine<QueryContext extends IQueryContextCommon = IQueryC
    */
   explain: <QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
     explainMode: QueryExplainMode,
   ) => Promise<IQueryExplained>;
   /**

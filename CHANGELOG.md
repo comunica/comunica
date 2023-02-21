@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.7"></a>
+## [v2.6.7](https://github.com/comunica/comunica/compare/v2.6.6...v2.6.7) - 2023-02-15
+
+### Added
+* [Allow minimum sources check on CLI to be disabled](https://github.com/comunica/comunica/commit/5cc10df8a9f48f07e31616c5fddbb4ceb989cdc5)
+* [Allow generic context type in QueryEngine to omit fields](https://github.com/comunica/comunica/commit/5f91896401bb2244a0e0b33fddb94ea32d86f438)
+
 <a name="v2.6.6"></a>
 ## [v2.6.6](https://github.com/comunica/comunica/compare/v2.6.5...v2.6.6) - 2023-02-08
 

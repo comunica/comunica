@@ -32,6 +32,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
         this.defaultQueryInputFormat,
         this.queryString,
         this.context,
+        this.allowNoSources,
       ),
       // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
       ...(<ICliArgsHandler[]> action.context?.get(KeysInitQuery.cliArgsHandlers)) || [],

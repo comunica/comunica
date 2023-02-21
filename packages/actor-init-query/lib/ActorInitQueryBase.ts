@@ -28,6 +28,7 @@ export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQuer
   public readonly logger: Logger;
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
+  public readonly allowNoSources?: boolean;
   public readonly context?: string;
   public readonly contextKeyShortcuts: Record<string, string> & Partial<Record<keyof QueryContext, string>>;
   /** Array of `contextKeyShortcuts` appended to `contextKeyShortcuts` during construction. */
@@ -110,6 +111,11 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    * @default {sparql}
    */
   defaultQueryInputFormat?: string;
+  /**
+   * If it should be allowed that the user passes no sources.
+   * @default {false}
+   */
+  allowNoSources?: boolean;
   /**
    * A JSON string of a query operation context
    */

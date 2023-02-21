@@ -20,8 +20,11 @@ import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 /**
  * Base implementation of a Comunica query engine.
  */
-export class QueryEngineBase<QueryContext extends IQueryContextCommon = IQueryContextCommon>
-implements IQueryEngine<QueryContext> {
+export class QueryEngineBase<
+  QueryContext extends IQueryContextCommon = IQueryContextCommon,
+  QueryStringContextInner extends RDF.QueryStringContext = QueryStringContext,
+  QueryAlgebraContextInner extends RDF.QueryAlgebraContext = QueryAlgebraContext>
+implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraContextInner> {
   private readonly actorInitQuery: ActorInitQueryBase;
   private readonly defaultFunctionArgumentsCache: FunctionArgumentsCache;
 
@@ -32,36 +35,36 @@ implements IQueryEngine<QueryContext> {
 
   public async queryBindings<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<BindingsStream> {
     return this.queryOfType<QueryFormatTypeInner, IQueryBindingsEnhanced>(query, context, 'bindings');
   }
 
   public async queryQuads<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>> {
     return this.queryOfType<QueryFormatTypeInner, IQueryQuadsEnhanced>(query, context, 'quads');
   }
 
   public async queryBoolean<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<boolean> {
     return this.queryOfType<QueryFormatTypeInner, RDF.QueryBoolean>(query, context, 'boolean');
   }
 
   public async queryVoid<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<void> {
     return this.queryOfType<QueryFormatTypeInner, RDF.QueryVoid>(query, context, 'void');
   }
 
   protected async queryOfType<QueryFormatTypeInner extends QueryFormatType, QueryTypeOut extends QueryEnhanced>(
     query: QueryFormatTypeInner,
-    context: undefined | (QueryContext & QueryFormatTypeInner extends string ?
-      QueryStringContext : QueryAlgebraContext),
+    context: undefined | (QueryFormatTypeInner extends string ?
+      QueryStringContextInner : QueryAlgebraContextInner),
     expectedType: QueryTypeOut['resultType'],
   ): Promise<ReturnType<QueryTypeOut['execute']>> {
     const result = await this.query<QueryFormatTypeInner>(query, context);
@@ -79,7 +82,7 @@ implements IQueryEngine<QueryContext> {
    */
   public async query<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<QueryType> {
     const output = await this.queryOrExplain(query, context);
     if ('explain' in output) {
@@ -98,7 +101,7 @@ implements IQueryEngine<QueryContext> {
    */
   public async explain<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
     explainMode: QueryExplainMode,
   ): Promise<IQueryExplained> {
     context.explain = explainMode;
@@ -115,7 +118,7 @@ implements IQueryEngine<QueryContext> {
    */
   public async queryOrExplain<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
-    context?: QueryContext & QueryFormatTypeInner extends string ? QueryStringContext : QueryAlgebraContext,
+    context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<QueryType | IQueryExplained> {
     context = context || <any>{};
 
