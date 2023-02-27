@@ -124,6 +124,82 @@ describe('ActorQueryOperationLeftJoin', () => {
       });
     });
 
+    it('should correctly handle left hand bindings that are missing the variables of the expression', async() => {
+      const expression = {
+        expressionType: 'term',
+        term: DF.literal('nonemptystring'),
+        type: 'expression',
+      };
+
+      mediatorQueryOperation = {
+        mediate: (arg: any) => Promise.resolve({
+          bindingsStream: new ArrayIterator([
+            BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          ], { autoStart: false }),
+          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]}),
+          operated: arg,
+          type: 'bindings',
+        }),
+      };
+
+      actor = new ActorQueryOperationLeftJoin({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin });
+
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context: new ActionContext() };
+      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        ]);
+        expect(await output.metadata()).toMatchObject({
+          cardinality: 100,
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
+        expect(output.type).toEqual('bindings');
+      });
+    });
+
+    it('should correctly handle left hand bindings when there are no variables', async() => {
+      const expression = {
+        expressionType: 'term',
+        term: DF.literal('nonemptystring'),
+        type: 'expression',
+      };
+
+      mediatorQueryOperation = {
+        mediate: (arg: any) => Promise.resolve({
+          bindingsStream: new ArrayIterator([
+            BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          ], { autoStart: false }),
+          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true, variables: []}),
+          operated: arg,
+          type: 'bindings',
+        }),
+      };
+
+      actor = new ActorQueryOperationLeftJoin({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin });
+
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context: new ActionContext() };
+      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        ]);
+        expect(await output.metadata()).toMatchObject({
+          cardinality: 100,
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
+        expect(output.type).toEqual('bindings');
+      });
+    });
+
     it('should correctly handle falsy expressions', async() => {
       const expression = {
         expressionType: 'term',

@@ -33,6 +33,8 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         operation,
       }));
     const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
+    const rightMetadata = await entries[1].output.metadata();
+    const expressionVariables = rightMetadata.variables
 
     // If the pattern contains an expression, filter the resulting stream
     if (operationOriginal.expression) {
@@ -42,6 +44,15 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         .transform({
           autoStart: false,
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
+            const keysArefulfilled = expressionVariables.length > 0 ?
+            expressionVariables.every(variable => bindings.has(variable.value)) :
+                true;
+
+            if (!keysArefulfilled) {
+                push(bindings);
+                return done();
+            }
+
             try {
               const result = await evaluator.evaluateAsEBV(bindings);
               if (result) {
