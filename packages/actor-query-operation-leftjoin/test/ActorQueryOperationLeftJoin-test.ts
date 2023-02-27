@@ -149,8 +149,8 @@ describe('ActorQueryOperationLeftJoin', () => {
       await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         ]);
         expect(await output.metadata()).toMatchObject({

@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, BindingsStream } from '@comunica/types';
+import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -32,70 +32,52 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         output: ActorQueryOperation.getSafeBindings(output),
         operation,
       }));
+    const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
 
+    // If the pattern contains an expression, filter the resulting stream
     if (operationOriginal.expression) {
-      const { variables: variables0 } = await entries[0].output.metadata();
-      const { variables: variables1 } = await entries[1].output.metadata();
-      const variables = [ ...variables0, ...variables1 ];
+      const rightMetadata = await entries[1].output.metadata();
+      const expressionVariables = rightMetadata.variables;
       const config = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
       const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
+      const bindingsStream = joined.bindingsStream
+        .transform({
+          autoStart: false,
+          transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
+            const keysArefulfilled = expressionVariables.length > 0 ?
+              expressionVariables.every(variable => bindings.has(variable.value)) :
+              true;
 
-      const validateExpressions = async(
-        bindings: Bindings, done: () => void,
-        push: (item: Bindings) => void,
-        bindingsStream: BindingsStream,
-      ): Promise<void> => {
-        try {
-          const result = await evaluator.evaluateAsEBV(bindings);
-          if (result) {
-            push(bindings);
-          }
-        } catch (error: unknown) {
-          // We ignore all Expression errors.
-          // Other errors (likely programming mistakes) are still propagated.
-          // Left Join is defined in terms of Filter (https://www.w3.org/TR/sparql11-query/#defn_algJoin),
-          // and Filter requires this (https://www.w3.org/TR/sparql11-query/#expressions).
-          if (isExpressionError(<Error>error)) {
-            // In many cases, this is a user error, where the user should manually cast the variable to a string.
-            // In order to help users debug this, we should report these errors via the logger as warnings.
-            this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings }));
-          } else {
-            bindingsStream.emit('error', error);
-          }
-        }
-        done();
-      };
+            if (!keysArefulfilled) {
+              push(bindings);
+              return done();
+            }
 
-      const filteredBindingsStreamLeft: BindingsStream = entries[0].output.bindingsStream.transform({
-        autoStart: false,
-        async transform(bindings: Bindings, done: () => void, push: (item: Bindings) => void) {
-          const keysArefulfilled = variables.length > 0 ?
-            variables.every(variable => bindings.has(variable.value)) :
-            true;
-
-          if (!keysArefulfilled) {
-            push(bindings);
-            return done();
-          }
-
-          return validateExpressions(bindings, done, push, filteredBindingsStreamLeft);
-        },
-      });
-
-      const filteredBindingsStreamRight: BindingsStream = entries[1].output.bindingsStream.transform({
-        autoStart: false,
-        transform: async(
-          bindings: Bindings,
-          done: () => void,
-          push: (item: Bindings) => void,
-        ) => validateExpressions(bindings, done, push, filteredBindingsStreamRight),
-      });
-
-      entries[0].output.bindingsStream = filteredBindingsStreamLeft;
-      entries[1].output.bindingsStream = filteredBindingsStreamRight;
+            try {
+              const result = await evaluator.evaluateAsEBV(bindings);
+              if (result) {
+                push(bindings);
+              }
+            } catch (error: unknown) {
+              // We ignore all Expression errors.
+              // Other errors (likely programming mistakes) are still propagated.
+              // Left Join is defined in terms of Filter (https://www.w3.org/TR/sparql11-query/#defn_algJoin),
+              // and Filter requires this (https://www.w3.org/TR/sparql11-query/#expressions).
+              if (isExpressionError(<Error>error)) {
+                // In many cases, this is a user error, where the user should manually cast the variable to a string.
+                // In order to help users debug this, we should report these errors via the logger as warnings.
+                this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings }));
+              } else {
+                bindingsStream.emit('error', error);
+              }
+            }
+            done();
+          },
+        });
+      joined.bindingsStream = bindingsStream;
     }
 
-    return this.mediatorJoin.mediate({ type: 'optional', entries, context });
+    return joined;
   }
 }
 
