@@ -139,8 +139,8 @@ describe('ActorQueryOperationLeftJoin', () => {
         metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]}),
         operated: arg,
         type: 'bindings',
-      })
-     
+      });
+
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context: new ActionContext() };
       await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.bindingsStream).toEqualBindingsStream([

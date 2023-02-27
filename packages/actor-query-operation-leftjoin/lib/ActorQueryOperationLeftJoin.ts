@@ -44,7 +44,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         .transform({
           autoStart: false,
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
-            const optionalBindingsFulfilled = expressionVariables.every(variable => bindings.has(variable.value))
+            const optionalBindingsFulfilled = expressionVariables.every(variable => bindings.has(variable.value));
 
             if (!optionalBindingsFulfilled) {
               push(bindings);
