@@ -94,6 +94,11 @@ const equality = {
   overloads: declare(C.RegularOperator.EQUAL)
     .numberTest(() => (left, right) => left === right)
     .stringTest(() => (left, right) => left.localeCompare(right) === 0)
+    .set(
+      [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
+      () => ([ left, right ]: E.LangStringLiteral[]) => bool(left.str() === right.str() &&
+        left.language === right.language),
+    )
     .booleanTest(() => (left, right) => left === right)
     .dateTimeTest(() => (left, right) => left.getTime() === right.getTime())
     .set(
@@ -107,7 +112,7 @@ function RDFTermEqual(_left: Term, _right: Term): boolean {
   const left = _left.toRDF();
   const right = _right.toRDF();
   const val = left.equals(right);
-  if ((left.termType === 'Literal') && (right.termType === 'Literal')) {
+  if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
     throw new Err.RDFEqualTypeError([ _left, _right ]);
   }
   return val;

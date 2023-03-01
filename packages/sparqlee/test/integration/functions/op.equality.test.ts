@@ -58,10 +58,14 @@ describe('evaluation of \'=\'', () => {
     runTestTable({
       ...config,
       testTable: `
+        "test1"@en "test1"@en = true
+        "test1" "test1" = true
         empty empty = true
         empty aaa   = false
         aaa   aaa   = true
         aaa   bbb   = false
+        "test1" "test2" = false
+        "test1"@en "test2"@en = false
       `,
     });
   });
