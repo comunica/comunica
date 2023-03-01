@@ -44,6 +44,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         .transform({
           autoStart: false,
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
+            // If variables of the right-hand entry are missing, we skip expression evaluation
             if (!expressionVariables.every(variable => bindings.has(variable.value))) {
               push(bindings);
               return done();

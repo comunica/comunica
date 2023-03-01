@@ -688,7 +688,7 @@ describe('System test: QuerySparql', () => {
     });
 
     describe('left join with an optional', () => {
-      it('with correct results', async() => {
+      it('should handle filters inside the optional block', async() => {
         const store = new Store();
 
         store.addQuad(
@@ -711,7 +711,24 @@ describe('System test: QuerySparql', () => {
             FILTER(lang(?name) = 'nl')
           }
         }`, { sources: [ store ]});
-        expect((await arrayifyStream(await result.execute())).length).toBe(2);
+        const results = await arrayifyStream(await result.execute());
+
+        const expectedResult = [
+          [
+            [ DF.variable('s'), DF.namedNode('http://ex.org/Pluto') ],
+            [ DF.variable('p'), DF.namedNode('http://ex.org/type') ],
+            [ DF.variable('o'), DF.namedNode('http://ex.org/Dog') ],
+          ],
+          [
+            [ DF.variable('name'), DF.literal('Lorem ipsum', 'nl') ],
+            [ DF.variable('s'), DF.namedNode('http://ex.org/Mickey') ],
+            [ DF.variable('p'), DF.namedNode('http://ex.org/name') ],
+            [ DF.variable('o'), DF.literal('Lorem ipsum', 'nl') ],
+          ],
+        ];
+
+        const bindings = results.map(binding => [ ...binding ]);
+        expect(bindings).toMatchObject(expectedResult);
       });
     });
   });
