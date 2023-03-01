@@ -88,6 +88,12 @@
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/types.IAggregatedStore.html" class="tsd-signature-type" data-tsd-kind="Interface">IAggregatedStore</a></li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -104,6 +110,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#ended" class="tsd-kind-icon">ended</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#pendingStreams" class="tsd-kind-icon">pending<wbr>Streams</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#runningIterators" class="tsd-kind-icon">running<wbr>Iterators</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#started" class="tsd-kind-icon">started</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#store" class="tsd-kind-icon">store</a></li>
 							</ul>
 						</section>
@@ -112,6 +119,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#end" class="tsd-kind-icon">end</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#getStore" class="tsd-kind-icon">get<wbr>Store</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#hasRunningIterators" class="tsd-kind-icon">has<wbr>Running<wbr>Iterators</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#import" class="tsd-kind-icon">import</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#importToListeners" class="tsd-kind-icon">import<wbr>ToListeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#match" class="tsd-kind-icon">match</a></li>
@@ -177,9 +185,25 @@
 					<div class="tsd-signature tsd-kind-icon">running<wbr>Iterators<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/5cc10df/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts#L11">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c180fc6/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts#L12">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts:12</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="started" class="tsd-anchor"></a>
+					<h3>started</h3>
+					<div class="tsd-signature tsd-kind-icon">started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/types.IAggregatedStore.html">IAggregatedStore</a>.<a href="../interfaces/types.IAggregatedStore.html#started">started</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c180fc6/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts#L11">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts:11</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If this aggregated has started processing.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 					<a name="store" class="tsd-anchor"></a>
@@ -204,6 +228,7 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/types.IAggregatedStore.html">IAggregatedStore</a>.<a href="../interfaces/types.IAggregatedStore.html#end">end</a></p>
 								<p>Inherited from StreamingStore.end</p>
 								<ul>
 									<li>Defined in node_modules/rdf-streaming-store/lib/StreamingStore.d.ts:26</li>
@@ -243,6 +268,29 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="hasRunningIterators" class="tsd-anchor"></a>
+					<h3>has<wbr>Running<wbr>Iterators</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Running<wbr>Iterators<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/types.IAggregatedStore.html">IAggregatedStore</a>.<a href="../interfaces/types.IAggregatedStore.html#hasRunningIterators">hasRunningIterators</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c180fc6/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts#L14">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts:14</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>If iterators created during the <code>match</code> call are still running.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="import" class="tsd-anchor"></a>
 					<h3>import</h3>
@@ -252,11 +300,19 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/types.IAggregatedStore.html">IAggregatedStore</a>.<a href="../interfaces/types.IAggregatedStore.html#import">import</a></p>
 								<p>Inherited from StreamingStore.import</p>
 								<ul>
 									<li>Defined in node_modules/rdf-streaming-store/lib/StreamingStore.d.ts:28</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Consumes the given stream.</p>
+								</div>
+								<p>The <code>end</code> and <code>error</code> events are used like described in the Stream interface.
+								Depending on the use case, subtypes of EventEmitter or Stream are used.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -300,9 +356,10 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/types.IAggregatedStore.html">IAggregatedStore</a>.<a href="../interfaces/types.IAggregatedStore.html#match">match</a></p>
 								<p>Overrides StreamingStore.match</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/5cc10df/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts#L13">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c180fc6/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts#L18">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/StreamingStoreMetadata.ts:18</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -371,6 +428,9 @@
 									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#runningIterators" class="tsd-kind-icon">running<wbr>Iterators</a>
 									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#started" class="tsd-kind-icon">started</a>
+									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#store" class="tsd-kind-icon">store</a>
 									</li>
@@ -379,6 +439,9 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#getStore" class="tsd-kind-icon">get<wbr>Store</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#hasRunningIterators" class="tsd-kind-icon">has<wbr>Running<wbr>Iterators</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.StreamingStoreMetadata.html#import" class="tsd-kind-icon">import</a>

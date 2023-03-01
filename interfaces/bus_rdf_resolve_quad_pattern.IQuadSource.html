@@ -112,13 +112,13 @@
 					<a name="match" class="tsd-anchor"></a>
 					<h3>match</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, context<span class="tsd-signature-symbol">?: </span><a href="types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/5cc10df/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts#L71">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c180fc6/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts#L72">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -153,6 +153,12 @@
 									<h5>graph: <span class="tsd-signature-type">Term</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The exact graph to match, variable is wildcard.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The query context.</p>
 									</div>
 								</li>
 							</ul>
