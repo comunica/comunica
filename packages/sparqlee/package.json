@@ -1,6 +1,6 @@
 {
   "name": "sparqlee",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A simple SPARQL expression evaluator library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

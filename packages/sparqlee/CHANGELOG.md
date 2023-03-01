@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.2.1"></a>
+## [v2.2.1](https://github.com/comunica/sparqlee/compare/v2.2.0...v2.2.1) - 2023-03-01
+
+### Fixed
+* [Fix comparisons with languages failing](https://github.com/comunica/sparqlee/commit/d2971c554494d3eed3be3a92d385e61772342526)
+
 <a name="v2.2.0"></a>
 ## [v2.2.0](https://github.com/comunica/sparqlee/compare/v2.1.0...v2.2.0) - 2023-01-20
 
