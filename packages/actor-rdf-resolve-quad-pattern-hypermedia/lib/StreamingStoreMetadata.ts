@@ -1,5 +1,5 @@
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
-import type { MetadataQuads } from '@comunica/types';
+import type { MetadataQuads, IAggregatedStore } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { StreamingStore } from 'rdf-streaming-store';
@@ -7,8 +7,13 @@ import { StreamingStore } from 'rdf-streaming-store';
 /**
  * A StreamingStore that returns an AsyncIterator with a valid MetadataQuads property.
  */
-export class StreamingStoreMetadata extends StreamingStore {
+export class StreamingStoreMetadata extends StreamingStore implements IAggregatedStore {
+  public started = false;
   public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
+
+  public hasRunningIterators(): boolean {
+    return this.runningIterators.size > 0;
+  }
 
   public match(
     subject?: RDF.Term | null,

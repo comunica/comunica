@@ -41,6 +41,7 @@
     "@comunica/bus-rdf-resolve-hypermedia-links": "^2.6.7",
     "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^2.6.7",
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.6.7",
+    "@comunica/context-entries": "^2.6.7",
     "@comunica/core": "^2.6.7",
     "@comunica/types": "^2.6.7",
     "@rdfjs/types": "*",

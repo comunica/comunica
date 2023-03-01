@@ -30,15 +30,15 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
   /**
    * Get the output of the given action on a source.
    * @param {IQuadSource} source A quad source, possibly lazy.
-   * @param {Algebra.Operation} operation The operation to apply.
-   * @param ActionContext context Optional context data.
+   * @param {Algebra.Operation} pattern The operation to apply.
+   * @param {IActionContext} context Optional context data.
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream.
    */
   protected async getOutput(source: IQuadSource, pattern: RDF.BaseQuad, context: IActionContext):
   Promise<IActorRdfResolveQuadPatternOutput> {
     // Create data stream
-    const data = source.match(pattern.subject, pattern.predicate, pattern.object, pattern.graph);
+    const data = source.match(pattern.subject, pattern.predicate, pattern.object, pattern.graph, context);
     return { data };
   }
 
@@ -66,7 +66,15 @@ export interface IQuadSource {
    * @param {RDF.Term} predicate The exact predicate to match, variable is wildcard.
    * @param {RDF.Term} object    The exact object to match, variable is wildcard.
    * @param {RDF.Term} graph     The exact graph to match, variable is wildcard.
+   * @param {IActionContext} context The query context.
    * @return {AsyncIterator<RDF.Quad>} The resulting quad stream.
    */
-  match: (subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term) => AsyncIterator<RDF.Quad>;
+  match: (
+    subject: RDF.Term,
+    predicate: RDF.Term,
+    object: RDF.Term,
+    graph: RDF.Term,
+    // TODO: in next major update, make this mandatory.
+    context?: IActionContext,
+  ) => AsyncIterator<RDF.Quad>;
 }

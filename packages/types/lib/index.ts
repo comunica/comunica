@@ -1,5 +1,6 @@
 export * from './Bindings';
 export * from './IActionContext';
+export * from './IAggregatedStore';
 export * from './ICliArgsHandler';
 export * from './IDataDestination';
 export * from './IDataSource';

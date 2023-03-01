@@ -1,6 +1,5 @@
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
-import type {
-  Bindings,
+import type { Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
@@ -9,7 +8,7 @@ import type {
   IDataSource,
   IDataDestination,
   MetadataBindings, FunctionArgumentsCache,
-} from '@comunica/types';
+  IAggregatedStore } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -256,6 +255,12 @@ export const KeysRdfResolveQuadPattern = {
    * A map containing unique IDs for each source
    */
   sourceIds: new ActionContextKey<Map<IDataSource, string>>('@comunica/bus-rdf-resolve-quad-pattern:sourceIds'),
+  /**
+   * Hypermedia sources mapping to their aggregated store.
+   */
+  hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
+    '@comunica/bus-rdf-resolve-quad-pattern:hypermediaSourcesAggregatedStores',
+  ),
 };
 
 export const KeysRdfUpdateQuads = {

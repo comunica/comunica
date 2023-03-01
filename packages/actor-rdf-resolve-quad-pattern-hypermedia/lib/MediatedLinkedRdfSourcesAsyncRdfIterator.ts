@@ -6,12 +6,11 @@ import type { ILink,
   MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IAggregatedStore } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
-import type { StreamingStoreMetadata } from './StreamingStoreMetadata';
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources
@@ -29,12 +28,12 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly context: IActionContext;
   private readonly forceSourceType?: string;
   private readonly handledUrls: Record<string, boolean>;
-  private readonly aggregatedStore: StreamingStoreMetadata | undefined;
+  private readonly aggregatedStore: IAggregatedStore | undefined;
   private linkQueue: Promise<ILinkQueue> | undefined;
 
   public constructor(cacheSize: number, context: IActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string, maxIterators: number, aggregatedStore: StreamingStoreMetadata | undefined,
+    firstUrl: string, maxIterators: number, aggregatedStore: IAggregatedStore | undefined,
     mediators: IMediatorArgs) {
     super(cacheSize, subject, predicate, object, graph, firstUrl, maxIterators);
     this.context = context;
@@ -61,12 +60,12 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    return (this.aggregatedStore && this.aggregatedStore.runningIterators.size > 0) || super.canStartNewIterator();
+    return (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || super.canStartNewIterator();
   }
 
   protected override isRunning(): boolean {
     // Same as above
-    return (this.aggregatedStore && this.aggregatedStore.runningIterators.size > 0) || !this.done;
+    return (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || !this.done;
   }
 
   protected shouldStoreSourcesStates(): boolean {

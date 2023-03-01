@@ -1,5 +1,6 @@
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { IActionContext } from '@comunica/types';
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import type { IActionContext, IAggregatedStore, IDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { ISourcesState } from './LinkedRdfSourcesAsyncRdfIterator';
@@ -13,25 +14,23 @@ import { StreamingStoreMetadata } from './StreamingStoreMetadata';
  * @see MediatedLinkedRdfSourcesAsyncRdfIterator
  */
 export class MediatedQuadSource implements IQuadSource {
-  public readonly context: IActionContext;
   public readonly firstUrl: string;
   public readonly forceSourceType?: string;
   public readonly mediators: IMediatorArgs;
 
   public sourcesState: ISourcesState;
-  public aggregatedStore: StreamingStoreMetadata | undefined;
+  public aggregateStore: boolean;
 
   private readonly cacheSize: number;
   private readonly maxIterators: number;
 
-  public constructor(cacheSize: number, context: IActionContext, firstUrl: string,
+  public constructor(cacheSize: number, firstUrl: string,
     forceSourceType: string | undefined, maxIterators: number, aggregateStore: boolean, mediators: IMediatorArgs) {
     this.cacheSize = cacheSize;
-    this.context = context;
     this.firstUrl = firstUrl;
     this.forceSourceType = forceSourceType;
     this.maxIterators = maxIterators;
-    this.aggregatedStore = aggregateStore ? new StreamingStoreMetadata() : undefined;
+    this.aggregateStore = aggregateStore;
     this.mediators = mediators;
   }
 
@@ -39,19 +38,38 @@ export class MediatedQuadSource implements IQuadSource {
     return !term || term.termType === 'Variable' ? undefined : term;
   }
 
-  public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
-    if (this.sourcesState && this.aggregatedStore) {
-      return this.aggregatedStore.match(
-        MediatedQuadSource.nullifyVariables(subject),
-        MediatedQuadSource.nullifyVariables(predicate),
-        MediatedQuadSource.nullifyVariables(object),
-        MediatedQuadSource.nullifyVariables(graph),
-      );
+  public match(
+    subject: RDF.Term,
+    predicate: RDF.Term,
+    object: RDF.Term,
+    graph: RDF.Term,
+    context: IActionContext,
+  ): AsyncIterator<RDF.Quad> {
+    // Optimized match with aggregated store if enabled and started.
+    let aggregatedStore: IAggregatedStore | undefined;
+    if (this.aggregateStore) {
+      const aggregatedStores: Map<IDataSource, IAggregatedStore> | undefined = context
+        .get(KeysRdfResolveQuadPattern.hypermediaSourcesAggregatedStores);
+      if (aggregatedStores) {
+        aggregatedStore = aggregatedStores.get(this.firstUrl);
+        if (!aggregatedStore) {
+          aggregatedStore = new StreamingStoreMetadata();
+          aggregatedStores.set(this.firstUrl, aggregatedStore);
+        }
+        if (aggregatedStore.started) {
+          return aggregatedStore.match(
+            MediatedQuadSource.nullifyVariables(subject),
+            MediatedQuadSource.nullifyVariables(predicate),
+            MediatedQuadSource.nullifyVariables(object),
+            MediatedQuadSource.nullifyVariables(graph),
+          );
+        }
+      }
     }
 
     const it = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       this.cacheSize,
-      this.context,
+      context,
       this.forceSourceType,
       subject,
       predicate,
@@ -59,7 +77,7 @@ export class MediatedQuadSource implements IQuadSource {
       graph,
       this.firstUrl,
       this.maxIterators,
-      this.aggregatedStore,
+      aggregatedStore,
       this.mediators,
     );
     if (!this.sourcesState) {
@@ -67,6 +85,9 @@ export class MediatedQuadSource implements IQuadSource {
       this.sourcesState = it.sourcesState!;
     } else {
       it.setSourcesState(this.sourcesState);
+    }
+    if (aggregatedStore) {
+      aggregatedStore.started = true;
     }
     return it;
   }

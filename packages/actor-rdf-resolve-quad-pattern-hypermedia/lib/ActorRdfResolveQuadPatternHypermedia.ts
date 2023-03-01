@@ -66,7 +66,6 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
       // If not in cache, create a new source
       source = new MediatedQuadSource(
         this.cacheSize,
-        context,
         url,
         getDataSourceType(contextSource),
         this.maxIterators,

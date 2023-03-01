@@ -147,7 +147,8 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
       .setDefault(KeysRdfResolveQuadPattern.sourceIds, new Map())
       // Set the default logger if none is provided
       .setDefault(KeysCore.log, this.actorInitQuery.logger)
-      .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache);
+      .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)
+      .setDefault(KeysRdfResolveQuadPattern.hypermediaSourcesAggregatedStores, new Map());
 
     // Pre-processing the context
     actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;

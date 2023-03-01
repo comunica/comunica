@@ -1,5 +1,6 @@
 import type { MediatorDereferenceRdf, IActionDereferenceRdf,
   IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
+import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -29,7 +30,10 @@ describe('MediatedQuadSource', () => {
   let mediators: any;
 
   beforeEach(() => {
-    context = new ActionContext({});
+    context = new ActionContext({
+      [KeysInitQuery.query.name]: {},
+      [KeysRdfResolveQuadPattern.hypermediaSourcesAggregatedStores.name]: new Map(),
+    });
     mediatorDereferenceRdf = utilMediators.mediatorDereferenceRdf;
     mediatorMetadata = utilMediators.mediatorMetadata;
     mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
@@ -49,16 +53,16 @@ describe('MediatedQuadSource', () => {
     let source: MediatedQuadSource;
 
     beforeEach(() => {
-      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', 64, false, mediators);
+      source = new MediatedQuadSource(10, 'firstUrl', 'forcedType', 64, false, mediators);
     });
 
     describe('match', () => {
       it('should return a MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
-        return expect(source.match(v, v, v, v)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
+        return expect(source.match(v, v, v, v, context)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
       });
 
       it('should return a stream', async() => {
-        expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
+        expect(await arrayifyStream(source.match(v, v, v, v, context))).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
@@ -67,7 +71,7 @@ describe('MediatedQuadSource', () => {
       });
 
       it('should return a metadata event', async() => {
-        const out = source.match(v, v, v, v);
+        const out = source.match(v, v, v, v, context);
         const metaPromise = new Promise(resolve => out.getProperty('metadata', resolve));
         expect(await arrayifyStream(out)).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
@@ -79,7 +83,7 @@ describe('MediatedQuadSource', () => {
       });
 
       it('should set the first source after the first match call', async() => {
-        source.match(v, v, v, v);
+        source.match(v, v, v, v, context);
         expect(((await source.sourcesState.sources.get('firstUrl')))!.metadata).toEqual({ a: 1 });
         expect(((await source.sourcesState.sources.get('firstUrl')))!.source).toBeTruthy();
       });
@@ -103,7 +107,7 @@ describe('MediatedQuadSource', () => {
             },
           },
         }));
-        expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
+        expect(await arrayifyStream(source.match(v, v, v, v, context))).toEqualRdfQuadArray([
           quad('s1x', 'p1', 'o1'),
           quad('s2x', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
@@ -130,7 +134,7 @@ describe('MediatedQuadSource', () => {
             },
           },
         }));
-        const out = source.match(v, v, v, v);
+        const out = source.match(v, v, v, v, context);
         const metaPromise = new Promise(resolve => out.getProperty('metadata', resolve));
         expect(await arrayifyStream(out)).toEqualRdfQuadArray([
           quad('s1x', 'p1', 'o1'),
@@ -162,7 +166,7 @@ describe('MediatedQuadSource', () => {
             },
           });
         };
-        expect(await arrayifyStream(source.match(v, v, v, v))).toBeRdfIsomorphic([
+        expect(await arrayifyStream(source.match(v, v, v, v, context))).toBeRdfIsomorphic([
           quad('s11', 'p11', 'o11'),
           quad('s21', 'p21', 'o21'),
           quad('s12', 'p12', 'o12'),
@@ -178,14 +182,14 @@ describe('MediatedQuadSource', () => {
     let source: MediatedQuadSource;
 
     beforeEach(() => {
-      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', 64, true, mediators);
+      source = new MediatedQuadSource(10, 'firstUrl', 'forcedType', 64, true, mediators);
     });
 
     describe('match', () => {
       it('should match three chained sources when queried multiple times', async() => {
         let i = 0;
         mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ links: [{ url: `next${i}` }]});
-        mediatorRdfResolveHypermedia.mediate = (args: any) => {
+        mediatorRdfResolveHypermedia.mediate = jest.fn((args: any) => {
           if (i < 3) {
             i++;
           }
@@ -202,7 +206,7 @@ describe('MediatedQuadSource', () => {
               },
             },
           });
-        };
+        });
         let j = 0;
         mediatorDereferenceRdf.mediate = async({ url }: IActionDereferenceRdf) => {
           if (j < 3) {
@@ -222,7 +226,7 @@ describe('MediatedQuadSource', () => {
           data.data.setProperty('metadata', { firstMeta: true });
           return data;
         };
-        expect(await arrayifyStream(source.match(v, v, undefined!, v))).toBeRdfIsomorphic([
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
           quad('s11', 'p11', 'o11'),
           quad('s21', 'p21', 'o21'),
           quad('s12', 'p12', 'o12'),
@@ -230,7 +234,8 @@ describe('MediatedQuadSource', () => {
           quad('s13', 'p13', 'o13'),
           quad('s23', 'p23', 'o23'),
         ]);
-        expect(await arrayifyStream(source.match(v, v, undefined!, v))).toBeRdfIsomorphic([
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(4);
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
           quad('s11', 'p11', 'o11'),
           quad('s21', 'p21', 'o21'),
           quad('s12', 'p12', 'o12'),
@@ -238,9 +243,124 @@ describe('MediatedQuadSource', () => {
           quad('s13', 'p13', 'o13'),
           quad('s23', 'p23', 'o23'),
         ]);
-        expect(await arrayifyStream(source.match(DF.namedNode('s11'), v, undefined!, v))).toBeRdfIsomorphic([
+        expect(await arrayifyStream(source.match(DF.namedNode('s11'), v, undefined!, v, context))).toBeRdfIsomorphic([
           quad('s11', 'p11', 'o11'),
         ]);
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(4);
+      });
+
+      it('should match three chained sources when queried multiple times for multiple queries', async() => {
+        let i = 0;
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ links: [{ url: `next${i}` }]});
+        mediatorRdfResolveHypermedia.mediate = jest.fn((args: any) => {
+          if (i < 3) {
+            i++;
+          }
+          return Promise.resolve({
+            dataset: `MYDATASET${i}`,
+            source: {
+              match() {
+                const it = new ArrayIterator([
+                  quad(`s1${i}`, `p1${i}`, `o1${i}`),
+                  quad(`s2${i}`, `p2${i}`, `o2${i}`),
+                ], { autoStart: false });
+                it.setProperty('metadata', { firstMeta: true });
+                return it;
+              },
+            },
+          });
+        });
+        let j = 0;
+        mediatorDereferenceRdf.mediate = async({ url }: IActionDereferenceRdf) => {
+          if (j < 3) {
+            j++;
+          }
+          const data: IActorDereferenceRdfOutput = {
+            data: <any> new ArrayIterator<RDF.Quad>([
+              quad(`s1${j}`, `p1${j}`, `o1${j}`),
+              quad(`s2${j}`, `p2${j}`, `o2${j}`),
+            ], { autoStart: false }),
+            metadata: { triples: true },
+            exists: true,
+            requestTime: 0,
+            url,
+          };
+          // @ts-expect-error
+          data.data.setProperty('metadata', { firstMeta: true });
+          return data;
+        };
+
+        // First query exec
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(4);
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(await arrayifyStream(source.match(DF.namedNode('s11'), v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+        ]);
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(4);
+
+        // Second query exec (of the same query!)
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(4);
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(await arrayifyStream(source.match(DF.namedNode('s11'), v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+        ]);
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(4);
+
+        // Second query exec (of a different query!)
+        context = context.set(KeysRdfResolveQuadPattern.hypermediaSourcesAggregatedStores, new Map());
+        i = 1;
+        j = 0;
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(7);
+        expect(await arrayifyStream(source.match(v, v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
+        expect(await arrayifyStream(source.match(DF.namedNode('s11'), v, undefined!, v, context))).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+        ]);
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledTimes(7);
       });
     });
   });
