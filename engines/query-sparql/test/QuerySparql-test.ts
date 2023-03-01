@@ -686,6 +686,35 @@ describe('System test: QuerySparql', () => {
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
     });
+
+    describe('left join with an optional', () => {
+      it('with correct results', async() => {
+        const store = new Store()
+
+        store.addQuad(
+          DF.namedNode('http://ex.org/Pluto'),
+          DF.namedNode('http://ex.org/type'),
+          DF.namedNode('http://ex.org/Dog')
+        );
+        store.addQuad(
+          DF.namedNode('http://ex.org/Mickey'),
+          DF.namedNode('http://ex.org/name'),
+          DF.literal('Lorem ipsum', 'nl')
+        );
+
+        const result = <QueryBindings> await engine.query(`
+        SELECT * WHERE { 
+          ?s ?p ?o .
+      
+          OPTIONAL {
+            ?s <http://ex.org/name> ?name .
+            FILTER(lang(?name) = 'nl')
+          }
+        }`, { sources: [ store ]});
+        expect((await arrayifyStream(await result.execute())).length).toBe(2);
+      });
+    });
+    
   });
 
   // We skip these tests in browsers due to CORS issues
