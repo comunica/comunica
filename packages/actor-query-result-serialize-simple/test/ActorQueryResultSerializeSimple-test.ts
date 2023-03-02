@@ -1,11 +1,12 @@
 import { Readable } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import type { BindingsStream, IActionContext } from '@comunica/types';
+import type { Bindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSimple } from '../lib/ActorQueryResultSerializeSimple';
+import { AsyncIterator } from 'asynciterator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -39,8 +40,8 @@ describe('ActorQueryResultSerializeSimple', () => {
 
   describe('An ActorQueryResultSerializeSimple instance', () => {
     let actor: ActorQueryResultSerializeSimple;
-    let bindingsStream: BindingsStream;
-    let quadStream: RDF.Stream;
+    let bindingsStream: () => BindingsStream;
+    let quadStream: () => RDF.Stream & AsyncIterator<Bindings>;
     let streamError: Readable;
 
     beforeEach(() => {
@@ -50,7 +51,7 @@ describe('ActorQueryResultSerializeSimple', () => {
         },
         mediaTypeFormats: {},
         name: 'actor' });
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -58,7 +59,7 @@ describe('ActorQueryResultSerializeSimple', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      quadStream = new ArrayIterator([
+      quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
@@ -79,22 +80,27 @@ describe('ActorQueryResultSerializeSimple', () => {
     });
 
     describe('for serializing', () => {
-      it('should test on simple quads', () => {
-        return expect(actor.test({
-          handle: <any> { type: 'quads', quadStream, context },
+      it('should test on simple quads', async () => {
+        const stream = quadStream();
+        await expect(actor.test({
+          handle: <any> { type: 'quads', quadStream: stream, context },
           handleMediaType: 'simple',
           context,
         }))
           .resolves.toBeTruthy();
+        stream.destroy()
       });
 
-      it('should test on simple bindings', () => {
-        return expect(actor.test({
-          handle: <any> { type: 'bindings', bindingsStream, context },
+      it('should test on simple bindings', async () => {
+        const stream = bindingsStream();
+        await expect(actor.test({
+          handle: <any> { type: 'bindings', bindingsStream: stream, context },
           handleMediaType: 'simple',
           context,
         }))
           .resolves.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should test on simple booleans', () => {
@@ -111,13 +117,15 @@ describe('ActorQueryResultSerializeSimple', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test({
-          handle: <any> { type: 'quads', quadStream, context },
+      it('should not test on N-Triples', async () => {
+        const stream = quadStream();
+        await expect(actor.test({
+          handle: <any> { type: 'quads', quadStream: stream, context },
           handleMediaType: 'application/n-triples',
           context,
         }))
           .rejects.toBeTruthy();
+        stream.destroy();
       });
 
       it('should not test on unknown types', () => {
@@ -129,7 +137,7 @@ describe('ActorQueryResultSerializeSimple', () => {
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream, context }, handleMediaType: 'simple', context },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context }, handleMediaType: 'simple', context },
         ))).handle.data)).toEqual(
           `?k1: v1
 
@@ -141,7 +149,7 @@ describe('ActorQueryResultSerializeSimple', () => {
 
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'simple', context },
+          { handle: <any> { type: 'quads', quadStream: quadStream(), context }, handleMediaType: 'simple', context },
         ))).handle.data)).toEqual(
           `subject: http://example.org/a
 predicate: http://example.org/b

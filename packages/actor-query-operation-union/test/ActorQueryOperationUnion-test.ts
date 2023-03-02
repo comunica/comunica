@@ -13,9 +13,9 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationUnion', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let op3: any;
-  let op2: any;
-  let op2Undef: any;
+  let op3: Function;
+  let op2: Function;
+  let op2Undef: Function;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -28,7 +28,7 @@ describe('ActorQueryOperationUnion', () => {
         canContainUndefs: arg.operation.canContainUndefs,
       }),
     };
-    op3 = {
+    op3 = () => ({
       metadata: () => Promise.resolve({
         cardinality: { type: 'estimate', value: 3 },
         canContainUndefs: false,
@@ -40,8 +40,8 @@ describe('ActorQueryOperationUnion', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ], { autoStart: false }),
       type: 'bindings',
-    };
-    op2 = {
+    });
+    op2 = () => ({
       metadata: () => Promise.resolve({
         cardinality: { type: 'estimate', value: 2 },
         canContainUndefs: false,
@@ -52,8 +52,8 @@ describe('ActorQueryOperationUnion', () => {
         BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
       ], { autoStart: false }),
       type: 'bindings',
-    };
-    op2Undef = {
+    });
+    op2Undef = () => ({
       metadata: () => Promise.resolve({
         cardinality: { type: 'estimate', value: 2 },
         canContainUndefs: true,
@@ -64,7 +64,7 @@ describe('ActorQueryOperationUnion', () => {
         BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
       ]),
       type: 'bindings',
-    };
+    });
   });
 
   describe('The ActorQueryOperationUnion module', () => {
@@ -239,18 +239,22 @@ describe('ActorQueryOperationUnion', () => {
       actor = new ActorQueryOperationUnion({ name: 'actor', bus, mediatorQueryOperation });
     });
 
-    it('should test on union', () => {
-      const op: any = { operation: { type: 'union', input: [ op3, op2 ]}};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+    it('should test on union', async () => {
+      const input = [ op3(), op2() ];
+      const op: any = { operation: { type: 'union', input, context: new ActionContext()}};
+      await expect(actor.test(op)).resolves.toBeTruthy();
+      input.forEach(op => op.stream.destroy());
     });
 
-    it('should not test on non-union', () => {
-      const op: any = { operation: { type: 'some-other-type', input: [ op3, op2 ]}, context: new ActionContext() };
-      return expect(actor.test(op)).rejects.toBeTruthy();
+    it('should not test on non-union', async () => {
+      const input = [ op3(), op2() ];
+      const op: any = { operation: { type: 'some-other-type', input}, context: new ActionContext() };
+      await expect(actor.test(op)).rejects.toBeTruthy();
+      input.forEach(op => op.stream.destroy());
     });
 
     it('should run on two streams', () => {
-      const op: any = { operation: { type: 'union', input: [ op3, op2 ]}, context: new ActionContext() };
+      const op: any = { operation: { type: 'union', input: [ op3(), op2() ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 5 },
@@ -269,7 +273,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run on three streams', () => {
-      const op: any = { operation: { type: 'union', input: [ op3, op2, op2Undef ]}, context: new ActionContext() };
+      const op: any = { operation: { type: 'union', input: [ op3(), op2(), op2Undef() ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 7 },
@@ -290,7 +294,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run with a right stream with undefs', () => {
-      const op: any = { operation: { type: 'union', input: [ op3, op2Undef ]}, context: new ActionContext() };
+      const op: any = { operation: { type: 'union', input: [ op3(), op2Undef() ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
           cardinality: { type: 'estimate', value: 5 },

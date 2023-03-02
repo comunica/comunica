@@ -7,6 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActionObserverHttp, ActorQueryResultSerializeStats } from '..';
+import { AsyncIterator } from 'asynciterator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -40,8 +41,8 @@ describe('ActorQueryResultSerializeStats', () => {
   describe('An ActorQueryResultSerializeStats instance', () => {
     let httpObserver: ActionObserverHttp;
     let actor: ActorQueryResultSerializeStats;
-    let bindingsStream: BindingsStream;
-    let quadStream: RDF.Stream;
+    let bindingsStream: () => BindingsStream;
+    let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let streamError: Readable;
     let httpInvalidator: ActorHttpInvalidateListenable;
     let lastListener: IInvalidateListener;
@@ -67,7 +68,7 @@ describe('ActorQueryResultSerializeStats', () => {
         httpObserver,
       });
 
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -75,7 +76,7 @@ describe('ActorQueryResultSerializeStats', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      quadStream = new ArrayIterator([
+      quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
@@ -105,17 +106,21 @@ describe('ActorQueryResultSerializeStats', () => {
         actor.delay = () => 3.14;
       });
 
-      it('should test on table', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
+      it('should test on table', async () => {
+        const stream = quadStream();
+        await expect(actor.test({ handle: <any> { type: 'quads', quadStream: stream },
           handleMediaType: 'debug',
           context })).resolves.toBeTruthy();
+        stream.destroy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
+      it('should not test on N-Triples', async () => {
+        const stream = quadStream();
+        await expect(actor.test({ handle: <any> { type: 'quads', quadStream: stream },
           handleMediaType: 'application/n-triples',
           context }))
           .rejects.toBeTruthy();
+        stream.destroy();
       });
 
       it('should not test on unknown types', () => {
@@ -127,7 +132,7 @@ describe('ActorQueryResultSerializeStats', () => {
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug', context },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream() }, handleMediaType: 'debug', context },
         )
         )).handle.data)).toEqual(
           `Result,Delay (ms),HTTP requests
@@ -142,7 +147,7 @@ TOTAL,3.14,0
         (<any> httpObserver).onRun(null, null, null);
         (<any> httpObserver).onRun(null, null, null);
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug', context },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream() }, handleMediaType: 'debug', context },
         )
         )).handle.data)).toEqual(
           `Result,Delay (ms),HTTP requests
@@ -160,7 +165,7 @@ TOTAL,3.14,2
         (<any> httpObserver).onRun(null, null, null);
         (<any> httpObserver).onRun(null, null, null);
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug', context },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream() }, handleMediaType: 'debug', context },
         )
         )).handle.data)).toEqual(
           `Result,Delay (ms),HTTP requests
@@ -173,7 +178,7 @@ TOTAL,3.14,2
 
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream },
+          { handle: <any> { type: 'quads', quadStream: quadStream() },
             handleMediaType: 'debug',
             context },
         ))).handle.data)).toEqual(
@@ -198,7 +203,7 @@ TOTAL,3.14,0
           { handle: <any> { type: 'quads', quadStream: streamError },
             handleMediaType: 'application/json',
             context },
-        ))).handle.data)).rejects.toBeTruthy();
+        ))).haquadStreamndle.data)).rejects.toBeTruthy();
       });
     });
   });

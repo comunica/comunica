@@ -100,6 +100,12 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       );
     });
 
+    afterEach(() => {
+      // This is here since the MediatedLinkedRdfSourcesAsyncRdfIterator is never fully consumed
+      // **THIS IS AN ALARM BELL** do not merge without checking this
+      source.destroy();
+    })
+
     describe('getLinkQueue', () => {
       it('should return a new link queue when called for the first time', async() => {
         expect(await source.getLinkQueue()).toBeInstanceOf(LinkQueueFifo);

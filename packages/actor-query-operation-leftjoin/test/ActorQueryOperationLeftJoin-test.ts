@@ -215,6 +215,8 @@ describe('ActorQueryOperationLeftJoin', () => {
           // Do nothing
         });
       });
+      // TODO: See if this should be closed on the error event
+      output.bindingsStream.destroy();
     });
   });
 });

@@ -27,8 +27,6 @@ export class RdfJsQuadSource implements IQuadSource {
       RdfJsQuadSource.nullifyVariables(graph),
     );
     const it = wrapAsyncIterator<RDF.Quad>(rawStream, { autoStart: false });
-    // @ts-ignore
-    it.toString = () => 'me';
 
     // Determine metadata
     this.setMetadata(it, subject, predicate, object, graph)

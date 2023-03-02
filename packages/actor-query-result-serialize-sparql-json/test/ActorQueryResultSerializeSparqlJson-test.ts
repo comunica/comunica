@@ -7,6 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActionObserverHttp, ActorQueryResultSerializeSparqlJson } from '..';
+import { AsyncIterator } from 'asynciterator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -73,11 +74,11 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
   describe('An ActorQueryResultSerializeSparqlJson instance', () => {
     let httpObserver: ActionObserverHttp;
     let actor: ActorQueryResultSerializeSparqlJson;
-    let bindingsStream: BindingsStream;
-    let bindingsStreamPartial: BindingsStream;
+    let bindingsStream: () => BindingsStream;
+    let bindingsStreamPartial: () => BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
-    let quadStream: RDF.Stream;
+    let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let metadata: MetadataBindings;
     let httpInvalidator: ActorHttpInvalidateListenable;
     let lastListener: IInvalidateListener;
@@ -103,7 +104,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         emitMetadata: true,
         httpObserver,
       });
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -111,7 +112,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      bindingsStreamPartial = new ArrayIterator([
+      bindingsStreamPartial = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -124,7 +125,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpJson')); });
-      quadStream = new ArrayIterator([
+      quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
@@ -165,17 +166,20 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test({ context,
-          handle: <any> { bindingsStream, type: 'bindings' },
+      it('should not test on N-Triples', async () => {
+        const stream = bindingsStream();
+        await expect(actor.test({ context,
+          handle: <any> { bindingsStream: stream, type: 'bindings' },
           handleMediaType: 'application/n-triples' }))
           .rejects.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata },
+            handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {"vars":["k1","k2"]},
@@ -193,7 +197,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         (<any> httpObserver).onRun(null, null, null);
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata },
+            handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {"vars":["k1","k2"]},
@@ -214,7 +218,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         (<any> httpObserver).onRun(null, null, null);
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata },
+            handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {"vars":["k1","k2"]},
@@ -240,7 +244,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         });
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata },
+            handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {"vars":["k1","k2"]},
@@ -255,7 +259,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
-            handle: <any> { bindingsStream, type: 'bindings', metadata: async() => ({ variables: []}) },
+            handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => ({ variables: []}) },
             handleMediaType: 'json' },
         ))).handle.data)).toEqual(
           `{"head": {},
@@ -272,7 +276,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         expect(await stringifyStream((<any> (await actor.run(
           { context,
             handle: <any> {
-              bindingsStream: bindingsStreamPartial,
+              bindingsStream: bindingsStreamPartial(),
               type: 'bindings',
               metadata: async() => ({ variables: []}),
             },

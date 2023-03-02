@@ -7,6 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeTree, bindingsStreamToGraphQl } from '..';
+import { AsyncIterator } from 'asynciterator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -16,7 +17,7 @@ const stringifyStream = require('stream-to-string');
 describe('ActorQueryResultSerializeTree', () => {
   let bus: any;
   let context: IActionContext;
-
+  ActorQueryResultSerializeTree
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
@@ -45,8 +46,8 @@ describe('ActorQueryResultSerializeTree', () => {
 
   describe('An ActorQueryResultSerializeTree instance', () => {
     let actor: ActorQueryResultSerializeTree;
-    let bindingsStream: BindingsStream;
-    let quadStream: RDF.Stream;
+    let bindingsStream: () => BindingsStream;
+    let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let streamError: Readable;
     let variables: RDF.Variable[];
 
@@ -54,11 +55,11 @@ describe('ActorQueryResultSerializeTree', () => {
       actor = new ActorQueryResultSerializeTree(
         { bus, name: 'actor', mediaTypePriorities: { tree: 1 }, mediaTypeFormats: {}},
       );
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([[ DF.variable('k1'), DF.literal('v1') ]]),
         BF.bindings([[ DF.variable('k2'), DF.literal('v2') ]]),
       ]);
-      quadStream = new ArrayIterator([
+      quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
@@ -78,24 +79,33 @@ describe('ActorQueryResultSerializeTree', () => {
     });
 
     describe('for serializing', () => {
-      it('should test on tree', () => {
-        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream, context },
+      it('should test on tree', async () => {
+        const stream = bindingsStream();
+        await expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream: stream, context },
           handleMediaType: 'tree',
           context })).resolves.toBeTruthy();
+
+        stream.destroy();
       });
 
-      it('should not test on tree with a quad stream', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads', quadStream, context },
+      it('should not test on tree with a quad stream', async () => {
+        const stream = quadStream();
+        await expect(actor.test({ handle: <any> { type: 'quads', quadStream: stream, context },
           handleMediaType: 'tree',
           context }))
           .rejects.toBeTruthy();
+
+        stream.destroy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream, context },
+      it('should not test on N-Triples', async () => {
+        const stream = bindingsStream();
+        await expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream: stream, context },
           handleMediaType: 'application/n-triples',
           context }))
           .rejects.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should not test on unknown types', () => {
@@ -107,7 +117,7 @@ describe('ActorQueryResultSerializeTree', () => {
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream, variables, context },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), variables, context },
             handleMediaType: 'tree',
             context },
         ))).handle.data)).toEqual(
@@ -129,7 +139,7 @@ describe('ActorQueryResultSerializeTree', () => {
           [KeysInitQuery.graphqlSingularizeVariables.name]: { k1: true, k2: false },
         });
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream, variables, context },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), variables, context },
             handleMediaType: 'tree',
             context },
         ))).handle.data)).toEqual(

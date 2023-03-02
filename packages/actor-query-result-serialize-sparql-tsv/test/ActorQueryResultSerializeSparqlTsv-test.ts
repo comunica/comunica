@@ -99,9 +99,9 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
 
   describe('An ActorQueryResultSerializeSparqlTsv instance', () => {
     let actor: ActorQueryResultSerializeSparqlTsv;
-    let bindingsStream: BindingsStream;
-    let bindingsStreamPartial: BindingsStream;
-    let bindingsStreamMixed: BindingsStream;
+    let bindingsStream: () => BindingsStream;
+    let bindingsStreamPartial: () => BindingsStream;
+    let bindingsStreamMixed: () => BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
     let metadata: MetadataBindings;
@@ -113,7 +113,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         },
         mediaTypeFormats: {},
         name: 'actor' });
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -121,7 +121,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      bindingsStreamPartial = new ArrayIterator([
+      bindingsStreamPartial = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -130,7 +130,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         ]),
         BF.bindings(),
       ]);
-      bindingsStreamMixed = new ArrayIterator([
+      bindingsStreamMixed = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.literal('v"') ],
           [ DF.variable('k2'), DF.defaultGraph() ],
@@ -167,11 +167,14 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should test on text/tab-separated-values bindings', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream, type: 'bindings', context },
+      it('should test on text/tab-separated-values bindings', async () => {
+        const stream = bindingsStream()
+        await expect(actor.test({ handle: <any> { bindingsStream: stream, type: 'bindings', context },
           handleMediaType: 'text/tab-separated-values',
           context }))
           .resolves.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should not test on sparql-results+tsv booleans', () => {
@@ -181,16 +184,19 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream, type: 'bindings', context },
+      it('should not test on N-Triples', async () => {
+        const stream = bindingsStream();
+        await expect(actor.test({ handle: <any> { bindingsStream: stream, type: 'bindings', context },
           handleMediaType: 'application/n-triples',
           context }))
           .rejects.toBeTruthy();
+        
+        stream.destroy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream, type: 'bindings', metadata: async() => metadata, context },
+          { handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => metadata, context },
             handleMediaType: 'text/tab-separated-values',
             context },
         ))).handle.data)).toEqual(
@@ -203,7 +209,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
 
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { bindingsStream, type: 'bindings', metadata: async() => ({ variables: []}), context },
+          { handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => ({ variables: []}), context },
             handleMediaType: 'text/tab-separated-values',
             context },
         ))).handle.data)).toEqual(
@@ -217,7 +223,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
       it('should run on a bindings stream with unbound variables', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> {
-            bindingsStream: bindingsStreamPartial,
+            bindingsStream: bindingsStreamPartial(),
             type: 'bindings',
             metadata: async() => ({ variables: [ DF.variable('k3') ]}),
             context,
@@ -236,7 +242,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
 
     it('should run on a bindings stream containing values with special characters', async() => {
       expect(await stringifyStream((<any> (await actor.run({
-        handle: <any> { bindingsStream: bindingsStreamMixed, type: 'bindings', metadata: async() => metadata, context },
+        handle: <any> { bindingsStream: bindingsStreamMixed(), type: 'bindings', metadata: async() => metadata, context },
         handleMediaType: 'text/tab-separated-values',
         context,
       }))).handle.data)).toEqual(
