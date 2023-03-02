@@ -60,7 +60,10 @@ describe('ActorRdfResolveHypermediaNone', () => {
       expect(source.match).toBeTruthy();
       await expect(new Promise((resolve, reject) => {
         const stream = source.match(v, v, v, v);
-        stream.getProperty('metadata', resolve);
+        stream.getProperty('metadata', (metadata) => {
+          resolve(metadata);
+          stream.close();
+        });
       })).resolves.toEqual({ cardinality: { type: 'exact', value: 2 }, canContainUndefs: false });
       expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
         quad('s1', 'p1', 'o1'),

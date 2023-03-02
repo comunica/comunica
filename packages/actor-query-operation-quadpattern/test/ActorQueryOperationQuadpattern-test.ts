@@ -487,7 +487,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
 
-      await actor.run({ operation, context: new ActionContext({ a: 'a', b: 'b' }) });
+      const result = await actor.run({ operation, context: new ActionContext({ a: 'a', b: 'b' }) });
       expect(mediatorResolveQuadPattern.mediate)
         .toHaveBeenCalledWith({
           context: new ActionContext({
@@ -497,6 +497,11 @@ describe('ActorQueryOperationQuadpattern', () => {
           }),
           pattern: operation,
         });
+
+      expect(result.type).toEqual('bindings');
+      if (result.type === 'bindings') {
+        await expect(result.bindingsStream).toEqualBindingsStream([])
+      }
     });
 
     it('should run s ?p o under default non-union default graph semantics', async() => {

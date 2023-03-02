@@ -1,0 +1,46 @@
+
+packages/actor-query-operation-construct/test/BindingsToQuadsIterator-test.ts (11.594 s)
+packages/actor-query-operation-quadpattern/test/ActorQueryOperationQuadpattern-test.ts (12.917 s)
+packages/actor-rdf-resolve-quad-pattern-federated/test/FederatedQuadSource-test.ts (13.253 s)
+packages/actor-rdf-resolve-quad-pattern-hypermedia/test/LinkedRdfSourcesAsyncRdfIterator-test.ts (13.405 s)
+packages/actor-query-operation-orderby-sparqlee/test/ActorQueryOperationOrderBySparqlee-test.ts (13.438 s)
+packages/actor-query-operation-group/test/ActorQueryOperationGroup-test.ts (13.56 s)
+packages/actor-rdf-resolve-hypermedia-qpf/test/RdfSourceQpf-test.ts
+packages/actor-query-operation-sparql-endpoint/test/ActorQueryOperationSparqlEndpoint-test.ts (14.042 s)
+packages/actor-rdf-join-minus-hash-undef/test/ActorRdfJoinMinusHashUndef-test.ts
+packages/actor-rdf-join-inner-multi-smallest/test/ActorRdfJoinMultiSmallest-test.ts
+packages/actor-rdf-join-inner-hash/test/ActorRdfJoinHash-test.ts
+packages/actor-rdf-join-inner-symmetrichash/test/ActorRdfJoinSymmetricHash-test.ts
+packages/actor-rdf-join-inner-nestedloop/test/ActorRdfJoinNestedLoop-test.ts
+packages/actor-query-operation-union/test/ActorQueryOperationUnion-test.ts
+packages/actor-rdf-parse-shaclc/test/ActorRdfParseShaclc-test.ts
+packages/actor-query-operation-update-deleteinsert/test/ActorQueryOperationUpdateDeleteInsert-test.ts
+packages/actor-rdf-resolve-hypermedia-sparql/test/RdfSourceSparql-test.ts
+packages/actor-rdf-join-inner-multi-sequential/test/ActorRdfJoinMultiSequential-test.ts
+packages/actor-query-result-serialize-sparql-json/test/ActorQueryResultSerializeSparqlJson-test.ts
+packages/actor-rdf-resolve-quad-pattern-hypermedia/test/MediatedLinkedRdfSourcesAsyncRdfIterator-test.ts
+packages/actor-query-result-serialize-sparql-xml/test/ActorQueryResultSerializeSparqlXml-test.ts
+packages/actor-query-operation-project/test/ActorQueryOperationProject-test.ts
+packages/actor-query-result-serialize-sparql-tsv/test/ActorQueryResultSerializeSparqlTsv-test.ts
+packages/actor-query-result-serialize-sparql-csv/test/ActorQueryResultSerializeSparqlCsv-test.ts
+packages/actor-query-operation-leftjoin/test/ActorQueryOperationLeftJoin-test.ts
+packages/actor-rdf-resolve-quad-pattern-hypermedia/test/MediatedQuadSource-test.ts
+packages/actor-rdf-resolve-quad-pattern-rdfjs-source/test/ActorRdfResolveQuadPatternRdfJsSource-test.ts
+packages/actor-rdf-serialize-jsonld/test/ActorRdfSerializeJsonLd-test.ts
+packages/actor-query-result-serialize-json/test/ActorQueryResultSerializeJson-test.ts
+packages/actor-query-result-serialize-simple/test/ActorQueryResultSerializeSimple-test.ts
+packages/actor-init-query/test/HttpServiceSparqlEndpoint-test.ts (17.963 s)
+packages/actor-rdf-join-minus-hash/test/ActorRdfJoinMinusHash-test.ts
+packages/actor-rdf-serialize-shaclc/test/ActorRdfSerializeShaclc-test.ts
+packages/actor-query-result-serialize-stats/test/ActorQueryResultSerializeStats-test.ts
+packages/actor-rdf-resolve-hypermedia-qpf/test/ActorRdfResolveHypermediaQpf-test.ts
+packages/actor-query-result-serialize-table/test/ActorQueryResultSerializeTable-test.ts
+packages/actor-rdf-serialize-n3/test/ActorRdfSerializeN3-test.ts
+packages/actor-rdf-resolve-quad-pattern-federated/test/ActorRdfResolveQuadPatternFederated-test.ts
+packages/actor-query-result-serialize-tree/test/ActorQueryResultSerializeTree-test.ts
+packages/actor-query-operation-sparql-endpoint/test/LazyCardinalityIterator-test.ts
+packages/actor-query-operation-ask/test/ActorQueryOperationAsk-test.ts
+packages/actor-rdf-update-hypermedia-patch-sparql-update/test/QuadDestinationPatchSparqlUpdate-test.ts
+packages/actor-abstract-path/test/PathVariableObjectIterator-test.ts
+packages/actor-rdf-resolve-hypermedia-none/test/ActorRdfResolveHypermediaNone-test.ts
+engines/query-sparql/test/QuerySparql-test.ts (24.038 s)

@@ -5,6 +5,7 @@ if (!global.window) {
   jest.unmock('follow-redirects');
 }
 
+// import * as asynciterator from 'asynciterator';
 import { KeysHttpWayback, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, QueryBindings, QueryStringContext } from '@comunica/types';
@@ -21,6 +22,16 @@ const stringifyStream = require('stream-to-string');
 
 const DF = new DataFactory();
 const factory = new Factory();
+
+
+// const spy = jest.spyOn(asynciterator, 'AsyncIterator')
+// const spy = jest.spyOn(asynciterator, 'TransformIterator')
+
+// afterAll(() => {
+//   expect(spy).toHaveBeenCalled()
+//   console.log('spy')
+// })
+
 
 describe('System test: QuerySparql', () => {
   usePolly();
