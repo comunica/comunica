@@ -69,22 +69,6 @@ describe('RdfSourceQpf', () => {
       },
     };
 
-    source = new RdfSourceQpf(
-      mediatorMetadata,
-      mediatorMetadataExtract,
-      mediatorDereferenceRdf,
-      's',
-      'p',
-      'o',
-      'g',
-      metadata,
-      new ActionContext(),
-      streamifyArray([
-        quad('s1', 'p1', 'o1'),
-        quad('s2', 'p2', 'o2'),
-      ]),
-    );
-
     S = DF.namedNode('S');
     P = DF.namedNode('P');
     O = DF.namedNode('O');
@@ -138,6 +122,24 @@ describe('RdfSourceQpf', () => {
   });
 
   describe('getSearchForm', () => {
+    beforeEach(() => {
+    source = new RdfSourceQpf(
+      mediatorMetadata,
+      mediatorMetadataExtract,
+      mediatorDereferenceRdf,
+      's',
+      'p',
+      'o',
+      'g',
+      metadata,
+      new ActionContext(),
+      streamifyArray([
+        quad('s1', 'p1', 'o1'),
+        quad('s2', 'p2', 'o2'),
+      ]),
+    );
+    });
+
     it('should return a searchForm', () => {
       return expect(source.getSearchForm(metadata)).toEqual(metadata.searchForms.values[0]);
     });
@@ -189,6 +191,24 @@ describe('RdfSourceQpf', () => {
   });
 
   describe('createFragmentUri', () => {
+    beforeEach(() => {
+      source = new RdfSourceQpf(
+        mediatorMetadata,
+        mediatorMetadataExtract,
+        mediatorDereferenceRdf,
+        's',
+        'p',
+        'o',
+        'g',
+        metadata,
+        new ActionContext(),
+        streamifyArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+        ]),
+      );
+      });
+
     it('should create a valid fragment URI with materialized terms', () => {
       return expect(source.createFragmentUri(metadata.searchForms.values[0],
         DF.namedNode('S'),
@@ -209,6 +229,24 @@ describe('RdfSourceQpf', () => {
   });
 
   describe('match', () => {
+    beforeEach(() => {
+      source = new RdfSourceQpf(
+        mediatorMetadata,
+        mediatorMetadataExtract,
+        mediatorDereferenceRdf,
+        's',
+        'p',
+        'o',
+        'g',
+        metadata,
+        new ActionContext(),
+        streamifyArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+        ]),
+      );
+      });
+      
     it('should return a copy of the initial quads for the empty pattern', async() => {
       expect(await arrayifyStream(source.match(v, v, v, v))).toBeRdfIsomorphic([
         quad('s1', 'p1', 'o1'),

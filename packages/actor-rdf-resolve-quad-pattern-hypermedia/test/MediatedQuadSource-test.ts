@@ -54,7 +54,14 @@ describe('MediatedQuadSource', () => {
 
     describe('match', () => {
       it('should return a MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
-        return expect(source.match(v, v, v, v)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
+        const stream = source.match(v, v, v, v);
+        expect(stream).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
+        return expect(stream.toArray()).resolves.toBeRdfIsomorphic([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+          quad('s3', 'p3', 'o3'),
+          quad('s4', 'p4', 'o4'),
+        ])
       });
 
       it('should return a stream', async() => {
@@ -79,9 +86,15 @@ describe('MediatedQuadSource', () => {
       });
 
       it('should set the first source after the first match call', async() => {
-        source.match(v, v, v, v);
+        const stream = source.match(v, v, v, v);
         expect(((await source.sourcesState.sources.get('firstUrl')))!.metadata).toEqual({ a: 1 });
         expect(((await source.sourcesState.sources.get('firstUrl')))!.source).toBeTruthy();
+        return expect(stream.toArray()).resolves.toBeRdfIsomorphic([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+          quad('s3', 'p3', 'o3'),
+          quad('s4', 'p4', 'o4'),
+        ])
       });
 
       it('should allow a custom first source to be set', async() => {

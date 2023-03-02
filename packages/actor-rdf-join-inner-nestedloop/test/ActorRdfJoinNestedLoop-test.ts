@@ -97,6 +97,12 @@ describe('ActorRdfJoinNestedLoop', () => {
       };
     });
 
+    describe('should test', () => {
+
+      afterEach(() => {
+        action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+      })
+
     it('should only handle 2 streams', () => {
       action.entries.push(<any> {});
       return expect(actor.test(action)).rejects.toBeTruthy();
@@ -166,12 +172,16 @@ describe('ActorRdfJoinNestedLoop', () => {
         (await (<any> action.entries[1].output).metadata()).cardinality.value);
     });
 
+  });
+
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
-        return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
+        await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
           { type: 'estimate',
             value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
           (await (<any> action.entries[1].output).metadata()).cardinality.value });
+
+        await expect(result.bindingsStream).toEqualBindingsStream([]);
       });
     });
 
@@ -183,6 +193,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join bindings with matching values', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -210,6 +223,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should not join bindings with incompatible values', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -231,6 +247,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join multiple bindings', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
@@ -338,6 +357,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join multiple bindings with undefs', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
