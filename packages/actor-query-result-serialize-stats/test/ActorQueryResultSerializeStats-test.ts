@@ -203,7 +203,7 @@ TOTAL,3.14,0
           { handle: <any> { type: 'quads', quadStream: streamError },
             handleMediaType: 'application/json',
             context },
-        ))).haquadStreamndle.data)).rejects.toBeTruthy();
+        ))).handle.data)).rejects.toBeTruthy();
       });
     });
   });
