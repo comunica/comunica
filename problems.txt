@@ -44,3 +44,8 @@ packages/actor-rdf-update-hypermedia-patch-sparql-update/test/QuadDestinationPat
 packages/actor-abstract-path/test/PathVariableObjectIterator-test.ts
 packages/actor-rdf-resolve-hypermedia-none/test/ActorRdfResolveHypermediaNone-test.ts
 engines/query-sparql/test/QuerySparql-test.ts (24.038 s)
+
+// Things that are needed in asynciterator
+// - Destroy on Error
+// - Destroy on `.toArray` rejection
+
