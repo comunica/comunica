@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-extend",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A extend query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,9 +33,9 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.5.1",
-    "@comunica/bus-query-operation": "^2.6.7",
-    "@comunica/core": "^2.6.7",
-    "@comunica/types": "^2.6.7",
+    "@comunica/bus-query-operation": "^2.6.8",
+    "@comunica/core": "^2.6.8",
+    "@comunica/types": "^2.6.8",
     "sparqlalgebrajs": "^4.0.5",
     "sparqlee": "^2.2.0"
   },

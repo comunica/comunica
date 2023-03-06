@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-join-coefficients-fixed",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A join-coefficients-fixed mediator",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,11 +30,11 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-join": "^2.6.7",
-    "@comunica/context-entries": "^2.6.7",
-    "@comunica/core": "^2.6.7",
-    "@comunica/mediatortype-join-coefficients": "^2.6.7",
-    "@comunica/types": "^2.6.7"
+    "@comunica/bus-rdf-join": "^2.6.8",
+    "@comunica/context-entries": "^2.6.8",
+    "@comunica/core": "^2.6.8",
+    "@comunica/mediatortype-join-coefficients": "^2.6.8",
+    "@comunica/types": "^2.6.8"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-describe-subject",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A describe-subject query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,11 +32,11 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-query-operation-union": "^2.6.7",
-    "@comunica/bus-query-operation": "^2.6.7",
-    "@comunica/context-entries": "^2.6.7",
-    "@comunica/core": "^2.6.7",
-    "@comunica/types": "^2.6.7",
+    "@comunica/actor-query-operation-union": "^2.6.8",
+    "@comunica/bus-query-operation": "^2.6.8",
+    "@comunica/context-entries": "^2.6.8",
+    "@comunica/core": "^2.6.8",
+    "@comunica/types": "^2.6.8",
     "asynciterator": "^3.8.0",
     "rdf-data-factory": "^1.1.1",
     "sparqlalgebrajs": "^4.0.5"

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-update-drop",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A drop query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,10 +32,10 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.6.7",
-    "@comunica/bus-rdf-update-quads": "^2.6.7",
-    "@comunica/core": "^2.6.7",
-    "@comunica/types": "^2.6.7",
+    "@comunica/bus-query-operation": "^2.6.8",
+    "@comunica/bus-rdf-update-quads": "^2.6.8",
+    "@comunica/core": "^2.6.8",
+    "@comunica/types": "^2.6.8",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^1.1.1",
     "sparqlalgebrajs": "^4.0.5"

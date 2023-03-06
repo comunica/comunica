@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-union",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A union query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.6.7",
-    "@comunica/core": "^2.6.7",
-    "@comunica/types": "^2.6.7",
+    "@comunica/bus-query-operation": "^2.6.8",
+    "@comunica/core": "^2.6.8",
+    "@comunica/types": "^2.6.8",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
     "rdf-terms": "^1.9.1",

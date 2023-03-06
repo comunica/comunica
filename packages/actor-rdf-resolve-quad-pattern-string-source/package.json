@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-string-source",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A rdf-resolve-quad-pattern-string-source actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,11 +32,11 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^2.6.7",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^2.6.7",
-    "@comunica/context-entries": "^2.6.7",
-    "@comunica/core": "^2.6.7",
-    "@comunica/types": "^2.6.7",
+    "@comunica/bus-rdf-parse": "^2.6.8",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^2.6.8",
+    "@comunica/context-entries": "^2.6.8",
+    "@comunica/core": "^2.6.8",
+    "@comunica/types": "^2.6.8",
     "@rdfjs/types": "*",
     "lru-cache": "^7.14.1",
     "rdf-store-stream": "^1.3.1",

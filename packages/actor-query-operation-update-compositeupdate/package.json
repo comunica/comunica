@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-update-compositeupdate",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A update-compositeupdate query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -28,9 +28,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.6.7",
-    "@comunica/core": "^2.6.7",
-    "@comunica/types": "^2.6.7",
+    "@comunica/bus-query-operation": "^2.6.8",
+    "@comunica/core": "^2.6.8",
+    "@comunica/types": "^2.6.8",
     "sparqlalgebrajs": "^4.0.5"
   },
   "scripts": {

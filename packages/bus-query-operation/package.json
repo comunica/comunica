@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-operation",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A comunica bus for query-operation events.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,10 +32,10 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.5.1",
-    "@comunica/context-entries": "^2.6.7",
-    "@comunica/core": "^2.6.7",
+    "@comunica/context-entries": "^2.6.8",
+    "@comunica/core": "^2.6.8",
     "@comunica/data-factory": "^2.5.1",
-    "@comunica/types": "^2.6.7",
+    "@comunica/types": "^2.6.8",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
     "rdf-string": "^1.6.1",

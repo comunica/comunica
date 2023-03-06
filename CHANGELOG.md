@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.8"></a>
+## [v2.6.8](https://github.com/comunica/comunica/compare/v2.6.7...v2.6.8) - 2023-03-06
+
+### Changed
+* [Remove deprecated calls to lru-cache](https://github.com/comunica/comunica/commit/20441fc0baab6e167f042c7a555c7a8cab5ccc08)
+
+### Fixed
+* [Bump rdf-streaming-store with fix for stream.push() after EOF](https://github.com/comunica/comunica/commit/aeccd872812dee8379f8eefc5153f4ef2fb973fc)
+* [Fix aggregated store not ending when linked iterator is destroyed](https://github.com/comunica/comunica/commit/9d1a2780530f3aa2517f3fff81148141cf5c4dac)
+* [Scope aggregated stores in the query context](https://github.com/comunica/comunica/commit/c180fc6c67de7aa5650cdc3ba9ecdf202a1f8356)
+
 <a name="v2.6.7"></a>
 ## [v2.6.7](https://github.com/comunica/comunica/compare/v2.6.6...v2.6.7) - 2023-02-15
 

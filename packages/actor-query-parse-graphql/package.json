@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-parse-graphql",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A graphql sparql-parse actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-parse": "^2.6.7",
-    "@comunica/context-entries": "^2.6.7",
-    "@comunica/core": "^2.6.7",
+    "@comunica/bus-query-parse": "^2.6.8",
+    "@comunica/context-entries": "^2.6.8",
+    "@comunica/core": "^2.6.8",
     "graphql-to-sparql": "^3.0.1"
   },
   "scripts": {

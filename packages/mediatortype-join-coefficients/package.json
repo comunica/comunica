@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediatortype-join-coefficients",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A comunica mediator type for the 'join-coefficients' parameter.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,7 +30,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.6.7",
+    "@comunica/core": "^2.6.8",
     "@rdfjs/types": "*"
   },
   "scripts": {

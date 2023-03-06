@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -36,8 +36,8 @@
     "bin/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-init": "^2.6.7",
-    "@comunica/core": "^2.6.7",
+    "@comunica/bus-init": "^2.6.8",
+    "@comunica/core": "^2.6.8",
     "componentsjs": "^5.3.2"
   },
   "scripts": {

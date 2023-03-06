@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-optional-nestedloop",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A optional-nestedloop rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-join": "^2.6.7",
-    "@comunica/mediatortype-join-coefficients": "^2.6.7",
-    "@comunica/types": "^2.6.7",
+    "@comunica/bus-rdf-join": "^2.6.8",
+    "@comunica/mediatortype-join-coefficients": "^2.6.8",
+    "@comunica/types": "^2.6.8",
     "asyncjoin": "^1.1.1"
   },
   "scripts": {
