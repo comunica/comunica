@@ -32,7 +32,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     const cache = this.cache;
     if (cache) {
       this.httpInvalidator.addInvalidateListener(
-        ({ url }: IActionHttpInvalidate) => url ? cache.del(url) : cache.reset(),
+        ({ url }: IActionHttpInvalidate) => url ? cache.delete(url) : cache.clear(),
       );
     }
   }
