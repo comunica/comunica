@@ -16,7 +16,7 @@
     "@solid/community-server": "^5.1.0",
     "@strictsoftware/typedoc-plugin-monorepo": "^0.4.2",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.33",
+    "@types/node": "^18.14.6",
     "@types/object-inspect": "^1.8.1",
     "@types/readable-stream": "^2.3.15",
     "@types/setup-polly-jest": "^0.5.2",

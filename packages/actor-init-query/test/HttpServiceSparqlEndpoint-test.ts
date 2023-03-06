@@ -1,4 +1,5 @@
-import * as cluster from 'cluster';
+import * as clusterUntyped from 'cluster';
+import type { Cluster } from 'cluster';
 import * as EventEmitter from 'events';
 import * as querystring from 'querystring';
 import { PassThrough } from 'stream';
@@ -17,6 +18,9 @@ import { parse } from '../__mocks__/url';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
+
+// Force type on Cluster, because there are issues with the Node.js typings since v18
+const cluster: Cluster = <any> clusterUntyped;
 
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
@@ -56,7 +60,6 @@ describe('HttpServiceSparqlEndpoint', () => {
   });
 
   afterAll(() => {
-    // eslint-disable-next-line no-import-assign
     Object.assign(cluster, originalCluster);
   });
 

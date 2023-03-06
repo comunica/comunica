@@ -1,5 +1,6 @@
 /* eslint-disable import/no-nodejs-modules */
-import * as cluster from 'cluster';
+import * as clusterUntyped from 'cluster';
+import type { Cluster } from 'cluster';
 import type { EventEmitter } from 'events';
 import * as http from 'http';
 import type { IncomingMessage, ServerResponse } from 'http';
@@ -20,6 +21,9 @@ import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
 
 const quad = require('rdf-quad');
+
+// Force type on Cluster, because there are issues with the Node.js typings since v18
+const cluster: Cluster = <any> clusterUntyped;
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
