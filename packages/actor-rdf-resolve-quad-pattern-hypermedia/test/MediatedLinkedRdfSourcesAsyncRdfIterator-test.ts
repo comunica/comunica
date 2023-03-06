@@ -20,10 +20,11 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
     let context: IActionContext;
     let source: any;
-    let s;
-    let p;
-    let o;
-    let g;
+    let mediators: any;
+    let s: RDF.Term;
+    let p: RDF.Term;
+    let o: RDF.Term;
+    let g: RDF.Term;
     let mediatorDereferenceRdf: MediatorDereferenceRdf;
     let mediatorMetadata: any;
     let mediatorMetadataExtract: any;
@@ -77,7 +78,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       mediatorRdfResolveHypermediaLinksQueue = {
         mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
       };
-      const mediators: any = {
+      mediators = {
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorDereferenceRdf,
@@ -98,6 +99,62 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         undefined,
         mediators,
       );
+    });
+
+    describe('close', () => {
+      it('should not end an undefined aggregated store', async() => {
+        source.close();
+      });
+
+      it('should end a defined aggregated store', async() => {
+        const aggregatedStore: any = {
+          end: jest.fn(),
+        };
+        source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+          10,
+          context,
+          'forcedType',
+          s,
+          p,
+          o,
+          g,
+          'first',
+          64,
+          aggregatedStore,
+          mediators,
+        );
+
+        source.close();
+        expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('destroy', () => {
+      it('should not end an undefined aggregated store', async() => {
+        source.destroy();
+      });
+
+      it('should end a defined aggregated store', async() => {
+        const aggregatedStore: any = {
+          end: jest.fn(),
+        };
+        source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+          10,
+          context,
+          'forcedType',
+          s,
+          p,
+          o,
+          g,
+          'first',
+          64,
+          aggregatedStore,
+          mediators,
+        );
+
+        source.destroy();
+        expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('getLinkQueue', () => {
