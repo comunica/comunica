@@ -125,23 +125,34 @@ describe('ActorQueryOperationLeftJoin', () => {
     });
 
     it('should correctly handle left hand bindings that are missing the variables of the expression', async() => {
-      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]}),
-        operated: arg,
-        type: 'bindings',
-      });
+      mediatorQueryOperation.mediate = (arg: any) => {
+        const { side } = arg.operation;
 
-      const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}, context: new ActionContext() };
+        return Promise.resolve({
+          bindingsStream: new ArrayIterator(side === 'left' ?
+            [
+              BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+            ] :
+            [
+              BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
+            ], { autoStart: false }),
+          metadata: () => Promise.resolve({
+            cardinality: 1,
+            canContainUndefs: true,
+            variables: side === 'left' ? [ DF.variable('a') ] : [ DF.variable('c') ],
+          }),
+          operated: arg,
+          type: 'bindings',
+        });
+      };
+
+      const op: any = { operation: { type: 'leftjoin',
+        input: [{ side: 'left' }, { side: 'right' }]},
+      context: new ActionContext() };
       await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
         ]);
       });
     });
