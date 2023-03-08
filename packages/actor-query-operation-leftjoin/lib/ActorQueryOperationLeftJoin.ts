@@ -36,12 +36,20 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
 
     // If the pattern contains an expression, filter the resulting stream
     if (operationOriginal.expression) {
+      const rightMetadata = await entries[1].output.metadata();
+      const expressionVariables = rightMetadata.variables;
       const config = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
       const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
+            // If variables of the right-hand entry are missing, we skip expression evaluation
+            if (!expressionVariables.every(variable => bindings.has(variable.value))) {
+              push(bindings);
+              return done();
+            }
+
             try {
               const result = await evaluator.evaluateAsEBV(bindings);
               if (result) {

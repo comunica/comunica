@@ -686,6 +686,51 @@ describe('System test: QuerySparql', () => {
         expect((await arrayifyStream(await result.execute()))).toEqual([]);
       });
     });
+
+    describe('left join with an optional', () => {
+      it('should handle filters inside the optional block', async() => {
+        const store = new Store();
+
+        store.addQuad(
+          DF.namedNode('http://ex.org/Pluto'),
+          DF.namedNode('http://ex.org/type'),
+          DF.namedNode('http://ex.org/Dog'),
+        );
+        store.addQuad(
+          DF.namedNode('http://ex.org/Mickey'),
+          DF.namedNode('http://ex.org/name'),
+          DF.literal('Lorem ipsum', 'nl'),
+        );
+
+        const result = <QueryBindings> await engine.query(`
+        SELECT * WHERE { 
+          ?s ?p ?o .
+      
+          OPTIONAL {
+            ?s <http://ex.org/name> ?name .
+            FILTER(lang(?name) = 'nl')
+          }
+        }`, { sources: [ store ]});
+        const results = await arrayifyStream(await result.execute());
+
+        const expectedResult = [
+          [
+            [ DF.variable('s'), DF.namedNode('http://ex.org/Pluto') ],
+            [ DF.variable('p'), DF.namedNode('http://ex.org/type') ],
+            [ DF.variable('o'), DF.namedNode('http://ex.org/Dog') ],
+          ],
+          [
+            [ DF.variable('name'), DF.literal('Lorem ipsum', 'nl') ],
+            [ DF.variable('s'), DF.namedNode('http://ex.org/Mickey') ],
+            [ DF.variable('p'), DF.namedNode('http://ex.org/name') ],
+            [ DF.variable('o'), DF.literal('Lorem ipsum', 'nl') ],
+          ],
+        ];
+
+        const bindings = results.map(binding => [ ...binding ]);
+        expect(bindings).toMatchObject(expectedResult);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
