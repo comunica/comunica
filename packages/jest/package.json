@@ -1,6 +1,6 @@
 {
   "name": "@comunica/jest",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "Jest utilities for Comunica",
   "main": "lib/index.js",
   "typings": "lib/index",

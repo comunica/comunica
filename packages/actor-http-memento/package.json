@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-memento",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "A memento http actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,7 +32,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-http": "^2.6.8",
+    "@comunica/bus-http": "^2.6.9",
     "@comunica/context-entries": "^2.6.8",
     "@comunica/core": "^2.6.8",
     "@types/parse-link-header": "^2.0.0",

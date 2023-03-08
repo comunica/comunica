@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-http",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "A http dereference actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bus-dereference": "^2.6.8",
-    "@comunica/bus-http": "^2.6.8",
+    "@comunica/bus-http": "^2.6.9",
     "@comunica/core": "^2.6.8",
     "cross-fetch": "^3.1.5",
     "relative-to-absolute-iri": "^1.0.7",

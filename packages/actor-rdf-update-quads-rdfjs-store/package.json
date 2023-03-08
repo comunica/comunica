@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-quads-rdfjs-store",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "A rdfjs-store rdf-update-quads actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,7 +32,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-update-quads": "^2.6.8",
+    "@comunica/bus-rdf-update-quads": "^2.6.9",
     "@comunica/core": "^2.6.8",
     "@comunica/types": "^2.6.8",
     "@rdfjs/types": "*",

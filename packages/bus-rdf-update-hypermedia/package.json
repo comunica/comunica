@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-update-hypermedia",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "A comunica bus for rdf-update-hypermedia events.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-update-quads": "^2.6.8",
+    "@comunica/bus-rdf-update-quads": "^2.6.9",
     "@comunica/core": "^2.6.8"
   },
   "scripts": {

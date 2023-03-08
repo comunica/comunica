@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-leftjoin",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "A leftjoin query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",

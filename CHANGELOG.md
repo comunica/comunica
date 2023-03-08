@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.9"></a>
+## [v2.6.9](https://github.com/comunica/comunica/compare/v2.6.8...v2.6.9) - 2023-03-08
+
+### Changed
+* [Update to Node.js typings v18](https://github.com/comunica/comunica/commit/227c71ca94d8bcf2b63ad5002f2b442be2a1fca0)
+
+### Fixed
+* [Bump rdf-streaming-store with another fix for stream.push() after EOF](https://github.com/comunica/comunica/commit/6889b5dcb4be3ea849ca3830f5b1d7011a33f429)
+* [Use globalThis instead of global](https://github.com/comunica/comunica/commit/a5ee4208372c8f949988fb83324c7b190d3caac4)
+* [Fix OPTIONAL failing to emit FILTERed results](https://github.com/comunica/comunica/commit/23f78cace357eb1a023bf00466a990dfe27afff1)
+
 <a name="v2.6.8"></a>
 ## [v2.6.8](https://github.com/comunica/comunica/compare/v2.6.7...v2.6.8) - 2023-03-06
 

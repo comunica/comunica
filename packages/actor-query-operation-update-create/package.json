@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-update-create",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "A create query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bus-query-operation": "^2.6.8",
-    "@comunica/bus-rdf-update-quads": "^2.6.8",
+    "@comunica/bus-rdf-update-quads": "^2.6.9",
     "@comunica/core": "^2.6.8",
     "@comunica/types": "^2.6.8",
     "sparqlalgebrajs": "^4.0.5"
