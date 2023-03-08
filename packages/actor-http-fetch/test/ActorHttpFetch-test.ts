@@ -48,7 +48,7 @@ describe('ActorHttpFetch', () => {
     it('should create a user agent in the browser', () => {
       (<any> global).navigator = { userAgent: 'Dummy' };
       return expect(ActorHttpFetch.createUserAgent())
-        .toEqual(`Comunica/actor-http-fetch (Browser-${global.navigator.userAgent})`);
+        .toEqual(`Comunica/actor-http-fetch (Browser-${globalThis.navigator.userAgent})`);
     });
 
     it('should create a user agent in Node.js', () => {

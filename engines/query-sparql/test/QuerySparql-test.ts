@@ -1,7 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
-if (!global.window) {
+if (!globalThis.window) {
   jest.unmock('follow-redirects');
 }
 

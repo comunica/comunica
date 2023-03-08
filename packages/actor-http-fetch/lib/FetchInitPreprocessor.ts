@@ -28,7 +28,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
   public async createAbortController(): Promise<AbortController> {
     // Fallback to abort-controller for Node 14 backward compatibility
     /* istanbul ignore next */
-    const AbortController = global.AbortController || await import('abort-controller');
+    const AbortController = globalThis.AbortController || await import('abort-controller');
     return new AbortController();
   }
 }
