@@ -20,7 +20,6 @@ const config = [{
 }];
 
 // Store global fetch to reset to after mock.
-// eslint-disable-next-line no-undef
 const globalFetch = globalThis.fetch;
 
 // Use an increased timeout, since the CSS server takes too much setup time.
@@ -109,7 +108,6 @@ describe('System test: QuerySparql over Solid Pods', () => {
 
     // Override global fetch with auth fetch
     // @ts-expect-error
-    // eslint-disable-next-line no-undef
     globalThis.fetch = jest.fn(authFetch);
   });
 
@@ -117,7 +115,6 @@ describe('System test: QuerySparql over Solid Pods', () => {
     await app.stop();
 
     // Reset global fetch. This is probably redundant, as jest clears the DOM after each file.
-    // eslint-disable-next-line no-undef
     globalThis.fetch = globalFetch;
   });
 

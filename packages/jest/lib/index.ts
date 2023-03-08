@@ -13,4 +13,4 @@ declare global {
   }
 }
 
-(<any> global).expect.extend(matchers);
+(<any> globalThis).expect.extend(matchers);

@@ -20,9 +20,9 @@ export class ActorHttpNative extends ActorHttp {
   }
 
   public static createUserAgent(): string {
-    return `Comunica/actor-http-native (${typeof global.navigator === 'undefined' ?
+    return `Comunica/actor-http-native (${typeof globalThis.navigator === 'undefined' ?
       `Node.js ${process.version}; ${process.platform}` :
-      `Browser-${global.navigator.userAgent}`})`;
+      `Browser-${globalThis.navigator.userAgent}`})`;
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {

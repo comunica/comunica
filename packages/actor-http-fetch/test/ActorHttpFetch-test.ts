@@ -12,7 +12,7 @@ import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 const streamifyString = require('streamify-string');
 
 // Mock fetch
-(<any> global).fetch = jest.fn((input: any, init: any) => {
+(<any> globalThis).fetch = jest.fn((input: any, init: any) => {
   return Promise.resolve({
     status: input.url === 'https://www.google.com/' ? 200 : 404,
     ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
@@ -46,13 +46,13 @@ describe('ActorHttpFetch', () => {
 
   describe('#createUserAgent', () => {
     it('should create a user agent in the browser', () => {
-      (<any> global).navigator = { userAgent: 'Dummy' };
+      (<any> globalThis).navigator = { userAgent: 'Dummy' };
       return expect(ActorHttpFetch.createUserAgent())
-        .toEqual(`Comunica/actor-http-fetch (Browser-${global.navigator.userAgent})`);
+        .toEqual(`Comunica/actor-http-fetch (Browser-${globalThis.navigator.userAgent})`);
     });
 
     it('should create a user agent in Node.js', () => {
-      delete (<any> global).navigator;
+      delete (<any> globalThis).navigator;
       return expect(ActorHttpFetch.createUserAgent())
         .toEqual(`Comunica/actor-http-fetch (Node.js ${process.version}; ${process.platform})`);
     });
@@ -122,7 +122,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should run without KeysHttp.includeCredentials', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({}),
@@ -132,7 +132,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should run with KeysHttp.includeCredentials', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({
@@ -147,7 +147,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should run with authorization', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({
@@ -167,7 +167,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should run with authorization and init.headers undefined', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: {},
@@ -188,7 +188,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should run with authorization and already header in init', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
 
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
@@ -255,7 +255,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should set no user agent if one has been set', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ 'user-agent': 'b' }) },
@@ -266,7 +266,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should set a user agent if none has been set', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({}) },
@@ -288,7 +288,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should run with a Node.js body', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       const body = <any> new Readable();
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }, context });
 
@@ -303,7 +303,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should run with a Web stream body', async() => {
-      const spy = jest.spyOn(global, 'fetch');
+      const spy = jest.spyOn(globalThis, 'fetch');
       const body = ActorHttp.toWebReadableStream(streamifyString('a'));
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }, context });
 
@@ -340,7 +340,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should work with a large timeout', async() => {
-      jest.spyOn(global, 'clearTimeout');
+      jest.spyOn(globalThis, 'clearTimeout');
       await expect(actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000 }),
@@ -349,7 +349,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should work with a large timeout with an error', async() => {
-      jest.spyOn(global, 'clearTimeout');
+      jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
         throw new Error('foo');
       });
@@ -377,7 +377,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should work with a large timeout including body if there is no body', async() => {
-      jest.spyOn(global, 'clearTimeout');
+      jest.spyOn(globalThis, 'clearTimeout');
       await expect(actor.run({
         input: <Request> { url: 'NOBODY' },
         context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000, [KeysHttp.httpBodyTimeout.name]: true }),
@@ -386,7 +386,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should work with a large timeout including body if the body is consumed', async() => {
-      jest.spyOn(global, 'clearTimeout');
+      jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
         const body = Readable.from('foo');
         return Promise.resolve({
@@ -409,7 +409,7 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should work with a large timeout including body if the body is cancelled', async() => {
-      jest.spyOn(global, 'clearTimeout');
+      jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
         const body = Readable.from('foo');
         return Promise.resolve({
