@@ -33,6 +33,7 @@ module.exports = {
     Headers: false,
     Request: false,
     XMLHttpRequest: false,
+    globalThis: false,
   },
   rules: {
     // Default
