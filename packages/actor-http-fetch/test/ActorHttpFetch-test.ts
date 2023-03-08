@@ -12,7 +12,7 @@ import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 const streamifyString = require('streamify-string');
 
 // Mock fetch
-(<any> global).fetch = jest.fn((input: any, init: any) => {
+(<any> globalThis).fetch = jest.fn((input: any, init: any) => {
   return Promise.resolve({
     status: input.url === 'https://www.google.com/' ? 200 : 404,
     ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
@@ -46,13 +46,13 @@ describe('ActorHttpFetch', () => {
 
   describe('#createUserAgent', () => {
     it('should create a user agent in the browser', () => {
-      (<any> global).navigator = { userAgent: 'Dummy' };
+      (<any> globalThis).navigator = { userAgent: 'Dummy' };
       return expect(ActorHttpFetch.createUserAgent())
         .toEqual(`Comunica/actor-http-fetch (Browser-${globalThis.navigator.userAgent})`);
     });
 
     it('should create a user agent in Node.js', () => {
-      delete (<any> global).navigator;
+      delete (<any> globalThis).navigator;
       return expect(ActorHttpFetch.createUserAgent())
         .toEqual(`Comunica/actor-http-fetch (Node.js ${process.version}; ${process.platform})`);
     });
