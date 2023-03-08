@@ -276,7 +276,6 @@ export class FederatedQuadSource implements IQuadSource {
       return data;
     }));
 
-    // TODO: Work out why things don't get properly closed with it = new UnionIterator(proxyIt);
     // Take the union of all source streams
     const it = new ClosableTransformIterator(async() => new UnionIterator(await proxyIt), {
       autoStart: false,
