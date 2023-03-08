@@ -28,7 +28,8 @@ module.exports = {
     }
   },
   globals: {
-    window: false,
+    window: "off",
+    global: "off",
     fetch: false,
     Headers: false,
     Request: false,
