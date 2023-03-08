@@ -53,6 +53,7 @@ describe('ActorRdfJoinHash', () => {
     let action: IActionRdfJoin;
     let variables0: RDF.Variable[];
     let variables1: RDF.Variable[];
+    let iterators: ArrayIterator<Bindings>[];
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
@@ -61,12 +62,16 @@ describe('ActorRdfJoinHash', () => {
       actor = new ActorRdfJoinHash({ name: 'actor', bus, mediatorJoinSelectivity });
       variables0 = [];
       variables1 = [];
+      iterators = [
+        new ArrayIterator<Bindings>([], { autoStart: false }),
+        new ArrayIterator<Bindings>([], { autoStart: false }),
+      ];
       action = {
         type: 'inner',
         entries: [
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[0],
               metadata: () => Promise.resolve(
                 {
                   cardinality: { type: 'estimate', value: 4 },
@@ -82,7 +87,7 @@ describe('ActorRdfJoinHash', () => {
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[1],
               metadata: () => Promise.resolve(
                 {
                   cardinality: { type: 'estimate', value: 5 },
@@ -101,18 +106,19 @@ describe('ActorRdfJoinHash', () => {
       };
     });
 
-    it('should only handle 2 streams', () => {
+    it('should only handle 2 streams', async() => {
       action.entries.push(<any> {});
-      return expect(actor.test(action)).rejects.toBeTruthy();
+      await expect(actor.test(action)).rejects.toBeTruthy();
+      iterators.forEach(iter => iter.destroy());
     });
 
-    it('should fail on undefs in left stream', () => {
+    it('should fail on undefs in left stream', async() => {
       action = {
         type: 'inner',
         entries: [
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[0],
               metadata: () => Promise.resolve(
                 {
                   cardinality: { type: 'estimate', value: 4 },
@@ -128,7 +134,7 @@ describe('ActorRdfJoinHash', () => {
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[1],
               metadata: () => Promise.resolve(
                 {
                   cardinality: { type: 'estimate', value: 5 },
@@ -145,17 +151,19 @@ describe('ActorRdfJoinHash', () => {
         ],
         context,
       };
-      return expect(actor.test(action)).rejects
+      await expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
+
+      iterators.forEach(iter => iter.destroy());
     });
 
-    it('should fail on undefs in right stream', () => {
+    it('should fail on undefs in right stream', async() => {
       action = {
         type: 'inner',
         entries: [
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[0],
               metadata: () => Promise.resolve(
                 {
                   cardinality: { type: 'estimate', value: 4 },
@@ -171,7 +179,7 @@ describe('ActorRdfJoinHash', () => {
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[1],
               metadata: () => Promise.resolve({
                 cardinality: { type: 'estimate', value: 5 },
                 pageSize: 100,
@@ -186,17 +194,19 @@ describe('ActorRdfJoinHash', () => {
         ],
         context,
       };
-      return expect(actor.test(action)).rejects
+      await expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
+
+      iterators.forEach(iter => iter.destroy());
     });
 
-    it('should fail on undefs in left and right stream', () => {
+    it('should fail on undefs in left and right stream', async() => {
       action = {
         type: 'inner',
         entries: [
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[0],
               metadata: () => Promise.resolve({
                 cardinality: { type: 'estimate', value: 4 },
                 pageSize: 100,
@@ -210,7 +220,7 @@ describe('ActorRdfJoinHash', () => {
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: iterators[1],
               metadata: () => Promise.resolve({
                 cardinality: { type: 'estimate', value: 5 },
                 pageSize: 100,
@@ -225,8 +235,10 @@ describe('ActorRdfJoinHash', () => {
         ],
         context,
       };
-      return expect(actor.test(action)).rejects
+      await expect(actor.test(action)).rejects
         .toThrow(new Error('Actor actor can not join streams containing undefs'));
+
+      iterators.forEach(iter => iter.destroy());
     });
 
     it('should generate correct test metadata', async() => {
@@ -237,16 +249,20 @@ describe('ActorRdfJoinHash', () => {
           blockingItems: 4,
           requestTime: 1.4,
         });
+
+      iterators.forEach(iter => iter.destroy());
     });
 
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
-        return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
+        await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
           {
             type: 'estimate',
             value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
           (await (<any> action.entries[1].output).metadata()).cardinality.value,
           });
+
+        await expect(result.bindingsStream.toArray()).resolves.toEqual([]);
       });
     });
 
@@ -259,6 +275,9 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should join bindings with matching values', () => {
+      // Close the iterators already declared since we will not be using them
+      iterators.forEach(iter => iter.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -291,6 +310,9 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should not join bindings with incompatible values', () => {
+      // Close the iterators already declared since we will not be using them
+      iterators.forEach(iter => iter.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -316,6 +338,9 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should join multiple bindings', () => {
+      // Close the iterators already declared since we will not be using them
+      iterators.forEach(iter => iter.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],

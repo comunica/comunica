@@ -97,81 +97,89 @@ describe('ActorRdfJoinNestedLoop', () => {
       };
     });
 
-    it('should only handle 2 streams', () => {
-      action.entries.push(<any> {});
-      return expect(actor.test(action)).rejects.toBeTruthy();
-    });
-
-    it('should handle undefs in left stream', () => {
-      action.entries[0].output.metadata = async() => ({
-        cardinality: { type: 'estimate', value: 4 },
-        pageSize: 100,
-        requestTime: 10,
-        canContainUndefs: true,
-        variables: [],
+    describe('should test', () => {
+      afterEach(() => {
+        action.entries.forEach(output => output.output?.bindingsStream?.destroy());
       });
-      return expect(actor.test(action)).resolves
-        .toEqual({
-          iterations: 20,
-          persistedItems: 0,
-          blockingItems: 0,
-          requestTime: 1.4,
+
+      it('should only handle 2 streams', () => {
+        action.entries.push(<any> {});
+        return expect(actor.test(action)).rejects.toBeTruthy();
+      });
+
+      it('should handle undefs in left stream', () => {
+        action.entries[0].output.metadata = async() => ({
+          cardinality: { type: 'estimate', value: 4 },
+          pageSize: 100,
+          requestTime: 10,
+          canContainUndefs: true,
+          variables: [],
         });
-    });
-
-    it('should handle undefs in right stream', () => {
-      action.entries[1].output.metadata = async() => ({
-        cardinality: { type: 'estimate', value: 5 },
-        pageSize: 100,
-        requestTime: 20,
-        canContainUndefs: true,
-        variables: [],
+        return expect(actor.test(action)).resolves
+          .toEqual({
+            iterations: 20,
+            persistedItems: 0,
+            blockingItems: 0,
+            requestTime: 1.4,
+          });
       });
-      return expect(actor.test(action)).resolves
-        .toEqual({
-          iterations: 20,
-          persistedItems: 0,
-          blockingItems: 0,
-          requestTime: 1.4,
+
+      it('should handle undefs in right stream', () => {
+        action.entries[1].output.metadata = async() => ({
+          cardinality: { type: 'estimate', value: 5 },
+          pageSize: 100,
+          requestTime: 20,
+          canContainUndefs: true,
+          variables: [],
         });
-    });
+        return expect(actor.test(action)).resolves
+          .toEqual({
+            iterations: 20,
+            persistedItems: 0,
+            blockingItems: 0,
+            requestTime: 1.4,
+          });
+      });
 
-    it('should handle undefs in left and right stream', () => {
-      action.entries[0].output.metadata = async() => ({
-        cardinality: { type: 'estimate', value: 4 },
-        pageSize: 100,
-        requestTime: 10,
-        canContainUndefs: true,
-        variables: [],
-      });
-      action.entries[1].output.metadata = async() => ({
-        cardinality: { type: 'estimate', value: 5 },
-        pageSize: 100,
-        requestTime: 20,
-        canContainUndefs: true,
-        variables: [],
-      });
-      return expect(actor.test(action)).resolves
-        .toEqual({
-          iterations: 20,
-          persistedItems: 0,
-          blockingItems: 0,
-          requestTime: 1.4,
+      it('should handle undefs in left and right stream', () => {
+        action.entries[0].output.metadata = async() => ({
+          cardinality: { type: 'estimate', value: 4 },
+          pageSize: 100,
+          requestTime: 10,
+          canContainUndefs: true,
+          variables: [],
         });
-    });
+        action.entries[1].output.metadata = async() => ({
+          cardinality: { type: 'estimate', value: 5 },
+          pageSize: 100,
+          requestTime: 20,
+          canContainUndefs: true,
+          variables: [],
+        });
+        return expect(actor.test(action)).resolves
+          .toEqual({
+            iterations: 20,
+            persistedItems: 0,
+            blockingItems: 0,
+            requestTime: 1.4,
+          });
+      });
 
-    it('should generate correct test metadata', async() => {
-      await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0].output).metadata()).cardinality.value *
+      it('should generate correct test metadata', async() => {
+        await expect(actor.test(action)).resolves.toHaveProperty('iterations',
+          (await (<any> action.entries[0].output).metadata()).cardinality.value *
         (await (<any> action.entries[1].output).metadata()).cardinality.value);
+      });
     });
 
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
-        return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
+        await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
           { type: 'estimate',
             value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
           (await (<any> action.entries[1].output).metadata()).cardinality.value });
+
+        await expect(result.bindingsStream).toEqualBindingsStream([]);
       });
     });
 
@@ -183,6 +191,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join bindings with matching values', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -210,6 +221,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should not join bindings with incompatible values', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -231,6 +245,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join multiple bindings', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
@@ -338,6 +355,9 @@ describe('ActorRdfJoinNestedLoop', () => {
     });
 
     it('should join multiple bindings with undefs', () => {
+      // Clean up the old bindings
+      action.entries.forEach(output => output.output?.bindingsStream?.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],

@@ -50,18 +50,23 @@ describe('ActorRdfSerializeJsonLd', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        quadStream = new ArrayIterator([
+        quadStream = () => new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
-        quadStreamPipeable = streamifyArray([
+        quadStreamPipeable = () => streamifyArray([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
       });
 
       it('should run', () => {
-        return actor.run({ handle: { quadStream, context }, handleMediaType: 'application/ld+json', context })
+        return actor.run({ handle: {
+          quadStream: quadStream(),
+          context,
+        },
+        handleMediaType: 'application/ld+json',
+        context })
           .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
             `[
   {
@@ -85,7 +90,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
     it('should run on a pipeable stream', () => {
       return actor.run({
-        handle: { quadStream: quadStreamPipeable, context },
+        handle: { quadStream: quadStreamPipeable(), context },
         handleMediaType: 'application/ld+json',
         context,
       })
@@ -110,15 +115,16 @@ describe('ActorRdfSerializeJsonLd', () => {
     });
 
     it('should run with multiple array entries', () => {
-      quadStream = new ArrayIterator([
+      return actor.run({ handle: { quadStream: new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
 
         quad('http://example.org/a2', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a2', 'http://example.org/d', 'http://example.org/e'),
-      ]);
-
-      return actor.run({ handle: { quadStream, context }, handleMediaType: 'application/ld+json', context })
+      ]),
+      context },
+      handleMediaType: 'application/ld+json',
+      context })
         .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
           `[
   {
@@ -179,23 +185,33 @@ describe('ActorRdfSerializeJsonLd', () => {
         quadsError._read = () => quadsError.emit('error', new Error('SerializeJsonLd'));
       });
 
-      it('should test on application/json', () => {
-        return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
-          .resolves.toBeTruthy();
-      });
+      describe('should test', () => {
+        afterEach(() => {
+          quadStream.destroy();
+        });
 
-      it('should test on application/ld+json', () => {
-        return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/ld+json', context }))
-          .resolves.toBeTruthy();
-      });
+        it('should test on application/json', () => {
+          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
+            .resolves.toBeTruthy();
+        });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test({
-          handle: { quadStream, context },
-          handleMediaType: 'application/n-triples',
-          context,
-        }))
-          .rejects.toBeTruthy();
+        it('should test on application/ld+json', () => {
+          return expect(actor.test({
+            handle: { quadStream, context },
+            handleMediaType: 'application/ld+json',
+            context,
+          }))
+            .resolves.toBeTruthy();
+        });
+
+        it('should not test on N-Triples', () => {
+          return expect(actor.test({
+            handle: { quadStream, context },
+            handleMediaType: 'application/n-triples',
+            context,
+          }))
+            .rejects.toBeTruthy();
+        });
       });
 
       it('should run', () => {
@@ -210,6 +226,9 @@ describe('ActorRdfSerializeJsonLd', () => {
           { handle: { quadStream: quadsError, context }, handleMediaType: 'application/ld+json', context },
         )))
           .handle.data)).rejects.toBeTruthy();
+
+        // Destroy the quadStream since we didn't use it
+        quadStream.destroy();
       });
     });
 

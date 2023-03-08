@@ -101,6 +101,12 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       );
     });
 
+    afterEach(() => {
+      // This is here since the MediatedLinkedRdfSourcesAsyncRdfIterator is never fully consumed
+      // **THIS IS AN ALARM BELL** do not merge without checking this
+      source.destroy();
+    });
+
     describe('close', () => {
       it('should not end an undefined aggregated store', async() => {
         source.close();
@@ -167,6 +173,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         expect(await source.getLinkQueue()).toBe(queue);
         expect(await source.getLinkQueue()).toBe(queue);
         expect(await source.getLinkQueue()).toBe(queue);
+        source.destroy();
       });
 
       it('should throw on a rejecting mediator', async() => {

@@ -3,6 +3,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlXml } from '../lib/ActorQueryResultSerializeSparqlXml';
@@ -98,10 +99,10 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
 
   describe('An ActorQueryResultSerializeSparqlXml instance', () => {
     let actor: ActorQueryResultSerializeSparqlXml;
-    let bindingsStream: BindingsStream;
-    let bindingsStreamPartial: BindingsStream;
+    let bindingsStream: () => BindingsStream;
+    let bindingsStreamPartial: () => BindingsStream;
     let bindingsStreamError: BindingsStream;
-    let quadStream: RDF.Stream;
+    let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let metadata: MetadataBindings;
 
     beforeEach(() => {
@@ -111,7 +112,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         },
         mediaTypeFormats: {},
         name: 'actor' });
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -119,7 +120,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ], { autoStart: false });
-      bindingsStreamPartial = new ArrayIterator([
+      bindingsStreamPartial = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -130,7 +131,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       ], { autoStart: false });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpXml')); });
-      quadStream = new ArrayIterator([
+      quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
@@ -150,18 +151,28 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
     });
 
     describe('for serializing', () => {
-      it('should not test on quad streams', () => {
-        return expect(actor.test(
-          { context, handle: <any> { type: 'quads', quadStream }, handleMediaType: 'sparql-results+xml' },
+      it('should not test on quad streams', async() => {
+        const stream = quadStream();
+        await expect(actor.test(
+          { context, handle: <any> { type: 'quads', quadStream: stream }, handleMediaType: 'sparql-results+xml' },
         ))
           .rejects.toBeTruthy();
+
+        stream.destroy();
       });
 
-      it('should test on sparql-results+xml bindings', () => {
-        return expect(actor.test(
-          { context, handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'sparql-results+xml' },
+      it('should test on sparql-results+xml bindings', async() => {
+        const stream = bindingsStream();
+        await expect(actor.test(
+          {
+            context,
+            handle: <any> { type: 'bindings', bindingsStream: stream },
+            handleMediaType: 'sparql-results+xml',
+          },
         ))
           .resolves.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should test on sparql-results+xml booleans', () => {
@@ -173,17 +184,24 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test(
-          { context, handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/n-triples' },
+      it('should not test on N-Triples', async() => {
+        const stream = bindingsStream();
+        await expect(actor.test(
+          {
+            context,
+            handle: <any> { type: 'bindings', bindingsStream: stream },
+            handleMediaType: 'application/n-triples',
+          },
         ))
           .rejects.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run({
           context,
-          handle: <any> { type: 'bindings', bindingsStream, metadata: async() => metadata },
+          handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), metadata: async() => metadata },
           handleMediaType: 'xml',
         })))
           .handle.data)).toEqual(
@@ -213,7 +231,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       it('should run on a bindings stream without variables', async() => {
         expect(await stringifyStream((<any> (await actor.run({
           context,
-          handle: <any> { type: 'bindings', bindingsStream, metadata: async() => ({ variables: []}) },
+          handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), metadata: async() => ({ variables: []}) },
           handleMediaType: 'xml',
         })))
           .handle.data)).toEqual(
@@ -243,7 +261,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           context,
           handle: <any> {
             type: 'bindings',
-            bindingsStream: bindingsStreamPartial,
+            bindingsStream: bindingsStreamPartial(),
             metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'xml',

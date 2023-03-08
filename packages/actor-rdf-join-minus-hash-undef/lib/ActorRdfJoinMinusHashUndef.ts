@@ -63,6 +63,9 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
         },
       };
     }
+    // Destroy the buffer stream since it is not needed when
+    // there are no common variables.
+    buffer.bindingsStream.destroy();
     return {
       result: output,
     };
