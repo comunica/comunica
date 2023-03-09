@@ -1,6 +1,8 @@
 import type * as LRUCache from 'lru-cache';
-import type { TermType } from '../expressions';
+import type * as E from '../expressions';
 import { asTermType } from '../expressions';
+import type { ArgumentType } from '../functions';
+import { double, float, string } from '../functions/Helpers';
 import type { KnownLiteralTypes } from './Consts';
 import { TypeAlias, TypeURL } from './Consts';
 
@@ -165,9 +167,9 @@ export function asOverrideType(type: string): OverrideType | undefined {
   return undefined;
 }
 
-export function asGeneralType(type: string): 'term' | TermType | undefined {
+export function asGeneralType(type: string): 'term' | E.TermType | undefined {
   if (type === 'term' || asTermType(type)) {
-    return <'term' | TermType> type;
+    return <'term' | E.TermType> type;
   }
   return undefined;
 }
@@ -219,3 +221,21 @@ export function isSubTypeOf(baseType: string, argumentType: KnownLiteralTypes,
   }
   return getSuperTypeDict(baseType, superTypeProvider)[argumentType] !== undefined;
 }
+
+// Defined by https://www.w3.org/TR/xpath-31/#promotion .
+// e.g. When a function takes a string, it can also accept a XSD_ANY_URI if it's cast first.
+export const typePromotion: Partial<Record<ArgumentType,
+{ typeToPromote: KnownLiteralTypes; conversionFunction: (arg: E.TermExpression) => E.TermExpression }[]>> = {
+  [TypeURL.XSD_STRING]: [
+    { typeToPromote: TypeURL.XSD_ANY_URI, conversionFunction: arg => string(arg.str()) },
+  ],
+  [TypeURL.XSD_DOUBLE]: [
+    { typeToPromote: TypeURL.XSD_FLOAT, conversionFunction: arg => double((<E.NumericLiteral>arg).typedValue) },
+    // TODO: in case of decimal a round needs to happen.
+    { typeToPromote: TypeURL.XSD_DECIMAL, conversionFunction: arg => double((<E.NumericLiteral>arg).typedValue) },
+  ],
+  [TypeURL.XSD_FLOAT]: [
+    // TODO: in case of decimal a round needs to happen.
+    { typeToPromote: TypeURL.XSD_DECIMAL, conversionFunction: arg => float((<E.NumericLiteral>arg).typedValue) },
+  ],
+};

@@ -2,17 +2,15 @@ import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/Base
 import type * as E from '../expressions';
 import { isLiteralTermExpression } from '../expressions';
 import type { KnownLiteralTypes } from '../util/Consts';
-import { TypeURL } from '../util/Consts';
 import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling';
 import {
   asGeneralType,
   asKnownLiteralType,
   asOverrideType,
   getSuperTypes,
-  superTypeDictTable,
+  superTypeDictTable, typePromotion,
 } from '../util/TypeHandling';
 import type { ArgumentType } from './Core';
-import { double, float, string } from './Helpers';
 
 export type SearchStack = OverloadTree[];
 export type ImplementationFunction = (sharedContext: ICompleteSharedContext) => E.SimpleApplication;
@@ -170,24 +168,11 @@ export class OverloadTree {
       nextTree = newNode;
     }
     nextTree._addOverload(_argumentTypes, func, promotionCount);
-    // Defined by https://www.w3.org/TR/xpath-31/#promotion .
-    // e.g. When a function takes a string, it can also accept a XSD_ANY_URI if it's cast first.
-    // TODO: When promoting decimal type a cast needs to be preformed.
-    if (argumentType === TypeURL.XSD_STRING) {
-      this.addPromotedOverload(TypeURL.XSD_ANY_URI, func, arg =>
-        string(arg.str()), _argumentTypes, promotionCount);
-    }
-    // TODO: in case of decimal a round needs to happen.
-    if (argumentType === TypeURL.XSD_DOUBLE) {
-      this.addPromotedOverload(TypeURL.XSD_FLOAT, func, arg =>
-        double((<E.NumericLiteral>arg).typedValue), _argumentTypes, promotionCount);
-      this.addPromotedOverload(TypeURL.XSD_DECIMAL, func, arg =>
-        double((<E.NumericLiteral>arg).typedValue), _argumentTypes, promotionCount);
-    }
-    if (argumentType === TypeURL.XSD_FLOAT) {
-      this.addPromotedOverload(TypeURL.XSD_DECIMAL, func, arg =>
-        float((<E.NumericLiteral>arg).typedValue), _argumentTypes, promotionCount);
-    }
+
+    typePromotion[argumentType]?.forEach(ret =>
+      this.addPromotedOverload(
+        ret.typeToPromote, func, ret.conversionFunction, _argumentTypes, promotionCount,
+      ));
   }
 
   private addPromotedOverload(typeToPromote: OverrideType, func: ImplementationFunction,
