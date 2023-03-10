@@ -114,6 +114,7 @@
     "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source": "^2.6.8",
     "@comunica/actor-rdf-serialize-jsonld": "^2.6.8",
     "@comunica/actor-rdf-serialize-n3": "^2.6.8",
+    "@comunica/actor-rdf-serialize-shaclc": "^2.6.8",
     "@comunica/actor-rdf-update-quads-rdfjs-store": "^2.6.9",
     "@comunica/bus-http-invalidate": "^2.6.8",
     "@comunica/config-query-sparql": "^2.6.0",
