@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "2.6.9",
+  "version": "2.6.10",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "main": "lib/index.js",
   "typings": "lib/index",

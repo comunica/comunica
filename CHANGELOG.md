@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.6.10"></a>
+## [v2.6.10](https://github.com/comunica/comunica/compare/v2.6.9...v2.6.10) - 2023-03-10
+
+### Fixed
+* [Add missing shaclc dependency in rdfjs engine](https://github.com/comunica/comunica/commit/f912ea313d9c72e7883e462ff66aac778cac6936)
+
 <a name="v2.6.9"></a>
 ## [v2.6.9](https://github.com/comunica/comunica/compare/v2.6.8...v2.6.9) - 2023-03-08
 
