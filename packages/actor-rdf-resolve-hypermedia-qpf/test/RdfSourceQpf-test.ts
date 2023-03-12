@@ -272,6 +272,70 @@ describe('RdfSourceQpf', () => {
         ]);
     });
 
+    describe('[QPF] should not return any quads if if the selector is malformed', () => {
+      const L = DF.literal('l');
+      const B = DF.blankNode();
+      const D = DF.defaultGraph();
+
+      beforeEach(() => {
+        metadata = {
+          searchForms: {
+            values: [
+              {
+                getUri: (entries: any) => `${entries.s || '_'},${entries.p || '_'},${entries.o || '_'
+                },${entries.g || '_'}`,
+                mappings: {
+                  g: 'G',
+                  o: 'O',
+                  p: 'P',
+                  s: 'S',
+                },
+              },
+            ],
+          },
+        };
+
+        source = new RdfSourceQpf(
+          mediatorMetadata,
+          mediatorMetadataExtract,
+          mediatorDereferenceRdf,
+          's',
+          'p',
+          'o',
+          'g',
+          metadata,
+          new ActionContext(),
+          streamifyArray([
+            quad('"L"', 'p', 'o', 'g'),
+            quad('_:B', 'p', 'o', 'g'),
+            quad('', 'p', 'o', 'g'),
+            quad('s', '"L"', 'o', 'g'),
+            quad('s', '_:B', 'o', 'g'),
+            quad('s', '', 'o', 'g'),
+            quad('s', 'p', '_:B', 'g'),
+            quad('s', 'p', '', 'g'),
+            quad('s', 'p', 'o', '"L"'),
+            quad('s', 'p', 'o', '_:B'),
+          ]),
+        );
+      });
+
+      it.each([
+        [ 'subject is a literal', L, v, v, v ],
+        [ 'subject is a blank', B, v, v, v ],
+        [ 'subject is a graph', D, v, v, v ],
+        [ 'predicate is a literal', v, L, v, v ],
+        [ 'predicate is a blank', v, B, v, v ],
+        [ 'predicate is a graph', v, D, v, v ],
+        [ 'object is a blank', v, v, B, v ],
+        [ 'object is a graph', v, v, D, v ],
+        [ 'graph is a literal', v, v, v, L ],
+        [ 'graph is a blank', v, v, v, B ],
+      ])('when the %s node', async(title: string, s: RDF.Term, p: RDF.Term, o: RDF.Term, g: RDF.Term) => {
+        expect(await arrayifyStream(source.match(s, p, o, g))).toBeRdfIsomorphic([]);
+      });
+    });
+
     it('should return multiple copies of the initial quads for the empty pattern', async() => {
       expect(await arrayifyStream(source.match(v, v, v, v))).toBeRdfIsomorphic([
         quad('s1', 'p1', 'o1'),
