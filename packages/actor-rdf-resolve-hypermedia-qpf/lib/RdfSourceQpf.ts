@@ -120,6 +120,10 @@ export class RdfSourceQpf implements IQuadSource {
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
+    if (_isMalformedSelector(subject, predicate, object, graph)) {
+      return _noQuads();
+    }
+
     // If we are querying the default graph,
     // and the source has an overridden value for the default graph (such as QPF can provide),
     // we override the graph parameter with that value.
@@ -131,16 +135,7 @@ export class RdfSourceQpf implements IQuadSource {
       } else if (Object.keys(this.searchForm.mappings).length === 4 && !this.defaultGraph) {
         // If the sd:defaultGraph is not declared on a QPF endpoint,
         // then the default graph must be empty.
-        const quads = new ArrayIterator([], { autoStart: false });
-        quads.setProperty('metadata', {
-          requestTime: 0,
-          cardinality: { type: 'exact', value: 0 },
-          first: null,
-          next: null,
-          last: null,
-          canContainUndefs: false,
-        });
-        return quads;
+        return _noQuads();
       }
     }
 
@@ -247,4 +242,27 @@ function _termToString(term: RDF.Term): string {
     // Any character that cannot be present in a URL will do
     '|' :
     termToString(term);
+}
+
+function _isMalformedSelector(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): boolean {
+  const wellFormed =
+      (subject.termType === 'Variable' || subject.termType === 'NamedNode') &&
+      (predicate.termType === 'Variable' || predicate.termType === 'NamedNode') &&
+      (object.termType === 'Variable' || object.termType === 'NamedNode' || object.termType === 'Literal') &&
+      (graph.termType === 'Variable' || graph.termType === 'NamedNode' || graph.termType === 'DefaultGraph');
+
+  return !wellFormed;
+}
+
+function _noQuads(): AsyncIterator<RDF.Quad> {
+  const quads = new ArrayIterator([], { autoStart: false });
+  quads.setProperty('metadata', {
+    requestTime: 0,
+    cardinality: { type: 'exact', value: 0 },
+    first: null,
+    next: null,
+    last: null,
+    canContainUndefs: false,
+  });
+  return quads;
 }
