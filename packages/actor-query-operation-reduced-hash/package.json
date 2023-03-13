@@ -37,7 +37,7 @@
     "@comunica/core": "^2.6.8",
     "@comunica/types": "^2.6.8",
     "@types/lru-cache": "^7.0.0",
-    "lru-cache": "^7.0.0",
+    "lru-cache": "^8.0.0",
     "sparqlalgebrajs": "^4.0.5"
   },
   "scripts": {
