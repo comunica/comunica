@@ -782,9 +782,9 @@
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
 "@types/node@*":
-  version "17.0.36"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.36.tgz#c0d5f2fe76b47b63e0e0efc3d2049a9970d68794"
-  integrity sha512-V3orv+ggDsWVHP99K3JlwtH20R7J4IhI1Kksgc+64q5VxgfRkQG8Ws3MFm/FZOKDYGy9feGFlZ70/HpCNe9QaA==
+  version "18.15.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.3.tgz#f0b991c32cfc6a4e7f3399d6cb4b8cf9a0315014"
+  integrity sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -3816,9 +3816,9 @@ ramda@^0.27.1:
   integrity sha512-SbiLPU40JuJniHexQSAgad32hfwd+DRUdwF2PlVuI5RZD0/vahUco7R8vD86J/tcEKKF9vZrUVwgtmGCqlCKyA==
 
 rdf-data-factory@^1.0.4, rdf-data-factory@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rdf-data-factory/-/rdf-data-factory-1.1.0.tgz#d0510b9f100dd79e94f29559a12d4a5a585054d6"
-  integrity sha512-g8feOVZ/KL1OK2Pco/jDBDFh4m29QDsOOD+rWloG9qFvIzRFchGy2CviLUX491E0ByewXxMpaq/A3zsWHQA16A==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/rdf-data-factory/-/rdf-data-factory-1.1.1.tgz#370142794e2299846896e9c0fafd35e5128c8e5f"
+  integrity sha512-0HoLx7lbBlNd2YTmNKin0txgiYmAV56eVU823at8cG2+iD0Ia5kcRNDpzZy6I/HCtFTymHvTfdhHTzm3ak3Jpw==
   dependencies:
     "@rdfjs/types" "*"
 
