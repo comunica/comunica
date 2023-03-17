@@ -313,14 +313,14 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@comunica/bindings-factory@^2.0.1":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@comunica/bindings-factory/-/bindings-factory-2.2.0.tgz#9d95142ce561c72436872558da0541c81d948947"
-  integrity sha512-KFn/djqJwTn1nQLI/T/roOf2A+otuNtPmMtXba0rna+X59sjbA7e4KUnG4wMd9yKQVt2/1a1e9F3vVvGOMB63A==
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@comunica/bindings-factory/-/bindings-factory-2.5.1.tgz#18fc7269dc8d11f8de28b8c8c21c80ea80464250"
+  integrity sha512-w8L9t17EaBibuyDXQAjSK04E4E3s/WWsSCNQz7QzG8dpLqscLfwiE0OBJpqpqGZ8pBkgQPt/JyC2WAqwPi5CHg==
   dependencies:
     "@rdfjs/types" "*"
-    immutable "^4.0.0"
-    rdf-data-factory "^1.1.0"
-    rdf-string "^1.6.0"
+    immutable "^4.1.0"
+    rdf-data-factory "^1.1.1"
+    rdf-string "^1.6.1"
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
@@ -2447,10 +2447,10 @@ ignore@^5.0.5, ignore@^5.1.8, ignore@^5.2.0:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.0.tgz#6d3bac8fa7fe0d45d9f9be7bac2fc279577e345a"
   integrity sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==
 
-immutable@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.1.0.tgz#f795787f0db780183307b9eb2091fcac1f6fafef"
-  integrity sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==
+immutable@^4.1.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.0.tgz#eb1738f14ffb39fd068b1dbe1296117484dd34be"
+  integrity sha512-0AOCmOip+xgJwEVTQj1EfiDDOkPmuyllDuTuEX+DDXUgapLAsBIfkg3sxCYyCEA8mQqZrrxPUGjcOQ2JS3WLkg==
 
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
@@ -3844,7 +3844,7 @@ rdf-js@^4.0.2:
   dependencies:
     "@rdfjs/types" "*"
 
-rdf-string@^1.6.0:
+rdf-string@^1.6.0, rdf-string@^1.6.1:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/rdf-string/-/rdf-string-1.6.3.tgz#5c3173fad13e6328698277fb8ff151e3423282ab"
   integrity sha512-HIVwQ2gOqf+ObsCLSUAGFZMIl3rh9uGcRf1KbM85UDhKqP+hy6qj7Vz8FKt3GA54RiThqK3mNcr66dm1LP0+6g==
