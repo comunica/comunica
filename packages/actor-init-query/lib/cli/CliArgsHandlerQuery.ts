@@ -137,7 +137,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
     }
 
     // Set the blank node localization
-    if (args.localizeBlankNodes) {
+    if (args.localizeBlankNodes !== undefined) {
       context[KeysQueryOperation.localizeBlankNodes.name] = args.localizeBlankNodes;
     }
 
