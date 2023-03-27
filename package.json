@@ -20,7 +20,7 @@
     "@types/object-inspect": "^1.8.1",
     "@types/readable-stream": "^2.3.15",
     "@types/setup-polly-jest": "^0.5.2",
-    "@typescript-eslint/eslint-plugin": "5.43.0",
+    "@typescript-eslint/eslint-plugin": "5.56.0",
     "@typescript-eslint/parser": "^5.43.0",
     "abort-controller": "^3.0.0",
     "arrayify-stream": "^2.0.1",
