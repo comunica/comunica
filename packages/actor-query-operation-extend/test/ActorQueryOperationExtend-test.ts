@@ -6,6 +6,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
+import '@comunica/jest';
 
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
 
@@ -119,7 +120,7 @@ describe('ActorQueryOperationExtend', () => {
     it('should run', async() => {
       const op: any = { operation: example(defaultExpression), context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+      await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
           [ DF.variable('l'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],

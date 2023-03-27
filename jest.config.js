@@ -1,6 +1,9 @@
 module.exports = {
   transform: {
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.ts$': ['ts-jest', {
+      // Enabling this can fix issues when using prereleases of typings packages
+      //isolatedModules: true
+    }],
   },
   testRegex: ['/test/.*-test.*.ts$'],
   // TODO: Remove this condition, once solid-client-authn supports node 18.
@@ -11,12 +14,6 @@ module.exports = {
     'ts',
     'js'
   ],
-  globals: {
-    'ts-jest': {
-      // Enabling this can fix issues when using prereleases of typings packages
-      //isolatedModules: true
-    },
-  },
   setupFilesAfterEnv: ['./setup-jest.js'],
   collectCoverage: true,
   coveragePathIgnorePatterns: [

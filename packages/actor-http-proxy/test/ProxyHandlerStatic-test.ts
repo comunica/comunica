@@ -19,13 +19,14 @@ describe('ProxyHandlerStatic', () => {
   });
 
   it('should modify an object-based request', async() => {
-    expect(await proxy.getProxy({ input: new Request('http://example.org/') }))
-      .toEqual({ input: new Request('http://prefix.org/http://example.org/') });
+    expect((await proxy.getProxy({ input: new Request('http://example.org/') })).input.url)
+      .toEqual('http://prefix.org/http://example.org/');
   });
 
   it('should modify an object-based request with options', async() => {
     const init = { headers: new Headers({ a: 'b' }) };
-    expect(await proxy.getProxy({ input: new Request('http://example.org/', init) }))
-      .toEqual({ input: new Request('http://prefix.org/http://example.org/', init) });
+    const rewritten = await proxy.getProxy({ input: new Request('http://example.org/', init) });
+    expect(rewritten.input.url).toEqual('http://prefix.org/http://example.org/');
+    expect(rewritten.input.headers.get('a')).toEqual('b');
   });
 });

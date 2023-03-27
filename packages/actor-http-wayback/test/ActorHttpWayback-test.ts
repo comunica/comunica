@@ -3,8 +3,8 @@ import type { MediatorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
-import { Request } from 'cross-fetch';
 import { ActorHttpWayback } from '../lib';
+import 'cross-fetch/polyfill';
 
 const stringToStream = require('streamify-string');
 

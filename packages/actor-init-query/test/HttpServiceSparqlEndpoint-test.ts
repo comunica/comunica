@@ -46,7 +46,7 @@ jest.mock('fs', () => {
   return fs;
 });
 
-jest.useFakeTimers('legacy');
+jest.useFakeTimers({ legacyFakeTimers: true });
 
 const argsDefault = {
   moduleRootPath: 'moduleRootPath',

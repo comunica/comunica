@@ -236,9 +236,11 @@ describe('ActorHttpNative', () => {
     });
 
     it('should throw when the given body via input', async() => {
-      await expect(actor.run(
-        { context, input: new Request('http://example.com', { body: new ReadableStream(), method: 'POST' }) },
-      )).rejects.toThrow(new Error('ActorHttpNative does not support passing body via input, use init instead.'));
+      await expect(actor.run({
+        context,
+        input: new Request('http://example.com',
+          <any>{ body: new ReadableStream(), method: 'POST', duplex: 'half' }),
+      })).rejects.toThrow(new Error('ActorHttpNative does not support passing body via input, use init instead.'));
     });
 
     it('should send the given body via init', async() => {

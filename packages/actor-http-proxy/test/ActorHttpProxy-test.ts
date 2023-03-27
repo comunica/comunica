@@ -93,7 +93,12 @@ describe('ActorHttpProxy', () => {
       expect(await actor.run({ input, context }))
         .toEqual({ url: 'http://example.org/', output: 'ABC', headers: new Headers({}) });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(
-        { input: new Request('http://proxy.org/http://example.org/'), context: new ActionContext({}) },
+        {
+          input: expect.objectContaining({
+            url: 'http://proxy.org/http://example.org/',
+          }),
+          context: new ActionContext({}),
+        },
       );
     });
   });
