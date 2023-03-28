@@ -10,7 +10,14 @@ async function depInfo({ location, name }, log) {
   let ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
   ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
-  const {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+  let {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+
+  if (dependencies.includes('process') && Object.values(using).flat().some(file => 
+    readFileSync(file, 'utf8').toString().includes('import process = require(\'process\')') ||
+    readFileSync(file, 'utf8').toString().includes('const process = require(\'process\')')
+    )) {
+      dependencies = dependencies.filter(dep => dep !== 'process');
+  }
 
   return {
     unusedDeps: [...dependencies, ...devDependencies].filter(elem => !Object.keys(using).includes(elem)),
