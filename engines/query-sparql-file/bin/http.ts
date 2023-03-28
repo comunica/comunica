@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import process = require('process');
 import { HttpServiceSparqlEndpoint } from '@comunica/actor-init-query';
 
 const defaultConfigPath = `${__dirname}/../config/config-default.json`;

@@ -1,4 +1,5 @@
 /* eslint-disable no-process-env,unicorn/no-process-exit */
+import process = require('process');
 import type { IActorOutputInit } from '@comunica/bus-init';
 import { ActionContext } from '@comunica/core';
 import type { ISetupProperties } from '@comunica/runner';

@@ -1,3 +1,4 @@
+import process = require('process');
 import { compileConfig } from 'componentsjs';
 
 // Compiles a configuration to a module (single file) that exports the instantiated instance,

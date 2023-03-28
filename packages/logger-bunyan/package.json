@@ -33,7 +33,8 @@
   "dependencies": {
     "@comunica/types": "^2.6.8",
     "@types/bunyan": "^1.8.8",
-    "bunyan": "^1.8.15"
+    "bunyan": "^1.8.15",
+    "process": "^0.11.10"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

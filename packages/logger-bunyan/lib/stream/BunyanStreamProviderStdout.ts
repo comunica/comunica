@@ -1,3 +1,4 @@
+import process = require('process');
 import type { Stream } from 'bunyan';
 import type { IBunyanStreamProviderArgs } from './BunyanStreamProvider';
 import { BunyanStreamProvider } from './BunyanStreamProvider';

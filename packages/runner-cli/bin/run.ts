@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import process = require('process');
 import { runArgs } from '../lib/ArgsRunner';
 
 const argv = process.argv.slice(2);

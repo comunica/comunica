@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as Path from 'path';
+import process = require('process');
 import { compileConfig } from 'componentsjs';
 import type { ParsedArgs } from 'minimist';
 import minimist = require('minimist');

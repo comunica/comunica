@@ -2,6 +2,7 @@
 import { exec } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import * as OS from 'os';
+import process = require('process');
 import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';

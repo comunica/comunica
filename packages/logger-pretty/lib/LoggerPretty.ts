@@ -1,3 +1,4 @@
+import process = require('process');
 import { Logger } from '@comunica/types';
 import * as objectInspect from 'object-inspect';
 

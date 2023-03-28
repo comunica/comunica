@@ -1,3 +1,4 @@
+import process = require('process');
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { ComponentsManager } from 'componentsjs';
 import type {

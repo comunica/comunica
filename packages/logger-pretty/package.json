@@ -32,7 +32,8 @@
   ],
   "dependencies": {
     "@comunica/types": "^2.6.8",
-    "object-inspect": "^1.12.2"
+    "object-inspect": "^1.12.2",
+    "process": "^0.11.10"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
