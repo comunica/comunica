@@ -179,7 +179,7 @@
     "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
     "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
     "browser-profile": "\"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --profile --mode production --json > stats.json && webpack-bundle-analyzer stats.json && rm stats.json",
-    "spec:base": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql11/data-sparql11/manifest-all.ttl -c ../../.rdf-test-suite-cache/",
+    "spec:base": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql/sparql11/manifest-all.ttl -c ../../.rdf-test-suite-cache/",
     "spec:query": "yarn run spec:base -s http://www.w3.org/TR/sparql11-query/",
     "spec:update": "yarn run spec:base -s http://www.w3.org/TR/sparql11-update/ -e",
     "spec:csv-tsv": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-csv-tsv/",
