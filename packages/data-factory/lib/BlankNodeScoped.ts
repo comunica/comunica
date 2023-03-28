@@ -4,7 +4,7 @@ import type * as RDF from '@rdfjs/types';
  * A blank node that is scoped to a certain source.
  */
 export class BlankNodeScoped implements RDF.BlankNode {
-  public readonly termType: 'BlankNode' = 'BlankNode';
+  public readonly termType = 'BlankNode';
   public readonly value: string;
   /**
    * This value can be obtained by consumers in query results,
