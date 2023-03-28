@@ -1,10 +1,11 @@
-import process = require('process');
 import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
 import Requester from './Requester';
+
+const process: NodeJS.Process = require('process/');
 
 /**
  * A comunica Follow Redirects Http Actor.

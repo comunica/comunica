@@ -1,7 +1,8 @@
-import process = require('process');
 import type { Stream } from 'bunyan';
 import type { IBunyanStreamProviderArgs } from './BunyanStreamProvider';
 import { BunyanStreamProvider } from './BunyanStreamProvider';
+
+const process: NodeJS.Process = require('process/');
 
 /**
  * A stderr bunyan stream provider.

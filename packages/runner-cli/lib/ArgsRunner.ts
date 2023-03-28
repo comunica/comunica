@@ -1,11 +1,12 @@
 /* eslint-disable no-process-env,unicorn/no-process-exit */
-import process = require('process');
 import type { IActorOutputInit } from '@comunica/bus-init';
 import { ActionContext } from '@comunica/core';
 import type { ISetupProperties } from '@comunica/runner';
 import { run } from '@comunica/runner';
 import type { IActionContext } from '@comunica/types';
 import type { Readable } from 'readable-stream';
+
+const process: NodeJS.Process = require('process/');
 
 export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS.ReadStream,
   stdout: NodeJS.WriteStream, stderr: NodeJS.WriteStream, exit: (code?: number) => void, env: NodeJS.ProcessEnv,

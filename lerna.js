@@ -13,8 +13,10 @@ async function depInfo({ location, name }, log) {
   let {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
 
   if (Object.values(using).flat().some(file => 
-    readFileSync(file, 'utf8').toString().includes('import process = require(\'process\')') ||
-    readFileSync(file, 'utf8').toString().includes('const process = require(\"process\")')
+    readFileSync(file, 'utf8').toString().includes('const process: NodeJS.Process = require(\'process/\')') ||
+    readFileSync(file, 'utf8').toString().includes('const process: NodeJS.Process = require(\"process/\")') ||
+    readFileSync(file, 'utf8').toString().includes('const process = require(\"process/\")') ||
+    readFileSync(file, 'utf8').toString().includes('const process = require(\'process/\')')
     )) {
       if (dependencies.includes('process')) {
         // If we know it exists and is in the dependency array, remove it so that no errors are thrown

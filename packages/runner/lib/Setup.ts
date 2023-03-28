@@ -1,4 +1,3 @@
-import process = require('process');
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { ComponentsManager } from 'componentsjs';
 import type {
@@ -10,6 +9,8 @@ import type {
   LogLevel,
 } from 'componentsjs';
 import type { Runner } from './Runner';
+
+const process: NodeJS.Process = require('process/');
 
 /**
  * Helper functions to setup instances from a given comunica config file.

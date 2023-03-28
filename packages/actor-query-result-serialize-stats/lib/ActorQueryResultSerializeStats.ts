@@ -1,4 +1,3 @@
-import process = require('process');
 import type { IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
@@ -9,6 +8,8 @@ import type {
 } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
+
+const process: NodeJS.Process = require('process/');
 
 /**
  * Serializes SPARQL results for testing and debugging.

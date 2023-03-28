@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-import process = require('process');
 import { runArgs } from '../lib/ArgsRunner';
+
+const process: NodeJS.Process = require('process/');
 
 const argv = process.argv.slice(2);
 if (argv.length === 0 || /^--?h(elp)?$/u.test(argv[0])) {
