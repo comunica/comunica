@@ -21,7 +21,7 @@ async function depInfo({ location, name }, log) {
         dependencies = dependencies.filter(dep => dep !== 'process');
       } else {
         // If it is *not* declared in teh dependencies then mark it as missing
-        missing['process'] ??= [];
+        missing['process'] = missing['process'] || [];
       }
   }
 
