@@ -14,7 +14,7 @@ async function depInfo({ location, name }, log) {
 
   if (dependencies.includes('process') && Object.values(using).flat().some(file => 
     readFileSync(file, 'utf8').toString().includes('import process = require(\'process\')') ||
-    readFileSync(file, 'utf8').toString().includes('const process = require(\'process\')')
+    readFileSync(file, 'utf8').toString().includes('const process = require(\"process\")')
     )) {
       dependencies = dependencies.filter(dep => dep !== 'process');
   }
