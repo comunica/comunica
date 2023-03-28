@@ -12,11 +12,17 @@ async function depInfo({ location, name }, log) {
 
   let {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
 
-  if (dependencies.includes('process') && Object.values(using).flat().some(file => 
+  if (Object.values(using).flat().some(file => 
     readFileSync(file, 'utf8').toString().includes('import process = require(\'process\')') ||
     readFileSync(file, 'utf8').toString().includes('const process = require(\"process\")')
     )) {
-      dependencies = dependencies.filter(dep => dep !== 'process');
+      if (dependencies.includes('process')) {
+        // If we know it exists and is in the dependency array, remove it so that no errors are thrown
+        dependencies = dependencies.filter(dep => dep !== 'process');
+      } else {
+        // If it is *not* declared in teh dependencies then mark it as missing
+        missing['process'] ??= [];
+      }
   }
 
   return {
