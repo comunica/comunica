@@ -4,6 +4,7 @@ import type { Cluster } from 'cluster';
 import type { EventEmitter } from 'events';
 import * as http from 'http';
 import type { IncomingMessage, ServerResponse } from 'http';
+
 import * as querystring from 'querystring';
 import type { Writable } from 'stream';
 import * as url from 'url';
@@ -19,6 +20,8 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 import type { IDynamicQueryEngineOptions } from '..';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+
+const process: NodeJS.Process = require('process/');
 
 const quad = require('rdf-quad');
 

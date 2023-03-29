@@ -5,6 +5,8 @@ import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
 import Requester from './Requester';
 
+const process: NodeJS.Process = require('process/');
+
 /**
  * A comunica Follow Redirects Http Actor.
  */

@@ -35,7 +35,8 @@
   "dependencies": {
     "@comunica/core": "^2.6.8",
     "@comunica/runner": "^2.6.8",
-    "@comunica/types": "^2.6.8"
+    "@comunica/types": "^2.6.8",
+    "process": "^0.11.10"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

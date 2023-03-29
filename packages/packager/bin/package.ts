@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as Path from 'path';
+
 import { compileConfig } from 'componentsjs';
 import type { ParsedArgs } from 'minimist';
 import minimist = require('minimist');
+
+const process: NodeJS.Process = require('process/');
 
 const args: ParsedArgs = minimist(process.argv.slice(2));
 if (args._.length > 0 || args.h || args.help) {

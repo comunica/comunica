@@ -1,6 +1,8 @@
 import { Logger } from '@comunica/types';
 import * as objectInspect from 'object-inspect';
 
+const process: NodeJS.Process = require('process/');
+
 /**
  * A logger that pretty-prints everything.
  */

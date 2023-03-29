@@ -2,6 +2,8 @@
 
 import { runArgs } from '../lib/ArgsRunner';
 
+const process: NodeJS.Process = require('process/');
+
 const argv = process.argv.slice(2);
 if (argv.length === 0 || /^--?h(elp)?$/u.test(argv[0])) {
   process.stdout.write('usage: runner-cli config.json [args...]`n');

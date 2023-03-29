@@ -37,7 +37,8 @@
     "@comunica/mediatortype-time": "^2.6.8",
     "cross-fetch": "^3.1.5",
     "follow-redirects": "^1.15.2",
-    "parse-link-header": "^2.0.0"
+    "parse-link-header": "^2.0.0",
+    "process": "^0.11.10"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

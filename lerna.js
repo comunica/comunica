@@ -10,7 +10,20 @@ async function depInfo({ location, name }, log) {
   let ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
   ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
-  const {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+  let {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+
+  if (Object.values(using).flat().some(file => 
+    readFileSync(file, 'utf8').toString().includes('require(\'process/\')') ||
+    readFileSync(file, 'utf8').toString().includes('require(\"process/\")')
+    )) {
+      if (dependencies.includes('process')) {
+        // If we know it exists and is in the dependency array, remove it so that no errors are thrown
+        dependencies = dependencies.filter(dep => dep !== 'process');
+      } else {
+        // If it is *not* declared in teh dependencies then mark it as missing
+        missing['process'] = missing['process'] || [];
+      }
+  }
 
   return {
     unusedDeps: [...dependencies, ...devDependencies].filter(elem => !Object.keys(using).includes(elem)),

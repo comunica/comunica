@@ -9,6 +9,8 @@ import type {
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
+const process: NodeJS.Process = require('process/');
+
 /**
  * Serializes SPARQL results for testing and debugging.
  */
