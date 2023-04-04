@@ -35,7 +35,7 @@
   "dependencies": {
     "@comunica/bus-hash-bindings": "^2.6.8",
     "@comunica/core": "^2.6.8",
-    "canonicalize": "^1.0.8",
+    "canonicalize": "^2.0.0",
     "hash.js": "^1.1.7",
     "rdf-string": "^1.6.1"
   },
