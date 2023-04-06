@@ -26,15 +26,25 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
     const cardinality: QueryResultCardinality = { ...action.accumulatedMetadata.cardinality };
 
     if (cardinality.dataset) {
-      if (action.appendingMetadata.cardinality.dataset &&
-        cardinality.dataset !== action.appendingMetadata.cardinality.dataset) {
-        // If the accumulated cardinality is dataset-wide,
-        // and the appending cardinality refers to another dataset,
-        // remove the dataset scopes.
-        delete cardinality.dataset;
+      if (action.appendingMetadata.cardinality.dataset) {
+        // If the accumulated cardinality is dataset-wide
+        if (cardinality.dataset !== action.appendingMetadata.cardinality.dataset &&
+          action.appendingMetadata.subsetOf === cardinality.dataset) {
+          // If the appending cardinality refers to the subset of a dataset,
+          // use the cardinality of the subset.
+          return { metadata: { cardinality: action.appendingMetadata.cardinality }};
+        }
+        if (cardinality.dataset !== action.appendingMetadata.cardinality.dataset) {
+          // If the appending cardinality refers to another dataset,
+          // remove the dataset scopes.
+          delete cardinality.dataset;
+        } else {
+          // If the appending cardinality is for the same dataset,
+          // keep the accumulated cardinality unchanged.
+          return { metadata: { cardinality }};
+        }
       } else {
-        // If the accumulated cardinality is dataset-wide,
-        // and the appending cardinality refers to a dataset subset,
+        // If the appending cardinality refers to a dataset subset,
         // keep the accumulated cardinality unchanged.
         return { metadata: { cardinality }};
       }

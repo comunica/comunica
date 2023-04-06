@@ -280,7 +280,12 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       it('should return a quad stream and metadata, with metadata resolving first', async() => {
         const { data } = await actor.run({ context, pattern });
         expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-          .toEqual({ state: expect.any(MetadataValidationState), firstMeta: true, a: 1 });
+          .toEqual({
+            state: expect.any(MetadataValidationState),
+            firstMeta: true,
+            a: 1,
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          });
         expect(await arrayifyStream(data)).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),

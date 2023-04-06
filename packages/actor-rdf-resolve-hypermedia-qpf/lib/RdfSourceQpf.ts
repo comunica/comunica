@@ -29,6 +29,7 @@ export class RdfSourceQpf implements IQuadSource {
   private readonly predicateUri: string;
   private readonly objectUri: string;
   private readonly graphUri?: string;
+  private readonly url: string;
   private readonly defaultGraph?: RDF.NamedNode;
   private readonly context: IActionContext;
   private readonly cachedQuads: Record<string, AsyncIterator<RDF.Quad>>;
@@ -37,6 +38,7 @@ export class RdfSourceQpf implements IQuadSource {
     mediatorMetadataExtract: MediatorRdfMetadataExtract,
     mediatorDereferenceRdf: MediatorDereferenceRdf,
     subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
+    url: string,
     metadata: Record<string, any>, context: IActionContext, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
@@ -45,6 +47,7 @@ export class RdfSourceQpf implements IQuadSource {
     this.predicateUri = predicateUri;
     this.objectUri = objectUri;
     this.graphUri = graphUri;
+    this.url = url;
     this.context = context;
     this.cachedQuads = {};
     const searchForm = this.getSearchForm(metadata);
@@ -170,7 +173,7 @@ export class RdfSourceQpf implements IQuadSource {
           requestTime: dereferenceRdfOutput.requestTime,
         })
         .then(({ metadata }) => quads
-          .setProperty('metadata', { ...metadata, canContainUndefs: false }));
+          .setProperty('metadata', { ...metadata, canContainUndefs: false, subsetOf: this.url }));
 
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.

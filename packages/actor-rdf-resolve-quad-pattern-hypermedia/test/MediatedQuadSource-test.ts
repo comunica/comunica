@@ -80,7 +80,12 @@ describe('MediatedQuadSource', () => {
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]);
-        expect(await metaPromise).toEqual({ state: expect.any(MetadataValidationState), firstMeta: true, a: 1 });
+        expect(await metaPromise).toEqual({
+          state: expect.any(MetadataValidationState),
+          firstMeta: true,
+          a: 1,
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+        });
       });
 
       it('should set the first source after the first match call', async() => {
@@ -127,7 +132,7 @@ describe('MediatedQuadSource', () => {
           link: { url: 'firstUrl' },
           handledDatasets: {},
           metadata: { state: new MetadataValidationState(),
-            cardinality: { type: 'exact', value: 0 },
+            cardinality: { type: 'exact', value: 1 },
             canContainUndefs: false,
             a: 2 },
           source: {
@@ -136,7 +141,7 @@ describe('MediatedQuadSource', () => {
                 quad('s1x', 'p1', 'o1'),
                 quad('s2x', 'p2', 'o2'),
               ], { autoStart: false });
-              it.setProperty('metadata', { firstMeta: true });
+              it.setProperty('metadata', { firstMeta: true, cardinality: { type: 'exact', value: 1 }});
               return it;
             },
           },
@@ -152,7 +157,7 @@ describe('MediatedQuadSource', () => {
         expect(await metaPromise).toEqual({
           state: expect.any(MetadataValidationState),
           canContainUndefs: false,
-          cardinality: { type: 'exact', value: 0 },
+          cardinality: { type: 'exact', value: 1 },
           firstMeta: true,
           a: 2,
         });

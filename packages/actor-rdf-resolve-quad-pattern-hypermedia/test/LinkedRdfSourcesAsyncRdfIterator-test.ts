@@ -49,7 +49,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
         source: <any> {
           match() {
             const it = new ArrayIterator<RDF.Quad>([], { autoStart: false });
-            it.setProperty('metadata', { subseq: true });
+            it.setProperty('metadata', { subseq: true, next: undefined });
             if (this.createdSubIterator) {
               this.createdSubIterator.emit('data', it);
             }
@@ -65,7 +65,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
       source: <any> {
         match: () => {
           const it = new ArrayIterator<RDF.Quad>([ ...this.data[requestedPage] ], { autoStart: false });
-          it.setProperty('metadata', { subseq: true });
+          it.setProperty('metadata', { subseq: true, next: `P${requestedPage + 1}` });
           if (this.createdSubIterator) {
             this.createdSubIterator.emit('data', it);
           }
@@ -79,7 +79,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     accumulatedMetadata: MetadataQuads,
     appendingMetadata: MetadataQuads,
   ): Promise<MetadataQuads> {
-    return { ...accumulatedMetadata, next: undefined, ...appendingMetadata };
+    return { ...accumulatedMetadata, ...appendingMetadata };
   }
 }
 
@@ -123,7 +123,7 @@ class DummyMetaOverride extends Dummy {
         source: <any> {
           match() {
             const it = new ArrayIterator<RDF.Quad>([], { autoStart: false });
-            it.setProperty('metadata', { subseq: true });
+            it.setProperty('metadata', { subseq: true, next: undefined });
             return it;
           },
         },
@@ -334,7 +334,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         state: expect.any(MetadataValidationState),
         firstPageToken: true,
         next: undefined,
-        requestedPage: 1,
+        requestedPage: 0,
         subseq: true,
       });
     });
@@ -395,7 +395,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         state: expect.any(MetadataValidationState),
         firstPageToken: true,
         next: undefined,
-        requestedPage: 1,
+        requestedPage: 0,
         subseq: true,
       });
     });
@@ -472,16 +472,11 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       await new Promise(resolve => it.on('end', resolve));
 
       expect(result).toEqual(quads.flat());
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(9);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { P1: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { P2: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(9, { P3: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledWith({ first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledWith({ first: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledWith({ P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledWith({ P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledWith({ P3: true }, true);
     });
 
     it('handles multiple pages when the first source is pre-loaded', async() => {

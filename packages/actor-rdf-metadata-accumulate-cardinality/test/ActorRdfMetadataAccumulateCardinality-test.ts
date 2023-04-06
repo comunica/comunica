@@ -90,6 +90,15 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
         })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }}});
       });
 
+      it('should handle appending with the same dataset-wide cardinality', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
+          appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'abc' }},
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }}});
+      });
+
       it('should handle appending with different dataset-wide cardinalities', async() => {
         expect(await actor.run({
           context,
@@ -97,6 +106,15 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'def' }},
         })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 203 }}});
+      });
+
+      it('should handle appending with different dataset-wide cardinalities that are subsets', async() => {
+        expect(await actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
+          appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'def' }, subsetOf: 'abc' },
+        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 3, dataset: 'def' }}});
       });
     });
   });

@@ -222,19 +222,17 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     // Listen for the metadata of the source
     // The metadata property is guaranteed to be set
     iterator.getProperty('metadata', (metadata: MetadataQuads) => {
-      metadata = { ...startSource.metadata, ...metadata };
-
       // Accumulate the metadata object
       this.accumulatedMetadata = this.accumulatedMetadata
         .then(previousMetadata => (async() => {
           if (!previousMetadata) {
-            return metadata;
+            previousMetadata = startSource.metadata;
           }
           return this.accumulateMetadata(previousMetadata, metadata);
         })()
           .then(accumulatedMetadata => {
             // Also merge fields that were not explicitly accumulated
-            const returnMetadata = { ...metadata, ...accumulatedMetadata };
+            const returnMetadata = { ...startSource.metadata, ...metadata, ...accumulatedMetadata };
 
             // Create new metadata state
             returnMetadata.state = new MetadataValidationState();

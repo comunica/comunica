@@ -27,7 +27,7 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
   }
 
   public async testMetadata(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaTest> {
-    const { searchForm } = this.createSource(action.metadata, action.context);
+    const { searchForm } = this.createSource(action.url, action.metadata, action.context);
     if (action.handledDatasets && action.handledDatasets[searchForm.dataset]) {
       throw new Error(`Actor ${this.name} can only be applied for the first page of a QPF dataset.`);
     }
@@ -41,11 +41,16 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
    */
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
     this.logInfo(action.context, `Identified as qpf source: ${action.url}`);
-    const source = this.createSource(action.metadata, action.context, action.quads);
+    const source = this.createSource(action.url, action.metadata, action.context, action.quads);
     return { source, dataset: source.searchForm.dataset };
   }
 
-  protected createSource(metadata: Record<string, any>, context: IActionContext, quads?: RDF.Stream): RdfSourceQpf {
+  protected createSource(
+    url: string,
+    metadata: Record<string, any>,
+    context: IActionContext,
+    quads?: RDF.Stream,
+  ): RdfSourceQpf {
     return new RdfSourceQpf(
       this.mediatorMetadata,
       this.mediatorMetadataExtract,
@@ -54,6 +59,7 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
       this.predicateUri,
       this.objectUri,
       this.graphUri,
+      url,
       metadata,
       context,
       quads,
