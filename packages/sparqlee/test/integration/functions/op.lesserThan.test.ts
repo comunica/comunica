@@ -1,4 +1,4 @@
-import { bool, dateTime, merge, numeric, str } from '../../util/Aliases';
+import { bool, dateTime, dateTyped, merge, numeric, str, timeTyped } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import type { ITestTableConfigBase } from '../../util/utils';
 import { runTestTable } from '../../util/utils';
@@ -96,6 +96,41 @@ describe('evaluation of \'<\'', () => {
         lateZ earlyZ  = false
     
         edge1 edge2   = false
+      `,
+    });
+  });
+
+  describe('with date operants like', () => {
+    // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-less-than
+    runTestTable({
+      operation: '<',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${dateTyped('2004-12-25Z')}' '${dateTyped('2004-12-25-05:00')}' = true
+        '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = false
+      `,
+    });
+  });
+
+  describe('with time operants like', () => {
+    // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-less-than
+    runTestTable({
+      operation: '<',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      config: {
+        config: {
+          defaultTimeZone: { zoneHours: -5, zoneMinutes: 0 },
+        },
+        type: 'sync',
+      },
+      testTable: `
+        '${timeTyped('12:00:00')}' '${timeTyped('23:00:00+06:00')}' = false
+        '${timeTyped('11:00:00')}' '${timeTyped('17:00:00Z')}' = true
+        '${timeTyped('23:59:59')}' '${timeTyped('24:00:00')}' = false
       `,
     });
   });

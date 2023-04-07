@@ -89,11 +89,51 @@ export function double(value: string): string {
  * '2001-10-26T21:32:52' => "2001-10-26T21:32:52"^^xsd:dateTime
  * @param value string (representing a date)
  */
-export function date(value: string): string {
+export function dateTimeTyped(value: string): string {
   return compactTermString(value, 'xsd:dateTime');
 }
 
-function compactTermString(value: string, dataType: string): string {
+/**
+ * ''02:12:59'' => "'02:12:59'"^^xsd:time
+ * @param value string (representing a date)
+ */
+export function timeTyped(value: string): string {
+  return compactTermString(value, 'xsd:time');
+}
+
+/**
+ * ''2010-06-21'' => "'2010-06-21'"^^xsd:date
+ * @param value string (representing a date)
+ */
+export function dateTyped(value: string): string {
+  return compactTermString(value, 'xsd:date');
+}
+
+/**
+ * 'P1Y' => "P1Y"^^xsd:duration
+ * @param value string (representing a duration)
+ */
+export function durationTyped(value: string): string {
+  return compactTermString(value, 'xsd:duration');
+}
+
+/**
+ * '-PT10H' => "-PT10H"^^xsd:dateTime
+ * @param value string (representing a dayTimeDuration)
+ */
+export function dayTimeDurationTyped(value: string): string {
+  return compactTermString(value, 'xsd:dayTimeDuration');
+}
+
+/**
+ * 'P1Y' => "P1Y"^^xsd:yearMonthDuration
+ * @param value string (representing a yearMonthDuration)
+ */
+export function yearMonthDurationTyped(value: string): string {
+  return compactTermString(value, 'xsd:yearMonthDuration');
+}
+
+export function compactTermString(value: string, dataType: string): string {
   return `"${value}"^^${dataType}`;
 }
 

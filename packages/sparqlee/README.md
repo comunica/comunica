@@ -51,6 +51,10 @@ Note: If you want to use *aggregates*, or *exists* you should check out the [str
 Sparqlee accepts an optional config argument, that is not required for simple use cases,
 but for feature completeness and spec compliance it should receive `now, baseIRI, exists, aggregate and bnode`.
 
+For the extended date functionality (see later), an additional context item has been added: `implicitTimezone`.
+The choice was made to default to the timezone `now` has.
+It can be desired to set it explicitly so `implicitTimezone` does not change over time (i.e., it is not dependent on daylight saving time).
+
 ```ts
 interface AsyncEvaluatorContext {
   now?: Date;
@@ -63,7 +67,7 @@ interface AsyncEvaluatorContext {
   overloadCache?: LRUCache<string, SomeInternalType>;
   typeCache?: LRUCache<string, SomeInternalType>;
   getSuperType?: (unknownType: string) => string;
-  enableExtendedXsdTypes?: boolean;
+  implicitTimezone?: { zoneHours: number; zoneMinutes: number;}; 
 }
 ```
 
@@ -352,6 +356,13 @@ which you can provide as `baseIRI: string` to the config.
 | int            | ✓ | ✓ | ? |   |   |
 | dT             | ✓ | ✓ | ? |   |   |
 | bool           | ✓ | ✓ | ? |   |   |
+
+### SPARQL 1.2
+
+Sparqlee looks forward and already implements some SPARQL 1.2 specification functions.
+
+Currently, this is restricted to the [extended date](https://github.com/w3c/sparql-12/blob/main/SEP/SEP-0002/sep-0002.md) functionality.
+Please note that the new built-in `ADJUST` function has not been implemented due to package dependencies.
 
 ## Development
 

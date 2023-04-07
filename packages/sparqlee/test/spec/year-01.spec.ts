@@ -72,17 +72,17 @@ describe('Year', () => {
    * </sparql>
    */
 
-  describe('We should allow YEAR on xsd:date', () => {
-    const { dr1, dr2, dr3, dr4 } = Data.data();
+  describe('We should allow YEAR on xsd:dateTime', () => {
+    const { d1, d2, d3, d4 } = Data.data();
     runTestTable({
       operation: 'YEAR',
       arity: 1,
       notation: Notation.Function,
       testTable: `
-        '${dr1}' = '${int('2010')}'
-        '${dr2}' = '${int('2010')}'
-        '${dr3}' = '${int('2008')}'
-        '${dr4}' = '${int('2011')}'  
+        '${d1}' = '${int('2010')}'
+        '${d2}' = '${int('2010')}'
+        '${d3}' = '${int('2008')}'
+        '${d4}' = '${int('2011')}'  
       `,
     });
   });

@@ -1,9 +1,17 @@
-import type * as E from '../expressions';
+import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '../expressions';
+import * as E from '../expressions';
+import { DurationLiteral } from '../expressions';
 import type * as C from '../util/Consts';
 import { TypeAlias, TypeURL } from '../util/Consts';
+import { trimToDayTimeDuration, trimToYearMonthDuration } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
-
-import { parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '../util/Parsing';
+import { parseDate,
+  parseDateTime,
+  parseDayTimeDuration,
+  parseDuration,
+  parseTime,
+  parseYearMonthDuration,
+  parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '../util/Parsing';
 
 import type { IOverloadedDefinition } from './Core';
 import { bool, dateTime, decimal, declare, double, float, integer, string } from './Helpers';
@@ -115,13 +123,10 @@ const xsdToDatetime = {
   arity: 1,
   overloads: declare(TypeURL.XSD_DATE_TIME)
     .onUnary(TypeURL.XSD_DATE_TIME, () => (val: E.DateTimeLiteral) => val)
-    .onUnary(TypeURL.XSD_STRING, () => (val: Term) => {
-      const date = new Date(val.str());
-      if (Number.isNaN(date.getTime())) {
-        throw new Err.CastError(val, TypeURL.XSD_DATE_TIME);
-      }
-      return dateTime(date, val.str());
-    })
+    .onUnary(TypeURL.XSD_STRING, () => (val: Term) =>
+      dateTime(parseDateTime(val.str()), val.str()))
+    .onUnary(TypeURL.XSD_DATE, () => (val: E.DateLiteral) =>
+      new E.DateTimeLiteral({ ...val.typedValue, hours: 0, minutes: 0, seconds: 0 }))
     .copy({ from: [ TypeURL.XSD_STRING ], to: [ TypeAlias.SPARQL_NON_LEXICAL ]})
     .collect(),
 };
@@ -154,6 +159,64 @@ const xsdToBoolean = {
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
+// Additional definitions to implement https://github.com/w3c/sparql-12/blob/main/SEP/SEP-0002/sep-0002.md
+// The additional casts are listed in https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive
+const xsdToTime = {
+  arity: 1,
+  overloads: declare(TypeURL.XSD_TIME)
+    .onUnary(TypeURL.XSD_TIME, () => (val: TimeLiteral) => new E.TimeLiteral(val.typedValue, val.strValue))
+    .onUnary(TypeURL.XSD_DATE_TIME, () => (val: DateTimeLiteral) =>
+      new E.TimeLiteral(val.typedValue))
+    .onStringly1(() => (val: Term) => new E.TimeLiteral(parseTime(val.str())))
+    .collect(),
+};
+
+const xsdToDate = {
+  arity: 1,
+  overloads: declare(TypeURL.XSD_DATE)
+    .onUnary(TypeURL.XSD_DATE, () => (val: DateLiteral) => new E.DateLiteral(val.typedValue, val.strValue))
+    .onUnary(TypeURL.XSD_DATE_TIME, () => (val: DateTimeLiteral) =>
+      new E.DateLiteral(val.typedValue))
+    .onStringly1(() => (val: E.Term) => new E.DateLiteral(parseDate(val.str())))
+    .collect(),
+};
+
+const xsdToDuration = {
+  arity: 1,
+  overloads: declare(TypeURL.XSD_DURATION)
+    // https://www.w3.org/TR/xpath-functions/#casting-to-durations
+    .onUnary(TypeURL.XSD_DURATION, () => (val: E.DurationLiteral) =>
+      // Copy is needed to make sure the dataType is changed, even when the provided type was a subtype
+      new E.DurationLiteral(val.typedValue, val.strValue))
+    .onStringly1(() => (val: Term) =>
+      new DurationLiteral(parseDuration(val.str())))
+    .collect(),
+};
+
+const xsdToDayTimeDuration = {
+  arity: 1,
+  overloads: declare(TypeURL.XSD_DAY_TIME_DURATION)
+    // https://www.w3.org/TR/xpath-functions/#casting-to-durations
+    .onUnary(TypeURL.XSD_DURATION, () => (val: E.DurationLiteral) =>
+      // Copy is needed to make sure the dataType is changed, even when the provided type was a subtype
+      new E.DayTimeDurationLiteral(trimToDayTimeDuration(val.typedValue)))
+    .onStringly1(() => (val: Term) =>
+      new E.DayTimeDurationLiteral(parseDayTimeDuration(val.str())))
+    .collect(),
+};
+
+const xsdToYearMonthDuration = {
+  arity: 1,
+  overloads: declare(TypeURL.XSD_YEAR_MONTH_DURATION)
+    // https://www.w3.org/TR/xpath-functions/#casting-to-durations
+    .onUnary(TypeURL.XSD_DURATION, () => (val: E.DurationLiteral) =>
+      // Copy is needed to make sure the dataType is changed, even when the provided type was a subtype
+      new E.YearMonthDurationLiteral(trimToYearMonthDuration(val.typedValue)))
+    .onStringly1(() => (val: Term) =>
+      new E.YearMonthDurationLiteral(parseYearMonthDuration(val.str())))
+    .collect(),
+};
+
 export const namedDefinitions: Record<C.NamedOperator, IOverloadedDefinition> = {
   // --------------------------------------------------------------------------
   // XPath Constructor functions
@@ -165,6 +228,10 @@ export const namedDefinitions: Record<C.NamedOperator, IOverloadedDefinition> = 
   [TypeURL.XSD_DECIMAL]: xsdToDecimal,
   [TypeURL.XSD_INTEGER]: xsdToInteger,
   [TypeURL.XSD_DATE_TIME]: xsdToDatetime,
-  [TypeURL.XSD_DATE]: xsdToDatetime,
+  [TypeURL.XSD_DATE]: xsdToDate,
   [TypeURL.XSD_BOOLEAN]: xsdToBoolean,
+  [TypeURL.XSD_TIME]: xsdToTime,
+  [TypeURL.XSD_DURATION]: xsdToDuration,
+  [TypeURL.XSD_DAY_TIME_DURATION]: xsdToDayTimeDuration,
+  [TypeURL.XSD_YEAR_MONTH_DURATION]: xsdToYearMonthDuration,
 };

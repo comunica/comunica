@@ -4,6 +4,7 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type * as E from '../expressions/Expressions';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
 import type { IExpressionEvaluator } from '../Types';
+import { extractTimeZone } from '../util/DateTimeHelpers';
 import type { ICompleteAsyncEvaluatorContext } from './evaluatorHelpers/AsyncRecursiveEvaluator';
 import { AsyncRecursiveEvaluator } from './evaluatorHelpers/AsyncRecursiveEvaluator';
 import type { ISharedContext } from './evaluatorHelpers/BaseExpressionEvaluator';
@@ -23,8 +24,9 @@ export class AsyncEvaluator {
   private readonly evaluator: IExpressionEvaluator<E.Expression, Promise<E.TermExpression>>;
 
   public static completeContext(context: IAsyncEvaluatorContext): ICompleteAsyncEvaluatorContext {
+    const now = context.now || new Date(Date.now());
     return {
-      now: context.now || new Date(Date.now()),
+      now,
       baseIRI: context.baseIRI || undefined,
       functionArgumentsCache: context.functionArgumentsCache || {},
       superTypeProvider: {
@@ -35,6 +37,7 @@ export class AsyncEvaluator {
       exists: context.exists,
       aggregate: context.aggregate,
       bnode: context.bnode,
+      defaultTimeZone: context.defaultTimeZone || extractTimeZone(now),
     };
   }
 

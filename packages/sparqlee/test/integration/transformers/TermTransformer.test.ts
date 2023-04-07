@@ -173,7 +173,16 @@ describe('TermTransformer', () => {
       expect(res.strValue).toEqual('2022-01-02T03:04:05Z');
       expect(res.termType).toEqual('literal');
       expect(res.dataType).toEqual(DT.XSD_DATE_TIME);
-      expect(res.typedValue).toEqual(new Date('2022-01-02T03:04:05Z'));
+      expect(res.typedValue).toEqual({
+        year: 2_022,
+        month: 1,
+        day: 2,
+        hours: 3,
+        minutes: 4,
+        seconds: 5,
+        zoneHours: 0,
+        zoneMinutes: 0,
+      });
       expect(res.expressionType).toEqual('term');
     });
 
@@ -250,18 +259,38 @@ describe('TermTransformer', () => {
       it('datatype: float', () => {
         returnNonLexicalTest('apple', DT.XSD_FLOAT);
       });
-    });
 
-    it('datatype: decimal', () => {
-      returnNonLexicalTest('apple', DT.XSD_DECIMAL);
-    });
+      it('datatype: decimal', () => {
+        returnNonLexicalTest('apple', DT.XSD_DECIMAL);
+      });
 
-    it('datatype: boolean', () => {
-      returnNonLexicalTest('apple', DT.XSD_BOOLEAN);
-    });
+      it('datatype: boolean', () => {
+        returnNonLexicalTest('apple', DT.XSD_BOOLEAN);
+      });
 
-    it('datatype: dateTime', () => {
-      returnNonLexicalTest('apple', DT.XSD_DATE_TIME);
+      it('datatype: dateTime', () => {
+        returnNonLexicalTest('apple', DT.XSD_DATE_TIME);
+      });
+
+      it('datatype: date', () => {
+        returnNonLexicalTest('apple', DT.XSD_DATE);
+      });
+
+      it('datatype: time', () => {
+        returnNonLexicalTest('apple', DT.XSD_TIME);
+      });
+
+      it('datatype: duration', () => {
+        returnNonLexicalTest('apple', DT.XSD_DURATION);
+      });
+
+      it('datatype: dayTimeDuration', () => {
+        returnNonLexicalTest('apple', DT.XSD_DAY_TIME_DURATION);
+      });
+
+      it('datatype: YearMonthDuration', () => {
+        returnNonLexicalTest('apple', DT.XSD_YEAR_MONTH_DURATION);
+      });
     });
 
     it('badly invalid literal', () => {

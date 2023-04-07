@@ -130,6 +130,12 @@ export class EmptyAggregateError extends ExpressionError {
   }
 }
 
+export class ParseError extends ExpressionError {
+  public constructor(str: string, type: string) {
+    super(`Failed to parse ${str} as ${type}.`);
+  }
+}
+
 // Non Expression Errors ------------------------------------------------------
 
 /**

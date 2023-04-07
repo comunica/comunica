@@ -1,4 +1,4 @@
-import { bool, dateTime, merge, numeric, str } from '../../util/Aliases';
+import { bool, dateTime, dateTyped, durationTyped, merge, numeric, str, timeTyped } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import type { ITestTableConfigBase } from '../../util/utils';
 import { runTestTable } from '../../util/utils';
@@ -78,6 +78,57 @@ describe('evaluation of \'!=\'', () => {
         earlyZ lateN  = true
     
         edge1 edge2   = false
+      `,
+    });
+  });
+
+  describe('with date operants like', () => {
+    // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-equal
+    runTestTable({
+      operation: '!=',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${dateTyped('2004-12-25Z')}' '${dateTyped('2004-12-25+07:00')}' = true
+        '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = false
+      `,
+    });
+  });
+
+  describe('with time operants like', () => {
+    // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-equal
+    runTestTable({
+      operation: '!=',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${timeTyped('08:00:00+09:00')}' '${timeTyped('17:00:00-06:00')}' = true
+        '${timeTyped('21:30:00+10:30')}' '${timeTyped('06:00:00-05:00')}' = false
+        '${timeTyped('24:00:00+01:00')}' '${timeTyped('00:00:00+01:00')}' = false
+      `,
+    });
+  });
+
+  describe('with duration operants like', () => {
+    // These tests are just inverse of the spec tests of =
+    runTestTable({
+      operation: '!=',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${durationTyped('P1Y')}' '${durationTyped('P1Y')}' = false
+        '${durationTyped('P1Y')}' '${durationTyped('P12M')}' = false
+        '${durationTyped('P1Y')}' '${durationTyped('P365D')}' = true
+        '${durationTyped('P0Y')}' '${durationTyped('PT0S')}' = false
+        '${durationTyped('P1D')}' '${durationTyped('PT24H')}' = false
+        '${durationTyped('P1D')}' '${durationTyped('PT23H')}' = true
+        '${durationTyped('PT1H')}' '${durationTyped('PT60M')}' = false
+        '${durationTyped('PT1H')}' '${durationTyped('PT3600S')}' = false
+        '${durationTyped('-P1Y')}' '${durationTyped('P1Y')}' = true
+        '${durationTyped('-P0Y')}' '${durationTyped('PT0S')}' = false
       `,
     });
   });

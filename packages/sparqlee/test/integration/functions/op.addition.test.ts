@@ -1,5 +1,5 @@
 import { TypeURL } from '../../../lib/util/Consts';
-import { int, numeric } from '../../util/Aliases';
+import { dateTimeTyped, dayTimeDurationTyped, int, numeric } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import type { ITestTableConfigBase } from '../../util/utils';
 import { runTestTable } from '../../util/utils';
@@ -46,6 +46,8 @@ describe('evaluation of \'+\' like', () => {
       "0"^^xsd:double 0i = "0.0E0"^^xsd:double
       "0"^^xsd:double 0d = "0.0E0"^^xsd:double
       "0"^^xsd:double 0f = "0.0E0"^^xsd:double
+      
+      '${dateTimeTyped('2012-02-28T12:14:45Z')}' '${dayTimeDurationTyped('P2D')}' = '${dateTimeTyped('2012-03-01T12:14:45Z')}'
     `,
   });
   runTestTable({
@@ -54,7 +56,6 @@ describe('evaluation of \'+\' like', () => {
       type: 'sync',
       config: {
         getSuperType: unknownType => TypeURL.XSD_INTEGER,
-        enableExtendedXsdTypes: true,
       },
     },
     testTable: `

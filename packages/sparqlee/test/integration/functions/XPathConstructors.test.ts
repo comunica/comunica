@@ -1,3 +1,4 @@
+import { dayTimeDurationTyped, durationTyped, yearMonthDurationTyped } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import { runTestTable } from '../../util/utils';
 
@@ -234,12 +235,17 @@ describe('evaluation of XPath constructors', () => {
         "1999-03-17T06:00:00Z" = "1999-03-17T06:00:00Z"^^xsd:dateTime
         "1999-03-17T06:00:00+02:30" = "1999-03-17T06:00:00+02:30"^^xsd:dateTime
         "1999-03-17T06:00:00" = "1999-03-17T06:00:00"^^xsd:dateTime
-        "1999-03-17" = "1999-03-17"^^xsd:dateTime
+        
+        "1999-03-17Z"^^xsd:date = "1999-03-17T00:00:00Z"^^xsd:dateTime
+        "1999-03-17"^^xsd:date = "1999-03-17T00:00:00"^^xsd:dateTime 
+        "1999-03-17+07:25"^^xsd:date = "1999-03-17T00:00:00+07:25"^^xsd:dateTime
+        "1999-03-17-07:25"^^xsd:date = "1999-03-17T00:00:00-07:25"^^xsd:dateTime
       `,
       errorTable: `
         "foo" = ''
         "1234567789"^^xsd:integer = ''
         "foo"^^xsd:dateTime = ''
+        "1999-03-17" = ''
       `,
     });
   });
@@ -284,6 +290,91 @@ describe('evaluation of XPath constructors', () => {
         "1E0"^^xsd:string = ''
         "2002-10-10T17:00:00Z"^^xsd:string = ''
         "foo"^^xsd:boolean = ''
+      `,
+    });
+  });
+
+  describe('to date', () => {
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'xsd:date',
+      testTable: `
+        "1999-03-17T06:00:00Z"^^xsd:dateTime = "1999-03-17Z"^^xsd:date
+        "1999-03-17T06:00:00"^^xsd:dateTime = "1999-03-17"^^xsd:date
+        "1999-03-17T06:00:00+07:25"^^xsd:dateTime = "1999-03-17+07:25"^^xsd:date
+        "1999-03-17T06:00:00-07:25"^^xsd:dateTime = "1999-03-17-07:25"^^xsd:date
+        
+        "1999-03-17"^^xsd:date = "1999-03-17"^^xsd:date
+        "1999-03-17Z"^^xsd:date = "1999-03-17Z"^^xsd:date
+      `,
+      errorTable: `
+        "1999-03-17ZZ"^^xsd:date = ''
+      `,
+    });
+  });
+
+  describe('to time', () => {
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'xsd:time',
+      testTable: `
+        "1999-03-17T06:00:00Z"^^xsd:dateTime = "06:00:00Z"^^xsd:time
+        "1999-03-17T06:00:00"^^xsd:dateTime = "06:00:00"^^xsd:time
+        "1999-03-17T06:00:00+07:25"^^xsd:dateTime = "06:00:00+07:25"^^xsd:time
+        "1999-03-17T06:00:00-07:25"^^xsd:dateTime = "06:00:00-07:25"^^xsd:time
+        
+        "06:00:00+07:25"^^xsd:time = "06:00:00+07:25"^^xsd:time
+        "06:00:00"^^xsd:time = "06:00:00"^^xsd:time
+      `,
+      errorTable: `
+        "06:00:00Z+00:00"^^xsd:time = ''
+      `,
+    });
+  });
+
+  describe('to duration', () => {
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'xsd:duration',
+      testTable: `
+        ${durationTyped('-PT10H')} = ${durationTyped('-PT10H')}
+      `,
+    });
+  });
+
+  describe('to yearMonthDuration', () => {
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'xsd:yearMonthDuration',
+      testTable: `
+        ${durationTyped('-PT10H')} = ${yearMonthDurationTyped('P0M')}
+        ${durationTyped('-P5Y6M')} = ${yearMonthDurationTyped('-P5Y6M')}
+        '"P5Y30M"' = ${yearMonthDurationTyped('P7Y6M')}
+        ${dayTimeDurationTyped('P1DT1H1M1.1S')} = ${yearMonthDurationTyped('P0M')}
+      `,
+      errorTable: `
+        '"-PT10H"' = ''
+      `,
+    });
+  });
+
+  describe('to dayTimeDuration', () => {
+    runTestTable({
+      arity: 1,
+      notation: Notation.Function,
+      operation: 'xsd:dayTimeDuration',
+      testTable: `
+        ${durationTyped('-PT10H')} = ${dayTimeDurationTyped('-PT10H')}
+        ${durationTyped('PT5S')} = ${dayTimeDurationTyped('PT5S')}
+        '"-PT10H"' = '${dayTimeDurationTyped('-PT10H')}'
+        '${yearMonthDurationTyped('-P5Y2M')}' = '${dayTimeDurationTyped('PT0S')}'
+      `,
+      errorTable: `
+        '"P5Y30M"' = ''
       `,
     });
   });

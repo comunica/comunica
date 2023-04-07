@@ -1,5 +1,5 @@
 import { TypeURL } from '../../../lib/util/Consts';
-import { bool, dateTime, merge, numeric, str } from '../../util/Aliases';
+import { bool, dateTime, dateTyped, merge, numeric, str, timeTyped } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import type { ITestTableConfigBase } from '../../util/utils';
 import { runTestTable } from '../../util/utils';
@@ -96,6 +96,35 @@ describe('evaluation of \'=\'', () => {
         earlyZ lateN  = false
     
         edge1 edge2   = true
+      `,
+    });
+  });
+
+  describe('with date operants like', () => {
+    // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-equal
+    runTestTable({
+      operation: '=',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${dateTyped('2004-12-25Z')}' '${dateTyped('2004-12-25+07:00')}' = false
+        '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = true
+      `,
+    });
+  });
+
+  describe('with time operants like', () => {
+    // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-equal
+    runTestTable({
+      operation: '=',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${timeTyped('08:00:00+09:00')}' '${timeTyped('17:00:00-06:00')}' = false
+        '${timeTyped('21:30:00+10:30')}' '${timeTyped('06:00:00-05:00')}' = true
+        '${timeTyped('24:00:00+01:00')}' '${timeTyped('00:00:00+01:00')}' = true
       `,
     });
   });

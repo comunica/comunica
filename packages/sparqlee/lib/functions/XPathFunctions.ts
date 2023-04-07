@@ -62,38 +62,3 @@ function _matchLangTag(left: string, right: string): boolean {
   const matchInitial = new RegExp(`/${left}/`, 'iu');
   return matchInitial.test(`/${right}/`);
 }
-
-/**
- * Formats a timezone string into a XML DayTimeDuration
- *
- * TODO: Test
- * Used in fn:timezone
- * http://www.datypic.com/sc/xsd/t-xsd_dayTimeDuration.html
- */
-export function formatDayTimeDuration(timezone: string): string | undefined {
-  if (!timezone) {
-    return;
-  }
-
-  let sign = '';
-  let hours = 0;
-  let minutes = 0;
-  if (timezone !== 'Z') {
-    sign = timezone.startsWith('-') ? '-' : '';
-    hours = Number.parseInt(timezone.slice(1, 3), 10);
-    minutes = Number.parseInt(timezone.slice(4, 6), 10);
-  }
-
-  if (hours === 0 && minutes === 0) {
-    return 'PT0S';
-  }
-
-  let time = `${sign}PT`;
-  if (hours > 0) {
-    time += `${hours}H`;
-  }
-  if (minutes > 0) {
-    time += `${minutes}M`;
-  }
-  return time;
-}

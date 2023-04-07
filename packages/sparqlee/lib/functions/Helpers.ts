@@ -9,6 +9,7 @@ import type { Literal } from '../expressions';
 import * as E from '../expressions';
 import * as C from '../util/Consts';
 import { TypeURL } from '../util/Consts';
+import type { IDateTimeRepresentation } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import type { ArgumentType } from './Core';
 import type { ImplementationFunction } from './OverloadTree';
@@ -227,7 +228,8 @@ export class Builder {
       .invalidLexicalForm([ C.TypeURL.XSD_BOOLEAN, C.TypeAlias.SPARQL_NON_LEXICAL ], 2);
   }
 
-  public dateTimeTest(test: (context: ICompleteSharedContext) => (left: Date, right: Date) => boolean): Builder {
+  public dateTimeTest(test: (context: ICompleteSharedContext)
+  => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean): Builder {
     return this
       .set(
         [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
@@ -286,7 +288,7 @@ export function langString(str: string, lang: string): E.LangStringLiteral {
   return new E.LangStringLiteral(str, lang);
 }
 
-export function dateTime(date: Date, str: string): E.DateTimeLiteral {
+export function dateTime(date: IDateTimeRepresentation, str: string): E.DateTimeLiteral {
   return new E.DateTimeLiteral(date, str);
 }
 

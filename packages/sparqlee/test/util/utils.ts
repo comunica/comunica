@@ -64,6 +64,7 @@ export function getDefaultSharedContext(): ICompleteSharedContext {
       discoverer: () => 'term',
     },
     functionArgumentsCache: {},
+    defaultTimeZone: { zoneMinutes: 0, zoneHours: 0 },
   };
 }
 

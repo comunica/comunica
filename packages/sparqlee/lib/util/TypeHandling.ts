@@ -20,7 +20,7 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
   [TypeURL.XSD_DATE_TIME_STAMP]: TypeURL.XSD_DATE_TIME,
 
   // Duration types
-  [TypeURL.XSD_DAYTIME_DURATION]: TypeURL.XSD_DURATION,
+  [TypeURL.XSD_DAY_TIME_DURATION]: TypeURL.XSD_DURATION,
   [TypeURL.XSD_YEAR_MONTH_DURATION]: TypeURL.XSD_DURATION,
 
   // Stringly types
@@ -57,6 +57,7 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
   [TypeURL.XSD_BYTE]: TypeURL.XSD_SHORT,
 
   [TypeURL.XSD_NON_NEGATIVE_INTEGER]: TypeURL.XSD_INTEGER,
+  [TypeURL.XSD_NON_NEGATIVE_INTEGER]: TypeURL.XSD_INTEGER,
   [TypeURL.XSD_POSITIVE_INTEGER]: TypeURL.XSD_NON_NEGATIVE_INTEGER,
   [TypeURL.XSD_UNSIGNED_LONG]: TypeURL.XSD_NON_NEGATIVE_INTEGER,
   [TypeURL.XSD_UNSIGNED_INT]: TypeURL.XSD_UNSIGNED_LONG,
@@ -66,6 +67,12 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
   [TypeURL.XSD_DATE_TIME]: 'term',
   [TypeURL.XSD_BOOLEAN]: 'term',
   [TypeURL.XSD_DATE]: 'term',
+  [TypeURL.XSD_G_MONTH]: 'term',
+  [TypeURL.XSD_G_MONTHDAY]: 'term',
+  [TypeURL.XSD_G_YEAR]: 'term',
+  [TypeURL.XSD_G_YEAR_MONTH]: 'term',
+  [TypeURL.XSD_TIME]: 'term',
+  [TypeURL.XSD_G_DAY]: 'term',
   [TypeURL.XSD_DURATION]: 'term',
   [TypeAlias.SPARQL_NUMERIC]: 'term',
   [TypeAlias.SPARQL_STRINGLY]: 'term',
