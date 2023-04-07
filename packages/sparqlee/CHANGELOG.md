@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.3.0"></a>
+## [v2.3.0](https://github.com/comunica/sparqlee/compare/v2.2.1...v2.3.0) - 2023-04-07
+
+### Added
+* [Support durations, dates, and times](https://github.com/comunica/sparqlee/commit/84b051dd12f6d3cd1201527f7ad10a88ae423bcd)
+
 <a name="v2.2.1"></a>
 ## [v2.2.1](https://github.com/comunica/sparqlee/compare/v2.2.0...v2.2.1) - 2023-03-01
 
