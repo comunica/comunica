@@ -161,6 +161,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
 
     // Aggregate all discovered quads into a store.
+    this.aggregatedStore?.setBaseMetadata(<MetadataQuads> metadata, false);
     this.aggregatedStore?.import(quads);
 
     // Determine the source
@@ -183,7 +184,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     return { link, source, metadata: <MetadataQuads> metadata, handledDatasets };
   }
 
-  protected async accumulateMetadata(
+  public async accumulateMetadata(
     accumulatedMetadata: MetadataQuads,
     appendingMetadata: MetadataQuads,
   ): Promise<MetadataQuads> {
@@ -193,6 +194,11 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       appendingMetadata,
       context: this.context,
     })).metadata;
+  }
+
+  protected updateMetadata(metadataNew: MetadataQuads): void {
+    super.updateMetadata(metadataNew);
+    this.aggregatedStore?.setBaseMetadata(metadataNew, true);
   }
 }
 

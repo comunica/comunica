@@ -311,6 +311,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         bus,
         cacheSize: 10,
         maxIterators: 64,
+        aggregateStore: false,
         httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,

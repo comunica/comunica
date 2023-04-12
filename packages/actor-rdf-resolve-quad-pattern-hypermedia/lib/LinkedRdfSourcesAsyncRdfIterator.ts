@@ -238,9 +238,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             returnMetadata.state = new MetadataValidationState();
 
             // Emit metadata, and invalidate any metadata that was set before
-            const metadataToInvalidate = this.getProperty<MetadataQuads>('metadata');
-            this.setProperty('metadata', returnMetadata);
-            metadataToInvalidate?.state.invalidate();
+            this.updateMetadata(returnMetadata);
 
             // Determine next urls, which will eventually become a next-next source.
             this.getSourceLinks(returnMetadata)
@@ -262,6 +260,12 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           return <MetadataQuads> {};
         });
     });
+  }
+
+  protected updateMetadata(metadataNew: MetadataQuads): void {
+    const metadataToInvalidate = this.getProperty<MetadataQuads>('metadata');
+    this.setProperty('metadata', metadataNew);
+    metadataToInvalidate?.state.invalidate();
   }
 
   protected isRunning(): boolean {

@@ -250,6 +250,7 @@ describe('RdfSourceQpf', () => {
         'p',
         'o',
         undefined,
+        'url',
         metadata,
         new ActionContext(),
         streamifyArray([

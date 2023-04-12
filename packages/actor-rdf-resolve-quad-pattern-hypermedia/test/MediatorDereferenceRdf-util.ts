@@ -55,12 +55,18 @@ const mediatorMetadataExtract: MediatorRdfMetadataExtract = {
 const mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate = {
   async mediate(action: IActionRdfMetadataAccumulateAppend) {
     const metadata = { ...action.accumulatedMetadata };
+    if (metadata.cardinality) {
+      metadata.cardinality = { ...metadata.cardinality };
+    }
     const subMetadata = action.appendingMetadata;
     if (!subMetadata.cardinality) {
       // We're already at infinite, so ignore any later metadata
       metadata.cardinality = <any>{};
       metadata.cardinality.type = 'estimate';
       metadata.cardinality.value = Number.POSITIVE_INFINITY;
+    }
+    if (metadata.cardinality?.type === 'exact' && subMetadata.cardinality?.type === 'exact') {
+      metadata.cardinality.value += subMetadata.cardinality.value;
     }
 
     return { metadata };

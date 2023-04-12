@@ -53,7 +53,7 @@ export class MediatedQuadSource implements IQuadSource {
       if (aggregatedStores) {
         aggregatedStore = aggregatedStores.get(this.firstUrl);
         if (!aggregatedStore) {
-          aggregatedStore = new StreamingStoreMetadata();
+          aggregatedStore = new StreamingStoreMetadata(undefined, (acc, app) => it.accumulateMetadata(acc, app));
           aggregatedStores.set(this.firstUrl, aggregatedStore);
         }
         if (aggregatedStore.started) {
@@ -67,7 +67,7 @@ export class MediatedQuadSource implements IQuadSource {
       }
     }
 
-    const it = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+    const it: MediatedLinkedRdfSourcesAsyncRdfIterator = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       this.cacheSize,
       context,
       this.forceSourceType,

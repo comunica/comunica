@@ -11736,10 +11736,10 @@ rdf-store-stream@^1.1.0, rdf-store-stream@^1.3.1:
     "@rdfjs/types" "*"
     n3 "^1.11.1"
 
-rdf-streaming-store@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/rdf-streaming-store/-/rdf-streaming-store-1.0.2.tgz#e373c1aa633c047c339ae023233d801c2d1c9b30"
-  integrity sha512-+clYrm8tSfAhTBRZ6NIE5i/JmYZE0B/2Vu8SOCel+lfarjXZwlejoVeA+a/AHcl+lrF2yGh+iw16SsHoE23uTA==
+rdf-streaming-store@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/rdf-streaming-store/-/rdf-streaming-store-1.1.0.tgz#a00be02eeb1616e577a095dad9afe96d9106fcfa"
+  integrity sha512-C/5NTKGpKrNJ5VUo42DtGFsXYDlP3rx/u4C6gEBuSn+6eVFahjFdUDgNGcPtVyhCQkctRCj3GT1lX9UeyoXWtw==
   dependencies:
     "@rdfjs/types" "*"
     "@types/n3" "^1.10.4"
