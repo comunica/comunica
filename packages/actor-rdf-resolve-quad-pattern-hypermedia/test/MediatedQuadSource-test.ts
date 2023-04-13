@@ -317,7 +317,7 @@ describe('MediatedQuadSource', () => {
         expect(it2.getProperty('metadata')).toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: {
-            type: 'exact',
+            type: 'estimate',
             value: 0,
           },
           canContainUndefs: false,
@@ -325,7 +325,7 @@ describe('MediatedQuadSource', () => {
         expect(it3.getProperty('metadata')).toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: {
-            type: 'exact',
+            type: 'estimate',
             value: 0,
           },
           canContainUndefs: false,
@@ -408,44 +408,44 @@ describe('MediatedQuadSource', () => {
         expect(it2Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
           canContainUndefs: false,
-          cardinality: { type: 'exact', value: 0 },
+          cardinality: { type: 'estimate', value: 0 },
         });
         expect(it2Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'exact', value: 2 },
+          cardinality: { type: 'estimate', value: 2 },
         });
         expect(it2Meta).toHaveBeenNthCalledWith(4, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'exact', value: 4 },
+          cardinality: { type: 'estimate', value: 4 },
         });
         expect(it2Meta).toHaveBeenNthCalledWith(6, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'exact', value: 6 },
+          cardinality: { type: 'estimate', value: 6 },
         });
         expect(it2Meta).toHaveBeenNthCalledWith(8, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'exact', value: 8 },
+          cardinality: { type: 'estimate', value: 8 },
         });
         expect(it3Meta).toHaveBeenCalledTimes(6);
         expect(it3Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
           canContainUndefs: false,
-          cardinality: { type: 'exact', value: 0 },
+          cardinality: { type: 'estimate', value: 0 },
         });
         expect(it3Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'exact', value: 1 },
+          cardinality: { type: 'estimate', value: 1 },
         });
         expect(it3Meta).toHaveBeenNthCalledWith(6, {
           state: expect.any(MetadataValidationState),
           a: 1,
           firstMeta: true,
-          cardinality: { type: 'exact', value: 1 },
+          cardinality: { type: 'estimate', value: 1 },
         });
       });
 

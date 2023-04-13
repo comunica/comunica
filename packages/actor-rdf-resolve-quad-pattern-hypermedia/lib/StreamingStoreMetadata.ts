@@ -56,7 +56,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     const metadata: MetadataQuads = {
       state: new MetadataValidationState(),
       cardinality: {
-        type: 'exact',
+        type: 'estimate',
         value: count,
       },
       canContainUndefs: false,
@@ -93,7 +93,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     const metadataNew: MetadataQuads = {
       state: new MetadataValidationState(),
       cardinality: {
-        type: 'exact',
+        type: 'estimate',
         value: count,
       },
       canContainUndefs: false,

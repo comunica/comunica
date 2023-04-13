@@ -65,8 +65,11 @@ const mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate = {
       metadata.cardinality.type = 'estimate';
       metadata.cardinality.value = Number.POSITIVE_INFINITY;
     }
-    if (metadata.cardinality?.type === 'exact' && subMetadata.cardinality?.type === 'exact') {
+    if (metadata.cardinality?.value !== undefined && subMetadata.cardinality?.value !== undefined) {
       metadata.cardinality.value += subMetadata.cardinality.value;
+    }
+    if (subMetadata.cardinality?.type === 'estimate') {
+      metadata.cardinality.type = 'estimate';
     }
 
     return { metadata };
