@@ -91,7 +91,7 @@ export class Bindings implements RDF.Bindings {
       .map((value, key) => fn(value, this.dataFactory.variable!(key)))));
   }
 
-  public merge(other: Bindings): Bindings | undefined {
+  public merge(other: RDF.Bindings): Bindings | undefined {
     // Determine the union of keys
     const keys = new Set([
       ...this.iteratorToIterable(this.entries.keys()),
@@ -115,7 +115,7 @@ export class Bindings implements RDF.Bindings {
 
   public mergeWith(
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
-    other: Bindings,
+    other: RDF.Bindings,
   ): Bindings {
     // Determine the union of keys
     const keys = new Set([
