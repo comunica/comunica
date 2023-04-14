@@ -48,9 +48,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let mediatorJoin: any;
     let actor: ActorRdfJoinMultiSmallest;
-    let action3: IActionRdfJoin;
-    let action4: IActionRdfJoin;
-    let action3PartialMeta: IActionRdfJoin;
+    let action3: () => IActionRdfJoin;
+    let action4: () => IActionRdfJoin;
     let invocationCounter: any;
 
     beforeEach(() => {
@@ -80,7 +79,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       actor = new ActorRdfJoinMultiSmallest(
         { name: 'actor', bus, mediatorJoin, mediatorJoinSelectivity, mediatorJoinEntriesSort },
       );
-      action3 = {
+      action3 = () => ({
         type: 'inner',
         entries: [
           {
@@ -160,8 +159,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
         ],
         context,
-      };
-      action4 = {
+      });
+      action4 = () => ({
         type: 'inner',
         entries: [
           {
@@ -266,80 +265,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
         ],
         context,
-      };
-      action3PartialMeta = {
-        type: 'inner',
-        entries: [
-          {
-            output: {
-              bindingsStream: new ArrayIterator([
-                BF.bindings([
-                  [ DF.variable('a'), DF.literal('a1') ],
-                  [ DF.variable('b'), DF.literal('b1') ],
-                ]),
-                BF.bindings([
-                  [ DF.variable('a'), DF.literal('a2') ],
-                  [ DF.variable('b'), DF.literal('b2') ],
-                ]),
-              ]),
-              metadata: () => Promise.resolve({
-                cardinality: { type: 'estimate', value: 4 },
-                pageSize: 100,
-                requestTime: 10,
-                canContainUndefs: false,
-                variables: [ DF.variable('a'), DF.variable('b') ],
-              }),
-              type: 'bindings',
-            },
-            operation: <any> {},
-          },
-          {
-            output: {
-              bindingsStream: new ArrayIterator([
-                BF.bindings([
-                  [ DF.variable('a'), DF.literal('a1') ],
-                  [ DF.variable('c'), DF.literal('c1') ],
-                ]),
-                BF.bindings([
-                  [ DF.variable('a'), DF.literal('a2') ],
-                  [ DF.variable('c'), DF.literal('c2') ],
-                ]),
-              ]),
-              metadata: () => Promise.resolve({
-                cardinality: { type: 'estimate', value: 2 },
-                canContainUndefs: false,
-                variables: [ DF.variable('a'), DF.variable('c') ],
-              }),
-              type: 'bindings',
-            },
-            operation: <any> {},
-          },
-          {
-            output: {
-              bindingsStream: new ArrayIterator([
-                BF.bindings([
-                  [ DF.variable('a'), DF.literal('a1') ],
-                  [ DF.variable('b'), DF.literal('b1') ],
-                ]),
-                BF.bindings([
-                  [ DF.variable('a'), DF.literal('a2') ],
-                  [ DF.variable('b'), DF.literal('b2') ],
-                ]),
-              ]),
-              metadata: () => Promise.resolve({
-                cardinality: { type: 'estimate', value: 2 },
-                pageSize: 100,
-                requestTime: 30,
-                canContainUndefs: false,
-                variables: [ DF.variable('a'), DF.variable('b') ],
-              }),
-              type: 'bindings',
-            },
-            operation: <any> {},
-          },
-        ],
-        context,
-      };
+      });
     });
 
     it('should not test on 0 streams', () => {
@@ -357,26 +283,31 @@ describe('ActorRdfJoinMultiSmallest', () => {
         .toThrow(new Error('actor requires 3 join entries at least. The input contained 2.'));
     });
 
-    it('should test on 3 streams', () => {
-      return expect(actor.test(action3)).resolves.toEqual({
+    it('should test on 3 streams', async() => {
+      const action = action3();
+      await expect(actor.test(action)).resolves.toEqual({
         iterations: 40,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 2,
       });
+      action.entries.forEach(entry => entry.output.bindingsStream.destroy());
     });
 
-    it('should test on 4 streams', () => {
-      return expect(actor.test(action4)).resolves.toEqual({
+    it('should test on 4 streams', async() => {
+      const action = action4();
+      await expect(actor.test(action)).resolves.toEqual({
         iterations: 80,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 2.8,
       });
+      action.entries.forEach(entry => entry.output.bindingsStream.destroy());
     });
 
     it('should run on 3 streams', async() => {
-      const output = await actor.run(action3);
+      const action = action3();
+      const output = await actor.run(action);
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toEqual({
         cardinality: { type: 'estimate', value: 40 },
@@ -397,13 +328,14 @@ describe('ActorRdfJoinMultiSmallest', () => {
       ]);
 
       // Check join order
-      expect((<any> action3.entries[0]).operation.called).toBe(0);
-      expect((<any> action3.entries[1]).operation.called).toBe(1);
-      expect((<any> action3.entries[2]).operation.called).toBe(0);
+      expect((<any> action.entries[0]).operation.called).toBe(0);
+      expect((<any> action.entries[1]).operation.called).toBe(1);
+      expect((<any> action.entries[2]).operation.called).toBe(0);
     });
 
     it('should run on 4 streams', async() => {
-      const output = await actor.run(action4);
+      const action = action4();
+      const output = await actor.run(action);
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toEqual({
         cardinality: { type: 'estimate', value: 80 },
@@ -426,10 +358,10 @@ describe('ActorRdfJoinMultiSmallest', () => {
       ]);
 
       // Check join order
-      expect((<any> action4.entries[0]).operation.called).toBe(1);
-      expect((<any> action4.entries[1]).operation.called).toBe(2);
-      expect((<any> action4.entries[2]).operation.called).toBe(0);
-      expect((<any> action4.entries[3]).operation.called).toBe(0);
+      expect((<any> action.entries[0]).operation.called).toBe(1);
+      expect((<any> action.entries[1]).operation.called).toBe(2);
+      expect((<any> action.entries[2]).operation.called).toBe(0);
+      expect((<any> action.entries[3]).operation.called).toBe(0);
     });
   });
 });

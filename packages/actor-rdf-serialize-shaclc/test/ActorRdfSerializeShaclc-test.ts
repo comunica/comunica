@@ -63,29 +63,35 @@ describe('ActorRdfSerializeShaclc', () => {
         quadsError._read = () => quadsError.emit('error', new Error('SerializeShaclc'));
       });
 
-      it('should test on text/shaclc', () => {
-        return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context }))
-          .resolves.toBeTruthy();
-      });
+      describe('should test', () => {
+        afterEach(() => {
+          quadStream.destroy();
+        });
 
-      it('should test on text/shaclc-ext', () => {
-        return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc-ext', context }))
-          .resolves.toBeTruthy();
-      });
+        it('should test on text/shaclc', () => {
+          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context }))
+            .resolves.toBeTruthy();
+        });
 
-      it('should not test on application/trig', () => {
-        return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/trig', context }))
-          .rejects.toBeTruthy();
-      });
+        it('should test on text/shaclc-ext', () => {
+          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc-ext', context }))
+            .resolves.toBeTruthy();
+        });
 
-      it('should not test on text/turtle', () => {
-        return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/turtle', context }))
-          .rejects.toBeTruthy();
-      });
+        it('should not test on application/trig', () => {
+          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/trig', context }))
+            .rejects.toBeTruthy();
+        });
 
-      it('should not test on application/json', () => {
-        return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
-          .rejects.toBeTruthy();
+        it('should not test on text/turtle', () => {
+          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/turtle', context }))
+            .rejects.toBeTruthy();
+        });
+
+        it('should not test on application/json', () => {
+          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
+            .rejects.toBeTruthy();
+        });
       });
 
       it('should run', async() => {
@@ -169,6 +175,9 @@ describe('ActorRdfSerializeShaclc', () => {
           { handle: { quadStream: quadsError, context }, handleMediaType: 'application/trig', context },
         )))
           .handle.data)).rejects.toBeTruthy();
+
+        // Close the quadStream since we didn't use it
+        quadStream.destroy();
       });
     });
 

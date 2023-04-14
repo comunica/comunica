@@ -191,6 +191,11 @@ describe('RdfSourceSparql', () => {
       );
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
         .toEqual({ cardinality: 3, canContainUndefs: true });
+      await expect(stream.toArray()).resolves.toEqual([
+        quad('s', 'p1', 'o'),
+        quad('s', 'p2', 'o'),
+        quad('s', 'p3', 'o'),
+      ]);
     });
 
     it('should emit an error on server errors', async() => {

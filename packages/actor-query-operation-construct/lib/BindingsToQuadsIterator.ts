@@ -116,6 +116,6 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   public _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
     return new ArrayIterator(this.bindTemplate(
       bindings, this.template, this.blankNodeCounter++,
-    ));
+    ), { autoStart: false });
   }
 }

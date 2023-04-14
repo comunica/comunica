@@ -3,6 +3,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeTable } from '../lib/ActorQueryResultSerializeTable';
@@ -38,8 +39,8 @@ describe('ActorQueryResultSerializeTable', () => {
 
   describe('An ActorQueryResultSerializeTable instance', () => {
     let actor: ActorQueryResultSerializeTable;
-    let bindingsStream: BindingsStream;
-    let quadStream: RDF.Stream;
+    let bindingsStream: () => BindingsStream;
+    let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let streamError: Readable;
     let metadata: MetadataBindings;
 
@@ -51,7 +52,7 @@ describe('ActorQueryResultSerializeTable', () => {
         },
         mediaTypeFormats: {},
         name: 'actor' });
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -59,7 +60,7 @@ describe('ActorQueryResultSerializeTable', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      quadStream = new ArrayIterator([
+      quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
@@ -81,17 +82,23 @@ describe('ActorQueryResultSerializeTable', () => {
     });
 
     describe('for serializing', () => {
-      it('should test on table', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
+      it('should test on table', async() => {
+        const stream = quadStream();
+        await expect(actor.test({ handle: <any> { type: 'quads', quadStream: stream },
           handleMediaType: 'table',
           context })).resolves.toBeTruthy();
+
+        stream.destroy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
+      it('should not test on N-Triples', async() => {
+        const stream = quadStream();
+        await expect(actor.test({ handle: <any> { type: 'quads', quadStream: stream },
           handleMediaType: 'application/n-triples',
           context }))
           .rejects.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should not test on unknown types', () => {
@@ -103,7 +110,7 @@ describe('ActorQueryResultSerializeTable', () => {
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream, metadata: async() => metadata },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), metadata: async() => metadata },
             handleMediaType: 'table',
             context },
         ))).handle.data)).toEqual(
@@ -117,7 +124,7 @@ v1
 
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream },
+          { handle: <any> { type: 'quads', quadStream: quadStream() },
             handleMediaType: 'table',
             context },
         ))).handle.data)).toEqual(

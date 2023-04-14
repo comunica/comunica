@@ -248,6 +248,7 @@ describe('ActorQueryOperationLeftJoin', () => {
           // Do nothing
         });
       });
+      output.bindingsStream.destroy();
     });
   });
 });

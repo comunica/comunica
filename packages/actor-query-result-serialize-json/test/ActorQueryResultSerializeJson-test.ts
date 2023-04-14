@@ -3,6 +3,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeJson } from '..';
@@ -38,9 +39,9 @@ describe('ActorQueryResultSerializeJson', () => {
 
   describe('An ActorQueryResultSerializeJson instance', () => {
     let actor: ActorQueryResultSerializeJson;
-    let bindingsStream: BindingsStream;
-    let quadStream: RDF.Stream;
-    let bindingsStreamEmpty: BindingsStream;
+    let bindingsStream: () => BindingsStream;
+    let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
+    let bindingsStreamEmpty: () => BindingsStream;
     let streamError: Readable;
 
     beforeEach(() => {
@@ -50,7 +51,7 @@ describe('ActorQueryResultSerializeJson', () => {
         },
         mediaTypeFormats: {},
         name: 'actor' });
-      bindingsStream = new ArrayIterator([
+      bindingsStream = () => new ArrayIterator([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -58,11 +59,11 @@ describe('ActorQueryResultSerializeJson', () => {
           [ DF.variable('k2'), DF.blankNode('v2') ],
         ]),
       ], { autoStart: false });
-      quadStream = new ArrayIterator([
+      quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ], { autoStart: false });
-      bindingsStreamEmpty = new ArrayIterator([], { autoStart: false });
+      bindingsStreamEmpty = () => new ArrayIterator([], { autoStart: false });
       streamError = new Readable();
       streamError._read = () => streamError.emit('error', new Error('SparqlJson'));
     });
@@ -80,17 +81,26 @@ describe('ActorQueryResultSerializeJson', () => {
     });
 
     describe('for serializing', () => {
-      it('should test on application/json quads', () => {
-        return expect(actor
-          .test({ handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'application/json', context }))
+      it('should test on application/json quads', async() => {
+        const stream = quadStream();
+        await expect(actor
+          .test({
+            handle: <any> { type: 'quads', quadStream: stream, context },
+            handleMediaType: 'application/json',
+            context,
+          }))
           .resolves.toBeTruthy();
+
+        stream.destroy();
       });
 
-      it('should test on application/json bindings', () => {
-        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream, context },
+      it('should test on application/json bindings', async() => {
+        const stream = bindingsStream();
+        await expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream: stream, context },
           handleMediaType: 'application/json',
           context }))
           .resolves.toBeTruthy();
+        stream.destroy();
       });
 
       it('should test on application/json booleans', () => {
@@ -100,11 +110,18 @@ describe('ActorQueryResultSerializeJson', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should not test on N-Triples', () => {
-        return expect(actor.test(
-          { handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'application/n-triples', context },
+      it('should not test on N-Triples', async() => {
+        const stream = quadStream();
+        await expect(actor.test(
+          {
+            handle: <any> { type: 'quads', quadStream: stream, context },
+            handleMediaType: 'application/n-triples',
+            context,
+          },
         ))
           .rejects.toBeTruthy();
+
+        stream.destroy();
       });
 
       it('should not test on unknown types', () => {
@@ -116,7 +133,11 @@ describe('ActorQueryResultSerializeJson', () => {
 
       it('should run on a bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream, context }, handleMediaType: 'application/json', context },
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
+            handleMediaType: 'application/json',
+            context,
+          },
         ))).handle.data))
           .toEqual(
             `[
@@ -129,7 +150,11 @@ describe('ActorQueryResultSerializeJson', () => {
 
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream, context }, handleMediaType: 'application/json', context },
+          {
+            handle: <any> { type: 'quads', quadStream: quadStream(), context },
+            handleMediaType: 'application/json',
+            context,
+          },
         ))).handle.data)).toEqual(
           `[
 {"subject":"http://example.org/a","predicate":"http://example.org/b","object":"http://example.org/c","graph":""},
@@ -141,7 +166,7 @@ describe('ActorQueryResultSerializeJson', () => {
 
       it('should run on an empty bindings stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamEmpty, context },
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamEmpty(), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data))
@@ -151,7 +176,7 @@ describe('ActorQueryResultSerializeJson', () => {
 
       it('should run on an empty quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: bindingsStreamEmpty, context },
+          { handle: <any> { type: 'quads', quadStream: bindingsStreamEmpty(), context },
             handleMediaType: 'application/json',
             context },
         ))).handle.data))

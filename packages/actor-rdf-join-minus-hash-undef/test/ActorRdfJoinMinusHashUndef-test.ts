@@ -14,51 +14,11 @@ const BF = new BindingsFactory();
 
 describe('ActorRdfJoinMinusHashUndef', () => {
   let bus: any;
-  let left: any;
-  let right: any;
-  let rightNoCommons: any;
   let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
-    left = {
-      metadata: () => Promise.resolve({
-        cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
-      }),
-      stream: new ArrayIterator([
-        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-      ]),
-      type: 'bindings',
-    };
-    rightNoCommons = {
-      metadata: () => Promise.resolve({
-        cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('b') ],
-      }),
-      stream: new ArrayIterator([
-        BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
-        BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
-      ]),
-      type: 'bindings',
-    };
-    right = {
-      metadata: () => Promise.resolve({
-        cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
-      }),
-      stream: new ArrayIterator([
-        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-      ]),
-      type: 'bindings',
-    };
   });
 
   describe('An ActorRdfJoinMinusHashUndef instance', () => {
