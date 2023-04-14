@@ -103,7 +103,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
     afterEach(() => {
       // This is here since the MediatedLinkedRdfSourcesAsyncRdfIterator is never fully consumed
-      // **THIS IS AN ALARM BELL** do not merge without checking this
+      // This should not be needed, see https://github.com/comunica/comunica/issues/1197
       source.destroy();
     });
 
