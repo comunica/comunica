@@ -1,17 +1,20 @@
 import type * as RDF from '@rdfjs/types';
-import { BaseAggregator } from './BaseAggregator';
+import { AggregatorComponent } from './Aggregator';
 
-export class Sample extends BaseAggregator<RDF.Term> {
-  public init(start: RDF.Term): RDF.Term {
-    return start;
-  }
+export class Sample extends AggregatorComponent {
+  private state: RDF.Term | undefined = undefined;
 
-  public put(state: RDF.Term, term: RDF.Term): RDF.Term {
+  public put(term: RDF.Term): void {
     // First value is our sample
-    return state;
+    if (this.state === undefined) {
+      this.state = term;
+    }
   }
 
-  public result(state: RDF.Term): RDF.Term {
-    return state;
+  public result(): RDF.Term | undefined {
+    if (this.state === undefined) {
+      return Sample.emptyValue();
+    }
+    return this.state;
   }
 }

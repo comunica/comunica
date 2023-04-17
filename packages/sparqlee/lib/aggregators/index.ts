@@ -2,8 +2,8 @@ import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type { SetFunction } from '../util/Consts';
+import type { AggregatorComponent } from './Aggregator';
 import { Average } from './Average';
-import type { BaseAggregator } from './BaseAggregator';
 import { Count } from './Count';
 import { GroupConcat } from './GroupConcat';
 import { Max } from './Max';
@@ -11,13 +11,12 @@ import { Min } from './Min';
 import { Sample } from './Sample';
 import { Sum } from './Sum';
 
-export interface IAggregatorClass {
-  new(expr: Algebra.AggregateExpression, sharedContext: ICompleteSharedContext): BaseAggregator<any>;
-
+export interface IAggregatorComponentClass {
+  new(expr: Algebra.AggregateExpression, sharedContext: ICompleteSharedContext): AggregatorComponent;
   emptyValue: () => RDF.Term | undefined;
 }
 
-export const aggregators: Readonly<{[key in SetFunction]: IAggregatorClass }> = {
+export const aggregators: Readonly<{[key in SetFunction]: IAggregatorComponentClass }> = {
   count: Count,
   sum: Sum,
   min: Min,

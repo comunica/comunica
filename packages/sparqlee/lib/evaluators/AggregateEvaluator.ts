@@ -14,15 +14,18 @@ export class AggregateEvaluator extends BaseAggregateEvaluator {
   }
 
   public put(bindings: RDF.Bindings): void {
-    this.init(bindings);
-  }
-
-  protected __put(bindings: RDF.Bindings): void {
-    try {
-      const term = this.evaluator.evaluate(bindings);
-      this.state = this.aggregator.put(this.state, term);
-    } catch (error: unknown) {
-      this.safeThrow(error);
+    if (this.errorOccurred) {
+      return;
+    }
+    if (this.isWildcard) {
+      this.wildcardAggregator!.putBindings(bindings);
+    } else {
+      try {
+        const startTerm = this.evaluator.evaluate(bindings);
+        this.aggregator.put(startTerm);
+      } catch (error: unknown) {
+        this.safeThrow(error);
+      }
     }
   }
 
@@ -30,23 +33,7 @@ export class AggregateEvaluator extends BaseAggregateEvaluator {
     if (this.throwError) {
       throw err;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      this.put = () => {};
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      this.result = () => undefined;
-    }
-  }
-
-  private init(start: RDF.Bindings): void {
-    try {
-      const startTerm = this.evaluator.evaluate(start);
-      this.state = this.aggregator.init(startTerm);
-      if (this.state) {
-        this.put = this.__put.bind(this);
-        this.result = this.__result.bind(this);
-      }
-    } catch (error: unknown) {
-      this.safeThrow(error);
+      this.errorOccurred = true;
     }
   }
 }

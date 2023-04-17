@@ -3,27 +3,31 @@ import type * as E from '../expressions';
 import { regularFunctions } from '../functions';
 import { integer } from '../functions/Helpers';
 import * as C from '../util/Consts';
-import { BaseAggregator } from './BaseAggregator';
+import { AggregatorComponent } from './Aggregator';
 
 type SumState = E.NumericLiteral;
 
-export class Sum extends BaseAggregator<SumState> {
+export class Sum extends AggregatorComponent {
+  private state: SumState | undefined = undefined;
   private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
 
   public static emptyValue(): RDF.Term {
     return integer(0).toRDF();
   }
 
-  public init(start: RDF.Term): SumState {
-    return this.termToNumericOrError(start);
+  public put(term: RDF.Term): void {
+    if (this.state === undefined) {
+      this.state = this.termToNumericOrError(term);
+    } else {
+      const internalTerm = this.termToNumericOrError(term);
+      this.state = <E.NumericLiteral> this.summer.apply([ this.state, internalTerm ], this.sharedContext);
+    }
   }
 
-  public put(state: SumState, term: RDF.Term): SumState {
-    const internalTerm = this.termToNumericOrError(term);
-    return <E.NumericLiteral> this.summer.apply([ state, internalTerm ], this.sharedContext);
-  }
-
-  public result(state: SumState): RDF.Term {
-    return state.toRDF();
+  public result(): RDF.Term {
+    if (this.state === undefined) {
+      return Sum.emptyValue();
+    }
+    return this.state.toRDF();
   }
 }

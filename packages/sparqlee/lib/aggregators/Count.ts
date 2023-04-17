@@ -1,21 +1,24 @@
 import type * as RDF from '@rdfjs/types';
 import { integer } from '../functions/Helpers';
-import { BaseAggregator } from './BaseAggregator';
+import { AggregatorComponent } from './Aggregator';
 
-export class Count extends BaseAggregator<number> {
+export class Count extends AggregatorComponent {
+  private state: number | undefined = undefined;
   public static emptyValue(): RDF.Term {
     return integer(0).toRDF();
   }
 
-  public init(start: RDF.Term): number {
-    return 1;
+  public put(term: RDF.Term): void {
+    if (this.state === undefined) {
+      this.state = 0;
+    }
+    this.state++;
   }
 
-  public put(state: number, term: RDF.Term): number {
-    return state + 1;
-  }
-
-  public result(state: number): RDF.Term {
-    return integer(state).toRDF();
+  public result(): RDF.Term {
+    if (this.state === undefined) {
+      return Count.emptyValue();
+    }
+    return integer(this.state).toRDF();
   }
 }
