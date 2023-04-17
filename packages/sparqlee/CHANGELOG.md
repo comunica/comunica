@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.3.1"></a>
+## [v2.3.1](https://github.com/comunica/sparqlee/compare/v2.3.0...v2.3.1) - 2023-04-17
+
+### Fixed
+* [Fix DISTINCT not being supported in aggregates](https://github.com/comunica/sparqlee/commit/1c809e578eadc5c9e0754bd65b172ba07e436096)
+
 <a name="v2.3.0"></a>
 ## [v2.3.0](https://github.com/comunica/sparqlee/compare/v2.2.1...v2.3.0) - 2023-04-07
 
