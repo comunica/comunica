@@ -1,3 +1,4 @@
+import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -36,13 +37,20 @@ export class ActorRdfJoinInnerMultiAdaptiveDestroy extends ActorRdfJoin {
     return super.run(action);
   }
 
-  protected cloneEntries(entries: IJoinEntry[]): IJoinEntry[] {
+  protected cloneEntries(entries: IJoinEntry[], allowClosingOriginals: boolean): IJoinEntry[] {
     return entries.map(entry => ({
       operation: entry.operation,
       output: {
         ...entry.output,
         // Clone stream, as we'll also need it later
-        bindingsStream: entry.output.bindingsStream.clone(),
+        bindingsStream: new ClosableTransformIterator(entry.output.bindingsStream.clone(), {
+          autoStart: false,
+          onClose() {
+            if (allowClosingOriginals) {
+              entry.output.bindingsStream.destroy();
+            }
+          },
+        }),
       },
     }));
   }
@@ -54,7 +62,7 @@ export class ActorRdfJoinInnerMultiAdaptiveDestroy extends ActorRdfJoin {
     // Execute the join with the metadata we have now
     const firstOutput = await this.mediatorJoin.mediate({
       type: action.type,
-      entries: this.cloneEntries(action.entries),
+      entries: this.cloneEntries(action.entries, false),
       context: subContext,
     });
 
@@ -67,7 +75,7 @@ export class ActorRdfJoinInnerMultiAdaptiveDestroy extends ActorRdfJoin {
             // Restart the join with the latest metadata
             (await this.mediatorJoin.mediate({
               type: action.type,
-              entries: this.cloneEntries(action.entries),
+              entries: this.cloneEntries(action.entries, true),
               context: subContext,
             })).bindingsStream
           ,

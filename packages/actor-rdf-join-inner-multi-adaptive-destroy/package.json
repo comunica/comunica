@@ -33,6 +33,7 @@
   ],
   "dependencies": {
     "@comunica/context-entries": "^2.5.0",
+    "@comunica/bus-query-operation": "^2.5.0",
     "@comunica/bus-rdf-join": "^2.5.0",
     "@comunica/mediatortype-join-coefficients": "^2.5.0",
     "@comunica/types": "^2.5.0",

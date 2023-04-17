@@ -92,7 +92,12 @@ describe('ActorRdfJoinInnerMultiAdaptiveDestroy', () => {
         mediate: async() => ({ selectivity: 1 }),
       };
       mediatorJoin = <any> {
-        mediate: jest.fn(() => {
+        mediate: jest.fn(async action => {
+          // Fully consume the input entries
+          for (const entry of action.entries) {
+            await entry.output.bindingsStream.toArray();
+          }
+
           return {
             type: 'bindings',
             bindingsStream: new ArrayIterator([
@@ -140,6 +145,9 @@ describe('ActorRdfJoinInnerMultiAdaptiveDestroy', () => {
         entries,
       });
 
+      const destroy0 = jest.spyOn(entries[0].output.bindingsStream, 'destroy');
+      const destroy1 = jest.spyOn(entries[0].output.bindingsStream, 'destroy');
+
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toEqual({ a: 'b' });
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -153,6 +161,9 @@ describe('ActorRdfJoinInnerMultiAdaptiveDestroy', () => {
         entries: expect.anything(),
         context: context.set(KeysRdfJoin.skipAdaptiveJoin, true),
       });
+
+      expect(destroy0).toHaveBeenCalledTimes(0);
+      expect(destroy1).toHaveBeenCalledTimes(0);
     });
 
     it('should run with reaching the timeout', async() => {
@@ -161,6 +172,8 @@ describe('ActorRdfJoinInnerMultiAdaptiveDestroy', () => {
         type: 'inner',
         entries,
       });
+      const destroy0 = jest.spyOn(entries[0].output.bindingsStream, 'destroy');
+      const destroy1 = jest.spyOn(entries[0].output.bindingsStream, 'destroy');
 
       jest.runAllTimers();
 
@@ -182,6 +195,9 @@ describe('ActorRdfJoinInnerMultiAdaptiveDestroy', () => {
         entries: expect.anything(),
         context: context.set(KeysRdfJoin.skipAdaptiveJoin, true),
       });
+
+      expect(destroy0).toHaveBeenCalledTimes(1);
+      expect(destroy1).toHaveBeenCalledTimes(1);
     });
   });
 });
