@@ -1064,6 +1064,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bergos/jsonparse@^1.4.0":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@bergos/jsonparse/-/jsonparse-1.4.1.tgz#560e7125f65d0ad6b96dfe1c0d5da3115b9f8c59"
+  integrity sha512-vXIT0nzZGX/+yMD5bx2VhTzc92H55tPoehh1BW/FZHOndWGFddrH3MAfdx39FRc7irABirW6EQaGxIJYV6CGuA==
+  dependencies:
+    buffer "^6.0.3"
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
@@ -9044,6 +9051,18 @@ jsonld-context-parser@^2.0.0, jsonld-context-parser@^2.0.2, jsonld-context-parse
     http-link-header "^1.0.2"
     relative-to-absolute-iri "^1.0.5"
 
+jsonld-context-parser@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-2.3.0.tgz#423a36114bd7876477dabef105efe49cc79fb59b"
+  integrity sha512-c6w2GE57O26eWFjcPX6k6G86ootsIfpuVwhZKjCll0bVoDGBxr1P4OuU+yvgfnh1GJhAGErolfC7W1BklLjWMg==
+  dependencies:
+    "@types/http-link-header" "^1.0.1"
+    "@types/node" "^18.0.0"
+    canonicalize "^1.0.1"
+    cross-fetch "^3.0.6"
+    http-link-header "^1.0.2"
+    relative-to-absolute-iri "^1.0.5"
+
 jsonld-streaming-parser@^3.0.0, jsonld-streaming-parser@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-3.0.1.tgz#6503bacbc8640bb6eacafc29bcac583af5205407"
@@ -9057,6 +9076,22 @@ jsonld-streaming-parser@^3.0.0, jsonld-streaming-parser@^3.0.1:
     http-link-header "^1.0.2"
     jsonld-context-parser "^2.1.3"
     jsonparse "^1.3.1"
+    rdf-data-factory "^1.1.0"
+    readable-stream "^4.0.0"
+
+jsonld-streaming-parser@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-3.2.0.tgz#b879eae6389617746b24101e5a04eba60af0a15d"
+  integrity sha512-lJR1SCT364PGpFrOQaY+ZQ7qDWqqiT3IMK+AvZ83fo0LvltFn8/UyXvIFc3RO7YcaEjLahAF0otCi8vOq21NtQ==
+  dependencies:
+    "@bergos/jsonparse" "^1.4.0"
+    "@rdfjs/types" "*"
+    "@types/http-link-header" "^1.0.1"
+    "@types/readable-stream" "^2.3.13"
+    buffer "^6.0.3"
+    canonicalize "^1.0.1"
+    http-link-header "^1.0.2"
+    jsonld-context-parser "^2.3.0"
     rdf-data-factory "^1.1.0"
     readable-stream "^4.0.0"
 
@@ -11800,7 +11835,7 @@ rdf-test-suite-ldf@^1.4.2:
     url-exists "^1.0.3"
     winston "^3.2.1"
 
-rdf-test-suite@^1.18.0, rdf-test-suite@^1.19.3:
+rdf-test-suite@^1.18.0:
   version "1.19.3"
   resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.19.3.tgz#77aab6e07fd3862191e18301c433b70db666a9d4"
   integrity sha512-Tyq25j0oKQHGpx6QF9WMbPFctOkPb3GVDfvRmFEJzuOegiya9mGh2fn79gfYErQQ92wDOaP+0wB+fLVsEl4zLQ==
@@ -11815,6 +11850,39 @@ rdf-test-suite@^1.18.0, rdf-test-suite@^1.19.3:
     is-stream "^2.0.0"
     json-stable-stringify "^1.0.1"
     jsonld-streaming-parser "^3.0.0"
+    log-symbols "^4.0.0"
+    minimist "^1.2.0"
+    n3 "^1.11.1"
+    rdf-data-factory "^1.1.0"
+    rdf-isomorphic "^1.3.0"
+    rdf-literal "^1.3.0"
+    rdf-object "^1.11.1"
+    rdf-quad "^1.5.0"
+    rdf-string "^1.6.0"
+    rdf-terms "^1.7.0"
+    rdfxml-streaming-parser "^2.0.0"
+    readable-web-to-node-stream "^3.0.2"
+    relative-to-absolute-iri "^1.0.6"
+    sparqljson-parse "^2.0.1"
+    sparqlxml-parse "^2.0.1"
+    stream-to-string "^1.1.0"
+    streamify-string "^1.0.1"
+
+rdf-test-suite@^1.23.1:
+  version "1.23.1"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.23.1.tgz#48c28a707961d352420a7708eb5acdb95a4de147"
+  integrity sha512-V3UPcic1RCHPZFxwIywFRCJaOyK9k+k/Z8WA0Ss5WxUwFFwar6hyMYNHnVHVBJ1iXcWj+VsbGe9XvYn9XRnskw==
+  dependencies:
+    "@rdfjs/types" "*"
+    "@types/json-stable-stringify" "^1.0.32"
+    "@types/minimist" "^1.2.0"
+    "@types/n3" "^1.10.3"
+    "@types/sax" "^1.0.1"
+    arrayify-stream "^2.0.0"
+    cross-fetch "^3.0.6"
+    is-stream "^2.0.0"
+    json-stable-stringify "^1.0.1"
+    jsonld-streaming-parser "^3.2.0"
     log-symbols "^4.0.0"
     minimist "^1.2.0"
     n3 "^1.11.1"
