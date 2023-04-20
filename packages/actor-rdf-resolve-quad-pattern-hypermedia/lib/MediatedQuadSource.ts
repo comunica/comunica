@@ -53,7 +53,11 @@ export class MediatedQuadSource implements IQuadSource {
       if (aggregatedStores) {
         aggregatedStore = aggregatedStores.get(this.firstUrl);
         if (!aggregatedStore) {
-          aggregatedStore = new StreamingStoreMetadata(undefined, (acc, app) => it.accumulateMetadata(acc, app));
+          aggregatedStore = new StreamingStoreMetadata(
+            undefined,
+            () => it.closeIfDrained(),
+            (acc, app) => it.accumulateMetadata(acc, app),
+          );
           aggregatedStores.set(this.firstUrl, aggregatedStore);
         }
         if (aggregatedStore.started) {

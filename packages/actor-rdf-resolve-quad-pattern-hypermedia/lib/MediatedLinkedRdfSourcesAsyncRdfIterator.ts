@@ -32,12 +32,24 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly handledUrls: Record<string, boolean>;
   private readonly aggregatedStore: IAggregatedStore | undefined;
   private linkQueue: Promise<ILinkQueue> | undefined;
+  private wasForcefullyClosed = false;
 
   public constructor(cacheSize: number, context: IActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string, maxIterators: number, aggregatedStore: IAggregatedStore | undefined,
     mediators: IMediatorArgs) {
-    super(cacheSize, subject, predicate, object, graph, firstUrl, maxIterators);
+    super(
+      cacheSize,
+      subject,
+      predicate,
+      object,
+      graph,
+      firstUrl,
+      maxIterators,
+      // Buffersize must be infinite for an aggregated store because it must keep filling until there are no more
+      // derived iterators in the aggregated store.
+      aggregatedStore ? { maxBufferSize: Number.POSITIVE_INFINITY } : undefined,
+    );
     this.context = context;
     this.forceSourceType = forceSourceType;
     this.mediatorDereferenceRdf = mediators.mediatorDereferenceRdf;
@@ -56,13 +68,44 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   // until the buffer of this iterator must be fully consumed, which will not always be the case.
 
   public close(): void {
-    this.aggregatedStore?.end();
-    super.close();
+    this.getLinkQueue()
+      .then(linkQueue => {
+        if (this.isCloseable(linkQueue)) {
+          this.aggregatedStore?.end();
+          super.close();
+        } else {
+          this.wasForcefullyClosed = true;
+        }
+      })
+      .catch(error => super.destroy(error));
   }
 
   public destroy(cause?: Error): void {
-    this.aggregatedStore?.end();
-    super.destroy(cause);
+    this.getLinkQueue()
+      .then(linkQueue => {
+        if (this.isCloseable(linkQueue)) {
+          this.aggregatedStore?.end();
+          super.destroy(cause);
+        } else {
+          this.wasForcefullyClosed = true;
+        }
+      })
+      .catch(error => super.destroy(error));
+  }
+
+  public closeIfDrained(): void {
+    this.getLinkQueue()
+      .then(linkQueue => {
+        if (this.isCloseable(linkQueue)) {
+          this.aggregatedStore?.end();
+          super.close();
+        }
+      })
+      .catch(error => this.destroy(error));
+  }
+
+  protected isCloseable(linkQueue: ILinkQueue): boolean {
+    return (this.wasForcefullyClosed || linkQueue.isEmpty()) && !this.areIteratorsRunning();
   }
 
   protected override canStartNewIterator(): boolean {

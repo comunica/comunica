@@ -109,6 +109,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should end a defined aggregated store', async() => {
         const aggregatedStore: any = {
           end: jest.fn(),
+          setBaseMetadata: jest.fn(),
+          import: jest.fn(),
         };
         source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
           10,
@@ -125,7 +127,57 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
 
         source.close();
+        await new Promise(setImmediate);
         expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
+      });
+
+      it('should close if the iterator is closeable', async() => {
+        source.close();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(true);
+        expect(source.wasForcefullyClosed).toEqual(false);
+      });
+
+      it('should close if the iterator is closeable, and end the aggregated store', async() => {
+        const aggregatedStore: any = {
+          end: jest.fn(),
+          setBaseMetadata: jest.fn(),
+          import: jest.fn(),
+        };
+        source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+          10,
+          context,
+          'forcedType',
+          s,
+          p,
+          o,
+          g,
+          'first',
+          64,
+          aggregatedStore,
+          mediators,
+        );
+
+        source.close();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(true);
+        expect(aggregatedStore.end).toHaveBeenCalled();
+        expect(source.wasForcefullyClosed).toEqual(false);
+      });
+
+      it('should not close if the iterator is not closeable', async() => {
+        source.getLinkQueue = async() => ({ isEmpty: () => false });
+        source.close();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(false);
+        expect(source.wasForcefullyClosed).toEqual(true);
+      });
+
+      it('should destroy if the link queue rejects', async() => {
+        source.getLinkQueue = () => Promise.reject(new Error('getLinkQueue reject'));
+        source.close();
+        await expect(new Promise((resolve, reject) => source.on('error', reject)))
+          .rejects.toThrow('getLinkQueue reject');
       });
     });
 
@@ -137,6 +189,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should end a defined aggregated store', async() => {
         const aggregatedStore: any = {
           end: jest.fn(),
+          setBaseMetadata: jest.fn(),
+          import: jest.fn(),
         };
         source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
           10,
@@ -153,7 +207,105 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
 
         source.destroy();
+        await new Promise(setImmediate);
         expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
+      });
+
+      it('should close if the iterator is closeable', async() => {
+        source.destroy();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(true);
+        expect(source.wasForcefullyClosed).toEqual(false);
+      });
+
+      it('should close if the iterator is closeable, and end the aggregated store', async() => {
+        const aggregatedStore: any = {
+          end: jest.fn(),
+          setBaseMetadata: jest.fn(),
+          import: jest.fn(),
+        };
+        source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+          10,
+          context,
+          'forcedType',
+          s,
+          p,
+          o,
+          g,
+          'first',
+          64,
+          aggregatedStore,
+          mediators,
+        );
+
+        source.destroy();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(true);
+        expect(aggregatedStore.end).toHaveBeenCalled();
+        expect(source.wasForcefullyClosed).toEqual(false);
+      });
+
+      it('should not close if the iterator is not closeable', async() => {
+        source.getLinkQueue = async() => ({ isEmpty: () => false });
+        source.destroy();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(false);
+        expect(source.wasForcefullyClosed).toEqual(true);
+      });
+
+      it('should destroy if the link queue rejects', async() => {
+        source.getLinkQueue = () => Promise.reject(new Error('getLinkQueue reject'));
+        source.destroy();
+        await expect(new Promise((resolve, reject) => source.on('error', reject)))
+          .rejects.toThrow('getLinkQueue reject');
+      });
+    });
+
+    describe('closeIfDrained', () => {
+      it('should close if the iterator is closeable', async() => {
+        source.closeIfDrained();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(true);
+      });
+
+      it('should close if the iterator is closeable, and end the aggregated store', async() => {
+        const aggregatedStore: any = {
+          end: jest.fn(),
+          setBaseMetadata: jest.fn(),
+          import: jest.fn(),
+        };
+        source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+          10,
+          context,
+          'forcedType',
+          s,
+          p,
+          o,
+          g,
+          'first',
+          64,
+          aggregatedStore,
+          mediators,
+        );
+
+        source.closeIfDrained();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(true);
+        expect(aggregatedStore.end).toHaveBeenCalled();
+      });
+
+      it('should not close if the iterator is not closeable', async() => {
+        source.getLinkQueue = async() => ({ isEmpty: () => false });
+        source.closeIfDrained();
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(false);
+      });
+
+      it('should destroy if the link queue rejects', async() => {
+        source.getLinkQueue = () => Promise.reject(new Error('getLinkQueue reject'));
+        source.closeIfDrained();
+        await expect(new Promise((resolve, reject) => source.on('error', reject)))
+          .rejects.toThrow('getLinkQueue reject');
       });
     });
 
@@ -332,6 +484,51 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
         await source.getSource({ url: 'startUrl' }, {});
         await new Promise(setImmediate);
+      });
+    });
+
+    describe('isCloseable', () => {
+      it('should be false for a non-empty link queue', async() => {
+        const linkQueue = {
+          isEmpty: () => false,
+        };
+        expect(source.isCloseable(linkQueue)).toEqual(false);
+      });
+
+      it('should be true for an empty link queue', async() => {
+        const linkQueue = {
+          isEmpty: () => true,
+        };
+        expect(source.isCloseable(linkQueue)).toEqual(true);
+      });
+
+      it('should be false for an empty link queue when sub-iterators are running', async() => {
+        const linkQueue = {
+          isEmpty: () => true,
+        };
+        source.iteratorsPendingCreation++;
+        expect(source.isCloseable(linkQueue)).toEqual(false);
+      });
+
+      it('should be true for a non-empty link queue, but was forcefully closed', async() => {
+        const linkQueue = {
+          isEmpty: () => false,
+        };
+        source.iteratorsPendingCreation++;
+        source.close();
+        await new Promise(setImmediate);
+        source.iteratorsPendingCreation--;
+        expect(source.isCloseable(linkQueue)).toEqual(true);
+      });
+
+      it('should be false for non-empty link queue, was forcefully closed, and sub-iterators are running', async() => {
+        const linkQueue = {
+          isEmpty: () => true,
+        };
+        source.iteratorsPendingCreation++;
+        source.close();
+        await new Promise(setImmediate);
+        expect(source.isCloseable(linkQueue)).toEqual(false);
       });
     });
   });

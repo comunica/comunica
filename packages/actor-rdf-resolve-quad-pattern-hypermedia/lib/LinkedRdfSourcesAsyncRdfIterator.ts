@@ -4,7 +4,7 @@ import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
+import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
 
@@ -26,8 +26,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private accumulatedMetadata: Promise<MetadataQuads | undefined>;
 
   public constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string, maxIterators: number) {
-    super({ autoStart: true });
+    firstUrl: string, maxIterators: number, options?: BufferedIteratorOptions) {
+    super({ autoStart: true, ...options });
     this.cacheSize = cacheSize;
     this.subject = subject;
     this.predicate = predicate;
@@ -299,11 +299,15 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         }
 
         // Close, only if no other iterators are still running
-        if (canClose && linkQueue.isEmpty() && !this.areIteratorsRunning()) {
+        if (canClose && this.isCloseable(linkQueue)) {
           this.close();
         }
       })
       .catch(error => this.destroy(error));
+  }
+
+  protected isCloseable(linkQueue: ILinkQueue): boolean {
+    return linkQueue.isEmpty() && !this.areIteratorsRunning();
   }
 }
 

@@ -5,6 +5,9 @@ describe('StreamingStoreMetadata', () => {
     it('should ignore metadataAccumulator rejections', () => {
       const store = new StreamingStoreMetadata(
         undefined,
+        () => {
+          // Do nothing
+        },
         () => Promise.reject(new Error('StreamingStoreMetadata error')),
       );
       const it1 = store.match();

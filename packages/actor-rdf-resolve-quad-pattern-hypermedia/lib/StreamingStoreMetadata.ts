@@ -11,6 +11,7 @@ import { StreamingStore } from 'rdf-streaming-store';
 export class StreamingStoreMetadata extends StreamingStore implements IAggregatedStore {
   public started = false;
   public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
+  protected readonly onStreamClosed: () => void;
   protected readonly metadataAccumulator:
   (accumulatedMetadata: MetadataQuads, appendingMetadata: MetadataQuads) => Promise<MetadataQuads>;
 
@@ -22,10 +23,12 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
 
   public constructor(
     store: RDF.Store | undefined,
+    onStreamClosed: () => void,
     metadataAccumulator:
     (accumulatedMetadata: MetadataQuads, appendingMetadata: MetadataQuads) => Promise<MetadataQuads>,
   ) {
     super(store);
+    this.onStreamClosed = onStreamClosed;
     this.metadataAccumulator = metadataAccumulator;
   }
 
@@ -47,6 +50,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
         onClose: () => {
           // Running iterators are deleted once closed or destroyed
           this.runningIterators.delete(iterator);
+          this.onStreamClosed();
         },
       },
     );
