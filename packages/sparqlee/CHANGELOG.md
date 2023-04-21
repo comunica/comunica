@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v2.3.2"></a>
+## [v2.3.2](https://github.com/comunica/sparqlee/compare/v2.3.1...v2.3.2) - 2023-04-21
+
+### Fixed
+* [Fix error when comparing language and string literals](https://github.com/comunica/sparqlee/commit/f5988613ae219afadbf659f15a515878b22e3825)
+
 <a name="v2.3.1"></a>
 ## [v2.3.1](https://github.com/comunica/sparqlee/compare/v2.3.0...v2.3.1) - 2023-04-17
 
