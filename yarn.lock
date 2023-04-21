@@ -11868,10 +11868,10 @@ rdf-test-suite@^1.18.0:
     stream-to-string "^1.1.0"
     streamify-string "^1.0.1"
 
-rdf-test-suite@^1.23.1:
-  version "1.23.1"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.23.1.tgz#48c28a707961d352420a7708eb5acdb95a4de147"
-  integrity sha512-V3UPcic1RCHPZFxwIywFRCJaOyK9k+k/Z8WA0Ss5WxUwFFwar6hyMYNHnVHVBJ1iXcWj+VsbGe9XvYn9XRnskw==
+rdf-test-suite@^1.24.0:
+  version "1.24.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.24.0.tgz#c3b82079ab11a7e808cb64871b3bdbe37258c04c"
+  integrity sha512-CfzeMvAYveqBoCptLTDnEeJ6IBLCtf8mLQ7OAK+k6QY/k7R3Z8KfbOT+lekkB8EHP9cXk1LF5y9pfMO6U6swwQ==
   dependencies:
     "@rdfjs/types" "*"
     "@types/json-stable-stringify" "^1.0.32"
