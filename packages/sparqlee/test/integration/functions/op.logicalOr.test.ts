@@ -19,13 +19,13 @@ describe('evaluation of "||" like', () => {
       true  false = true
       false true  = true
       false false = false
-      true  error = true
-      error true  = true
+      true  invalidDateTime = true
+      invalidDateTime true  = true
     `,
     errorTable: `
-      false error = 'Cannot coerce term to EBV'
-      error false = 'Cannot coerce term to EBV'
-      error error = 'Cannot coerce term to EBV'
+      false invalidDateTime = 'Cannot coerce term to EBV'
+      invalidDateTime false = 'Cannot coerce term to EBV'
+      invalidDateTime invalidDateTime = 'Cannot coerce term to EBV'
     `,
   });
 });

@@ -188,6 +188,7 @@ const equality = {
     .set(
       [ 'term', 'term' ],
       () => ([ left, right ]) => bool(RDFTermEqual(left, right)),
+      false,
     )
     .set([ TypeURL.XSD_DURATION, TypeURL.XSD_DURATION ], () =>
       ([ dur1, dur2 ]: [ E.DurationLiteral, E.DurationLiteral ]) =>

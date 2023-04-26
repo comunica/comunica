@@ -14,7 +14,7 @@ describe('TypeHandling', () => {
   describe('has isTypeAlias function', () => {
     it('can say yes', () => {
       expect(
-        [ TypeAlias.SPARQL_NON_LEXICAL, TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_STRINGLY ]
+        [ TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_STRINGLY ]
           .every(type => asTypeAlias(type)),
       ).toBeTruthy();
     });
@@ -30,7 +30,7 @@ describe('TypeHandling', () => {
   describe('has isLiteralType function', () => {
     it('can say yes', () => {
       expect([ TypeURL.XSD_DECIMAL, TypeURL.XSD_DOUBLE, TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.RDF_LANG_STRING,
-        TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NON_LEXICAL, TypeAlias.SPARQL_NON_LEXICAL ]
+        TypeAlias.SPARQL_NUMERIC ]
         .every(type => asKnownLiteralType(type))).toBeTruthy();
     });
     it('can say no', () => {
@@ -40,7 +40,7 @@ describe('TypeHandling', () => {
   describe('has isOverrideType function', () => {
     it('can say yes', () => {
       expect([ TypeURL.XSD_DECIMAL, TypeURL.XSD_DOUBLE, TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.RDF_LANG_STRING,
-        TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NON_LEXICAL, TypeAlias.SPARQL_NON_LEXICAL, 'term' ]
+        TypeAlias.SPARQL_NUMERIC, 'term' ]
         .every(type => asOverrideType(type))).toBeTruthy();
     });
     it('can say no', () => {
@@ -57,7 +57,7 @@ describe('TypeHandling', () => {
     });
     it('can say no', () => {
       const testArray: [OverrideType, KnownLiteralTypes][] = [
-        [ 'term', TypeAlias.SPARQL_NON_LEXICAL ], [ 'term', TypeURL.XSD_STRING ],
+        [ 'term', TypeAlias.SPARQL_NUMERIC ], [ 'term', TypeURL.XSD_STRING ],
         [ TypeURL.XSD_BOOLEAN, TypeURL.XSD_DOUBLE ], [ TypeURL.XSD_FLOAT, TypeURL.XSD_DOUBLE ],
       ];
       expect(testArray.every(([ baseType, argumentType ]) => !isInternalSubType(baseType, argumentType))).toBeTruthy();
@@ -74,7 +74,7 @@ describe('TypeHandling', () => {
     });
     it('can say no', () => {
       const testArray: [OverrideType, KnownLiteralTypes][] = [
-        [ 'term', TypeAlias.SPARQL_NON_LEXICAL ], [ 'term', TypeURL.XSD_STRING ],
+        [ 'term', TypeAlias.SPARQL_NUMERIC ], [ 'term', TypeURL.XSD_STRING ],
         [ TypeURL.XSD_BOOLEAN, TypeURL.XSD_DOUBLE ], [ TypeURL.XSD_FLOAT, TypeURL.XSD_DOUBLE ],
       ];
       expect(testArray.every(([ baseType, argumentType ]) =>

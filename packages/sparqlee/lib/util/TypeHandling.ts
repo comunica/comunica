@@ -76,7 +76,6 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
   [TypeURL.XSD_DURATION]: 'term',
   [TypeAlias.SPARQL_NUMERIC]: 'term',
   [TypeAlias.SPARQL_STRINGLY]: 'term',
-  [TypeAlias.SPARQL_NON_LEXICAL]: 'term',
   [TypeURL.XSD_ANY_URI]: 'term',
 };
 type SuperTypeDict = Record<KnownLiteralTypes, number> & { __depth: number };

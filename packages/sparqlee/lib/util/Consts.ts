@@ -10,7 +10,6 @@ export enum TypeAlias {
    * Reasons for this are mentioned here: w3c/sparql-12#112
    */
   SPARQL_STRINGLY = 'SPARQL_STRINGLY',
-  SPARQL_NON_LEXICAL = 'SPARQL_NON_LEXICAL',
 }
 
 export enum TypeURL {

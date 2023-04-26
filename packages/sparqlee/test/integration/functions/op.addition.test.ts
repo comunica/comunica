@@ -49,6 +49,9 @@ describe('evaluation of \'+\' like', () => {
       
       '${dateTimeTyped('2012-02-28T12:14:45Z')}' '${dayTimeDurationTyped('P2D')}' = '${dateTimeTyped('2012-03-01T12:14:45Z')}'
     `,
+    errorTable: `
+      "apple"^^xsd:integer "0"^^xsd:integer = 'Invalid lexical form'
+    `,
   });
   runTestTable({
     ...baseConfig,

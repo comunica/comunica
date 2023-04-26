@@ -2,7 +2,7 @@ import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '../expressions';
 import * as E from '../expressions';
 import { DurationLiteral } from '../expressions';
 import type * as C from '../util/Consts';
-import { TypeAlias, TypeURL } from '../util/Consts';
+import { TypeURL } from '../util/Consts';
 import { trimToDayTimeDuration, trimToYearMonthDuration } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import { parseDate,
@@ -52,8 +52,7 @@ const xsdToFloat = {
         throw new Err.CastError(val, TypeURL.XSD_FLOAT);
       }
       return float(result);
-    })
-    .copy({ from: [ TypeURL.XSD_STRING ], to: [ TypeAlias.SPARQL_NON_LEXICAL ]})
+    }, false)
     .collect(),
 };
 
@@ -68,8 +67,7 @@ const xsdToDouble = {
         throw new Err.CastError(val, TypeURL.XSD_DOUBLE);
       }
       return double(result);
-    })
-    .copy({ from: [ TypeURL.XSD_STRING ], to: [ TypeAlias.SPARQL_NON_LEXICAL ]})
+    }, false)
     .collect(),
 };
 
@@ -90,8 +88,7 @@ const xsdToDecimal = {
         throw new Err.CastError(val, TypeURL.XSD_DECIMAL);
       }
       return decimal(result);
-    })
-    .copy({ from: [ TypeURL.XSD_STRING ], to: [ TypeAlias.SPARQL_NON_LEXICAL ]})
+    }, false)
     .onBoolean1Typed(() => val => decimal(val ? 1 : 0))
     .collect(),
 };
@@ -106,7 +103,7 @@ const xsdToInteger = {
         throw new Err.CastError(val, TypeURL.XSD_INTEGER);
       }
       return integer(result);
-    })
+    }, false)
     .onString1(() => (val: E.Term) => {
       const str = val.str();
       const result = /^\d+$/u.test(str) ? parseXSDInteger(str) : undefined;
@@ -115,7 +112,6 @@ const xsdToInteger = {
       }
       return integer(result);
     })
-    .copy({ from: [ TypeAlias.SPARQL_NUMERIC ], to: [ TypeAlias.SPARQL_NON_LEXICAL ]})
     .collect(),
 };
 
@@ -124,18 +120,17 @@ const xsdToDatetime = {
   overloads: declare(TypeURL.XSD_DATE_TIME)
     .onUnary(TypeURL.XSD_DATE_TIME, () => (val: E.DateTimeLiteral) => val)
     .onUnary(TypeURL.XSD_STRING, () => (val: Term) =>
-      dateTime(parseDateTime(val.str()), val.str()))
+      dateTime(parseDateTime(val.str()), val.str()), false)
     .onUnary(TypeURL.XSD_DATE, () => (val: E.DateLiteral) =>
       new E.DateTimeLiteral({ ...val.typedValue, hours: 0, minutes: 0, seconds: 0 }))
-    .copy({ from: [ TypeURL.XSD_STRING ], to: [ TypeAlias.SPARQL_NON_LEXICAL ]})
     .collect(),
 };
 
 const xsdToBoolean = {
   arity: 1,
   overloads: declare(TypeURL.XSD_BOOLEAN)
-    .onNumeric1(() => (val: E.NumericLiteral) => bool(val.coerceEBV()))
-    .onUnary(TypeURL.XSD_BOOLEAN, () => (val: Term) => bool(val.coerceEBV()))
+    .onNumeric1(() => (val: E.NumericLiteral) => bool(val.coerceEBV()), true)
+    .onUnary(TypeURL.XSD_BOOLEAN, () => (val: Term) => bool(val.coerceEBV()), true)
     .onUnary(TypeURL.XSD_STRING, () => (val: Term) => {
       switch (val.str()) {
         case 'true':
@@ -149,8 +144,7 @@ const xsdToBoolean = {
         default:
           throw new Err.CastError(val, TypeURL.XSD_BOOLEAN);
       }
-    })
-    .copy({ from: [ TypeURL.XSD_STRING ], to: [ TypeAlias.SPARQL_NON_LEXICAL ]})
+    }, false)
     .collect(),
 };
 

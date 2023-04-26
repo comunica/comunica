@@ -38,9 +38,9 @@ describe('evaluation of \'-\' like', () => {
       '${dateTimeTyped('2019-05-28T12:14:45Z')}' '${yearMonthDurationTyped('P1Y1M')}' = '${dateTimeTyped('2018-04-28T12:14:45Z')}'
     `,
     errorTable: `
-      anyNum error  = ''
-      error  anyNum = ''
-      error  error  = 'Argument types not valid'
+      anyNum invalidDateTime  = 'Argument types not valid'
+      invalidDateTime  anyNum = 'Argument types not valid'
+      invalidDateTime  invalidDateTime  = 'Invalid lexical form'
     `,
   });
 });

@@ -19,13 +19,13 @@ describe('evaluation of "&&" like', () => {
       true  false = false
       false true  = false
       false false = false
-      false error = false
-      error false = false
+      false invalidDateTime = false
+      invalidDateTime false = false
     `,
     errorTable: `
-      true  error = 'Cannot coerce term to EBV'
-      error true  = 'Cannot coerce term to EBV'
-      error error = 'Cannot coerce term to EBV'
+      true  invalidDateTime = 'Cannot coerce term to EBV'
+      invalidDateTime true  = 'Cannot coerce term to EBV'
+      invalidDateTime invalidDateTime = 'Cannot coerce term to EBV'
     `,
   });
 });

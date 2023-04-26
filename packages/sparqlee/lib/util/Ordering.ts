@@ -1,6 +1,7 @@
 import type * as RDF from '@rdfjs/types';
 import * as LRUCache from 'lru-cache';
 import type { LangStringLiteral } from '../expressions';
+import { isNonLexicalLiteral } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
 import { TypeAlias, TypeURL } from './Consts';
 import type { ITimeZoneRepresentation } from './DateTimeHelpers';
@@ -62,19 +63,21 @@ function isLiteralLowerThan(litA: RDF.Literal, litB: RDF.Literal,
   const superTypeDictA: GeneralSuperTypeDict = getSuperTypeDict(typeA, openWorldType);
   const superTypeDictB: GeneralSuperTypeDict = getSuperTypeDict(typeB, openWorldType);
 
-  if (TypeURL.XSD_BOOLEAN in superTypeDictA && TypeURL.XSD_BOOLEAN in superTypeDictB ||
+  if (!isNonLexicalLiteral(myLitA) && !isNonLexicalLiteral(myLitB)) {
+    if (TypeURL.XSD_BOOLEAN in superTypeDictA && TypeURL.XSD_BOOLEAN in superTypeDictB ||
       TypeAlias.SPARQL_NUMERIC in superTypeDictA && TypeAlias.SPARQL_NUMERIC in superTypeDictB ||
       TypeURL.XSD_STRING in superTypeDictA && TypeURL.XSD_STRING in superTypeDictB) {
-    return myLitA.typedValue < myLitB.typedValue;
-  }
-  if (TypeURL.XSD_DATE_TIME in superTypeDictA && TypeURL.XSD_DATE_TIME in superTypeDictB) {
-    return toUTCDate(myLitA.typedValue, defaultTimezone).getTime() <
-      toUTCDate(myLitB.typedValue, defaultTimezone).getTime();
-  }
-  if (TypeURL.RDF_LANG_STRING in superTypeDictA && TypeURL.RDF_LANG_STRING in superTypeDictB) {
-    return myLitA.typedValue < myLitB.typedValue ||
-      (myLitA.typedValue === myLitB.typedValue &&
-        (<LangStringLiteral>myLitA).language < (<LangStringLiteral>myLitB).language);
+      return myLitA.typedValue < myLitB.typedValue;
+    }
+    if (TypeURL.XSD_DATE_TIME in superTypeDictA && TypeURL.XSD_DATE_TIME in superTypeDictB) {
+      return toUTCDate(myLitA.typedValue, defaultTimezone).getTime() <
+        toUTCDate(myLitB.typedValue, defaultTimezone).getTime();
+    }
+    if (TypeURL.RDF_LANG_STRING in superTypeDictA && TypeURL.RDF_LANG_STRING in superTypeDictB) {
+      return myLitA.typedValue < myLitB.typedValue ||
+        (myLitA.typedValue === myLitB.typedValue &&
+          (<LangStringLiteral>myLitA).language < (<LangStringLiteral>myLitB).language);
+    }
   }
   return typeA < typeB || (myLitA.dataType === myLitB.dataType && myLitA.str() < myLitB.str());
 }

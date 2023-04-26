@@ -58,7 +58,7 @@ describe('TermTransformer', () => {
     const res = isNonLexicalLiteral(termTransformer.transformLiteral(lit));
     expect(res).toBeTruthy();
     // @ts-expect-error
-    expect(res.typeURL).toEqual(dataType);
+    expect(res.dataType).toEqual(dataType);
     // @ts-expect-error
     expect(res.strValue).toEqual(value);
     // @ts-expect-error

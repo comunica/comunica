@@ -328,18 +328,18 @@ export class YearMonthDurationLiteral extends Literal<Partial<IYearMonthDuration
 export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> {
   public constructor(
     typedValue: undefined,
-    public typeURL: string,
+    dataType: string,
     private readonly openWorldType: ISuperTypeProvider,
     strValue?: string,
     language?: string,
   ) {
-    super({ toString: () => 'undefined' }, TypeAlias.SPARQL_NON_LEXICAL, strValue, language);
+    super({ toString: () => 'undefined' }, dataType, strValue, language);
   }
 
   public coerceEBV(): boolean {
     const isNumericOrBool =
-      isSubTypeOf(this.typeURL, TypeURL.XSD_BOOLEAN, this.openWorldType) ||
-      isSubTypeOf(this.typeURL, TypeAlias.SPARQL_NUMERIC, this.openWorldType);
+      isSubTypeOf(this.dataType, TypeURL.XSD_BOOLEAN, this.openWorldType) ||
+      isSubTypeOf(this.dataType, TypeAlias.SPARQL_NUMERIC, this.openWorldType);
     if (isNumericOrBool) {
       return false;
     }
@@ -349,7 +349,7 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
   public toRDF(): RDF.Literal {
     return DF.literal(
       this.str(),
-      this.language || DF.namedNode(this.typeURL),
+      this.language || DF.namedNode(this.dataType),
     );
   }
 
@@ -359,8 +359,8 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
 }
 
 export function isNonLexicalLiteral(lit: Literal<any>): NonLexicalLiteral | undefined {
-  if (lit.dataType === TypeAlias.SPARQL_NON_LEXICAL) {
-    return <NonLexicalLiteral> lit;
+  if (lit instanceof NonLexicalLiteral) {
+    return lit;
   }
   return undefined;
 }
