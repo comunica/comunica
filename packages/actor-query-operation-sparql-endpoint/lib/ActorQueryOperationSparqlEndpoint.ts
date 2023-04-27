@@ -24,7 +24,7 @@ import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import type { IUpdateTypes } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory, toSparql, Util } from 'sparqlalgebrajs';
+import { Factory, toSparql, Util, Algebra } from 'sparqlalgebrajs';
 import { LazyCardinalityIterator } from './LazyCardinalityIterator';
 
 const BF = new BindingsFactory();
@@ -111,15 +111,17 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       type = 'SELECT';
     }
 
+    const canContainUndefs = this.canOperationContainUndefs(action.operation);
+
     // Execute the query against the endpoint depending on the type
     switch (type) {
       case 'SELECT':
         if (!variables) {
           variables = Util.inScopeVariables(action.operation);
         }
-        return this.executeQuery(endpoint, query!, false, variables);
+        return this.executeQuery(endpoint, query!, false, variables, canContainUndefs);
       case 'CONSTRUCT':
-        return this.executeQuery(endpoint, query!, true);
+        return this.executeQuery(endpoint, query!, true, undefined, false);
       case 'ASK':
         return <IQueryOperationResultBoolean>{
           type: 'boolean',
@@ -139,9 +141,15 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
    * @param query A SELECT or CONSTRUCT query.
    * @param quads If the query returns quads, i.e., if it is a CONSTRUCT query.
    * @param variables Variables for SELECT queries.
+   * @param canContainUndefs If the operation can contain undefined binding values.
    */
-  public executeQuery(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[]):
-  IQueryOperationResult {
+  public executeQuery(
+    endpoint: string,
+    query: string,
+    quads: boolean,
+    variables: RDF.Variable[] | undefined,
+    canContainUndefs: boolean,
+  ): IQueryOperationResult {
     const inputStream: Promise<NodeJS.EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
@@ -157,7 +165,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       async() => ({
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: await resultStream.getCardinality() },
-        canContainUndefs: true,
+        canContainUndefs,
         variables,
       }),
     );
@@ -174,6 +182,32 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       bindingsStream: <AsyncIterator<any>> resultStream,
       metadata,
     };
+  }
+
+  /**
+   * Inspect the query to determine if the query could produce undefined bindings values.
+   * @param operation A query operation.
+   */
+  public canOperationContainUndefs(operation: Algebra.Operation): boolean {
+    let canContainUndefs = false;
+
+    Util.recurseOperation(operation, {
+      [Algebra.types.LEFT_JOIN]() {
+        canContainUndefs = true;
+        return false;
+      },
+      [Algebra.types.VALUES](op) {
+        for (const bindings of op.bindings) {
+          const bindingsKeys = Object.keys(bindings);
+          if (!op.variables.every(variable => bindingsKeys.includes(`?${variable.value}`))) {
+            canContainUndefs = true;
+          }
+        }
+        return false;
+      },
+    });
+
+    return canContainUndefs;
   }
 }
 

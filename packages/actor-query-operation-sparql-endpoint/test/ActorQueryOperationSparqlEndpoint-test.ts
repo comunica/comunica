@@ -202,7 +202,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
-        canContainUndefs: true,
+        canContainUndefs: false,
         variables: [ DF.variable('p') ],
       });
 
@@ -231,7 +231,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
-        canContainUndefs: true,
+        canContainUndefs: false,
         variables: [ DF.variable('myP') ],
       });
 
@@ -244,6 +244,38 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ]),
         BF.bindings([
           [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
+        ]),
+      ]);
+    });
+
+    it('should run for a SELECT query with OPTIONAL', async() => {
+      const context = new ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
+      });
+      const op: any = { context,
+        operation: factory.createProject(
+          factory.createLeftJoin(
+            factory.createPattern(DF.namedNode('http://s'), DF.variable('p1'), DF.namedNode('http://o')),
+            factory.createPattern(DF.namedNode('http://s'), DF.variable('p2'), DF.namedNode('http://o')),
+          ),
+          [ DF.variable('myP') ],
+        ) };
+      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'exact', value: 3 },
+        canContainUndefs: true,
+        variables: [ DF.variable('myP') ],
+      });
+
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B%0A++%3Chttp%3A%2F%2Fs%3E+%3Fp1+%3Chttp%3A%2F%2Fo%3E.%0A++OPTIONAL+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp2+%3Chttp%3A%2F%2Fo%3E.+%7D%0A%7D/1`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B%0A++%3Chttp%3A%2F%2Fs%3E+%3Fp1+%3Chttp%3A%2F%2Fo%3E.%0A++OPTIONAL+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp2+%3Chttp%3A%2F%2Fo%3E.+%7D%0A%7D/2`) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B%0A++%3Chttp%3A%2F%2Fs%3E+%3Fp1+%3Chttp%3A%2F%2Fo%3E.%0A++OPTIONAL+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp2+%3Chttp%3A%2F%2Fo%3E.+%7D%0A%7D/3`) ],
         ]),
       ]);
     });
@@ -265,7 +297,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
-        canContainUndefs: true,
+        canContainUndefs: false,
         variables: [ DF.variable('p') ],
       });
 
@@ -302,7 +334,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
-        canContainUndefs: true,
+        canContainUndefs: false,
         variables: [ DF.variable('myP') ],
       });
 
@@ -348,7 +380,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
 
       expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 2 },
-        canContainUndefs: true,
+        canContainUndefs: false,
       });
 
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
@@ -434,7 +466,7 @@ this is a body`));
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       expect(await (<any> output).metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
-        canContainUndefs: true,
+        canContainUndefs: false,
         variables: [ DF.variable('p') ],
       });
 
@@ -449,6 +481,76 @@ this is a body`));
           [ DF.variable('p'), DF.namedNode(`http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3`) ],
         ]),
       ]);
+    });
+
+    describe('canOperationContainUndefs', () => {
+      it('should be false on a SELECT', () => {
+        expect(actor.canOperationContainUndefs(
+          factory.createProject(
+            factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
+            [ DF.variable('myP') ],
+          ),
+        )).toEqual(false);
+      });
+
+      it('should be true with an OPTIONAL', () => {
+        expect(actor.canOperationContainUndefs(
+          factory.createProject(
+            factory.createLeftJoin(
+              factory.createPattern(DF.namedNode('http://s'), DF.variable('p1'), DF.namedNode('http://o')),
+              factory.createPattern(DF.namedNode('http://s'), DF.variable('p2'), DF.namedNode('http://o')),
+            ),
+            [ DF.variable('myP') ],
+          ),
+        )).toEqual(true);
+      });
+
+      it('should be false on complete VALUES', () => {
+        expect(actor.canOperationContainUndefs(
+          factory.createProject(
+            factory.createValues(
+              [
+                DF.variable('a'),
+                DF.variable('b'),
+              ],
+              [
+                {
+                  '?a': DF.literal('a'),
+                  '?b': DF.literal('a'),
+                },
+                {
+                  '?a': DF.literal('a'),
+                  '?b': DF.literal('a'),
+                },
+              ],
+            ),
+            [ DF.variable('myP') ],
+          ),
+        )).toEqual(false);
+      });
+
+      it('should be true on incomplete VALUES', () => {
+        expect(actor.canOperationContainUndefs(
+          factory.createProject(
+            factory.createValues(
+              [
+                DF.variable('a'),
+                DF.variable('b'),
+              ],
+              [
+                {
+                  '?a': DF.literal('a'),
+                  '?b': DF.literal('a'),
+                },
+                {
+                  '?b': DF.literal('a'),
+                },
+              ],
+            ),
+            [ DF.variable('myP') ],
+          ),
+        )).toEqual(true);
+      });
     });
   });
 });
