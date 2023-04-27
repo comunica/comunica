@@ -128,7 +128,7 @@ describe('ActorHttpFetch', () => {
         context: new ActionContext({}),
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything() });
+        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
     });
 
     it('should run with KeysHttp.includeCredentials', async() => {
@@ -143,6 +143,7 @@ describe('ActorHttpFetch', () => {
         credentials: 'include',
         headers: new Headers({ 'user-agent': (<any> actor).userAgent }),
         agent: expect.anything(),
+        keepalive: true,
       });
     });
 
@@ -162,6 +163,7 @@ describe('ActorHttpFetch', () => {
             'user-agent': (<any> actor).userAgent,
           }),
           agent: expect.anything(),
+          keepalive: true,
         },
       );
     });
@@ -183,6 +185,7 @@ describe('ActorHttpFetch', () => {
             'user-agent': (<any> actor).userAgent,
           }),
           agent: expect.anything(),
+          keepalive: true,
         },
       );
     });
@@ -206,6 +209,7 @@ describe('ActorHttpFetch', () => {
             'user-agent': (<any> actor).userAgent,
           }),
           agent: expect.anything(),
+          keepalive: true,
         },
       );
     });
@@ -262,7 +266,7 @@ describe('ActorHttpFetch', () => {
         context,
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': 'b' }), agent: expect.anything() });
+        { headers: new Headers({ 'user-agent': 'b' }), agent: expect.anything(), keepalive: true });
     });
 
     it('should set a user agent if none has been set', async() => {
@@ -273,7 +277,7 @@ describe('ActorHttpFetch', () => {
         context,
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything() });
+        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
     });
 
     it('should run and expose body.cancel', async() => {
@@ -298,6 +302,7 @@ describe('ActorHttpFetch', () => {
           body,
           agent: expect.anything(),
           headers: expect.anything(),
+          keepalive: true,
         },
       );
     });
@@ -313,6 +318,7 @@ describe('ActorHttpFetch', () => {
           body: expect.any(ReadableWebToNodeStream),
           agent: expect.anything(),
           headers: expect.anything(),
+          keepalive: true,
         },
       );
     });

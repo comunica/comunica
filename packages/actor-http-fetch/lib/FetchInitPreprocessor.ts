@@ -22,7 +22,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
       init.body = <any> ActorHttp.toNodeReadable(<any> init.body);
     }
 
-    return <any> { ...init, agent: this.agent };
+    return <any> { ...init, agent: this.agent, keepalive: true };
   }
 
   public async createAbortController(): Promise<AbortController> {
