@@ -261,7 +261,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ DF.variable('myP') ],
         ) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await output.metadata()).toEqual({
+      expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
         canContainUndefs: true,
         variables: [ DF.variable('myP') ],

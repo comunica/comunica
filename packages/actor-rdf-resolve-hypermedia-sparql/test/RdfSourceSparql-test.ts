@@ -194,7 +194,7 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
       await expect(stream.toArray()).resolves.toEqual([
         quad('s', 'p1', 'o'),
         quad('s', 'p2', 'o'),
@@ -207,7 +207,7 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream1.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
       await stream1.toArray();
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
@@ -216,7 +216,7 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream2.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
       await stream2.toArray();
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(3);
@@ -227,7 +227,7 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream1.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
       await stream1.toArray();
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
@@ -236,7 +236,7 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s2'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream2.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
       await stream2.toArray();
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(4);
@@ -249,7 +249,7 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream1.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
       await stream1.toArray();
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
@@ -258,7 +258,7 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream2.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
       await stream2.toArray();
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(4);
@@ -388,7 +388,7 @@ describe('RdfSourceSparql', () => {
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
     });
 
     it('should emit metadata with infinity count for missing count results', async() => {
@@ -433,7 +433,7 @@ describe('RdfSourceSparql', () => {
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
     });
 
     it('should allow multiple read calls on query bindings', () => {
