@@ -4,7 +4,7 @@ import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { Bindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { wrap } from 'asynciterator';
+import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import LRU = require('lru-cache');
 import { DataFactory } from 'rdf-data-factory';
@@ -178,20 +178,24 @@ export class RdfSourceSparql implements IQuadSource {
       bindingsStream.on('error', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
       bindingsStream.on('end', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
     })
-      .then(cardinality => quads.setProperty('metadata', { cardinality, canContainUndefs: true }));
+      .then(cardinality => quads.setProperty('metadata', { cardinality, canContainUndefs: false }));
 
     // Materialize the queried pattern using each found binding.
-    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery)
-      .map((bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
-        if (value.termType === 'Variable') {
-          const boundValue = bindings.get(value);
-          if (!boundValue) {
-            quads.destroy(new Error(`The endpoint ${this.url} failed to provide a binding for ${value.value}.`));
+    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() => this
+      .queryBindings(this.url, selectQuery), { autoStart: false })
+      .transform({
+        map: (bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
+          if (value.termType === 'Variable') {
+            const boundValue = bindings.get(value);
+            if (!boundValue) {
+              quads.destroy(new Error(`The endpoint ${this.url} failed to provide a binding for ${value.value}.`));
+            }
+            return boundValue!;
           }
-          return boundValue!;
-        }
-        return value;
-      }));
+          return value;
+        }),
+        autoStart: false,
+      });
 
     return quads;
   }
