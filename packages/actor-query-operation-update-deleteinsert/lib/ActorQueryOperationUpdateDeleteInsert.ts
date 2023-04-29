@@ -49,7 +49,6 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
       quadStreamInsert = new BindingsToQuadsIterator(
         operation.insert.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
         whereBindings.clone(),
-        false,
       );
       this.blankNodeCounter++;
     }
@@ -58,7 +57,6 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
       quadStreamDelete = new BindingsToQuadsIterator(
         operation.delete.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
         whereBindings.clone(),
-        false,
       );
       this.blankNodeCounter++;
     }

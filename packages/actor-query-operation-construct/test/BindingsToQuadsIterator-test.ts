@@ -565,7 +565,7 @@ describe('BindingsToQuadsIterator', () => {
     });
   });
 
-  describe('instantiated for a template without localizing blank nodes', () => {
+  describe('instantiated for a template', () => {
     let iterator: BindingsToQuadsIterator;
     beforeEach(() => {
       iterator = new BindingsToQuadsIterator([
@@ -590,7 +590,7 @@ describe('BindingsToQuadsIterator', () => {
         BF.bindings([
           [ DF.variable('a'), DF.namedNode('a3') ],
         ]),
-      ]), false);
+      ]));
     });
 
     it('should be transformed to a valid triple stream', async() => {

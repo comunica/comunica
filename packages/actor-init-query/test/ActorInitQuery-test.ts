@@ -292,23 +292,6 @@ describe('ActorInitQuery', () => {
           .toHaveBeenCalledWith(expect.anything(), 'testtype', expect.anything());
       });
 
-      it('handle the --localizeBlankNodes option', async() => {
-        const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, queryString, '--localizeBlankNodes', 'true' ],
-          env: {},
-          stdin: <Readable><any> new PassThrough(),
-          context,
-        })).stdout);
-
-        expect(stdout).toContain(`{"a":"triple"}`);
-        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysQueryOperation.localizeBlankNodes.name]: true,
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
-        });
-      });
-
       it('handles the old inline context form', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ `{ "bla": true }`, 'Q' ],
