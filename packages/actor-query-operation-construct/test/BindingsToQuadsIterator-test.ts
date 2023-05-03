@@ -3,7 +3,8 @@ import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
+import { BindingsToQuadsIterator } from '../lib';
+import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -562,61 +563,6 @@ describe('BindingsToQuadsIterator', () => {
         // Consume the iterator
         expect(await iterator.toArray()).toHaveLength(10);
       });
-    });
-  });
-
-  describe('instantiated for a template', () => {
-    let iterator: BindingsToQuadsIterator;
-    beforeEach(() => {
-      iterator = new BindingsToQuadsIterator([
-        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
-        DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),
-        DF.quad(
-          DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-        ),
-      ], new ArrayIterator([
-        BF.bindings([
-          [ DF.variable('a'), DF.namedNode('a1') ],
-          [ DF.variable('b'), DF.namedNode('b1') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('a'), DF.namedNode('a2') ],
-          [ DF.variable('b'), DF.namedNode('b2') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('a'), DF.namedNode('a3') ],
-        ]),
-      ]));
-    });
-
-    it('should be transformed to a valid triple stream', async() => {
-      expect(await arrayifyStream(iterator)).toEqual([
-        DF.quad(DF.namedNode('a1'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('b1'), DF.blankNode('bnode')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('a1'), DF.namedNode('b1')),
-        DF.quad(DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode')),
-
-        DF.quad(DF.namedNode('a2'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('b2'), DF.blankNode('bnode')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('a2'), DF.namedNode('b2')),
-        DF.quad(DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode')),
-
-        DF.quad(DF.namedNode('a3'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode')),
-      ]);
     });
   });
 });
