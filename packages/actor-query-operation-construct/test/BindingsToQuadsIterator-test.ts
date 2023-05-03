@@ -4,7 +4,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { BindingsToQuadsIterator } from '../lib';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
