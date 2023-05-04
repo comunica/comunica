@@ -115,7 +115,6 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_construct.BindingsToQuadsIterator.html#_sourceStarted" class="tsd-kind-icon">_source<wbr>Started</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="actor_query_operation_construct.BindingsToQuadsIterator.html#_state" class="tsd-kind-icon">_state</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_query_operation_construct.BindingsToQuadsIterator.html#blankNodeCounter" class="tsd-kind-icon">blank<wbr>Node<wbr>Counter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_query_operation_construct.BindingsToQuadsIterator.html#localizeBlankNodes" class="tsd-kind-icon">localize<wbr>Blank<wbr>Nodes</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_query_operation_construct.BindingsToQuadsIterator.html#template" class="tsd-kind-icon">template</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_construct.BindingsToQuadsIterator.html#captureRejectionSymbol" class="tsd-kind-icon">capture<wbr>Rejection<wbr>Symbol</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="actor_query_operation_construct.BindingsToQuadsIterator.html#captureRejections" class="tsd-kind-icon">capture<wbr>Rejections</a></li>
@@ -216,14 +215,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Bindings<wbr>ToQuads<wbr>Iterator<span class="tsd-signature-symbol">(</span>template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span>, bindingsStream<span class="tsd-signature-symbol">: </span><a href="../modules/types.html#BindingsStream" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a>, localizeBlankNodes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_construct.BindingsToQuadsIterator.html" class="tsd-signature-type" data-tsd-kind="Class">BindingsToQuadsIterator</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Bindings<wbr>ToQuads<wbr>Iterator<span class="tsd-signature-symbol">(</span>template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span>, bindingsStream<span class="tsd-signature-symbol">: </span><a href="../modules/types.html#BindingsStream" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_construct.BindingsToQuadsIterator.html" class="tsd-signature-type" data-tsd-kind="Class">BindingsToQuadsIterator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides MultiTransformIterator&lt;Bindings, RDF.Quad&gt;.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L21">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L20">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:20</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -233,9 +232,6 @@
 								</li>
 								<li>
 									<h5>bindingsStream: <a href="../modules/types.html#BindingsStream" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a></h5>
-								</li>
-								<li>
-									<h5>localizeBlankNodes: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_construct.BindingsToQuadsIterator.html" class="tsd-signature-type" data-tsd-kind="Class">BindingsToQuadsIterator</a></h4>
@@ -409,17 +405,7 @@
 					<div class="tsd-signature tsd-kind-icon">blank<wbr>Node<wbr>Counter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L19">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:19</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a name="localizeBlankNodes" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> localize<wbr>Blank<wbr>Nodes</h3>
-					<div class="tsd-signature tsd-kind-icon">localize<wbr>Blank<wbr>Nodes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L18">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L18">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -429,7 +415,7 @@
 					<div class="tsd-signature tsd-kind-icon">template<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L17">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L17">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -888,7 +874,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides MultiTransformIterator._createTransformer</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L116">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L112">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:112</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1560,7 +1546,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L103">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:103</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L101">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:101</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3284,7 +3270,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L56">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L54">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3324,7 +3310,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L41">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L39">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3478,7 +3464,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L77">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L75">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:75</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3517,7 +3503,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ff7036c/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L91">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c594462/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L89">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:89</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3880,9 +3866,6 @@
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_query_operation_construct.BindingsToQuadsIterator.html#blankNodeCounter" class="tsd-kind-icon">blank<wbr>Node<wbr>Counter</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-										<a href="actor_query_operation_construct.BindingsToQuadsIterator.html#localizeBlankNodes" class="tsd-kind-icon">localize<wbr>Blank<wbr>Nodes</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_query_operation_construct.BindingsToQuadsIterator.html#template" class="tsd-kind-icon">template</a>
