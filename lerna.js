@@ -7,12 +7,34 @@ async function depInfo({ location, name }, log) {
   const folders = readdirSync(location, { withFileTypes: true });
 
   const { files } = JSON.parse(readFileSync(path.join(location, 'package.json'), 'utf8'));
-  let ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
-  ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
+  let ignore;
+  let checkedDeps;
+  if (location.startsWith(path.join(__dirname, '/engines'))) {
+    // First check whether we have a default engine file
+    if (!folders.some(elem => elem.name === 'engine-default.js')) {
+      return {
+        unusedDeps: [],
+        missingDeps: [],
+        allDeps: [],
+      };
+    }
+    ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
+    // ignore = folders.filter(elem => ['engine-browser.js', 'engine-default.js'].every(file => !file.startsWith(elem.name)));
+    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
-  let {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+    // Add a nonExisting path to bypass the automatic .gitignore parsing: https://github.com/depcheck/depcheck/issues/497
+    checkedDeps = await checkDeps(location,
+      { ignorePath: 'falsePath', ignorePatterns: ignore }, val => val);
+    const apple = 0;
+  } else {
+    ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
+    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
-  if (Object.values(using).flat().some(file => 
+    checkedDeps = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+  }
+  let {dependencies, devDependencies, missing, using} = checkedDeps;
+
+  if (Object.values(using).flat().some(file =>
     readFileSync(file, 'utf8').toString().includes('require(\'process/\')') ||
     readFileSync(file, 'utf8').toString().includes('require(\"process/\")')
     )) {
@@ -20,7 +42,7 @@ async function depInfo({ location, name }, log) {
         // If we know it exists and is in the dependency array, remove it so that no errors are thrown
         dependencies = dependencies.filter(dep => dep !== 'process');
       } else {
-        // If it is *not* declared in teh dependencies then mark it as missing
+        // If it is *not* declared in the dependencies then mark it as missing
         missing['process'] = missing['process'] || [];
       }
   }
@@ -119,6 +141,7 @@ module.exports.depfixTask = depfixTask
 module.exports.depcheckTask = depcheckTask
 
 const ncu = require('npm-check-updates');
+const depcheck = require('depcheck');
 async function updateTask(log) {
   const packages = (await (log.packages || loadPackages())).filter(
     package => package.location.startsWith(path.join(__dirname, '/packages')) ||
