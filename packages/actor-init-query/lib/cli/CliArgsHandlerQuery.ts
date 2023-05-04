@@ -4,7 +4,6 @@ import {
   KeysHttpProxy,
   KeysHttpWayback,
   KeysInitQuery,
-  KeysQueryOperation,
 } from '@comunica/context-entries';
 import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
@@ -89,10 +88,6 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
             'physical',
           ],
         },
-        localizeBlankNodes: {
-          type: 'boolean',
-          describe: 'If blank nodes should be localized per bindings entry',
-        },
         recoverBrokenLinks: {
           alias: 'r',
           type: 'boolean',
@@ -134,11 +129,6 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
     // Mark explain output
     if (args.explain) {
       context[KeysInitQuery.explain.name] = args.explain;
-    }
-
-    // Set the blank node localization
-    if (args.localizeBlankNodes !== undefined) {
-      context[KeysQueryOperation.localizeBlankNodes.name] = args.localizeBlankNodes;
     }
 
     // Set recover broken links flag

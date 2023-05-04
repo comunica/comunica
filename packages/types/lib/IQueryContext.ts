@@ -50,5 +50,4 @@ export interface IQueryContextCommon {
   extensionFunctions?: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
   explain?: QueryExplainMode;
   recoverBrokenLinks?: boolean;
-  localizeBlankNodes?: boolean;
 }

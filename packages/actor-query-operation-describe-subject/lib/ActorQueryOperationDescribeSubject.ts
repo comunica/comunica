@@ -3,7 +3,6 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResultQuads, IActionContext, IQueryOperationResult, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -81,12 +80,6 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       });
     }
 
-    // Set the blank node localization
-    // If it was not provided by the context it will set to false and added into the context
-    const localizeBlankNode = context.get(KeysQueryOperation.localizeBlankNodes);
-    context = context.set(KeysQueryOperation.localizeBlankNodes, localizeBlankNode !== undefined ?
-      <boolean> localizeBlankNode :
-      false);
     // Evaluate the construct queries
     const outputs: IQueryOperationResultQuads[] = (await Promise.all(operations.map(
       operation => this.mediatorQueryOperation.mediate({ operation, context }),

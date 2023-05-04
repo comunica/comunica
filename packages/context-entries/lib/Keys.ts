@@ -210,10 +210,6 @@ export const KeysQueryOperation = {
    * If the default graph should also contain the union of all named graphs.
    */
   unionDefaultGraph: new ActionContextKey<boolean>('@comunica/bus-query-operation:unionDefaultGraph'),
-  /**
-   * An indicator that the operator should apply blank node localization
-   */
-  localizeBlankNodes: new ActionContextKey<boolean>('@comunica/actor-query-operation:localizeBlankNodes'),
 };
 
 export const KeysRdfParseJsonLd = {
