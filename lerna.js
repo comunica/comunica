@@ -3,6 +3,13 @@ const checkDeps = require('depcheck')
 const path = require('path');
 const { readFileSync, writeFileSync, readdirSync, readdir } = require('fs');
 
+function ensureDependency({ checkedDeps, dependency, dependant }, log) {
+  if (!checkedDeps.dependencies.includes(dependency)) {
+    checkedDeps.missing[dependency] = [dependant];
+  }
+  checkedDeps.using[dependency] = [dependant];
+}
+
 async function depInfo({ location, name }, log) {
   const folders = readdirSync(location, { withFileTypes: true });
 
@@ -25,7 +32,10 @@ async function depInfo({ location, name }, log) {
     // Add a nonExisting path to bypass the automatic .gitignore parsing: https://github.com/depcheck/depcheck/issues/497
     checkedDeps = await checkDeps(location,
       { ignorePath: 'falsePath', ignorePatterns: ignore }, val => val);
-    const apple = 0;
+    ensureDependency({
+      checkedDeps, dependency: '@comunica/runner', dependant: path.join(location, 'engine-default.js') }, log);
+    ensureDependency({
+      checkedDeps, dependency: '@comunica/config-query-sparql', dependant: path.join(location, 'engine-default.js') }, log);
   } else {
     ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
     ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
@@ -109,7 +119,7 @@ async function depfixTask(log) {
 }
 
 async function depcheckTask(log) {
-  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
+  const packages = (await (log.packages || loadPackages()));
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   return iter.forEach(packages, { log })(async package => {
