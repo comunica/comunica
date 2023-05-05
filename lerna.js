@@ -26,7 +26,6 @@ async function depInfo({ location, name }, log) {
       };
     }
     ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
-    // ignore = folders.filter(elem => ['engine-browser.js', 'engine-default.js'].every(file => !file.startsWith(elem.name)));
     ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
     // Add a nonExisting path to bypass the automatic .gitignore parsing: https://github.com/depcheck/depcheck/issues/497
@@ -119,7 +118,7 @@ async function depfixTask(log) {
 }
 
 async function depcheckTask(log) {
-  const packages = (await (log.packages || loadPackages()));
+  const packages = await (log.packages || loadPackages());
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   return iter.forEach(packages, { log })(async package => {
@@ -151,7 +150,6 @@ module.exports.depfixTask = depfixTask
 module.exports.depcheckTask = depcheckTask
 
 const ncu = require('npm-check-updates');
-const depcheck = require('depcheck');
 async function updateTask(log) {
   const packages = (await (log.packages || loadPackages())).filter(
     package => package.location.startsWith(path.join(__dirname, '/packages')) ||
