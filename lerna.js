@@ -3,16 +3,47 @@ const checkDeps = require('depcheck')
 const path = require('path');
 const { readFileSync, writeFileSync, readdirSync, readdir } = require('fs');
 
+function ensureDependency({ checkedDeps, dependency, dependant }, log) {
+  if (!checkedDeps.dependencies.includes(dependency)) {
+    checkedDeps.missing[dependency] = [dependant];
+  }
+  checkedDeps.using[dependency] = [dependant];
+}
+
 async function depInfo({ location, name }, log) {
   const folders = readdirSync(location, { withFileTypes: true });
 
   const { files } = JSON.parse(readFileSync(path.join(location, 'package.json'), 'utf8'));
-  let ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
-  ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
+  let ignore;
+  let checkedDeps;
+  if (location.startsWith(path.join(__dirname, '/engines'))) {
+    // First check whether we have a default engine file
+    if (!folders.some(elem => elem.name === 'engine-default.js')) {
+      return {
+        unusedDeps: [],
+        missingDeps: [],
+        allDeps: [],
+      };
+    }
+    ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
+    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
-  let {dependencies, devDependencies, missing, using} = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+    // Add a nonExisting path to bypass the automatic .gitignore parsing: https://github.com/depcheck/depcheck/issues/497
+    checkedDeps = await checkDeps(location,
+      { ignorePath: 'falsePath', ignorePatterns: ignore }, val => val);
+    ensureDependency({
+      checkedDeps, dependency: '@comunica/runner', dependant: path.join(location, 'engine-default.js') }, log);
+    ensureDependency({
+      checkedDeps, dependency: '@comunica/config-query-sparql', dependant: path.join(location, 'engine-default.js') }, log);
+  } else {
+    ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
+    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
 
-  if (Object.values(using).flat().some(file => 
+    checkedDeps = await checkDeps(location, { ignorePatterns: ignore }, val => val);
+  }
+  let {dependencies, devDependencies, missing, using} = checkedDeps;
+
+  if (Object.values(using).flat().some(file =>
     readFileSync(file, 'utf8').toString().includes('require(\'process/\')') ||
     readFileSync(file, 'utf8').toString().includes('require(\"process/\")')
     )) {
@@ -20,7 +51,7 @@ async function depInfo({ location, name }, log) {
         // If we know it exists and is in the dependency array, remove it so that no errors are thrown
         dependencies = dependencies.filter(dep => dep !== 'process');
       } else {
-        // If it is *not* declared in teh dependencies then mark it as missing
+        // If it is *not* declared in the dependencies then mark it as missing
         missing['process'] = missing['process'] || [];
       }
   }
@@ -87,7 +118,7 @@ async function depfixTask(log) {
 }
 
 async function depcheckTask(log) {
-  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
+  const packages = await (log.packages || loadPackages());
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   return iter.forEach(packages, { log })(async package => {
