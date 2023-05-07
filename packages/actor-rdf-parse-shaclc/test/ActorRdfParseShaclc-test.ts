@@ -16,29 +16,6 @@ describe('ActorRdfParseShaclc', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    mediatorHttp = {
-      mediate(args: any) {
-        // Error
-        if (args.input.includes('error')) {
-          return Promise.resolve({
-            ok: false,
-            statusText: 'some error',
-            status: 500,
-            headers: new Headers({}),
-          });
-        }
-
-        return Promise.resolve({
-          body: streamifyString(`BASE <http://example.org/basic-shape-iri>
-
-          shape <http://example.org/test#TestShape> {
-          }`),
-          ok: true,
-          status: 200,
-          headers: new Headers({ 'Content-Type': 'text/shaclc' }),
-        });
-      },
-    };
     context = new ActionContext();
   });
 
@@ -48,7 +25,7 @@ describe('ActorRdfParseShaclc', () => {
     });
 
     it('should be a ActorRdfParseShaclc constructor', () => {
-      expect(new (<any> ActorRdfParseShaclc)({ name: 'actor', bus, mediaTypePriorities: {}, mediatorHttp }))
+      expect(new (<any> ActorRdfParseShaclc)({ name: 'actor', bus, mediaTypePriorities: {}}))
         .toBeInstanceOf(ActorRdfParseShaclc);
     });
 
@@ -206,6 +183,34 @@ describe('ActorRdfParseShaclc', () => {
           ex: 'http://example.org/ex#',
         });
       });
+    });
+
+    it('should apply the base IRI correctly', async() => {
+      const output: any = await actor.run({
+        handle: {
+          data: streamifyString('shape <#TestShape> {}'),
+          metadata: { baseIRI: 'https://www.jeswr.org/' },
+          context,
+        },
+        handleMediaType: 'text/shaclc',
+        context,
+      });
+
+      const prefixes: Record<string, string> = {};
+      output.handle.data.on('prefix', (prefix: string, iri: string) => { prefixes[prefix] = iri; });
+
+      expect(await arrayifyStream(output.handle.data)).toEqualRdfQuadArray([
+        quad(
+          'https://www.jeswr.org/#TestShape',
+          'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+          'http://www.w3.org/ns/shacl#NodeShape',
+        ),
+        quad(
+          'https://www.jeswr.org/',
+          'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+          'http://www.w3.org/2002/07/owl#Ontology',
+        ),
+      ]);
     });
 
     describe('for getting media types', () => {
