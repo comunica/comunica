@@ -34,5 +34,18 @@ describe('MetadataValidationState', () => {
       expect(listener1).toHaveBeenCalledTimes(1);
       expect(listener2).toHaveBeenCalledTimes(1);
     });
+
+    it('can be invalidated only', () => {
+      expect(state.valid).toBeTruthy();
+      state.invalidate();
+      expect(state.valid).toBeFalsy();
+      state.invalidate();
+      expect(state.valid).toBeFalsy();
+      state.invalidate();
+      expect(state.valid).toBeFalsy();
+
+      expect(listener1).toHaveBeenCalledTimes(1);
+      expect(listener2).toHaveBeenCalledTimes(1);
+    });
   });
 });

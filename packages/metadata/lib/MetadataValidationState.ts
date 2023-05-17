@@ -12,9 +12,11 @@ export class MetadataValidationState implements IMetadataValidationState {
   }
 
   public invalidate(): void {
-    this.valid = false;
-    for (const invalidateListener of this.invalidateListeners) {
-      invalidateListener();
+    if (this.valid) {
+      this.valid = false;
+      for (const invalidateListener of this.invalidateListeners) {
+        invalidateListener();
+      }
     }
   }
 }
