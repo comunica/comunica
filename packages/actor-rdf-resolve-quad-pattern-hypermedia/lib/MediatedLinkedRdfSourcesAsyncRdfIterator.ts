@@ -93,17 +93,6 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .catch(error => super.destroy(error));
   }
 
-  public closeIfDrained(): void {
-    this.getLinkQueue()
-      .then(linkQueue => {
-        if (this.isCloseable(linkQueue)) {
-          this.aggregatedStore?.end();
-          super.close();
-        }
-      })
-      .catch(error => this.destroy(error));
-  }
-
   protected isCloseable(linkQueue: ILinkQueue): boolean {
     return (this.wasForcefullyClosed || linkQueue.isEmpty()) && !this.areIteratorsRunning();
   }
@@ -111,7 +100,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    return (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || super.canStartNewIterator();
+    return !this.wasForcefullyClosed &&
+      (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || super.canStartNewIterator();
   }
 
   protected override isRunning(): boolean {

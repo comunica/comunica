@@ -261,54 +261,6 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
     });
 
-    describe('closeIfDrained', () => {
-      it('should close if the iterator is closeable', async() => {
-        source.closeIfDrained();
-        await new Promise(setImmediate);
-        expect(source.closed).toEqual(true);
-      });
-
-      it('should close if the iterator is closeable, and end the aggregated store', async() => {
-        const aggregatedStore: any = {
-          end: jest.fn(),
-          setBaseMetadata: jest.fn(),
-          import: jest.fn(),
-        };
-        source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
-          10,
-          context,
-          'forcedType',
-          s,
-          p,
-          o,
-          g,
-          'first',
-          64,
-          aggregatedStore,
-          mediators,
-        );
-
-        source.closeIfDrained();
-        await new Promise(setImmediate);
-        expect(source.closed).toEqual(true);
-        expect(aggregatedStore.end).toHaveBeenCalled();
-      });
-
-      it('should not close if the iterator is not closeable', async() => {
-        source.getLinkQueue = async() => ({ isEmpty: () => false });
-        source.closeIfDrained();
-        await new Promise(setImmediate);
-        expect(source.closed).toEqual(false);
-      });
-
-      it('should destroy if the link queue rejects', async() => {
-        source.getLinkQueue = () => Promise.reject(new Error('getLinkQueue reject'));
-        source.closeIfDrained();
-        await expect(new Promise((resolve, reject) => source.on('error', reject)))
-          .rejects.toThrow('getLinkQueue reject');
-      });
-    });
-
     describe('getLinkQueue', () => {
       it('should return a new link queue when called for the first time', async() => {
         expect(await source.getLinkQueue()).toBeInstanceOf(LinkQueueFifo);

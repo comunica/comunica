@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-nodejs-modules
+import type { EventEmitter } from 'events';
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataQuads, IAggregatedStore } from '@comunica/types';
@@ -11,7 +13,6 @@ import { StreamingStore } from 'rdf-streaming-store';
 export class StreamingStoreMetadata extends StreamingStore implements IAggregatedStore {
   public started = false;
   public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
-  protected readonly onStreamClosed: () => void;
   protected readonly metadataAccumulator:
   (accumulatedMetadata: MetadataQuads, appendingMetadata: MetadataQuads) => Promise<MetadataQuads>;
 
@@ -23,13 +24,18 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
 
   public constructor(
     store: RDF.Store | undefined,
-    onStreamClosed: () => void,
     metadataAccumulator:
     (accumulatedMetadata: MetadataQuads, appendingMetadata: MetadataQuads) => Promise<MetadataQuads>,
   ) {
     super(store);
-    this.onStreamClosed = onStreamClosed;
     this.metadataAccumulator = metadataAccumulator;
+  }
+
+  public import(stream: RDF.Stream): EventEmitter {
+    if (!this.ended) {
+      super.import(stream);
+    }
+    return stream;
   }
 
   public hasRunningIterators(): boolean {
@@ -50,7 +56,6 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
         onClose: () => {
           // Running iterators are deleted once closed or destroyed
           this.runningIterators.delete(iterator);
-          this.onStreamClosed();
         },
       },
     );
