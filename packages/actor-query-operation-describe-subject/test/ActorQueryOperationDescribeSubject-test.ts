@@ -1,6 +1,4 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IActionQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResultQuads } from '@comunica/types';
@@ -155,36 +153,6 @@ describe('ActorQueryOperationDescribeSubject', () => {
           DF.quad(DF.namedNode('b'), DF.namedNode('__predicate1'), DF.namedNode('__object1')),
         ]);
       });
-    });
-
-    it('should handle localizeBlankNodes provided by the context', () => {
-      const context = new ActionContext({ name: 'context', [KeysQueryOperation.localizeBlankNodes.name]: true });
-      const op: any = {
-        context,
-        operation: {
-          input: { type: 'bgp', patterns: [ DF.quad(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},
-          terms: [ DF.variable('a'), DF.variable('b'), DF.namedNode('c') ],
-          type: 'describe',
-        },
-      };
-      const spyMediator = jest.spyOn(mediatorQueryOperation, 'mediate');
-
-      const result = actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        expect(await output.metadata())
-          .toEqual({ state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 4 },
-            canContainUndefs: false });
-        expect(output.type).toEqual('quads');
-        expect(await arrayifyStream(output.quadStream)).toEqual([
-          DF.quad(DF.namedNode('c'), DF.namedNode('__predicate'), DF.namedNode('__object')),
-          DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('dummy')),
-          DF.quad(DF.namedNode('a'), DF.namedNode('__predicate0'), DF.namedNode('__object0')),
-          DF.quad(DF.namedNode('b'), DF.namedNode('__predicate1'), DF.namedNode('__object1')),
-        ]);
-      });
-      expect((<IActionQueryOperation>spyMediator.mock.calls[0][0])
-        .context.get(KeysQueryOperation.localizeBlankNodes)).toBe(true);
-      return result;
     });
   });
 });

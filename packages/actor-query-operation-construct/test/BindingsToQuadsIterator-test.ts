@@ -455,7 +455,7 @@ describe('BindingsToQuadsIterator', () => {
         BF.bindings([
           [ DF.variable('a'), DF.namedNode('a3') ],
         ]),
-      ]));
+      ], { autoStart: false }));
     });
 
     it('should be transformed to a valid triple stream', async() => {
@@ -485,13 +485,16 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     describe('#bindTemplate', () => {
-      it('should bind an empty template without variables, blank nodes and bindings', () => {
-        return expect(iterator.bindTemplate(BF.bindings(), [], 0))
+      it('should bind an empty template without variables, blank nodes and bindings', async() => {
+        expect(iterator.bindTemplate(BF.bindings(), [], 0))
           .toEqual([]);
+
+        // Consume the iterator
+        expect(await iterator.toArray()).toHaveLength(10);
       });
 
-      it('should bind a template without variables, blank nodes and bindings', () => {
-        return expect(iterator.bindTemplate(BF.bindings(), [
+      it('should bind a template without variables, blank nodes and bindings', async() => {
+        expect(iterator.bindTemplate(BF.bindings(), [
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
           DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
           DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
@@ -501,10 +504,13 @@ describe('BindingsToQuadsIterator', () => {
             DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
             DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
           ]);
+
+        // Consume the iterator
+        expect(await iterator.toArray()).toHaveLength(10);
       });
 
-      it('should bind a template with variables and bindings and without blank nodes', () => {
-        return expect(iterator.bindTemplate(BF.bindings([
+      it('should bind a template with variables and bindings and without blank nodes', async() => {
+        expect(iterator.bindTemplate(BF.bindings([
           [ DF.variable('a'), DF.namedNode('a') ],
           [ DF.variable('b'), DF.namedNode('b') ],
         ]), [
@@ -517,10 +523,13 @@ describe('BindingsToQuadsIterator', () => {
             DF.quad(DF.namedNode('s2'), DF.namedNode('b'), DF.namedNode('o2')),
             DF.quad(DF.namedNode('s3'), DF.namedNode('a'), DF.namedNode('b')),
           ]);
+
+        // Consume the iterator
+        expect(await iterator.toArray()).toHaveLength(10);
       });
 
-      it('should bind a template with variables and incomplete bindings and without blank nodes', () => {
-        return expect(iterator.bindTemplate(BF.bindings([
+      it('should bind a template with variables and incomplete bindings and without blank nodes', async() => {
+        expect(iterator.bindTemplate(BF.bindings([
           [ DF.variable('a'), DF.namedNode('a') ],
         ]), [
           DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
@@ -530,10 +539,13 @@ describe('BindingsToQuadsIterator', () => {
           .toEqual([
             DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
           ]);
+
+        // Consume the iterator
+        expect(await iterator.toArray()).toHaveLength(10);
       });
 
-      it('should bind a template with variables, bindings and blank nodes', () => {
-        return expect(iterator.bindTemplate(BF.bindings([
+      it('should bind a template with variables, bindings and blank nodes', async() => {
+        expect(iterator.bindTemplate(BF.bindings([
           [ DF.variable('a'), DF.namedNode('a') ],
           [ DF.variable('b'), DF.namedNode('b') ],
         ]), [
@@ -546,62 +558,10 @@ describe('BindingsToQuadsIterator', () => {
             DF.quad(DF.blankNode('bnode0'), DF.namedNode('b'), DF.blankNode('bnode0')),
             DF.quad(DF.blankNode('bnode0'), DF.namedNode('a'), DF.namedNode('b')),
           ]);
+
+        // Consume the iterator
+        expect(await iterator.toArray()).toHaveLength(10);
       });
-    });
-  });
-
-  describe('instantiated for a template without localizing blank nodes', () => {
-    let iterator: BindingsToQuadsIterator;
-    beforeEach(() => {
-      iterator = new BindingsToQuadsIterator([
-        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
-        DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),
-        DF.quad(
-          DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-        ),
-      ], new ArrayIterator([
-        BF.bindings([
-          [ DF.variable('a'), DF.namedNode('a1') ],
-          [ DF.variable('b'), DF.namedNode('b1') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('a'), DF.namedNode('a2') ],
-          [ DF.variable('b'), DF.namedNode('b2') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('a'), DF.namedNode('a3') ],
-        ]),
-      ]), false);
-    });
-
-    it('should be transformed to a valid triple stream', async() => {
-      expect(await arrayifyStream(iterator)).toEqual([
-        DF.quad(DF.namedNode('a1'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('b1'), DF.blankNode('bnode')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('a1'), DF.namedNode('b1')),
-        DF.quad(DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode')),
-
-        DF.quad(DF.namedNode('a2'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('b2'), DF.blankNode('bnode')),
-        DF.quad(DF.blankNode('bnode'), DF.namedNode('a2'), DF.namedNode('b2')),
-        DF.quad(DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode')),
-
-        DF.quad(DF.namedNode('a3'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'),
-          <any> DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode'),
-          DF.blankNode('otherbnode')),
-      ]);
     });
   });
 });

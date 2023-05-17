@@ -4,7 +4,9 @@ import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
+import type { AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveHypermediaNone } from '../lib/ActorRdfResolveHypermediaNone';
 
@@ -59,15 +61,16 @@ describe('ActorRdfResolveHypermediaNone', () => {
       ]);
       const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
       expect(source.match).toBeTruthy();
+      let stream: AsyncIterator<RDF.Quad>;
       await expect(new Promise((resolve, reject) => {
-        const stream = source.match(v, v, v, v);
+        stream = source.match(v, v, v, v);
         stream.getProperty('metadata', resolve);
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 2 },
         canContainUndefs: false,
       });
-      expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
+      expect(await arrayifyStream(stream!)).toEqualRdfQuadArray([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);

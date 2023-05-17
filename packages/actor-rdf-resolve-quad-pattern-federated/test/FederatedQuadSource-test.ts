@@ -525,9 +525,13 @@ describe('FederatedQuadSource', () => {
       );
     });
 
-    it('should return an AsyncIterator', () => {
-      return expect(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.variable('v')))
-        .toBeInstanceOf(TransformIterator);
+    it('should return an AsyncIterator', async() => {
+      const match = source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.variable('v'));
+      expect(match).toBeInstanceOf(TransformIterator);
+      expect(await match.toArray()).toBeRdfIsomorphic([
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o2')),
+      ]);
     });
 
     describe('when calling isSourceEmpty', () => {
@@ -611,8 +615,12 @@ describe('FederatedQuadSource', () => {
       );
     });
 
-    it('should return an empty AsyncIterator', async() => {
-      expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
+    it('should return an empty array of results using #toArray', async() => {
+      expect(await source.match(v, v, v, v).toArray()).toEqual([]);
+    });
+
+    it('should return an empty array of results using arrayifyStream', async() => {
+      expect(await source.match(v, v, v, v).toArray()).toEqual([]);
     });
 
     it('should emit metadata with 0 cardinality', async() => {
@@ -623,6 +631,7 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'exact', value: 0 },
           canContainUndefs: false,
         });
+      expect(await arrayifyStream(stream)).toEqual([]);
     });
 
     it('should reject when mediatorRdfMetadataAccumulate rejects', async() => {
@@ -662,6 +671,8 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: 0 },
           canContainUndefs: false,
         });
+
+      expect(await arrayifyStream(stream)).toEqual([]);
     });
 
     it('should store the queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -725,6 +736,11 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: false,
           otherMetadata: true,
         });
+
+      expect(await arrayifyStream(stream)).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should store no queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -743,7 +759,8 @@ describe('FederatedQuadSource', () => {
     it('destroyed before started should destroy the sub iterators', async() => {
       const it = source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g'));
       it.destroy();
-      await new Promise(setImmediate);
+      await new Promise(res => setImmediate(res, 10));
+      expect(returnedIterators[0].done).toBeTruthy();
       expect(returnedIterators[0].destroy).toHaveReturnedTimes(1);
     });
 
@@ -808,6 +825,15 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: 6 },
           canContainUndefs: false,
         });
+      expect(await arrayifyStream(stream)).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+
+        squad('s2', 'p1', 'o1', 'g1'),
+        squad('s2', 'p1', 'o2', 'g1'),
+        squad('s3', 'p1', 'o1', 'g2'),
+        squad('s3', 'p1', 'o2', 'g2'),
+      ]);
     });
   });
 
@@ -864,6 +890,11 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: false,
           otherMetadata: true,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -928,6 +959,7 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: 0 },
           canContainUndefs: false,
         });
+      expect(await stream.toArray()).toEqual([]);
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -994,6 +1026,7 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: 0 },
           canContainUndefs: false,
         });
+      expect(await stream.toArray()).toEqual([]);
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -1054,6 +1087,7 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: 0 },
           canContainUndefs: false,
         });
+      expect(await stream.toArray()).toEqual([]);
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -1126,6 +1160,13 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: false,
           otherMetadata: true,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -1202,6 +1243,13 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: false,
           otherMetadata: true,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
   });
 
@@ -1256,6 +1304,13 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           canContainUndefs: false,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
   });
 
@@ -1313,6 +1368,13 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: false,
           otherMetadata: true,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
   });
 
@@ -1367,6 +1429,13 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           canContainUndefs: false,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
   });
 
@@ -1660,6 +1729,13 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: true,
           otherMetadata: true,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
   });
 
@@ -1701,6 +1777,13 @@ describe('FederatedQuadSource', () => {
           canContainUndefs: true,
           otherMetadata: true,
         });
+
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
   });
 
@@ -1739,6 +1822,12 @@ describe('FederatedQuadSource', () => {
           cardinality: { type: 'estimate', value: 4 },
           canContainUndefs: true,
         });
+      expect(await stream.toArray()).toEqual([
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o1'),
+        squad('s1', 'p1', 'o2'),
+        squad('s1', 'p1', 'o2'),
+      ]);
     });
   });
 

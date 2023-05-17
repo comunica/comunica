@@ -271,12 +271,13 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         expect(await source.getLinkQueue()).toBe(queue);
         expect(await source.getLinkQueue()).toBe(queue);
         expect(await source.getLinkQueue()).toBe(queue);
+        source.destroy();
       });
 
       it('should throw on a rejecting mediator', async() => {
         mediatorRdfResolveHypermediaLinksQueue.mediate = () => Promise
-          .reject(new Error('MediatedLinkRdfSourceAsyncRdfIterator-error'));
-        await expect(source.getLinkQueue()).rejects.toThrowError('MediatedLinkRdfSourceAsyncRdfIterator-error');
+          .reject(new Error('mediatorRdfResolveHypermediaLinksQueue-error'));
+        await expect(source.getLinkQueue()).rejects.toThrowError('mediatorRdfResolveHypermediaLinksQueue-error');
       });
     });
 

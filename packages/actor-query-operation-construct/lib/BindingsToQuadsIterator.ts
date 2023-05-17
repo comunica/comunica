@@ -15,13 +15,11 @@ const DF = new DataFactory();
  */
 export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RDF.Quad> {
   protected readonly template: RDF.BaseQuad[];
-  protected readonly localizeBlankNodes: boolean;
   protected blankNodeCounter: number;
 
-  public constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream, localizeBlankNodes = true) {
+  public constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
     super(bindingsStream, { autoStart: false });
     this.template = template;
-    this.localizeBlankNodes = localizeBlankNodes;
     this.blankNodeCounter = 0;
   }
 
@@ -101,21 +99,19 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.Quad[]}                    A list of quads.
    */
   public bindTemplate(bindings: Bindings, template: RDF.BaseQuad[], blankNodeCounter: number): RDF.Quad[] {
-    let quads: RDF.BaseQuad[] = <RDF.BaseQuad[]> template
+    const quads: RDF.BaseQuad[] = <RDF.BaseQuad[]> template
+      // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
+      .map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter))
       // Bind variables to bound terms
       .map(x => BindingsToQuadsIterator.bindQuad.bind(null, bindings)(x))
       // Remove quads that contained unbound terms, i.e., variables.
       .filter(Boolean);
-    if (this.localizeBlankNodes) {
-      // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
-      quads = quads.map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter));
-    }
     return <RDF.Quad[]> quads;
   }
 
   public _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
     return new ArrayIterator(this.bindTemplate(
       bindings, this.template, this.blankNodeCounter++,
-    ));
+    ), { autoStart: false });
   }
 }

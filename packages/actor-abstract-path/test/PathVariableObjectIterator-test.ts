@@ -28,14 +28,6 @@ describe('PathVariableObjectIterator', () => {
         return { type: 'bindings', bindingsStream };
       }),
     };
-    iterator = new PathVariableObjectIterator(
-      DF.namedNode('ex:s'),
-      FACTORY.createLink(DF.namedNode('ex:p')),
-      DF.namedNode('ex:g'),
-      new ActionContext(),
-      mediatorQueryOperation,
-      true,
-    );
   });
 
   it('destroys the iterator when an error occurs during mediation', async() => {
@@ -53,7 +45,11 @@ describe('PathVariableObjectIterator', () => {
 
     await expect(new Promise((resolve, reject) => {
       iterator.on('end', resolve);
-      iterator.on('error', reject);
+      iterator.on('error', e => {
+        iterator.close();
+        iterator.destroy();
+        reject(e);
+      });
     })).rejects.toThrow('mediatorQueryOperation rejection in PathVariableObjectIterator');
   });
 
@@ -82,6 +78,15 @@ describe('PathVariableObjectIterator', () => {
   });
 
   it('destroys runningOperations when closed', async() => {
+    iterator = new PathVariableObjectIterator(
+      DF.namedNode('ex:s'),
+      FACTORY.createLink(DF.namedNode('ex:p')),
+      DF.namedNode('ex:g'),
+      new ActionContext(),
+      mediatorQueryOperation,
+      true,
+    );
+
     iterator.read();
     await new Promise(setImmediate);
 

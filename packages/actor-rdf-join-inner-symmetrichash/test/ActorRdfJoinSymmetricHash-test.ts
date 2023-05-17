@@ -96,136 +96,139 @@ describe('ActorRdfJoinSymmetricHash', () => {
       };
     });
 
-    it('should only handle 2 streams', () => {
-      action.entries.push(<any> {});
-      return expect(actor.test(action)).rejects.toBeTruthy();
-    });
+    describe('should test', () => {
+      afterEach(() => {
+        action.entries.forEach(({ output }) => output?.bindingsStream.destroy());
+      });
 
-    it('should fail on undefs in left stream', () => {
-      action = {
-        type: 'inner',
-        entries: [
-          {
-            output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 4 },
-                canContainUndefs: true,
-                variables: [],
-              }),
-              type: 'bindings',
+      it('should fail on undefs in left stream', () => {
+        action = {
+          type: 'inner',
+          entries: [
+            {
+              output: {
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  canContainUndefs: true,
+                  variables: [],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
             },
-            operation: <any> {},
-          },
-          {
-            output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 5 },
-                canContainUndefs: false,
-                variables: [],
-              }),
-              type: 'bindings',
+            {
+              output: {
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  canContainUndefs: false,
+                  variables: [],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
             },
-            operation: <any> {},
-          },
-        ],
-        context,
-      };
-      return expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
-    });
+          ],
+          context,
+        };
+        return expect(actor.test(action)).rejects
+          .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      });
 
-    it('should fail on undefs in right stream', () => {
-      action = {
-        type: 'inner',
-        entries: [
-          {
-            output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 4 },
-                canContainUndefs: false,
-                variables: [],
-              }),
-              type: 'bindings',
+      it('should fail on undefs in right stream', () => {
+        action = {
+          type: 'inner',
+          entries: [
+            {
+              output: {
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  canContainUndefs: false,
+                  variables: [],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
             },
-            operation: <any> {},
-          },
-          {
-            output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 5 },
-                canContainUndefs: true,
-                variables: [],
-              }),
-              type: 'bindings',
+            {
+              output: {
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  canContainUndefs: true,
+                  variables: [],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
             },
-            operation: <any> {},
-          },
-        ],
-        context,
-      };
-      return expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
-    });
+          ],
+          context,
+        };
+        return expect(actor.test(action)).rejects
+          .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      });
 
-    it('should fail on undefs in left and right stream', () => {
-      action = {
-        type: 'inner',
-        entries: [
-          {
-            output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 4 },
-                canContainUndefs: true,
-                variables: [],
-              }),
-              type: 'bindings',
+      it('should fail on undefs in left and right stream', () => {
+        action = {
+          type: 'inner',
+          entries: [
+            {
+              output: {
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  canContainUndefs: true,
+                  variables: [],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
             },
-            operation: <any> {},
-          },
-          {
-            output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
-              metadata: () => Promise.resolve({
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 5 },
-                canContainUndefs: true,
-                variables: [],
-              }),
-              type: 'bindings',
+            {
+              output: {
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  canContainUndefs: true,
+                  variables: [],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
             },
-            operation: <any> {},
-          },
-        ],
-        context,
-      };
-      return expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
-    });
+          ],
+          context,
+        };
+        return expect(actor.test(action)).rejects
+          .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      });
 
-    it('should generate correct test metadata', async() => {
-      await expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await (<any> action.entries[0].output).metadata()).cardinality.value +
-        (await (<any> action.entries[1].output).metadata()).cardinality.value);
+      it('should generate correct test metadata', async() => {
+        await expect(actor.test(action)).resolves.toHaveProperty('iterations',
+          (await (<any> action.entries[0].output).metadata()).cardinality.value +
+          (await (<any> action.entries[1].output).metadata()).cardinality.value);
+      });
     });
 
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
-        return expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
+        await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality',
           {
             type: 'estimate',
             value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
           (await (<any> action.entries[1].output).metadata()).cardinality.value,
           });
+
+        await expect(result.bindingsStream.toArray()).resolves.toEqual([]);
       });
     });
 
@@ -242,6 +245,9 @@ describe('ActorRdfJoinSymmetricHash', () => {
     });
 
     it('should join bindings with matching values', () => {
+      // Close of the bindings streams that we are not going to use
+      action.entries.forEach(({ output }) => output?.bindingsStream.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -274,6 +280,9 @@ describe('ActorRdfJoinSymmetricHash', () => {
     });
 
     it('should not join bindings with incompatible values', () => {
+      // Close of the bindings streams that we are not going to use
+      action.entries.forEach(({ output }) => output?.bindingsStream.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
@@ -300,6 +309,9 @@ describe('ActorRdfJoinSymmetricHash', () => {
     });
 
     it('should join multiple bindings', () => {
+      // Close of the bindings streams that we are not going to use
+      action.entries.forEach(({ output }) => output?.bindingsStream.destroy());
+
       action.entries[0].output.bindingsStream = new ArrayIterator([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
