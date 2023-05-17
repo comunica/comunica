@@ -38,7 +38,7 @@ export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad, S extends R
    * @param metadata The metadata object.
    * @param updateState If the metadata state of derived iterators should be immediately updated.
    */
-  setBaseMetadata: (metadata: MetadataQuads, updateStates: boolean) => any;
+  setBaseMetadata: (metadata: MetadataQuads, updateStates: boolean) => void;
 
   match: (
     subject?: RDF.Term | null,

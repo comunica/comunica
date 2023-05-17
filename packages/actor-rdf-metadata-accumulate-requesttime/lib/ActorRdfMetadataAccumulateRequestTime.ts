@@ -24,7 +24,7 @@ export class ActorRdfMetadataAccumulateRequestTime extends ActorRdfMetadataAccum
     // Otherwise, attempt to increment existing value
     return {
       metadata: {
-        ...'requestTime' in action.accumulatedMetadata || 'requestTime' in action.appendingMetadata ?
+        ...('requestTime' in action.accumulatedMetadata) || ('requestTime' in action.appendingMetadata) ?
           {
             requestTime: (action.accumulatedMetadata.requestTime || 0) + (action.appendingMetadata.requestTime || 0),
           } :

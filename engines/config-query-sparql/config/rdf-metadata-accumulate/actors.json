@@ -11,7 +11,7 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:rdf-metadata-accumulate/actors#cancontainundef",
+      "@id": "urn:comunica:default:rdf-metadata-accumulate/actors#cancontainundefs",
       "@type": "ActorRdfMetadataAccumulateCanContainUndefs"
     },
     {

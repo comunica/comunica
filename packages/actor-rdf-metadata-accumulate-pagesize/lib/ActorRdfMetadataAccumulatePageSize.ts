@@ -24,7 +24,7 @@ export class ActorRdfMetadataAccumulatePageSize extends ActorRdfMetadataAccumula
     // Otherwise, attempt to increment existing value
     return {
       metadata: {
-        ...'pageSize' in action.accumulatedMetadata || 'pageSize' in action.appendingMetadata ?
+        ...('pageSize' in action.accumulatedMetadata) || ('pageSize' in action.appendingMetadata) ?
           {
             pageSize: (action.accumulatedMetadata.pageSize || 0) + (action.appendingMetadata.pageSize || 0),
           } :
