@@ -110,6 +110,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.IMetadata.html#order" class="tsd-kind-icon">order</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.IMetadata.html#pageSize" class="tsd-kind-icon">page<wbr>Size</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.IMetadata.html#requestTime" class="tsd-kind-icon">request<wbr>Time</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.IMetadata.html#state" class="tsd-kind-icon">state</a></li>
 							</ul>
 						</section>
 					</div>
@@ -123,7 +124,7 @@
 					<div class="tsd-signature tsd-kind-icon">available<wbr>Orders<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">QueryOperationOrder</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">OrderItemsType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IMetadata.ts#L49">packages/types/lib/IMetadata.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IMetadata.ts#L54">packages/types/lib/IMetadata.ts:54</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -138,7 +139,7 @@
 					<div class="tsd-signature tsd-kind-icon">can<wbr>Contain<wbr>Undefs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IMetadata.ts#L16">packages/types/lib/IMetadata.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IMetadata.ts#L21">packages/types/lib/IMetadata.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -151,10 +152,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="cardinality" class="tsd-anchor"></a>
 					<h3>cardinality</h3>
-					<div class="tsd-signature tsd-kind-icon">cardinality<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">QueryResultCardinality</span></div>
+					<div class="tsd-signature tsd-kind-icon">cardinality<span class="tsd-signature-symbol">:</span> <a href="../modules/types.html#QueryResultCardinality" class="tsd-signature-type" data-tsd-kind="Type alias">QueryResultCardinality</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IMetadata.ts#L11">packages/types/lib/IMetadata.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IMetadata.ts#L16">packages/types/lib/IMetadata.ts:16</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -169,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">order<span class="tsd-signature-symbol">:</span> <a href="../modules/types.html#TermsOrder" class="tsd-signature-type" data-tsd-kind="Type alias">TermsOrder</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">OrderItemsType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IMetadata.ts#L44">packages/types/lib/IMetadata.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IMetadata.ts#L49">packages/types/lib/IMetadata.ts:49</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -192,7 +193,7 @@
 					<div class="tsd-signature tsd-kind-icon">page<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IMetadata.ts#L24">packages/types/lib/IMetadata.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IMetadata.ts#L29">packages/types/lib/IMetadata.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -208,13 +209,28 @@
 					<div class="tsd-signature tsd-kind-icon">request<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IMetadata.ts#L29">packages/types/lib/IMetadata.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IMetadata.ts#L34">packages/types/lib/IMetadata.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The time it takes to request a page in milliseconds.
 							This is the time until the first byte arrives.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="state" class="tsd-anchor"></a>
+					<h3>state</h3>
+					<div class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">:</span> <a href="types.IMetadataValidationState.html" class="tsd-signature-type" data-tsd-kind="Interface">IMetadataValidationState</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IMetadata.ts#L11">packages/types/lib/IMetadata.ts:11</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The validity state of this metadata object.</p>
 						</div>
 					</div>
 				</section>
@@ -258,6 +274,9 @@
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="types.IMetadata.html#requestTime" class="tsd-kind-icon">request<wbr>Time</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="types.IMetadata.html#state" class="tsd-kind-icon">state</a>
 									</li>
 								</ul>
 							</li>

@@ -106,6 +106,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#algebraFactory" class="tsd-kind-icon">algebra<wbr>Factory</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#contextDefault" class="tsd-kind-icon">context<wbr>Default</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#emptyPatterns" class="tsd-kind-icon">empty<wbr>Patterns</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#mediatorRdfMetadataAccumulate" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Metadata<wbr>Accumulate</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#mediatorResolveQuadPattern" class="tsd-kind-icon">mediator<wbr>Resolve<wbr>Quad<wbr>Pattern</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#skipEmptyPatterns" class="tsd-kind-icon">skip<wbr>Empty<wbr>Patterns</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#sourceIds" class="tsd-kind-icon">source<wbr>Ids</a></li>
@@ -136,19 +137,22 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Federated<wbr>Quad<wbr>Source<span class="tsd-signature-symbol">(</span>mediatorResolveQuadPattern<span class="tsd-signature-symbol">: </span><a href="../modules/bus_rdf_resolve_quad_pattern.html#MediatorRdfResolveQuadPattern" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfResolveQuadPattern</a>, context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, emptyPatterns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#IDataSource" class="tsd-signature-type" data-tsd-kind="Type alias">IDataSource</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span>, skipEmptyPatterns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html" class="tsd-signature-type" data-tsd-kind="Class">FederatedQuadSource</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Federated<wbr>Quad<wbr>Source<span class="tsd-signature-symbol">(</span>mediatorResolveQuadPattern<span class="tsd-signature-symbol">: </span><a href="../modules/bus_rdf_resolve_quad_pattern.html#MediatorRdfResolveQuadPattern" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfResolveQuadPattern</a>, mediatorRdfMetadataAccumulate<span class="tsd-signature-symbol">: </span><a href="../modules/bus_rdf_metadata_accumulate.html#MediatorRdfMetadataAccumulate" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadataAccumulate</a>, context<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a>, emptyPatterns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#IDataSource" class="tsd-signature-type" data-tsd-kind="Type alias">IDataSource</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span>, skipEmptyPatterns<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html" class="tsd-signature-type" data-tsd-kind="Class">FederatedQuadSource</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L37">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L40">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:40</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>mediatorResolveQuadPattern: <a href="../modules/bus_rdf_resolve_quad_pattern.html#MediatorRdfResolveQuadPattern" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfResolveQuadPattern</a></h5>
+								</li>
+								<li>
+									<h5>mediatorRdfMetadataAccumulate: <a href="../modules/bus_rdf_metadata_accumulate.html#MediatorRdfMetadataAccumulate" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadataAccumulate</a></h5>
 								</li>
 								<li>
 									<h5>context: <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></h5>
@@ -173,7 +177,7 @@
 					<div class="tsd-signature tsd-kind-icon">algebra<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">default</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L35">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L38">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:38</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -183,7 +187,7 @@
 					<div class="tsd-signature tsd-kind-icon">context<wbr>Default<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.IActionContext.html" class="tsd-signature-type" data-tsd-kind="Interface">IActionContext</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L31">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L34">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:34</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +197,17 @@
 					<div class="tsd-signature tsd-kind-icon">empty<wbr>Patterns<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#IDataSource" class="tsd-signature-type" data-tsd-kind="Type alias">IDataSource</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L32">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L35">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:35</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="mediatorRdfMetadataAccumulate" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Rdf<wbr>Metadata<wbr>Accumulate</h3>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Metadata<wbr>Accumulate<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_metadata_accumulate.html#MediatorRdfMetadataAccumulate" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfMetadataAccumulate</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L31">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:31</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -203,7 +217,7 @@
 					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Resolve<wbr>Quad<wbr>Pattern<span class="tsd-signature-symbol">:</span> <a href="../modules/bus_rdf_resolve_quad_pattern.html#MediatorRdfResolveQuadPattern" class="tsd-signature-type" data-tsd-kind="Type alias">MediatorRdfResolveQuadPattern</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L28">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L30">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -213,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">skip<wbr>Empty<wbr>Patterns<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L34">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L37">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:37</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -223,7 +237,7 @@
 					<div class="tsd-signature tsd-kind-icon">source<wbr>Ids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#IDataSource" class="tsd-signature-type" data-tsd-kind="Type alias">IDataSource</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L33">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L36">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -233,7 +247,7 @@
 					<div class="tsd-signature tsd-kind-icon">sources<span class="tsd-signature-symbol">:</span> <a href="../modules/types.html#DataSources" class="tsd-signature-type" data-tsd-kind="Type alias">DataSources</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L30">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L33">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:33</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -243,7 +257,7 @@
 					<div class="tsd-signature tsd-kind-icon">SKOLEM_<wbr>PREFIX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;urn:comunica_skolem:source_&quot;</span><span class="tsd-signature-symbol"> = &#x27;urn:comunica_skolem:source_&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L26">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L28">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -260,7 +274,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L180">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:180</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L188">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:188</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -292,7 +306,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L160">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:160</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L168">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:168</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -328,16 +342,18 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/bus_rdf_resolve_quad_pattern.IQuadSource.html">IQuadSource</a>.<a href="../interfaces/bus_rdf_resolve_quad_pattern.IQuadSource.html#match">match</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L189">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:189</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L197">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:197</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Returns a (possibly lazy) stream that processes all quads matching the pattern.</p>
 								</div>
-								<p>The returned stream MUST expose the property &#39;metadata&#39;.
+								<p>The returned stream MUST expose the property &#39;metadata&#39; of type <code>MetadataQuads</code>.
 									The implementor is reponsible for handling cases where &#39;metadata&#39;
-								is being called without the stream being in flow-mode.</p>
+									is being called without the stream being in flow-mode.
+									This metadata object can become invalidated (see <code>metadata.state</code>),
+								in which case the &#39;metadata&#39; property must and will be updated.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -368,7 +384,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L140">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L148">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:148</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -412,7 +428,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L115">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L123">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:123</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -452,7 +468,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L75">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L83">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:83</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -491,7 +507,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L64">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L72">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -524,7 +540,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L103">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:103</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L111">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:111</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -568,7 +584,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L89">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:89</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts#L97">packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts:97</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -634,6 +650,9 @@
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#emptyPatterns" class="tsd-kind-icon">empty<wbr>Patterns</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+										<a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#mediatorRdfMetadataAccumulate" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Metadata<wbr>Accumulate</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_rdf_resolve_quad_pattern_federated.FederatedQuadSource.html#mediatorResolveQuadPattern" class="tsd-kind-icon">mediator<wbr>Resolve<wbr>Quad<wbr>Pattern</a>

@@ -130,6 +130,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="types.IAggregatedStore.html#hasRunningIterators" class="tsd-kind-icon">has<wbr>Running<wbr>Iterators</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="types.IAggregatedStore.html#import" class="tsd-kind-icon">import</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="types.IAggregatedStore.html#match" class="tsd-kind-icon">match</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="types.IAggregatedStore.html#setBaseMetadata" class="tsd-kind-icon">set<wbr>Base<wbr>Metadata</a></li>
 							</ul>
 						</section>
 					</div>
@@ -143,7 +144,7 @@
 					<div class="tsd-signature tsd-kind-icon">started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IAggregatedStore.ts#L20">packages/types/lib/IAggregatedStore.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IAggregatedStore.ts#L21">packages/types/lib/IAggregatedStore.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -165,7 +166,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IAggregatedStore.ts#L33">packages/types/lib/IAggregatedStore.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IAggregatedStore.ts#L34">packages/types/lib/IAggregatedStore.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -189,7 +190,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IAggregatedStore.ts#L25">packages/types/lib/IAggregatedStore.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IAggregatedStore.ts#L26">packages/types/lib/IAggregatedStore.ts:26</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -252,7 +253,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides RDF.Source.match</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a4c0053/packages/types/lib/IAggregatedStore.ts#L35">packages/types/lib/IAggregatedStore.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IAggregatedStore.ts#L43">packages/types/lib/IAggregatedStore.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -271,6 +272,40 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Q</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="setBaseMetadata" class="tsd-anchor"></a>
+					<h3>set<wbr>Base<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Base<wbr>Metadata<span class="tsd-signature-symbol">(</span>metadata<span class="tsd-signature-symbol">: </span><a href="../modules/types.html#MetadataQuads" class="tsd-signature-type" data-tsd-kind="Type alias">MetadataQuads</a>, updateStates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1d63300/packages/types/lib/IAggregatedStore.ts#L41">packages/types/lib/IAggregatedStore.ts:41</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Update the metadata of the base iterator, from which the aggregated store is being populated.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>metadata: <a href="../modules/types.html#MetadataQuads" class="tsd-signature-type" data-tsd-kind="Type alias">MetadataQuads</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The metadata object.</p>
+									</div>
+								</li>
+								<li>
+									<h5>updateStates: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -311,6 +346,9 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
 										<a href="types.IAggregatedStore.html#match" class="tsd-kind-icon">match</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-interface">
+										<a href="types.IAggregatedStore.html#setBaseMetadata" class="tsd-kind-icon">set<wbr>Base<wbr>Metadata</a>
 									</li>
 								</ul>
 							</li>
