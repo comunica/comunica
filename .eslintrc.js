@@ -9,6 +9,9 @@ module.exports = {
       '@rubensworks'
   ],
 
+  // TODO: Remove this once solid-client-authn supports node 18.
+  ignorePatterns: ['*QuerySparql-solid-test.ts'],
+
   rules: {
     // Default
     'unicorn/consistent-destructuring': 'off',
