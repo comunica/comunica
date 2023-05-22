@@ -3,8 +3,10 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
-import { SingletonIterator } from 'asynciterator';
+import type { Bindings, IQueryOperationResult, IActionContext, BindingsStream } from '@comunica/types';
+import {
+  SingletonIterator, UnionIterator,
+} from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
 const BF = new BindingsFactory();
@@ -23,13 +25,12 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
   ): Promise<IQueryOperationResult> {
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
-    const sVar = operation.subject.termType === 'Variable';
-    const oVar = operation.object.termType === 'Variable';
-
     const extra: Bindings[] = [];
 
     // Both subject and object non-variables
-    if (!sVar && !oVar && operation.subject.equals(operation.object)) {
+    if (operation.subject.termType !== 'Variable' &&
+      operation.object.termType !== 'Variable' &&
+      operation.subject.equals(operation.object)) {
       return {
         type: 'bindings',
         bindingsStream: new SingletonIterator(BF.bindings()),
@@ -42,37 +43,65 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       };
     }
 
-    if (sVar && oVar) {
-      throw new Error('ZeroOrOne path expressions with 2 variables not supported yet');
-    }
-
+    // Check if we require a distinct path operation
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
     }
-
     context = distinct.context;
 
-    if (operation.subject.termType === 'Variable') {
-      extra.push(BF.bindings([[ operation.subject, operation.object ]]));
-    }
-
-    if (operation.object.termType === 'Variable') {
-      extra.push(BF.bindings([[ operation.object, operation.subject ]]));
-    }
-
-    const single = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+    // Create an operator that resolve to the "One" part
+    const bindingsOne = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
       operation: ActorAbstractPath.FACTORY
         .createPath(operation.subject, predicate.path, operation.object, operation.graph),
     }));
 
-    const bindingsStream = single.bindingsStream.prepend(extra);
+    // Determine the bindings stream based on the variable-ness of subject and object
+    let bindingsStream: BindingsStream;
+    if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
+      // Both subject and object are variables
+      // To determine the "Zero" part, we
+      // query ?s ?p ?o. FILTER ?s = ?0, to get all possible namedNodes in de the db
+      const varP = this.generateVariable(operation);
+      const bindingsZero = ActorQueryOperation.getSafeBindings(
+        await this.mediatorQueryOperation.mediate({
+          context,
+          operation: ActorAbstractPath.FACTORY.createFilter(
+            ActorAbstractPath.FACTORY
+              .createPattern(operation.subject, varP, operation.object, operation.graph),
+            ActorAbstractPath.FACTORY.createOperatorExpression('=', [
+              ActorAbstractPath.FACTORY.createTermExpression(operation.subject),
+              ActorAbstractPath.FACTORY.createTermExpression(operation.object),
+            ]),
+          ),
+        }),
+      ).bindingsStream.transform({
+        map(bindings) {
+          return bindings.delete(varP);
+        },
+        autoStart: false,
+      });
+      bindingsStream = new UnionIterator([
+        bindingsZero,
+        bindingsOne.bindingsStream,
+      ], { autoStart: false });
+    } else {
+      // If subject or object is not a variable, then determining the "Zero" part is simple.
+      if (operation.subject.termType === 'Variable') {
+        extra.push(BF.bindings([[ operation.subject, operation.object ]]));
+      }
+      if (operation.object.termType === 'Variable') {
+        extra.push(BF.bindings([[ operation.object, operation.subject ]]));
+      }
+
+      bindingsStream = bindingsOne.bindingsStream.prepend(extra);
+    }
 
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: single.metadata,
+      metadata: bindingsOne.metadata,
     };
   }
 }

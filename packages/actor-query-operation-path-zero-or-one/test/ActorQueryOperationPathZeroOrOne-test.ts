@@ -220,14 +220,46 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       ]);
     });
 
-    it('should not support ZeroOrOne paths with 2 variables', () => {
+    it('should support ZeroOrOne paths with 2 variables', async() => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('y'),
       ),
-      context: new ActionContext() };
-      return expect(actor.run(op)).rejects.toBeTruthy();
+      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 3 },
+        canContainUndefs: false,
+        variables: [ DF.variable('x'), DF.variable('y') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('4') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('5') ],
+        ]),
+      ]);
     });
   });
 });
