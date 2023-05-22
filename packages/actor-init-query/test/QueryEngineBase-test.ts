@@ -2,6 +2,7 @@ import { Readable, Transform } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext, ActionContextKey } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IPhysicalQueryPlanLogger,
   IActionContext, QueryStringContext, IQueryBindingsEnhanced, IQueryQuadsEnhanced,
@@ -551,6 +552,7 @@ describe('QueryEngineBase', () => {
           ]),
         ]),
         metadata: async() => ({
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
           canContainUndefs: false,
           variables: [ DF.variable('a') ],
@@ -565,6 +567,7 @@ describe('QueryEngineBase', () => {
         ]),
       ]);
       expect(await final.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('a') ],
@@ -579,6 +582,7 @@ describe('QueryEngineBase', () => {
           DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
         ]),
         metadata: async() => ({
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
           canContainUndefs: false,
           variables: [ DF.variable('a') ],
@@ -591,6 +595,7 @@ describe('QueryEngineBase', () => {
         DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
       ]);
       expect(await final.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('a') ],

@@ -6,6 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
+import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IQueryOperationResultBindings, MetadataBindings,
   IPhysicalQueryPlanLogger, Bindings, IActionContext, IJoinEntry, IJoinEntryWithMetadata,
@@ -200,7 +201,15 @@ export abstract class ActorRdfJoin
       cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
     }
 
+    // Propagate metadata invalidations
+    const state = new MetadataValidationState();
+    const invalidateListener = (): void => state.invalidate();
+    for (const metadata of metadatas) {
+      metadata.state.addInvalidateListener(invalidateListener);
+    }
+
     return {
+      state,
       ...partialMetadata,
       cardinality: {
         type: cardinalityJoined.type,

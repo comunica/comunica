@@ -1,4 +1,5 @@
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { MetadataValidationState } from '@comunica/metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap as wrapAsyncIterator } from 'asynciterator';
@@ -68,6 +69,10 @@ export class RdfJsQuadSource implements IQuadSource {
         matches.on('data', () => i++);
       });
     }
-    it.setProperty('metadata', { cardinality: { type: 'exact', value: cardinality }, canContainUndefs: false });
+    it.setProperty('metadata', {
+      state: new MetadataValidationState(),
+      cardinality: { type: 'exact', value: cardinality },
+      canContainUndefs: false,
+    });
   }
 }

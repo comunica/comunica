@@ -200,7 +200,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await output.metadata()).toEqual({
+      expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
         canContainUndefs: true,
         variables: [ DF.variable('p') ],
@@ -229,7 +229,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ DF.variable('myP') ],
         ) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await output.metadata()).toEqual({
+      expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
         canContainUndefs: true,
         variables: [ DF.variable('myP') ],
@@ -263,7 +263,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await output.metadata()).toEqual({
+      expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
         canContainUndefs: true,
         variables: [ DF.variable('p') ],
@@ -300,7 +300,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ DF.variable('myP') ],
         ) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await output.metadata()).toEqual({
+      expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
         canContainUndefs: true,
         variables: [ DF.variable('myP') ],
@@ -346,7 +346,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IQueryOperationResultQuads = <any> await actor.run(op);
 
-      expect(await output.metadata()).toEqual({
+      expect(await output.metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 2 },
         canContainUndefs: true,
       });
@@ -432,7 +432,7 @@ this is a body`));
       const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await (<any> output).metadata()).toEqual({
+      expect(await (<any> output).metadata()).toMatchObject({
         cardinality: { type: 'exact', value: 3 },
         canContainUndefs: true,
         variables: [ DF.variable('p') ],

@@ -1,12 +1,13 @@
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import type { ILink,
   MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { IActionContext, IAggregatedStore } from '@comunica/types';
+import type { IActionContext, IAggregatedStore, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
@@ -22,6 +23,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   private readonly mediatorMetadata: MediatorRdfMetadata;
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  private readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   private readonly mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   private readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   private readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
@@ -30,17 +32,30 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly handledUrls: Record<string, boolean>;
   private readonly aggregatedStore: IAggregatedStore | undefined;
   private linkQueue: Promise<ILinkQueue> | undefined;
+  private wasForcefullyClosed = false;
 
   public constructor(cacheSize: number, context: IActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string, maxIterators: number, aggregatedStore: IAggregatedStore | undefined,
     mediators: IMediatorArgs) {
-    super(cacheSize, subject, predicate, object, graph, firstUrl, maxIterators);
+    super(
+      cacheSize,
+      subject,
+      predicate,
+      object,
+      graph,
+      firstUrl,
+      maxIterators,
+      // Buffersize must be infinite for an aggregated store because it must keep filling until there are no more
+      // derived iterators in the aggregated store.
+      aggregatedStore ? { maxBufferSize: Number.POSITIVE_INFINITY } : undefined,
+    );
     this.context = context;
     this.forceSourceType = forceSourceType;
     this.mediatorDereferenceRdf = mediators.mediatorDereferenceRdf;
     this.mediatorMetadata = mediators.mediatorMetadata;
     this.mediatorMetadataExtract = mediators.mediatorMetadataExtract;
+    this.mediatorMetadataAccumulate = mediators.mediatorMetadataAccumulate;
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
     this.mediatorRdfResolveHypermediaLinks = mediators.mediatorRdfResolveHypermediaLinks;
     this.mediatorRdfResolveHypermediaLinksQueue = mediators.mediatorRdfResolveHypermediaLinksQueue;
@@ -53,19 +68,40 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   // until the buffer of this iterator must be fully consumed, which will not always be the case.
 
   public close(): void {
-    this.aggregatedStore?.end();
-    super.close();
+    this.getLinkQueue()
+      .then(linkQueue => {
+        if (this.isCloseable(linkQueue)) {
+          this.aggregatedStore?.end();
+          super.close();
+        } else {
+          this.wasForcefullyClosed = true;
+        }
+      })
+      .catch(error => super.destroy(error));
   }
 
   public destroy(cause?: Error): void {
-    this.aggregatedStore?.end();
-    super.destroy(cause);
+    this.getLinkQueue()
+      .then(linkQueue => {
+        if (this.isCloseable(linkQueue)) {
+          this.aggregatedStore?.end();
+          super.destroy(cause);
+        } else {
+          this.wasForcefullyClosed = true;
+        }
+      })
+      .catch(error => super.destroy(error));
+  }
+
+  protected isCloseable(linkQueue: ILinkQueue): boolean {
+    return (this.wasForcefullyClosed || linkQueue.isEmpty()) && !this.areIteratorsRunning();
   }
 
   protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    return (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || super.canStartNewIterator();
+    return !this.wasForcefullyClosed &&
+      (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || super.canStartNewIterator();
   }
 
   protected override isRunning(): boolean {
@@ -158,6 +194,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
 
     // Aggregate all discovered quads into a store.
+    this.aggregatedStore?.setBaseMetadata(<MetadataQuads> metadata, false);
     this.aggregatedStore?.import(quads);
 
     // Determine the source
@@ -177,7 +214,24 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       handledDatasets[dataset] = true;
     }
 
-    return { link, source, metadata, handledDatasets };
+    return { link, source, metadata: <MetadataQuads> metadata, handledDatasets };
+  }
+
+  public async accumulateMetadata(
+    accumulatedMetadata: MetadataQuads,
+    appendingMetadata: MetadataQuads,
+  ): Promise<MetadataQuads> {
+    return <MetadataQuads> (await this.mediatorMetadataAccumulate.mediate({
+      mode: 'append',
+      accumulatedMetadata,
+      appendingMetadata,
+      context: this.context,
+    })).metadata;
+  }
+
+  protected updateMetadata(metadataNew: MetadataQuads): void {
+    super.updateMetadata(metadataNew);
+    this.aggregatedStore?.setBaseMetadata(metadataNew, true);
   }
 }
 
@@ -185,6 +239,7 @@ export interface IMediatorArgs {
   mediatorDereferenceRdf: MediatorDereferenceRdf;
   mediatorMetadata: MediatorRdfMetadata;
   mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;

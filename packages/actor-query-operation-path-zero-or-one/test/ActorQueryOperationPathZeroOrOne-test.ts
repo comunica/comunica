@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -51,6 +52,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         return Promise.resolve({
           bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings),
           metadata: () => Promise.resolve({
+            state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: distinct ? 1 : 3 },
             canContainUndefs: false,
             variables: vars,
@@ -107,6 +109,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -125,6 +128,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -143,6 +147,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -164,6 +169,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -185,6 +191,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
         canContainUndefs: false,
         variables: [],
@@ -203,6 +210,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await output.metadata()).toEqual({
+        state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 1 },
         canContainUndefs: false,
         variables: [],

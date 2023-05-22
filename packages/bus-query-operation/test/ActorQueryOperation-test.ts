@@ -1,6 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { FunctionArgumentsCache } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -58,12 +59,28 @@ describe('ActorQueryOperation', () => {
   });
 
   describe('#cachifyMetadata', () => {
-    it('should remember an instance', () => {
-      const cb = jest.fn(() => 'ABC');
+    it('should remember an instance', async() => {
+      let counter = 0;
+      const cb = jest.fn(async() => ({ state: new MetadataValidationState(), value: counter++ }));
       const cached = ActorQueryOperation.cachifyMetadata(<any> cb);
-      expect(cached()).toEqual('ABC');
-      expect(cached()).toEqual('ABC');
+      expect((await cached()).value).toEqual(0);
+      expect((await cached()).value).toEqual(0);
       expect(cb).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle invalidation', async() => {
+      let counter = 0;
+      const state = new MetadataValidationState();
+      const cb = jest.fn(async() => ({ state, value: counter++ }));
+      const cached = ActorQueryOperation.cachifyMetadata(<any> cb);
+      expect((await cached()).value).toEqual(0);
+      expect((await cached()).value).toEqual(0);
+      expect(cb).toHaveBeenCalledTimes(1);
+
+      state.invalidate();
+      expect((await cached()).value).toEqual(1);
+      expect((await cached()).value).toEqual(1);
+      expect(cb).toHaveBeenCalledTimes(2);
     });
   });
 

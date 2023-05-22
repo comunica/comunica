@@ -1,8 +1,10 @@
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { MetadataValidationState } from '@comunica/metadata';
+import type { MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
+import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
 
@@ -13,7 +15,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected readonly predicate: RDF.Term;
   protected readonly object: RDF.Term;
   protected readonly graph: RDF.Term;
-  protected nextSource: ISourceState | undefined;
 
   private readonly cacheSize: number;
   protected readonly firstUrl: string;
@@ -22,10 +23,11 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private started = false;
   private readonly currentIterators: AsyncIterator<RDF.Quad>[];
   private iteratorsPendingCreation: number;
+  private accumulatedMetadata: Promise<MetadataQuads | undefined>;
 
   public constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string, maxIterators: number) {
-    super({ autoStart: true });
+    firstUrl: string, maxIterators: number, options?: BufferedIteratorOptions) {
+    super({ autoStart: true, ...options });
     this.cacheSize = cacheSize;
     this.subject = subject;
     this.predicate = predicate;
@@ -40,6 +42,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
     this.currentIterators = [];
     this.iteratorsPendingCreation = 0;
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    this.accumulatedMetadata = Promise.resolve(undefined);
   }
 
   protected _end(destroy?: boolean): void {
@@ -178,12 +182,23 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   }
 
   /**
+   * Append the fields from appendingMetadata into accumulatedMetadata.
+   * @param accumulatedMetadata The fields to append to.
+   * @param appendingMetadata The fields to append.
+   * @protected
+   */
+  protected abstract accumulateMetadata(
+    accumulatedMetadata: MetadataQuads,
+    appendingMetadata: MetadataQuads,
+  ): Promise<MetadataQuads>;
+
+  /**
    * Start a new iterator for the given source.
    * Once the iterator is done, it will either determine a new source, or it will close the linked iterator.
    * @param {ISourceState} startSource The start source state.
-   * @param {boolean} emitMetadata If the metadata event should be emitted.
+   * @param {boolean} firstPage If this is the first iterator that is being started.
    */
-  protected startIterator(startSource: ISourceState, emitMetadata: boolean): void {
+  protected startIterator(startSource: ISourceState, firstPage: boolean): void {
     // Delegate the quad pattern query to the given source
     const iterator = startSource.source!
       .match(this.subject, this.predicate, this.object, this.graph);
@@ -206,28 +221,51 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
     // Listen for the metadata of the source
     // The metadata property is guaranteed to be set
-    iterator.getProperty('metadata', (metadata: Record<string, any>) => {
-      startSource.metadata = { ...startSource.metadata, ...metadata };
-
-      // Emit metadata if needed
-      if (emitMetadata) {
-        this.setProperty('metadata', startSource.metadata);
-      }
-
-      // Determine next urls, which will eventually become a next-next source.
-      this.getSourceLinks(startSource.metadata)
-        .then((nextUrls: ILink[]) => Promise.all(nextUrls))
-        .then(async(nextUrls: ILink[]) => {
-          // Append all next URLs to our queue
-          const linkQueue = await this.getLinkQueue();
-          for (const nextUrl of nextUrls) {
-            linkQueue.push(nextUrl, startSource.link);
+    iterator.getProperty('metadata', (metadata: MetadataQuads) => {
+      // Accumulate the metadata object
+      this.accumulatedMetadata = this.accumulatedMetadata
+        .then(previousMetadata => (async() => {
+          if (!previousMetadata) {
+            previousMetadata = startSource.metadata;
           }
+          return this.accumulateMetadata(previousMetadata, metadata);
+        })()
+          .then(accumulatedMetadata => {
+            // Also merge fields that were not explicitly accumulated
+            const returnMetadata = { ...startSource.metadata, ...metadata, ...accumulatedMetadata };
 
-          receivedMetadata = true;
-          this.startIteratorsForNextUrls(startSource.handledDatasets, true);
-        }).catch(error => this.destroy(error));
+            // Create new metadata state
+            returnMetadata.state = new MetadataValidationState();
+
+            // Emit metadata, and invalidate any metadata that was set before
+            this.updateMetadata(returnMetadata);
+
+            // Determine next urls, which will eventually become a next-next source.
+            this.getSourceLinks(returnMetadata)
+              .then((nextUrls: ILink[]) => Promise.all(nextUrls))
+              .then(async(nextUrls: ILink[]) => {
+                // Append all next URLs to our queue
+                const linkQueue = await this.getLinkQueue();
+                for (const nextUrl of nextUrls) {
+                  linkQueue.push(nextUrl, startSource.link);
+                }
+
+                receivedMetadata = true;
+                this.startIteratorsForNextUrls(startSource.handledDatasets, true);
+              }).catch(error => this.destroy(error));
+
+            return returnMetadata;
+          })).catch(error => {
+          this.destroy(error);
+          return <MetadataQuads> {};
+        });
     });
+  }
+
+  protected updateMetadata(metadataNew: MetadataQuads): void {
+    const metadataToInvalidate = this.getProperty<MetadataQuads>('metadata');
+    this.setProperty('metadata', metadataNew);
+    metadataToInvalidate?.state.invalidate();
   }
 
   protected isRunning(): boolean {
@@ -261,11 +299,15 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         }
 
         // Close, only if no other iterators are still running
-        if (canClose && linkQueue.isEmpty() && !this.areIteratorsRunning()) {
+        if (canClose && this.isCloseable(linkQueue)) {
           this.close();
         }
       })
       .catch(error => this.destroy(error));
+  }
+
+  protected isCloseable(linkQueue: ILinkQueue): boolean {
+    return linkQueue.isEmpty() && !this.areIteratorsRunning();
   }
 }
 
@@ -296,7 +338,7 @@ export interface ISourceState {
   /**
    * The source's initial metadata.
    */
-  metadata: Record<string, any>;
+  metadata: MetadataQuads;
   /**
    * All dataset identifiers that have been passed for this source.
    */

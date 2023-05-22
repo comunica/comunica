@@ -57,12 +57,12 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
 
     it('should run on a stream where count is given', () => {
       return expect(actor.run({ url: '', metadata: input, requestTime: 0, context })).resolves
-        .toEqual({ metadata: { cardinality: { type: 'estimate', value: 12_345 }}});
+        .toEqual({ metadata: { cardinality: { type: 'estimate', value: 12_345, dataset: 'g1' }}});
     });
 
     it('should run on a stream where count is not given', () => {
       return expect(actor.run({ url: '', metadata: inputNone, requestTime: 0, context })).resolves
-        .toEqual({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
+        .toEqual({ metadata: { cardinality: { type: 'estimate', value: 0 }}});
     });
   });
 });

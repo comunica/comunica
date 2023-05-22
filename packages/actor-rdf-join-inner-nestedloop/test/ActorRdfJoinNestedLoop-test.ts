@@ -4,6 +4,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -68,6 +69,7 @@ describe('ActorRdfJoinNestedLoop', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: async() => ({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
                 pageSize: 100,
                 requestTime: 10,
@@ -82,6 +84,7 @@ describe('ActorRdfJoinNestedLoop', () => {
             output: {
               bindingsStream: new ArrayIterator([], { autoStart: false }),
               metadata: async() => ({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
                 pageSize: 100,
                 requestTime: 20,
@@ -109,6 +112,7 @@ describe('ActorRdfJoinNestedLoop', () => {
 
       it('should handle undefs in left stream', () => {
         action.entries[0].output.metadata = async() => ({
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 4 },
           pageSize: 100,
           requestTime: 10,
@@ -126,6 +130,7 @@ describe('ActorRdfJoinNestedLoop', () => {
 
       it('should handle undefs in right stream', () => {
         action.entries[1].output.metadata = async() => ({
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 5 },
           pageSize: 100,
           requestTime: 20,
@@ -143,6 +148,7 @@ describe('ActorRdfJoinNestedLoop', () => {
 
       it('should handle undefs in left and right stream', () => {
         action.entries[0].output.metadata = async() => ({
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 4 },
           pageSize: 100,
           requestTime: 10,
@@ -150,6 +156,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           variables: [],
         });
         action.entries[1].output.metadata = async() => ({
+          state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 5 },
           pageSize: 100,
           requestTime: 20,
@@ -379,6 +386,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         ]),
       ]);
       action.entries[1].output.metadata = async() => ({
+        state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: 5 },
         pageSize: 100,
         requestTime: 20,

@@ -34,6 +34,7 @@
   "dependencies": {
     "@comunica/bus-rdf-join": "^2.6.8",
     "@comunica/mediatortype-join-coefficients": "^2.6.8",
+    "@comunica/metadata": "^2.5.0",
     "@comunica/types": "^2.6.8",
     "asynciterator": "^3.8.0"
   },

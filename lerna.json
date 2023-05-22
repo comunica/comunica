@@ -8,7 +8,8 @@
       "message": "Bump to release version %s",
       "allowBranch": [
         "master",
-        "next/major"
+        "next/major",
+        "feature/adaptive-join"
       ],
       "npmClient": "npm"
     }

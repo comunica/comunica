@@ -1,4 +1,5 @@
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
+import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type {
   IActorRdfResolveQuadPatternOutput,
   IQuadSource,
@@ -7,6 +8,7 @@ import type {
 import { getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -26,6 +28,7 @@ export class FederatedQuadSource implements IQuadSource {
   private static readonly SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
   protected readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
+  protected readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
 
   protected readonly sources: DataSources;
   protected readonly contextDefault: IActionContext;
@@ -34,10 +37,15 @@ export class FederatedQuadSource implements IQuadSource {
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
-  public constructor(mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern,
-    context: IActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
-    skipEmptyPatterns: boolean) {
+  public constructor(
+    mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern,
+    mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate,
+    context: IActionContext,
+    emptyPatterns: Map<IDataSource, RDF.Quad[]>,
+    skipEmptyPatterns: boolean,
+  ) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
+    this.mediatorRdfMetadataAccumulate = mediatorRdfMetadataAccumulate;
     this.sources = context.get(KeysRdfResolveQuadPattern.sources)!;
     this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
     this.emptyPatterns = emptyPatterns;
@@ -187,27 +195,39 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
-    // Counters for our metadata
-    const metadata: MetadataQuads = { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false };
-    let remainingSources = this.sources.length;
-
-    // Anonymous function to handle cardinality from metadata
-    const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
-      pattern: RDF.BaseQuad | undefined, lastMetadata?: MetadataQuads): void => {
-      if (this.skipEmptyPatterns && !currentTotalItems && pattern && !this.isSourceEmpty(source, pattern)) {
-        this.emptyPatterns.get(source)!.push(pattern);
-      }
-      if (!remainingSources) {
-        if (lastMetadata && this.sources.length === 1) {
-          // If we only had one source, emit the metadata as-is.
-          it.setProperty('metadata', lastMetadata);
-        } else {
-          it.setProperty('metadata', metadata);
+    // A function that is called every time metadata is found,
+    // and will accumulate all metadata if the metadata from all sources have been defined.
+    const tryAccumulatingMetadata = async(): Promise<void> => {
+      // Only accumulate when the metadata of all sources have been defined
+      if (accumulatingMetadata.size === this.sources.length) {
+        // Accumulate metadata using mediator
+        let accumulatedMetadata: MetadataQuads = <MetadataQuads> (await this.mediatorRdfMetadataAccumulate
+          .mediate({ mode: 'initialize', context: this.contextDefault })).metadata;
+        for (const appendingMetadata of accumulatingMetadata.values()) {
+          accumulatedMetadata = {
+            ...appendingMetadata,
+            ...(await this.mediatorRdfMetadataAccumulate
+              .mediate({
+                mode: 'append',
+                accumulatedMetadata,
+                appendingMetadata,
+                context: this.contextDefault,
+              })).metadata,
+          };
         }
+        // Create new metadata state
+        accumulatedMetadata.state = new MetadataValidationState();
+
+        // Emit metadata, and invalidate any metadata that was set before
+        const metadataToInvalidate = it.getProperty<MetadataQuads>('metadata');
+        it.setProperty('metadata', accumulatedMetadata);
+        metadataToInvalidate?.state.invalidate();
       }
     };
 
-    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
+    // Immediately start sub-iterators for each source, so that their metadata can be collected.
+    const accumulatingMetadata: Map<string, MetadataQuads> = new Map();
+    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async(source, sourceIndex) => {
       const sourceId = this.getSourceId(source);
 
       // Deskolemize terms, so we send the original blank nodes to each source.
@@ -232,40 +252,44 @@ export class FederatedQuadSource implements IQuadSource {
         this.isSourceEmpty(source, pattern = this.algebraFactory
           .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
-        output.data.setProperty('metadata', { cardinality: 0, canContainUndefs: false });
+        // Return the default metadata
+        output.data.setProperty('metadata', {
+          state: new MetadataValidationState(),
+          ...(await this.mediatorRdfMetadataAccumulate
+            .mediate({ mode: 'initialize', context: this.contextDefault })).metadata,
+        });
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
 
       // Handle the metadata from this source
-      output.data.getProperty('metadata', (subMetadata: MetadataQuads) => {
-        if (!subMetadata.cardinality || !Number.isFinite(subMetadata.cardinality.value)) {
-          // We're already at infinite, so ignore any later metadata
-          metadata.cardinality.type = 'estimate';
-          metadata.cardinality.value = Number.POSITIVE_INFINITY;
-          remainingSources = 0;
-        } else {
-          if (subMetadata.cardinality.type === 'estimate') {
-            metadata.cardinality.type = 'estimate';
+      const addMetadataPropertyListener = (): void => {
+        output.data.getProperty('metadata', (subMetadata: MetadataQuads) => {
+          accumulatingMetadata.set(`${sourceIndex}`, subMetadata);
+
+          // Save empty patterns
+          if (this.skipEmptyPatterns &&
+            !subMetadata.cardinality?.value &&
+            pattern &&
+            !this.isSourceEmpty(source, pattern)) {
+            this.emptyPatterns.get(source)!.push(pattern);
           }
-          metadata.cardinality.value += subMetadata.cardinality.value;
-          remainingSources--;
-        }
-        if (metadata.requestTime || subMetadata.requestTime) {
-          metadata.requestTime = metadata.requestTime || 0;
-          subMetadata.requestTime = subMetadata.requestTime || 0;
-          metadata.requestTime += subMetadata.requestTime;
-        }
-        if (metadata.pageSize || subMetadata.pageSize) {
-          metadata.pageSize = metadata.pageSize || 0;
-          subMetadata.pageSize = subMetadata.pageSize || 0;
-          metadata.pageSize += subMetadata.pageSize;
-        }
-        if (subMetadata.canContainUndefs) {
-          metadata.canContainUndefs = true;
-        }
-        checkEmitMetadata(metadata.cardinality.value, source, pattern, subMetadata);
-      });
+
+          // Accumulate metadata
+          tryAccumulatingMetadata()
+            .catch(error => it.emit('error', error));
+
+          // Re-accumulate metadata if this metadata changes
+          subMetadata.state?.addInvalidateListener(() => {
+            // Remove this source's metadata in the array
+            accumulatingMetadata.delete(`${sourceIndex}`);
+
+            // Listen to new metadata property changes
+            addMetadataPropertyListener();
+          });
+        });
+      };
+      addMetadataPropertyListener();
 
       // Determine the data stream from this source
       const data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
@@ -293,7 +317,10 @@ export class FederatedQuadSource implements IQuadSource {
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
-      it.setProperty('metadata', metadata);
+      this.mediatorRdfMetadataAccumulate
+        .mediate({ mode: 'initialize', context: this.contextDefault })
+        .then(result => it.setProperty('metadata', { state: new MetadataValidationState(), ...result.metadata }))
+        .catch(error => it.emit('error', error));
     }
 
     return it;

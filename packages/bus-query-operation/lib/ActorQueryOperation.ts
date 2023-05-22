@@ -93,9 +93,20 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   public static cachifyMetadata<M extends IMetadata<T>, T extends RDF.Variable | RDF.QuadTermName>(
     metadata: () => Promise<M>,
   ): () => Promise<M> {
-    let lastReturn: Promise<M>;
-    // eslint-disable-next-line no-return-assign,@typescript-eslint/no-misused-promises
-    return () => (lastReturn || (lastReturn = metadata()));
+    let lastReturn: Promise<M> | undefined;
+    return () => {
+      if (!lastReturn) {
+        lastReturn = metadata();
+        lastReturn
+          .then(lastReturnValue => lastReturnValue.state.addInvalidateListener(() => {
+            lastReturn = undefined;
+          }))
+          .catch(() => {
+            // Ignore error
+          });
+      }
+      return lastReturn;
+    };
   }
 
   /**

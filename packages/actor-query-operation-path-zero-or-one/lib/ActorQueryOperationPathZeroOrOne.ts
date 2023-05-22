@@ -2,6 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
@@ -33,6 +34,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
         type: 'bindings',
         bindingsStream: new SingletonIterator(BF.bindings()),
         metadata: () => Promise.resolve({
+          state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },
           canContainUndefs: false,
           variables: [],

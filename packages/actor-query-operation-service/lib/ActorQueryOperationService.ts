@@ -3,6 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -50,7 +51,12 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
         output = {
           bindingsStream: new SingletonIterator(BF.bindings()),
           type: 'bindings',
-          metadata: async() => ({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []}),
+          metadata: async() => ({
+            state: new MetadataValidationState(),
+            cardinality: { type: 'exact', value: 1 },
+            canContainUndefs: false,
+            variables: [],
+          }),
         };
       } else {
         throw error;

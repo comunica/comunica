@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { IActorArgs, IActorTest } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResult,
   BindingsStream,
   Bindings,
@@ -33,6 +34,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
     const variables = operation.variables;
     const metadata = (): Promise<MetadataBindings> => Promise.resolve({
+      state: new MetadataValidationState(),
       cardinality: { type: 'exact', value: operation.bindings.length },
       canContainUndefs: operation.bindings.some(bindings => variables.some(variable => !(`?${variable.value}` in bindings))),
       variables,

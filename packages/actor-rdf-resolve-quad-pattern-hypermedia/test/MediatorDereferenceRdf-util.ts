@@ -5,6 +5,8 @@ import type {
   MediatorDereferenceRdf,
 } from '@comunica/bus-dereference-rdf';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataAccumulate,
+  IActionRdfMetadataAccumulateAppend } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -50,6 +52,30 @@ const mediatorMetadataExtract: MediatorRdfMetadataExtract = {
   mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
 };
 // @ts-expect-error
+const mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate = {
+  async mediate(action: IActionRdfMetadataAccumulateAppend) {
+    const metadata = { ...action.accumulatedMetadata };
+    if (metadata.cardinality) {
+      metadata.cardinality = { ...metadata.cardinality };
+    }
+    const subMetadata = action.appendingMetadata;
+    if (!subMetadata.cardinality) {
+      // We're already at infinite, so ignore any later metadata
+      metadata.cardinality = <any>{};
+      metadata.cardinality.type = 'estimate';
+      metadata.cardinality.value = Number.POSITIVE_INFINITY;
+    }
+    if (metadata.cardinality?.value !== undefined && subMetadata.cardinality?.value !== undefined) {
+      metadata.cardinality.value += subMetadata.cardinality.value;
+    }
+    if (subMetadata.cardinality?.type === 'estimate') {
+      metadata.cardinality.type = 'estimate';
+    }
+
+    return { metadata };
+  },
+};
+// @ts-expect-error
 const mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia = {
   mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
     dataset: 'MYDATASET',
@@ -69,6 +95,7 @@ const mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQ
 export const mediators = {
   mediatorMetadata,
   mediatorMetadataExtract,
+  mediatorMetadataAccumulate,
   mediatorDereferenceRdf,
   mediatorRdfResolveHypermedia,
   mediatorRdfResolveHypermediaLinks,

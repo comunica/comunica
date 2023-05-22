@@ -6,9 +6,14 @@ import type * as RDF from '@rdfjs/types';
  */
 export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermName> extends Record<string, any> {
   /**
+   * The validity state of this metadata object.
+   */
+  state: IMetadataValidationState;
+
+  /**
    * An estimate of the number of bindings in the source.
    */
-  cardinality: RDF.QueryResultCardinality;
+  cardinality: QueryResultCardinality;
   /**
    * If any of the bindings could contain an undefined variable binding.
    * If this is false, then all variables are guaranteed to have a defined bound value in the bindingsStream.
@@ -57,3 +62,38 @@ export type MetadataBindings = IMetadata<RDF.Variable> & {
   variables: RDF.Variable[];
 };
 export type MetadataQuads = IMetadata<RDF.QuadTermName>;
+
+export type QueryResultCardinality = RDF.QueryResultCardinality & {
+  /**
+   * If this field is set, this means that the cardinality is defined across this whole dataset.
+   * If this field is not set, then the cardinality is only defined for the current stream.
+   */
+  dataset?: string;
+};
+
+/**
+ * Represents the validity of a metadata object.
+ */
+export interface IMetadataValidationState {
+  /**
+   * If the metadata object is valid.
+   *
+   * If it is invalid, the metadata values should be considered outdated, and a new version should be requested.
+   */
+  valid: boolean;
+  /**
+   * Mark the metadta object as invalid.
+   *
+   * This will set the `valid` field to false, and invoke the invalidation listeners.
+   */
+  invalidate: () => void;
+  /**
+   * Add an listener that will be invoked when the metadata object becomes invalid.
+   *
+   * No expensive operations should be done in these listeners, only other invalidations.
+   * If other operations should be done, those should be scheduled in next ticks.
+   *
+   * @param listener An invalidation listener.
+   */
+  addInvalidateListener: (listener: () => void) => void;
+}

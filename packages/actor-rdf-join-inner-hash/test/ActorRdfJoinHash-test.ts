@@ -4,6 +4,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -74,6 +75,7 @@ describe('ActorRdfJoinHash', () => {
               bindingsStream: iterators[0],
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
@@ -90,6 +92,7 @@ describe('ActorRdfJoinHash', () => {
               bindingsStream: iterators[1],
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
@@ -121,6 +124,7 @@ describe('ActorRdfJoinHash', () => {
               bindingsStream: iterators[0],
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
@@ -137,6 +141,7 @@ describe('ActorRdfJoinHash', () => {
               bindingsStream: iterators[1],
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
@@ -166,6 +171,7 @@ describe('ActorRdfJoinHash', () => {
               bindingsStream: iterators[0],
               metadata: () => Promise.resolve(
                 {
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
@@ -181,6 +187,7 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: iterators[1],
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
                 pageSize: 100,
                 requestTime: 20,
@@ -208,6 +215,7 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: iterators[0],
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
                 pageSize: 100,
                 requestTime: 10,
@@ -222,6 +230,7 @@ describe('ActorRdfJoinHash', () => {
             output: {
               bindingsStream: iterators[1],
               metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
                 pageSize: 100,
                 requestTime: 20,
@@ -269,7 +278,10 @@ describe('ActorRdfJoinHash', () => {
     it('should return an empty stream for empty input', () => {
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'estimate', value: 20 }, canContainUndefs: false, variables: []});
+          .toEqual({ state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 20 },
+            canContainUndefs: false,
+            variables: []});
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
     });
@@ -295,6 +307,7 @@ describe('ActorRdfJoinHash', () => {
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
           .toEqual({
+            state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 20 },
             canContainUndefs: false,
             variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
@@ -329,6 +342,7 @@ describe('ActorRdfJoinHash', () => {
       variables1 = [ DF.variable('a'), DF.variable('c') ];
       return actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
           variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
@@ -439,6 +453,7 @@ describe('ActorRdfJoinHash', () => {
           ]),
         ];
         expect(await output.metadata()).toEqual({
+          state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
           variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],

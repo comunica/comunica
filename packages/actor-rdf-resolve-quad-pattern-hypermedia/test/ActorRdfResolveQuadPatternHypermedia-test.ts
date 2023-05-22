@@ -1,11 +1,13 @@
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
@@ -20,6 +22,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let mediatorDereferenceRdf: MediatorDereferenceRdf;
   let mediatorMetadata: MediatorRdfMetadata;
   let mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  let mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   let mediatorRdfResolveHypermedia: MediatorRdfResolveHypermedia;
   let mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   let mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
@@ -29,6 +32,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
     mediatorDereferenceRdf = utilMediators.mediatorDereferenceRdf;
     mediatorMetadata = utilMediators.mediatorMetadata;
     mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
+    mediatorMetadataAccumulate = utilMediators.mediatorMetadataAccumulate;
     mediatorRdfResolveHypermedia = utilMediators.mediatorRdfResolveHypermedia;
     mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
     mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
@@ -45,6 +49,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
+        mediatorMetadataAccumulate,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
       })).toBeInstanceOf(ActorRdfResolveQuadPatternHypermedia);
@@ -62,6 +67,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         mediatorDereferenceRdf,
         mediatorMetadata,
         mediatorMetadataExtract,
+        mediatorMetadataAccumulate,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
       })).toBeInstanceOf(ActorRdfResolveQuadPatternHypermedia);
@@ -92,6 +98,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
+        mediatorMetadataAccumulate,
         mediatorDereferenceRdf,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
@@ -231,6 +238,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           httpInvalidator,
           mediatorMetadata,
           mediatorMetadataExtract,
+          mediatorMetadataAccumulate,
           mediatorDereferenceRdf,
           mediatorRdfResolveHypermedia,
           mediatorRdfResolveHypermediaLinks,
@@ -263,13 +271,21 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           quad('s4', 'p4', 'o4'),
         ]);
         expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-          .toEqual({ firstMeta: true, a: 1 });
+          .toEqual({ state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+            firstMeta: true,
+            a: 1 });
       });
 
       it('should return a quad stream and metadata, with metadata resolving first', async() => {
         const { data } = await actor.run({ context, pattern });
         expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
-          .toEqual({ firstMeta: true, a: 1 });
+          .toEqual({
+            state: expect.any(MetadataValidationState),
+            firstMeta: true,
+            a: 1,
+            cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          });
         expect(await arrayifyStream(data)).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
@@ -277,6 +293,62 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           quad('s4', 'p4', 'o4'),
         ]);
       });
+    });
+  });
+
+  describe('An ActorRdfResolveQuadPatternHypermedia instance without mediatorMetadataAccumulate', () => {
+    let actor: any;
+    let context: IActionContext;
+    let pattern: any;
+    let httpInvalidator: any;
+    let listener: any;
+
+    beforeEach(() => {
+      httpInvalidator = {
+        addInvalidateListener: (l: any) => listener = l,
+      };
+      actor = new ActorRdfResolveQuadPatternHypermedia({
+        bus,
+        cacheSize: 10,
+        maxIterators: 64,
+        aggregateStore: false,
+        httpInvalidator,
+        mediatorMetadata,
+        mediatorMetadataExtract,
+        mediatorDereferenceRdf,
+        mediatorRdfResolveHypermedia,
+        mediatorRdfResolveHypermediaLinks,
+        mediatorRdfResolveHypermediaLinksQueue,
+        name: 'actor',
+      });
+      context = new ActionContext({ [KeysRdfResolveQuadPattern.source.name]: { value: 'firstUrl' }});
+      pattern = quad('?s', 'p1', '?o');
+    });
+
+    it('should return a quad stream and metadata', async() => {
+      const { data } = await actor.run({ context, pattern });
+      expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+        quad('s1', 'p1', 'o1'),
+        quad('s2', 'p2', 'o2'),
+        quad('s3', 'p3', 'o3'),
+        quad('s4', 'p4', 'o4'),
+      ]);
+      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+        .toEqual({ state: expect.any(MetadataValidationState),
+          firstMeta: true,
+          a: 1 });
+    });
+
+    it('should return a quad stream and metadata, with metadata resolving first', async() => {
+      const { data } = await actor.run({ context, pattern });
+      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+        .toEqual({ state: expect.any(MetadataValidationState), firstMeta: true, a: 1 });
+      expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+        quad('s1', 'p1', 'o1'),
+        quad('s2', 'p2', 'o2'),
+        quad('s3', 'p3', 'o3'),
+        quad('s4', 'p4', 'o4'),
+      ]);
     });
   });
 });

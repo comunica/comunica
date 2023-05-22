@@ -116,7 +116,7 @@ describe('ActorQueryOperationService', () => {
         context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata())
-          .toEqual({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
+          .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings(),
         ]);

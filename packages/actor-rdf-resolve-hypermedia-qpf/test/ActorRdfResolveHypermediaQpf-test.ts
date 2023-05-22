@@ -102,7 +102,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
     it('should create an RdfSourceQpf', () => {
       const context = {};
       const quads = empty();
-      const source = actor.createSource(metadata, context, quads);
+      const source = actor.createSource('url', metadata, context, quads);
       expect(source).toBeInstanceOf(RdfSourceQpf);
       expect(source.mediatorMetadata).toBe(mediatorMetadata);
       expect(source.mediatorMetadataExtract).toBe(mediatorMetadataExtract);

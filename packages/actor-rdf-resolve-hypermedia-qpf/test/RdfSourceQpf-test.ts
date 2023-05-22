@@ -89,6 +89,7 @@ describe('RdfSourceQpf', () => {
         'p',
         's',
         'g',
+        'url',
         metadata,
         new ActionContext(),
         undefined,
@@ -106,6 +107,7 @@ describe('RdfSourceQpf', () => {
         'p',
         's',
         'g',
+        'url',
         metadata,
         new ActionContext(),
         streamifyArray([
@@ -131,6 +133,7 @@ describe('RdfSourceQpf', () => {
         'p',
         'o',
         'g',
+        'url',
         metadata,
         new ActionContext(),
         streamifyArray([
@@ -200,6 +203,7 @@ describe('RdfSourceQpf', () => {
         'p',
         'o',
         'g',
+        'url',
         metadata,
         new ActionContext(),
         streamifyArray([
@@ -238,6 +242,7 @@ describe('RdfSourceQpf', () => {
         'p',
         'o',
         'g',
+        'url',
         metadata,
         new ActionContext(),
         streamifyArray([
@@ -285,6 +290,7 @@ describe('RdfSourceQpf', () => {
         'p',
         'o',
         undefined,
+        'url',
         metadata,
         new ActionContext(),
         streamifyArray([
@@ -348,7 +354,7 @@ describe('RdfSourceQpf', () => {
       const output = source.match(DF.namedNode('s1'), v, DF.namedNode('o1'), v);
       const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
       await arrayifyStream(output);
-      expect(await metadataPromise).toEqual({ next: 'NEXT', canContainUndefs: false });
+      expect(await metadataPromise).toEqual({ next: 'NEXT', canContainUndefs: false, subsetOf: 'url' });
     });
 
     // The following test is not applicable anymore.
@@ -495,6 +501,7 @@ describe('RdfSourceQpf with a custom default graph', () => {
       'p',
       'o',
       'g',
+      'url',
       metadata,
       new ActionContext(),
       streamifyArray([

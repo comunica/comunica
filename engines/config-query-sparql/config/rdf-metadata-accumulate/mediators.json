@@ -1,0 +1,10 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-accumulate/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main",
+  "@type": "MediatorCombineUnion",
+  "bus": { "@id": "ActorRdfMetadataAccumulate:_default_bus" },
+  "field": "metadata"
+}

@@ -1,6 +1,7 @@
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 
@@ -33,6 +34,7 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
       result: {
         bindingsStream: new ArrayIterator([], { autoStart: false }),
         metadata: async() => ({
+          state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 0 },
           canContainUndefs: false,
           variables: ActorRdfJoin.joinVariables(await ActorRdfJoin.getMetadatas(action.entries)),

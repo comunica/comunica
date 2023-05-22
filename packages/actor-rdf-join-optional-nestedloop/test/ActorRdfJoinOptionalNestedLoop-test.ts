@@ -3,6 +3,7 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -115,6 +116,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
                   variables: [ DF.variable('a') ],
@@ -140,6 +142,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
                   ]),
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
                   canContainUndefs: false,
                   variables: [ DF.variable('a'), DF.variable('b') ],
@@ -157,6 +160,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         expect(result.type).toEqual('bindings');
         expect(await result.metadata())
           .toEqual({
+            state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
             canContainUndefs: true,
             variables: [ DF.variable('a'), DF.variable('b') ],
