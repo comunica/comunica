@@ -37,7 +37,7 @@
     "@comunica/core": "^2.6.8",
     "@comunica/types": "^2.6.8",
     "@rdfjs/types": "*",
-    "htmlparser2": "^8.0.1",
+    "htmlparser2": "^9.0.0",
     "readable-stream": "^4.2.0"
   },
   "scripts": {
