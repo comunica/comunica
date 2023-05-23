@@ -38,4 +38,6 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `checkUrlSuffix`: If URLs ending with '/sparql' should also be considered SPARQL endpoints, defaults to `true`.
 * `forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.
+* `cacheSize`: The cache size for COUNT queries, defaults to `1024`.

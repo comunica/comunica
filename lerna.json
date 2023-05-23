@@ -9,7 +9,9 @@
       "allowBranch": [
         "master",
         "next/major",
-        "feature/adaptive-join"
+        "feature/adaptive-join",
+        "feature/optimize-sparql-fed",
+        "feature/*"
       ],
       "npmClient": "npm"
     }
