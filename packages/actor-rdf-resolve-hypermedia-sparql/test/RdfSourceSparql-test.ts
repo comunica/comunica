@@ -18,7 +18,7 @@ globalThis.ReadableStream = globalThis.ReadableStream || require('web-streams-po
 describe('RdfSourceSparql', () => {
   const context = new ActionContext({});
   const mediatorHttp: any = {
-    mediate(action: any) {
+    mediate: jest.fn((action: any) => {
       const query = action.init.body.toString();
       return {
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -53,8 +53,12 @@ describe('RdfSourceSparql', () => {
 }`),
         ok: true,
       };
-    },
+    }),
   };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   describe('#replaceBlankNodes', () => {
     it('should replace blank nodes with variables', () => {
@@ -121,7 +125,7 @@ describe('RdfSourceSparql', () => {
     let source: RdfSourceSparql;
 
     beforeEach(() => {
-      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false);
+      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false, 64);
     });
 
     it('should return data', async() => {
@@ -174,7 +178,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       expect(await arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
@@ -190,12 +194,74 @@ describe('RdfSourceSparql', () => {
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
       );
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: 3, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
       await expect(stream.toArray()).resolves.toEqual([
         quad('s', 'p1', 'o'),
         quad('s', 'p2', 'o'),
         quad('s', 'p3', 'o'),
       ]);
+    });
+
+    it('should emit metadata twice, and reuse from cache', async() => {
+      const stream1 = source.match(
+        DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
+      );
+      expect(await new Promise(resolve => stream1.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+      await stream1.toArray();
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+
+      const stream2 = source.match(
+        DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
+      );
+      expect(await new Promise(resolve => stream2.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+      await stream2.toArray();
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not cache different queries', async() => {
+      const stream1 = source.match(
+        DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
+      );
+      expect(await new Promise(resolve => stream1.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+      await stream1.toArray();
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+
+      const stream2 = source.match(
+        DF.namedNode('s2'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
+      );
+      expect(await new Promise(resolve => stream2.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+      await stream2.toArray();
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(4);
+    });
+
+    it('should not cache if cache is disabled', async() => {
+      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false, 0);
+
+      const stream1 = source.match(
+        DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
+      );
+      expect(await new Promise(resolve => stream1.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+      await stream1.toArray();
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+
+      const stream2 = source.match(
+        DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
+      );
+      expect(await new Promise(resolve => stream2.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: true });
+      await stream2.toArray();
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(4);
     });
 
     it('should emit an error on server errors', async() => {
@@ -210,7 +276,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       await expect(arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
@@ -256,7 +322,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       await expect(arrayifyStream(source
         .match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph())))
         .rejects.toThrow(new Error('The endpoint http://example.org/sparql failed to provide a binding for p.'));
@@ -274,7 +340,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       await expect(arrayifyStream(source
         .match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph())))
         .rejects.toThrow(new Error('Some stream error'));
@@ -319,10 +385,10 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: true });
     });
 
     it('should emit metadata with infinity count for missing count results', async() => {
@@ -364,10 +430,10 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ cardinality: Number.POSITIVE_INFINITY, canContainUndefs: true });
+        .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: true });
     });
 
     it('should allow multiple read calls on query bindings', () => {
@@ -417,7 +483,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, true);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, true, 64);
       expect(await arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))

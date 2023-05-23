@@ -6,6 +6,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
+import LRU = require('lru-cache');
 import { DataFactory } from 'rdf-data-factory';
 import { getTerms, getVariables, mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -23,8 +24,10 @@ export class RdfSourceSparql implements IQuadSource {
   private readonly mediatorHttp: MediatorHttp;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
+  private readonly cache: LRU<string, RDF.QueryResultCardinality> | undefined;
 
-  public constructor(url: string, context: IActionContext, mediatorHttp: MediatorHttp, forceHttpGet: boolean) {
+  public constructor(url: string, context: IActionContext, mediatorHttp: MediatorHttp, forceHttpGet: boolean,
+    cacheSize: number) {
     this.url = url;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
@@ -35,6 +38,9 @@ export class RdfSourceSparql implements IQuadSource {
       ),
       prefixVariableQuestionMark: true,
     });
+    this.cache = cacheSize > 0 ?
+      new LRU<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
+      undefined;
   }
 
   /**
@@ -149,23 +155,30 @@ export class RdfSourceSparql implements IQuadSource {
 
     // Emit metadata containing the estimated count (reject is never called)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    new Promise<Record<string, any>>(resolve => {
+    new Promise<RDF.QueryResultCardinality>(resolve => {
+      const cachedCardinality = this.cache?.get(countQuery);
+      if (cachedCardinality !== undefined) {
+        return resolve(cachedCardinality);
+      }
+
       const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
       bindingsStream.on('data', (bindings: Bindings) => {
         const count = bindings.get(VAR_COUNT);
+        const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
         if (count) {
-          const cardinality: number = Number.parseInt(count.value, 10);
-          if (Number.isNaN(cardinality)) {
-            return resolve({ cardinality: Number.POSITIVE_INFINITY });
+          const cardinalityValue: number = Number.parseInt(count.value, 10);
+          if (!Number.isNaN(cardinalityValue)) {
+            cardinality.type = 'exact';
+            cardinality.value = cardinalityValue;
+            this.cache?.set(countQuery, cardinality);
           }
-          return resolve({ cardinality });
         }
-        return resolve({ cardinality: Number.POSITIVE_INFINITY });
+        return resolve(cardinality);
       });
-      bindingsStream.on('error', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
-      bindingsStream.on('end', () => resolve({ cardinality: Number.POSITIVE_INFINITY }));
+      bindingsStream.on('error', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
+      bindingsStream.on('end', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
     })
-      .then(metadata => quads.setProperty('metadata', { ...metadata, canContainUndefs: true }));
+      .then(cardinality => quads.setProperty('metadata', { cardinality, canContainUndefs: true }));
 
     // Materialize the queried pattern using each found binding.
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery)

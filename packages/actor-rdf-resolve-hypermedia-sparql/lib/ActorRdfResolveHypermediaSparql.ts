@@ -11,6 +11,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   public readonly mediatorHttp: MediatorHttp;
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
+  public readonly cacheSize: number;
 
   public constructor(args: IActorRdfResolveHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -31,6 +32,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
       action.context,
       this.mediatorHttp,
       this.forceHttpGet,
+      this.cacheSize,
     );
     return { source };
   }
@@ -51,4 +53,10 @@ export interface IActorRdfResolveHypermediaSparqlArgs extends IActorRdfResolveHy
    * @default {false}
    */
   forceHttpGet: boolean;
+  /**
+   * The cache size for COUNT queries.
+   * @range {integer}
+   * @default {1024}
+   */
+  cacheSize?: number;
 }

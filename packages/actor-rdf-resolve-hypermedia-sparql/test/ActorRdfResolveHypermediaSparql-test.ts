@@ -34,9 +34,14 @@ describe('ActorRdfResolveHypermediaSparql', () => {
     let actor: ActorRdfResolveHypermediaSparql;
 
     beforeEach(() => {
-      actor = new ActorRdfResolveHypermediaSparql(
-        { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: true, forceHttpGet: false },
-      );
+      actor = new ActorRdfResolveHypermediaSparql({
+        name: 'actor',
+        bus,
+        mediatorHttp: <any> 'mediator',
+        checkUrlSuffix: true,
+        forceHttpGet: false,
+        cacheSize: 1_024,
+      });
     });
 
     describe('#test', () => {
@@ -96,6 +101,12 @@ describe('ActorRdfResolveHypermediaSparql', () => {
           .run({ url: 'URL', metadata: {}, quads: <any> null, forceSourceType: 'sparql', context });
         expect(output.source).toBeInstanceOf(RdfSourceSparql);
         expect((<any> output.source).url).toEqual('URL');
+      });
+
+      it('should return a source with the correct cache size', async() => {
+        const output = await actor
+          .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
+        expect((<any> output.source).cache.max).toEqual(1_024);
       });
     });
   });
