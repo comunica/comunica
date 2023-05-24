@@ -13,7 +13,9 @@ const streamifyString = require('streamify-string');
 const DF = new DataFactory();
 
 // TODO: Remove when targeting NodeJS 18+
-globalThis.ReadableStream = globalThis.ReadableStream || require('web-streams-ponyfill').ReadableStream;
+if (!globalThis.ReadableStream) {
+  globalThis.ReadableStream = require('web-streams-ponyfill').ReadableStream;
+}
 
 describe('RdfSourceSparql', () => {
   const context = new ActionContext({});

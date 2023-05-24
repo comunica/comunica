@@ -11,7 +11,9 @@ import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
 const streamifyString = require('streamify-string');
 
 // TODO: Remove when targeting NodeJS 18+
-globalThis.ReadableStream = globalThis.ReadableStream || require('web-streams-ponyfill').ReadableStream;
+if (!globalThis.ReadableStream) {
+  globalThis.ReadableStream = require('web-streams-ponyfill').ReadableStream;
+}
 
 describe('ActorDereferenceHttp', () => {
   let bus: any;
