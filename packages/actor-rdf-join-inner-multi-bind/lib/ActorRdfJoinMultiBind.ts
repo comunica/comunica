@@ -12,7 +12,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Bindings, BindingsStream, IQueryOperationResultBindings,
   MetadataBindings, IActionContext, IJoinEntryWithMetadata } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
-import { Factory, Algebra } from 'sparqlalgebrajs';
+import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Multi-way Bind RDF Join Actor.
@@ -204,6 +204,26 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     };
   }
 
+  public canBindWithOperation(operation: Algebra.Operation): boolean {
+    let valid = true;
+    Util.recurseOperation(operation, {
+      [Algebra.types.EXTEND](): boolean {
+        valid = false;
+        return false;
+      },
+      [Algebra.types.GROUP](): boolean {
+        valid = false;
+        return false;
+      },
+      [Algebra.types.FILTER](): boolean {
+        valid = false;
+        return false;
+      },
+    });
+
+    return valid;
+  }
+
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
@@ -226,8 +246,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Reject binding on some operation types
     if (remainingEntries
-      .some(entry => entry.operation.type === Algebra.types.EXTEND || entry.operation.type === Algebra.types.GROUP)) {
-      throw new Error(`Actor ${this.name} can not bind on Extend and Group operations`);
+      .some(entry => !this.canBindWithOperation(entry.operation))) {
+      throw new Error(`Actor ${this.name} can not bind on Extend, Group, and Filter operations`);
     }
 
     // Determine selectivities of smallest entry with all other entries

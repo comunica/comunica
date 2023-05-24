@@ -93,15 +93,15 @@ describe('ActorRdfJoinMultiBind', () => {
             entries: [
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createNop(),
               },
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createNop(),
               },
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createNop(),
               },
             ],
             context: new ActionContext(),
@@ -147,15 +147,15 @@ describe('ActorRdfJoinMultiBind', () => {
             entries: [
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createNop(),
               },
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createNop(),
               },
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createNop(),
               },
             ],
             context: new ActionContext(),
@@ -239,7 +239,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrowError('Actor actor can not bind on Extend, Group, and Filter operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -276,7 +276,81 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrowError('Actor actor can not bind on Extend, Group, and Filter operations');
+      });
+
+      it('should reject on a right stream of type filter', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any> {},
+                operation: <any> { type: Algebra.types.FILTER },
+              },
+              {
+                output: <any> {},
+                operation: <any> {},
+              },
+            ],
+            context: new ActionContext(),
+          },
+          [
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          ],
+        )).rejects.toThrowError('Actor actor can not bind on Extend, Group, and Filter operations');
+      });
+
+      it('should reject on a right stream containing group', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any> {},
+                operation: FACTORY.createProject(<any>{ type: Algebra.types.GROUP }, []),
+              },
+              {
+                output: <any> {},
+                operation: <any> {},
+              },
+            ],
+            context: new ActionContext(),
+          },
+          [
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          ],
+        )).rejects.toThrowError('Actor actor can not bind on Extend, Group, and Filter operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
@@ -286,7 +360,7 @@ describe('ActorRdfJoinMultiBind', () => {
             entries: [
               {
                 output: <any> {},
-                operation: <any> {},
+                operation: FACTORY.createNop(),
               },
               {
                 output: <any> {},
