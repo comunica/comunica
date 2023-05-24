@@ -305,6 +305,11 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
       }
     }
 
+    // If there are no overlapping patterns, the cost is 1
+    if (costEntries === 0) {
+      return 1;
+    }
+
     // Combine all pairwise costs, and multiply with costs of each pattern separately
     return totalCost / costEntries * patterns
       .reduce((factor, pattern) => factor * ActorRdfJoinSelectivityVariableCounting.getPatternCost(pattern), 1);

@@ -617,6 +617,28 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
           ),
         ])).toEqual((1 - 12 / ActorRdfJoinSelectivityVariableCounting.MAX_PAIRWISE_COST) * (1 / 9) * (2 / 9));
       });
+
+      it('should handle non-quad-patterns', async() => {
+        expect(ActorRdfJoinSelectivityVariableCounting.getOperationsJoinCost([
+          F.createPattern(
+            DF.namedNode('ex:s'),
+            DF.namedNode('ex:p'),
+            DF.namedNode('ex:o'),
+            DF.namedNode('ex:g'),
+          ),
+          F.createValues(
+            [
+              DF.variable('s'),
+              DF.variable('p'),
+            ],
+            [
+              {
+                s: DF.namedNode('ex:s'),
+              },
+            ],
+          ),
+        ])).toEqual(1);
+      });
     });
 
     describe('run', () => {
