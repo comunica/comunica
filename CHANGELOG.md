@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.7.0"></a>
+## [v2.7.0](https://github.com/comunica/comunica/compare/v2.6.10...v2.7.0) - 2023-05-24
+
+### Added
+* [Support durations, dates, and times in filters](https://github.com/comunica/comunica/commit/9788c434c9d6496746733f37856046b0ac0bc124)
+* [Add support for ZeroOrOne path expressions with 2 variables](https://github.com/comunica/comunica/commit/1d63300d3dbaac03619c5211973d56c8b45c8dfd)
+
+### Changed
+* Improving Web support
+  * [Use process shim (#1186)](https://github.com/comunica/comunica/commit/e5a1f634e712989edaf4ea2d698e1eae25339b7a)
+* Improve performance with SPARQL endpoints
+  * [Improve metadata and lazyness in SPARQL hypermedia actor](https://github.com/comunica/comunica/commit/acbc510d9ff2de8a5b6eb79d4a3f430ca00efa42)
+  * [Fix SPARQL endpoint operator always having canContainUndefs: true](https://github.com/comunica/comunica/commit/71e7048cc01af2ab300bd1b4622d19bfd9677bbc)
+  * [Fix keepalive not being true in fetch-only environments](https://github.com/comunica/comunica/commit/30aa52b8308178f4a86a9a3f7d1c465a6c11ba5b)
+  * [Cache count queries over SPARQL endpoints](https://github.com/comunica/comunica/commit/87f08d6b265def4660f6089879b8795748dcef01)
+* [Enable incremental metadata updates](https://github.com/comunica/comunica/commit/f9065487cd94ecff6b9406833a18d313d766ca6f)
+* [Update dependency canonicalize to v2](https://github.com/comunica/comunica/commit/5407a718dc97b167267f4baf2829b3ed7551471d)
+* [Make Bindings#merge and mergeWith accept more generic RDF.Bindings](https://github.com/comunica/comunica/commit/2b025b651710c9f4a06614f961886cde361d5dbf)
+
+### Fixed
+* [Fix blank node scoping in CONSTRUCT queries, Closes #1190](https://github.com/comunica/comunica/commit/c594462a84e13cb581d219ef77394efcd2c021f2)
+* [Add missing baseIRI for shaclc](https://github.com/comunica/comunica/commit/a4c0053ad11a22e51489f3262a352992095b8372)
+* [Destroy unused iterators](https://github.com/comunica/comunica/commit/712b71c451ff9bbbd15cb467a7d0f5b6577c0946)
+
 <a name="v2.6.10"></a>
 ## [v2.6.10](https://github.com/comunica/comunica/compare/v2.6.9...v2.6.10) - 2023-03-10
 

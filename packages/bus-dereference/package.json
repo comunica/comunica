@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-dereference",
-  "version": "2.6.8",
+  "version": "2.7.0",
   "description": "A bus for dereferencing a path or URL into a (generic) stream.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,11 +31,11 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-mediatyped": "^2.6.8",
-    "@comunica/actor-abstract-parse": "^2.6.8",
-    "@comunica/context-entries": "^2.6.8",
-    "@comunica/core": "^2.6.8",
-    "@comunica/types": "^2.6.8",
+    "@comunica/actor-abstract-mediatyped": "^2.7.0",
+    "@comunica/actor-abstract-parse": "^2.7.0",
+    "@comunica/context-entries": "^2.7.0",
+    "@comunica/core": "^2.7.0",
+    "@comunica/types": "^2.7.0",
     "readable-stream": "^4.2.0"
   },
   "scripts": {

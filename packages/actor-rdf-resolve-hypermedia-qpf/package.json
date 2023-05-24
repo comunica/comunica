@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-qpf",
-  "version": "2.6.8",
+  "version": "2.7.0",
   "description": "A hypermedia-qpf rdf-resolve-quad-pattern actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,13 +32,13 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^2.6.8",
-    "@comunica/bus-dereference-rdf": "^2.6.8",
-    "@comunica/bus-rdf-metadata": "^2.6.8",
-    "@comunica/bus-rdf-metadata-extract": "^2.6.8",
-    "@comunica/bus-rdf-resolve-hypermedia": "^2.6.8",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^2.6.8",
-    "@comunica/types": "^2.6.8",
+    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^2.7.0",
+    "@comunica/bus-dereference-rdf": "^2.7.0",
+    "@comunica/bus-rdf-metadata": "^2.7.0",
+    "@comunica/bus-rdf-metadata-extract": "^2.7.0",
+    "@comunica/bus-rdf-resolve-hypermedia": "^2.7.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^2.7.0",
+    "@comunica/types": "^2.7.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
     "rdf-data-factory": "^1.1.1",

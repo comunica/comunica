@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-rdfxml",
-  "version": "2.6.8",
+  "version": "2.7.0",
   "description": "A rdfxml rdf-parse actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^2.6.8",
-    "@comunica/types": "^2.6.8",
+    "@comunica/bus-rdf-parse": "^2.7.0",
+    "@comunica/types": "^2.7.0",
     "rdfxml-streaming-parser": "^2.2.1"
   },
   "scripts": {

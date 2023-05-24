@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-minus-hash",
-  "version": "2.6.8",
+  "version": "2.7.0",
   "description": "A minus-hash rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,10 +32,10 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.6.8",
-    "@comunica/bus-rdf-join": "^2.6.8",
-    "@comunica/mediatortype-join-coefficients": "^2.6.8",
-    "@comunica/types": "^2.6.8",
+    "@comunica/bus-query-operation": "^2.7.0",
+    "@comunica/bus-rdf-join": "^2.7.0",
+    "@comunica/mediatortype-join-coefficients": "^2.7.0",
+    "@comunica/types": "^2.7.0",
     "@rdfjs/types": "*"
   },
   "scripts": {

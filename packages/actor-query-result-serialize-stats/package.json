@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-stats",
-  "version": "2.6.9",
+  "version": "2.7.0",
   "description": "A stats query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,11 +32,11 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-http": "^2.6.9",
-    "@comunica/bus-http-invalidate": "^2.6.8",
-    "@comunica/bus-query-result-serialize": "^2.6.8",
-    "@comunica/core": "^2.6.8",
-    "@comunica/types": "^2.6.8",
+    "@comunica/bus-http": "^2.7.0",
+    "@comunica/bus-http-invalidate": "^2.7.0",
+    "@comunica/bus-query-result-serialize": "^2.7.0",
+    "@comunica/core": "^2.7.0",
+    "@comunica/types": "^2.7.0",
     "process": "^0.11.10",
     "readable-stream": "^4.2.0"
   },
