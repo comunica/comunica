@@ -53,17 +53,13 @@ export class ActorRdfResolveQuadPatternStringSource extends ActorRdfResolveQuadP
         this.cache.set(source, rdfSourcePromise);
       }
     }
-    return new Promise((resolve, reject) => rdfSourcePromise!
-      .then(rdfSource => {
-        const resolveQuadAction: IActionRdfResolveQuadPattern = {
-          pattern: action.pattern,
-          context: action.context.set(KeysRdfResolveQuadPattern.source, {
-            value: rdfSource,
-            type: 'rdfjsSource',
-          }),
-        };
-        resolve(this.mediatorRdfResolveQuadPattern.mediate(resolveQuadAction));
-      }).catch(reject));
+    return rdfSourcePromise.then(rdfSource => this.mediatorRdfResolveQuadPattern.mediate({
+      pattern: action.pattern,
+      context: action.context.set(KeysRdfResolveQuadPattern.source, {
+        value: rdfSource,
+        type: 'rdfjsSource',
+      }),
+    }));
   }
 
   /**
