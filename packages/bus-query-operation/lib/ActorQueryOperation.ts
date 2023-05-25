@@ -159,19 +159,15 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * Create an options object that can be used to construct a sparqlee asynchronous evaluator.
    * @param context An action context.
-   * @param mediatorQueryOperation An optional query query operation mediator.
-   *                               If defined, the existence resolver will be defined as `exists`.
+   * @param mediatorQueryOperation A query query operation mediator for resolving `exists`.
    */
-  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
   IAsyncExpressionContext {
-    const expressionContext: IAsyncExpressionContext = {
+    return {
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
+      exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation),
     };
-    if (mediatorQueryOperation) {
-      expressionContext.exists = ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation);
-    }
-    return expressionContext;
   }
 
   /**

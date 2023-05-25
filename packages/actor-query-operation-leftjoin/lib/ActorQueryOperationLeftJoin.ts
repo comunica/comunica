@@ -38,7 +38,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     if (operationOriginal.expression) {
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
-      const config = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
+      const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
       const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
       const bindingsStream = joined.bindingsStream
         .transform({
