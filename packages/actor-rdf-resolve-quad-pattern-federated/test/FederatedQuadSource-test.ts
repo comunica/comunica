@@ -768,6 +768,9 @@ describe('FederatedQuadSource', () => {
       mediatorResolveQuadPattern.mediate = () => Promise.reject(new Error('ignored error'));
 
       const it = source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g'));
+      it.on('error', () => {
+        // Ignore errors
+      });
       it.destroy();
       expect(returnedIterators.length).toEqual(0);
     });
@@ -1186,6 +1189,11 @@ describe('FederatedQuadSource', () => {
     it('should reject when mediatorRdfMetadataAccumulate rejects', async() => {
       mediatorRdfMetadataAccumulate.mediate = () => Promise.reject(new Error(`mediatorRdfMetadataAccumulate error in FederatedQuadSource-test`));
       await expect(arrayifyStream(source.match(v, v, v, v))).rejects.toThrow(`mediatorRdfMetadataAccumulate error in FederatedQuadSource-test`);
+    });
+
+    it('should reject when mediatorResolveQuadPattern rejects', async() => {
+      mediatorResolveQuadPattern.mediate = () => Promise.reject(new Error(`mediatorResolveQuadPattern error in FederatedQuadSource-test`));
+      await expect(arrayifyStream(source.match(v, v, v, v))).rejects.toThrow(`mediatorResolveQuadPattern error in FederatedQuadSource-test`);
     });
   });
 

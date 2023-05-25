@@ -300,6 +300,9 @@ export class FederatedQuadSource implements IQuadSource {
       return data;
     }));
 
+    // Forward any source creation rejections as errors to our final iterator
+    proxyIt.catch(error => it.emit('error', error));
+
     // Take the union of all source streams
     const it = new ClosableTransformIterator(async() => new UnionIterator(await proxyIt), {
       autoStart: false,
