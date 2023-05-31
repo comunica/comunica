@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-join",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A join query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.7.0",
-    "@comunica/bus-rdf-join": "^2.7.0",
+    "@comunica/bus-query-operation": "^2.7.1",
+    "@comunica/bus-rdf-join": "^2.7.1",
     "@comunica/core": "^2.7.0",
     "@comunica/types": "^2.7.0",
     "sparqlalgebrajs": "^4.0.5"

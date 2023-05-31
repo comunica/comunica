@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-hypermedia-put-ldp",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A put-ldp rdf-update-hypermedia actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -34,8 +34,8 @@
   "dependencies": {
     "@comunica/bus-http": "^2.7.0",
     "@comunica/bus-rdf-serialize": "^2.7.0",
-    "@comunica/bus-rdf-update-hypermedia": "^2.7.0",
-    "@comunica/bus-rdf-update-quads": "^2.7.0",
+    "@comunica/bus-rdf-update-hypermedia": "^2.7.1",
+    "@comunica/bus-rdf-update-quads": "^2.7.1",
     "@comunica/core": "^2.7.0",
     "@comunica/types": "^2.7.0",
     "@rdfjs/types": "*",

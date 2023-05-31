@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A hypermedia rdf-resolve-quad-pattern actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -34,7 +34,7 @@
   "dependencies": {
     "@comunica/bus-dereference-rdf": "^2.7.0",
     "@comunica/bus-http-invalidate": "^2.7.0",
-    "@comunica/bus-query-operation": "^2.7.0",
+    "@comunica/bus-query-operation": "^2.7.1",
     "@comunica/bus-rdf-metadata": "^2.7.0",
     "@comunica/bus-rdf-metadata-accumulate": "^2.7.0",
     "@comunica/bus-rdf-metadata-extract": "^2.7.0",

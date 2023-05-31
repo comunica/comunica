@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.7.1"></a>
+## [v2.7.1](https://github.com/comunica/comunica/compare/v2.7.0...v2.7.1) - 2023-05-31
+
+### Changed
+* [Update dependency htmlparser2 to v9 (#1211)](https://github.com/comunica/comunica/commit/8e2fd93f26ffccee1ce243bf2d4378b845231c33)
+* [Simplify stringSource actor implementation](https://github.com/comunica/comunica/commit/1ab4d002763c1bb5a40c47ad6be7ead07729a37e)
+
+### Fixed
+* [Fix existence hook not provided error with OPTIONAL, Closes #1029](https://github.com/comunica/comunica/commit/fd0c311584b17d11d4eeeaf73a579d5df33931d8)
+* [Fix stringSource syntax errors not being caught, Closes #1192](https://github.com/comunica/comunica/commit/15e9c6c246d5da2d337d6320caeeb11d7ea4b8e2)
+* [Fix bind join illegally being used over FILTERs](https://github.com/comunica/comunica/commit/afaa05962ec72202fec8fbc656fb435088e2999a)
+* [Fix NaN selectivity for non-pattern operations](https://github.com/comunica/comunica/commit/6984a5af1a01131a4c9855483a6192fb7217d0d5)
+
 <a name="v2.7.0"></a>
 ## [v2.7.0](https://github.com/comunica/comunica/compare/v2.6.10...v2.7.0) - 2023-05-24
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-sparql",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A sparql rdf-resolve-hypermedia actor",
   "lsd:module": true,
   "main": "lib/index.js",

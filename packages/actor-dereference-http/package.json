@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-http",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A http dereference actor",
   "lsd:module": true,
   "main": "lib/index.js",

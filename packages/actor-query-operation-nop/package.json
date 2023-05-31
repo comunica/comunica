@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-nop",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A nop query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.7.0",
-    "@comunica/bus-query-operation": "^2.7.0",
+    "@comunica/bus-query-operation": "^2.7.1",
     "@comunica/core": "^2.7.0",
     "@comunica/metadata": "^2.7.0",
     "@comunica/types": "^2.7.0",
