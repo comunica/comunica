@@ -6,7 +6,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
-import LRU = require('lru-cache');
+import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import { getTerms, getVariables, mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -24,7 +24,7 @@ export class RdfSourceSparql implements IQuadSource {
   private readonly mediatorHttp: MediatorHttp;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
-  private readonly cache: LRU<string, RDF.QueryResultCardinality> | undefined;
+  private readonly cache: LRUCache<string, RDF.QueryResultCardinality> | undefined;
 
   public constructor(url: string, context: IActionContext, mediatorHttp: MediatorHttp, forceHttpGet: boolean,
     cacheSize: number) {
@@ -39,7 +39,7 @@ export class RdfSourceSparql implements IQuadSource {
       prefixVariableQuestionMark: true,
     });
     this.cache = cacheSize > 0 ?
-      new LRU<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
+      new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
       undefined;
   }
 

@@ -8,7 +8,7 @@ import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataSource, IDataSourceSerialized } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import * as LRUCache from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import { storeStream } from 'rdf-store-stream';
 import { Readable } from 'readable-stream';
 

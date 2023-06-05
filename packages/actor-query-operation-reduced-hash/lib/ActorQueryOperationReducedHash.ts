@@ -5,7 +5,7 @@ import type { IActorTest } from '@comunica/core';
 import type {
   Bindings, BindingsStream, IActionContext, IQueryOperationResult, IQueryOperationResultBindings,
 } from '@comunica/types';
-import LRU = require('lru-cache');
+import { LRUCache } from 'lru-cache';
 import type { Algebra } from 'sparqlalgebrajs';
 /**
  * A comunica Reduced Hash Query Operation Actor.
@@ -42,7 +42,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
    */
   public async newHashFilter(context: IActionContext): Promise<(bindings: Bindings) => boolean> {
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
-    const hashes = new LRU<string, boolean>({ max: this.cacheSize });
+    const hashes = new LRUCache<string, boolean>({ max: this.cacheSize });
     return (bindings: Bindings) => {
       const hash: string = hashFunction(bindings);
       if (hashes.has(hash)) {

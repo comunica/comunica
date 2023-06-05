@@ -12,7 +12,7 @@ import type { IActionRdfUpdateQuads,
   IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataDestination } from '@comunica/types';
-import LRUCache = require('lru-cache');
+import { LRUCache } from 'lru-cache';
 
 /**
  * A comunica Hypermedia RDF Update Quads Actor.

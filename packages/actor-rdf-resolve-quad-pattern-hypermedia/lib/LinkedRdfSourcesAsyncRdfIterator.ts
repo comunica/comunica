@@ -6,7 +6,7 @@ import type { MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
-import LRUCache = require('lru-cache');
+import { LRUCache } from 'lru-cache';
 
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
   public sourcesState?: ISourcesState;

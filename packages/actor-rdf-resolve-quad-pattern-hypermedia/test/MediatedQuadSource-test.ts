@@ -8,7 +8,7 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import 'jest-rdf';
-import LRUCache = require('lru-cache');
+import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
