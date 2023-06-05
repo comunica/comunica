@@ -69,7 +69,7 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
   ): Promise<ReturnType<QueryTypeOut['execute']>> {
     const result = await this.query<QueryFormatTypeInner>(query, context);
     if (result.resultType === expectedType) {
-      return result.execute();
+      return <ReturnType<QueryTypeOut['execute']>> await result.execute();
     }
     throw new Error(`Query result type '${expectedType}' was expected, while '${result.resultType}' was found.`);
   }

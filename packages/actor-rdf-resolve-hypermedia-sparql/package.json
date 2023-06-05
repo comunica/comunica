@@ -39,7 +39,7 @@
     "@comunica/types": "^2.7.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
-    "fetch-sparql-endpoint": "^3.1.1",
+    "fetch-sparql-endpoint": "^3.3.2",
     "lru-cache": "^7.0.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-terms": "^1.9.1",
