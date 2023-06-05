@@ -49,7 +49,7 @@
     "@rdfjs/types": "*",
     "@types/lru-cache": "^7.0.0",
     "asynciterator": "^3.8.0",
-    "lru-cache": "^7.0.0",
+    "lru-cache": "^9.0.0",
     "rdf-streaming-store": "^1.1.0",
     "readable-stream": "^4.2.0",
     "sparqlalgebrajs": "^4.0.5"
