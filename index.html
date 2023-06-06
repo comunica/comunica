@@ -1,1320 +1,359 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Comunica</title>
-	<meta name="description" content="Documentation for Comunica">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
-	<script async src="assets/js/search.js" id="search-script"></script>
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="index.html" class="title">Comunica</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<h1>Comunica</h1>
-		</div>
-	</div>
-</header>
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Comunica</title><meta name="description" content="Documentation for Comunica"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">Comunica</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
 <div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<p align="center">
-					<a href="https://comunica.dev/">
-						<img alt="Comunica" src="https://comunica.dev/img/comunica_red.svg" width="200">
-					</a>
-				</p>
-				<p align="center">
-					<strong>A knowledge graph querying framework for JavaScript</strong>
-					<br />
-					<i>Flexible SPARQL and GraphQL over decentralized RDF on the Web.</i>
-				</p>
-				<p align="center">
-					<a href="https://github.com/comunica/comunica/actions?query=workflow%3ACI"><img src="https://github.com/comunica/comunica/workflows/CI/badge.svg" alt="Build Status"></a>
-					<a href="https://coveralls.io/github/comunica/comunica?branch=master"><img src="https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master" alt="Coverage Status"></a>
-					<a href="https://zenodo.org/badge/latestdoi/107345960"><img src="https://zenodo.org/badge/107345960.svg" alt="DOI"></a>
-					<a href="https://gitter.im/comunica/Lobby"><img src="https://img.shields.io/gitter/room/comunica/Lobby.svg?style=plastic&label=Lobby-Chat" alt="Gitter Lobby chat"></a>
-					<a href="https://gitter.im/comunica/core-dev"><img src="https://img.shields.io/gitter/room/comunica/Lobby.svg?style=plastic&label=Dev-Chat" alt="Gitter Dev chat"></a>
-				</p>
-				<p align="center">
-					<a href="https://comunica.github.io/comunica/"><img src="https://img.shields.io/badge/doc-code_documentation-blueviolet"/></a>
-				</p>
-				<p><strong><a href="https://comunica.dev/">Learn more about Comunica on our website</a>.</strong></p>
-				<p>Comunica is an open-source project that is used by <a href="https://github.com/comunica/comunica/network/dependents">many other projects</a>,
-					and is being maintained by a <a href="https://github.com/comunica/comunica/graphs/contributors">group of volunteers</a>.
-				If you would like to support this project, you may consider:</p>
-				<ul>
-					<li>Contributing directly by <a href="https://comunica.dev/contribute/">writing code or documentation</a>; or</li>
-					<li>Contributing indirectly by funding this project via <a href="https://opencollective.com/comunica-association">Open Collective</a>.</li>
-				</ul>
-				<a href="#supported-by" id="supported-by" style="color: inherit; text-decoration: none;">
-					<h2>Supported by</h2>
-				</a>
-				<p>Comunica is a community-driven project, sustained by the <a href="https://comunica.dev/association/">Comunica Association</a>.
-				If you are using Comunica, <a href="https://opencollective.com/comunica-association">becoming a sponsor or member</a> is a way to make Comunica sustainable in the long-term.</p>
-				<p>Our top sponsors are shown below!</p>
-				<p><a href="https://opencollective.com/comunica-association/sponsor/0/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/0/avatar.svg"></a>
-					<a href="https://opencollective.com/comunica-association/sponsor/1/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/1/avatar.svg"></a>
-					<a href="https://opencollective.com/comunica-association/sponsor/2/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/2/avatar.svg"></a>
-				<a href="https://opencollective.com/comunica-association/sponsor/3/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/3/avatar.svg"></a></p>
-				<a href="#query-with-comunica" id="query-with-comunica" style="color: inherit; text-decoration: none;">
-					<h2>Query with Comunica</h2>
-				</a>
-				<p>Read one of our <a href="https://comunica.dev/docs/query/getting_started/">guides to <strong>get started</strong> with querying</a>:</p>
-				<ul>
-					<li><a href="https://comunica.dev/docs/query/getting_started/query_cli/">Querying from the command line</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/update_cli/">Updating from the command line</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/query_cli_file/">Querying local files from the command line</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/query_app/">Querying in a JavaScript app</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/update_app/">Updating in a JavaScript app</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/query_browser_app/">Querying in a JavaScript browser app</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/setup_endpoint/">Setting up a SPARQL endpoint</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/query_docker/">Querying from a Docker container</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/setup_web_client/">Setting up a Web client</a></li>
-					<li><a href="https://comunica.dev/docs/query/getting_started/query_dev_version/">Query using the latest development version</a></li>
-				</ul>
-				<p>Or jump right into one of the available query engines:</p>
-				<ul>
-					<li><a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql#readme">Comunica SPARQL</a>: SPARQL/GraphQL querying from JavaScript applications or the CLI (<a href="https://github.com/rdfjs/comunica-browser">Browser-ready via a CDN</a>)</li>
-				</ul>
-				<ul>
-					<li><p>Source Customisation</p>
-						<ul>
-							<li><a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme">Comunica SPARQL File</a>: Engine to query over local RDF files</li>
-							<li><a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme">Comunica SPARQL RDFJS</a>: Engine to query over in-memory <a href="https://rdf.js.org/stream-spec/#source-interface">RDFJS-compliant sources</a>.</li>
-							<li><a href="https://github.com/comunica/comunica-actor-init-sparql-hdt#readme">Comunica SPARQL HDT</a>: Library to query over local <a href="https://www.rdfhdt.org/">HDT</a> files</li>
-						</ul>
-					</li>
-					<li><p>Solid Customisation</p>
-						<ul>
-							<li><a href="https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme">Comunica SPARQL Solid</a>: Engine to query over files behind <a href="https://solidproject.org/">Solid access control</a>.</li>
-						</ul>
-					</li>
-					<li><p>Link Traversal Research</p>
-						<ul>
-							<li><a href="https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal#readme">Comunica SPARQL Link Traversal</a>: Engine to query over multiple files by following links between them.</li>
-							<li><a href="https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal-solid#readme">Comunica SPARQL Link Traversal Solid</a>: Engine to query within <a href="https://solidproject.org/">Solid data vaults</a> by following links between documents.</li>
-						</ul>
-					</li>
-					<li><p>Reasoning Support</p>
-						<ul>
-							<li><a href="https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-reasoning">Comunica SPARQL Reasoning</a>: Engine that adds support for reasoning</li>
-							<li><a href="https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-file-reasoning">Comunica SPARQL Reasoning File</a>: Engine to query over local RDF files with support for reasoning</li>
-						</ul>
-					</li>
-				</ul>
-				<a href="#modify-or-extending-comunica" id="modify-or-extending-comunica" style="color: inherit; text-decoration: none;">
-					<h2>Modify or Extending Comunica</h2>
-				</a>
-				<p><a href="https://comunica.dev/docs/modify/">Read one of our guides to <strong>get started</strong> with modifying Comunica</a>,
-				or have a look at some <a href="https://github.com/comunica/examples">examples</a>:</p>
-				<ul>
-					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_config_cli/">Querying with a custom configuration from the command line</a></li>
-					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_config_app/">Querying with a custom configuration in a JavaScript app</a></li>
-					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_init/">Exposing your custom config as an npm package</a></li>
-					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_web_client/">Exposing your custom config in a Web client</a></li>
-					<li><a href="https://comunica.dev/docs/modify/getting_started/contribute_actor/">Contributing a new query operation actor to the Comunica repository</a></li>
-					<li><a href="https://comunica.dev/docs/modify/getting_started/actor_parameter/">Adding a config parameter to an actor</a></li>
-				</ul>
-				<a href="#contribute" id="contribute" style="color: inherit; text-decoration: none;">
-					<h2>Contribute</h2>
-				</a>
-				<p>Interested in contributing? Have a look at our <a href="https://comunica.dev/contribute/">contribution guide</a>.</p>
-				<a href="#development-setup" id="development-setup" style="color: inherit; text-decoration: none;">
-					<h2>Development Setup</h2>
-				</a>
-				<p><em>(JSDoc: <a href="https://comunica.github.io/comunica/">https://comunica.github.io/comunica/</a>)</em></p>
-				<p>This repository should be used by Comunica module <strong>developers</strong> as it contains multiple Comunica modules that can be composed.
-					This repository is managed as a <a href="https://github.com/babel/babel/blob/master/doc/design/monorepo.md">monorepo</a>
-				using <a href="https://lernajs.io/">Lerna</a>.</p>
-				<p>If you want to develop new features
-					or use the (potentially unstable) in-development version,
-				you can set up a development environment for Comunica.</p>
-				<p>Comunica requires <a href="http://nodejs.org/">Node.JS</a> 8.0 or higher and the <a href="https://yarnpkg.com/en/">Yarn</a> package manager.
-				Comunica is tested on OSX, Linux and Windows.</p>
-				<p>This project can be setup by cloning and installing it as follows:</p>
-				<pre><code class="language-bash"><span style="color: #000000">$ git clone https://github.com/comunica/comunica.git</span>
-<span style="color: #000000">$ </span><span style="color: #795E26">cd</span><span style="color: #000000"> comunica</span>
-<span style="color: #000000">$ yarn install</span>
-</code></pre>
-				<p><strong>Note: <code>npm install</code> is not supported at the moment, as this project makes use of Yarn&#39;s <a href="https://yarnpkg.com/lang/en/docs/workspaces/">workspaces</a> functionality</strong></p>
-				<p>This will install the dependencies of all modules, and bootstrap the Lerna monorepo.
-					After that, all <a href="https://github.com/comunica/comunica/tree/master/packages">Comunica packages</a> are available in the <code>packages/</code> folder
-				and can be used in a development environment, such as querying with <a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql">Comunica SPARQL (<code>@comunica/query-sparql</code>)</a>.</p>
-				<p>Furthermore, this will add <a href="https://www.npmjs.com/package/pre-commit">pre-commit hooks</a>
-					to build, lint and test.
-				These hooks can temporarily be disabled at your own risk by adding the <code>-n</code> flag to the commit command.</p>
-				<a href="#benchmarking" id="benchmarking" style="color: inherit; text-decoration: none;">
-					<h2>Benchmarking</h2>
-				</a>
-				<p>If you want to do benchmarking with Comunica in Node.js,
-				make sure to run Node.js in production mode as follows:</p>
-				<pre><code class="language-bash"><span style="color: #000000">&gt; NODE_ENV=production node packages/some-package/bin/some-bin.js</span>
-</code></pre>
-				<p>The reason for this is that Comunica extensively generates
-					internal <code>Error</code> objects.
-					In non-production mode, these also produce long stacktraces,
-				which may in some cases impact performance.</p>
-				<a href="#cite" id="cite" style="color: inherit; text-decoration: none;">
-					<h2>Cite</h2>
-				</a>
-				<p>If you are using or extending Comunica as part of a scientific publication,
-				we would appreciate a citation of our <a href="https://comunica.github.io/Article-ISWC2018-Resource/">article</a>.</p>
-				<pre><code class="language-bibtex">@inproceedings{taelman_iswc_resources_comunica_2018,
-  author    = {Taelman, Ruben and Van Herwegen, Joachim and Vander Sande, Miel and Verborgh, Ruben},
-  title     = {Comunica: a Modular SPARQL Query Engine for the Web},
-  booktitle = {Proceedings of the 17th International Semantic Web Conference},
-  year      = {2018},
-  month     = oct,
-  url       = {https://comunica.github.io/Article-ISWC2018-Resource/}
-}
-</code></pre>
-				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
-					<h2>License</h2>
-				</a>
-				<p>This code is copyrighted by <a href="https://comunica.dev/association/">the Comunica Association</a> and <a href="http://idlab.ugent.be/">Ghent University – imec</a>
-				and released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
-			</div>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class=" ">
-						<a href="modules.html">Modules</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_abstract_mediatyped.html">actor-<wbr>abstract-<wbr>mediatyped</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_abstract_parse.html">actor-<wbr>abstract-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_abstract_path.html">actor-<wbr>abstract-<wbr>path</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_context_preprocess_source_to_destination.html">actor-<wbr>context-<wbr>preprocess-<wbr>source-<wbr>to-<wbr>destination</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_fallback.html">actor-<wbr>dereference-<wbr>fallback</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_file.html">actor-<wbr>dereference-<wbr>file</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_http.html">actor-<wbr>dereference-<wbr>http</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_rdf_parse.html">actor-<wbr>dereference-<wbr>rdf-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_hash_bindings_sha1.html">actor-<wbr>hash-<wbr>bindings-<wbr>sha1</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_fetch.html">actor-<wbr>http-<wbr>fetch</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_memento.html">actor-<wbr>http-<wbr>memento</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_native.html">actor-<wbr>http-<wbr>native</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_proxy.html">actor-<wbr>http-<wbr>proxy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_wayback.html">actor-<wbr>http-<wbr>wayback</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_init_query.html">actor-<wbr>init-<wbr>query</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_optimize_query_operation_bgp_to_join.html">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>to-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_optimize_query_operation_join_bgp.html">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>join-<wbr>bgp</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_optimize_query_operation_join_connected.html">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>join-<wbr>connected</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_ask.html">actor-<wbr>query-<wbr>operation-<wbr>ask</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_bgp_join.html">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_construct.html">actor-<wbr>query-<wbr>operation-<wbr>construct</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_describe_subject.html">actor-<wbr>query-<wbr>operation-<wbr>describe-<wbr>subject</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_distinct_hash.html">actor-<wbr>query-<wbr>operation-<wbr>distinct-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_extend.html">actor-<wbr>query-<wbr>operation-<wbr>extend</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_filter_sparqlee.html">actor-<wbr>query-<wbr>operation-<wbr>filter-<wbr>sparqlee</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_from_quad.html">actor-<wbr>query-<wbr>operation-<wbr>from-<wbr>quad</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_group.html">actor-<wbr>query-<wbr>operation-<wbr>group</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_join.html">actor-<wbr>query-<wbr>operation-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_leftjoin.html">actor-<wbr>query-<wbr>operation-<wbr>leftjoin</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_minus.html">actor-<wbr>query-<wbr>operation-<wbr>minus</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_nop.html">actor-<wbr>query-<wbr>operation-<wbr>nop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_orderby_sparqlee.html">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>sparqlee</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_alt.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>alt</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_inv.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>inv</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_link.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>link</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_nps.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>nps</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_one_or_more.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>one-<wbr>or-<wbr>more</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_seq.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>seq</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_zero_or_more.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>more</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_zero_or_one.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>one</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_project.html">actor-<wbr>query-<wbr>operation-<wbr>project</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_quadpattern.html">actor-<wbr>query-<wbr>operation-<wbr>quadpattern</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_reduced_hash.html">actor-<wbr>query-<wbr>operation-<wbr>reduced-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_service.html">actor-<wbr>query-<wbr>operation-<wbr>service</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_slice.html">actor-<wbr>query-<wbr>operation-<wbr>slice</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_sparql_endpoint.html">actor-<wbr>query-<wbr>operation-<wbr>sparql-<wbr>endpoint</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_union.html">actor-<wbr>query-<wbr>operation-<wbr>union</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_add_rewrite.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>add-<wbr>rewrite</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_clear.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>clear</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_compositeupdate.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>compositeupdate</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_copy_rewrite.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>copy-<wbr>rewrite</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_create.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>create</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_deleteinsert.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>deleteinsert</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_drop.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>drop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_load.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>load</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_move_rewrite.html">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>move-<wbr>rewrite</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_values.html">actor-<wbr>query-<wbr>operation-<wbr>values</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_parse_graphql.html">actor-<wbr>query-<wbr>parse-<wbr>graphql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_parse_sparql.html">actor-<wbr>query-<wbr>parse-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_json.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>json</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_rdf.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>rdf</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_simple.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>simple</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_csv.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>csv</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_json.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>json</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_tsv.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>tsv</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_xml.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>xml</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_stats.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>stats</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_table.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>table</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_tree.html">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>tree</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_entries_sort_cardinality.html">actor-<wbr>rdf-<wbr>join-<wbr>entries-<wbr>sort-<wbr>cardinality</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_hash.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_bind.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>bind</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_empty.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>empty</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_sequential.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>sequential</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_smallest.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>smallest</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_nestedloop.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>nestedloop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_none.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>none</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_single.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>single</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_symmetrichash.html">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>symmetrichash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_minus_hash.html">actor-<wbr>rdf-<wbr>join-<wbr>minus-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_minus_hash_undef.html">actor-<wbr>rdf-<wbr>join-<wbr>minus-<wbr>hash-<wbr>undef</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_optional_bind.html">actor-<wbr>rdf-<wbr>join-<wbr>optional-<wbr>bind</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_optional_nestedloop.html">actor-<wbr>rdf-<wbr>join-<wbr>optional-<wbr>nestedloop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_selectivity_variable_counting.html">actor-<wbr>rdf-<wbr>join-<wbr>selectivity-<wbr>variable-<wbr>counting</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_cancontainundefs.html">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>cancontainundefs</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_cardinality.html">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>cardinality</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_pagesize.html">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>pagesize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_requesttime.html">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>requesttime</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_all.html">actor-<wbr>rdf-<wbr>metadata-<wbr>all</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_allow_http_methods.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>allow-<wbr>http-<wbr>methods</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_hydra_controls.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>controls</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_hydra_count.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>count</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_hydra_pagesize.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>pagesize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_patch_sparql_update.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>patch-<wbr>sparql-<wbr>update</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_put_accepted.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>put-<wbr>accepted</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_request_time.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>request-<wbr>time</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_sparql_service.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>sparql-<wbr>service</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_primary_topic.html">actor-<wbr>rdf-<wbr>metadata-<wbr>primary-<wbr>topic</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html.html">actor-<wbr>rdf-<wbr>parse-<wbr>html</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html_microdata.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html_rdfa.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>rdfa</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html_script.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>script</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_jsonld.html">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_n3.html">actor-<wbr>rdf-<wbr>parse-<wbr>n3</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_rdfxml.html">actor-<wbr>rdf-<wbr>parse-<wbr>rdfxml</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_shaclc.html">actor-<wbr>rdf-<wbr>parse-<wbr>shaclc</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_xml_rdfa.html">actor-<wbr>rdf-<wbr>parse-<wbr>xml-<wbr>rdfa</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_links_next.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>next</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_links_queue_fifo.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>queue-<wbr>fifo</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_none.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>none</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_qpf.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>qpf</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_sparql.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_federated.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>federated</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_hypermedia.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_rdfjs_source.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>rdfjs-<wbr>source</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_string_source.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>string-<wbr>source</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_serialize_jsonld.html">actor-<wbr>rdf-<wbr>serialize-<wbr>jsonld</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_serialize_n3.html">actor-<wbr>rdf-<wbr>serialize-<wbr>n3</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_serialize_shaclc.html">actor-<wbr>rdf-<wbr>serialize-<wbr>shaclc</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_hypermedia_patch_sparql_update.html">actor-<wbr>rdf-<wbr>update-<wbr>hypermedia-<wbr>patch-<wbr>sparql-<wbr>update</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_hypermedia_put_ldp.html">actor-<wbr>rdf-<wbr>update-<wbr>hypermedia-<wbr>put-<wbr>ldp</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_hypermedia_sparql.html">actor-<wbr>rdf-<wbr>update-<wbr>hypermedia-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_quads_hypermedia.html">actor-<wbr>rdf-<wbr>update-<wbr>quads-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_quads_rdfjs_store.html">actor-<wbr>rdf-<wbr>update-<wbr>quads-<wbr>rdfjs-<wbr>store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bindings_factory.html">bindings-<wbr>factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_context_preprocess.html">bus-<wbr>context-<wbr>preprocess</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_dereference.html">bus-<wbr>dereference</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_dereference_rdf.html">bus-<wbr>dereference-<wbr>rdf</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_hash_bindings.html">bus-<wbr>hash-<wbr>bindings</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_http.html">bus-<wbr>http</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_http_invalidate.html">bus-<wbr>http-<wbr>invalidate</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_init.html">bus-<wbr>init</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_optimize_query_operation.html">bus-<wbr>optimize-<wbr>query-<wbr>operation</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_query_operation.html">bus-<wbr>query-<wbr>operation</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_query_parse.html">bus-<wbr>query-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_query_result_serialize.html">bus-<wbr>query-<wbr>result-<wbr>serialize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_join.html">bus-<wbr>rdf-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_join_entries_sort.html">bus-<wbr>rdf-<wbr>join-<wbr>entries-<wbr>sort</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_join_selectivity.html">bus-<wbr>rdf-<wbr>join-<wbr>selectivity</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_metadata.html">bus-<wbr>rdf-<wbr>metadata</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_metadata_accumulate.html">bus-<wbr>rdf-<wbr>metadata-<wbr>accumulate</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_metadata_extract.html">bus-<wbr>rdf-<wbr>metadata-<wbr>extract</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_parse.html">bus-<wbr>rdf-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_parse_html.html">bus-<wbr>rdf-<wbr>parse-<wbr>html</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_hypermedia.html">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_hypermedia_links.html">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_hypermedia_links_queue.html">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>queue</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_quad_pattern.html">bus-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_serialize.html">bus-<wbr>rdf-<wbr>serialize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_update_hypermedia.html">bus-<wbr>rdf-<wbr>update-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_update_quads.html">bus-<wbr>rdf-<wbr>update-<wbr>quads</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/context_entries.html">context-<wbr>entries</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/core.html">core</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/data_factory.html">data-<wbr>factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/jest.html">jest</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logger_bunyan.html">logger-<wbr>bunyan</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logger_pretty.html">logger-<wbr>pretty</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logger_void.html">logger-<wbr>void</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_all.html">mediator-<wbr>all</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_combine_pipeline.html">mediator-<wbr>combine-<wbr>pipeline</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_combine_union.html">mediator-<wbr>combine-<wbr>union</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_join_coefficients_fixed.html">mediator-<wbr>join-<wbr>coefficients-<wbr>fixed</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_number.html">mediator-<wbr>number</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_race.html">mediator-<wbr>race</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_accuracy.html">mediatortype-<wbr>accuracy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_httprequests.html">mediatortype-<wbr>httprequests</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_join_coefficients.html">mediatortype-<wbr>join-<wbr>coefficients</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_priority.html">mediatortype-<wbr>priority</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_time.html">mediatortype-<wbr>time</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/metadata.html">metadata</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/query_sparql.html">query-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/query_sparql_file.html">query-<wbr>sparql-<wbr>file</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/query_sparql_rdfjs.html">query-<wbr>sparql-<wbr>rdfjs</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/runner.html">runner</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/runner_cli.html">runner-<wbr>cli</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/types.html">types</a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_abstract_mediatyped.html" class="tsd-kind-icon">actor-<wbr>abstract-<wbr>mediatyped</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_abstract_parse.html" class="tsd-kind-icon">actor-<wbr>abstract-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_abstract_path.html" class="tsd-kind-icon">actor-<wbr>abstract-<wbr>path</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_context_preprocess_source_to_destination.html" class="tsd-kind-icon">actor-<wbr>context-<wbr>preprocess-<wbr>source-<wbr>to-<wbr>destination</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_fallback.html" class="tsd-kind-icon">actor-<wbr>dereference-<wbr>fallback</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_file.html" class="tsd-kind-icon">actor-<wbr>dereference-<wbr>file</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_http.html" class="tsd-kind-icon">actor-<wbr>dereference-<wbr>http</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_dereference_rdf_parse.html" class="tsd-kind-icon">actor-<wbr>dereference-<wbr>rdf-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_hash_bindings_sha1.html" class="tsd-kind-icon">actor-<wbr>hash-<wbr>bindings-<wbr>sha1</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_fetch.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>fetch</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_memento.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>memento</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_native.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>native</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_proxy.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>proxy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_http_wayback.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>wayback</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_init_query.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>query</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_optimize_query_operation_bgp_to_join.html" class="tsd-kind-icon">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>to-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_optimize_query_operation_join_bgp.html" class="tsd-kind-icon">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>join-<wbr>bgp</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_optimize_query_operation_join_connected.html" class="tsd-kind-icon">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>join-<wbr>connected</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_ask.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>ask</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_bgp_join.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_construct.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>construct</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_describe_subject.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>describe-<wbr>subject</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_distinct_hash.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>distinct-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_extend.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>extend</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_filter_sparqlee.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>filter-<wbr>sparqlee</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_from_quad.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>from-<wbr>quad</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_group.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>group</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_join.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_leftjoin.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>leftjoin</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_minus.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>minus</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_nop.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>nop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_orderby_sparqlee.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>sparqlee</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_alt.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>alt</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_inv.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>inv</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_link.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>link</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_nps.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>nps</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_one_or_more.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>one-<wbr>or-<wbr>more</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_seq.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>seq</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_zero_or_more.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>more</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_path_zero_or_one.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>one</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_project.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>project</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_quadpattern.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>quadpattern</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_reduced_hash.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>reduced-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_service.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>service</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_slice.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>slice</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_sparql_endpoint.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>sparql-<wbr>endpoint</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_union.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>union</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_add_rewrite.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>add-<wbr>rewrite</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_clear.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>clear</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_compositeupdate.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>compositeupdate</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_copy_rewrite.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>copy-<wbr>rewrite</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_create.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>create</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_deleteinsert.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>deleteinsert</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_drop.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>drop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_load.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>load</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_update_move_rewrite.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>update-<wbr>move-<wbr>rewrite</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_operation_values.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>values</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_parse_graphql.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>parse-<wbr>graphql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_parse_sparql.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>parse-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_json.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>json</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_rdf.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>rdf</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_simple.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>simple</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_csv.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>csv</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_json.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>json</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_tsv.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>tsv</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_sparql_xml.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>sparql-<wbr>xml</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_stats.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>stats</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_table.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>table</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_query_result_serialize_tree.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>result-<wbr>serialize-<wbr>tree</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_entries_sort_cardinality.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>entries-<wbr>sort-<wbr>cardinality</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_hash.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_bind.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>bind</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_empty.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>empty</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_sequential.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>sequential</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_multi_smallest.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>multi-<wbr>smallest</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_nestedloop.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>nestedloop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_none.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>none</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_single.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>single</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_inner_symmetrichash.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>inner-<wbr>symmetrichash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_minus_hash.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>minus-<wbr>hash</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_minus_hash_undef.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>minus-<wbr>hash-<wbr>undef</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_optional_bind.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>optional-<wbr>bind</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_optional_nestedloop.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>optional-<wbr>nestedloop</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_join_selectivity_variable_counting.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>selectivity-<wbr>variable-<wbr>counting</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_cancontainundefs.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>cancontainundefs</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_cardinality.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>cardinality</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_pagesize.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>pagesize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_accumulate_requesttime.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>accumulate-<wbr>requesttime</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_all.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>all</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_allow_http_methods.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>allow-<wbr>http-<wbr>methods</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_hydra_controls.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>controls</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_hydra_count.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>count</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_hydra_pagesize.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>pagesize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_patch_sparql_update.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>patch-<wbr>sparql-<wbr>update</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_put_accepted.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>put-<wbr>accepted</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_request_time.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>request-<wbr>time</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_extract_sparql_service.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>sparql-<wbr>service</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_metadata_primary_topic.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>primary-<wbr>topic</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html_microdata.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html_rdfa.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>rdfa</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_html_script.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>script</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_jsonld.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_n3.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>n3</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_rdfxml.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>rdfxml</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_shaclc.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>shaclc</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_parse_xml_rdfa.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>xml-<wbr>rdfa</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_links_next.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>next</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_links_queue_fifo.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>queue-<wbr>fifo</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_none.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>none</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_qpf.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>qpf</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_hypermedia_sparql.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_federated.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>federated</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_hypermedia.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_rdfjs_source.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>rdfjs-<wbr>source</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_resolve_quad_pattern_string_source.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>string-<wbr>source</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_serialize_jsonld.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>serialize-<wbr>jsonld</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_serialize_n3.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>serialize-<wbr>n3</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_serialize_shaclc.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>serialize-<wbr>shaclc</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_hypermedia_patch_sparql_update.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>update-<wbr>hypermedia-<wbr>patch-<wbr>sparql-<wbr>update</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_hypermedia_put_ldp.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>update-<wbr>hypermedia-<wbr>put-<wbr>ldp</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_hypermedia_sparql.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>update-<wbr>hypermedia-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_quads_hypermedia.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>update-<wbr>quads-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/actor_rdf_update_quads_rdfjs_store.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>update-<wbr>quads-<wbr>rdfjs-<wbr>store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bindings_factory.html" class="tsd-kind-icon">bindings-<wbr>factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_context_preprocess.html" class="tsd-kind-icon">bus-<wbr>context-<wbr>preprocess</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_dereference.html" class="tsd-kind-icon">bus-<wbr>dereference</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_dereference_rdf.html" class="tsd-kind-icon">bus-<wbr>dereference-<wbr>rdf</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_hash_bindings.html" class="tsd-kind-icon">bus-<wbr>hash-<wbr>bindings</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_http.html" class="tsd-kind-icon">bus-<wbr>http</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_http_invalidate.html" class="tsd-kind-icon">bus-<wbr>http-<wbr>invalidate</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_init.html" class="tsd-kind-icon">bus-<wbr>init</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_optimize_query_operation.html" class="tsd-kind-icon">bus-<wbr>optimize-<wbr>query-<wbr>operation</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_query_operation.html" class="tsd-kind-icon">bus-<wbr>query-<wbr>operation</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_query_parse.html" class="tsd-kind-icon">bus-<wbr>query-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_query_result_serialize.html" class="tsd-kind-icon">bus-<wbr>query-<wbr>result-<wbr>serialize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_join.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>join</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_join_entries_sort.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>join-<wbr>entries-<wbr>sort</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_join_selectivity.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>join-<wbr>selectivity</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_metadata.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>metadata</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_metadata_accumulate.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>metadata-<wbr>accumulate</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_metadata_extract.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>metadata-<wbr>extract</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_parse.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>parse</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_parse_html.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>parse-<wbr>html</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_hypermedia.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_hypermedia_links.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_hypermedia_links_queue.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>queue</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_resolve_quad_pattern.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_serialize.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>serialize</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_update_hypermedia.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>update-<wbr>hypermedia</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/bus_rdf_update_quads.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>update-<wbr>quads</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/context_entries.html" class="tsd-kind-icon">context-<wbr>entries</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/core.html" class="tsd-kind-icon">core</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/data_factory.html" class="tsd-kind-icon">data-<wbr>factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/jest.html" class="tsd-kind-icon">jest</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logger_bunyan.html" class="tsd-kind-icon">logger-<wbr>bunyan</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logger_pretty.html" class="tsd-kind-icon">logger-<wbr>pretty</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logger_void.html" class="tsd-kind-icon">logger-<wbr>void</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_all.html" class="tsd-kind-icon">mediator-<wbr>all</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_combine_pipeline.html" class="tsd-kind-icon">mediator-<wbr>combine-<wbr>pipeline</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_combine_union.html" class="tsd-kind-icon">mediator-<wbr>combine-<wbr>union</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_join_coefficients_fixed.html" class="tsd-kind-icon">mediator-<wbr>join-<wbr>coefficients-<wbr>fixed</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_number.html" class="tsd-kind-icon">mediator-<wbr>number</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediator_race.html" class="tsd-kind-icon">mediator-<wbr>race</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_accuracy.html" class="tsd-kind-icon">mediatortype-<wbr>accuracy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_httprequests.html" class="tsd-kind-icon">mediatortype-<wbr>httprequests</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_join_coefficients.html" class="tsd-kind-icon">mediatortype-<wbr>join-<wbr>coefficients</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_priority.html" class="tsd-kind-icon">mediatortype-<wbr>priority</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/mediatortype_time.html" class="tsd-kind-icon">mediatortype-<wbr>time</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/metadata.html" class="tsd-kind-icon">metadata</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/query_sparql.html" class="tsd-kind-icon">query-<wbr>sparql</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/query_sparql_file.html" class="tsd-kind-icon">query-<wbr>sparql-<wbr>file</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/query_sparql_rdfjs.html" class="tsd-kind-icon">query-<wbr>sparql-<wbr>rdfjs</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/runner.html" class="tsd-kind-icon">runner</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/runner_cli.html" class="tsd-kind-icon">runner-<wbr>cli</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/types.html" class="tsd-kind-icon">types</a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-</body>
-</html>
+<div class="col-content">
+<div class="tsd-page-title">
+<h2>Comunica</h2></div>
+<div class="tsd-panel tsd-typography"><p align="center">
+  <a href="https://comunica.dev/">
+    <img alt="Comunica" src="https://comunica.dev/img/comunica_red.svg" width="200">
+  </a>
+</p>
+
+<p align="center">
+  <strong>A knowledge graph querying framework for JavaScript</strong>
+  <br />
+  <i>Flexible SPARQL and GraphQL over decentralized RDF on the Web.</i>
+</p>
+
+<p align="center">
+<a href="https://github.com/comunica/comunica/actions?query=workflow%3ACI"><img src="https://github.com/comunica/comunica/workflows/CI/badge.svg" alt="Build Status"></a>
+<a href="https://coveralls.io/github/comunica/comunica?branch=master"><img src="https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master" alt="Coverage Status"></a>
+<a href="https://zenodo.org/badge/latestdoi/107345960"><img src="https://zenodo.org/badge/107345960.svg" alt="DOI"></a>
+<a href="https://gitter.im/comunica/Lobby"><img src="https://img.shields.io/gitter/room/comunica/Lobby.svg?style=plastic&label=Lobby-Chat" alt="Gitter Lobby chat"></a>
+<a href="https://gitter.im/comunica/core-dev"><img src="https://img.shields.io/gitter/room/comunica/Lobby.svg?style=plastic&label=Dev-Chat" alt="Gitter Dev chat"></a>
+</p>
+
+<p align="center">
+  <a href="https://comunica.github.io/comunica/"><img src="https://img.shields.io/badge/doc-code_documentation-blueviolet"/></a>
+</p>
+
+<p><strong><a href="https://comunica.dev/">Learn more about Comunica on our website</a>.</strong></p>
+<p>Comunica is an open-source project that is used by <a href="https://github.com/comunica/comunica/network/dependents">many other projects</a>,
+and is being maintained by a <a href="https://github.com/comunica/comunica/graphs/contributors">group of volunteers</a>.
+If you would like to support this project, you may consider:</p>
+<ul>
+<li>Contributing directly by <a href="https://comunica.dev/contribute/">writing code or documentation</a>; or</li>
+<li>Contributing indirectly by funding this project via <a href="https://opencollective.com/comunica-association">Open Collective</a>.</li>
+</ul>
+<a id="md:supported-by" class="tsd-anchor"></a><h2><a href="#md:supported-by">Supported by</a></h2><p>Comunica is a community-driven project, sustained by the <a href="https://comunica.dev/association/">Comunica Association</a>.
+If you are using Comunica, <a href="https://opencollective.com/comunica-association">becoming a sponsor or member</a> is a way to make Comunica sustainable in the long-term.</p>
+<p>Our top sponsors are shown below!</p>
+<p><a href="https://opencollective.com/comunica-association/sponsor/0/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/1/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/2/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/comunica-association/sponsor/3/website" target="_blank"><img src="https://opencollective.com/comunica-association/sponsor/3/avatar.svg"></a></p>
+<a id="md:query-with-comunica" class="tsd-anchor"></a><h2><a href="#md:query-with-comunica">Query with Comunica</a></h2><p>Read one of our <a href="https://comunica.dev/docs/query/getting_started/">guides to <strong>get started</strong> with querying</a>:</p>
+<ul>
+<li><a href="https://comunica.dev/docs/query/getting_started/query_cli/">Querying from the command line</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/update_cli/">Updating from the command line</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/query_cli_file/">Querying local files from the command line</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/query_app/">Querying in a JavaScript app</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/update_app/">Updating in a JavaScript app</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/query_browser_app/">Querying in a JavaScript browser app</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/setup_endpoint/">Setting up a SPARQL endpoint</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/query_docker/">Querying from a Docker container</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/setup_web_client/">Setting up a Web client</a></li>
+<li><a href="https://comunica.dev/docs/query/getting_started/query_dev_version/">Query using the latest development version</a></li>
+</ul>
+<p>Or jump right into one of the available query engines:</p>
+<ul>
+<li><a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql#readme">Comunica SPARQL</a>: SPARQL/GraphQL querying from JavaScript applications or the CLI (<a href="https://github.com/rdfjs/comunica-browser">Browser-ready via a CDN</a>)</li>
+</ul>
+<ul>
+<li><p>Source Customisation</p>
+<ul>
+<li><a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme">Comunica SPARQL File</a>: Engine to query over local RDF files</li>
+<li><a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme">Comunica SPARQL RDFJS</a>: Engine to query over in-memory <a href="https://rdf.js.org/stream-spec/#source-interface">RDFJS-compliant sources</a>.</li>
+<li><a href="https://github.com/comunica/comunica-actor-init-sparql-hdt#readme">Comunica SPARQL HDT</a>: Library to query over local <a href="https://www.rdfhdt.org/">HDT</a> files</li>
+</ul>
+</li>
+<li><p>Solid Customisation</p>
+<ul>
+<li><a href="https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme">Comunica SPARQL Solid</a>: Engine to query over files behind <a href="https://solidproject.org/">Solid access control</a>.</li>
+</ul>
+</li>
+<li><p>Link Traversal Research</p>
+<ul>
+<li><a href="https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal#readme">Comunica SPARQL Link Traversal</a>: Engine to query over multiple files by following links between them.</li>
+<li><a href="https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal-solid#readme">Comunica SPARQL Link Traversal Solid</a>: Engine to query within <a href="https://solidproject.org/">Solid data vaults</a> by following links between documents.</li>
+</ul>
+</li>
+<li><p>Reasoning Support</p>
+<ul>
+<li><a href="https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-reasoning">Comunica SPARQL Reasoning</a>: Engine that adds support for reasoning</li>
+<li><a href="https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-file-reasoning">Comunica SPARQL Reasoning File</a>: Engine to query over local RDF files with support for reasoning</li>
+</ul>
+</li>
+</ul>
+<a id="md:modify-or-extending-comunica" class="tsd-anchor"></a><h2><a href="#md:modify-or-extending-comunica">Modify or Extending Comunica</a></h2><p><a href="https://comunica.dev/docs/modify/">Read one of our guides to <strong>get started</strong> with modifying Comunica</a>,
+or have a look at some <a href="https://github.com/comunica/examples">examples</a>:</p>
+<ul>
+<li><a href="https://comunica.dev/docs/modify/getting_started/custom_config_cli/">Querying with a custom configuration from the command line</a></li>
+<li><a href="https://comunica.dev/docs/modify/getting_started/custom_config_app/">Querying with a custom configuration in a JavaScript app</a></li>
+<li><a href="https://comunica.dev/docs/modify/getting_started/custom_init/">Exposing your custom config as an npm package</a></li>
+<li><a href="https://comunica.dev/docs/modify/getting_started/custom_web_client/">Exposing your custom config in a Web client</a></li>
+<li><a href="https://comunica.dev/docs/modify/getting_started/contribute_actor/">Contributing a new query operation actor to the Comunica repository</a></li>
+<li><a href="https://comunica.dev/docs/modify/getting_started/actor_parameter/">Adding a config parameter to an actor</a></li>
+</ul>
+<a id="md:contribute" class="tsd-anchor"></a><h2><a href="#md:contribute">Contribute</a></h2><p>Interested in contributing? Have a look at our <a href="https://comunica.dev/contribute/">contribution guide</a>.</p>
+<a id="md:development-setup" class="tsd-anchor"></a><h2><a href="#md:development-setup">Development Setup</a></h2><p><em>(JSDoc: <a href="https://comunica.github.io/comunica/">https://comunica.github.io/comunica/</a>)</em></p>
+<p>This repository should be used by Comunica module <strong>developers</strong> as it contains multiple Comunica modules that can be composed.
+This repository is managed as a <a href="https://github.com/babel/babel/blob/master/doc/design/monorepo.md">monorepo</a>
+using <a href="https://lernajs.io/">Lerna</a>.</p>
+<p>If you want to develop new features
+or use the (potentially unstable) in-development version,
+you can set up a development environment for Comunica.</p>
+<p>Comunica requires <a href="http://nodejs.org/">Node.JS</a> 8.0 or higher and the <a href="https://yarnpkg.com/en/">Yarn</a> package manager.
+Comunica is tested on OSX, Linux and Windows.</p>
+<p>This project can be setup by cloning and installing it as follows:</p>
+<pre><code class="language-bash"><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-2">git</span><span class="hl-1"> </span><span class="hl-2">clone</span><span class="hl-1"> </span><span class="hl-2">https://github.com/comunica/comunica.git</span><br/><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-2">cd</span><span class="hl-1"> </span><span class="hl-2">comunica</span><br/><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-2">yarn</span><span class="hl-1"> </span><span class="hl-2">install</span>
+</code><button>Copy</button></pre>
+<p><strong>Note: <code>npm install</code> is not supported at the moment, as this project makes use of Yarn&#39;s <a href="https://yarnpkg.com/lang/en/docs/workspaces/">workspaces</a> functionality</strong></p>
+<p>This will install the dependencies of all modules, and bootstrap the Lerna monorepo.
+After that, all <a href="https://github.com/comunica/comunica/tree/master/packages">Comunica packages</a> are available in the <code>packages/</code> folder
+and can be used in a development environment, such as querying with <a href="https://github.com/comunica/comunica/tree/master/engines/query-sparql">Comunica SPARQL (<code>@comunica/query-sparql</code>)</a>.</p>
+<p>Furthermore, this will add <a href="https://www.npmjs.com/package/pre-commit">pre-commit hooks</a>
+to build, lint and test.
+These hooks can temporarily be disabled at your own risk by adding the <code>-n</code> flag to the commit command.</p>
+<a id="md:benchmarking" class="tsd-anchor"></a><h2><a href="#md:benchmarking">Benchmarking</a></h2><p>If you want to do benchmarking with Comunica in Node.js,
+make sure to run Node.js in production mode as follows:</p>
+<pre><code class="language-bash"><span class="hl-1">&gt; NODE_ENV=production node packages/some-package/bin/some-bin.js</span>
+</code><button>Copy</button></pre>
+<p>The reason for this is that Comunica extensively generates
+internal <code>Error</code> objects.
+In non-production mode, these also produce long stacktraces,
+which may in some cases impact performance.</p>
+<a id="md:cite" class="tsd-anchor"></a><h2><a href="#md:cite">Cite</a></h2><p>If you are using or extending Comunica as part of a scientific publication,
+we would appreciate a citation of our <a href="https://comunica.github.io/Article-ISWC2018-Resource/">article</a>.</p>
+<pre><code class="language-bibtex"><span class="hl-3">@inproceedings</span><span class="hl-1">{</span><span class="hl-4">taelman_iswc_resources_comunica_2018</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">author</span><span class="hl-1">    = </span><span class="hl-1">{</span><span class="hl-1">Taelman, Ruben and Van Herwegen, Joachim and Vander Sande, Miel and Verborgh, Ruben</span><span class="hl-1">}</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">title</span><span class="hl-1">     = </span><span class="hl-1">{</span><span class="hl-1">Comunica: a Modular SPARQL Query Engine for the Web</span><span class="hl-1">}</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">booktitle</span><span class="hl-1"> = </span><span class="hl-1">{</span><span class="hl-1">Proceedings of the 17th International Semantic Web Conference</span><span class="hl-1">}</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">year</span><span class="hl-1">      = </span><span class="hl-1">{</span><span class="hl-1">2018</span><span class="hl-1">}</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">month</span><span class="hl-1">     = </span><span class="hl-5">oct</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">url</span><span class="hl-1">       = </span><span class="hl-1">{</span><span class="hl-1">https://comunica.github.io/Article-ISWC2018-Resource/</span><span class="hl-1">}</span><br/><span class="hl-1">}</span>
+</code><button>Copy</button></pre>
+<a id="md:license" class="tsd-anchor"></a><h2><a href="#md:license">License</a></h2><p>This code is copyrighted by <a href="https://comunica.dev/association/">the Comunica Association</a> and <a href="http://idlab.ugent.be/">Ghent University – imec</a>
+and released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+</div></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)" id="icon-chevronDown"></path></svg>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li>
+<ul>
+<li><a href="#md:supported-by"><span>Supported by</span></a></li>
+<li>
+<ul>
+<li><a href="#md:query-with-comunica"><span>Query with <wbr/>Comunica</span></a></li>
+<li><a href="#md:modify-or-extending-comunica"><span>Modify or <wbr/>Extending <wbr/>Comunica</span></a></li>
+<li><a href="#md:contribute"><span>Contribute</span></a></li>
+<li><a href="#md:development-setup"><span>Development <wbr/>Setup</span></a></li>
+<li><a href="#md:benchmarking"><span>Benchmarking</span></a></li>
+<li><a href="#md:cite"><span>Cite</span></a></li>
+<li><a href="#md:license"><span>License</span></a></li></ul></li></ul></li></ul></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="index.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>Comunica</span></a>
+<ul class="tsd-small-nested-navigation">
+<li><a href="modules/_comunica_config_query_sparql.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/config-<wbr/>query-<wbr/>sparql -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_query_sparql.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/query-<wbr/>sparql -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_query_sparql_file.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/query-<wbr/>sparql-<wbr/>file -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_query_sparql_rdfjs.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/query-<wbr/>sparql-<wbr/>rdfjs -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_abstract_mediatyped.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>abstract-<wbr/>mediatyped -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_abstract_parse.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>abstract-<wbr/>parse -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_abstract_path.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>abstract-<wbr/>path -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_context_preprocess_source_to_destination.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>context-<wbr/>preprocess-<wbr/>source-<wbr/>to-<wbr/>destination -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_dereference_fallback.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>dereference-<wbr/>fallback -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_dereference_file.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>dereference-<wbr/>file -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_dereference_http.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>dereference-<wbr/>http -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_dereference_rdf_parse.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>dereference-<wbr/>rdf-<wbr/>parse -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_hash_bindings_sha1.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>hash-<wbr/>bindings-<wbr/>sha1 -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_http_fetch.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>http-<wbr/>fetch -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_http_memento.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>http-<wbr/>memento -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_http_native.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>http-<wbr/>native -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_http_proxy.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>http-<wbr/>proxy -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_http_wayback.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>http-<wbr/>wayback -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_init_query.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>init-<wbr/>query -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_init_sparql.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>init-<wbr/>sparql</span></a></li>
+<li><a href="modules/_comunica_actor_init_sparql_file.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>init-<wbr/>sparql-<wbr/>file</span></a></li>
+<li><a href="modules/_comunica_actor_init_sparql_rdfjs.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>init-<wbr/>sparql-<wbr/>rdfjs</span></a></li>
+<li><a href="modules/_comunica_actor_optimize_query_operation_bgp_to_join.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>optimize-<wbr/>query-<wbr/>operation-<wbr/>bgp-<wbr/>to-<wbr/>join -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_optimize_query_operation_join_bgp.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>optimize-<wbr/>query-<wbr/>operation-<wbr/>join-<wbr/>bgp -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_optimize_query_operation_join_connected.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>optimize-<wbr/>query-<wbr/>operation-<wbr/>join-<wbr/>connected -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_ask.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>ask -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_bgp_join.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>bgp-<wbr/>join -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_construct.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>construct -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_describe_subject.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>describe-<wbr/>subject -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_distinct_hash.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>distinct-<wbr/>hash -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_extend.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>extend -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_filter_sparqlee.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>filter-<wbr/>sparqlee -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_from_quad.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>from-<wbr/>quad -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_group.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>group -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_join.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>join -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_leftjoin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>leftjoin -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_minus.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>minus -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_nop.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>nop -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_orderby_sparqlee.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>orderby-<wbr/>sparqlee -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_alt.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>alt -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_inv.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>inv -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_link.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>link -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_nps.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>nps -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_one_or_more.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>one-<wbr/>or-<wbr/>more -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_seq.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>seq -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_zero_or_more.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>zero-<wbr/>or-<wbr/>more -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_path_zero_or_one.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>path-<wbr/>zero-<wbr/>or-<wbr/>one -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_project.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>project -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_quadpattern.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>quadpattern -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_reduced_hash.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>reduced-<wbr/>hash -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_service.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>service -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_slice.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>slice -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_sparql_endpoint.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>sparql-<wbr/>endpoint -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_union.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>union -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_add_rewrite.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>add-<wbr/>rewrite -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_clear.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>clear -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_compositeupdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>compositeupdate -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_copy_rewrite.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>copy-<wbr/>rewrite -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_create.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>create -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_deleteinsert.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>deleteinsert -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_drop.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>drop -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_load.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>load -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_update_move_rewrite.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>update-<wbr/>move-<wbr/>rewrite -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_operation_values.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>operation-<wbr/>values -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_query_parse_graphql.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>parse-<wbr/>graphql -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_parse_sparql.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>parse-<wbr/>sparql -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_json.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>json -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_rdf.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>rdf -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_simple.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>simple -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_sparql_csv.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>sparql-<wbr/>csv -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_sparql_json.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>sparql-<wbr/>json -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_sparql_tsv.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>sparql-<wbr/>tsv -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_sparql_xml.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>sparql-<wbr/>xml -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_stats.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>stats -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_table.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>table -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_query_result_serialize_tree.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>query-<wbr/>result-<wbr/>serialize-<wbr/>tree -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_entries_sort_cardinality.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>entries-<wbr/>sort-<wbr/>cardinality -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_hash.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>hash -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_multi_bind.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>multi-<wbr/>bind -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_multi_empty.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>multi-<wbr/>empty -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_multi_sequential.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>multi-<wbr/>sequential -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_multi_smallest.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>multi-<wbr/>smallest -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_nestedloop.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>nestedloop -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_none.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>none -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_single.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>single -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_inner_symmetrichash.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>inner-<wbr/>symmetrichash -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_minus_hash.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>minus-<wbr/>hash -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_minus_hash_undef.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>minus-<wbr/>hash-<wbr/>undef -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_optional_bind.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>optional-<wbr/>bind -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_optional_nestedloop.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>optional-<wbr/>nestedloop -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_join_selectivity_variable_counting.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>join-<wbr/>selectivity-<wbr/>variable-<wbr/>counting -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_accumulate_cancontainundefs.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>accumulate-<wbr/>cancontainundefs -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_accumulate_cardinality.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>accumulate-<wbr/>cardinality -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_accumulate_pagesize.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>accumulate-<wbr/>pagesize -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_accumulate_requesttime.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>accumulate-<wbr/>requesttime -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_all.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>all -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_allow_http_methods.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>allow-<wbr/>http-<wbr/>methods -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_hydra_controls.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>hydra-<wbr/>controls -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_hydra_count.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>hydra-<wbr/>count -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_hydra_pagesize.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>hydra-<wbr/>pagesize -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_patch_sparql_update.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>patch-<wbr/>sparql-<wbr/>update -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_put_accepted.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>put-<wbr/>accepted -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_request_time.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>request-<wbr/>time -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_extract_sparql_service.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>extract-<wbr/>sparql-<wbr/>service -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_metadata_primary_topic.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>metadata-<wbr/>primary-<wbr/>topic -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_html.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>html -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_html_microdata.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>html-<wbr/>microdata -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_html_rdfa.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>html-<wbr/>rdfa -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_html_script.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>html-<wbr/>script -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_jsonld.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>jsonld -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_n3.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>n3 -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_rdfxml.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>rdfxml -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_shaclc.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>shaclc -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_parse_xml_rdfa.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>parse-<wbr/>xml-<wbr/>rdfa -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_hypermedia_links_next.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia-<wbr/>links-<wbr/>next -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_hypermedia_links_queue_fifo.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia-<wbr/>links-<wbr/>queue-<wbr/>fifo -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_hypermedia_none.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia-<wbr/>none -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_hypermedia_qpf.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia-<wbr/>qpf -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_hypermedia_sparql.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia-<wbr/>sparql -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_quad_pattern_federated.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>quad-<wbr/>pattern-<wbr/>federated -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_quad_pattern_hypermedia.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>quad-<wbr/>pattern-<wbr/>hypermedia -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_quad_pattern_rdfjs_source.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>quad-<wbr/>pattern-<wbr/>rdfjs-<wbr/>source -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_resolve_quad_pattern_string_source.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>resolve-<wbr/>quad-<wbr/>pattern-<wbr/>string-<wbr/>source -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_serialize_jsonld.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>serialize-<wbr/>jsonld -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_serialize_n3.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>serialize-<wbr/>n3 -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_serialize_shaclc.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>serialize-<wbr/>shaclc -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_update_hypermedia_patch_sparql_update.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>update-<wbr/>hypermedia-<wbr/>patch-<wbr/>sparql-<wbr/>update -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_update_hypermedia_put_ldp.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>update-<wbr/>hypermedia-<wbr/>put-<wbr/>ldp -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_update_hypermedia_sparql.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>update-<wbr/>hypermedia-<wbr/>sparql -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_update_quads_hypermedia.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>update-<wbr/>quads-<wbr/>hypermedia -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_actor_rdf_update_quads_rdfjs_store.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/actor-<wbr/>rdf-<wbr/>update-<wbr/>quads-<wbr/>rdfjs-<wbr/>store -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_bindings_factory.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bindings-<wbr/>factory -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_context_preprocess.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>context-<wbr/>preprocess -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_dereference.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>dereference -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_dereference_rdf.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>dereference-<wbr/>rdf -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_hash_bindings.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>hash-<wbr/>bindings -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_http.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>http -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_http_invalidate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>http-<wbr/>invalidate -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_init.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>init -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_optimize_query_operation.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>optimize-<wbr/>query-<wbr/>operation -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_query_operation.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>query-<wbr/>operation -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_bus_query_parse.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>query-<wbr/>parse -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_query_result_serialize.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>query-<wbr/>result-<wbr/>serialize -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_join.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>join -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_join_entries_sort.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>join-<wbr/>entries-<wbr/>sort -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_join_selectivity.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>join-<wbr/>selectivity -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_metadata.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>metadata -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_metadata_accumulate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>metadata-<wbr/>accumulate -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_metadata_extract.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>metadata-<wbr/>extract -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_parse.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>parse -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_parse_html.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>parse-<wbr/>html -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_resolve_hypermedia.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_resolve_hypermedia_links.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia-<wbr/>links -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_resolve_hypermedia_links_queue.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>resolve-<wbr/>hypermedia-<wbr/>links-<wbr/>queue -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_resolve_quad_pattern.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>resolve-<wbr/>quad-<wbr/>pattern -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_serialize.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>serialize -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_update_hypermedia.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>update-<wbr/>hypermedia -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_bus_rdf_update_quads.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/bus-<wbr/>rdf-<wbr/>update-<wbr/>quads -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_context_entries.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/context-<wbr/>entries -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_core.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/core -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_data_factory.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/data-<wbr/>factory -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_jest.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/jest -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_logger_bunyan.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/logger-<wbr/>bunyan -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_logger_pretty.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/logger-<wbr/>pretty -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_logger_void.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/logger-<wbr/>void -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediator_all.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediator-<wbr/>all -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediator_combine_pipeline.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediator-<wbr/>combine-<wbr/>pipeline -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediator_combine_union.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediator-<wbr/>combine-<wbr/>union -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediator_join_coefficients_fixed.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediator-<wbr/>join-<wbr/>coefficients-<wbr/>fixed -<wbr/> v2.7.1</span></a></li>
+<li><a href="modules/_comunica_mediator_number.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediator-<wbr/>number -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediator_race.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediator-<wbr/>race -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediatortype_accuracy.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediatortype-<wbr/>accuracy -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediatortype_httprequests.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediatortype-<wbr/>httprequests -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediatortype_join_coefficients.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediatortype-<wbr/>join-<wbr/>coefficients -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediatortype_priority.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediatortype-<wbr/>priority -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_mediatortype_time.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/mediatortype-<wbr/>time -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_metadata.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/metadata -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_packager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/packager</span></a></li>
+<li><a href="modules/_comunica_runner.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/runner -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_runner_cli.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/runner-<wbr/>cli -<wbr/> v2.7.0</span></a></li>
+<li><a href="modules/_comunica_types.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>@comunica/types -<wbr/> v2.7.0</span></a></li></ul></nav></div></div></div>
+<div class="tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div></body></html>
