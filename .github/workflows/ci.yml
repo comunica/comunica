@@ -140,9 +140,6 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   docs:
-    needs:
-      - test
-      - lint
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
