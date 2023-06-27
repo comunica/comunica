@@ -67,7 +67,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
         stream.getProperty('metadata', resolve);
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'exact', value: 2 },
+        cardinality: { type: 'estimate', value: 2 },
         canContainUndefs: false,
       });
       expect(await arrayifyStream(stream!)).toEqualRdfQuadArray([

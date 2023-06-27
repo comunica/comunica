@@ -235,18 +235,40 @@ describe('FederatedQuadSource', () => {
       expect(FederatedQuadSource.skolemizeQuad(
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')), '0',
       ))
-        .toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
+        .toEqual(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
     });
 
     it('should skolemize blank nodes', () => {
       expect(FederatedQuadSource.skolemizeQuad(
         DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')), '0',
       ))
-        .toEqualRdfQuad(DF.quad(
-          DF.blankNode('urn:comunica_skolem:source_0:s'),
-          DF.blankNode('urn:comunica_skolem:source_0:p'),
-          DF.blankNode('urn:comunica_skolem:source_0:o'),
-          DF.blankNode('urn:comunica_skolem:source_0:g'),
+        .toEqual(DF.quad(
+          new BlankNodeScoped('bc_0_s', DF.namedNode('urn:comunica_skolem:source_0:s')),
+          new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_0:p')),
+          new BlankNodeScoped('bc_0_o', DF.namedNode('urn:comunica_skolem:source_0:o')),
+          new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g')),
+        ));
+    });
+
+    it('should skolemize blank nodes in quoted triples', () => {
+      expect(FederatedQuadSource.skolemizeQuad(
+        DF.quad(
+          DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')),
+          DF.blankNode('p'),
+          DF.blankNode('o'),
+          DF.blankNode('g'),
+        ), '0',
+      ))
+        .toEqual(DF.quad(
+          DF.quad(
+            new BlankNodeScoped('bc_0_s', DF.namedNode('urn:comunica_skolem:source_0:s')),
+            new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_0:p')),
+            new BlankNodeScoped('bc_0_o', DF.namedNode('urn:comunica_skolem:source_0:o')),
+            new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g')),
+          ),
+          new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_0:p')),
+          new BlankNodeScoped('bc_0_o', DF.namedNode('urn:comunica_skolem:source_0:o')),
+          new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g')),
         ));
     });
   });
@@ -256,32 +278,63 @@ describe('FederatedQuadSource', () => {
       expect(FederatedQuadSource.deskolemizeQuad(
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')), '0',
       ))
-        .toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
+        .toEqual(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
     });
 
     it('should deskolemize blank nodes with the right id', () => {
       expect(FederatedQuadSource.deskolemizeQuad(
         DF.quad(
-          DF.blankNode('urn:comunica_skolem:source_0:s'),
-          DF.blankNode('urn:comunica_skolem:source_0:p'),
-          DF.blankNode('urn:comunica_skolem:source_0:o'),
-          DF.blankNode('urn:comunica_skolem:source_0:g'),
+          new BlankNodeScoped('bc_0_s', DF.namedNode('urn:comunica_skolem:source_0:s')),
+          new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_0:p')),
+          new BlankNodeScoped('bc_0_o', DF.namedNode('urn:comunica_skolem:source_0:o')),
+          new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g')),
         ), '0',
-      )).toEqualRdfQuad(DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')));
+      )).toEqual(DF.quad(
+        DF.blankNode('s'),
+        DF.blankNode('p'),
+        DF.blankNode('o'),
+        DF.blankNode('g'),
+      ));
+    });
+
+    it('should deskolemize blank nodes in quoted triples with the right id', () => {
+      expect(FederatedQuadSource.deskolemizeQuad(
+        DF.quad(
+          DF.quad(
+            new BlankNodeScoped('bc_0_s', DF.namedNode('urn:comunica_skolem:source_0:s')),
+            new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_0:p')),
+            new BlankNodeScoped('bc_0_o', DF.namedNode('urn:comunica_skolem:source_0:o')),
+            new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g')),
+          ),
+          new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_0:p')),
+          new BlankNodeScoped('bc_0_o', DF.namedNode('urn:comunica_skolem:source_0:o')),
+          new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g')),
+        ), '0',
+      )).toEqual(DF.quad(
+        DF.quad(
+          DF.blankNode('s'),
+          DF.blankNode('p'),
+          DF.blankNode('o'),
+          DF.blankNode('g'),
+        ),
+        DF.blankNode('p'),
+        DF.blankNode('o'),
+        DF.blankNode('g'),
+      ));
     });
 
     it('should deskolemize blank nodes with the right id but not ones with the wrong id', () => {
       expect(FederatedQuadSource.deskolemizeQuad(
         DF.quad(
-          DF.blankNode('urn:comunica_skolem:source_0:s'),
-          DF.blankNode('urn:comunica_skolem:source_1:p'),
-          DF.blankNode('urn:comunica_skolem:source_0:o'),
-          DF.blankNode('urn:comunica_skolem:source_0:g'),
+          new BlankNodeScoped('bc_0_s', DF.namedNode('urn:comunica_skolem:source_0:s')),
+          new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_1:p')),
+          new BlankNodeScoped('bc_0_o', DF.namedNode('urn:comunica_skolem:source_0:o')),
+          new BlankNodeScoped('bc_0_g', DF.namedNode('urn:comunica_skolem:source_0:g')),
         ), '0',
-      )).toEqualRdfQuad(
+      )).toEqual(
         DF.quad(
           DF.blankNode('s'),
-          DF.blankNode('urn:comunica_skolem:source_1:p'),
+          new BlankNodeScoped('bc_0_p', DF.namedNode('urn:comunica_skolem:source_1:p')),
           DF.blankNode('o'),
           DF.blankNode('g'),
         ),
@@ -296,7 +349,7 @@ describe('FederatedQuadSource', () => {
           DF.namedNode('urn:comunica_skolem:source_0:o'),
           DF.namedNode('urn:comunica_skolem:source_0:g'),
         ), '0',
-      )).toEqualRdfQuad(
+      )).toEqual(
         DF.quad(
           DF.blankNode('s'),
           DF.namedNode('urn:comunica_skolem:source_1:p'),

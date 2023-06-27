@@ -8,7 +8,7 @@ import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
-import { getTerms, getVariables, mapTerms } from 'rdf-terms';
+import { getTerms, getVariables, mapTermsNested } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';
 
@@ -56,7 +56,7 @@ export class RdfSourceSparql implements IQuadSource {
     let changed = false;
 
     // For every position, convert to a variable if there is a blank node
-    const result = mapTerms(pattern, term => {
+    const result = mapTermsNested(pattern, term => {
       if (term.termType === 'BlankNode') {
         let name = term.value;
         if (blankMap[name]) {
@@ -102,7 +102,7 @@ export class RdfSourceSparql implements IQuadSource {
     return toSparql(RdfSourceSparql.FACTORY.createProject(
       RdfSourceSparql.patternToBgp(pattern),
       variables,
-    ));
+    ), { sparqlStar: true });
   }
 
   /**
@@ -127,7 +127,7 @@ export class RdfSourceSparql implements IQuadSource {
         RdfSourceSparql.FACTORY.createTermExpression(DF.variable('var0')),
       ),
       [ DF.variable('count') ],
-    ));
+    ), { sparqlStar: true });
   }
 
   /**
@@ -184,7 +184,7 @@ export class RdfSourceSparql implements IQuadSource {
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() => this
       .queryBindings(this.url, selectQuery), { autoStart: false })
       .transform({
-        map: (bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
+        map: (bindings: Bindings) => <RDF.Quad> mapTermsNested(pattern, (value: RDF.Term) => {
           if (value.termType === 'Variable') {
             const boundValue = bindings.get(value);
             if (!boundValue) {

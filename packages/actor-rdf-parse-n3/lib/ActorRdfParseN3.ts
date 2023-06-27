@@ -37,7 +37,8 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
     action.data.on('error', error => data.emit('error', error));
     const data = <Readable><any>action.data.pipe(new StreamParser({
       baseIRI: action.metadata?.baseIRI,
-      format: mediaType,
+      // Enable RDF-star-mode on all formats, except N3, where this is not supported.
+      format: mediaType.endsWith('n3') ? mediaType : `${mediaType}*`,
     }));
     return {
       data,

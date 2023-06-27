@@ -36,7 +36,7 @@
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.13",
     "asynciterator": "^3.8.0",
-    "sparqlalgebrajs": "^4.0.5"
+    "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

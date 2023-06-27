@@ -45,10 +45,11 @@
     "pre-commit": "^1.2.2",
     "rdf-data-factory": "^1.1.1",
     "rdf-quad": "^1.5.0",
-    "rdf-test-suite": "^1.24.0",
+    "rdf-stores": "^1.0.0",
+    "rdf-test-suite": "^1.25.0",
     "rdf-test-suite-ldf": "^1.4.2",
     "setup-polly-jest": "^0.11.0",
-    "sparqlalgebrajs": "^4.0.5",
+    "sparqlalgebrajs": "^4.2.0",
     "stream-to-string": "^1.2.0",
     "streamify-array": "^1.0.1",
     "streamify-string": "^1.0.1",
@@ -92,6 +93,7 @@
     "ncu:major:all": "lerna-script updateTaskMajor"
   },
   "resolutions": {
-    "@rdfjs/types": "1.1.0"
+    "@rdfjs/types": "1.1.0",
+    "readable-stream": "4.3.0"
   }
 }

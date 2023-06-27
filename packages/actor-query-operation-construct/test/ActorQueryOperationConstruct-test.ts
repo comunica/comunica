@@ -84,6 +84,17 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.variable('o1'), DF.namedNode('p2'), DF.literal('o2'), DF.namedNode('g2')),
       ])).toEqual([ DF.variable('o1') ]);
     });
+
+    it('should find variables in quoted triple patterns with variables', () => {
+      return expect(ActorQueryOperationConstruct.getVariables([
+        DF.quad(
+          DF.blankNode('s1'),
+          DF.namedNode('p1'),
+          DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.variable('o1')),
+        ),
+        DF.quad(DF.variable('s2'), DF.namedNode('p2'), DF.literal('o2'), DF.namedNode('g2')),
+      ])).toEqual([ DF.variable('o1'), DF.variable('s2') ]);
+    });
   });
 
   describe('An ActorQueryOperationConstruct instance', () => {

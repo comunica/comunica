@@ -141,6 +141,111 @@ describe('RdfSourceSparql', () => {
         ]);
     });
 
+    it('should return data with quoted triples', async() => {
+      const thisMediator: any = {
+        mediate: jest.fn((action: any) => {
+          const query = action.init.body.toString();
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') > 0 ?
+              streamifyString(`{
+  "head": { "vars": [ "count" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "count": { "type": "literal" , "value": "3" }
+      }
+    ]
+  }
+}`) :
+              streamifyString(`{
+  "head": { "vars": [ "s" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "s": { "type": "triple", "value": { "subject": { "type": "uri" , "value": "s1" }, "predicate": { "type": "uri" , "value": "p1" }, "object": { "type": "uri" , "value": "o1" } } }
+      },
+      {
+        "s": { "type": "triple", "value": { "subject": { "type": "uri" , "value": "s2" }, "predicate": { "type": "uri" , "value": "p2" }, "object": { "type": "uri" , "value": "o2" } } }
+      },
+      {
+        "s": { "type": "triple", "value": { "subject": { "type": "uri" , "value": "s3" }, "predicate": { "type": "uri" , "value": "p3" }, "object": { "type": "uri" , "value": "o3" } } }
+      }
+    ]
+  }
+}`),
+            ok: true,
+          };
+        }),
+      };
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      expect(await arrayifyStream(
+        source.match(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o'), DF.defaultGraph()),
+      ))
+        .toEqualRdfQuadArray([
+          quad('<<s1 p1 o1>>', 'p', 'o'),
+          quad('<<s2 p2 o2>>', 'p', 'o'),
+          quad('<<s3 p3 o3>>', 'p', 'o'),
+        ]);
+    });
+
+    it('should return data with quoted triple patterns', async() => {
+      const thisMediator: any = {
+        mediate: jest.fn((action: any) => {
+          const query = action.init.body.toString();
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') > 0 ?
+              streamifyString(`{
+  "head": { "vars": [ "count" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "count": { "type": "literal" , "value": "3" }
+      }
+    ]
+  }
+}`) :
+              streamifyString(`{
+  "head": { "vars": [ "s" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "s": { "type": "uri" , "value": "s1" }
+      },
+      {
+        "s": { "type": "uri" , "value": "s2" }
+      },
+      {
+        "s": { "type": "uri" , "value": "s3" }
+      }
+    ]
+  }
+}`),
+            ok: true,
+          };
+        }),
+      };
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      expect(await arrayifyStream(
+        source.match(
+          DF.quad(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o')),
+          DF.namedNode('p'),
+          DF.namedNode('o'),
+          DF.defaultGraph(),
+        ),
+      ))
+        .toEqualRdfQuadArray([
+          quad('<<s1 p o>>', 'p', 'o'),
+          quad('<<s2 p o>>', 'p', 'o'),
+          quad('<<s3 p o>>', 'p', 'o'),
+        ]);
+    });
+
     it('should return data for a web stream', async() => {
       const thisMediator: any = {
         mediate(action: any) {

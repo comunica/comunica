@@ -84,6 +84,7 @@ describe('ActorRdfParseN3', () => {
   describe('An ActorRdfParseN3 instance', () => {
     let actor: ActorRdfParseN3;
     let input: Readable;
+    let inputQuoted: Readable;
     let inputError: Readable;
 
     beforeEach(() => {
@@ -136,6 +137,10 @@ describe('ActorRdfParseN3', () => {
           <a> <b> <c>.
           <d> <e> <f>.
       `);
+        inputQuoted = stringToStream(`
+          << <a> <b> <c> >> <b> <c>.
+          <d> <e> <f>.
+      `);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseN3'));
       });
@@ -169,6 +174,19 @@ describe('ActorRdfParseN3', () => {
       it('should test on Turtle', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'text/turtle', context }))
+          .resolves.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: 'text/turtle',
+            context,
+          }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on Turtle with quoted triples', async() => {
+        await expect(actor
+          .test({ handle: { data: inputQuoted, context }, handleMediaType: 'text/turtle', context }))
           .resolves.toBeTruthy();
         await expect(actor
           .test({

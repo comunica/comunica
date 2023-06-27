@@ -43,7 +43,7 @@
     "asynciterator": "^3.8.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.1",
-    "rdf-terms": "^1.9.1"
+    "rdf-terms": "^1.11.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -72,7 +72,13 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
       // Sort the annoted stream
       const sortedStream = new SortIterator(transformedStream,
-        (left, right) => orderTypes(left.result, right.result, isAscending),
+        (left, right) => {
+          let compare = orderTypes(left.result, right.result);
+          if (!isAscending) {
+            compare *= -1;
+          }
+          return compare;
+        },
         options);
 
       // Remove the annotation

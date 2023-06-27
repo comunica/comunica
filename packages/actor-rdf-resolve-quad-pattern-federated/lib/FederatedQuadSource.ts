@@ -14,7 +14,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { mapTerms } from 'rdf-terms';
+import { mapTermsNested } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
@@ -109,7 +109,7 @@ export class FederatedQuadSource implements IQuadSource {
    * @return The skolemized quad.
    */
   public static skolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sourceId: string): Q {
-    return mapTerms(quad, term => FederatedQuadSource.skolemizeTerm(term, sourceId));
+    return mapTermsNested(quad, term => FederatedQuadSource.skolemizeTerm(term, sourceId));
   }
 
   /**
@@ -146,7 +146,7 @@ export class FederatedQuadSource implements IQuadSource {
    * @return The deskolemized quad.
    */
   public static deskolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sourceId: string): Q {
-    return mapTerms(quad, (term: RDF.Term): RDF.Term => {
+    return mapTermsNested(quad, (term: RDF.Term): RDF.Term => {
       const newTerm = FederatedQuadSource.deskolemizeTerm(term, sourceId);
       // If the term was skolemized in a different source then dont deskolemize it
       return !newTerm ? term : newTerm;

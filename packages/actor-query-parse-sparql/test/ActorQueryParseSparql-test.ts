@@ -77,6 +77,11 @@ describe('ActorQueryParseSparql', () => {
       );
     });
 
+    it('should run for a SPARQL-star query', async() => {
+      const result = await actor.run({ query: 'SELECT * WHERE { << ?a a ?q >> a ?b }', context });
+      expect(result).toBeTruthy();
+    });
+
     it('should run for an update query', async() => {
       const result = await actor.run({
         query: 'INSERT { <http://example/egbook> <http://ex.org/p> "A" } WHERE {}',

@@ -3,7 +3,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { mapTerms } from 'rdf-terms';
+import { mapTermsNested } from 'rdf-terms';
 
 const DF = new DataFactory();
 
@@ -53,7 +53,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    */
   public static bindQuad(bindings: Bindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
     try {
-      return mapTerms(<RDF.Quad> pattern, term => {
+      return mapTermsNested(<RDF.Quad> pattern, term => {
         const boundTerm = BindingsToQuadsIterator.bindTerm(bindings, term);
         if (!boundTerm) {
           throw new Error('Unbound term');
@@ -88,7 +88,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    */
   public static localizeQuad(blankNodeCounter: number,
     pattern: RDF.BaseQuad): RDF.BaseQuad {
-    return mapTerms(pattern, term => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
+    return mapTermsNested(pattern, term => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
   }
 
   /**

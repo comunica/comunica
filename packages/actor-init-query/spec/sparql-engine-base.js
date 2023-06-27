@@ -1,6 +1,6 @@
 const ProxyHandlerStatic = require('@comunica/actor-http-proxy').ProxyHandlerStatic;
 const RdfTestSuite = require('rdf-test-suite');
-const N3Store = require('n3').Store;
+const RdfStore = require('rdf-stores').RdfStore;
 
 module.exports = function(engine) {
   return {
@@ -48,7 +48,9 @@ module.exports = function(engine) {
 };
 
 function source(data) {
-  const store = new N3Store();
-  store.addQuads(data);
+  const store = RdfStore.createDefault();
+  for (quad of data) {
+    store.addQuad(quad);
+  }
   return store;
 }

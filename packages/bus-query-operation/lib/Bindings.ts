@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
+import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
@@ -25,6 +26,9 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
     if (value) {
       return value;
     }
+  }
+  if (term.termType === 'Quad' && someTermsNested(term, value => value.termType === 'Variable')) {
+    return mapTermsNested(term, subTerm => materializeTerm(subTerm, bindings));
   }
   return term;
 }
