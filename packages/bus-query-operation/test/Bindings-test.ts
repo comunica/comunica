@@ -116,6 +116,53 @@ describe('materializeTerm', () => {
     return expect(materializeTerm(termDefaultGraph, bindingsAC))
       .toEqual(termDefaultGraph);
   });
+
+  it('should not materialize a quoted triple without variables', () => {
+    return expect(materializeTerm(DF.quad(
+      termNamedNode,
+      termNamedNode,
+      termNamedNode,
+    ), bindingsAC))
+      .toEqual(DF.quad(
+        termNamedNode,
+        termNamedNode,
+        termNamedNode,
+      ));
+  });
+
+  it('should materialize a quoted triple with variables', () => {
+    return expect(materializeTerm(DF.quad(
+      termVariableA,
+      termNamedNode,
+      termVariableB,
+    ), bindingsAB))
+      .toEqual(DF.quad(
+        <any> valueA,
+        termNamedNode,
+        valueB,
+      ));
+  });
+
+  it('should materialize a nested quoted triple with variables', () => {
+    return expect(materializeTerm(DF.quad(
+      termVariableA,
+      termNamedNode,
+      DF.quad(
+        termVariableA,
+        termNamedNode,
+        termVariableB,
+      ),
+    ), bindingsAB))
+      .toEqual(DF.quad(
+        <any> valueA,
+        termNamedNode,
+        DF.quad(
+          <any> valueA,
+          termNamedNode,
+          valueB,
+        ),
+      ));
+  });
 });
 
 // eslint-disable-next-line mocha/max-top-level-suites

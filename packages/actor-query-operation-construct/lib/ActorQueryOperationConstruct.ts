@@ -8,7 +8,7 @@ import type { IQueryOperationResultBindings, IActionContext, IQueryOperationResu
   MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
+import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
@@ -27,7 +27,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
    */
   public static getVariables(patterns: RDF.BaseQuad[]): RDF.Variable[] {
     return uniqTerms((<RDF.Variable[]> []).concat
-      .apply([], patterns.map(pattern => getVariables(getTerms(pattern)))));
+      .apply([], patterns.map(pattern => getVariables(getTermsNested(pattern)))));
   }
 
   public async testOperation(operation: Algebra.Construct, context: IActionContext): Promise<IActorTest> {

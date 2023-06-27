@@ -41,8 +41,9 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
     "rdf-data-factory": "^1.1.1",
-    "rdf-terms": "^1.9.1",
-    "sparqlalgebrajs": "^4.0.5"
+    "rdf-terms": "^1.11.0",
+    "rdf-string": "^1.6.3",
+    "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

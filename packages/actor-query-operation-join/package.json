@@ -36,7 +36,7 @@
     "@comunica/bus-rdf-join": "^2.7.1",
     "@comunica/core": "^2.7.0",
     "@comunica/types": "^2.7.0",
-    "sparqlalgebrajs": "^4.0.5"
+    "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

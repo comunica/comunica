@@ -9,7 +9,7 @@ import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { mapTerms, matchPattern } from 'rdf-terms';
+import { everyTermsNested, mapTerms, matchPattern } from 'rdf-terms';
 
 const DF = new DataFactory();
 
@@ -115,7 +115,8 @@ export class RdfSourceQpf implements IQuadSource {
       { uri: this.graphUri, term: graph },
     ];
     for (const entry of input) {
-      if (entry.uri && entry.term.termType !== 'Variable') {
+      if (entry.uri && entry.term.termType !== 'Variable' &&
+        (entry.term.termType !== 'Quad' || everyTermsNested(entry.term, value => value.termType !== 'Variable'))) {
         entries[entry.uri] = termToString(entry.term);
       }
     }

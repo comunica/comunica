@@ -35,7 +35,7 @@
     "@comunica/types": "^2.7.0",
     "@rdfjs/types": "*",
     "jsonld-context-parser": "^2.2.2",
-    "sparqlalgebrajs": "^4.0.5"
+    "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

@@ -23,7 +23,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
   }
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
-    const parser = new SparqlParser({ prefixes: this.prefixes, baseIRI: action.baseIRI });
+    const parser = new SparqlParser({ prefixes: this.prefixes, baseIRI: action.baseIRI, sparqlStar: true });
     const parsedSyntax = parser.parse(action.query);
     const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
     return {

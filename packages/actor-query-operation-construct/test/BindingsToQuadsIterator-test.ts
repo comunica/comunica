@@ -236,6 +236,34 @@ describe('BindingsToQuadsIterator', () => {
           DF.namedNode('b'),
         ));
       });
+
+      it('should return a bound quoted quad', () => {
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.quad(
+            DF.variable('a'),
+            DF.namedNode('p'),
+            DF.literal('o'),
+          ),
+          DF.namedNode('p'),
+          DF.quad(
+            DF.variable('b'),
+            DF.namedNode('p'),
+            DF.literal('o'),
+          ),
+        ))).toEqual(DF.quad(
+          DF.quad(
+            DF.namedNode('a'),
+            DF.namedNode('p'),
+            DF.literal('o'),
+          ),
+          DF.namedNode('p'),
+          DF.quad(
+            DF.namedNode('b'),
+            DF.namedNode('p'),
+            DF.literal('o'),
+          ),
+        ));
+      });
     });
   });
 
@@ -385,6 +413,28 @@ describe('BindingsToQuadsIterator', () => {
         DF.blankNode('a'),
       ))).toEqual(DF.quad(
         DF.blankNode('a0'),
+        <any> DF.blankNode('a0'),
+        DF.blankNode('a0'),
+        DF.blankNode('a0'),
+      ));
+    });
+
+    it('should localize a quad with equal subject, predicate, object and graph blank nodes in quoted triples', () => {
+      return expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.quad(
+          DF.blankNode('a'),
+          <any> DF.blankNode('a'),
+          DF.blankNode('a'),
+        ),
+        <any> DF.blankNode('a'),
+        DF.blankNode('a'),
+        DF.blankNode('a'),
+      ))).toEqual(DF.quad(
+        DF.quad(
+          DF.blankNode('a0'),
+          <any> DF.blankNode('a0'),
+          DF.blankNode('a0'),
+        ),
         <any> DF.blankNode('a0'),
         DF.blankNode('a0'),
         DF.blankNode('a0'),

@@ -222,6 +222,19 @@ describe('RdfSourceQpf', () => {
         .toEqual('S,P,O,G');
     });
 
+    it('should create a valid fragment URI with materialized quoted triple terms', () => {
+      return expect(source.createFragmentUri(metadata.searchForms.values[0],
+        DF.quad(
+          DF.namedNode('S'),
+          DF.namedNode('P'),
+          DF.namedNode('O'),
+        ),
+        DF.namedNode('P'),
+        DF.namedNode('O'),
+        DF.namedNode('G')))
+        .toEqual('<<S P O>>,P,O,G');
+    });
+
     it('should create a valid fragment URI with only a few materialized terms', () => {
       return expect(source.createFragmentUri(metadata.searchForms.values[0],
         v,
@@ -229,6 +242,19 @@ describe('RdfSourceQpf', () => {
         v,
         DF.namedNode('G')))
         .toEqual('_,P,_,G');
+    });
+
+    it('should create a valid fragment URI with quoted triple terms with variables', () => {
+      return expect(source.createFragmentUri(metadata.searchForms.values[0],
+        DF.quad(
+          DF.namedNode('S'),
+          v,
+          DF.namedNode('O'),
+        ),
+        DF.namedNode('P'),
+        DF.namedNode('O'),
+        DF.namedNode('G')))
+        .toEqual('_,P,O,G');
     });
   });
 

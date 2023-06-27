@@ -11,8 +11,13 @@ import type { BindingsStream,
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { termToString } from 'rdf-string';
 import type { QuadTermName } from 'rdf-terms';
-import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
+import { forEachTermsNested,
+  getTermsNested,
+  getValueNestedPath,
+  reduceTermsNested,
+  uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
@@ -37,7 +42,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @param {RDF.Term} term An RDF term.
    * @return {any} If the term is a variable or blank node.
    */
-  public static isTermVariable(term: RDF.Term): any {
+  public static isTermVariable(term: RDF.Term): term is RDF.Variable {
     return term.termType === 'Variable';
   }
 
@@ -47,7 +52,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @param {RDF.BaseQuad} pattern A quad pattern.
    */
   public static getVariables(pattern: RDF.BaseQuad): RDF.Variable[] {
-    return <RDF.Variable[]> uniqTerms(getTerms(pattern)
+    return uniqTerms(getTermsNested(pattern)
       .filter(ActorQueryOperationQuadpattern.isTermVariable));
   }
 
@@ -57,42 +62,46 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @param {RDF.Quad} pattern A quad pattern.
    *
    * @return {{[p: string]: string[]}} If no equal variable names are present in the four terms, this returns undefined.
-   *                                   Otherwise, this maps quad elements ('subject', 'predicate', 'object', 'graph')
+   *                                   Otherwise, this maps quad elements paths (['subject'], ['predicate'], ['object'],
+   *                                   ['graph'])
    *                                   to the list of quad elements it shares a variable name with.
+   *                                   For quoted triples, paths such as ['subject', 'object'] may occur.
    *                                   If no links for a certain element exist, this element will
    *                                   not be included in the hash.
    *                                   Note 1: Quad elements will never have a link to themselves.
-   *                                           So this can never occur: { subject: [ 'subject'] },
+   *                                           So this can never occur: { subject: [[ 'subject']] },
    *                                           instead 'null' would be returned.
    *                                   Note 2: Links only exist in one direction,
-   *                                           this means that { subject: [ 'predicate'], predicate: [ 'subject' ] }
-   *                                           will not occur, instead only { subject: [ 'predicate'] }
+   *                                           this means that { subject: [[ 'predicate']], predicate: [[ 'subject' ]] }
+   *                                           will not occur, instead only { subject: [[ 'predicate']] }
    *                                           will be returned.
+   *                                   Note 3: Keys can also be paths, but they are delimited by '_', such as:
+   *                                           { subject_object_subject: [[ 'predicate']] }
    */
-  public static getDuplicateElementLinks(pattern: RDF.BaseQuad): Record<string, string[]> | undefined {
+  public static getDuplicateElementLinks(pattern: RDF.BaseQuad): Record<string, QuadTermName[][]> | undefined {
     // Collect a variable to quad elements mapping.
-    const variableElements: Record<string, string[]> = {};
+    const variableElements: Record<string, QuadTermName[][]> = {};
     let duplicateVariables = false;
-    for (const key of QUAD_TERM_NAMES) {
-      if (pattern[key].termType === 'Variable') {
-        const val = pattern[key].value;
-        const length = (variableElements[val] || (variableElements[val] = [])).push(key);
+    forEachTermsNested(pattern, (value, keys) => {
+      if (value.termType === 'Variable') {
+        const val = termToString(value);
+        const length = (variableElements[val] || (variableElements[val] = [])).push(keys);
         duplicateVariables = duplicateVariables || length > 1;
       }
-    }
+    });
 
     if (!duplicateVariables) {
       return;
     }
 
     // Collect quad element to elements with equal variables mapping.
-    const duplicateElementLinks: Record<string, string[]> = {};
+    const duplicateElementLinks: Record<string, QuadTermName[][]> = {};
     for (const variable in variableElements) {
       const elements = variableElements[variable];
       const remainingElements = elements.slice(1);
       // Only store the elements that have at least one equal element.
       if (remainingElements.length > 0) {
-        duplicateElementLinks[elements[0]] = remainingElements;
+        duplicateElementLinks[elements[0].join('_')] = remainingElements;
       }
     }
 
@@ -215,22 +224,14 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const variables = ActorQueryOperationQuadpattern.getVariables(pattern);
 
     // Convenience datastructure for mapping quad elements to variables
-    const elementVariables: Record<string, string> = reduceTerms(pattern,
-      (acc: Record<string, string>, term: RDF.Term, key: QuadTermName) => {
+    const elementVariables: Record<string, string> = reduceTermsNested(pattern,
+      (acc: Record<string, string>, term: RDF.Term, keys: QuadTermName[]) => {
         if (term.termType === 'Variable') {
-          acc[key] = term.value;
+          acc[keys.join('_')] = term.value;
         }
         return acc;
       },
       {});
-    const quadBindingsReducer = (acc: [RDF.Variable, RDF.Term][], term: RDF.Term, key: QuadTermName):
-    [RDF.Variable, RDF.Term][] => {
-      const variable: string = elementVariables[key];
-      if (variable) {
-        acc.push([ DF.variable(variable), term ]);
-      }
-      return acc;
-    };
 
     // Create the metadata callback
     const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data, elementVariables, variables);
@@ -240,7 +241,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       let filteredOutput = result.data;
 
       // Detect duplicate variables in the pattern
-      const duplicateElementLinks: Record<string, string[]> | undefined = ActorQueryOperationQuadpattern
+      const duplicateElementLinks: Record<string, QuadTermName[][]> | undefined = ActorQueryOperationQuadpattern
         .getDuplicateElementLinks(pattern);
 
       // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
@@ -251,13 +252,14 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
       // If there are duplicate variables in the search pattern,
       // make sure that we filter out the triples that don't have equal values for those triple elements,
-      // as QPF ignores variable names.
+      // as the rdf-resolve-quad-pattern bus ignores variable names.
       if (duplicateElementLinks) {
         filteredOutput = filteredOutput.filter(quad => {
-          // No need to check the graph, because an equal element already would have to be found in s, p, or o.
-          for (const element1 of TRIPLE_TERM_NAMES) {
-            for (const element2 of duplicateElementLinks[element1] || []) {
-              if (!(<any> quad)[element1].equals((<any> quad)[element2])) {
+          for (const keyLeft in duplicateElementLinks) {
+            const keysLeft: QuadTermName[] = <QuadTermName[]> keyLeft.split('_');
+            const valueLeft = getValueNestedPath(quad, keysLeft);
+            for (const keysRight of duplicateElementLinks[keyLeft]) {
+              if (!valueLeft.equals(getValueNestedPath(quad, keysRight))) {
                 return false;
               }
             }
@@ -266,7 +268,12 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         });
       }
 
-      return filteredOutput.map(quad => BF.bindings(reduceTerms(quad, quadBindingsReducer, [])));
+      return filteredOutput.map(quad => BF.bindings(Object.keys(elementVariables).map(key => {
+        const keys: QuadTermName[] = <any>key.split('_');
+        const variable = elementVariables[key];
+        const term = getValueNestedPath(quad, keys);
+        return [ DF.variable(variable), term ];
+      })));
     }, {
       autoStart: false,
       onClose: () => result.data.destroy(),

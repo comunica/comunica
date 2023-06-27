@@ -55,6 +55,14 @@ describe('ActorQueryOperationQuadpattern', () => {
     it('should be false for a named node', () => {
       expect(ActorQueryOperationQuadpattern.isTermVariable(DF.namedNode('n'))).toBeFalsy();
     });
+
+    it('should be false for a quoted triple', () => {
+      expect(ActorQueryOperationQuadpattern.isTermVariable(DF.quad(
+        DF.namedNode('iri'),
+        DF.namedNode('iri'),
+        DF.namedNode('iri'),
+      ))).toBeFalsy();
+    });
   });
 
   describe('getDuplicateElementLinks', () => {
@@ -75,7 +83,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should return correctly on patterns with equal subject and predicate variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v4')))
-        .toEqual({ subject: [ 'predicate' ]});
+        .toEqual({ subject: [[ 'predicate' ]]});
     });
 
     it('should ignore patterns with equal subject and predicate blank nodes', () => {
@@ -85,52 +93,70 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should return correctly on patterns with equal subject and object variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v4')))
-        .toEqual({ subject: [ 'object' ]});
+        .toEqual({ subject: [[ 'object' ]]});
     });
 
     it('should return correctly on patterns with equal subject and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v1')))
-        .toEqual({ subject: [ 'graph' ]});
+        .toEqual({ subject: [[ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal subject, predicate and object variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v4')))
-        .toEqual({ subject: [ 'predicate', 'object' ]});
+        .toEqual({ subject: [[ 'predicate' ], [ 'object' ]]});
     });
 
     it('should return correctly on patterns with equal subject, predicate and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v1')))
-        .toEqual({ subject: [ 'predicate', 'graph' ]});
+        .toEqual({ subject: [[ 'predicate' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal subject, object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v1')))
-        .toEqual({ subject: [ 'object', 'graph' ]});
+        .toEqual({ subject: [[ 'object' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal subject, predicate, object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v1')))
-        .toEqual({ subject: [ 'predicate', 'object', 'graph' ]});
+        .toEqual({ subject: [[ 'predicate' ], [ 'object' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal predicate and object variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v4')))
-        .toEqual({ predicate: [ 'object' ]});
+        .toEqual({ predicate: [[ 'object' ]]});
     });
 
     it('should return correctly on patterns with equal predicate and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v2')))
-        .toEqual({ predicate: [ 'graph' ]});
+        .toEqual({ predicate: [[ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal predicate, object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v2')))
-        .toEqual({ predicate: [ 'object', 'graph' ]});
+        .toEqual({ predicate: [[ 'object' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v3')))
-        .toEqual({ object: [ 'graph' ]});
+        .toEqual({ object: [[ 'graph' ]]});
+    });
+
+    it('should return correctly on quoted patterns with equal SP and OP variables', () => {
+      return expect(ActorQueryOperationQuadpattern
+        .getDuplicateElementLinks(quad('<<ex:s ?v1 ex:o>>', '?v2', '<<ex:s ?v1 ex:o>>', '?v4')))
+        .toEqual({ subject_predicate: [[ 'object', 'predicate' ]]});
+    });
+
+    it('should return correctly on quoted patterns with equal SP, PO and OP variables', () => {
+      return expect(ActorQueryOperationQuadpattern
+        .getDuplicateElementLinks(quad('<<ex:s ?v1 ex:o>>', '<<ex:s ex:p ?v1>>', '<<ex:s ?v1 ex:o>>', '?v4')))
+        .toEqual({ subject_predicate: [[ 'predicate', 'object' ], [ 'object', 'predicate' ]]});
+    });
+
+    it('should return correctly on quoted patterns with equal SP and OP, and P and G variables', () => {
+      return expect(ActorQueryOperationQuadpattern
+        .getDuplicateElementLinks(quad('<<ex:s ?v1 ex:o>>', '?v2', '<<ex:s ?v1 ex:o>>', '?v2')))
+        .toEqual({ subject_predicate: [[ 'object', 'predicate' ]], predicate: [[ 'graph' ]]});
     });
   });
 
@@ -220,12 +246,35 @@ describe('ActorQueryOperationQuadpattern', () => {
       })).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g') ]);
     });
 
+    it('should get variables ?s, ?p, ?o, ?g from pattern <<?s1 ?p1 ?o1 ?g>> ?p ?o ?g', () => {
+      return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.Quad> {
+        graph: DF.variable('g'),
+        object: DF.variable('o'),
+        predicate: DF.variable('p'),
+        subject: DF.quad(DF.variable('s1'), DF.variable('p1'), DF.variable('o1'), DF.variable('g')),
+      })).toEqual([
+        DF.variable('s1'), DF.variable('p1'), DF.variable('o1'),
+        DF.variable('g'),
+        DF.variable('p'),
+        DF.variable('o'),
+      ]);
+    });
+
     it('should not get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
       return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.BaseQuad> {
         graph: DF.blankNode('g'),
         object: DF.blankNode('o'),
         predicate: DF.blankNode('p'),
         subject: DF.blankNode('s'),
+      })).toEqual([]);
+    });
+
+    it('should not get blank nodes _:s, _:p, _:o, _:g from pattern <<_:s1 <p1> _:o1>> _:p _:o _:g', () => {
+      return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.BaseQuad> {
+        graph: DF.blankNode('g'),
+        object: DF.blankNode('o'),
+        predicate: DF.blankNode('p'),
+        subject: DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.blankNode('o1')),
       })).toEqual([]);
     });
 
@@ -756,6 +805,153 @@ describe('ActorQueryOperationQuadpattern', () => {
           BF.bindings([
             [ DF.variable('p'), DF.namedNode('pd') ],
             [ DF.variable('g'), DF.defaultGraph() ],
+          ]),
+        ],
+      );
+    });
+
+    it('should run <<s p o>> ?p o ?g', async() => {
+      mediatorResolveQuadPattern.mediate = jest.fn(
+        () => {
+          const data = new ArrayIterator([
+            quad('<<s p o>>', 'p1', 'o1', 'g1'),
+            quad('<<s p o>>', 'p2', 'o2', 'g2'),
+            quad('<<s p o>>', 'p3', 'o3', 'g3'),
+            quad('sd', 'pd', 'od'),
+          ]);
+          data.setProperty('metadata', metadataContent);
+          return Promise.resolve({ data });
+        },
+      );
+
+      const operation = AF.createPattern(
+        DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.variable('g'),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+          { term: DF.variable('g'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('p'), DF.variable('g') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p1') ],
+            [ DF.variable('g'), DF.namedNode('g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p2') ],
+            [ DF.variable('g'), DF.namedNode('g2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('p'), DF.namedNode('p3') ],
+            [ DF.variable('g'), DF.namedNode('g3') ],
+          ]),
+        ],
+      );
+    });
+
+    it('should run <<?s p o>> ?p o ?g', async() => {
+      mediatorResolveQuadPattern.mediate = jest.fn(
+        () => {
+          const data = new ArrayIterator([
+            quad('<<s1 p o>>', 'p1', 'o1', 'g1'),
+            quad('<<s2 p o>>', 'p2', 'o2', 'g2'),
+            quad('<<s3 p o>>', 'p3', 'o3', 'g3'),
+            quad('sd', 'pd', 'od'),
+          ]);
+          data.setProperty('metadata', metadataContent);
+          return Promise.resolve({ data });
+        },
+      );
+
+      const operation = AF.createPattern(
+        DF.quad(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o')),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.variable('g'),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+          { term: DF.variable('g'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('s'), DF.variable('p'), DF.variable('g') ],
+        availableOrders: undefined,
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('s1') ],
+            [ DF.variable('p'), DF.namedNode('p1') ],
+            [ DF.variable('g'), DF.namedNode('g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('s2') ],
+            [ DF.variable('p'), DF.namedNode('p2') ],
+            [ DF.variable('g'), DF.namedNode('g2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('s3') ],
+            [ DF.variable('p'), DF.namedNode('p3') ],
+            [ DF.variable('g'), DF.namedNode('g3') ],
+          ]),
+        ],
+      );
+    });
+
+    it('should run <<?s p ?s>> ?p o ?g', async() => {
+      mediatorResolveQuadPattern.mediate = jest.fn(
+        () => {
+          const data = new ArrayIterator([
+            quad('<<s1 p s1>>', 'p1', 'o1', 'g1'),
+            quad('<<s2 p sother>>', 'p2', 'o2', 'g2'),
+            quad('<<s3 p s3>>', 'p3', 'o3', 'g3'),
+            quad('sd', 'pd', 'od'),
+          ]);
+          data.setProperty('metadata', metadataContent);
+          return Promise.resolve({ data });
+        },
+      );
+
+      const operation = AF.createPattern(
+        DF.quad(DF.variable('s'), DF.namedNode('p'), DF.variable('s')),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.variable('g'),
+      );
+      const output = <IQueryOperationResultBindings> await actor.run({ operation, context });
+      expect(await output.metadata()).toEqual({
+        cardinality: { type: 'estimate', value: 3 },
+        order: [
+          { term: DF.variable('p'), direction: 'asc' },
+          { term: DF.variable('g'), direction: 'asc' },
+        ],
+        canContainUndefs: false,
+        variables: [ DF.variable('s'), DF.variable('p'), DF.variable('g') ],
+        availableOrders: undefined,
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('s1') ],
+            [ DF.variable('p'), DF.namedNode('p1') ],
+            [ DF.variable('g'), DF.namedNode('g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('s3') ],
+            [ DF.variable('p'), DF.namedNode('p3') ],
+            [ DF.variable('g'), DF.namedNode('g3') ],
           ]),
         ],
       );
