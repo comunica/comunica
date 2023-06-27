@@ -1,5 +1,15 @@
 # Changelog
 
+<a name="v3.0.0"></a>
+## [v3.0.0](https://github.com/comunica/sparqlee/compare/v2.3.2...v3.0.0) - 2023-06-27
+
+### Added
+* [Add SPARQL-star operators and comparison (#179)](https://github.com/comunica/sparqlee/commit/d1e01c353c9c2ae810cece7ec4ff209ec1a57dd6)
+    The `isAscending` option in `orderTypes` has been removed, which is a breaking change.
+
+### Fixed
+* [Fix invalid lexical form not throwing the correct error](https://github.com/comunica/sparqlee/commit/1d9ca76f0355303661822b691257e3c17f8892aa)
+
 <a name="v2.3.2"></a>
 ## [v2.3.2](https://github.com/comunica/sparqlee/compare/v2.3.1...v2.3.2) - 2023-04-21
 
