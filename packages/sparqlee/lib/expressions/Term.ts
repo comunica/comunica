@@ -1,5 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { TermTransformer } from '../transformers/TermTransformer';
 import * as C from '../util/Consts';
 import { TypeAlias, TypeURL } from '../util/Consts';
 
@@ -62,6 +63,47 @@ export class BlankNode extends Term {
 
   public toRDF(): RDF.Term {
     return this.value;
+  }
+}
+
+// Quads -----------------------------------------------------------------
+export class Quad extends Term {
+  public termType: TermType = 'quad';
+  private readonly transformer: TermTransformer;
+  private readonly valueTerm: RDF.BaseQuad;
+
+  public constructor(input: RDF.BaseQuad, superTypeProvider: ISuperTypeProvider) {
+    super();
+    this.transformer = new TermTransformer(superTypeProvider);
+    this.valueTerm = input;
+  }
+
+  public toRDF(): RDF.BaseQuad {
+    return this.valueTerm;
+  }
+
+  public get subject(): Term {
+    return this.transformer.transformRDFTermUnsafe(this.RDFsubject);
+  }
+
+  public get predicate(): Term {
+    return this.transformer.transformRDFTermUnsafe(this.RDFpredicate);
+  }
+
+  public get object(): Term {
+    return this.transformer.transformRDFTermUnsafe(this.RDFobject);
+  }
+
+  public get RDFsubject(): RDF.Term {
+    return this.toRDF().subject;
+  }
+
+  public get RDFpredicate(): RDF.Term {
+    return this.toRDF().predicate;
+  }
+
+  public get RDFobject(): RDF.Term {
+    return this.toRDF().object;
   }
 }
 

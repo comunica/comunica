@@ -3,7 +3,7 @@ import type { ICompleteSharedContext } from '../../lib/evaluators/evaluatorHelpe
 import type { AliasMap } from './Aliases';
 import type { GeneralEvaluationConfig } from './generalEvaluation';
 import type { Notation } from './TestTable';
-import { BinaryTable, UnaryTable, VariableTable } from './TestTable';
+import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
 
 export interface ITestTableConfigBase {
   /**
@@ -33,19 +33,31 @@ export type TestTableConfig = ITestTableConfigBase & {
    */
   testTable?: string;
   /**
+   * Test array that will check equality;
+   */
+  testArray?: string[][];
+  /**
    * TestTable that will check if a given error is thrown.
    * Result can be '' if the message doesn't need to be checked.
    */
   errorTable?: string;
+  /**
+   * Test array that will check if a given error is thrown.
+   * Result can be '' if the message doesn't need to be checked.
+   */
+  errorArray?: string[][];
 };
 
 export function runTestTable(arg: TestTableConfig): void {
-  if (!(arg.testTable || arg.errorTable)) {
+  if (!(arg.testTable || arg.testArray || arg.errorTable || arg.errorArray)) {
     // We throw this error and don't just say all is well because not providing a table is probably a user mistake.
-    throw new Error('Can not test if neither testTable or errorTable is provided');
+    throw new Error('Can not test if no testTable, testArray, or errorTable is provided');
   }
-  let testTable: UnaryTable | BinaryTable | VariableTable;
-  if (arg.arity === 1) {
+
+  let testTable: ArrayTable | UnaryTable | BinaryTable | VariableTable;
+  if (arg.testArray || arg.errorArray) {
+    testTable = new ArrayTable(arg);
+  } else if (arg.arity === 1) {
     testTable = new UnaryTable(arg);
   } else if (arg.arity === 2) {
     testTable = new BinaryTable(arg);

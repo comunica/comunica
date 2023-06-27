@@ -5,7 +5,7 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type { Literal, TermExpression } from '../expressions';
+import type { Literal, TermExpression, Quad } from '../expressions';
 import * as E from '../expressions';
 import { NonLexicalLiteral } from '../expressions';
 import * as C from '../util/Consts';
@@ -116,6 +116,15 @@ export class Builder {
       context => ([ term ]: [Term]) => op(context)(term),
       addInvalidHandling,
     );
+  }
+
+  public onTerm3(op: (context: ICompleteSharedContext) => (t1: Term, t2: Term, t3: Term) => Term): Builder {
+    return this.set([ 'term', 'term', 'term' ],
+      context => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(context)(t1, t2, t3));
+  }
+
+  public onQuad1(op: (context: ICompleteSharedContext) => (term: Term & Quad) => Term): Builder {
+    return this.set([ 'quad' ], context => ([ term ]: [Term & Quad]) => op(context)(term));
   }
 
   public onLiteral1<T>(op: (context: ICompleteSharedContext) => (lit: E.Literal<T>) => Term,

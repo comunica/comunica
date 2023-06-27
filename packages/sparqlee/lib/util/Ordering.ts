@@ -6,6 +6,7 @@ import { TermTransformer } from '../transformers/TermTransformer';
 import { TypeAlias, TypeURL } from './Consts';
 import type { ITimeZoneRepresentation } from './DateTimeHelpers';
 import { toUTCDate } from './DateTimeHelpers';
+import * as Err from './Errors';
 import type { ISuperTypeProvider, SuperTypeCallback, TypeCache, GeneralSuperTypeDict } from './TypeHandling';
 import { getSuperTypeDict } from './TypeHandling';
 
@@ -13,41 +14,71 @@ import { getSuperTypeDict } from './TypeHandling';
 /**
  * @param enableExtendedXSDTypes System will behave like when this was true. @deprecated
  */
-export function orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefined, isAscending: boolean,
+export function orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefined,
+  strict = false,
   typeDiscoveryCallback?: SuperTypeCallback, typeCache?: TypeCache, enableExtendedXSDTypes?: boolean): -1 | 0 | 1 {
+  // Check if terms are the same by reference
   if (termA === termB) {
     return 0;
   }
 
   // We handle undefined that is lower than everything else.
   if (termA === undefined) {
-    return isAscending ? -1 : 1;
+    return -1;
   }
   if (termB === undefined) {
-    return isAscending ? 1 : -1;
+    return 1;
   }
 
-  // We handle terms
+  //
+  if (termA.termType !== termB.termType) {
+    return _TERM_ORDERING_PRIORITY[termA.termType] < _TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
+  }
+
+  // Check exact term equality
   if (termA.equals(termB)) {
     return 0;
   }
-  return isTermLowerThan(termA, termB, typeDiscoveryCallback, typeCache, enableExtendedXSDTypes) === isAscending ?
-    -1 :
-    1;
-}
 
-function isTermLowerThan(termA: RDF.Term, termB: RDF.Term,
-  typeDiscoveryCallback?: SuperTypeCallback, typeCache?: TypeCache, enableExtendedXSDTypes?: boolean): boolean {
-  if (termA.termType !== termB.termType) {
-    return _TERM_ORDERING_PRIORITY[termA.termType] < _TERM_ORDERING_PRIORITY[termB.termType];
+  // Handle quoted triples
+  if (termA.termType === 'Quad' && termB.termType === 'Quad') {
+    const orderSubject = orderTypes(
+      termA.subject, termB.subject, strict, typeDiscoveryCallback, typeCache, enableExtendedXSDTypes,
+    );
+    if (orderSubject !== 0) {
+      return orderSubject;
+    }
+    const orderPredicate = orderTypes(
+      termA.predicate, termB.predicate, strict, typeDiscoveryCallback, typeCache, enableExtendedXSDTypes,
+    );
+    if (orderPredicate !== 0) {
+      return orderPredicate;
+    }
+    const orderObject = orderTypes(
+      termA.object, termB.object, strict, typeDiscoveryCallback, typeCache, enableExtendedXSDTypes,
+    );
+    if (orderObject !== 0) {
+      return orderObject;
+    }
+    return orderTypes(
+      termA.graph, termB.graph, strict, typeDiscoveryCallback, typeCache, enableExtendedXSDTypes,
+    );
   }
-  return termA.termType === 'Literal' ?
-    isLiteralLowerThan(termA, <RDF.Literal>termB, typeDiscoveryCallback, typeCache) :
-    termA.value < termB.value;
+
+  // Handle literals
+  if (termA.termType === 'Literal') {
+    return orderLiteralTypes(termA, <RDF.Literal>termB, typeDiscoveryCallback, typeCache);
+  }
+
+  // Handle all other types
+  if (strict) {
+    throw new Err.InvalidCompareArgumentTypes(termA, termB);
+  }
+  return comparePrimitives(termA.value, termB.value);
 }
 
-function isLiteralLowerThan(litA: RDF.Literal, litB: RDF.Literal,
-  typeDiscoveryCallback?: SuperTypeCallback, typeCache?: TypeCache): boolean {
+function orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal,
+  typeDiscoveryCallback?: SuperTypeCallback, typeCache?: TypeCache): -1 | 0 | 1 {
   const defaultTimezone: ITimeZoneRepresentation = { zoneHours: 0, zoneMinutes: 0 };
 
   const openWorldType: ISuperTypeProvider = {
@@ -63,23 +94,39 @@ function isLiteralLowerThan(litA: RDF.Literal, litB: RDF.Literal,
   const superTypeDictA: GeneralSuperTypeDict = getSuperTypeDict(typeA, openWorldType);
   const superTypeDictB: GeneralSuperTypeDict = getSuperTypeDict(typeB, openWorldType);
 
+  // Special handling of specific datatypes
   if (!isNonLexicalLiteral(myLitA) && !isNonLexicalLiteral(myLitB)) {
     if (TypeURL.XSD_BOOLEAN in superTypeDictA && TypeURL.XSD_BOOLEAN in superTypeDictB ||
       TypeAlias.SPARQL_NUMERIC in superTypeDictA && TypeAlias.SPARQL_NUMERIC in superTypeDictB ||
       TypeURL.XSD_STRING in superTypeDictA && TypeURL.XSD_STRING in superTypeDictB) {
-      return myLitA.typedValue < myLitB.typedValue;
+      return comparePrimitives(myLitA.typedValue, myLitB.typedValue);
     }
     if (TypeURL.XSD_DATE_TIME in superTypeDictA && TypeURL.XSD_DATE_TIME in superTypeDictB) {
-      return toUTCDate(myLitA.typedValue, defaultTimezone).getTime() <
-        toUTCDate(myLitB.typedValue, defaultTimezone).getTime();
+      return comparePrimitives(
+        toUTCDate(myLitA.typedValue, defaultTimezone).getTime(),
+        toUTCDate(myLitB.typedValue, defaultTimezone).getTime(),
+      );
     }
     if (TypeURL.RDF_LANG_STRING in superTypeDictA && TypeURL.RDF_LANG_STRING in superTypeDictB) {
-      return myLitA.typedValue < myLitB.typedValue ||
-        (myLitA.typedValue === myLitB.typedValue &&
-          (<LangStringLiteral>myLitA).language < (<LangStringLiteral>myLitB).language);
+      const compareType = comparePrimitives(myLitA.typedValue, myLitB.typedValue);
+      if (compareType !== 0) {
+        return compareType;
+      }
+      return comparePrimitives((<LangStringLiteral>myLitA).language, (<LangStringLiteral>myLitB).language);
     }
   }
-  return typeA < typeB || (myLitA.dataType === myLitB.dataType && myLitA.str() < myLitB.str());
+
+  // Fallback to string-based comparison
+  const compareType = comparePrimitives(typeA, typeB);
+  if (compareType !== 0) {
+    return compareType;
+  }
+  return comparePrimitives(myLitA.str(), myLitB.str());
+}
+
+function comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
+  // eslint-disable-next-line @typescript-eslint/no-extra-parens
+  return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
 }
 
 // SPARQL specifies that blankNode < namedNode < literal.

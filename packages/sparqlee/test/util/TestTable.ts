@@ -183,6 +183,47 @@ export class BinaryTable extends Table<[string, string, string]> {
   }
 }
 
+export class ArrayTable extends Table<string[]> {
+  protected readonly parser: TableParser<[]>;
+  protected readonly def: TestTableConfig;
+  public constructor(def: TestTableConfig) {
+    super();
+    this.def = def;
+  }
+
+  public test(): void {
+    for (const row of this.def.testArray || []) {
+      const result = row[row.length - 1];
+      const { operation } = this.def;
+      const aliases = this.def.aliases || {};
+      it(`${this.format(operation, row)} should return ${result}`, async() => {
+        const expr = this.format(operation, row.map(el => aliases[el] || el));
+        await this.testExpression(expr, result);
+      });
+    }
+
+    for (const row of this.def.errorArray || []) {
+      const error = row[row.length - 1];
+      const { operation } = this.def;
+      const aliases = this.def.aliases || {};
+      it(`${this.format(operation, row)} should error`, async() => {
+        const expr = this.format(operation, <[string, string, string]> row.map(el => aliases[el] || el));
+        await this.testErrorExpression(expr, error);
+      });
+    }
+  }
+
+  protected format(operation: string, row: string[]): string {
+    const [ fst, snd, _ ] = row;
+    switch (this.def.notation) {
+      case Notation.Function: return `${operation}(${row.slice(0, -1).join(', ')})`;
+      case Notation.Prefix: return `${operation} ${fst} ${snd}`;
+      case Notation.Infix: return `${fst} ${operation} ${snd}`;
+      default: throw new Error('Unreachable');
+    }
+  }
+}
+
 abstract class TableParser<RowType extends Row> {
   public readonly table: RowType[];
   public readonly errorTable: RowType[];

@@ -76,12 +76,12 @@ export type SpecialOperatorExpression = IExpressionProps & {
 
 // TODO: Create alias Term = TermExpression
 export function asTermType(type: string): TermType | undefined {
-  if (type === 'namedNode' || type === 'literal' || type === 'blankNode') {
+  if (type === 'namedNode' || type === 'literal' || type === 'blankNode' || type === 'quad') {
     return type;
   }
   return undefined;
 }
-export type TermType = 'namedNode' | 'literal' | 'blankNode';
+export type TermType = 'namedNode' | 'literal' | 'blankNode' | 'quad';
 export type TermExpression = IExpressionProps & {
   expressionType: ExpressionType.Term;
   termType: TermType;

@@ -55,6 +55,8 @@ export class TermTransformer implements ITermTransformer {
         return new E.NamedNode(term.term.value);
       case 'BlankNode':
         return new E.BlankNode(term.term.value);
+      case 'Quad':
+        return new E.Quad(term.term, this.superTypeProvider);
       default:
         throw new Err.InvalidTermType(term);
     }

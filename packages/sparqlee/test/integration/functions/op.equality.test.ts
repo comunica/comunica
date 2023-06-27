@@ -152,4 +152,21 @@ describe('evaluation of \'=\'', () => {
       `,
     });
   });
+
+  describe('with quoted triple operands like', () => {
+    // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
+    runTestTable({
+      ...config,
+      testArray: [
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123.0 >>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'true' ],
+        [ '<< << <ex:a> <ex:b> 123 >> <ex:q> 999 >>', '<< << <ex:a> <ex:b> 123.0 >> <ex:q> 999 >>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123e0 >>', '<< <ex:a> <ex:b> 123 >>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 9 >>', 'false' ],
+        [ '<< <ex:a> <ex:b> 9 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:c> <ex:d> 123 >>', 'false' ],
+      ],
+    });
+  });
 });

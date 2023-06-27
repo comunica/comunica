@@ -104,6 +104,15 @@ export class InvalidArgumentTypes extends ExpressionError {
 }
 
 /**
+ * Terms were being compared that are not supported.
+ */
+export class InvalidCompareArgumentTypes extends ExpressionError {
+  public constructor(public arg0: RDF.Term, public arg1: RDF.Term) {
+    super(`Compared argument types are supported: '${arg0.termType}' and '${arg1.termType}'`);
+  }
+}
+
+/**
  * An invalid typecast happened.
  */
 export class CastError<T> extends ExpressionError {

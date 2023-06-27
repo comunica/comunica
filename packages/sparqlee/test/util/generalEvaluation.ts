@@ -114,7 +114,7 @@ function syncCallbackWrapper(f: SyncExtensionFunctionCreator | undefined): Async
 }
 
 function parse(query: string) {
-  const sparqlQuery = translate(query);
+  const sparqlQuery = translate(query, { sparqlStar: true });
   // Extract filter expression from complete query
   return sparqlQuery.input.expression;
 }

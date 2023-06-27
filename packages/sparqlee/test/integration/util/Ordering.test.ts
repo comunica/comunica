@@ -33,10 +33,8 @@ function dateTime(value: string): RDF.Literal {
 
 function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
   typeDiscoveryCallback?: SuperTypeCallback) {
-  expect(orderTypes(litA, litB, true, typeDiscoveryCallback)).toEqual(-1);
-  expect(orderTypes(litA, litB, false, typeDiscoveryCallback)).toEqual(1);
-  expect(orderTypes(litB, litA, true, typeDiscoveryCallback)).toEqual(1);
-  expect(orderTypes(litB, litA, false, typeDiscoveryCallback)).toEqual(-1);
+  expect(orderTypes(litA, litB, false, typeDiscoveryCallback)).toEqual(-1);
+  expect(orderTypes(litB, litA, false, typeDiscoveryCallback)).toEqual(1);
 }
 
 function genericOrderTestLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
@@ -45,10 +43,8 @@ function genericOrderTestLower(litA: RDF.Term | undefined, litB: RDF.Term | unde
 }
 
 function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined) {
-  expect(orderTypes(litA, litB, true)).toEqual(0);
-  expect(orderTypes(litA, litB, false)).toEqual(0);
-  expect(orderTypes(litB, litA, true)).toEqual(0);
-  expect(orderTypes(litB, litA, false)).toEqual(0);
+  expect(orderTypes(litA, litB)).toEqual(0);
+  expect(orderTypes(litB, litA)).toEqual(0);
 }
 
 describe('terms order', () => {
@@ -152,5 +148,20 @@ describe('terms order', () => {
 
   it('invalid literals comparison', () => {
     genericOrderTestLower(dateTime('a'), dateTime('b'));
+  });
+
+  it('quoted triples comparison', () => {
+    genericOrderTestLower(
+      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+      DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:b'), DF.namedNode('ex:b')),
+    );
+    genericOrderTestLower(
+      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.namedNode('ex:b')),
+    );
+    genericOrderTestLower(
+      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:b')),
+    );
   });
 });

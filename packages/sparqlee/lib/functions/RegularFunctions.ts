@@ -1,3 +1,4 @@
+import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
 import { DataFactory } from 'rdf-data-factory';
@@ -7,9 +8,10 @@ import * as uuid from 'uuid';
 
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import * as E from '../expressions';
+import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
 import * as C from '../util/Consts';
-import { TypeAlias, TypeURL } from '../util/Consts';
+import { RegularOperator, TypeAlias, TypeURL } from '../util/Consts';
 import type { IDayTimeDurationRepresentation } from '../util/DateTimeHelpers';
 import {
   dayTimeDurationsToSeconds,
@@ -24,12 +26,14 @@ import {
   yearMonthDurationsToMonths,
 } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
+import { orderTypes } from '../util/Ordering';
 import { addDurationToDateTime, elapsedDuration } from '../util/SpecAlgos';
 import type { IOverloadedDefinition } from './Core';
+import { RegularFunction } from './Core';
 import { bool, decimal, declare, double, integer, langString, string } from './Helpers';
 import * as X from './XPathFunctions';
 
-const DF = new DataFactory();
+const DF = new DataFactory<RDF.BaseQuad>();
 
 type Term = E.TermExpression;
 
@@ -186,6 +190,18 @@ const equality = {
       to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
     })
     .set(
+      [ 'quad', 'quad' ],
+      context => ([ left, right ]) => {
+        const op: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
+        return bool(
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).subject, (<Quad> right).subject ], context)).coerceEBV() &&
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).predicate, (<Quad> right).predicate ], context)).coerceEBV() &&
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).object, (<Quad> right).object ], context)).coerceEBV(),
+        );
+      },
+      false,
+    )
+    .set(
       [ 'term', 'term' ],
       () => ([ left, right ]) => bool(RDFTermEqual(left, right)),
       false,
@@ -223,6 +239,18 @@ const inequality = {
     .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
       toUTCDate(left, defaultTimeZone).getTime() !== toUTCDate(right, defaultTimeZone).getTime())
     .set(
+      [ 'quad', 'quad' ],
+      context => ([ left, right ]) => {
+        const op: RegularFunction = new RegularFunction(RegularOperator.NOT_EQUAL, inequality);
+        return bool(
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).subject, (<Quad> right).subject ], context)).coerceEBV() ||
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).predicate, (<Quad> right).predicate ], context)).coerceEBV() ||
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).object, (<Quad> right).object ], context)).coerceEBV(),
+        );
+      },
+      false,
+    )
+    .set(
       [ 'term', 'term' ],
       () => ([ left, right ]) => bool(!RDFTermEqual(left, right)),
     )
@@ -250,6 +278,11 @@ const lesserThan = {
     .numberTest(() => (left, right) => left < right)
     .stringTest(() => (left, right) => left.localeCompare(right) === -1)
     .booleanTest(() => (left, right) => left < right)
+    .set(
+      [ 'quad', 'quad' ],
+      context => ([ left, right ]) => bool(orderTypes(left.toRDF(), right.toRDF(), true) === -1),
+      false,
+    )
     .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
       toUTCDate(left, defaultTimeZone).getTime() < toUTCDate(right, defaultTimeZone).getTime())
     .copy({
@@ -281,6 +314,11 @@ const greaterThan = {
     .numberTest(() => (left, right) => left > right)
     .stringTest(() => (left, right) => left.localeCompare(right) === 1)
     .booleanTest(() => (left, right) => left > right)
+    .set(
+      [ 'quad', 'quad' ],
+      context => ([ left, right ]) => bool(orderTypes(left.toRDF(), right.toRDF(), true) === 1),
+      false,
+    )
     .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
       toUTCDate(left, defaultTimeZone).getTime() > toUTCDate(right, defaultTimeZone).getTime())
     .copy({
@@ -312,6 +350,18 @@ const lesserThanEqual = {
     .numberTest(() => (left, right) => left <= right)
     .stringTest(() => (left, right) => left.localeCompare(right) !== 1)
     .booleanTest(() => (left, right) => left <= right)
+    .set(
+      [ 'quad', 'quad' ],
+      context => ([ left, right ]) => {
+        const opEq: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
+        const opLt: RegularFunction = new RegularFunction(RegularOperator.LT, lesserThan);
+        return bool(
+          (<E.BooleanLiteral> opEq.apply([ left, right ], context)).coerceEBV() ||
+          (<E.BooleanLiteral> opLt.apply([ left, right ], context)).coerceEBV(),
+        );
+      },
+      false,
+    )
     .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
       toUTCDate(left, defaultTimeZone).getTime() <= toUTCDate(right, defaultTimeZone).getTime())
     .set([ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ], () =>
@@ -340,6 +390,18 @@ const greaterThanEqual = {
     .numberTest(() => (left, right) => left >= right)
     .stringTest(() => (left, right) => left.localeCompare(right) !== -1)
     .booleanTest(() => (left, right) => left >= right)
+    .set(
+      [ 'quad', 'quad' ],
+      context => ([ left, right ]) => {
+        const opEq: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
+        const opGt: RegularFunction = new RegularFunction(RegularOperator.GT, greaterThan);
+        return bool(
+          (<E.BooleanLiteral> opEq.apply([ left, right ], context)).coerceEBV() ||
+          (<E.BooleanLiteral> opGt.apply([ left, right ], context)).coerceEBV(),
+        );
+      },
+      false,
+    )
     .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
       toUTCDate(left, defaultTimeZone).getTime() >= toUTCDate(right, defaultTimeZone).getTime())
     .set([ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ], () =>
@@ -1013,6 +1075,66 @@ const SHA512 = {
     .collect(),
 };
 
+// ----------------------------------------------------------------------------
+// Functions for quoted triples
+// https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
+// ----------------------------------------------------------------------------
+
+/**
+ * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
+ */
+const triple = {
+  arity: 3,
+  overloads: declare(C.RegularOperator.TRIPLE)
+    .onTerm3(
+      context => (...args) => new E.Quad(
+        DF.quad(args[0].toRDF(), args[1].toRDF(), args[2].toRDF()),
+        context.superTypeProvider,
+      ),
+    )
+    .collect(),
+};
+
+/**
+ * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#subject
+ */
+const subject = {
+  arity: 1,
+  overloads: declare(C.RegularOperator.SUBJECT)
+    .onQuad1(() => quad => quad.subject)
+    .collect(),
+};
+
+/**
+ * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#predicate
+ */
+const predicate = {
+  arity: 1,
+  overloads: declare(C.RegularOperator.PREDICATE)
+    .onQuad1(() => quad => quad.predicate)
+    .collect(),
+};
+
+/**
+ * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#object
+ */
+const object = {
+  arity: 1,
+  overloads: declare(C.RegularOperator.OBJECT)
+    .onQuad1(() => quad => quad.object)
+    .collect(),
+};
+
+/**
+ * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#istriple
+ */
+const istriple = {
+  arity: 1,
+  overloads: declare(C.RegularOperator.IS_TRIPLE)
+    .onTerm1(() => term => bool(term.termType === 'quad'))
+    .collect(),
+};
+
 // End definitions.
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -1112,4 +1234,14 @@ export const definitions: Record<C.RegularOperator, IOverloadedDefinition> = {
   sha256: SHA256,
   sha384: SHA384,
   sha512: SHA512,
+
+  // --------------------------------------------------------------------------
+  // Functions for quoted triples
+  // https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
+  // --------------------------------------------------------------------------
+  triple,
+  subject,
+  predicate,
+  object,
+  istriple,
 };

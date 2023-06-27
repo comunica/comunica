@@ -168,6 +168,14 @@ export enum RegularOperator {
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
   // See Named Operators
+
+  // Functions for quoted triples
+  // https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
+  TRIPLE = 'triple',
+  SUBJECT = 'subject',
+  PREDICATE = 'predicate',
+  OBJECT = 'object',
+  IS_TRIPLE = 'istriple',
 }
 
 export enum SpecialOperator {
