@@ -6,7 +6,6 @@ import { PassThrough } from 'stream';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import { ArrayIterator } from 'asynciterator';
-import { WritableStream } from 'memory-streams';
 // @ts-expect-error
 import { QueryEngineFactoryBase, QueryEngineBase } from '../__mocks__';
 // @ts-expect-error
@@ -23,6 +22,7 @@ import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 const cluster: Cluster = <any> clusterUntyped;
 
 const quad = require('rdf-quad');
+const stringifyStream = require('stream-to-string');
 const stringToStream = require('streamify-string');
 
 jest.mock('..', () => {
@@ -101,8 +101,8 @@ describe('HttpServiceSparqlEndpoint', () => {
     const source = 'http://localhost:8080/data.jsonld';
     const context =
       '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
-    let stdout: any;
-    let stderr: any;
+    let stdout: PassThrough;
+    let stderr: PassThrough;
     const moduleRootPath = 'test_modulerootpath';
     const env = { COMUNICA_CONFIG: 'test_config' };
     const defaultConfigPath = 'test_defaultConfigPath';
@@ -110,8 +110,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
     beforeEach(() => {
       exit.mockClear();
-      stdout = new WritableStream();
-      stderr = new WritableStream();
+      stdout = new PassThrough();
+      stderr = new PassThrough();
     });
 
     it('exits on error', async() => {
@@ -124,7 +124,8 @@ describe('HttpServiceSparqlEndpoint', () => {
         exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toBe('REASON');
+      stderr.end();
+      expect(await stringifyStream(stderr)).toEqual('REASON');
     });
 
     it('handles valid args', async() => {
@@ -174,8 +175,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toContain('exposes a SPARQL endpoint');
-      expect(stderr.toString()).toContain('At least one source must be provided');
+      stderr.end();
+      const err = await stringifyStream(stderr);
+      expect(err).toContain('exposes a SPARQL endpoint');
+      expect(err).toContain('At least one source must be provided');
     });
 
     it('handles the -h option', async() => {
@@ -188,8 +191,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toContain('exposes a SPARQL endpoint');
-      expect(stderr.toString()).toContain('At least one source must be provided');
+      stderr.end();
+      const err = await stringifyStream(stderr);
+      expect(err).toContain('exposes a SPARQL endpoint');
+      expect(err).toContain('At least one source must be provided');
     });
 
     it('handles the --version option', async() => {
@@ -202,8 +207,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toContain('Comunica Engine');
-      expect(stderr.toString()).toContain('dev');
+      stderr.end();
+      const err = await stringifyStream(stderr);
+      expect(err).toContain('Comunica Engine');
+      expect(err).toContain('dev');
     });
 
     it('handles the -v option', async() => {
@@ -217,8 +224,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toContain('Comunica Engine');
-      expect(stderr.toString()).not.toContain('dev');
+      stderr.end();
+      const err = await stringifyStream(stderr);
+      expect(err).toContain('Comunica Engine');
+      expect(err).not.toContain('dev');
     });
 
     it('handles no args', async() => {
@@ -231,8 +240,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toContain('exposes a SPARQL endpoint');
-      expect(stderr.toString()).toContain('At least one source must be provided');
+      stderr.end();
+      const err = await stringifyStream(stderr);
+      expect(err).toContain('exposes a SPARQL endpoint');
+      expect(err).toContain('At least one source must be provided');
     });
   });
 
@@ -248,7 +259,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       env = { COMUNICA_CONFIG: 'test_config' };
       fs.existsSync.mockReturnValue(true);
       testCommandlineArguments = [ '-c', contextCommandlineArgument ];
-      stderr = new WritableStream();
+      stderr = new PassThrough();
       exit.mockClear();
     });
 
@@ -1239,7 +1250,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-        expect(response.toString()).toBe('test_query_result');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('test_query_result');
       });
 
       it('should end the response with an internal server error message when the queryresult stream emits an error'
@@ -1278,7 +1291,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
         expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe('');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('');
       });
 
       it('should write the service description when no query was defined', async() => {
@@ -1305,7 +1320,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-        expect(response.toString()).toBe('test_query_result');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('test_query_result');
 
         // Check if the SD logic has been called
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
@@ -1357,7 +1374,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-        expect(response.toString()).toBe('');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('');
 
         // Check if the SD logic has been called
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
@@ -1425,7 +1444,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': 'application/sparql-results+json', 'Access-Control-Allow-Origin': '*' });
-        expect(response.toString()).toBe('test_query_result');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('test_query_result');
       });
 
       it('should fallback to SPARQL JSON for booleans if media type is falsy', async() => {
@@ -1447,7 +1468,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': 'application/sparql-results+json', 'Access-Control-Allow-Origin': '*' });
-        expect(response.toString()).toBe('test_query_result');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('test_query_result');
       });
 
       it('should fallback to TriG for quads if media type is falsy', async() => {
@@ -1469,7 +1492,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': 'application/trig', 'Access-Control-Allow-Origin': '*' });
-        expect(response.toString()).toBe('test_query_result');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('test_query_result');
       });
 
       it('should emit process start and end events', async() => {
@@ -1515,7 +1540,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
           { 'content-type': 'simple', 'Access-Control-Allow-Origin': '*' });
-        expect(response.toString()).toBe('test_query_result');
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toEqual('test_query_result');
       });
 
       it('should set readOnly in the context if called with readOnly true', async() => {

@@ -38,7 +38,6 @@
     "lerna": "^7.0.1",
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.2",
-    "memory-streams": "^0.1.3",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "nodemon": "^2.0.20",
     "npm-check-updates": "^16.4.1",
