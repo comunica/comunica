@@ -1,7 +1,7 @@
-const streams = require('memory-streams');
 const EventEmitter = require('events');
+const { PassThrough } = require("readable-stream");
 
-class ServerResponseMock extends streams.WritableStream {
+class ServerResponseMock extends PassThrough {
   constructor(){
     super();
     this.writeHead = jest.fn();
