@@ -90,6 +90,33 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       return expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.literal('a"b,\n\rc')))
         .toEqual('"a""b,\n\rc"');
     });
+
+    it('should convert quoted triples', () => {
+      return expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.quad(
+        DF.namedNode('ex:s'),
+        DF.namedNode('ex:p'),
+        DF.namedNode('ex:o'),
+      )))
+        .toEqual('<< <ex:s> <ex:p> <ex:o> >>');
+    });
+
+    it('should convert quoted triples with a character that needs escaping', () => {
+      return expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.quad(
+        DF.namedNode('ex:s'),
+        DF.namedNode('ex:p,'),
+        DF.namedNode('ex:o'),
+      )))
+        .toEqual('"<< <ex:s> ""<ex:p,>"" <ex:o> >>"');
+    });
+
+    it('should convert quoted triples with literals', () => {
+      return expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.quad(
+        DF.namedNode('ex:s'),
+        DF.namedNode('ex:p'),
+        DF.literal('abc'),
+      )))
+        .toEqual('"<< <ex:s> <ex:p> ""abc"" >>"');
+    });
   });
 
   describe('An ActorQueryResultSerializeSparqlCsv instance', () => {
@@ -99,6 +126,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     let bindingsStreamMixed: () => BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
+    let bindingsStreamQuoted: () => BindingsStream;
     let metadata: MetadataBindings;
 
     beforeEach(() => {
@@ -139,6 +167,14 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpCsv')); });
+      bindingsStreamQuoted = () => new ArrayIterator([
+        BF.bindings([
+          [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
+        ]),
+      ], { autoStart: false });
       metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
     });
 
@@ -267,6 +303,19 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', metadata: async() => metadata },
           handleMediaType: 'text/csv' },
       ))).handle.data)).rejects.toBeTruthy();
+    });
+
+    it('should run on a bindings stream with quoted triples', async() => {
+      expect(await stringifyStream((<any> (await actor.run(
+        { context,
+          handle: <any> { bindingsStream: bindingsStreamQuoted(), type: 'bindings', metadata: async() => metadata },
+          handleMediaType: 'text/csv' },
+      ))).handle.data)).toEqual(
+        `k1,k2\r
+<< <s1> <p1> <o1> >>,\r
+,<< <s2> <p2> <o2> >>\r
+`,
+      );
     });
   });
 });

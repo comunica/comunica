@@ -41,6 +41,13 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
       stringValue = `${stringValue}`;
     } else if (value.termType === 'BlankNode') {
       stringValue = `_:${stringValue}`;
+    } else if (value.termType === 'Quad') {
+      let object = ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.object);
+      if (value.object.termType === 'Literal') {
+        // If object is a literal, it must be put in quotes, and internal quotes must be escaped
+        object = `"${object.replace(/"/ug, '""')}"`;
+      }
+      stringValue = `<< ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.subject)} ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.predicate)} ${object} >>`;
     } else {
       stringValue = `<${stringValue}>`;
     }

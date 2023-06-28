@@ -69,6 +69,28 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         .bindingToJsonBindings(DF.literal('abc', DF.namedNode('http://ex'))))
         .toEqual({ value: 'abc', type: 'literal', datatype: 'http://ex' });
     });
+
+    it('should convert quoted triples', () => {
+      return expect(ActorQueryResultSerializeSparqlJson
+        .bindingToJsonBindings(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'))))
+        .toEqual({
+          type: 'triple',
+          value: {
+            object: {
+              type: 'uri',
+              value: 'ex:o',
+            },
+            predicate: {
+              type: 'uri',
+              value: 'ex:p',
+            },
+            subject: {
+              type: 'uri',
+              value: 'ex:s',
+            },
+          },
+        });
+    });
   });
 
   describe('An ActorQueryResultSerializeSparqlJson instance', () => {
@@ -78,6 +100,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     let bindingsStreamPartial: () => BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
+    let bindingsStreamQuoted: () => BindingsStream;
     let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let metadata: MetadataBindings;
     let httpInvalidator: ActorHttpInvalidateListenable;
@@ -125,6 +148,14 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpJson')); });
+      bindingsStreamQuoted = () => new ArrayIterator([
+        BF.bindings([
+          [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
+        ]),
+      ], { autoStart: false });
       quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -319,6 +350,22 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', metadata: async() => metadata },
           handleMediaType: 'json' },
       ))).handle.data)).rejects.toBeTruthy();
+    });
+
+    it('should run on a bindings stream with quoted triples', async() => {
+      expect(await stringifyStream((<any> (await actor.run(
+        { context,
+          handle: <any> { bindingsStream: bindingsStreamQuoted(), type: 'bindings', metadata: async() => metadata },
+          handleMediaType: 'json' },
+      ))).handle.data)).toEqual(
+        `{"head": {"vars":["k1","k2"]},
+"results": { "bindings": [
+{"k1":{"value":{"subject":{"value":"s1","type":"uri"},"predicate":{"value":"p1","type":"uri"},"object":{"value":"o1","type":"uri"}},"type":"triple"}},
+{"k2":{"value":{"subject":{"value":"s2","type":"uri"},"predicate":{"value":"p2","type":"uri"},"object":{"value":"o2","type":"uri"}},"type":"triple"}}
+]},
+"metadata": { "httpRequests": 0 }}
+`,
+      );
     });
 
     it('should run on a boolean result that resolves to true', async() => {

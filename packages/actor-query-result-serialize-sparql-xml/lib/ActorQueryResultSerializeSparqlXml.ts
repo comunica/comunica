@@ -51,6 +51,15 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
         return { name: 'literal', attributes, children: value.value };
       case 'BlankNode':
         return { name: 'bnode', children: value.value };
+      case 'Quad':
+        return {
+          name: 'triple',
+          children: [
+            { name: 'subject', children: [ this.valueToXmlValue(value.subject) ]},
+            { name: 'predicate', children: [ this.valueToXmlValue(value.predicate) ]},
+            { name: 'object', children: [ this.valueToXmlValue(value.object) ]},
+          ],
+        };
       default:
         return { name: 'uri', children: value.value };
     }

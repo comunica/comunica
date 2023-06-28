@@ -95,6 +95,43 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           children: [{ name: 'literal', attributes: { datatype: 'http://ex' }, children: 'abc' }],
         });
     });
+
+    it('should convert quoted triples', () => {
+      return expect(ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(DF.quad(
+        DF.namedNode('ex:s'),
+        DF.namedNode('ex:p'),
+        DF.namedNode('ex:o'),
+      ), DF.variable('k')))
+        .toEqual({
+          attributes: { name: 'k' },
+          children: [
+            {
+              children: [
+                {
+                  children: [
+                    { children: 'ex:s', name: 'uri' },
+                  ],
+                  name: 'subject',
+                },
+                {
+                  children: [
+                    { children: 'ex:p', name: 'uri' },
+                  ],
+                  name: 'predicate',
+                },
+                {
+                  children: [
+                    { children: 'ex:o', name: 'uri' },
+                  ],
+                  name: 'object',
+                },
+              ],
+              name: 'triple',
+            },
+          ],
+          name: 'binding',
+        });
+    });
   });
 
   describe('An ActorQueryResultSerializeSparqlXml instance', () => {
@@ -102,6 +139,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
     let bindingsStream: () => BindingsStream;
     let bindingsStreamPartial: () => BindingsStream;
     let bindingsStreamError: BindingsStream;
+    let bindingsStreamQuoted: () => BindingsStream;
     let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let metadata: MetadataBindings;
 
@@ -131,6 +169,14 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       ], { autoStart: false });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpXml')); });
+      bindingsStreamQuoted = () => new ArrayIterator([
+        BF.bindings([
+          [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
+        ]),
+      ], { autoStart: false });
       quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -296,6 +342,56 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
             handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', metadata: async() => metadata },
             handleMediaType: 'json' },
         ))).handle.data)).rejects.toBeTruthy();
+      });
+
+      it('should run on a bindings stream with quoted triples', async() => {
+        expect(await stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> { type: 'bindings', bindingsStream: bindingsStreamQuoted(), metadata: async() => metadata },
+          handleMediaType: 'xml',
+        })))
+          .handle.data)).toEqual(
+          `<?xml version="1.0" encoding="UTF-8"?>
+<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+  <head>
+    <variable name="k1"/>
+    <variable name="k2"/>
+  </head>
+  <results>
+    <result>
+      <binding name="k1">
+        <triple>
+          <subject>
+            <uri>s1</uri>
+          </subject>
+          <predicate>
+            <uri>p1</uri>
+          </predicate>
+          <object>
+            <uri>o1</uri>
+          </object>
+        </triple>
+      </binding>
+    </result>
+    <result>
+      <binding name="k2">
+        <triple>
+          <subject>
+            <uri>s2</uri>
+          </subject>
+          <predicate>
+            <uri>p2</uri>
+          </predicate>
+          <object>
+            <uri>o2</uri>
+          </object>
+        </triple>
+      </binding>
+    </result>
+  </results>
+</sparql>
+`,
+        );
       });
 
       it('should run on a boolean result that resolves to true', async() => {
