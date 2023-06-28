@@ -5,6 +5,7 @@ import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-re
 import type { IActionContext, IQueryOperationResultBindings, IQueryOperationResultBoolean,
   IQueryOperationResultQuads, IQueryOperationResultVoid } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { termToString } from 'rdf-string';
 import { Readable } from 'readable-stream';
 
 /**
@@ -27,6 +28,10 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
     return true;
   }
 
+  protected static termToString(term: RDF.Term): string {
+    return term.termType === 'Quad' ? termToString(term) : term.value;
+  }
+
   public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
@@ -39,17 +44,17 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
       resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', (bindings: RDF.Bindings) => data.push(`${[ ...bindings ].map(
-        ([ key, value ]) => `?${key.value}: ${value.value}`,
+        ([ key, value ]) => `?${key.value}: ${ActorQueryResultSerializeSimple.termToString(value)}`,
       ).join('\n')}\n\n`));
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'quads') {
       resultStream = (<IQueryOperationResultQuads> action).quadStream;
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', quad => data.push(
-        `subject: ${quad.subject.value}\n` +
-        `predicate: ${quad.predicate.value}\n` +
-        `object: ${quad.object.value}\n` +
-        `graph: ${quad.graph.value}\n\n`,
+        `subject: ${ActorQueryResultSerializeSimple.termToString(quad.subject)}\n` +
+        `predicate: ${ActorQueryResultSerializeSimple.termToString(quad.predicate)}\n` +
+        `object: ${ActorQueryResultSerializeSimple.termToString(quad.object)}\n` +
+        `graph: ${ActorQueryResultSerializeSimple.termToString(quad.graph)}\n\n`,
       ));
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'boolean') {

@@ -55,6 +55,16 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
     if (value.termType === 'BlankNode') {
       return { value: value.value, type: 'bnode' };
     }
+    if (value.termType === 'Quad') {
+      return {
+        value: {
+          subject: ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value.subject),
+          predicate: ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value.predicate),
+          object: ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value.object),
+        },
+        type: 'triple',
+      };
+    }
     return { value: value.value, type: 'uri' };
   }
 

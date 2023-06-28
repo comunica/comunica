@@ -95,6 +95,15 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
       return expect(ActorQueryResultSerializeSparqlTsv.bindingToTsvBindings(DF.literal('a"b,\n\rc')))
         .toEqual('"a\\"b,\\n\\rc"');
     });
+
+    it('should convert quoted triples', () => {
+      return expect(ActorQueryResultSerializeSparqlTsv.bindingToTsvBindings(DF.quad(
+        DF.namedNode('ex:s'),
+        DF.namedNode('ex:p'),
+        DF.namedNode('ex:o'),
+      )))
+        .toEqual('<<<ex:s> <ex:p> <ex:o>>>');
+    });
   });
 
   describe('An ActorQueryResultSerializeSparqlTsv instance', () => {
@@ -104,6 +113,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
     let bindingsStreamMixed: () => BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
+    let bindingsStreamQuoted: () => BindingsStream;
     let metadata: MetadataBindings;
 
     beforeEach(() => {
@@ -144,6 +154,14 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SparqlTsv')); });
+      bindingsStreamQuoted = () => new ArrayIterator([
+        BF.bindings([
+          [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
+        ]),
+      ], { autoStart: false });
       metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
     });
 
@@ -284,6 +302,24 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         handleMediaType: 'text/tab-separated-values',
         context,
       }))).handle.data)).rejects.toBeTruthy();
+    });
+
+    it('should run on a bindings stream with quoted triples', async() => {
+      expect(await stringifyStream((<any> (await actor.run(
+        { handle: <any> {
+          bindingsStream: bindingsStreamQuoted(),
+          type: 'bindings',
+          metadata: async() => metadata,
+          context,
+        },
+        handleMediaType: 'text/tab-separated-values',
+        context },
+      ))).handle.data)).toEqual(
+        `k1\tk2
+<<<s1> <p1> <o1>>>\t
+\t<<<s2> <p2> <o2>>>
+`,
+      );
     });
   });
 });

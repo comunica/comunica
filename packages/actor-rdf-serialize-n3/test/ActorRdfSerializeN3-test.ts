@@ -36,6 +36,7 @@ describe('ActorRdfSerializeN3', () => {
   describe('An ActorRdfSerializeN3 instance', () => {
     let actor: ActorRdfSerializeN3;
     let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
+    let quadStreamQuoted: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let quadStreamPipeable: any;
     let quadsError: any;
 
@@ -58,6 +59,10 @@ describe('ActorRdfSerializeN3', () => {
         quadStreamPipeable = streamifyArray([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+        ]);
+        quadStreamQuoted = () => new ArrayIterator([
+          quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/b', 'http://example.org/c'),
+          quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/d', 'http://example.org/e'),
         ]);
         quadsError = new Readable();
         quadsError._read = () => quadsError.emit('error', new Error('SerializeN3'));
@@ -115,6 +120,16 @@ describe('ActorRdfSerializeN3', () => {
           .run({ handle: { quadStream: quadStreamPipeable, context }, handleMediaType: 'text/turtle', context });
         expect(await stringifyStream(output.handle.data)).toEqual(
           `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
+    <http://example.org/d> <http://example.org/e>.
+`,
+        );
+      });
+
+      it('should run on quoted triples', async() => {
+        const output: any = await actor
+          .run({ handle: { quadStream: quadStreamQuoted(), context }, handleMediaType: 'text/turtle', context });
+        expect(await stringifyStream(output.handle.data)).toEqual(
+          `<<<ex:s1> <ex:p1> <ex:o1>>> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
 `,
         );

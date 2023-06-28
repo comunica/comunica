@@ -40,7 +40,9 @@ describe('ActorQueryResultSerializeTable', () => {
   describe('An ActorQueryResultSerializeTable instance', () => {
     let actor: ActorQueryResultSerializeTable;
     let bindingsStream: () => BindingsStream;
+    let bindingsStreamQuoted: () => BindingsStream;
     let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
+    let quadStreamQuoted: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let streamError: Readable;
     let metadata: MetadataBindings;
 
@@ -60,10 +62,22 @@ describe('ActorQueryResultSerializeTable', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
+      bindingsStreamQuoted = () => new ArrayIterator([
+        BF.bindings([
+          [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
+        ]),
+        BF.bindings([
+          [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
+        ]),
+      ], { autoStart: false });
       quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
+      quadStreamQuoted = () => new ArrayIterator([
+        quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/b', 'http://example.org/c'),
+        quad('<<ex:s2 ex:p2 ex:o2>>', 'http://example.org/d', 'http://example.org/e'),
+      ], { autoStart: false });
       streamError = new Readable();
       streamError._read = () => streamError.emit('error', new Error('ActorQueryResultSerializeTable-test'));
       metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
@@ -122,6 +136,20 @@ v1
         );
       });
 
+      it('should run on a bindings stream with quoted triples', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamQuoted(), metadata: async() => metadata },
+            handleMediaType: 'table',
+            context },
+        ))).handle.data)).toEqual(
+          `k1         k2        
+---------------------
+<<s1 p1 o…           
+           <<s2 p2 o…
+`,
+        );
+      });
+
       it('should run on a quad stream', async() => {
         expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream: quadStream() },
@@ -132,6 +160,20 @@ v1
 -------------------------------------------
 http://ex… http://ex… http://ex…           
 http://ex… http://ex… http://ex…           
+`,
+        );
+      });
+
+      it('should run on a quad stream with quoted triples', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'quads', quadStream: quadStreamQuoted() },
+            handleMediaType: 'table',
+            context },
+        ))).handle.data)).toEqual(
+          `subject    predicate  object     graph     
+-------------------------------------------
+<<ex:s1 e… http://ex… http://ex…           
+<<ex:s2 e… http://ex… http://ex…           
 `,
         );
       });

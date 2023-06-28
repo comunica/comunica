@@ -36,6 +36,7 @@ describe('ActorRdfSerializeJsonLd', () => {
     let actor: ActorRdfSerializeJsonLd;
     let quadStream: any;
     let quadStreamPipeable: any;
+    let quadStreamQuoted: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus,
@@ -48,7 +49,7 @@ describe('ActorRdfSerializeJsonLd', () => {
         name: 'actor' });
     });
 
-    describe('for parsing', () => {
+    describe('for serializing', () => {
       beforeEach(() => {
         quadStream = () => new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -57,6 +58,10 @@ describe('ActorRdfSerializeJsonLd', () => {
         quadStreamPipeable = () => streamifyArray([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+        ]);
+        quadStreamQuoted = () => new ArrayIterator([
+          quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/b', 'http://example.org/c'),
+          quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/d', 'http://example.org/e'),
         ]);
       });
 
@@ -98,6 +103,42 @@ describe('ActorRdfSerializeJsonLd', () => {
           `[
   {
     "@id": "http://example.org/a",
+    "http://example.org/b": [
+      {
+        "@id": "http://example.org/c"
+      }
+    ],
+    "http://example.org/d": [
+      {
+        "@id": "http://example.org/e"
+      }
+    ]
+  }
+]
+`,
+        ));
+    });
+
+    it('should run on quoted triples', () => {
+      return actor.run({
+        handle: {
+          quadStream: quadStreamQuoted(),
+          context,
+        },
+        handleMediaType: 'application/ld+json',
+        context,
+      })
+        .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
+          `[
+  {
+    "@id": {
+      "@id": "ex:s1",
+      "ex:p1": [
+        {
+          "@id": "ex:o1"
+        }
+      ]
+    },
     "http://example.org/b": [
       {
         "@id": "http://example.org/c"

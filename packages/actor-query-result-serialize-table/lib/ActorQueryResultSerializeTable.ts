@@ -9,6 +9,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { termToString } from 'rdf-string';
 import { getTerms, QUAD_TERM_NAMES } from 'rdf-terms';
 import { Readable } from 'readable-stream';
 
@@ -44,6 +45,10 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     return true;
   }
 
+  public termToString(term: RDF.Term): string {
+    return term.termType === 'Quad' ? termToString(term) : term.value;
+  }
+
   public pad(str: string): string {
     if (str.length <= this.columnWidth) {
       return str + this.padding.slice(str.length);
@@ -58,7 +63,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
 
   public pushRow(data: Readable, labels: RDF.Variable[], bindings: Bindings): void {
     data.push(`${labels
-      .map(label => bindings.get(label)?.value || '')
+      .map(label => bindings.has(label) ? this.termToString(bindings.get(label)!) : '')
       .map(label => this.pad(label))
       .join(' ')}\n`);
   }
@@ -82,7 +87,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
       this.pushHeader(data, QUAD_TERM_NAMES_VARS);
       resultStream.on('error', error => data.emit('error', error));
       resultStream.on('data', quad => data.push(
-        `${getTerms(quad).map(term => this.pad(term.value)).join(' ')}\n`,
+        `${getTerms(quad).map(term => this.pad(this.termToString(term))).join(' ')}\n`,
       ));
     }
     resultStream.on('end', () => data.push(null));

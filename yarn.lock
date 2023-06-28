@@ -8122,10 +8122,10 @@ jsonld-streaming-parser@^3.2.0:
     rdf-data-factory "^1.1.0"
     readable-stream "^4.0.0"
 
-jsonld-streaming-serializer@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/jsonld-streaming-serializer/-/jsonld-streaming-serializer-2.0.1.tgz#b299588673df4450183e992fc34d8a8d21b50693"
-  integrity sha512-/ee/o1ZqzEaJIR70dWsMqc5ZvGV32wht4znvoGxVXtd+95vHNnQJHs9IEqm6G0tQFCNUlNSb3g62f7SK1jFNvw==
+jsonld-streaming-serializer@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/jsonld-streaming-serializer/-/jsonld-streaming-serializer-2.1.0.tgz#db80d6e13d74ae5837a313123ea4d409b04df2e0"
+  integrity sha512-COHdLoeMTnrqHMoFhN3PoAwqnrKrpPC7/ACb0WbELYvt+HSOIFN3v4IJP7fOtLNQ4GeaeYkvbeWJ7Jo4EjxMDw==
   dependencies:
     "@rdfjs/types" "*"
     "@types/readable-stream" "^2.3.13"
