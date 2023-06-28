@@ -55,6 +55,31 @@ describe('QuadDestinationSparql', () => {
       });
     });
 
+    it('should handle a valid insert with quoted triples', async() => {
+      await destination.insert(new ArrayIterator([
+        DF.quad(
+          DF.namedNode('ex:s1'),
+          DF.namedNode('ex:p1'),
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+        ),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+      ]));
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context,
+        init: {
+          headers: { 'content-type': 'application/sparql-update' },
+          method: 'POST',
+          body: `INSERT DATA {
+  <ex:s1> <ex:p1> <<<ex:s1> <ex:p1> <ex:o1>>> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`,
+          signal: expect.anything(),
+        },
+        input: 'abc',
+      });
+    });
+
     it('should throw on a server error', async() => {
       const body = streamifyString(`ERROR`);
       mediatorHttp.mediate = () => ({
