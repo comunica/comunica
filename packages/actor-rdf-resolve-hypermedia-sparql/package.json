@@ -40,7 +40,7 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
     "fetch-sparql-endpoint": "^3.3.3",
-    "lru-cache": "^9.1.2",
+    "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-terms": "^1.11.0",
     "sparqlalgebrajs": "^4.2.0"
