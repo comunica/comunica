@@ -41,7 +41,7 @@
     "@comunica/core": "^2.7.0",
     "@comunica/types": "^2.7.0",
     "@types/lru-cache": "^7.0.0",
-    "lru-cache": "^9.1.2"
+    "lru-cache": "^10.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
