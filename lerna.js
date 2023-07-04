@@ -65,6 +65,7 @@ async function depInfo({ location, name }, log) {
 
 async function depfixTask(log) {
   const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
+  const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   await iter.forEach(packages, { log })(async package => {
     log.info(package.name)
@@ -104,12 +105,21 @@ async function depfixTask(log) {
       }
     }
 
+    // Now fix up any resolutions to use a star ("*") import
+    const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
+    for (const dep of Object.keys(packageJson.dependencies ?? {})) {
+      if (resolutions.includes(dep) && packageJson.dependencies[dep] !== '*') {
+        log.info('    converting to \'*\' import for', dep)
+        packageJson.dependencies[dep] = '*';
+      }
+    }
     writeFileSync(path.join(package.location, 'package.json'), JSON.stringify(packageJson, null, 2) + '\n');
   })
 }
 
 async function depcheckTask(log) {
   const packages = await (log.packages || loadPackages());
+  const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   return iter.forEach(packages, { log })(async package => {
     const { missingDeps, unusedDeps, allDeps } = await depInfo(package)
@@ -124,6 +134,15 @@ async function depcheckTask(log) {
 
     if (allDeps.includes(package.name))
       throw new Error(`${package.name} is a dependency of itself`);
+
+
+    // Now check all resolutions use a star ("*") import
+    const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
+    for (const dep of Object.keys(packageJson.dependencies ?? {})) {
+      if (resolutions.includes(dep) && packageJson.dependencies[dep] !== '*') {
+        throw new Error(`Resolution not using \'*\' import for ${dep} in ${package.name}`);
+      }
+    }
   })
 }
 
