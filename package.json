@@ -92,7 +92,6 @@
     "ncu:major:all": "lerna-script updateTaskMajor"
   },
   "resolutions": {
-    "@rdfjs/types": "1.1.0",
-    "readable-stream": "4.3.0"
+    "@rdfjs/types": "1.1.0"
   }
 }
