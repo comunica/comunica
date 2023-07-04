@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.8.0"></a>
+## [v2.8.0](https://github.com/comunica/comunica/compare/v2.7.1...v2.8.0) - 2023-07-04
+
+### Added
+* Add support for RDF-star and SPARQL-star
+  * [Support quoted triples in result serializers](https://github.com/comunica/comunica/commit/5b66b377bb65fcaf69edc989314ccc98cbdd37b6)
+  * [Add support for processing quoted triples](https://github.com/comunica/comunica/commit/1ab23621292de1c3dccd6c550001944cf39d5947)
+
+### Changed
+* [Update to rdf-store-stream v2](https://github.com/comunica/comunica/commit/7d35453063b970f473631238d81459209191cb14)
+* [Update dependency lru-cache to v10](https://github.com/comunica/comunica/commit/5bf6a195bb809dbd748579a44c5c2c090280597d)
+* [Update to TypeScript 5.x](https://github.com/comunica/comunica/commit/1874c40f156f27d8aa566ac383e5541f8e8b54d8)
+
 <a name="v2.7.1"></a>
 ## [v2.7.1](https://github.com/comunica/comunica/compare/v2.7.0...v2.7.1) - 2023-05-31
 

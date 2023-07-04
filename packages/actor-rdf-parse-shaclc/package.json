@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-shaclc",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "description": "A shaclc rdf-parse actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^2.7.0",
-    "@comunica/types": "^2.7.0",
+    "@comunica/bus-rdf-parse": "^2.8.0",
+    "@comunica/types": "^2.8.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.0",
     "readable-stream": "^4.2.0",
