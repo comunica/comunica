@@ -1,7 +1,7 @@
 {
   "applicationBugsUrl": "https://github.com/comunica/comunica/issues",
   "applicationDescription": "A Comunica engine for SPARQL query evaluation over heterogeneous interfaces",
-  "applicationHomepageUrl": "http://comunica.linkeddatafragments.org/",
+  "applicationHomepageUrl": "https://comunica.dev/",
   "applicationNameFull": "Comunica SPARQL",
   "applicationNameNpm": "@comunica/query-sparql",
   "applicationUri": "https://www.npmjs.com/package/@comunica/query-sparql",
