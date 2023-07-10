@@ -37,7 +37,7 @@
     "@comunica/bus-query-operation": "^2.8.0",
     "@comunica/metadata": "^2.8.0",
     "@comunica/types": "^2.8.0",
-    "asynciterator": "^3.8.0",
+    "asynciterator": "^3.8.1",
     "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {

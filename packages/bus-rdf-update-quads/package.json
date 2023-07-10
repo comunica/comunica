@@ -37,7 +37,7 @@
     "@comunica/core": "^2.8.0",
     "@comunica/types": "^2.8.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.8.0",
+    "asynciterator": "^3.8.1",
     "stream-to-string": "^1.2.0"
   },
   "scripts": {

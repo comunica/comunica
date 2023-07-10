@@ -38,7 +38,7 @@
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.8.0",
     "@comunica/types": "^2.8.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.8.0",
+    "asynciterator": "^3.8.1",
     "fetch-sparql-endpoint": "^3.3.3",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.1",

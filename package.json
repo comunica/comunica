@@ -20,7 +20,7 @@
     "@types/setup-polly-jest": "^0.5.2",
     "abort-controller": "^3.0.0",
     "arrayify-stream": "^2.0.1",
-    "asynciterator": "^3.8.0",
+    "asynciterator": "^3.8.1",
     "babel-loader": "^9.1.0",
     "componentsjs-generator": "^3.1.0",
     "depcheck": "^1.4.3",

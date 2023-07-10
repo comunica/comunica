@@ -36,7 +36,7 @@
     "@comunica/mediatortype-join-coefficients": "^2.8.0",
     "@comunica/metadata": "^2.8.0",
     "@comunica/types": "^2.8.0",
-    "asynciterator": "^3.8.0"
+    "asynciterator": "^3.8.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

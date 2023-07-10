@@ -38,7 +38,7 @@
     "@comunica/core": "^2.8.0",
     "@comunica/types": "^2.8.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.8.0",
+    "asynciterator": "^3.8.1",
     "rdf-data-factory": "^1.1.1",
     "sparqlalgebrajs": "^4.2.0",
     "sparqlee": "^3.0.0"
