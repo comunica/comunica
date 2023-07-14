@@ -27,6 +27,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
       physicalName: 'multi-sequential',
       limitEntries: 3,
       limitEntriesMin: true,
+      canHandleUndefs: true,
     });
   }
 

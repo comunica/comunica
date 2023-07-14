@@ -29,6 +29,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
       physicalName: 'multi-smallest',
       limitEntries: 3,
       limitEntriesMin: true,
+      canHandleUndefs: true,
     });
   }
 

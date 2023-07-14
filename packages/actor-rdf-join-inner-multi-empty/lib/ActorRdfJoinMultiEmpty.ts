@@ -13,6 +13,7 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
     super(args, {
       logicalType: 'inner',
       physicalName: 'multi-empty',
+      canHandleUndefs: true,
     });
   }
 
