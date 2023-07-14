@@ -1,6 +1,6 @@
 {
   "name": "@comunica/jest",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Jest utilities for Comunica",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.7.0",
-    "@comunica/types": "^2.8.0",
+    "@comunica/types": "^2.8.1",
     "@rdfjs/types": "*",
     "arrayify-stream": "^2.0.1"
   },

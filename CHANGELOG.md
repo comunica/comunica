@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.8.1"></a>
+## [v2.8.1](https://github.com/comunica/comunica/compare/v2.8.0...v2.8.1) - 2023-07-14
+
+### Fixed
+* [Allow multi join actors to handle undefs, Closes #1231](https://github.com/comunica/comunica/commit/89d5f3d2d4de18035f0177a89f35db1e28108219)
+* [Fix process halting on many TPF sources](https://github.com/comunica/comunica/commit/492f899120a01cbbfd7f502881f992b8fd288f4c)
+
 <a name="v2.8.0"></a>
 ## [v2.8.0](https://github.com/comunica/comunica/compare/v2.7.1...v2.8.0) - 2023-07-04
 
