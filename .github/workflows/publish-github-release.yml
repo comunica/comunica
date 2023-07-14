@@ -12,3 +12,5 @@ jobs:
         uses: elgohr/Github-Release-Action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          title: Release
