@@ -5,6 +5,7 @@ import type { Bindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
+import type { IBindings } from 'fetch-sparql-endpoint';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
@@ -138,9 +139,9 @@ export class RdfSourceSparql implements IQuadSource {
    */
   public queryBindings(endpoint: string, query: string): BindingsStream {
     const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
-    return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map((rawData: Record<string, RDF.Term>) => BF.bindings(Object.entries(rawData)
-        .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
+    return wrap<IBindings>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
+      .map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => BF.bindings(Object.entries(rawData)
+      .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {

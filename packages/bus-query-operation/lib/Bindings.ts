@@ -187,7 +187,7 @@ export function materializeOperation(
         const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map(binding => {
           const newBinding = { ...binding };
           let valid = true;
-          bindings.forEach((value: RDF.NamedNode, key: RDF.Variable) => {
+          bindings.forEach((value, key) => {
             const keyString = termToString(key);
             if (keyString in newBinding) {
               if (!value.equals(newBinding[keyString])) {

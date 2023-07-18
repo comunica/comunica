@@ -41,9 +41,9 @@ export class ActorHttpFetch extends ActorHttp {
    * @param retryDelay Time in milliseconds to wait between retries
    * @returns a fetch `Response` object
    */
-  private static async getResponse(
-    fetchFn: (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>,
-    requestInput: RequestInfo | URL,
+  private static async getResponse<Input extends RequestInfo | URL>(
+    fetchFn: (input: Input, init?: RequestInit | undefined) => Promise<Response>,
+    requestInput: Input,
     requestInit: RequestInit,
     retryCount: number,
     retryDelay: number,

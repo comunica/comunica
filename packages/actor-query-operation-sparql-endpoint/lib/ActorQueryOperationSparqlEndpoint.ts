@@ -22,7 +22,8 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
-import type { IUpdateTypes } from 'fetch-sparql-endpoint';
+import type { IUpdateTypes, IBindings } from 'fetch-sparql-endpoint';
+import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util, Algebra } from 'sparqlalgebrajs';
 import { LazyCardinalityIterator } from './LazyCardinalityIterator';
@@ -154,9 +155,9 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
 
-    const stream = wrap<any>(inputStream, { autoStart: false }).map(rawData => quads ?
-      rawData :
-      BF.bindings(Object.entries(rawData)
+    const stream = wrap<Quad | IBindings>(inputStream, { autoStart: false }).map(rawData => quads ?
+      <Quad> rawData :
+      BF.bindings(Object.entries(<IBindings> rawData)
         .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ])));
 
     const resultStream = new LazyCardinalityIterator(stream);

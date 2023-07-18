@@ -17,7 +17,7 @@ export class BindingsFactory implements RDF.BindingsFactory {
     return new Bindings(this.dataFactory, Map(entries.map(([ key, value ]) => [ key.value, value ])));
   }
 
-  public fromBindings(bindings: Bindings): Bindings {
+  public fromBindings(bindings: RDF.Bindings): Bindings {
     return this.bindings([ ...bindings ]);
   }
 

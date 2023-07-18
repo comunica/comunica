@@ -3,6 +3,7 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 
 const BF = new BindingsFactory();
@@ -30,7 +31,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     return {
       result: {
-        bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),
+        bindingsStream: new ArrayIterator<RDF.Bindings>([ BF.bindings() ], { autoStart: false }),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },

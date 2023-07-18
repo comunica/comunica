@@ -5,6 +5,7 @@ import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entr
 import type { IActorTest } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -49,7 +50,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       if (operation.silent) {
         // Emit a single empty binding
         output = {
-          bindingsStream: new SingletonIterator(BF.bindings()),
+          bindingsStream: new SingletonIterator<RDF.Bindings>(BF.bindings()),
           type: 'bindings',
           metadata: async() => ({
             state: new MetadataValidationState(),

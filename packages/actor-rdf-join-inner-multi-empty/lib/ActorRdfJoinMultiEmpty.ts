@@ -3,6 +3,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 
 /**
@@ -33,7 +34,7 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
 
     return {
       result: {
-        bindingsStream: new ArrayIterator([], { autoStart: false }),
+        bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 0 },

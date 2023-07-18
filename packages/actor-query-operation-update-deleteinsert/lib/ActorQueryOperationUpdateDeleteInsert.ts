@@ -39,7 +39,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
         .mediate({ operation: operation.where, context })).bindingsStream :
-      new ArrayIterator([ BF.bindings() ], { autoStart: false });
+      new ArrayIterator<RDF.Bindings>([ BF.bindings() ], { autoStart: false });
 
     // Construct triples using the result based on the pattern.
     let quadStreamInsert: AsyncIterator<RDF.Quad> | undefined;

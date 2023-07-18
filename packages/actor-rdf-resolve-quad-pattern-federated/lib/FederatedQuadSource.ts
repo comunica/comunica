@@ -251,7 +251,7 @@ export class FederatedQuadSource implements IQuadSource {
         // eslint-disable-next-line no-cond-assign
         this.isSourceEmpty(source, pattern = this.algebraFactory
           .createPattern(patternS, patternP, patternO, patternG))) {
-        output = { data: new ArrayIterator([], { autoStart: false }) };
+        output = { data: new ArrayIterator<RDF.Quad>([], { autoStart: false }) };
         // Return the default metadata
         output.data.setProperty('metadata', {
           state: new MetadataValidationState(),

@@ -62,13 +62,14 @@ export class XmlSerializer {
   }
 
   private escape(text: string): string {
-    return text.replace(/["&'<>]/gu, (char: '"' | '&' | '\'' | '<' | '>') => {
+    return text.replace(/["&'<>]/gu, (char: string): string => {
       switch (char) {
         case '<': return '&lt;';
         case '>': return '&gt;';
         case '&': return '&amp;';
         case '\'': return '&apos;';
         case '"': return '&quot;';
+        default: throw new Error(`Trying to escape an unexpected character: ${char}`);
       }
     });
   }

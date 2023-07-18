@@ -43,8 +43,13 @@ export class MediatedQuadSource implements IQuadSource {
     predicate: RDF.Term,
     object: RDF.Term,
     graph: RDF.Term,
-    context: IActionContext,
+    context?: IActionContext,
   ): AsyncIterator<RDF.Quad> {
+    // IQuadSource["context"] should be mandatory in the next major update.
+    if (!context) {
+      throw new Error(`MediatedQuadSource requires a context.`);
+    }
+
     // Optimized match with aggregated store if enabled and started.
     let aggregatedStore: IAggregatedStore | undefined;
     if (this.aggregateStore) {

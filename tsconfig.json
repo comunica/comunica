@@ -17,7 +17,6 @@
     "downlevelIteration": true,
 
     "strict": true,
-    "strictFunctionTypes": false,
     "strictPropertyInitialization": false
   },
   "include": [
