@@ -11,12 +11,14 @@
     {
       "@id": "urn:comunica:default:rdf-join/actors#minus-hash",
       "@type": "ActorRdfJoinMinusHash",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorBindingMergeFactory": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#minus-hash-undef",
       "@type": "ActorRdfJoinMinusHashUndef",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorBindingMergeFactory": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main" }
     }
   ]
 }

@@ -1,19 +1,22 @@
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { bindingsToString } from './bindingsToString';
+import { IActionContext } from '@comunica/types';
+import { ActionContext, ActionContextKey } from '@comunica/core';
 
 /**
  * An immutable.js-based Bindings object.
  */
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
-
+  public context: IActionContext;
   private readonly dataFactory: RDF.DataFactory;
   private readonly entries: Map<string, RDF.Term>;
 
-  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>) {
+  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>, context: IActionContext = new ActionContext()) {
     this.dataFactory = dataFactory;
     this.entries = entries;
+    this.context = context;
   }
 
   public has(key: RDF.Variable | string): boolean {
@@ -91,7 +94,7 @@ export class Bindings implements RDF.Bindings {
       .map((value, key) => fn(value, this.dataFactory.variable!(key)))));
   }
 
-  public merge(other: RDF.Bindings): Bindings | undefined {
+  public merge(other: RDF.Bindings | Bindings, contextMergeHandlers?: any): Bindings | undefined {
     // Determine the union of keys
     const keys = new Set([
       ...this.iteratorToIterable(this.entries.keys()),
@@ -110,7 +113,27 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    return new Bindings(this.dataFactory, Map(entries));
+    // Determine union of keys in context
+    if (other.hasOwnProperty("context")){
+      // Get keys in context
+      let otherAsBinding = <Bindings> other;
+      const keysContext = new Set([  
+        ... this.context.keys(),
+        ... otherAsBinding.context.keys(),
+      ]);
+
+      // Merge context based on supplied mergeHandlers
+      for (const key of keysContext){
+        // merg handlers are stored as strings, so need to use the name of the key
+        if (contextMergeHandlers.get(key.name)){
+          // Apply contextMergeHandler to the key
+          this.context.set(key, contextMergeHandlers.get(key.name)([... this.context.get(key), ... otherAsBinding.context.get(key)]));
+        }
+      }
+    }
+    // If the other is NOT a Binding of our own type, we can just take original context and we don't need
+    // Merge handlers
+    return new Bindings(this.dataFactory, Map(entries), this.context);
   }
 
   public mergeWith(

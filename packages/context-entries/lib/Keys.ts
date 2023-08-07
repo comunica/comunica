@@ -15,7 +15,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
- * ActorIniQueryBase in @comunica/actor-init-query if it makes sense to use this entry externally.
+ * ActorInitQueryBase in @comunica/actor-init-query if it makes sense to use this entry externally.
  * Also, add this shortcut to IQueryContextCommon in @comunica/types.
  */
 
@@ -265,3 +265,10 @@ export const KeysRdfUpdateQuads = {
    */
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
 };
+
+export const KeysBindingContext = {
+  /**
+   * The data source of the binding
+   */
+  sourceBinding: new ActionContextKey<string>('@comunica/bus-merge-binding-factory:sourceBinding')
+}

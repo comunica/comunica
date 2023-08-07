@@ -37,6 +37,10 @@
     "ccqs:config/rdf-serialize/mediators.json",
 
     "ccqs:config/rdf-update-quads/actors-rdfjs.json",
-    "ccqs:config/rdf-update-quads/mediators.json"
+    "ccqs:config/rdf-update-quads/mediators.json",
+    
+    "ccqs:config/merge-binding/actors.json",
+    "ccqs:config/merge-binding/mediators.json"
+
   ]
 }

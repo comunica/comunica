@@ -1,3 +1,4 @@
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -8,7 +9,7 @@ import { SymmetricHashJoin } from 'asyncjoin';
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
-  public constructor(args: IActorRdfJoinArgs) {
+  public constructor(args: IActorRdfJoinSymmetricHashArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'symmetric-hash',
@@ -48,4 +49,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
     };
   }
+}
+
+export interface IActorRdfJoinSymmetricHashArgs extends IActorRdfJoinArgs{
 }
