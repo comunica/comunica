@@ -11,6 +11,7 @@ import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, IQueryOperationResultBindings,
   MetadataBindings, IActionContext, IJoinEntryWithMetadata } from '@comunica/types';
+import { rejects } from 'assert';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
@@ -73,7 +74,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           optional,
         }), { autoStart: false });
       default:
-        throw new Error(`Received request for unknown bind order: ${bindOrder}`);
+        console.log("I'm rejecting this promise!!!!!");
+        console.log(`${bindOrder}`);
+        return Promise.reject(new Error(`Received request for unknown bind order: ${bindOrder}`));
     }
   }
 
@@ -189,7 +192,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       false,
-    );
+    )
+    .catch(err => {
+      console.log(err);
+      throw new Error(err)
+    });
 
     return {
       result: {

@@ -5,7 +5,8 @@ import { Bindings } from '../lib/Bindings';
 import 'jest-rdf';
 
 const DF = new DataFactory();
-
+// Empty merge handlers, should implement specific ones when done
+const contextMergeHandlers = {};
 describe('Bindings', () => {
   let bindings: Bindings;
 
@@ -14,7 +15,9 @@ describe('Bindings', () => {
       [ 'a', DF.namedNode('ex:a') ],
       [ 'b', DF.namedNode('ex:b') ],
       [ 'c', DF.namedNode('ex:c') ],
-    ]));
+    ]),
+    contextMergeHandlers
+    );
   });
 
   describe('has', () => {
@@ -175,14 +178,16 @@ describe('Bindings', () => {
     });
 
     it('should be false for empty bindings', () => {
-      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([])))).toBeFalsy();
+      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([]), contextMergeHandlers))).toBeFalsy();
     });
 
     it('should be false for bindings with fewer keys', () => {
       expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
-      ])))).toBeFalsy();
+      ]),
+      contextMergeHandlers
+      ))).toBeFalsy();
     });
 
     it('should be false for bindings with more keys', () => {
@@ -191,7 +196,9 @@ describe('Bindings', () => {
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
         [ 'd', DF.namedNode('ex:d') ],
-      ])))).toBeFalsy();
+      ]),
+      contextMergeHandlers
+      ))).toBeFalsy();
     });
 
     it('should be false for bindings with the same amount of keys, but unequal', () => {
@@ -199,7 +206,9 @@ describe('Bindings', () => {
         [ 'a1', DF.namedNode('ex:a') ],
         [ 'b1', DF.namedNode('ex:b') ],
         [ 'c1', DF.namedNode('ex:c') ],
-      ])))).toBeFalsy();
+      ]),
+      contextMergeHandlers
+      ))).toBeFalsy();
     });
 
     it('should be false for bindings with equal keys, but unequal values', () => {
@@ -207,7 +216,9 @@ describe('Bindings', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b1') ],
         [ 'c', DF.namedNode('ex:c') ],
-      ])))).toBeFalsy();
+      ]),
+      contextMergeHandlers
+      ))).toBeFalsy();
     });
 
     it('should be true for bindings with equal keys and values', () => {
@@ -215,7 +226,9 @@ describe('Bindings', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
-      ])))).toBeTruthy();
+      ]),
+      contextMergeHandlers
+      ))).toBeTruthy();
     });
 
     it('should be true for itself', () => {
@@ -277,7 +290,9 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'e', DF.namedNode('ex:e') ],
         [ 'f', DF.namedNode('ex:f') ],
-      ]));
+      ]),
+      contextMergeHandlers
+      );
 
       const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
       expect(bindingsNew).toBeDefined();
@@ -297,7 +312,9 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
-      ]));
+      ]),
+      contextMergeHandlers
+      );
 
       const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
       expect(bindingsNew).toBeDefined();
@@ -313,7 +330,9 @@ describe('Bindings', () => {
     it('should return undefined on overlapping incompatible bindings', () => {
       const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:b') ],
-      ]));
+      ]),
+      contextMergeHandlers
+      );
 
       const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
       expect(bindingsNew).toBeUndefined();
@@ -326,7 +345,9 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'e', DF.namedNode('ex:e') ],
         [ 'f', DF.namedNode('ex:f') ],
-      ]));
+      ]),
+      contextMergeHandlers
+      );
 
       const cb = jest.fn();
       const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
@@ -349,7 +370,9 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
-      ]));
+      ]),
+      contextMergeHandlers
+      );
 
       const cb = jest.fn();
       const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
@@ -368,7 +391,9 @@ describe('Bindings', () => {
     it('should return undefined on overlapping incompatible bindings', () => {
       const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:b') ],
-      ]));
+      ]),
+      contextMergeHandlers
+      );
 
       const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
       const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
@@ -387,7 +412,7 @@ describe('Bindings', () => {
 
   describe('toString', () => {
     it('should stringify empty bindings', () => {
-      expect(new Bindings(DF, Map<string, RDF.Term>()).toString()).toEqual(`{}`);
+      expect(new Bindings(DF, Map<string, RDF.Term>(), contextMergeHandlers).toString()).toEqual(`{}`);
     });
 
     it('should stringify non-empty bindings', () => {

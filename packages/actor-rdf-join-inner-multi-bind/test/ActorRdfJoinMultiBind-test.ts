@@ -397,9 +397,13 @@ describe('ActorRdfJoinMultiBind', () => {
     });
 
     describe('createBindStream', () => {
-      it('throws when an unknown bind order is passed', async() => {
-        expect(() => (<any> ActorRdfJoinMultiBind).createBindStream('unknown'))
-          .toThrowError(`Received request for unknown bind order: unknown`);
+      it('throws when an unknown bind order is passed',  async () => {
+        await expect(
+          async () => await (<any> ActorRdfJoinMultiBind).createBindStream('unknown').catch((err: any) => {
+          throw new Error(err);
+        }))
+        .rejects
+        .toThrowError(`Received request for unknown bind order: unknown`);
       });
     });
 
