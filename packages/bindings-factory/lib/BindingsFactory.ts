@@ -8,13 +8,16 @@ import { Bindings } from './Bindings';
  */
 export class BindingsFactory implements RDF.BindingsFactory {
   private readonly dataFactory: RDF.DataFactory;
+  private readonly contextMergeHandlers: Record<string, Function>;
 
-  public constructor(dataFactory: RDF.DataFactory = new DataFactory()) {
+  // contextMergeHandlers is commented out for now, but should not be optional param!!!
+  public constructor(dataFactory: RDF.DataFactory = new DataFactory(), contextMergeHandlers?: Record<string, Function>) {
     this.dataFactory = dataFactory;
+    // this.contextMergeHandlers = contextMergeHandlers
   }
 
   public bindings(entries: [RDF.Variable, RDF.Term][] = []): Bindings {
-    return new Bindings(this.dataFactory, Map(entries.map(([ key, value ]) => [ key.value, value ])));
+    return new Bindings(this.dataFactory, Map(entries.map(([ key, value ]) => [ key.value, value ])), this.contextMergeHandlers);
   }
 
   public fromBindings(bindings: Bindings): Bindings {
@@ -23,5 +26,9 @@ export class BindingsFactory implements RDF.BindingsFactory {
 
   public fromRecord(record: Record<string, RDF.Term>): Bindings {
     return this.bindings(Object.entries(record).map(([ key, value ]) => [ this.dataFactory.variable!(key), value ]));
+  }
+
+  public test(){
+    
   }
 }

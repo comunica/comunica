@@ -1,5 +1,5 @@
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, materializeOperation, wrappedMaterializeOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -44,22 +44,22 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
    * @param optional If the original bindings should be emitted when the resulting bindings stream is empty.
    * @return {BindingsStream}
    */
-  public static createBindStream(
+  public static async createBindStream(
     bindOrder: BindOrder,
     baseStream: BindingsStream,
     operations: Algebra.Operation[],
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
-  ): BindingsStream {
+  ): Promise<BindingsStream> {
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
       const subOperations = operations
-        .map(operation => materializeOperation(operation, bindings, { bindFilter: false }));
+        .map(async operation => await wrappedMaterializeOperation(operation, bindings, { bindFilter: false }));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
-      return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
+      return new TransformIterator(async() => (await operationBinder(await Promise.all(subOperations), bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
     };
 
@@ -174,7 +174,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     const subContext = action.context
       .set(KeysQueryOperation.joinLeftMetadata, entries[0].metadata)
       .set(KeysQueryOperation.joinRightMetadatas, remainingEntries.map(entry => entry.metadata));
-    const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(
+    const bindingsStream: BindingsStream = await ActorRdfJoinMultiBind.createBindStream(
       this.bindOrder,
       smallestStream.bindingsStream,
       remainingEntries.map(entry => entry.operation),
