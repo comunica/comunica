@@ -50,4 +50,6 @@ export interface IQueryContextCommon {
   extensionFunctions?: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
   explain?: QueryExplainMode;
   recoverBrokenLinks?: boolean;
+  // The specific source of a binding object, for determining provenance of bindings
+  sourceBinding?: string;
 }

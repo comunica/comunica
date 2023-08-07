@@ -12,12 +12,14 @@
       "@id": "urn:comunica:default:rdf-join/actors#optional-bind",
       "@type": "ActorRdfJoinOptionalBind",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
-      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorBindingMergeFactory": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-nested-loop",
       "@type": "ActorRdfJoinOptionalNestedLoop",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorBindingMergeFactory": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main" }
     }
   ]
 }
