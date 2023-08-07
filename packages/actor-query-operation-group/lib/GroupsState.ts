@@ -117,7 +117,7 @@ export class GroupsState {
           const variable = aggregate.variable.value;
           await group.aggregators[variable].put(bindings);
         }));
-      })().then(async () => {
+      })().then(async() => {
         await this.subtractWaitCounterAndCollect();
       });
     }

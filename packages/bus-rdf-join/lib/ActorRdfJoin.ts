@@ -1,4 +1,4 @@
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   MediatorRdfJoinSelectivity,
@@ -33,7 +33,6 @@ export abstract class ActorRdfJoin
   extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
   public readonly mediatorBindingMergeFactory: MediatorMergeBindingFactory;
-
 
   /**
    * If this actor will be logged in the debugger and physical query plan logger
@@ -116,7 +115,7 @@ export abstract class ActorRdfJoin
    * @param {Bindings[]} bindings
    * @returns {Bindings}
    */
-  
+
   public static joinBindings(...bindings: Bindings[]): Bindings | null {
     if (bindings.length === 0) {
       return null;
@@ -304,7 +303,6 @@ export abstract class ActorRdfJoin
     }
     // Prepare functions for merging bindings
     const mergeHandlers = (await this.mediatorBindingMergeFactory.mediate(action)).mergeHandlers;
-    
 
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action);

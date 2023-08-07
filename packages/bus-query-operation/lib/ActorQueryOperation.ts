@@ -12,7 +12,7 @@ import type { IQueryOperationResult,
   FunctionArgumentsCache } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import { materializeOperation, wrappedMaterializeOperation } from './Bindings';
+import { wrappedMaterializeOperation } from './Bindings';
 
 /**
  * A counter that keeps track blank node generated through BNODE() SPARQL
@@ -179,7 +179,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async(expr, bindings) => {
       const operation = await wrappedMaterializeOperation(expr.input, bindings);
-      
+
       const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
       const output = ActorQueryOperation.getSafeBindings(outputRaw);
 

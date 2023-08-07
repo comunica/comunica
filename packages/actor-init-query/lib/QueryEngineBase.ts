@@ -1,4 +1,4 @@
-import { materializeOperation, wrappedMaterializeOperation } from '@comunica/bus-query-operation';
+import { wrappedMaterializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';

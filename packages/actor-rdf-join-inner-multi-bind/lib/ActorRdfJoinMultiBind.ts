@@ -1,5 +1,5 @@
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, materializeOperation, wrappedMaterializeOperation } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, wrappedMaterializeOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
