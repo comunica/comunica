@@ -6,7 +6,8 @@ import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
+
+
 
 /**
  * Materialize a term with the given binding.
@@ -33,6 +34,26 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   return term;
 }
 
+export async function wrappedMaterializeOperation(  
+  operation: Algebra.Operation,
+  bindings: Bindings,
+  options: {
+    /**
+     * If target variable bindings (such as on SELECT or BIND) should not be allowed.
+     */
+    strictTargetVariables?: boolean;
+    /**
+     * If filter expressions should be materialized
+     */
+    bindFilter?: boolean;
+  } = {},
+): Promise<Algebra.Operation> {
+  // Await BF handlers here
+  const BF = new BindingsFactory();
+  return materializeOperation(operation, bindings, BF, options)
+
+}
+
 /**
  * Materialize the given operation (recursively) with the given bindings.
  * Essentially, all variables in the given operation will be replaced
@@ -45,6 +66,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
+  BF: BindingsFactory,
   options: {
     /**
      * If target variable bindings (such as on SELECT or BIND) should not be allowed.
@@ -97,7 +119,7 @@ export function materializeOperation(
         } else {
           return {
             recurse: true,
-            result: materializeOperation(op.input, bindings, options),
+            result: materializeOperation(op.input, bindings, BF, options),
           };
         }
       }
@@ -166,6 +188,7 @@ export function materializeOperation(
           materializeOperation(
             op.input,
             subBindings,
+            BF,
             options,
           ),
           variables,

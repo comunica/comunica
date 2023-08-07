@@ -95,7 +95,7 @@ export class GroupsState {
         }
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
-        this.subtractWaitCounterAndCollect();
+        await this.subtractWaitCounterAndCollect();
         return group;
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
@@ -117,20 +117,20 @@ export class GroupsState {
           const variable = aggregate.variable.value;
           await group.aggregators[variable].put(bindings);
         }));
-      })().then(() => {
-        this.subtractWaitCounterAndCollect();
+      })().then(async () => {
+        await this.subtractWaitCounterAndCollect();
       });
     }
     return res;
   }
 
-  private subtractWaitCounterAndCollect(): void {
+  private async subtractWaitCounterAndCollect(): Promise<void> {
     if (--this.waitCounter === 0) {
       this.handleResultCollection();
     }
   }
 
-  private handleResultCollection(): void {
+  private async handleResultCollection(): Promise<void> {
     // Collect groups
     let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;

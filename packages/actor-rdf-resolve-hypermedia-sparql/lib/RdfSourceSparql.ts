@@ -154,11 +154,24 @@ export class RdfSourceSparql implements IQuadSource {
     const selectQuery: string = RdfSourceSparql.patternToSelectQuery(pattern);
 
     // Emit metadata containing the estimated count (reject is never called)
-    new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
-      try {
-        const cachedCardinality = this.cache?.get(countQuery);
-        if (cachedCardinality !== undefined) {
-          return resolve(cachedCardinality);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    new Promise<RDF.QueryResultCardinality> (resolve => {
+      const cachedCardinality = this.cache?.get(countQuery);
+      if (cachedCardinality !== undefined) {
+        return resolve(cachedCardinality);
+      }
+
+      const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
+      bindingsStream.on('data', (bindings: Bindings) => {
+        const count = bindings.get(VAR_COUNT);
+        const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
+        if (count) {
+          const cardinalityValue: number = Number.parseInt(count.value, 10);
+          if (!Number.isNaN(cardinalityValue)) {
+            cardinality.type = 'exact';
+            cardinality.value = cardinalityValue;
+            this.cache?.set(countQuery, cardinality);
+          }
         }
 
         const bindingsStream: BindingsStream = await this.queryBindings(this.url, countQuery);

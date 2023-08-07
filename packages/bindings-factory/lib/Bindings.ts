@@ -9,14 +9,19 @@ import { ActionContext, ActionContextKey } from '@comunica/core';
  */
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
+
   public context: IActionContext;
+  private readonly contextMergeHandlers: Record<string, Function>;
+
   private readonly dataFactory: RDF.DataFactory;
   private readonly entries: Map<string, RDF.Term>;
 
-  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>, context: IActionContext = new ActionContext()) {
+  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>, contextMergeHandlers: Record<string, Function>, context: IActionContext = new ActionContext()) {
     this.dataFactory = dataFactory;
     this.entries = entries;
+
     this.context = context;
+    this.contextMergeHandlers = contextMergeHandlers;
   }
 
   public has(key: RDF.Variable | string): boolean {
@@ -28,11 +33,11 @@ export class Bindings implements RDF.Bindings {
   }
 
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, this.entries.set(typeof key === 'string' ? key : key.value, value));
+    return new Bindings(this.dataFactory, this.entries.set(typeof key === 'string' ? key : key.value, value), this.contextMergeHandlers);
   }
 
   public delete(key: RDF.Variable | string): Bindings {
-    return new Bindings(this.dataFactory, this.entries.delete(typeof key === 'string' ? key : key.value));
+    return new Bindings(this.dataFactory, this.entries.delete(typeof key === 'string' ? key : key.value), this.contextMergeHandlers);
   }
 
   public keys(): Iterable<RDF.Variable> {
@@ -86,12 +91,12 @@ export class Bindings implements RDF.Bindings {
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .filter((value, key) => fn(value, this.dataFactory.variable!(key)))));
+      .filter((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextMergeHandlers);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .map((value, key) => fn(value, this.dataFactory.variable!(key)))));
+      .map((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextMergeHandlers);
   }
 
   public merge(other: RDF.Bindings | Bindings, contextMergeHandlers?: any): Bindings | undefined {
@@ -133,7 +138,7 @@ export class Bindings implements RDF.Bindings {
     }
     // If the other is NOT a Binding of our own type, we can just take original context and we don't need
     // Merge handlers
-    return new Bindings(this.dataFactory, Map(entries), this.context);
+    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, this.context);
   }
 
   public mergeWith(
@@ -161,7 +166,7 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    return new Bindings(this.dataFactory, Map(entries));
+    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers);
   }
 
   public toString(): string {
