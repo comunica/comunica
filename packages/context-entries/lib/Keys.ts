@@ -270,5 +270,5 @@ export const KeysBindingContext = {
   /**
    * The data source of the binding
    */
-  sourceBinding: new ActionContextKey<string>('@comunica/bus-merge-binding-factory:sourceBinding')
-}
+  sourceBinding: new ActionContextKey<string>('@comunica/bus-merge-binding-factory:sourceBinding'),
+};

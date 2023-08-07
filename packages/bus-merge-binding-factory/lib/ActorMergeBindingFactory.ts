@@ -1,9 +1,6 @@
-
-
-
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import { IActionContext } from '@comunica/types';
+import type { IActionContext } from '@comunica/types';
 
 /**
  * A comunica actor for the creation of merge handlers for binding context keys.

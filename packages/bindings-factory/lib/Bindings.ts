@@ -1,8 +1,8 @@
+import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { bindingsToString } from './bindingsToString';
-import { IActionContext } from '@comunica/types';
-import { ActionContext, ActionContextKey } from '@comunica/core';
 
 /**
  * An immutable.js-based Bindings object.
@@ -119,20 +119,20 @@ export class Bindings implements RDF.Bindings {
     }
 
     // Determine union of keys in context
-    if (other.hasOwnProperty("context")){
+    if (other.hasOwnProperty('context')) {
       // Get keys in context
-      let otherAsBinding = <Bindings> other;
-      const keysContext = new Set([  
-        ... this.context.keys(),
-        ... otherAsBinding.context.keys(),
+      const otherAsBinding = <Bindings> other;
+      const keysContext = new Set([
+        ...this.context.keys(),
+        ...otherAsBinding.context.keys(),
       ]);
 
       // Merge context based on supplied mergeHandlers
-      for (const key of keysContext){
-        // merg handlers are stored as strings, so need to use the name of the key
-        if (contextMergeHandlers.get(key.name)){
+      for (const key of keysContext) {
+        // Merg handlers are stored as strings, so need to use the name of the key
+        if (contextMergeHandlers.get(key.name)) {
           // Apply contextMergeHandler to the key
-          this.context.set(key, contextMergeHandlers.get(key.name)([... this.context.get(key), ... otherAsBinding.context.get(key)]));
+          this.context.set(key, contextMergeHandlers.get(key.name)([ ...this.context.get(key), ...otherAsBinding.context.get(key) ]));
         }
       }
     }

@@ -6,9 +6,6 @@ import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
-
-
-
 /**
  * Materialize a term with the given binding.
  *
@@ -34,7 +31,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   return term;
 }
 
-export async function wrappedMaterializeOperation(  
+export async function wrappedMaterializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
   options: {
@@ -50,8 +47,7 @@ export async function wrappedMaterializeOperation(
 ): Promise<Algebra.Operation> {
   // Await BF handlers here
   const BF = new BindingsFactory();
-  return materializeOperation(operation, bindings, BF, options)
-
+  return materializeOperation(operation, bindings, BF, options);
 }
 
 /**

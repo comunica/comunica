@@ -155,7 +155,7 @@ export class RdfSourceSparql implements IQuadSource {
 
     // Emit metadata containing the estimated count (reject is never called)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    new Promise<RDF.QueryResultCardinality> (resolve => {
+    new Promise<RDF.QueryResultCardinality>(resolve => {
       const cachedCardinality = this.cache?.get(countQuery);
       if (cachedCardinality !== undefined) {
         return resolve(cachedCardinality);
