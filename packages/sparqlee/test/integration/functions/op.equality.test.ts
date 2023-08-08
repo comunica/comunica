@@ -35,6 +35,7 @@ describe('evaluation of \'=\'', () => {
          3f   INF = false
          INF  NaN = false
          NaN  NaN = false
+         NaNd NaNd = false
          NaN  3f  = false
          3f   NaN = false
       `,

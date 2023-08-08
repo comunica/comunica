@@ -1,24 +1,18 @@
 import type * as RDF from '@rdfjs/types';
+import { orderTypes } from '../util/Ordering';
 import { AggregatorComponent } from './Aggregator';
 
-interface IExtremeState {
-  extremeValue: number; term: RDF.Term;
-}
 export class Max extends AggregatorComponent {
-  private state: IExtremeState | undefined = undefined;
+  private state: RDF.Term | undefined = undefined;
 
   public put(term: RDF.Term): void {
+    if (term.termType !== 'Literal') {
+      throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a literal`);
+    }
     if (this.state === undefined) {
-      const { value } = this.extractValue(term);
-      this.state = { extremeValue: value, term };
-    } else {
-      const extracted = this.extractValue(term);
-      if (extracted.value > this.state.extremeValue) {
-        this.state = {
-          extremeValue: extracted.value,
-          term,
-        };
-      }
+      this.state = term;
+    } else if (orderTypes(this.state, term) === -1) {
+      this.state = term;
     }
   }
 
@@ -26,6 +20,6 @@ export class Max extends AggregatorComponent {
     if (this.state === undefined) {
       return Max.emptyValue();
     }
-    return this.state.term;
+    return this.state;
   }
 }

@@ -35,15 +35,6 @@ export abstract class AggregatorComponent {
     }
     return <E.NumericLiteral> this.termTransformer.transformLiteral(term);
   }
-
-  protected extractValue(term: RDF.Term): { value: any; type: string } {
-    if (term.termType !== 'Literal') {
-      throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a literal`);
-    }
-
-    const transformedLit = this.termTransformer.transformLiteral(term);
-    return { type: transformedLit.dataType, value: transformedLit.typedValue };
-  }
 }
 
 /**

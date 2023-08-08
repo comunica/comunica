@@ -176,6 +176,7 @@ export const numeric: AliasMap = {
   '-12f': '"-12"^^xsd:float',
   NaN: '"NaN"^^xsd:float',
   INF: '"INF"^^xsd:float',
+  NaNd: '"NaN"^^xsd:double',
   '-INF': '"-INF"^^xsd:float',
 
   '0d': '"0"^^xsd:decimal',

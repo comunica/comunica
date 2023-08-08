@@ -115,6 +115,10 @@ function string(value: string): RDF.Term {
   return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#string'));
 }
 
+function date(value: string): RDF.Term {
+  return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#date'));
+}
+
 describe('an aggregate evaluator should be able to', () => {
   describe('count', () => {
     let baseTestCaseArgs: IBaseTestCaseArgs;
@@ -386,6 +390,45 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(string('1'));
     });
 
+    it('a list of date bindings', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), date('2010-06-21Z') ]]),
+          BF.bindings([[ DF.variable('x'), date('2010-06-21-08:00') ]]),
+          BF.bindings([[ DF.variable('x'), date('2001-07-23') ]]),
+          BF.bindings([[ DF.variable('x'), date('2010-06-21+09:00') ]]),
+        ],
+      });
+      expect(await result).toEqual(date('2001-07-23'));
+    });
+
+    it('passing a non-literal to max should not be accepted', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+        ],
+        evalTogether: true,
+      });
+      expect(await result).toEqual(undefined);
+    });
+
+    it('passing a non-literal to max should not be accepted even in non-first place', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), int('2') ]]),
+          BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+        ],
+        evalTogether: true,
+      });
+      expect(await result).toEqual(undefined);
+    });
+
     it('with respect to empty input', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
@@ -424,6 +467,19 @@ describe('an aggregate evaluator should be able to', () => {
         ],
       });
       expect(await result).toEqual(string('3'));
+    });
+
+    it('a list of date bindings', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), date('2010-06-21Z') ]]),
+          BF.bindings([[ DF.variable('x'), date('2010-06-21-08:00') ]]),
+          BF.bindings([[ DF.variable('x'), date('2001-07-23') ]]),
+          BF.bindings([[ DF.variable('x'), date('2010-06-21+09:00') ]]),
+        ],
+      });
+      expect(await result).toEqual(date('2010-06-21-08:00'));
     });
 
     it('with respect to empty input', async() => {
@@ -614,6 +670,19 @@ describe('an aggregate evaluator should be able to', () => {
       input: [
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
         BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), int('3') ]]),
+      ],
+      evalTogether: true,
+    });
+    expect(await result).toEqual(undefined);
+  });
+
+  it('passing a non-literal to max should not be accepted even in non-first place', async() => {
+    const result = testCase({
+      expr: makeAggregate('max'),
+      input: [
+        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
         BF.bindings([[ DF.variable('x'), int('3') ]]),
       ],
       evalTogether: true,
