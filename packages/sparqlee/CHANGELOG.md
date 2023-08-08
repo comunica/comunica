@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="v3.0.1"></a>
+## [v3.0.1](https://github.com/comunica/sparqlee/compare/v3.0.0...v3.0.1) - 2023-08-08
+
+### Changed
+* [Remove redundancies in inequality functions](https://github.com/comunica/sparqlee/commit/2e73d5c4fa01a27dc0170adc53bfac5bc584496a)
+* [Use ordering logic in min/max](https://github.com/comunica/sparqlee/commit/3bf0950aa333faa028f63939282b4f2a6dae8bcd)
+
 <a name="v3.0.0"></a>
 ## [v3.0.0](https://github.com/comunica/sparqlee/compare/v2.3.2...v3.0.0) - 2023-06-27
 
