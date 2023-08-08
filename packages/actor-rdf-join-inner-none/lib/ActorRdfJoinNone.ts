@@ -5,12 +5,12 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import { MetadataValidationState } from '@comunica/metadata';
 import { ArrayIterator } from 'asynciterator';
 
-const BF = new BindingsFactory();
 
 /**
  * A comunica None RDF Join Actor.
  */
 export class ActorRdfJoinNone extends ActorRdfJoin {
+
   public constructor(args: IActorRdfJoinArgs) {
     super(args, {
       logicalType: 'inner',
@@ -28,6 +28,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const BF = new BindingsFactory();
     return {
       result: {
         bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),

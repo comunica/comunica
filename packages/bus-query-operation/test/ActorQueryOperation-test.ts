@@ -124,15 +124,16 @@ describe('ActorQueryOperation', () => {
           variables: [ 'a' ],
         }),
       };
+      const BF = new BindingsFactory();
     });
 
     it('should create an object for an empty contexts save for the bnode function', () => {
-      expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation).bnode)
+      expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF).bnode)
         .toEqual(expect.any(Function));
     });
 
     it('the bnode function should asynchronously return a blank node', async() => {
-      const context = ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation);
+      const context = ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF);
       const blankNodePromise = context.bnode();
       expect(blankNodePromise).toBeInstanceOf(Promise);
       const blankNode = await blankNodePromise;
@@ -148,7 +149,7 @@ describe('ActorQueryOperation', () => {
         [KeysInitQuery.queryTimestamp.name]: date,
         [KeysInitQuery.baseIRI.name]: 'http://base.org/',
         [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
-      }), mediatorQueryOperation)).toEqual({
+      }), mediatorQueryOperation, BF)).toEqual({
         now: date,
         bnode: expect.any(Function),
         baseIRI: 'http://base.org/',
@@ -159,13 +160,13 @@ describe('ActorQueryOperation', () => {
 
     it('should create an object with a resolver', () => {
       const resolver = (<any>ActorQueryOperation
-        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation)).exists;
+        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF)).exists;
       expect(resolver).toBeTruthy();
     });
 
     it('should allow a resolver to be invoked', async() => {
       const resolver = (<any>ActorQueryOperation
-        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation)).exists;
+        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF)).exists;
       const factory = new Factory();
       const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
         true,

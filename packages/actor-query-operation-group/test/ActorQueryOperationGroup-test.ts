@@ -170,14 +170,16 @@ describe('ActorQueryOperationGroup', () => {
   describe('A GroupState instance', () => {
     it('should throw an error if collectResults is called multiple times', async() => {
       const { actor, op } = constructCase({});
-      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {});
+      const BF = new BindingsFactory()
+      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {}, BF);
       expect(await temp.collectResults()).toBeTruthy();
       await expect(temp.collectResults()).rejects.toThrow('collectResult');
     });
 
     it('should throw an error if consumeBindings is called after collectResults', async() => {
       const { actor, op } = constructCase({});
-      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {});
+      const BF = new BindingsFactory()
+      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {}, BF);
       expect(await temp.collectResults()).toBeTruthy();
       await expect(temp.consumeBindings(BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]])))
         .rejects.toThrow('collectResult');

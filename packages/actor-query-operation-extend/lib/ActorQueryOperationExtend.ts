@@ -1,4 +1,4 @@
-import { bindingsToString } from '@comunica/bindings-factory';
+import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -19,9 +19,10 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   }
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
+    const BF = new BindingsFactory()
     // Will throw error for unsupported opperations
     const _ = Boolean(new AsyncEvaluator(operation.expression,
-      ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation)));
+      ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF)));
     return true;
   }
 
@@ -32,13 +33,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
-
-    // Throw if the variable has already been bound
-    if ((await output.metadata()).variables.some(innerVariable => innerVariable.equals(variable))) {
-      throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
-    }
-
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
+    const BF = new BindingsFactory()
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
     const evaluator = new AsyncEvaluator(expression, config);
 
     // Transform the stream by extending each Bindings with the expression result

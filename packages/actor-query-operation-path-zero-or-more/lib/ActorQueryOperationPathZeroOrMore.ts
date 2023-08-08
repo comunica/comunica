@@ -8,17 +8,19 @@ import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedItera
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 
 /**
  * A comunica Path ZeroOrMore Query Operation Actor.
  */
 export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
+
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, Algebra.types.ZERO_OR_MORE_PATH);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
+    const BF = new BindingsFactory();
+
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
@@ -84,6 +86,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
+                    BF
                   );
                 }
                 // If not started from this namedNode (object in triple) in this graph, start a search
@@ -101,6 +104,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
+                    BF
                   );
                 }
                 return it.transform<Bindings>({
@@ -136,7 +140,9 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         operation.graph,
         context,
         true,
+        BF
       );
+      // Check this
       const bindingsStream = starEval.bindingsStream.transform<Bindings>({
         filter: item => operation.object.equals(item.get(variable)),
         transform(item, next, push) {
@@ -168,6 +174,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       operation.graph,
       context,
       true,
+      BF
     );
     const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];
     return {

@@ -7,7 +7,6 @@ import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation)
  * actor that handles SPARQL nop operations.
@@ -22,6 +21,8 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
   }
 
   public async runOperation(operation: Algebra.Nop, context: IActionContext): Promise<IQueryOperationResult> {
+    const BF = new BindingsFactory();
+
     return {
       bindingsStream: new SingletonIterator(BF.bindings()),
       metadata: () => Promise.resolve({

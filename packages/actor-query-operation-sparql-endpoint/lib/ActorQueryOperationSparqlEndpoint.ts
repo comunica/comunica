@@ -27,7 +27,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util, Algebra } from 'sparqlalgebrajs';
 import { LazyCardinalityIterator } from './LazyCardinalityIterator';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
 
 /**
@@ -114,14 +113,15 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const canContainUndefs = this.canOperationContainUndefs(action.operation);
 
     // Execute the query against the endpoint depending on the type
+    const BF = new BindingsFactory();
     switch (type) {
       case 'SELECT':
         if (!variables) {
           variables = Util.inScopeVariables(action.operation);
         }
-        return this.executeQuery(endpoint, query!, false, variables, canContainUndefs);
+        return this.executeQuery(endpoint, query!, false, variables, canContainUndefs, BF);
       case 'CONSTRUCT':
-        return this.executeQuery(endpoint, query!, true, undefined, false);
+        return this.executeQuery(endpoint, query!, true, undefined, false, BF);
       case 'ASK':
         return <IQueryOperationResultBoolean>{
           type: 'boolean',
@@ -149,6 +149,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     quads: boolean,
     variables: RDF.Variable[] | undefined,
     canContainUndefs: boolean,
+    BF: BindingsFactory
   ): IQueryOperationResult {
     const inputStream: Promise<NodeJS.EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :

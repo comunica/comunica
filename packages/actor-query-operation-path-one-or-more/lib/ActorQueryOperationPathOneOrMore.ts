@@ -6,17 +6,18 @@ import type { IQueryOperationResultBindings, Bindings, IQueryOperationResult, IA
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 
 /**
  * A comunica Path OneOrMore Query Operation Actor.
  */
 export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
+
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, Algebra.types.ONE_OR_MORE_PATH);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
+    const BF = new BindingsFactory();
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
@@ -35,6 +36,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         operation.graph,
         context,
         false,
+        BF
       );
       const variables = operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ];
       return {
@@ -79,6 +81,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   {},
                   it,
                   { count: 0 },
+                  BF
                 );
                 return it.transform<Bindings>({
                   transform(item, next, push) {

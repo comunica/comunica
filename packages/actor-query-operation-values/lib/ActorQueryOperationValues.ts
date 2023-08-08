@@ -12,7 +12,6 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
 
 /**
@@ -29,6 +28,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryOperationResult> {
+    const BF = new BindingsFactory();
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => BF.bindings(Object.entries(x)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));

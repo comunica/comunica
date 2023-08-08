@@ -21,7 +21,6 @@ import { forEachTermsNested,
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
 const AF = new Factory();
 
@@ -32,6 +31,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   implements IActorQueryOperationQuadpatternArgs {
   public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
   public readonly unionDefaultGraph: boolean;
+
 
   public constructor(args: IActorQueryOperationQuadpatternArgs) {
     super(args, 'pattern');
@@ -267,7 +267,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           return true;
         });
       }
-
+      const BF = new BindingsFactory();
       return filteredOutput.map(quad => BF.bindings(Object.keys(elementVariables).map(key => {
         const keys: QuadTermName[] = <any>key.split('_');
         const variable = elementVariables[key];
