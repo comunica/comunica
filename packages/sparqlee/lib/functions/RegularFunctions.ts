@@ -32,6 +32,7 @@ import type { IOverloadedDefinition } from './Core';
 import { RegularFunction } from './Core';
 import { bool, decimal, declare, double, integer, langString, string } from './Helpers';
 import * as X from './XPathFunctions';
+import { regularFunctions } from '.';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 
@@ -105,7 +106,7 @@ const addition = {
     })
     .set([ TypeURL.XSD_DATE, TypeURL.XSD_DAY_TIME_DURATION ], () =>
       ([ date, dur ]: [E.DateLiteral, E.DurationLiteral]) =>
-      // https://www.w3.org/TR/xpath-functions/#func-add-dayTimeDuration-to-date
+        // https://www.w3.org/TR/xpath-functions/#func-add-dayTimeDuration-to-date
         new E.DateLiteral(
           addDurationToDateTime(
             defaultedDateTimeRepresentation(date.typedValue),
@@ -118,7 +119,7 @@ const addition = {
     })
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
       ([ time, dur ]: [E.TimeLiteral, E.DurationLiteral]) =>
-      // https://www.w3.org/TR/xpath-functions/#func-add-dayTimeDuration-to-time
+        // https://www.w3.org/TR/xpath-functions/#func-add-dayTimeDuration-to-time
         new E.TimeLiteral(
           addDurationToDateTime(
             defaultedDateTimeRepresentation(time.typedValue),
@@ -210,13 +211,13 @@ const equality = {
       ([ dur1, dur2 ]: [ E.DurationLiteral, E.DurationLiteral ]) =>
         bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1.typedValue)) ===
           yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2.typedValue)) &&
-        dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) ===
+          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) ===
           dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], ({ defaultTimeZone }) =>
       ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-equal
         bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), defaultTimeZone).getTime() ===
-        toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
+          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
     .collect(),
 };
 
@@ -233,42 +234,10 @@ function RDFTermEqual(_left: Term, _right: Term): boolean {
 const inequality = {
   arity: 2,
   overloads: declare(C.RegularOperator.NOT_EQUAL)
-    .numberTest(() => (left, right) => left !== right)
-    .stringTest(() => (left, right) => left.localeCompare(right) !== 0)
-    .booleanTest(() => (left, right) => left !== right)
-    .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
-      toUTCDate(left, defaultTimeZone).getTime() !== toUTCDate(right, defaultTimeZone).getTime())
-    .set(
-      [ 'quad', 'quad' ],
-      context => ([ left, right ]) => {
-        const op: RegularFunction = new RegularFunction(RegularOperator.NOT_EQUAL, inequality);
-        return bool(
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).subject, (<Quad> right).subject ], context)).coerceEBV() ||
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).predicate, (<Quad> right).predicate ], context)).coerceEBV() ||
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).object, (<Quad> right).object ], context)).coerceEBV(),
-        );
-      },
-      false,
-    )
-    .set(
-      [ 'term', 'term' ],
-      () => ([ left, right ]) => bool(!RDFTermEqual(left, right)),
-    )
-    .set([ TypeURL.XSD_DURATION, TypeURL.XSD_DURATION ], () =>
-      ([ dur1, dur2 ]: [ E.DurationLiteral, E.DurationLiteral ]) =>
-        bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1.typedValue)) !==
-          yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2.typedValue)) ||
-          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) !==
-          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
-    .copy({
-      from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
-      to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
-    })
-    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], ({ defaultTimeZone }) =>
-      ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
-        // https://www.w3.org/TR/xpath-functions/#func-time-equal
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), defaultTimeZone).getTime() !==
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
+    .set([ 'term', 'term' ], context =>
+      ([ first, second ]) =>
+        bool(!(<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL]
+          .apply([ first, second ], context)).typedValue))
     .collect(),
 };
 
@@ -311,116 +280,35 @@ const lesserThan = {
 const greaterThan = {
   arity: 2,
   overloads: declare(C.RegularOperator.GT)
-    .numberTest(() => (left, right) => left > right)
-    .stringTest(() => (left, right) => left.localeCompare(right) === 1)
-    .booleanTest(() => (left, right) => left > right)
-    .set(
-      [ 'quad', 'quad' ],
-      context => ([ left, right ]) => bool(orderTypes(left.toRDF(), right.toRDF(), true) === 1),
-      false,
-    )
-    .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
-      toUTCDate(left, defaultTimeZone).getTime() > toUTCDate(right, defaultTimeZone).getTime())
-    .copy({
-      // https://www.w3.org/TR/xpath-functions/#func-date-greater-than
-      from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
-      to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
-    })
-    .set([ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ], () =>
-      ([ dur1, dur2 ]: [E.YearMonthDurationLiteral, E.YearMonthDurationLiteral]) =>
-        // https://www.w3.org/TR/xpath-functions/#func-yearMonthDuration-greater-than
-        bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1.typedValue)) >
-          yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2.typedValue))))
-    .set([ TypeURL.XSD_DAY_TIME_DURATION, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ dur1, dur2 ]: [E.DayTimeDurationLiteral, E.DayTimeDurationLiteral]) =>
-        // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
-        bool(dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) >
-          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
-    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], ({ defaultTimeZone }) =>
-      ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
-        // https://www.w3.org/TR/xpath-functions/#func-time-greater-than
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), defaultTimeZone).getTime() >
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
+    .set([ 'term', 'term' ], context =>
+      ([ first, second ]) =>
+        // X < Y -> Y > X
+        regularFunctions[C.RegularOperator.LT].apply([ second, first ], context))
     .collect(),
 };
 
 const lesserThanEqual = {
   arity: 2,
   overloads: declare(C.RegularOperator.LTE)
-    .numberTest(() => (left, right) => left <= right)
-    .stringTest(() => (left, right) => left.localeCompare(right) !== 1)
-    .booleanTest(() => (left, right) => left <= right)
-    .set(
-      [ 'quad', 'quad' ],
-      context => ([ left, right ]) => {
-        const opEq: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
-        const opLt: RegularFunction = new RegularFunction(RegularOperator.LT, lesserThan);
-        return bool(
-          (<E.BooleanLiteral> opEq.apply([ left, right ], context)).coerceEBV() ||
-          (<E.BooleanLiteral> opLt.apply([ left, right ], context)).coerceEBV(),
-        );
-      },
-      false,
-    )
-    .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
-      toUTCDate(left, defaultTimeZone).getTime() <= toUTCDate(right, defaultTimeZone).getTime())
-    .set([ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ], () =>
-      ([ dur1L, dur2L ]: [E.YearMonthDurationLiteral, E.YearMonthDurationLiteral]) =>
-        bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1L.typedValue)) <=
-          yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2L.typedValue))))
-    .set([ TypeURL.XSD_DAY_TIME_DURATION, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ dur1, dur2 ]: [E.DayTimeDurationLiteral, E.DayTimeDurationLiteral]) =>
-        // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
-        bool(dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) <=
-          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
-    .copy({
-      from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
-      to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
-    })
-    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], ({ defaultTimeZone }) =>
-      ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), defaultTimeZone).getTime() <=
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
+    .set([ 'term', 'term' ], context =>
+      ([ first, second ]) =>
+        // X <= Y -> X < Y || X = Y
+        // First check if the first is lesser than the second, then check if they are equal.
+        // Doing this, the correct error will be thrown, each type that has a lesserThanEqual has a matching lesserThan.
+        bool(
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].apply([ first, second ], context)).typedValue ||
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].apply([ first, second ], context)).typedValue,
+        ))
     .collect(),
 };
 
 const greaterThanEqual = {
   arity: 2,
   overloads: declare(C.RegularOperator.GTE)
-    .numberTest(() => (left, right) => left >= right)
-    .stringTest(() => (left, right) => left.localeCompare(right) !== -1)
-    .booleanTest(() => (left, right) => left >= right)
-    .set(
-      [ 'quad', 'quad' ],
-      context => ([ left, right ]) => {
-        const opEq: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
-        const opGt: RegularFunction = new RegularFunction(RegularOperator.GT, greaterThan);
-        return bool(
-          (<E.BooleanLiteral> opEq.apply([ left, right ], context)).coerceEBV() ||
-          (<E.BooleanLiteral> opGt.apply([ left, right ], context)).coerceEBV(),
-        );
-      },
-      false,
-    )
-    .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
-      toUTCDate(left, defaultTimeZone).getTime() >= toUTCDate(right, defaultTimeZone).getTime())
-    .set([ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ], () =>
-      ([ dur1L, dur2L ]: [E.YearMonthDurationLiteral, E.YearMonthDurationLiteral]) =>
-        bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1L.typedValue)) >=
-          yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2L.typedValue))))
-    .set([ TypeURL.XSD_DAY_TIME_DURATION, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ dur1, dur2 ]: [E.DayTimeDurationLiteral, E.DayTimeDurationLiteral]) =>
-        // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
-        bool(dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) >=
-          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
-    .copy({
-      from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
-      to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
-    })
-    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], ({ defaultTimeZone }) =>
-      ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), defaultTimeZone).getTime() >=
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
+    .set([ 'term', 'term' ], context =>
+      ([ first, second ]) =>
+        // X >= Y -> Y <= X
+        regularFunctions[C.RegularOperator.LTE].apply([ second, first ], context))
     .collect(),
 };
 
