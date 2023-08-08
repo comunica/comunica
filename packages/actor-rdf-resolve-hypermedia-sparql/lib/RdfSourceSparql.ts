@@ -13,7 +13,6 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 const VAR_COUNT = DF.variable('count');
 
 export class RdfSourceSparql implements IQuadSource {
@@ -26,8 +25,10 @@ export class RdfSourceSparql implements IQuadSource {
   private readonly endpointFetcher: SparqlEndpointFetcher;
   private readonly cache: LRUCache<string, RDF.QueryResultCardinality> | undefined;
 
+  private readonly BF: BindingsFactory;
+
   public constructor(url: string, context: IActionContext, mediatorHttp: MediatorHttp, forceHttpGet: boolean,
-    cacheSize: number) {
+    cacheSize: number, BF: BindingsFactory) {
     this.url = url;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
@@ -41,6 +42,7 @@ export class RdfSourceSparql implements IQuadSource {
     this.cache = cacheSize > 0 ?
       new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
       undefined;
+    this.BF = BF;
   }
 
   /**
@@ -136,10 +138,10 @@ export class RdfSourceSparql implements IQuadSource {
    * @param {string} query A SPARQL query string.
    * @return {BindingsStream} A stream of bindings.
    */
-  public queryBindings(endpoint: string, query: string): BindingsStream {
+  public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
     const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map((rawData: Record<string, RDF.Term>) => BF.bindings(Object.entries(rawData)
+      .map((rawData: Record<string, RDF.Term>) => this.BF.bindings(Object.entries(rawData)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
   }
 
@@ -155,13 +157,13 @@ export class RdfSourceSparql implements IQuadSource {
 
     // Emit metadata containing the estimated count (reject is never called)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    new Promise<RDF.QueryResultCardinality>(resolve => {
+    new Promise<RDF.QueryResultCardinality>(async resolve => {
       const cachedCardinality = this.cache?.get(countQuery);
       if (cachedCardinality !== undefined) {
         return resolve(cachedCardinality);
       }
 
-      const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
+      const bindingsStream: BindingsStream = await this.queryBindings(this.url, countQuery);
       bindingsStream.on('data', (bindings: Bindings) => {
         const count = bindings.get(VAR_COUNT);
         const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
@@ -181,7 +183,7 @@ export class RdfSourceSparql implements IQuadSource {
       .then(cardinality => quads.setProperty('metadata', { cardinality, canContainUndefs: false }));
 
     // Materialize the queried pattern using each found binding.
-    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() => this
+    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() => await this
       .queryBindings(this.url, selectQuery), { autoStart: false })
       .transform({
         map: (bindings: Bindings) => <RDF.Quad> mapTermsNested(pattern, (value: RDF.Term) => {

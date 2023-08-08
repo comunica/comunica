@@ -1,5 +1,6 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, wrappedMaterializeOperation } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -11,7 +12,6 @@ import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, IQueryOperationResultBindings,
   MetadataBindings, IActionContext, IJoinEntryWithMetadata } from '@comunica/types';
-import { rejects } from 'assert';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
@@ -45,22 +45,23 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
    * @param optional If the original bindings should be emitted when the resulting bindings stream is empty.
    * @return {BindingsStream}
    */
-  public static async createBindStream(
+  public static createBindStream(
     bindOrder: BindOrder,
     baseStream: BindingsStream,
     operations: Algebra.Operation[],
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
-  ): Promise<BindingsStream> {
+    BF: BindingsFactory
+  ): BindingsStream {
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
       const subOperations = operations
-        .map(async operation => await wrappedMaterializeOperation(operation, bindings, { bindFilter: false }));
+        .map(operation => materializeOperation(operation, bindings, BF, { bindFilter: false }));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
-      return new TransformIterator(async() => (await operationBinder(await Promise.all(subOperations), bindings))
+      return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
     };
 
@@ -74,9 +75,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           optional,
         }), { autoStart: false });
       default:
-        console.log("I'm rejecting this promise!!!!!");
-        console.log(`${bindOrder}`);
-        return Promise.reject(new Error(`Received request for unknown bind order: ${bindOrder}`));
+        throw new Error(`Received request for unknown bind order: ${bindOrder}`);
     }
   }
 
@@ -153,6 +152,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    // Create BindingsFactory and binding context handlers
+    const BF = new BindingsFactory();
+
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
     const entries = await this.sortJoinEntries(entriesUnsorted, action.context);
@@ -177,7 +179,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     const subContext = action.context
       .set(KeysQueryOperation.joinLeftMetadata, entries[0].metadata)
       .set(KeysQueryOperation.joinRightMetadatas, remainingEntries.map(entry => entry.metadata));
-    const bindingsStream: BindingsStream = await ActorRdfJoinMultiBind.createBindStream(
+    const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(
       this.bindOrder,
       smallestStream.bindingsStream,
       remainingEntries.map(entry => entry.operation),
@@ -192,11 +194,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       false,
-    )
-    .catch(err => {
-      console.log(err);
-      throw new Error(err)
-    });
+      BF
+    );
 
     return {
       result: {

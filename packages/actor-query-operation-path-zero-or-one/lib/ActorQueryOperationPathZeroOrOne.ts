@@ -9,12 +9,12 @@ import {
 } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 
 /**
  * A comunica Path ZeroOrOne Query Operation Actor.
  */
 export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
+
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, Algebra.types.ZERO_OR_ONE_PATH);
   }
@@ -23,6 +23,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     operation: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
+    const BF = new BindingsFactory();
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
     const extra: Bindings[] = [];

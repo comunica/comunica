@@ -8,7 +8,6 @@ import { AsyncAggregateEvaluator } from 'sparqlee';
 import type { AsyncEvaluatorConfig } from 'sparqlee';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 
 /**
  * A simple type alias for strings that should be hashes of Bindings
@@ -35,6 +34,7 @@ export class GroupsState {
   private readonly groupsInitializer: Map<BindingsHash, Promise<IGroup>>;
   private readonly groupVariables: Set<string>;
   private readonly distinctHashes: null | Map<BindingsHash, Set<BindingsHash>>;
+  private readonly BF: BindingsFactory;
   private waitCounter: number;
   // Function that resolves the promise given by collectResults
   private waitResolver: (bindings: Bindings[]) => void;
@@ -44,6 +44,7 @@ export class GroupsState {
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
     private readonly sparqleeConfig: AsyncEvaluatorConfig,
+    BF: BindingsFactory
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -53,6 +54,8 @@ export class GroupsState {
       null;
     this.waitCounter = 1;
     this.resultHasBeenCalled = false;
+    this.BF = BF;
+
   }
 
   /**
@@ -162,7 +165,7 @@ export class GroupsState {
           single.push([ key, value ]);
         }
       }
-      rows = [ BF.bindings(single) ];
+      rows = [ this.BF.bindings(single) ];
     }
     this.waitResolver(rows);
   }

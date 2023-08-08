@@ -8,6 +8,7 @@ import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
 import { SortIterator } from './SortIterator';
+import { BindingsFactory } from '@comunica/bindings-factory';
 
 /**
  * A comunica OrderBy Sparqlee Query Operation Actor.
@@ -22,11 +23,13 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
+    const BF = new BindingsFactory();
+
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
       const _ = new AsyncEvaluator(
         expr,
-        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation),
+        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF),
       );
     }
     return true;
@@ -38,7 +41,8 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
+    const BF = new BindingsFactory();
+    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.

@@ -7,6 +7,7 @@ import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from 'sparqlee';
 import { GroupsState } from './GroupsState';
+import { BindingsFactory } from '@comunica/bindings-factory';
 
 /**
  * A comunica Group Query Operation Actor.
@@ -19,11 +20,12 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 
   public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
+    const BF = new BindingsFactory();
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = new AsyncEvaluator(
         aggregate.expression,
-        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation),
+        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF),
       );
     }
     return true;
@@ -31,6 +33,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
   public async runOperation(operation: Algebra.Group, context: IActionContext):
   Promise<IQueryOperationResult> {
+    // Create bindingFactory with handlers
+    const BF = new BindingsFactory();
     // Create a hash function
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
 
@@ -47,11 +51,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => agg.variable),
     ];
 
-    const sparqleeConfig = ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation);
+    const sparqleeConfig = ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF);
 
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
     const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
-      const groups = new GroupsState(hashFunction, operation, sparqleeConfig);
+      const groups = new GroupsState(hashFunction, operation, sparqleeConfig, BF);
 
       // Phase 2: Collect aggregator results
       // We can only return when the binding stream ends, when that happens

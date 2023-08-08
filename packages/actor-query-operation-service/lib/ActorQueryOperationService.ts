@@ -8,7 +8,6 @@ import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindin
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 
 /**
  * A comunica Service Query Operation Actor.
@@ -31,7 +30,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   public async runOperation(operation: Algebra.Service, context: IActionContext):
   Promise<IQueryOperationResult> {
     const endpoint: string = operation.name.value;
-
+    const BF = new BindingsFactory();
     // Adjust our context to only have the endpoint as source
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)

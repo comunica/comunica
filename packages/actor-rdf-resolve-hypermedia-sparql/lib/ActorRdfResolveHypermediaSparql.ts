@@ -3,6 +3,7 @@ import type { IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput,
   IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { RdfSourceSparql } from './RdfSourceSparql';
+import { BindingsFactory } from '@comunica/bindings-factory';
 
 /**
  * A comunica SPARQL RDF Resolve Hypermedia Actor.
@@ -26,6 +27,8 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   }
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
+    // Create bindingsfactory with handlers
+    const BF = new BindingsFactory();
     this.logInfo(action.context, `Identified as sparql source: ${action.url}`);
     const source = new RdfSourceSparql(
       action.metadata.sparqlService || action.url,
@@ -33,6 +36,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
       this.mediatorHttp,
       this.forceHttpGet,
       this.cacheSize,
+      BF
     );
     return { source };
   }
