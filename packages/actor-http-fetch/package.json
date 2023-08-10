@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-fetch",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A node-fetch http actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,9 +30,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-http": "^2.8.1",
-    "@comunica/context-entries": "^2.8.1",
-    "@comunica/mediatortype-time": "^2.8.1",
+    "@comunica/bus-http": "^2.8.2",
+    "@comunica/context-entries": "^2.8.2",
+    "@comunica/mediatortype-time": "^2.8.2",
     "abort-controller": "^3.0.0",
     "cross-fetch": "^4.0.0"
   },

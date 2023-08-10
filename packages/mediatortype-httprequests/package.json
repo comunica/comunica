@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediatortype-httprequests",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A comunica mediator type for the 'httpRequests' parameter.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.8.1"
+    "@comunica/core": "^2.8.2"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

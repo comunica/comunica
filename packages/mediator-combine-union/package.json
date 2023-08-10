@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-combine-union",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A combine-union mediator",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -30,7 +30,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.8.1"
+    "@comunica/core": "^2.8.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

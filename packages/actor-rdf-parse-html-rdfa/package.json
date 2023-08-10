@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-html-rdfa",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A rdfa rdf-parse-html actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-parse-html": "^2.8.1",
-    "@comunica/core": "^2.8.1",
+    "@comunica/bus-rdf-parse-html": "^2.8.2",
+    "@comunica/core": "^2.8.2",
     "rdfa-streaming-parser": "^2.0.1"
   },
   "scripts": {

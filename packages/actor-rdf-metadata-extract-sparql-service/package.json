@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-sparql-service",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A sparql-service rdf-metadata-extract actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-metadata-extract": "^2.8.1",
-    "@comunica/core": "^2.8.1",
+    "@comunica/bus-rdf-metadata-extract": "^2.8.2",
+    "@comunica/core": "^2.8.2",
     "relative-to-absolute-iri": "^1.0.7"
   },
   "scripts": {

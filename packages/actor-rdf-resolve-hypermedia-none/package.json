@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-none",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A none rdf-resolve-hypermedia actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source": "^2.8.1",
-    "@comunica/bus-rdf-resolve-hypermedia": "^2.8.1",
+    "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source": "^2.8.2",
+    "@comunica/bus-rdf-resolve-hypermedia": "^2.8.2",
     "rdf-store-stream": "^2.0.0"
   },
   "scripts": {

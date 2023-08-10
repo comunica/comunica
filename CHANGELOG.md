@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.8.2"></a>
+## [v2.8.2](https://github.com/comunica/comunica/compare/v2.8.1...v2.8.2) - 2023-08-10
+
+### Fixed
+* [Fix aggregated store not containing first source after query re-exec](https://github.com/comunica/comunica/commit/e288e461867397606500b3f09189a25c6410894e)
+
 <a name="v2.8.1"></a>
 ## [v2.8.1](https://github.com/comunica/comunica/compare/v2.8.0...v2.8.1) - 2023-07-14
 

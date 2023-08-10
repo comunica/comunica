@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-rdf",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A rdf query-result-serialize actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,10 +32,10 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^2.8.1",
-    "@comunica/bus-rdf-serialize": "^2.8.1",
-    "@comunica/core": "^2.8.1",
-    "@comunica/types": "^2.8.1"
+    "@comunica/bus-query-result-serialize": "^2.8.2",
+    "@comunica/bus-rdf-serialize": "^2.8.2",
+    "@comunica/core": "^2.8.2",
+    "@comunica/types": "^2.8.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
