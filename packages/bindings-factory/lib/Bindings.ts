@@ -126,10 +126,10 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    let mergedContext = this.context
+    let mergedContext = this.context;
     // Only merge if the other has a context
     if ('context' in other) {
-      const otherAsBinding = <Bindings> other;
+      const otherAsBinding = other;
       // If we have empty context we skip the context merge (This is likely not needed / doesn't give performance boost)
       if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0) {
         mergedContext = this.mergeContext(other);
@@ -163,7 +163,7 @@ export class Bindings implements RDF.Bindings {
       }
       entries.push([ key, value ]);
     }
-    let mergedContext = this.context
+    let mergedContext = this.context;
     // Only merge if the other has a context
     if ('context' in other) {
       const otherAsBinding = <Bindings> other;
@@ -208,7 +208,7 @@ export class Bindings implements RDF.Bindings {
         mergedContext = mergedContext.set(key, otherAsBinding.context.get(key));
       }
     }
-    return mergedContext
+    return mergedContext;
   }
 
   public toString(): string {
