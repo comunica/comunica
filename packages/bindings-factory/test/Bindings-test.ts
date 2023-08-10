@@ -496,4 +496,20 @@ describe('Binding context mergehandler', ()=>{
     expect(bindingsNew.context).toEqual(new ActionContext({}));
   });
 
+  it('should merge overlapping compatible bindings', () => {
+    const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+      [ 'd', DF.namedNode('ex:d') ],
+      [ 'a', DF.namedNode('ex:a') ],
+      [ 'b', DF.namedNode('ex:b') ],
+    ]),
+    {'source': new SetUnionContext()},
+    new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S5']})
+    );
+
+    const cb = jest.fn();
+    const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+    expect(bindingsNew).toBeDefined();
+    expect(bindingsNew.context).toEqual(new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S3', 'ex:S5']}))
+  });
+
 });
