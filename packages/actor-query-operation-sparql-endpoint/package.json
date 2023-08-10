@@ -44,7 +44,7 @@
     "@comunica/types": "^2.8.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",
-    "fetch-sparql-endpoint": "^3.3.3",
+    "fetch-sparql-endpoint": "^4.0.0",
     "rdf-data-factory": "^1.1.1",
     "sparqlalgebrajs": "^4.2.0"
   },

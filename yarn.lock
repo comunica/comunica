@@ -5512,10 +5512,10 @@ fecha@^4.2.0:
   resolved "https://registry.yarnpkg.com/fecha/-/fecha-4.2.3.tgz#4d9ccdbc61e8629b259fdca67e65891448d569fd"
   integrity sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==
 
-fetch-sparql-endpoint@^3.3.2, fetch-sparql-endpoint@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-3.3.3.tgz#7b1fda7f980564fd62945ca880664d68c6994b93"
-  integrity sha512-5ZNesFhFMcsEiSaCyg36L5VU7YP7xMJogc5i0n00nFNFZzrfGJ4Cm8LGrzXI6eySkb7QmaRyNWJGk5btAOjniA==
+fetch-sparql-endpoint@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-4.0.0.tgz#5a604b13d8c94eb96993610897f95876a8ba5c0f"
+  integrity sha512-32a1Oa5rW513iwzKLmd9Y5UaJCk5PPwUF4H64Vw4Z0IjppMTX6aFqFeijLGuVPyV+mbqGFY43ZaePzjJMKnTqg==
   dependencies:
     "@rdfjs/types" "*"
     "@types/readable-stream" "^2.3.11"
