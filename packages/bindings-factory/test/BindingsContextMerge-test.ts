@@ -79,4 +79,39 @@ describe('Binding context mergehandler', () => {
     expect(bindingsNew).toBeDefined();
     expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
   });
+  describe('calling merge twice on same binding should give correct results', () =>{
+    let bindingsOther1: Bindings;
+    let bindingsOther2: Bindings;
+    beforeEach(()=>{
+      bindingsOther1 = new Bindings(DF, Map<string, RDF.Term>([
+        [ 'd', DF.namedNode('ex:d') ],
+        [ 'a', DF.namedNode('ex:a') ],
+        [ 'b', DF.namedNode('ex:b') ],
+      ]), { source: new SetUnionContext() }, new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ]}));
+      bindingsOther2 = new Bindings(DF, Map<string, RDF.Term>([
+        [ 'd', DF.namedNode('ex:d') ],
+        [ 'a', DF.namedNode('ex:a') ],
+        [ 'b', DF.namedNode('ex:b') ],
+      ]), { source: new SetUnionContext() }, new ActionContext({ source: [ 'ex:S2', 'ex:S9', 'ex:S10' ]}));
+    });
+    
+    it('calling merge twice with different bindings should give correct results', () =>{
+      const bindingsNew1: Bindings = bindings.merge(bindingsOther1)!;
+      expect(bindingsNew1).toBeDefined();
+      expect(bindingsNew1.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
+      const bindingsNew2: Bindings = bindings.merge(bindingsOther2)!;
+      expect(bindingsNew2).toBeDefined();
+      expect(bindingsNew2.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9', 'ex:S10' ]}));
+    });  
+
+    it('calling mergeWith twice with different bindings should give correct results', () =>{
+      const cb = jest.fn();
+      const bindingsNew1: Bindings = bindings.mergeWith(cb, bindingsOther1)!;
+      expect(bindingsNew1).toBeDefined();
+      expect(bindingsNew1.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
+      const bindingsNew2: Bindings = bindings.mergeWith(cb, bindingsOther2)!;
+      expect(bindingsNew2).toBeDefined();
+      expect(bindingsNew2.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9', 'ex:S10' ]}));
+    });  
+  })
 });

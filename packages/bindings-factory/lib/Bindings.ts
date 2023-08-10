@@ -126,15 +126,17 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
+    let mergedContext = this.context
     // Only merge if the other has a context
     if ('context' in other) {
-      const otherAsBinding = other;
+      const otherAsBinding = <Bindings> other;
       // If we have empty context we skip the context merge (This is likely not needed / doesn't give performance boost)
       if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0) {
-        this.mergeContext(other);
+        mergedContext = this.mergeContext(other);
       }
     }
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, this.context);
+
+    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
   }
 
   public mergeWith(
@@ -161,20 +163,20 @@ export class Bindings implements RDF.Bindings {
       }
       entries.push([ key, value ]);
     }
-
+    let mergedContext = this.context
     // Only merge if the other has a context
     if ('context' in other) {
       const otherAsBinding = <Bindings> other;
       // If we have empty context we skip the context merge (This is likely not needed / doesn't give performance boost)
       if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0) {
-        this.mergeContext(other);
+        mergedContext = this.mergeContext(other);
       }
     }
 
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, this.context);
+    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
   }
 
-  private mergeContext(other: RDF.Bindings | Bindings): void {
+  private mergeContext(other: RDF.Bindings | Bindings): IActionContext {
     const otherAsBinding = <Bindings> other;
     // Get Set of all keys present in either of the bindings
     const keysContext = this.unique_keys([ ...this.context.keys(),
@@ -184,28 +186,29 @@ export class Bindings implements RDF.Bindings {
     const keysBothContext = this.context.keys().filter(
       element => otherAsBinding.context.keys().some(({ name }) => element.name === name),
     );
-
+    let mergedContext: IActionContext = this.context;
     // Merge context based on supplied mergeHandlers
     for (const key of keysContext) {
       const keyString = key.name;
       const occursInBoth = keysBothContext.some(x => x.name === key.name);
 
       if (this.contextMergeHandlers[keyString] && occursInBoth) {
-        this.context = this.context.set(key, this.contextMergeHandlers[keyString]
-          .run(this.context.get(key), otherAsBinding.context.get(key)));
+        mergedContext = mergedContext.set(key, this.contextMergeHandlers[keyString]
+          .run(mergedContext.get(key), otherAsBinding.context.get(key)));
         continue;
       }
       // For keys in both bindings we require a mergehandler. If no mergehandler is supplied the keys
       // are removed in the result
       if (!this.contextMergeHandlers[keyString] && occursInBoth) {
-        this.context = this.context.delete(key);
+        mergedContext = mergedContext.delete(key);
         continue;
       }
       // If it doesn't occur in both contexts, we simply copy the context entry into the new binding
       if (!occursInBoth && !this.context.get(key)) {
-        this.context = this.context.set(key, otherAsBinding.context.get(key));
+        mergedContext = mergedContext.set(key, otherAsBinding.context.get(key));
       }
     }
+    return mergedContext
   }
 
   public toString(): string {
