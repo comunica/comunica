@@ -34,6 +34,7 @@
   "dependencies": {
     "@comunica/actor-abstract-path": "^2.8.2",
     "@comunica/bindings-factory": "^2.7.0",
+    "@comunica/bus-merge-binding-factory": "^2.0.0",
     "@comunica/bus-query-operation": "^2.8.2",
     "@comunica/types": "^2.8.2",
     "asynciterator": "^3.8.1",

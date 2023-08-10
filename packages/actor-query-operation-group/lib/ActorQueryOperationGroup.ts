@@ -8,19 +8,21 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from 'sparqlee';
 import { GroupsState } from './GroupsState';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 
 /**
  * A comunica Group Query Operation Actor.
  */
 export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<Algebra.Group> {
   public readonly mediatorHashBindings: MediatorHashBindings;
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationGroupArgs) {
     super(args, 'group');
   }
 
   public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = new AsyncEvaluator(
@@ -34,7 +36,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   public async runOperation(operation: Algebra.Group, context: IActionContext):
   Promise<IQueryOperationResult> {
     // Create bindingFactory with handlers
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
     // Create a hash function
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
 
@@ -91,4 +93,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
 export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorHashBindings: MediatorHashBindings;
+  /**
+  * A mediator for creating binding context merge handlers
+  */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
 }

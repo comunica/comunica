@@ -16,6 +16,12 @@ describe('ActorInitQueryBase', () => {
   const mediatorContextPreprocess: any = {
     mediate: (action: any) => Promise.resolve(action),
   };
+  const mediatorMergeHandlers: any = {
+    mediate(arg: any) {
+      return {};
+    },
+  };
+
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-query:initialBindings',
     log: '@comunica/core:log',
@@ -90,6 +96,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorMergeHandlers: mediatorMergeHandlers,
         name: 'actor',
       });
     });
@@ -126,6 +133,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorMergeHandlers: mediatorMergeHandlers,
         name: 'actor',
       })).toThrow('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
     });
@@ -148,6 +156,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorMergeHandlers: mediatorMergeHandlers,
         name: 'actor',
       });
 

@@ -4,7 +4,7 @@ import { Factory } from 'sparqlalgebrajs';
 import { materializeOperation, materializeTerm } from '..';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 
 const factory = new Factory();
 

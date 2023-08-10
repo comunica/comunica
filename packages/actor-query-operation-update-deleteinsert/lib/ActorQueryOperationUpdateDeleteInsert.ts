@@ -1,5 +1,6 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -17,6 +18,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTypedMediated<Algebra.DeleteInsert> {
   public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
 
   protected blankNodeCounter = 0;
 
@@ -34,7 +36,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
@@ -80,4 +82,9 @@ export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorQueryO
    * The RDF Update Quads mediator
    */
   mediatorUpdateQuads: MediatorRdfUpdateQuads;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
+
 }

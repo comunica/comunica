@@ -12,7 +12,7 @@ import type { IQueryOperationResult,
   FunctionArgumentsCache } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import { materializeOperation, wrappedMaterializeOperation } from './Bindings';
+import { materializeOperation } from './Bindings';
 import { BindingsFactory } from '@comunica/bindings-factory';
 
 /**

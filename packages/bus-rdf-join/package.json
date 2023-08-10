@@ -40,8 +40,7 @@
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^1.1.1",
-    "rdf-string": "^1.6.1",
-    "@comunica/bus-merge-binding-factory": "^2.0.0"
+    "rdf-string": "^1.6.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

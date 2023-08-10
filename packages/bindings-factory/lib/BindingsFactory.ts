@@ -2,18 +2,18 @@ import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import { Bindings } from './Bindings';
+import { IMergeHandler } from '@comunica/bus-merge-binding-factory';
 
 /**
  * A Bindings factory that provides Bindings backed by immutable.js.
  */
 export class BindingsFactory implements RDF.BindingsFactory {
   private readonly dataFactory: RDF.DataFactory;
-  private readonly contextMergeHandlers: Record<string, Function>;
+  private readonly contextMergeHandlers: Record<string, IMergeHandler<any>>;
 
-  // ContextMergeHandlers is commented out for now, but should not be optional param!!!
-  public constructor(dataFactory: RDF.DataFactory = new DataFactory(), contextMergeHandlers?: Record<string, Function>) {
+  public constructor(dataFactory: RDF.DataFactory = new DataFactory(), contextMergeHandlers: Record<string, IMergeHandler<any>>) {
     this.dataFactory = dataFactory;
-    // This.contextMergeHandlers = contextMergeHandlers
+    this.contextMergeHandlers = contextMergeHandlers;
   }
 
   public bindings(entries: [RDF.Variable, RDF.Term][] = []): Bindings {
@@ -26,9 +26,5 @@ export class BindingsFactory implements RDF.BindingsFactory {
 
   public fromRecord(record: Record<string, RDF.Term>): Bindings {
     return this.bindings(Object.entries(record).map(([ key, value ]) => [ this.dataFactory.variable!(key), value ]));
-  }
-
-  public test() {
-
   }
 }

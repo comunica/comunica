@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { IActorArgs, IActorTest } from '@comunica/core';
@@ -18,7 +19,9 @@ const DF = new DataFactory();
  * A comunica Values Query Operation Actor.
  */
 export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.Values> {
-  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult>) {
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+
+  public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
     super(args, 'values');
   }
 
@@ -28,7 +31,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => BF.bindings(Object.entries(x)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
@@ -41,4 +44,11 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     });
     return { type: 'bindings', bindingsStream, metadata };
   }
+}
+
+export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult> {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
 }

@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
@@ -15,6 +16,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationService extends ActorQueryOperationTypedMediated<Algebra.Service> {
   public readonly forceSparqlEndpoint: boolean;
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
@@ -30,7 +32,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   public async runOperation(operation: Algebra.Service, context: IActionContext):
   Promise<IQueryOperationResult> {
     const endpoint: string = operation.name.value;
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
     // Adjust our context to only have the endpoint as source
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
@@ -72,4 +74,9 @@ export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTyp
    * @default {false}
    */
   forceSparqlEndpoint: boolean;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
+
 }

@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-merge-binding-factory-source-binding-union",
+  "name": "@comunica/actor-merge-binding-factory-context-union",
   "version": "2.0.0",
-  "description": "A source-binding-union merge-binding-factory actor",
+  "description": "A context-union merge-binding-factory actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-merge-binding-factory-source-binding-union"
+    "directory": "packages/actor-merge-binding-factory-context-union"
   },
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "comunica",
     "actor",
     "merge-binding-factory",
-    "source-binding-union"
+    "context-union"
   ],
   "license": "MIT",
   "bugs": {
@@ -32,7 +32,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.7.0",
+    "@comunica/core": "^2.8.1",
     "@comunica/bus-merge-binding-factory": "^2.0.0"
   },
   "scripts": {

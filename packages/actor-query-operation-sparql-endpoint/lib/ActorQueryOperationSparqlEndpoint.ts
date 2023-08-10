@@ -26,6 +26,7 @@ import type { IUpdateTypes } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util, Algebra } from 'sparqlalgebrajs';
 import { LazyCardinalityIterator } from './LazyCardinalityIterator';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 
 const DF = new DataFactory();
 
@@ -43,6 +44,8 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   public readonly endpointFetcher: SparqlEndpointFetcher;
 
   protected lastContext: IActionContext;
+
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationSparqlEndpointArgs) {
     super(args);
@@ -113,7 +116,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const canContainUndefs = this.canOperationContainUndefs(action.operation);
 
     // Execute the query against the endpoint depending on the type
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
     switch (type) {
       case 'SELECT':
         if (!variables) {
@@ -233,4 +236,9 @@ export interface IActorQueryOperationSparqlEndpointArgs
    * @default {false}
    */
   forceHttpGet: boolean;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
+
 }

@@ -10,7 +10,7 @@ import { Factory } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from '../lib';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 const FACTORY = new Factory();
 
 describe('PathVariableObjectIterator', () => {

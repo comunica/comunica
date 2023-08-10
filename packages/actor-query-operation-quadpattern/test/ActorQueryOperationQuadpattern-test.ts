@@ -14,8 +14,15 @@ import '@comunica/jest';
 const quad = require('rdf-quad');
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 const AF = new Factory();
+
+const mediatorMergeHandlers: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
+
 
 describe('ActorQueryOperationQuadpattern', () => {
   let bus: any;
@@ -222,6 +229,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: false,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
     });
 
@@ -509,6 +517,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: false,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
 
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
@@ -594,6 +603,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: true,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
 
       const operation = AF.createPattern(
@@ -673,6 +683,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: true,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
 
       const operation = AF.createPattern(

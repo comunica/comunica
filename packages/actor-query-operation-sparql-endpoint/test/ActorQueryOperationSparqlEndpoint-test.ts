@@ -16,9 +16,16 @@ const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 
 const factory = new Factory();
+
+const mediatorMergeHandlers: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
+
 
 describe('ActorQueryOperationSparqlEndpoint', () => {
   let bus: any;
@@ -92,6 +99,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: false,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
     });
 
@@ -288,6 +296,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: true,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
       const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
@@ -322,6 +331,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: true,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
       const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
@@ -432,6 +442,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: false,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+         mediatorMergeHandlers: mediatorMergeHandlers
       });
       const x = ActorQueryOperation.getSafeBindings(await thisActor.run(op)).bindingsStream;
       await expect(arrayifyStream(x))

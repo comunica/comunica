@@ -4,15 +4,19 @@ import type { IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput,
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { RdfSourceSparql } from './RdfSourceSparql';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 
 /**
  * A comunica SPARQL RDF Resolve Hypermedia Actor.
  */
 export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   public readonly mediatorHttp: MediatorHttp;
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
+
 
   public constructor(args: IActorRdfResolveHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -28,7 +32,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
     // Create bindingsfactory with handlers
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
     this.logInfo(action.context, `Identified as sparql source: ${action.url}`);
     const source = new RdfSourceSparql(
       action.metadata.sparqlService || action.url,
@@ -57,6 +61,10 @@ export interface IActorRdfResolveHypermediaSparqlArgs extends IActorRdfResolveHy
    * @default {false}
    */
   forceHttpGet: boolean;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
   /**
    * The cache size for COUNT queries.
    * @range {integer}

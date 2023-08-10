@@ -12,7 +12,14 @@ import 'jest-rdf';
 
 const factory = new Factory();
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
+
+const mediatorMergeHandlers: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
+
 
 describe('ActorQueryOperationUpdateDeleteInsert', () => {
   let bus: any;
@@ -67,6 +74,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         bus,
         mediatorQueryOperation,
         mediatorUpdateQuads,
+        mediatorMergeHandlers: mediatorMergeHandlers
       });
     });
 

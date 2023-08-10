@@ -33,6 +33,7 @@
   ],
   "dependencies": {
     "@comunica/actor-http-proxy": "^2.8.2",
+    "@comunica/bindings-factory": "^2.7.0",
     "@comunica/bus-context-preprocess": "^2.8.2",
     "@comunica/bus-http-invalidate": "^2.8.2",
     "@comunica/bus-init": "^2.8.2",

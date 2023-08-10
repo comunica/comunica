@@ -11,7 +11,7 @@ import '@comunica/jest';
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF, {});
 
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
@@ -102,9 +102,15 @@ describe('ActorQueryOperationExtend', () => {
 
   describe('An ActorQueryOperationExtend instance', () => {
     let actor: ActorQueryOperationExtend;
-
+    let mediatorMergeHandlers: any;
     beforeEach(() => {
-      actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation });
+      mediatorMergeHandlers = {
+        mediate(arg: any) {
+          return {};
+        },
+      };
+  
+      actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
     });
 
     it('should test on extend', () => {

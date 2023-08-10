@@ -10,7 +10,8 @@
     {
       "@id": "urn:comunica:default:query-operation/actors#sparql-endpoint",
       "@type": "ActorQueryOperationSparqlEndpoint",
-      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "mediatorMergeHandlers": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main"}
     }
   ]
 }

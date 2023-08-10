@@ -80,9 +80,15 @@ describe('ActorInitQuery', () => {
     let actorAllowNoSources: ActorInitQuery;
     let spyResultToString: any;
     let spyQueryOrExplain: any;
-
+    let mediatorMergeHandlers: any;
     beforeEach(() => {
       const factory = new Factory();
+      mediatorMergeHandlers = {
+        mediate(arg: any) {
+          return {};
+        },
+      };
+  
       mediatorQueryOperation.mediate = jest.fn((action: any) => {
         if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
           (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
@@ -127,6 +133,7 @@ describe('ActorInitQuery', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorMergeHandlers: mediatorMergeHandlers,
         name: 'actor',
         allowNoSources: true,
       });

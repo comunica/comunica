@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -10,8 +11,9 @@ import { ArrayIterator } from 'asynciterator';
  * A comunica None RDF Join Actor.
  */
 export class ActorRdfJoinNone extends ActorRdfJoin {
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
 
-  public constructor(args: IActorRdfJoinArgs) {
+  public constructor(args: IActorRdfJoinNoneArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'none',
@@ -28,7 +30,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
     return {
       result: {
         bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),
@@ -51,4 +53,11 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
       requestTime: 0,
     };
   }
+}
+
+export interface IActorRdfJoinNoneArgs extends IActorRdfJoinArgs {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
 }
