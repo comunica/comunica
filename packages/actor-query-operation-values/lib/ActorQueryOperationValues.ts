@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import type { IActorArgs, IActorTest } from '@comunica/core';
@@ -31,7 +31,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => BF.bindings(Object.entries(x)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
@@ -46,7 +46,8 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
   }
 }
 
-export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult> {
+export interface IActorQueryOperationUpdateDeleteInsertArgs extends
+  IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult> {
   /**
    * A mediator for creating binding context merge handlers
    */

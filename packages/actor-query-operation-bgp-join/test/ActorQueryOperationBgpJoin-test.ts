@@ -9,7 +9,7 @@ import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 const FACTORY = new Factory();
 
 describe('ActorQueryOperationBgpJoin', () => {

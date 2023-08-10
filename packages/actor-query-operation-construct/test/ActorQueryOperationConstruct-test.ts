@@ -9,7 +9,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
 
 const DF = new DataFactory<RDF.BaseQuad>();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationConstruct', () => {
   let bus: any;

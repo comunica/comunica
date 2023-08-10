@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped, ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
@@ -33,7 +33,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
   public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
   public readonly unionDefaultGraph: boolean;
-
 
   public constructor(args: IActorQueryOperationQuadpatternArgs) {
     super(args, 'pattern');
@@ -269,7 +268,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           return true;
         });
       }
-      const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+      const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
       return filteredOutput.map(quad => BF.bindings(Object.keys(elementVariables).map(key => {
         const keys: QuadTermName[] = <any>key.split('_');
         const variable = elementVariables[key];

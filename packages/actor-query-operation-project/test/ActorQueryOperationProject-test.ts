@@ -9,7 +9,7 @@ import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationProject', () => {
   let bus: any;

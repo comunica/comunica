@@ -2,7 +2,6 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Bindings } from '../lib/Bindings';
 import { BindingsFactory } from '../lib/BindingsFactory';
-import { SetUnionContext} from '@comunica/actor-merge-binding-factory-context-union'
 
 const DF = new DataFactory();
 const mediatorMergeHandlers: any = {
@@ -15,11 +14,11 @@ describe('BindingsFactory', () => {
   let factory: RDF.BindingsFactory;
 
   beforeEach(() => {
-    factory = new BindingsFactory(DF, {});
+    factory = new BindingsFactory({}, DF);
   });
 
   it('should allow construction without args', () => {
-    factory = new BindingsFactory(undefined, {});
+    factory = new BindingsFactory({}, DF);
     expect((<any> factory).dataFactory).toBeInstanceOf(DataFactory);
   });
 

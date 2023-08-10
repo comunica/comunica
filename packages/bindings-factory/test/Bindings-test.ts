@@ -3,8 +3,6 @@ import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import { Bindings } from '../lib/Bindings';
 import 'jest-rdf';
-import { SetUnionContext } from '@comunica/actor-merge-binding-factory-context-union';
-import { ActionContext } from '@comunica/core';
 
 const DF = new DataFactory();
 // Empty merge handlers, should implement specific ones when done
@@ -17,9 +15,7 @@ describe('Bindings', () => {
       [ 'a', DF.namedNode('ex:a') ],
       [ 'b', DF.namedNode('ex:b') ],
       [ 'c', DF.namedNode('ex:c') ],
-    ]),
-    contextMergeHandlers
-    );
+    ]), contextMergeHandlers);
   });
 
   describe('has', () => {
@@ -187,9 +183,7 @@ describe('Bindings', () => {
       expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
-      ]),
-      contextMergeHandlers
-      ))).toBeFalsy();
+      ]), contextMergeHandlers))).toBeFalsy();
     });
 
     it('should be false for bindings with more keys', () => {
@@ -198,9 +192,7 @@ describe('Bindings', () => {
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
         [ 'd', DF.namedNode('ex:d') ],
-      ]),
-      contextMergeHandlers
-      ))).toBeFalsy();
+      ]), contextMergeHandlers))).toBeFalsy();
     });
 
     it('should be false for bindings with the same amount of keys, but unequal', () => {
@@ -208,9 +200,7 @@ describe('Bindings', () => {
         [ 'a1', DF.namedNode('ex:a') ],
         [ 'b1', DF.namedNode('ex:b') ],
         [ 'c1', DF.namedNode('ex:c') ],
-      ]),
-      contextMergeHandlers
-      ))).toBeFalsy();
+      ]), contextMergeHandlers))).toBeFalsy();
     });
 
     it('should be false for bindings with equal keys, but unequal values', () => {
@@ -218,9 +208,7 @@ describe('Bindings', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b1') ],
         [ 'c', DF.namedNode('ex:c') ],
-      ]),
-      contextMergeHandlers
-      ))).toBeFalsy();
+      ]), contextMergeHandlers))).toBeFalsy();
     });
 
     it('should be true for bindings with equal keys and values', () => {
@@ -228,9 +216,7 @@ describe('Bindings', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
-      ]),
-      contextMergeHandlers
-      ))).toBeTruthy();
+      ]), contextMergeHandlers))).toBeTruthy();
     });
 
     it('should be true for itself', () => {
@@ -292,9 +278,7 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'e', DF.namedNode('ex:e') ],
         [ 'f', DF.namedNode('ex:f') ],
-      ]),
-      contextMergeHandlers
-      );
+      ]), contextMergeHandlers);
 
       const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
       expect(bindingsNew).toBeDefined();
@@ -314,9 +298,7 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
-      ]),
-      contextMergeHandlers
-      );
+      ]), contextMergeHandlers);
 
       const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
       expect(bindingsNew).toBeDefined();
@@ -332,9 +314,7 @@ describe('Bindings', () => {
     it('should return undefined on overlapping incompatible bindings', () => {
       const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:b') ],
-      ]),
-      contextMergeHandlers
-      );
+      ]), contextMergeHandlers);
 
       const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
       expect(bindingsNew).toBeUndefined();
@@ -347,9 +327,7 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'e', DF.namedNode('ex:e') ],
         [ 'f', DF.namedNode('ex:f') ],
-      ]),
-      contextMergeHandlers
-      );
+      ]), contextMergeHandlers);
 
       const cb = jest.fn();
       const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
@@ -372,9 +350,7 @@ describe('Bindings', () => {
         [ 'd', DF.namedNode('ex:d') ],
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
-      ]),
-      contextMergeHandlers
-      );
+      ]), contextMergeHandlers);
 
       const cb = jest.fn();
       const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
@@ -393,9 +369,7 @@ describe('Bindings', () => {
     it('should return undefined on overlapping incompatible bindings', () => {
       const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:b') ],
-      ]),
-      contextMergeHandlers
-      );
+      ]), contextMergeHandlers);
 
       const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
       const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
@@ -427,89 +401,3 @@ describe('Bindings', () => {
   });
 });
 
-describe('Binding context mergehandler', ()=>{
-  let bindings: Bindings;
-
-  beforeEach(() => {
-    bindings = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-      [ 'c', DF.namedNode('ex:c') ],
-    ]), 
-    {'source': new SetUnionContext()},
-    new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S3']}));
-  });
-
-  it('should merge binding context according to mergehandler in mergeWith', ()=>{
-    let bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'd', DF.namedNode('ex:d') ],
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-    ]), 
-    {'source': new SetUnionContext()},
-    new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S5']})
-    );
-    const bindingsNew: Bindings = bindings.merge(bindingsOther)!
-    expect(bindingsNew).toBeDefined;
-    expect(bindingsNew.context).toEqual(new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S3', 'ex:S5']}))
-  });
-
-  it('should merge own binding context with extra key by adding to result context without change', ()=>{
-    let bindingsExtraKey = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'd', DF.namedNode('ex:d') ],
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-    ]), 
-    {'source': new SetUnionContext()},
-    new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S5'], extraKey: ['ex:T1', 'ex:T2']})
-    );
-    const bindingsNew: Bindings = bindingsExtraKey.merge(bindings)!;
-    expect(bindingsNew).toBeDefined;
-    expect(bindingsNew.context).toEqual(new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S5','ex:S3'], extraKey:['ex:T1', 'ex:T2']}));
-  });
-
-  it('should merge other binding context with extra key by adding to result context without change', ()=>{
-    let bindingsExtraKey = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'd', DF.namedNode('ex:d') ],
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-    ]), 
-    {'source': new SetUnionContext()},
-    new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S5'], extraKey: ['ex:T1', 'ex:T2']})
-    );
-    const bindingsNew: Bindings = bindings.merge(bindingsExtraKey)!;
-    expect(bindingsNew).toBeDefined;
-    expect(bindingsNew.context).toEqual(new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S3', 'ex:S5'], extraKey:['ex:T1', 'ex:T2']}));
-  });
-
-  it('should merge remove all binding context entries that occur in both contexts but dont have a mergehandler', ()=>{
-    let bindingsNoMergeHandler = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'd', DF.namedNode('ex:d') ],
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-    ]), 
-    {},
-    new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S5']})
-    );
-    const bindingsNew: Bindings = bindingsNoMergeHandler.merge(bindings)!;
-    expect(bindingsNew).toBeDefined;
-    expect(bindingsNew.context).toEqual(new ActionContext({}));
-  });
-
-  it('should merge overlapping compatible bindings', () => {
-    const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'd', DF.namedNode('ex:d') ],
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-    ]),
-    {'source': new SetUnionContext()},
-    new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S5']})
-    );
-
-    const cb = jest.fn();
-    const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
-    expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({source: ['ex:S1', 'ex:S2', 'ex:S3', 'ex:S5']}))
-  });
-
-});

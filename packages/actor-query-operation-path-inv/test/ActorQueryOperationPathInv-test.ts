@@ -8,7 +8,7 @@ import { ActorQueryOperationPathInv } from '../lib/ActorQueryOperationPathInv';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationPathInv', () => {
   let bus: any;

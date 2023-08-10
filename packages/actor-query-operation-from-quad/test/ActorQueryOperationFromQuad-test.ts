@@ -11,7 +11,7 @@ import { ActorQueryOperationFromQuad } from '../lib/ActorQueryOperationFromQuad'
 const quad = require('rdf-quad');
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationFromQuad', () => {
   let bus: any;

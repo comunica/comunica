@@ -16,14 +16,13 @@ import Mock = jest.Mock;
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 const FACTORY = new Factory();
 const mediatorMergeHandlers: any = {
   mediate(arg: any) {
     return {};
   },
 };
-
 
 describe('ActorRdfJoinMultiBind', () => {
   let bus: any;
@@ -87,7 +86,7 @@ describe('ActorRdfJoinMultiBind', () => {
         mediatorQueryOperation,
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
-        mediatorMergeHandlers
+        mediatorMergeHandlers,
       });
       logSpy = (<any> actor).logDebug = jest.fn();
     });
@@ -404,13 +403,14 @@ describe('ActorRdfJoinMultiBind', () => {
     });
 
     describe('createBindStream', () => {
-      it('throws when an unknown bind order is passed',  async () => {
+      it('throws when an unknown bind order is passed', async() => {
         await expect(
-          async () => await (<any> ActorRdfJoinMultiBind).createBindStream('unknown').catch((err: any) => {
-          throw new Error(err);
-        }))
-        .rejects
-        .toThrowError(`Received request for unknown bind order: unknown`);
+          async() => await (<any> ActorRdfJoinMultiBind).createBindStream('unknown').catch((error: any) => {
+            throw new Error(error);
+          }),
+        )
+          .rejects
+          .toThrowError(`Received request for unknown bind order: unknown`);
       });
     });
 
@@ -1075,7 +1075,7 @@ describe('ActorRdfJoinMultiBind', () => {
           mediatorQueryOperation,
           mediatorJoinSelectivity,
           mediatorJoinEntriesSort,
-          mediatorMergeHandlers: mediatorMergeHandlers
+          mediatorMergeHandlers,
         });
 
         const action: IActionRdfJoin = {

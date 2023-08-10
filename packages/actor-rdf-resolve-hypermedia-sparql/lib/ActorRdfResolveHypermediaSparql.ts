@@ -1,10 +1,10 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput,
   IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { RdfSourceSparql } from './RdfSourceSparql';
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 
 /**
  * A comunica SPARQL RDF Resolve Hypermedia Actor.
@@ -16,7 +16,6 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
-
 
   public constructor(args: IActorRdfResolveHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -32,7 +31,9 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
     // Create bindingsfactory with handlers
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
+    const BF = new BindingsFactory(
+      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+    );
     this.logInfo(action.context, `Identified as sparql source: ${action.url}`);
     const source = new RdfSourceSparql(
       action.metadata.sparqlService || action.url,
@@ -40,7 +41,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
       this.mediatorHttp,
       this.forceHttpGet,
       this.cacheSize,
-      BF
+      BF,
     );
     return { source };
   }

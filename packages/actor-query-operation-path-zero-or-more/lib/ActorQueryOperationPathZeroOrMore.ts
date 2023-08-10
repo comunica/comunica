@@ -1,6 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
@@ -8,7 +8,6 @@ import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
-
 
 /**
  * A comunica Path ZeroOrMore Query Operation Actor.
@@ -21,7 +20,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
 
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
@@ -88,7 +87,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
-                    BF
+                    BF,
                   );
                 }
                 // If not started from this namedNode (object in triple) in this graph, start a search
@@ -106,7 +105,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
-                    BF
+                    BF,
                   );
                 }
                 return it.transform<Bindings>({
@@ -142,7 +141,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         operation.graph,
         context,
         true,
-        BF
+        BF,
       );
       // Check this
       const bindingsStream = starEval.bindingsStream.transform<Bindings>({
@@ -176,7 +175,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       operation.graph,
       context,
       true,
-      BF
+      BF,
     );
     const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];
     return {
