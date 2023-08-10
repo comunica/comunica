@@ -111,6 +111,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           end: jest.fn(),
           setBaseMetadata: jest.fn(),
           import: jest.fn(),
+          containedSources: new Set(),
         };
         source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
           10,
@@ -143,6 +144,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           end: jest.fn(),
           setBaseMetadata: jest.fn(),
           import: jest.fn(),
+          containedSources: new Set(),
         };
         source = new MediatedLinkedRdfSourcesAsyncRdfIterator(
           10,
@@ -208,7 +210,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
         source.destroy();
         await new Promise(setImmediate);
-        expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
+        expect(aggregatedStore.end).toHaveBeenCalledTimes(2);
       });
 
       it('should close if the iterator is closeable', async() => {

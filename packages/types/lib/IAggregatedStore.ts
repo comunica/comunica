@@ -21,6 +21,11 @@ export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad, S extends R
   started: boolean;
 
   /**
+   * The sources that are indexed in this store.
+   */
+  containedSources: Set<string>;
+
+  /**
    * If iterators created during the `match` call are still running.
    */
   hasRunningIterators: () => boolean;
