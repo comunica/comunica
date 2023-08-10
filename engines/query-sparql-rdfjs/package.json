@@ -133,7 +133,7 @@
     "@comunica/mediator-race": "^2.8.1",
     "@comunica/runner": "^2.8.1",
     "@comunica/types": "^2.8.1",
-    "@comunica/actor-merge-binding-factory-source-binding-union": "^2.0.0"
+    "@comunica/actor-merge-binding-factory-context-union": "^2.0.0"
   },
   "scripts": {
     "build": "npm run build:ts",

@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
@@ -12,7 +13,9 @@ import type { Algebra } from 'sparqlalgebrajs';
  * actor that handles SPARQL nop operations.
  */
 export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Algebra.Nop> {
-  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+
+  public constructor(args: IActorQueryOperationNopArgs) {
     super(args, 'nop');
   }
 
@@ -21,7 +24,7 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
   }
 
   public async runOperation(operation: Algebra.Nop, context: IActionContext): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
 
     return {
       bindingsStream: new SingletonIterator(BF.bindings()),
@@ -34,4 +37,11 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
       type: 'bindings',
     };
   }
+}
+
+export interface IActorQueryOperationNopArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
 }

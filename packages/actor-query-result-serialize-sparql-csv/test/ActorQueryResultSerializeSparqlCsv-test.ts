@@ -7,7 +7,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlCsv } from '..';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 const stringifyStream = require('stream-to-string');
 
 describe('ActorQueryResultSerializeSparqlCsv', () => {

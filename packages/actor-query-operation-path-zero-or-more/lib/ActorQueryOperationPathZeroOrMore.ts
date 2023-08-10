@@ -1,5 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
@@ -13,13 +14,14 @@ import { Algebra } from 'sparqlalgebrajs';
  * A comunica Path ZeroOrMore Query Operation Actor.
  */
 export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
 
-  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public constructor(args: IActorQueryOperationPathZeroOrMoreArgs) {
     super(args, Algebra.types.ZERO_OR_MORE_PATH);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
 
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
@@ -183,4 +185,11 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       metadata: async() => ({ ...await starEval.metadata(), variables }),
     };
   }
+}
+
+export interface IActorQueryOperationPathZeroOrMoreArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
 }

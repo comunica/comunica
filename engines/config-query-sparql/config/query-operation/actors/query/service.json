@@ -11,7 +11,8 @@
       "@id": "urn:comunica:default:query-operation/actors#service",
       "@type": "ActorQueryOperationService",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "forceSparqlEndpoint": false
+      "forceSparqlEndpoint": false,
+      "mediatorMergeHandlers": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main"}
     }
   ]
 }

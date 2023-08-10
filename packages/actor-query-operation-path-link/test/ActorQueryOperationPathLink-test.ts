@@ -8,7 +8,7 @@ import { ActorQueryOperationPathLink } from '../lib/ActorQueryOperationPathLink'
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 
 describe('ActorQueryOperationPathLink', () => {
   let bus: any;

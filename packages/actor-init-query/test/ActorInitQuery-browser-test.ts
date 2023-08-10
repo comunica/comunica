@@ -53,8 +53,14 @@ describe('ActorInitQuery', () => {
 
   describe('An ActorInitQuery instance', () => {
     let actor: ActorInitQuery;
-
+    let mediatorMergeHandlers: any;
     beforeEach(() => {
+      mediatorMergeHandlers = {
+        mediate(arg: any) {
+          return {};
+        },
+      };
+  
       actor = new ActorInitQuery({
         bus,
         contextKeyShortcuts,
@@ -68,6 +74,7 @@ describe('ActorInitQuery', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorMergeHandlers: mediatorMergeHandlers,
         name: 'actor',
       });
     });

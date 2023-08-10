@@ -14,7 +14,7 @@ import { ActorRdfJoinMultiSmallest } from '../lib/ActorRdfJoinMultiSmallest';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 
 describe('ActorRdfJoinMultiSmallest', () => {
   let bus: any;

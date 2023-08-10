@@ -23,7 +23,7 @@ import '@comunica/jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF, {});
 
 describe('ActorInitQueryBase', () => {
   it('should not allow invoking its run method', () => {
@@ -43,6 +43,11 @@ describe('QueryEngineBase', () => {
   let mediatorHttpInvalidate: any;
   let actorInitQuery: ActorInitQuery;
   let context: IActionContext;
+  let mediatorMergeHandlers: any = {
+    mediate(arg: any) {
+      return {};
+    },
+  };
 
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-query:initialBindings',
@@ -144,6 +149,7 @@ describe('QueryEngineBase', () => {
           ),
         });
       const defaultQueryInputFormat = 'sparql';
+  
       actor = new ActorInitQuery(
         { bus,
           contextKeyShortcuts,
@@ -157,6 +163,7 @@ describe('QueryEngineBase', () => {
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          mediatorMergeHandlers: mediatorMergeHandlers,
           name: 'actor' },
       );
       queryEngine = new QueryEngineBase(actor);
@@ -356,6 +363,7 @@ describe('QueryEngineBase', () => {
             mediatorQueryResultSerializeMediaTypeCombiner: med,
             mediatorQueryResultSerializeMediaTypeFormatCombiner: med,
             name: 'actor',
+            mediatorMergeHandlers: mediatorMergeHandlers,
             queryString },
         );
         queryEngine = new QueryEngineBase(actor);
@@ -459,6 +467,7 @@ describe('QueryEngineBase', () => {
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          mediatorMergeHandlers: mediatorMergeHandlers,
           name: 'actor' },
       );
       queryEngine = new QueryEngineBase<ICustomQueryContext2>(actor);
@@ -530,6 +539,7 @@ describe('QueryEngineBase', () => {
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          mediatorMergeHandlers: mediatorMergeHandlers,
           name: 'actor' },
       );
       queryEngine = new QueryEngineBase(actor);

@@ -185,9 +185,8 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
 
     // Apply initial bindings in context
     if (actionContext.has(KeysInitQuery.initialBindings)) {
-      console.log("being ran")
       // Bindingsfactory with handlers 
-      const BF = new BindingsFactory();
+      const BF = new BindingsFactory(undefined, (await this.actorInitQuery.mediatorMergeHandlers.mediate({context: actionContext})).mergeHandlers);
       operation = materializeOperation(operation, actionContext.get(KeysInitQuery.initialBindings)!, BF);
 
       // Delete the query string from the context, since our initial query might have changed

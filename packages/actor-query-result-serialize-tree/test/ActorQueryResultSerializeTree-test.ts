@@ -10,7 +10,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeTree, bindingsStreamToGraphQl } from '..';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 

@@ -14,7 +14,7 @@ import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(undefined, {});
 
 describe('ActorQueryOperationPathSeq', () => {
   let bus: any;

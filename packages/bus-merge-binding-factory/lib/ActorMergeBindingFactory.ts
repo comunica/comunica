@@ -28,7 +28,7 @@ export interface IActionMergeBindingFactory extends IAction {
 }
 
 export interface IActorMergeBindingFactoryOutput extends IActorOutput {
-  mergeHandlers: Record<string, Function>;
+  mergeHandlers: Record<string, IMergeHandler<any>>;
 }
 
 export type IActorMergeBindingFactoryArgs = IActorArgs<
@@ -36,3 +36,8 @@ IActionMergeBindingFactory, IActorTest, IActorMergeBindingFactoryOutput>;
 
 export type MediatorMergeBindingFactory = Mediate<
 IActionMergeBindingFactory, IActorMergeBindingFactoryOutput>;
+
+export interface IMergeHandler<V> {
+  run: (...args: V[]) => V[]
+}
+

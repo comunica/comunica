@@ -33,9 +33,10 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.7.0",
-    "@comunica/bus-rdf-join": "^2.9.0",
-    "@comunica/mediatortype-join-coefficients": "^2.8.2",
-    "@comunica/metadata": "^2.8.2",
+    "@comunica/bus-rdf-join": "^2.8.1",
+    "@comunica/bus-merge-binding-factory": "^2.0.0",
+    "@comunica/mediatortype-join-coefficients": "^2.8.1",
+    "@comunica/metadata": "^2.8.1",
     "asynciterator": "^3.8.1"
   },
   "scripts": {

@@ -31,25 +31,6 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   return term;
 }
 
-export async function wrappedMaterializeOperation(
-  operation: Algebra.Operation,
-  bindings: Bindings,
-  options: {
-    /**
-     * If target variable bindings (such as on SELECT or BIND) should not be allowed.
-     */
-    strictTargetVariables?: boolean;
-    /**
-     * If filter expressions should be materialized
-     */
-    bindFilter?: boolean;
-  } = {},
-): Promise<Algebra.Operation> {
-  // Await BF handlers here
-  const BF = new BindingsFactory();
-  return materializeOperation(operation, bindings, BF, options);
-}
-
 /**
  * Materialize the given operation (recursively) with the given bindings.
  * Essentially, all variables in the given operation will be replaced

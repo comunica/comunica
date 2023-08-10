@@ -177,9 +177,8 @@
     "@comunica/runner": "^2.8.1",
     "@comunica/runner-cli": "^2.8.1",
     "@comunica/types": "^2.8.1",
-    "@comunica/actor-merge-binding-factory-source-binding-union": "^2.0.0",
-    "process": "^0.11.10",
-    "v8-profiler-next": "1.9.0"
+    "@comunica/actor-merge-binding-factory-context-union": "^2.0.0",
+    "process": "^0.11.10"
   },
   "scripts": {
     "build": "npm run build:ts",

@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
@@ -23,6 +24,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly selectivityModifier: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
+  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
 
   public static readonly FACTORY = new Factory();
 
@@ -153,7 +155,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Create BindingsFactory and binding context handlers
-    const BF = new BindingsFactory();
+    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
@@ -306,6 +308,10 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
    * The query operation mediator
    */
   mediatorQueryOperation: MediatorQueryOperation;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeHandlers: MediatorMergeBindingFactory;
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';
