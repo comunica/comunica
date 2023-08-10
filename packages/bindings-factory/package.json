@@ -29,16 +29,13 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
+    "@comunica/bus-merge-binding-factory": "^2.0.0",
     "@comunica/core": "^2.8.1",
     "@comunica/types": "^2.8.1",
-    "@comunica/bus-merge-binding-factory": "^2.0.0",
     "@rdfjs/types": "*",
     "immutable": "^4.1.0",
-    "lodash": "^4.17.21",
     "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.1"
-  },
-  "devDependencies": {
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""
