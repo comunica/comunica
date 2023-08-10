@@ -1,11 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
 import { ArrayIterator } from 'asynciterator';
-
 
 /**
  * A comunica None RDF Join Actor.
@@ -30,7 +29,9 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
+    const BF = new BindingsFactory(
+      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+    );
     return {
       result: {
         bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),

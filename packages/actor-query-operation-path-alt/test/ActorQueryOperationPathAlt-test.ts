@@ -9,7 +9,7 @@ import { ActorQueryOperationPathAlt } from '../lib/ActorQueryOperationPathAlt';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationPathAlt', () => {
   let bus: any;

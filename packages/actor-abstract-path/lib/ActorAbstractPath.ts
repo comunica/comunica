@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -82,7 +82,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     predicate: Algebra.PropertyPathSymbol,
     graph: RDF.Variable,
     context: IActionContext,
-    BF: BindingsFactory
+    BF: BindingsFactory,
   ): Promise<IPathResultStream> {
     // TODO: refactor this with an iterator just like PathVariableObjectIterator so we handle backpressure correctly
     // Construct path to obtain all graphs where subject exists
@@ -152,7 +152,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     graph: RDF.Term,
     context: IActionContext,
     emitFirstSubject: boolean,
-    BF: BindingsFactory
+    BF: BindingsFactory,
   ): Promise<IPathResultStream> {
     if (graph.termType === 'Variable') {
       return this.predicateStarGraphVariable(subject, object, predicate, graph, context, BF);
@@ -259,7 +259,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     termHashesCurrentSubject: Record<string, boolean>,
     it: BufferedIterator<Bindings>,
     counter: any,
-    BF: BindingsFactory
+    BF: BindingsFactory,
   ): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);
 
@@ -291,7 +291,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           termHashesCurrentSubject,
           it,
           counter,
-          BF
+          BF,
         );
       }
       if (--counter.count === 0) {
@@ -328,7 +328,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           termHashesCurrentSubject,
           it,
           counter,
-          BF
+          BF,
         );
       });
       results.bindingsStream.on('error', reject);

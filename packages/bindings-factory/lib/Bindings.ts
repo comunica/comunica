@@ -1,9 +1,10 @@
-import { ActionContext, ActionContextKey } from '@comunica/core';
+import type { IMergeHandler } from '@comunica/bus-merge-binding-factory';
+import type { ActionContextKey } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { bindingsToString } from './bindingsToString';
-import { IMergeHandler } from '@comunica/bus-merge-binding-factory';
-import { IActionContext } from '@comunica/types';
 
 /**
  * An immutable.js-based Bindings object.
@@ -17,8 +18,8 @@ export class Bindings implements RDF.Bindings {
   private readonly dataFactory: RDF.DataFactory;
   private readonly entries: Map<string, RDF.Term>;
 
-  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>, 
-    contextMergeHandlers: Record<string, IMergeHandler<any>>, 
+  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>,
+    contextMergeHandlers: Record<string, IMergeHandler<any>>,
     context: IActionContext = new ActionContext()) {
     this.dataFactory = dataFactory;
     this.entries = entries;
@@ -36,11 +37,15 @@ export class Bindings implements RDF.Bindings {
   }
 
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, this.entries.set(typeof key === 'string' ? key : key.value, value), this.contextMergeHandlers);
+    return new Bindings(this.dataFactory,
+      this.entries.set(typeof key === 'string' ? key : key.value, value),
+      this.contextMergeHandlers);
   }
 
   public delete(key: RDF.Variable | string): Bindings {
-    return new Bindings(this.dataFactory, this.entries.delete(typeof key === 'string' ? key : key.value), this.contextMergeHandlers);
+    return new Bindings(this.dataFactory,
+      this.entries.delete(typeof key === 'string' ? key : key.value),
+      this.contextMergeHandlers);
   }
 
   public keys(): Iterable<RDF.Variable> {
@@ -122,10 +127,10 @@ export class Bindings implements RDF.Bindings {
     }
 
     // Only merge if the other has a context
-    if (other.hasOwnProperty('context')) {
-      const otherAsBinding = <Bindings> other;
+    if ('context' in other) {
+      const otherAsBinding = other;
       // If we have empty context we skip the context merge (This is likely not needed / doesn't give performance boost)
-      if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0){
+      if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0) {
         this.mergeContext(other);
       }
     }
@@ -158,24 +163,27 @@ export class Bindings implements RDF.Bindings {
     }
 
     // Only merge if the other has a context
-    if (other.hasOwnProperty('context')) {
+    if ('context' in other) {
       const otherAsBinding = <Bindings> other;
       // If we have empty context we skip the context merge (This is likely not needed / doesn't give performance boost)
-      if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0){
+      if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0) {
         this.mergeContext(other);
       }
     }
-    
+
     return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, this.context);
   }
 
-  private mergeContext(other: RDF.Bindings | Bindings){
+  private mergeContext(other: RDF.Bindings | Bindings): void {
     const otherAsBinding = <Bindings> other;
     // Get Set of all keys present in either of the bindings
-    const keysContext = this.unique_keys([...this.context.keys(), ...otherAsBinding.context.keys()])
+    const keysContext = this.unique_keys([ ...this.context.keys(),
+      ...otherAsBinding.context.keys() ]);
 
     // Get Set of all keys present in both bindings
-    const keysBothContext = this.context.keys().filter(o => otherAsBinding.context!.keys().some(({name}) => o.name === name));
+    const keysBothContext = this.context.keys().filter(
+      element => otherAsBinding.context.keys().some(({ name }) => element.name === name),
+    );
 
     // Merge context based on supplied mergeHandlers
     for (const key of keysContext) {
@@ -183,19 +191,19 @@ export class Bindings implements RDF.Bindings {
       const occursInBoth = keysBothContext.some(x => x.name === key.name);
 
       if (this.contextMergeHandlers[keyString] && occursInBoth) {
-        this.context = this.context.set(key, this.contextMergeHandlers[keyString].run(this.context.get(key), otherAsBinding.context.get(key)));
+        this.context = this.context.set(key, this.contextMergeHandlers[keyString]
+          .run(this.context.get(key), otherAsBinding.context.get(key)));
         continue;
       }
-      // For keys in both bindings we require a mergehandler. If no mergehandler is supplied the keys are removed in the result 
-      if (!this.contextMergeHandlers[keyString] && occursInBoth){
+      // For keys in both bindings we require a mergehandler. If no mergehandler is supplied the keys
+      // are removed in the result
+      if (!this.contextMergeHandlers[keyString] && occursInBoth) {
         this.context = this.context.delete(key);
         continue;
       }
       // If it doesn't occur in both contexts, we simply copy the context entry into the new binding
-      if (!occursInBoth){
-        if (!this.context.get(key)){
-          this.context = this.context.set(key, otherAsBinding.context.get(key));
-        }
+      if (!occursInBoth && !this.context.get(key)) {
+        this.context = this.context.set(key, otherAsBinding.context.get(key));
       }
     }
   }
@@ -204,20 +212,21 @@ export class Bindings implements RDF.Bindings {
     return bindingsToString(this);
   }
 
-  private unique_keys(a: ActionContextKey<any>[]) {
-    let seen: Record<string, number> = {};
-    let out = [];
-    let len = a.length;
+  private unique_keys(keyArray: ActionContextKey<any>[]): ActionContextKey<any>[] {
+    const seen: Record<string, number> = {};
+    const out = [];
+    const len = keyArray.length;
     let j = 0;
-    for(let i = 0; i < len; i++) {
-         let item = a[i];
-         if(seen[item.name] !== 1) {
-               seen[item.name] = 1;
-               out[j++] = item;
-         }
+    for (let i = 0; i < len; i++) {
+      const item = keyArray[i];
+      if (seen[item.name] !== 1) {
+        seen[item.name] = 1;
+        out[j++] = item;
+      }
     }
     return out;
-}
+  }
+
   protected * mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
     for (const x of iterable) {
       // eslint-disable-next-line callback-return

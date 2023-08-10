@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getContextSourceFirst, getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
@@ -26,7 +27,6 @@ import type { IUpdateTypes } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, toSparql, Util, Algebra } from 'sparqlalgebrajs';
 import { LazyCardinalityIterator } from './LazyCardinalityIterator';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 
 const DF = new DataFactory();
 
@@ -116,7 +116,9 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const canContainUndefs = this.canOperationContainUndefs(action.operation);
 
     // Execute the query against the endpoint depending on the type
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
+    const BF = new BindingsFactory(
+      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+    );
     switch (type) {
       case 'SELECT':
         if (!variables) {
@@ -152,7 +154,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     quads: boolean,
     variables: RDF.Variable[] | undefined,
     canContainUndefs: boolean,
-    BF: BindingsFactory
+    BF: BindingsFactory,
   ): IQueryOperationResult {
     const inputStream: Promise<NodeJS.EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :

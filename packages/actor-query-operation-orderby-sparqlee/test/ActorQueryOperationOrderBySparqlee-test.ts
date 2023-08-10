@@ -9,7 +9,7 @@ import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
   let bus: any;
@@ -55,8 +55,11 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
         mediate(arg: any) {
           return {};
         },
-      };  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+      };
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -152,9 +155,14 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should be a ActorQueryOperationOrderBySparqlee constructor', () => {
-      expect(new (<any> ActorQueryOperationOrderBySparqlee)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationOrderBySparqlee)({ name: 'actor',
+        bus,
+        mediatorQueryOperation }))
         .toBeInstanceOf(<any> ActorQueryOperationOrderBySparqlee);
-      expect(new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers }))
+      expect(new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
@@ -169,15 +177,18 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     let orderB: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let orderA1: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+
     beforeEach(() => {
       mediatorMergeHandlers = {
         mediate(arg: any) {
           return {};
         },
       };
-  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -230,7 +241,11 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run with a window', async() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, window: 1, mediatorMergeHandlers });
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        window: 1,
+        mediatorMergeHandlers });
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext() };
       const output = await actor.run(op);
@@ -345,8 +360,11 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
           return {};
         },
       };
-  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -543,8 +561,11 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
           return {};
         },
       };
-  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -631,8 +652,11 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
           return {};
         },
       };
-  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -720,7 +744,10 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -807,8 +834,11 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
           return {};
         },
       };
-  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -895,8 +925,11 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
           return {};
         },
       };
-  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -983,8 +1016,11 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
           return {};
         },
       };
-  
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,

@@ -4,7 +4,7 @@ import { Factory } from 'sparqlalgebrajs';
 import { materializeOperation, materializeTerm } from '..';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 const factory = new Factory();
 
@@ -171,7 +171,7 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
       bindingsEmpty,
-      BF
+      BF,
     ))
       .toEqual(factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode));
   });
@@ -180,7 +180,7 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode));
   });
@@ -192,7 +192,7 @@ describe('materializeOperation', () => {
         factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
       ]),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createBgp([
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
@@ -204,7 +204,7 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createPath(termVariableA, <any> null, termVariableC, termNamedNode),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createPath(valueA, <any> null, termVariableC, termNamedNode));
   });
@@ -221,7 +221,7 @@ describe('materializeOperation', () => {
         termNamedNode,
       ),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createPath(
         valueA,
@@ -242,7 +242,7 @@ describe('materializeOperation', () => {
         factory.createTermExpression(termVariableB),
       ),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createExtend(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
@@ -259,7 +259,7 @@ describe('materializeOperation', () => {
         factory.createTermExpression(termVariableA),
       ),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createExtend(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
@@ -290,7 +290,7 @@ describe('materializeOperation', () => {
         factory.createTermExpression(termVariableC),
       ),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode));
   });
@@ -308,7 +308,7 @@ describe('materializeOperation', () => {
         ) ],
       ),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createGroup(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
@@ -335,7 +335,7 @@ describe('materializeOperation', () => {
         ) ],
       ),
       bindingsA,
-      BF
+      BF,
     ))
       .toEqual(factory.createGroup(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),

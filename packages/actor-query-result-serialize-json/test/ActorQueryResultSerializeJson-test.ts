@@ -9,7 +9,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeJson } from '..';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 

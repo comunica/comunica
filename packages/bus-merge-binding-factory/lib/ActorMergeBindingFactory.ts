@@ -14,7 +14,9 @@ import type { IActionContext } from '@comunica/types';
  * @see IActorMergeBindingFactoryOutput
  */
 
-export abstract class ActorMergeBindingFactory extends Actor<IActionMergeBindingFactory, IActorTest, IActorMergeBindingFactoryOutput> {
+export abstract class ActorMergeBindingFactory extends Actor<IActionMergeBindingFactory,
+IActorTest,
+IActorMergeBindingFactoryOutput> {
   /**
   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
   */
@@ -38,6 +40,6 @@ export type MediatorMergeBindingFactory = Mediate<
 IActionMergeBindingFactory, IActorMergeBindingFactoryOutput>;
 
 export interface IMergeHandler<V> {
-  run: (...args: V[]) => V[]
+  run: (...args: V[]) => V[];
 }
 

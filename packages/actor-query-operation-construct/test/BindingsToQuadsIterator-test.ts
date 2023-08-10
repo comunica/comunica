@@ -6,7 +6,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('BindingsToQuadsIterator', () => {
   describe('#bindTerm', () => {

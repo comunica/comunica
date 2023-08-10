@@ -1,4 +1,5 @@
-import { Bindings, BindingsFactory } from '@comunica/bindings-factory';
+import type { Bindings } from '@comunica/bindings-factory';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
@@ -12,7 +13,7 @@ import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPat
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationPathZeroOrMore', () => {
   let bus: any;
@@ -106,7 +107,10 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     let actor: ActorQueryOperationPathZeroOrMore;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationPathZeroOrMore({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+      actor = new ActorQueryOperationPathZeroOrMore({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeHandlers });
     });
 
     it('should test on ZeroOrMore paths', () => {

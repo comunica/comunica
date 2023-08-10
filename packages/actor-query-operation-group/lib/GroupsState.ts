@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -44,7 +44,7 @@ export class GroupsState {
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
     private readonly sparqleeConfig: AsyncEvaluatorConfig,
-    BF: BindingsFactory
+    BF: BindingsFactory,
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -55,7 +55,6 @@ export class GroupsState {
     this.waitCounter = 1;
     this.resultHasBeenCalled = false;
     this.BF = BF;
-
   }
 
   /**
@@ -98,7 +97,7 @@ export class GroupsState {
         }
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
-        await this.subtractWaitCounterAndCollect();
+        this.subtractWaitCounterAndCollect();
         return group;
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
@@ -121,19 +120,19 @@ export class GroupsState {
           await group.aggregators[variable].put(bindings);
         }));
       })().then(async() => {
-        await this.subtractWaitCounterAndCollect();
+        this.subtractWaitCounterAndCollect();
       });
     }
     return res;
   }
 
-  private async subtractWaitCounterAndCollect(): Promise<void> {
+  private subtractWaitCounterAndCollect(): void {
     if (--this.waitCounter === 0) {
       this.handleResultCollection();
     }
   }
 
-  private async handleResultCollection(): Promise<void> {
+  private handleResultCollection(): void {
     // Collect groups
     let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;

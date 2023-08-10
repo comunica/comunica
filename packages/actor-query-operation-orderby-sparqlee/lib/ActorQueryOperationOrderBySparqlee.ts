@@ -1,3 +1,5 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -8,8 +10,6 @@ import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
 import { SortIterator } from './SortIterator';
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 
 /**
  * A comunica OrderBy Sparqlee Query Operation Actor.
@@ -25,7 +25,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
 
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
@@ -43,8 +43,10 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
-    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context,
+      this.mediatorQueryOperation,
+      BF) };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.

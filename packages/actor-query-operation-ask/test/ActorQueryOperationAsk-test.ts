@@ -7,7 +7,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationAsk', () => {
   let bus: any;

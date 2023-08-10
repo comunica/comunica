@@ -2,7 +2,7 @@ import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess
 import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActionInit, IActorInitArgs, IActorOutputInit } from '@comunica/bus-init';
 import { ActorInit } from '@comunica/bus-init';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorQueryParse } from '@comunica/bus-query-parse';

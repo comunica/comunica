@@ -7,7 +7,7 @@ import { ActorQueryOperationReducedHash } from '..';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationReducedHash', () => {
   let bus: any;

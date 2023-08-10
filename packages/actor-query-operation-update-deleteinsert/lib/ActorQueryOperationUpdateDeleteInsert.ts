@@ -1,6 +1,6 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -36,7 +36,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation

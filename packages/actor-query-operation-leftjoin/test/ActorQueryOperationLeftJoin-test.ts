@@ -10,7 +10,7 @@ import { ActorQueryOperationLeftJoin } from '../lib/ActorQueryOperationLeftJoin'
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
@@ -71,7 +71,11 @@ describe('ActorQueryOperationLeftJoin', () => {
     let actor: ActorQueryOperationLeftJoin;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationLeftJoin({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin, mediatorMergeHandlers });
+      actor = new ActorQueryOperationLeftJoin({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorJoin,
+        mediatorMergeHandlers });
     });
 
     it('should test on leftjoin', () => {

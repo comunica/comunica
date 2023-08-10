@@ -11,7 +11,7 @@ import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNeste
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorRdfJoinOptionalNestedLoop', () => {
   let bus: any;

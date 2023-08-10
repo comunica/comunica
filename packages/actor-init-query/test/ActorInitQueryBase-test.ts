@@ -96,7 +96,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers: mediatorMergeHandlers,
+        mediatorMergeHandlers,
         name: 'actor',
       });
     });
@@ -133,7 +133,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers: mediatorMergeHandlers,
+        mediatorMergeHandlers,
         name: 'actor',
       })).toThrow('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
     });
@@ -156,7 +156,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers: mediatorMergeHandlers,
+        mediatorMergeHandlers,
         name: 'actor',
       });
 

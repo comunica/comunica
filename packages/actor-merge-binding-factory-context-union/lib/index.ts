@@ -1,2 +1,2 @@
 export * from './ActorMergeBindingFactoryContextUnion';
-export * from './SetUnionContext'
+export * from './SetUnionContext';

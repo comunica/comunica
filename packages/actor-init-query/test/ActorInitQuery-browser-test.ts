@@ -60,7 +60,7 @@ describe('ActorInitQuery', () => {
           return {};
         },
       };
-  
+
       actor = new ActorInitQuery({
         bus,
         contextKeyShortcuts,
@@ -74,7 +74,7 @@ describe('ActorInitQuery', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers: mediatorMergeHandlers,
+        mediatorMergeHandlers,
         name: 'actor',
       });
     });

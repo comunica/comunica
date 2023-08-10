@@ -12,7 +12,7 @@ import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 // Dummy class to test instance of abstract class
 class Dummy extends ActorRdfJoin {

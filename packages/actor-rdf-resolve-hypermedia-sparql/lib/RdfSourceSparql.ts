@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { Bindings, BindingsStream, IActionContext } from '@comunica/types';

@@ -1,12 +1,11 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IQueryOperationResultBindings, Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
-
 
 /**
  * A comunica Path OneOrMore Query Operation Actor.
@@ -19,7 +18,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
@@ -38,7 +37,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         operation.graph,
         context,
         false,
-        BF
+        BF,
       );
       const variables = operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ];
       return {
@@ -83,7 +82,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   {},
                   it,
                   { count: 0 },
-                  BF
+                  BF,
                 );
                 return it.transform<Bindings>({
                   transform(item, next, push) {

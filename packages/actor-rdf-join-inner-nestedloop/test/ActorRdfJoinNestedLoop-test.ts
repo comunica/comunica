@@ -14,7 +14,7 @@ import { ActorRdfJoinNestedLoop } from '../lib/ActorRdfJoinNestedLoop';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 function bindingsToString(b: Bindings): string {
   // eslint-disable-next-line @typescript-eslint/require-array-sort-compare

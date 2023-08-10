@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
@@ -54,7 +54,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
-    BF: BindingsFactory
+    BF: BindingsFactory,
   ): BindingsStream {
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
@@ -155,7 +155,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Create BindingsFactory and binding context handlers
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: action.context})).mergeHandlers);
+    const BF = new BindingsFactory(
+      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+    );
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
@@ -196,7 +198,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       false,
-      BF
+      BF,
     );
 
     return {

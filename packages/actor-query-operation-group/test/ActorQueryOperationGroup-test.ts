@@ -12,7 +12,7 @@ import { GroupsState } from '../lib/GroupsState';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(DF, {});
+const BF = new BindingsFactory({}, DF);
 const mediatorMergeHandlers: any = {
   mediate(arg: any) {
     return {};
@@ -117,12 +117,6 @@ function constructCase(
   const mediatorHashBindings: any = {
     mediate: () => Promise.resolve({ hashFunction }),
   };
-  const mediatorMergeHandlers: any = {
-    mediate(arg: any) {
-      return {};
-    },
-  };
-
 
   const operation: Algebra.Group = {
     type: Algebra.types.GROUP,
@@ -132,7 +126,11 @@ function constructCase(
   };
   const op: any = { operation, context: new ActionContext() };
 
-  const actor = new ActorQueryOperationGroup({ name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings, mediatorMergeHandlers });
+  const actor = new ActorQueryOperationGroup({ name: 'actor',
+    bus,
+    mediatorQueryOperation,
+    mediatorHashBindings,
+    mediatorMergeHandlers });
   return { actor, bus, mediatorQueryOperation, op };
 }
 
@@ -181,7 +179,6 @@ describe('ActorQueryOperationGroup', () => {
   describe('A GroupState instance', () => {
     it('should throw an error if collectResults is called multiple times', async() => {
       const { actor, op } = constructCase({});
-      const BF = new BindingsFactory(DF, {})
       const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {}, BF);
       expect(await temp.collectResults()).toBeTruthy();
       await expect(temp.collectResults()).rejects.toThrow('collectResult');
@@ -189,7 +186,6 @@ describe('ActorQueryOperationGroup', () => {
 
     it('should throw an error if consumeBindings is called after collectResults', async() => {
       const { actor, op } = constructCase({});
-      const BF = new BindingsFactory(DF, {})
       const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {}, BF);
       expect(await temp.collectResults()).toBeTruthy();
       await expect(temp.consumeBindings(BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]])))
@@ -614,7 +610,7 @@ describe('ActorQueryOperationGroup', () => {
         bus,
         mediatorHashBindings,
         mediatorQueryOperation: <any> myMediatorQueryOperation,
-        mediatorMergeHandlers: mediatorMergeHandlers
+        mediatorMergeHandlers,
       });
 
       await expect(async() => arrayifyStream((<any> await actor.run(op)).bindingsStream))

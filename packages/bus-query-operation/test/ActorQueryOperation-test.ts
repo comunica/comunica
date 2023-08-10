@@ -8,7 +8,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from '..';
 
-const BF = new BindingsFactory(undefined, {});
+const BF = new BindingsFactory({});
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
@@ -124,7 +124,6 @@ describe('ActorQueryOperation', () => {
           variables: [ 'a' ],
         }),
       };
-      const BF = new BindingsFactory(undefined, {});
     });
 
     it('should create an object for an empty contexts save for the bnode function', () => {

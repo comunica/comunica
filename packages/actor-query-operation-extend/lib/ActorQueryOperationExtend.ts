@@ -1,5 +1,5 @@
 import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -22,7 +22,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   }
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers)
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     // Will throw error for unsupported opperations
     const _ = Boolean(new AsyncEvaluator(operation.expression,
       ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF)));
@@ -36,7 +36,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers)
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
     const evaluator = new AsyncEvaluator(expression, config);
 

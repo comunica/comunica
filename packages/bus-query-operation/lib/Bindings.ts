@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';

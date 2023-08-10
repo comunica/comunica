@@ -1,4 +1,6 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
+import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
@@ -7,8 +9,6 @@ import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from 'sparqlee';
 import { GroupsState } from './GroupsState';
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 
 /**
  * A comunica Group Query Operation Actor.
@@ -22,7 +22,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 
   public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = new AsyncEvaluator(
@@ -36,7 +36,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   public async runOperation(operation: Algebra.Group, context: IActionContext):
   Promise<IQueryOperationResult> {
     // Create bindingFactory with handlers
-    const BF = new BindingsFactory(undefined, (await this.mediatorMergeHandlers.mediate({context: context})).mergeHandlers);
+    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     // Create a hash function
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
 

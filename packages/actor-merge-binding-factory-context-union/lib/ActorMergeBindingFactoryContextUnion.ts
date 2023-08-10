@@ -1,5 +1,6 @@
 import type { IActionMergeBindingFactory,
-  IActorMergeBindingFactoryOutput, IActorMergeBindingFactoryArgs, IMergeHandler } from '@comunica/bus-merge-binding-factory';
+  IActorMergeBindingFactoryOutput, IActorMergeBindingFactoryArgs,
+  IMergeHandler } from '@comunica/bus-merge-binding-factory';
 import { ActorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorTest } from '@comunica/core';
 import { SetUnionContext } from './SetUnionContext';
@@ -11,7 +12,7 @@ export class ActorMergeBindingFactoryContextUnion extends ActorMergeBindingFacto
   private readonly contextKey: string;
   public constructor(args: IActorMergeBindingFactoryContextUnionArgs) {
     super(args);
-    this.contextKey = args.contextKey
+    this.contextKey = args.contextKey;
   }
 
   public async test(action: IActionMergeBindingFactory): Promise<IActorTest> {
@@ -19,15 +20,11 @@ export class ActorMergeBindingFactoryContextUnion extends ActorMergeBindingFacto
   }
 
   public async run(action: IActionMergeBindingFactory): Promise<IActorMergeBindingFactoryOutput> {
-    // Here we take key specified in config and define the union function
-
-    // Merge of source bindings function: Union with set semantics
-    // Add union to mergehandlers
+    // Merge function: Union with set semantics
     const mergeHandlers: Record<string, IMergeHandler<any>> = {};
     mergeHandlers[this.contextKey] = new SetUnionContext();
-    
-    // mergeHandlers.sourceBinding = mergeSourceBindings;
-    return { mergeHandlers }; // TODO implement
+
+    return { mergeHandlers };
   }
 }
 
@@ -36,6 +33,6 @@ export interface IActorMergeBindingFactoryContextUnionArgs extends IActorMergeBi
    * The keys the mergehandler created by this actor should merge over. With the key of the record being the key name
    * and the value the expected type of the context entry
    */
-  contextKey: string; 
+  contextKey: string;
 }
 
