@@ -1,6 +1,5 @@
 import type * as RDF from '@rdfjs/types';
 import type { IDataDestination } from './IDataDestination';
-import type { IDataSource } from './IDataSource';
 import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
 import type { QueryExplainMode } from './IQueryOperationResult';
