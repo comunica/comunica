@@ -26,6 +26,7 @@ export interface IActionContext {
   has: <V>(key: IActionContextKey<V>) => boolean;
   merge: (...contexts: IActionContext[]) => IActionContext;
   keys: () => IActionContextKey<any>[];
+  contextSize: () => number;
   toJS: () => any;
 }
 

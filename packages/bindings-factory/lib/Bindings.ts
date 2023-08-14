@@ -126,17 +126,20 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    let mergedContext = this.context;
-    // Only merge if the other has a context
-    if ('context' in other) {
-      const otherAsBinding = other;
-      // If we have empty context we skip the context merge (This is likely not needed / doesn't give performance boost)
-      if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0) {
-        mergedContext = this.mergeContext(other);
+    // If any context is empty we skip merging contexts
+    if (this.context.contextSize() > 0) {
+      let mergedContext = this.context;
+      // Only merge if the other has a context
+      if ('context' in other) {
+        const otherAsBinding = other;
+        if (otherAsBinding.context.contextSize() > 0) {
+          mergedContext = this.mergeContext(other);
+        }
       }
+      return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
     }
 
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
+    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, this.context);
   }
 
   public mergeWith(
