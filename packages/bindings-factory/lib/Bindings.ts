@@ -130,11 +130,8 @@ export class Bindings implements RDF.Bindings {
     if (this.context.contextSize() > 0) {
       let mergedContext = this.context;
       // Only merge if the other has a context
-      if ('context' in other) {
-        const otherAsBinding = other;
-        if (otherAsBinding.context.contextSize() > 0) {
-          mergedContext = this.mergeContext(other);
-        }
+      if ('context' in other && other.context.contextSize() > 0) {
+        mergedContext = this.mergeContext(other);
       }
       return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
     }
@@ -144,7 +141,7 @@ export class Bindings implements RDF.Bindings {
 
   public mergeWith(
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
-    other: RDF.Bindings,
+    other: RDF.Bindings | Bindings,
   ): Bindings {
     // Determine the union of keys
     const keys = new Set([
@@ -166,17 +163,17 @@ export class Bindings implements RDF.Bindings {
       }
       entries.push([ key, value ]);
     }
-    let mergedContext = this.context;
-    // Only merge if the other has a context
-    if ('context' in other) {
-      const otherAsBinding = <Bindings> other;
-      // If we have empty context we skip the context merge (This is likely not needed / doesn't give performance boost)
-      if (this.context.keys().length > 0 || otherAsBinding.context.keys().length > 0) {
+
+    if (this.context.contextSize() > 0) {
+      let mergedContext = this.context;
+      // Only merge if the other has a context
+      if ('context' in other && other.context.contextSize() > 0) {
         mergedContext = this.mergeContext(other);
       }
+      return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
     }
 
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
+    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, this.context);
   }
 
   private mergeContext(other: RDF.Bindings | Bindings): IActionContext {
