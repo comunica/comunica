@@ -73,10 +73,6 @@ export class ActionContext implements IActionContext {
     return this.map.toJS();
   }
 
-  public contextSize(): number {
-    return this.map.size;
-  }
-
   public toString(): string {
     return `ActionContext(${JSON.stringify(this.map.toJS())})`;
   }
