@@ -10,6 +10,7 @@ const DF = new DataFactory();
 
 describe('Binding context mergehandler', () => {
   let bindings: Bindings;
+  let bindingsNoContext: Bindings;
 
   beforeEach(() => {
     bindings = new Bindings(DF, Map<string, RDF.Term>([
@@ -17,6 +18,11 @@ describe('Binding context mergehandler', () => {
       [ 'b', DF.namedNode('ex:b') ],
       [ 'c', DF.namedNode('ex:c') ],
     ]), { source: new SetUnionContext() }, new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
+    bindingsNoContext = new Bindings(DF, Map<string, RDF.Term>([
+      [ 'a', DF.namedNode('ex:a') ],
+      [ 'b', DF.namedNode('ex:b') ],
+      [ 'd', DF.namedNode('ex:d') ],
+    ]), {});
   });
 
   it('should merge binding context according to mergehandler in mergeWith', () => {
@@ -67,6 +73,12 @@ describe('Binding context mergehandler', () => {
     expect(bindingsNew.context).toEqual(new ActionContext({}));
   });
 
+  it('should merge with itself with context', () => {
+    const bindingsNew = bindings.merge(bindings)!;
+    expect(bindingsNew).toBeDefined();
+    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
+  });
+
   it('should merge overlapping compatible bindings', () => {
     const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
       [ 'd', DF.namedNode('ex:d') ],
@@ -79,6 +91,37 @@ describe('Binding context mergehandler', () => {
     expect(bindingsNew).toBeDefined();
     expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
   });
+
+  it('should merge with only left side merge context', () => {
+    const bindingsNew = bindings.merge(bindingsNoContext)!;
+    expect(bindingsNew).toBeDefined();
+    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
+  });
+
+  it('should merge with only right side merge context', () => {
+    const bindingsNew = bindingsNoContext.merge(bindings)!;
+    expect(bindingsNew).toBeDefined();
+    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
+  });
+
+  it('should merge with undefined context', () => {
+    const bindingsNoContextOther = new Bindings(DF, Map<string, RDF.Term>([
+      [ 'a', DF.namedNode('ex:a') ],
+      [ 'b', DF.namedNode('ex:b') ],
+      [ 'd', DF.namedNode('ex:d') ],
+    ]), {});
+
+    const bindingsNew = bindingsNoContext.merge(bindingsNoContextOther)!;
+    expect(bindingsNew).toBeDefined();
+    expect(bindingsNew.context).toEqual(undefined);
+  });
+
+  it('should merge with itself with no context', () => {
+    const bindingsNew = bindingsNoContext.merge(bindingsNoContext)!;
+    expect(bindingsNew).toBeDefined();
+    expect(bindingsNew.context).toEqual(undefined);
+  });
+
   describe('calling merge twice on same binding should give correct results', () => {
     let bindingsOther1: Bindings;
     let bindingsOther2: Bindings;
