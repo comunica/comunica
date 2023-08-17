@@ -33,6 +33,11 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
 
+    // Throw if the variable has already been bound
+    if ((await output.metadata()).variables.some(innerVariable => innerVariable.equals(variable))) {
+      throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
+    }
+
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     const evaluator = new AsyncEvaluator(expression, config);
 

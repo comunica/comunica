@@ -169,5 +169,27 @@ describe('ActorQueryOperationExtend', () => {
       });
       expect(warn).toBeCalledTimes(0);
     });
+
+    it('throws ia a variable was already bound', async() => {
+      const op: any = {
+        operation: {
+          type: 'extend',
+          input: {
+            type: 'bgp',
+            patterns: [{
+              subject: { value: 's' },
+              predicate: { value: 'p' },
+              object: { value: 'o' },
+              graph: { value: '' },
+              type: 'pattern',
+            }],
+          },
+          variable: { termType: 'Variable', value: 'a' },
+          defaultExpression,
+        },
+        context: new ActionContext(),
+      };
+      await expect(actor.run(op)).rejects.toThrow(`Illegal binding to variable 'a' that has already been bound`);
+    });
   });
 });
