@@ -731,6 +731,34 @@ describe('System test: QuerySparql', () => {
         expect(bindings).toMatchObject(expectedResult);
       });
     });
+
+    describe('with a throwing fetch function', () => {
+      function throwingFetch() {
+        throw new Error('Fetch failed!');
+      }
+
+      it('should throw when querying once', async() => {
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+      });
+
+      it('should throw when querying twice', async() => {
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues

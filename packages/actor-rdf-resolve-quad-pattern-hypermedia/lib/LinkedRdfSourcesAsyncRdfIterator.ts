@@ -21,9 +21,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private readonly maxIterators: number;
 
   private started = false;
-  private readonly currentIterators: AsyncIterator<RDF.Quad>[];
-  private iteratorsPendingCreation: number;
-  private accumulatedMetadata: Promise<MetadataQuads | undefined>;
+  private readonly currentIterators: AsyncIterator<RDF.Quad>[] = [];
+  private iteratorsPendingCreation = 0;
+  // eslint-disable-next-line unicorn/no-useless-undefined
+  private accumulatedMetadata: Promise<MetadataQuads | undefined> = Promise.resolve(undefined);
 
   public constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string, maxIterators: number, options?: BufferedIteratorOptions) {
@@ -39,11 +40,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     if (this.maxIterators <= 0) {
       throw new Error(`LinkedRdfSourcesAsyncRdfIterator.maxIterators must be larger than zero, but got ${this.maxIterators}`);
     }
-
-    this.currentIterators = [];
-    this.iteratorsPendingCreation = 0;
-    // eslint-disable-next-line unicorn/no-useless-undefined
-    this.accumulatedMetadata = Promise.resolve(undefined);
   }
 
   protected _end(destroy?: boolean): void {
@@ -138,10 +134,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           this.startIterator(sourceState, true);
           done();
         })
-        .catch(error => {
-          // We can safely ignore this error, since it handled in setSourcesState
-          done();
-        });
+        .catch(error => this.destroy(error));
     } else {
       // Read from all current iterators
       for (const iterator of this.currentIterators) {
