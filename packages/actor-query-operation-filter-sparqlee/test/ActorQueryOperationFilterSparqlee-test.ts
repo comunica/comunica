@@ -146,6 +146,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
         context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      output.bindingsStream.on('data', () => {
+        // This is here to force the stream to start.
+      });
       await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
       expect(logWarnSpy).toHaveBeenCalledTimes(3);
       logWarnSpy.mock.calls.forEach((call, index) => {
@@ -167,6 +170,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
         context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      output.bindingsStream.on('data', () => {
+        // This is here to force the stream to start.
+      });
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
 

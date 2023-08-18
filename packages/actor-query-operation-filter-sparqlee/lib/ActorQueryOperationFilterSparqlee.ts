@@ -60,7 +60,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
       next();
     };
 
-    const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
+    const bindingsStream = output.bindingsStream.transform<Bindings>({ transform, autoStart: false });
     return { type: 'bindings', bindingsStream, metadata: output.metadata };
   }
 }

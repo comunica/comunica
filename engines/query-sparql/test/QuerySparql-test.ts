@@ -759,6 +759,25 @@ describe('System test: QuerySparql', () => {
         })).rejects.toThrow('Fetch failed!');
       });
     });
+
+    describe('on a remote source', () => {
+      it('with non-matching query with limit and filter', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT * WHERE {
+  ?s ?p <http://purl.org/dc/terms/dontExist>
+  FILTER(?s>1)
+} LIMIT 1`, {
+          sources: [ 'https://dbpedia.org/resource/Tractatus_de_Intellectus_Emendatione' ],
+        });
+        const dataListener = jest.fn();
+        bindingsStream.on('data', dataListener);
+        await new Promise((resolve, reject) => {
+          bindingsStream.on('error', reject);
+          bindingsStream.on('end', resolve);
+        });
+        expect(dataListener).not.toHaveBeenCalled();
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
