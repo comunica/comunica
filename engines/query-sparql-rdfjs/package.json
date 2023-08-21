@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "2.8.2",
+  "version": "2.8.3",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -50,8 +50,8 @@
     "@comunica/actor-query-operation-construct": "^2.8.2",
     "@comunica/actor-query-operation-describe-subject": "^2.8.2",
     "@comunica/actor-query-operation-distinct-hash": "^2.8.2",
-    "@comunica/actor-query-operation-extend": "^2.8.2",
-    "@comunica/actor-query-operation-filter-sparqlee": "^2.8.2",
+    "@comunica/actor-query-operation-extend": "^2.8.3",
+    "@comunica/actor-query-operation-filter-sparqlee": "^2.8.3",
     "@comunica/actor-query-operation-from-quad": "^2.8.2",
     "@comunica/actor-query-operation-group": "^2.8.2",
     "@comunica/actor-query-operation-join": "^2.8.2",
