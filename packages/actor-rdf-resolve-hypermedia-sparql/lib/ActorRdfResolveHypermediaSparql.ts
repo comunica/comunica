@@ -26,7 +26,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   }
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
-    this.logInfo(action.context, `Identified as sparql source: ${action.url}`);
+    this.logInfo(action.context, `Identified ${action.url} as sparql source with service URL: ${action.metadata.sparqlService || action.url}`);
     const source = new RdfSourceSparql(
       action.metadata.sparqlService || action.url,
       action.context,
