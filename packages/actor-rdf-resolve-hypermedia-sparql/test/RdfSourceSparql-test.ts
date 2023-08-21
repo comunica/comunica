@@ -373,12 +373,25 @@ describe('RdfSourceSparql', () => {
 
     it('should emit an error on server errors', async() => {
       const thisMediator: any = {
-        mediate() {
+        mediate(action: any) {
+          const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: streamifyString(`empty body`),
-            ok: false,
-            status: 500,
+            body: query.indexOf('COUNT') > 0 ?
+              streamifyString(`{
+  "head": { "vars": [ "count" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "count": { "type": "literal" , "value": "3" }
+      }
+    ]
+  }
+}`) :
+              streamifyString(`empty body`),
+            ok: query.indexOf('COUNT') > 0,
+            status: query.indexOf('COUNT') > 0 ? 200 : 500,
             statusText: 'Error!',
           };
         },
@@ -388,6 +401,51 @@ describe('RdfSourceSparql', () => {
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
         .rejects.toThrow(new Error(`Invalid SPARQL endpoint response from http://example.org/sparql (HTTP status 500):\nempty body`));
+    });
+
+    it('should not emit an error on server errors in count queries', async() => {
+      const thisMediator: any = {
+        mediate(action: any) {
+          const query = action.init.body.toString();
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') <= 0 ?
+              streamifyString(`{
+  "head": { "vars": [ "p" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "p": { "type": "uri" , "value": "p1" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p2" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p3" }
+      }
+    ]
+  }
+}`) :
+              streamifyString(`empty body`),
+            ok: query.indexOf('COUNT') <= 0,
+            status: query.indexOf('COUNT') <= 0 ? 200 : 500,
+            statusText: 'Error!',
+          };
+        },
+      };
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+
+      const stream = source.match(
+        DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
+      );
+      expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
+      await expect(stream.toArray()).resolves.toEqual([
+        quad('s', 'p1', 'o'),
+        quad('s', 'p2', 'o'),
+        quad('s', 'p3', 'o'),
+      ]);
     });
 
     it('should emit an error for invalid binding results', async() => {
@@ -543,8 +601,8 @@ describe('RdfSourceSparql', () => {
         .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
     });
 
-    it('should allow multiple read calls on query bindings', () => {
-      const data = source.queryBindings('http://ex', '');
+    it('should allow multiple read calls on query bindings', async() => {
+      const data = await source.queryBindings('http://ex', '');
       const r1 = data.read();
       const r2 = data.read();
       expect(r1).toEqual(null);
