@@ -86,7 +86,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   public destroy(cause?: Error): void {
     this.getLinkQueue()
       .then(linkQueue => {
-        if (this.isCloseable(linkQueue)) {
+        if (cause || this.isCloseable(linkQueue)) {
           this.aggregatedStore?.end();
           super.destroy(cause);
         } else {

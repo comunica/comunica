@@ -268,6 +268,16 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         await new Promise(setImmediate);
       });
 
+      it('should close if the iterator is not closeable but an error is passed', async() => {
+        const source = sourceFactory();
+        source.getLinkQueue = async() => ({ isEmpty: () => false });
+        source.on('error', jest.fn());
+        source.destroy(new Error('force destroy'));
+        await new Promise(setImmediate);
+        expect(source.closed).toEqual(true);
+        expect(source.wasForcefullyClosed).toEqual(false);
+      });
+
       it('should destroy if the link queue rejects', async() => {
         const source = sourceFactory();
         source.getLinkQueue = () => Promise.reject(new Error('getLinkQueue reject'));
