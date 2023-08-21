@@ -769,13 +769,16 @@ SELECT * WHERE {
 } LIMIT 1`, {
           sources: [ 'https://dbpedia.org/resource/Tractatus_de_Intellectus_Emendatione' ],
         });
-        const dataListener = jest.fn();
+        let called = 0;
+        const dataListener = () => {
+          called++;
+        };
         bindingsStream.on('data', dataListener);
         await new Promise((resolve, reject) => {
           bindingsStream.on('error', reject);
           bindingsStream.on('end', resolve);
         });
-        expect(dataListener).not.toHaveBeenCalled();
+        expect(called).toEqual(0);
       });
     });
   });
