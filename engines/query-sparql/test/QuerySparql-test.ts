@@ -767,7 +767,7 @@ SELECT * WHERE {
   ?s ?p <http://purl.org/dc/terms/dontExist>
   FILTER(?s>1)
 } LIMIT 1`, {
-          sources: [ 'https://dbpedia.org/resource/Tractatus_de_Intellectus_Emendatione' ],
+          sources: [ 'https://www.rubensworks.net/' ],
         });
         let called = 0;
         const dataListener = () => {
