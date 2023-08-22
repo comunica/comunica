@@ -10271,10 +10271,10 @@ rdf-terms@^1.10.0, rdf-terms@^1.11.0, rdf-terms@^1.7.0, rdf-terms@^1.9.1:
     rdf-data-factory "^1.1.0"
     rdf-string "^1.6.0"
 
-rdf-test-suite-ldf@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.4.2.tgz#36999f1456cdbede775c152c4c9724c5c055cd84"
-  integrity sha512-0M7cf+2iDs1brfUBA5J3Wg3KNwNi2gxAYCOdoVbVMH43GdN5s/dvT0L4dx2zXMcbUwGrlErIJoPYNTThuyw6PQ==
+rdf-test-suite-ldf@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.5.0.tgz#a1a50c9691307753174a193783a7fee4d6dd6e70"
+  integrity sha512-oquCtHYyHVZEzV7737DwLwVqzpDQULvq4aVwIIUcYqZ58CzWhAC/XNAzsZGxCnYo/BOd+lllvZ+7AKCCLmTQTg==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     "@types/node-fetch" "^2.5.0"
