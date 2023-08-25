@@ -6,6 +6,8 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@types/benchmark": "^2.0.0",
+    "benchmark": "^2.1.4",
     "@babel/core": "^7.20.2",
     "@babel/preset-env": "^7.20.2",
     "@pollyjs/adapter-node-http": "^6.0.5",

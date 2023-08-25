@@ -1,11 +1,11 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Actor, Bus } from '@comunica/core';
+import * as sparqlee from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import * as sparqlee from 'sparqlee';
 import '@comunica/jest';
 
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';

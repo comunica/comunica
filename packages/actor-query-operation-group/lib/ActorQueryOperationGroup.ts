@@ -2,10 +2,10 @@ import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
+import { AsyncEvaluator } from '@comunica/expression-evaluator';
 import type { BindingsStream, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
-import { AsyncEvaluator } from 'sparqlee';
 import { GroupsState } from './GroupsState';
 
 /**

@@ -34,10 +34,10 @@
   "dependencies": {
     "@comunica/bus-query-operation": "^2.8.2",
     "@comunica/core": "^2.8.2",
+    "@comunica/expression-evaluator": "^2.8.2",
     "@comunica/types": "^2.8.2",
     "asynciterator": "^3.8.1",
-    "sparqlalgebrajs": "^4.2.0",
-    "sparqlee": "^3.0.0"
+    "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

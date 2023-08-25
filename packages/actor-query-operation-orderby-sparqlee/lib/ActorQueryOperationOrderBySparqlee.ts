@@ -3,10 +3,10 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
+import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
-import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
 import { SortIterator } from './SortIterator';
 
 /**

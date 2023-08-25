@@ -2,14 +2,14 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import * as sparqlee from '@comunica/expression-evaluator';
+import { isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
-import * as sparqlee from 'sparqlee';
-import { isExpressionError } from 'sparqlee';
-import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
+import { ActorQueryOperationFilterSparqlee } from '../lib';
 import '@comunica/jest';
 
 const DF = new DataFactory();

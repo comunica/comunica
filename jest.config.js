@@ -19,6 +19,7 @@ module.exports = {
     '/mocks/',
     'index.js',
     '/engines/query-sparql/test/util.ts',
+    '/test/util/'
   ],
   testEnvironment: 'node',
   coverageThreshold: {
