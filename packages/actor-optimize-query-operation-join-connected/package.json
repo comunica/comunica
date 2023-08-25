@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-optimize-query-operation-join-connected",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A join-connected optimize-query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-optimize-query-operation": "^2.8.1",
-    "@comunica/core": "^2.8.1",
+    "@comunica/bus-optimize-query-operation": "^2.8.2",
+    "@comunica/core": "^2.8.2",
     "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {

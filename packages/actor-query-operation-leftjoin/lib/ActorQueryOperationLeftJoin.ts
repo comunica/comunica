@@ -2,9 +2,9 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
+import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
  * A comunica LeftJoin Query Operation Actor.

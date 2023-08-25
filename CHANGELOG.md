@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.8.3"></a>
+## [v2.8.3](https://github.com/comunica/comunica/compare/v2.8.2...v2.8.3) - 2023-08-21
+
+### Changed
+* [Throw when doing BIND on a pre-bound variable, Closes #1229](https://github.com/comunica/comunica/commit/cb9f0a9c90c0586d2149b02dac7a5e63c4bbcd80)
+* [Include final SPARQL endpoint URL in debug logger](https://github.com/comunica/comunica/commit/aa392165f18012e518773a9479b0033fcb605005)
+
+### Fixed
+* [Fix hypermedia errors being voided, Closes #1241](https://github.com/comunica/comunica/commit/13e75b9a918b530a7e4d9f26322d020241e9a542)
+* [Fix some SPARQL endpoint errors being voided](https://github.com/comunica/comunica/commit/fb42092caf9ea52ae4e8713fdb412d8bdcd397a4)
+* [Fix missing end event for empty queries with limit](https://github.com/comunica/comunica/commit/3a35163546698575f63760907dc1de4a5f7d3e88)
+* [Fix process halt when re-executing query over erroring source](https://github.com/comunica/comunica/commit/159ea078ea760d6e58eda2733a700db8bfa0d2a1)
+
+<a name="v2.8.2"></a>
+## [v2.8.2](https://github.com/comunica/comunica/compare/v2.8.1...v2.8.2) - 2023-08-10
+
+### Fixed
+* [Fix aggregated store not containing first source after query re-exec](https://github.com/comunica/comunica/commit/e288e461867397606500b3f09189a25c6410894e)
+
 <a name="v2.8.1"></a>
 ## [v2.8.1](https://github.com/comunica/comunica/compare/v2.8.0...v2.8.1) - 2023-07-14
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/context-entries",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A collection of reusable Comunica context key definitions.",
   "main": "lib/index.js",
   "typings": "lib/index",
@@ -31,8 +31,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.8.1",
-    "@comunica/types": "^2.8.1",
+    "@comunica/core": "^2.8.2",
+    "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
     "jsonld-context-parser": "^2.2.2",
     "sparqlalgebrajs": "^4.2.0"

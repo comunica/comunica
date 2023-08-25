@@ -2,14 +2,14 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import * as sparqlee from '@comunica/expression-evaluator';
+import { isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
-import * as sparqlee from 'sparqlee';
-import { isExpressionError } from 'sparqlee';
-import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
+import { ActorQueryOperationFilterSparqlee } from '../lib';
 import '@comunica/jest';
 
 const DF = new DataFactory();
@@ -146,6 +146,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
         context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      output.bindingsStream.on('data', () => {
+        // This is here to force the stream to start.
+      });
       await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
       expect(logWarnSpy).toHaveBeenCalledTimes(3);
       logWarnSpy.mock.calls.forEach((call, index) => {
@@ -167,6 +170,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
         context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      output.bindingsStream.on('data', () => {
+        // This is here to force the stream to start.
+      });
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/types",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "Typings module for Comunica",
   "lsd:module": true,
   "main": "lib/index.js",

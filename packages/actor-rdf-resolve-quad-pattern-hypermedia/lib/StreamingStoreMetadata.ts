@@ -12,6 +12,7 @@ import { StreamingStore } from 'rdf-streaming-store';
  */
 export class StreamingStoreMetadata extends StreamingStore implements IAggregatedStore {
   public started = false;
+  public containedSources = new Set<string>();
   public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
   protected readonly metadataAccumulator:
   (accumulatedMetadata: MetadataQuads, appendingMetadata: MetadataQuads) => Promise<MetadataQuads>;

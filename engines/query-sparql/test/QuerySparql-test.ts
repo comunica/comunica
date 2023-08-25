@@ -731,6 +731,56 @@ describe('System test: QuerySparql', () => {
         expect(bindings).toMatchObject(expectedResult);
       });
     });
+
+    describe('with a throwing fetch function', () => {
+      function throwingFetch() {
+        throw new Error('Fetch failed!');
+      }
+
+      it('should throw when querying once', async() => {
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+      });
+
+      it('should throw when querying twice', async() => {
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+      });
+    });
+
+    describe('on a remote source', () => {
+      it('with non-matching query with limit and filter', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT * WHERE {
+  ?s ?p <http://purl.org/dc/terms/dontExist>
+  FILTER(?s>1)
+} LIMIT 1`, {
+          sources: [ 'https://www.rubensworks.net/' ],
+        });
+        let called = 0;
+        const dataListener = () => {
+          called++;
+        };
+        bindingsStream.on('data', dataListener);
+        await new Promise((resolve, reject) => {
+          bindingsStream.on('error', reject);
+          bindingsStream.on('end', resolve);
+        });
+        expect(called).toEqual(0);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues

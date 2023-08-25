@@ -9,9 +9,12 @@ import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IActionContext, IAggregatedStore, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
+
+const DF = new DataFactory();
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources
@@ -83,7 +86,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   public destroy(cause?: Error): void {
     this.getLinkQueue()
       .then(linkQueue => {
-        if (this.isCloseable(linkQueue)) {
+        if (cause || this.isCloseable(linkQueue)) {
           this.aggregatedStore?.end();
           super.destroy(cause);
         } else {
@@ -195,6 +198,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
     // Aggregate all discovered quads into a store.
     this.aggregatedStore?.setBaseMetadata(<MetadataQuads> metadata, false);
+    this.aggregatedStore?.containedSources.add(link.url);
     this.aggregatedStore?.import(quads);
 
     // Determine the source
@@ -215,6 +219,27 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
 
     return { link, source, metadata: <MetadataQuads> metadata, handledDatasets };
+  }
+
+  protected startIterator(startSource: ISourceState, firstPage: boolean): void {
+    if (this.aggregatedStore && !this.aggregatedStore.containedSources.has(startSource.link.url)) {
+      // A source that has been cached due to earlier query executions may not be part of the aggregated store yet.
+      // In that case, we add all quads from that source to the aggregated store.
+      this.aggregatedStore?.containedSources.add(startSource.link.url);
+      const stream = startSource.source!.match(
+        DF.variable('s'),
+        DF.variable('p'),
+        DF.variable('o'),
+        DF.variable('g'),
+        this.context,
+      );
+      this.aggregatedStore.import(stream)
+        .on('end', () => {
+          super.startIterator(startSource, firstPage);
+        });
+    } else {
+      super.startIterator(startSource, firstPage);
+    }
   }
 
   public async accumulateMetadata(

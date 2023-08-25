@@ -10,6 +10,21 @@ function ensureDependency({ checkedDeps, dependency, dependant }, log) {
   checkedDeps.using[dependency] = [dependant];
 }
 
+/**
+ * Filter out @types/ dependencies that should be used but are not registered as used by depcheck: https://github.com/depcheck/depcheck/issues/735#issuecomment-1689905150
+ * We know the @types/ dependency is used if it its normal dependency is used. (Because we uny use typescript files)
+ */
+function filterTypeUsedTypeDependencies({ dependencies, using }) {
+  const newDependencies = [];
+  for (let dependency of dependencies) {
+    if (dependency.startsWith('@types/') && Object.keys(using).some(file => file === dependency.slice(7))) {
+      break;
+    }
+    newDependencies.push(dependency);
+  }
+  return newDependencies;
+}
+
 async function depInfo({ location, name }, log) {
   const folders = readdirSync(location, { withFileTypes: true });
 
@@ -42,6 +57,8 @@ async function depInfo({ location, name }, log) {
     checkedDeps = await checkDeps(location, { ignorePatterns: ignore }, val => val);
   }
   let {dependencies, devDependencies, missing, using} = checkedDeps;
+
+  dependencies = filterTypeUsedTypeDependencies({ dependencies, using });
 
   if (Object.values(using).flat().some(file =>
     readFileSync(file, 'utf8').toString().includes('require(\'process/\')') ||

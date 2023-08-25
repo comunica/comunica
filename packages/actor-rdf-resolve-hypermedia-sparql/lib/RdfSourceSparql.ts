@@ -136,8 +136,8 @@ export class RdfSourceSparql implements IQuadSource {
    * @param {string} query A SPARQL query string.
    * @return {BindingsStream} A stream of bindings.
    */
-  public queryBindings(endpoint: string, query: string): BindingsStream {
-    const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
+  public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
+    const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map((rawData: Record<string, RDF.Term>) => BF.bindings(Object.entries(rawData)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
@@ -154,31 +154,38 @@ export class RdfSourceSparql implements IQuadSource {
     const selectQuery: string = RdfSourceSparql.patternToSelectQuery(pattern);
 
     // Emit metadata containing the estimated count (reject is never called)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    new Promise<RDF.QueryResultCardinality>(resolve => {
-      const cachedCardinality = this.cache?.get(countQuery);
-      if (cachedCardinality !== undefined) {
-        return resolve(cachedCardinality);
-      }
-
-      const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
-      bindingsStream.on('data', (bindings: Bindings) => {
-        const count = bindings.get(VAR_COUNT);
-        const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
-        if (count) {
-          const cardinalityValue: number = Number.parseInt(count.value, 10);
-          if (!Number.isNaN(cardinalityValue)) {
-            cardinality.type = 'exact';
-            cardinality.value = cardinalityValue;
-            this.cache?.set(countQuery, cardinality);
-          }
+    new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
+      try {
+        const cachedCardinality = this.cache?.get(countQuery);
+        if (cachedCardinality !== undefined) {
+          return resolve(cachedCardinality);
         }
-        return resolve(cardinality);
-      });
-      bindingsStream.on('error', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
-      bindingsStream.on('end', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
+
+        const bindingsStream: BindingsStream = await this.queryBindings(this.url, countQuery);
+        bindingsStream.on('data', (bindings: Bindings) => {
+          const count = bindings.get(VAR_COUNT);
+          const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
+          if (count) {
+            const cardinalityValue: number = Number.parseInt(count.value, 10);
+            if (!Number.isNaN(cardinalityValue)) {
+              cardinality.type = 'exact';
+              cardinality.value = cardinalityValue;
+              this.cache?.set(countQuery, cardinality);
+            }
+          }
+          return resolve(cardinality);
+        });
+        bindingsStream.on('error', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
+        bindingsStream.on('end', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
+      } catch (error: unknown) {
+        reject(error);
+      }
     })
-      .then(cardinality => quads.setProperty('metadata', { cardinality, canContainUndefs: false }));
+      .then(cardinality => quads.setProperty('metadata', { cardinality, canContainUndefs: false }))
+      .catch(() => quads.setProperty(
+        'metadata',
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false },
+      ));
 
     // Materialize the queried pattern using each found binding.
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() => this

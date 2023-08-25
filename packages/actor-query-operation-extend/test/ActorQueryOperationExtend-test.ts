@@ -1,11 +1,11 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Actor, Bus } from '@comunica/core';
+import * as sparqlee from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import * as sparqlee from 'sparqlee';
 import '@comunica/jest';
 
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
@@ -168,6 +168,28 @@ describe('ActorQueryOperationExtend', () => {
         output.bindingsStream.on('data', reject);
       });
       expect(warn).toBeCalledTimes(0);
+    });
+
+    it('throws ia a variable was already bound', async() => {
+      const op: any = {
+        operation: {
+          type: 'extend',
+          input: {
+            type: 'bgp',
+            patterns: [{
+              subject: { value: 's' },
+              predicate: { value: 'p' },
+              object: { value: 'o' },
+              graph: { value: '' },
+              type: 'pattern',
+            }],
+          },
+          variable: { termType: 'Variable', value: 'a' },
+          defaultExpression,
+        },
+        context: new ActionContext(),
+      };
+      await expect(actor.run(op)).rejects.toThrow(`Illegal binding to variable 'a' that has already been bound`);
     });
   });
 });

@@ -143,7 +143,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   /**
-   * Create an options object that can be used to construct a sparqlee synchronous evaluator.
+   * Create an options object that can be used to construct a expression-evaluator synchronous evaluator.
    * @param context An action context.
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
@@ -157,7 +157,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   /**
-   * Create an options object that can be used to construct a sparqlee asynchronous evaluator.
+   * Create an options object that can be used to construct a expression-evaluator asynchronous evaluator.
    * @param context An action context.
    * @param mediatorQueryOperation A query query operation mediator for resolving `exists`.
    */

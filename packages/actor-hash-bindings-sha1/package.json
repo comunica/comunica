@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-hash-bindings-sha1",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "A hash bindings actor that provides the SHA1 function",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,8 +33,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-hash-bindings": "^2.8.1",
-    "@comunica/core": "^2.8.1",
+    "@comunica/bus-hash-bindings": "^2.8.2",
+    "@comunica/core": "^2.8.2",
     "canonicalize": "^2.0.0",
     "hash.js": "^1.1.7",
     "rdf-string": "^1.6.1"
