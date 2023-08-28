@@ -40,10 +40,9 @@
 <li><span class="target">IQueryEngine</span></li></ul></li></ul></section>
 <section class="tsd-panel">
 <h4>Implemented by</h4>
-<ul class="tsd-hierarchy">
-<li><a href="../classes/_comunica_actor_init_query.QueryEngineBase.html" class="tsd-signature-type tsd-kind-class">QueryEngineBase</a></li></ul></section><aside class="tsd-sources">
+<ul class="tsd-hierarchy"></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L17">packages/types/lib/IQueryEngine.ts:17</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L17">packages/types/lib/IQueryEngine.ts:17</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -87,23 +86,20 @@
 <li>
 <h5><span class="tsd-kind-parameter">query</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A query string or algebra.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><br/><span>    </span><span class="tsd-signature-symbol">? </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryStringContextInner</span><br/><span>    </span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryAlgebraContextInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A query context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><span class="tsd-kind-parameter">explainMode</span>: <a href="../types/_comunica_types.QueryExplainMode.html" class="tsd-signature-type tsd-kind-type-alias">QueryExplainMode</a></h5>
 <div class="tsd-comment tsd-typography"><p>The explain mode.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_comunica_types.IQueryExplained.html" class="tsd-signature-type tsd-kind-interface">IQueryExplained</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the query output.</p>
 
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L91">packages/types/lib/IQueryEngine.ts:91</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L91">packages/types/lib/IQueryEngine.ts:91</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="getResultMediaTypeFormats" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Result<wbr/>Media<wbr/>Type<wbr/>Formats</span><a href="#getResultMediaTypeFormats" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">get<wbr/>Result<wbr/>Media<wbr/>Type<wbr/>Formats</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -120,13 +116,12 @@
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <a href="_comunica_types.IActionContext.html" class="tsd-signature-type tsd-kind-interface">IActionContext</a></h5>
 <div class="tsd-comment tsd-typography"><p>An optional context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>All available SPARQL result media type formats.</p>
 
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L105">packages/types/lib/IQueryEngine.ts:105</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L105">packages/types/lib/IQueryEngine.ts:105</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="getResultMediaTypes" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Result<wbr/>Media<wbr/>Types</span><a href="#getResultMediaTypes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">get<wbr/>Result<wbr/>Media<wbr/>Types</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -143,13 +138,12 @@
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <a href="_comunica_types.IActionContext.html" class="tsd-signature-type tsd-kind-interface">IActionContext</a></h5>
 <div class="tsd-comment tsd-typography"><p>An optional context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>All available SPARQL (weighted) result media types.</p>
 
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L100">packages/types/lib/IQueryEngine.ts:100</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L100">packages/types/lib/IQueryEngine.ts:100</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="invalidateHttpCache" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>invalidate<wbr/>Http<wbr/>Cache</span><a href="#invalidateHttpCache" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">invalidate<wbr/>Http<wbr/>Cache</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">url</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -169,13 +163,12 @@ If no page URL is given, then all pages will be invalidated.</p>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">url</span>: <span class="tsd-signature-type">string</span></h5>
 <div class="tsd-comment tsd-typography"><p>The page URL to invalidate.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise resolving when the caches have been invalidated.</p>
 
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L120">packages/types/lib/IQueryEngine.ts:120</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L120">packages/types/lib/IQueryEngine.ts:120</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="query" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>query</span><a href="#query" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">query</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">query</span>, <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_comunica_types.QueryType.html" class="tsd-signature-type tsd-kind-type-alias">QueryType</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -203,18 +196,16 @@ or if you require access to the metadata of the results.</p>
 <li>
 <h5><span class="tsd-kind-parameter">query</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A query string or algebra object.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><br/><span>    </span><span class="tsd-signature-symbol">? </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryStringContextInner</span><br/><span>    </span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryAlgebraContextInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_comunica_types.QueryType.html" class="tsd-signature-type tsd-kind-type-alias">QueryType</a><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <p>Overrides RDF.StringQueryable.query</p>
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L78">packages/types/lib/IQueryEngine.ts:78</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L78">packages/types/lib/IQueryEngine.ts:78</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="queryBindings" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>query<wbr/>Bindings</span><a href="#queryBindings" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">query<wbr/>Bindings</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">query</span>, <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_comunica_types.BindingsStream.html" class="tsd-signature-type tsd-kind-type-alias">BindingsStream</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -238,18 +229,16 @@ or if you require access to the metadata of the results.</p>
 <li>
 <h5><span class="tsd-kind-parameter">query</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A query string or algebra object.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><br/><span>    </span><span class="tsd-signature-symbol">? </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryStringContextInner</span><br/><span>    </span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryAlgebraContextInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_comunica_types.BindingsStream.html" class="tsd-signature-type tsd-kind-type-alias">BindingsStream</a><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <p>Overrides RDF.StringSparqlQueryable.queryBindings</p>
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L32">packages/types/lib/IQueryEngine.ts:32</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L32">packages/types/lib/IQueryEngine.ts:32</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="queryBoolean" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>query<wbr/>Boolean</span><a href="#queryBoolean" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">query<wbr/>Boolean</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">query</span>, <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -273,18 +262,16 @@ or if you require access to the metadata of the results.</p>
 <li>
 <h5><span class="tsd-kind-parameter">query</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A query string or algebra object.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><br/><span>    </span><span class="tsd-signature-symbol">? </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryStringContextInner</span><br/><span>    </span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryAlgebraContextInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <p>Overrides RDF.StringSparqlQueryable.queryBoolean</p>
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L52">packages/types/lib/IQueryEngine.ts:52</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L52">packages/types/lib/IQueryEngine.ts:52</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="queryQuads" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>query<wbr/>Quads</span><a href="#queryQuads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">query<wbr/>Quads</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">query</span>, <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type ">ResultStream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -308,18 +295,16 @@ or if you require access to the metadata of the results.</p>
 <li>
 <h5><span class="tsd-kind-parameter">query</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A query string or algebra object.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><br/><span>    </span><span class="tsd-signature-symbol">? </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryStringContextInner</span><br/><span>    </span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryAlgebraContextInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type ">ResultStream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <p>Overrides RDF.StringSparqlQueryable.queryQuads</p>
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L42">packages/types/lib/IQueryEngine.ts:42</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L42">packages/types/lib/IQueryEngine.ts:42</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="queryVoid" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>query<wbr/>Void</span><a href="#queryVoid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">query<wbr/>Void</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">query</span>, <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -343,18 +328,16 @@ or if you require access to the metadata of the results.</p>
 <li>
 <h5><span class="tsd-kind-parameter">query</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A query string or algebra object.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><br/><span>    </span><span class="tsd-signature-symbol">? </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryStringContextInner</span><br/><span>    </span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">QueryAlgebraContextInner</span></h5>
 <div class="tsd-comment tsd-typography"><p>A context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <p>Overrides RDF.StringSparqlQueryable.queryVoid</p>
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L62">packages/types/lib/IQueryEngine.ts:62</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L62">packages/types/lib/IQueryEngine.ts:62</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="resultToString" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>result<wbr/>To<wbr/>String</span><a href="#resultToString" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">result<wbr/>To<wbr/>String</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">queryResult</span>, <span class="tsd-kind-parameter">mediaType</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span></div>
@@ -373,23 +356,20 @@ or if you require access to the metadata of the results.</p>
 <li>
 <h5><span class="tsd-kind-parameter">queryResult</span>: <a href="../types/_comunica_types.QueryType.html" class="tsd-signature-type tsd-kind-type-alias">QueryType</a></h5>
 <div class="tsd-comment tsd-typography"><p>A query result.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">mediaType</span>: <span class="tsd-signature-type">string</span></h5>
 <div class="tsd-comment tsd-typography"><p>A media type.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type">any</span></h5>
 <div class="tsd-comment tsd-typography"><p>An optional context.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+</div><code class="tsd-tag ts-flagOptional">Optional</code> </li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>A text stream.</p>
 
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/comunica/comunica/blob/12395e9/packages/types/lib/IQueryEngine.ts#L113">packages/types/lib/IQueryEngine.ts:113</a></li></ul></aside></section></section></div>
+<li>Defined in <a href="https://github.com/comunica/comunica/blob/9d65a35/packages/types/lib/IQueryEngine.ts#L113">packages/types/lib/IQueryEngine.ts:113</a></li></ul></aside></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -631,27 +611,27 @@ or if you require access to the metadata of the results.</p>
 <li><a href="_comunica_types.IQueryOperationResultVoid.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IQuery<wbr/>Operation<wbr/>Result<wbr/>Void</span></a></li>
 <li><a href="_comunica_types.IQueryQuadsEnhanced.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IQuery<wbr/>Quads<wbr/>Enhanced</span></a></li>
 <li><a href="_comunica_types.IRequest.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IRequest</span></a></li>
-<li><a href="../types/_comunica_types.Bindings.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Bindings</span></a></li>
-<li><a href="../types/_comunica_types.BindingsStream.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Bindings<wbr/>Stream</span></a></li>
-<li><a href="../types/_comunica_types.DataSources.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Data<wbr/>Sources</span></a></li>
-<li><a href="../types/_comunica_types.FunctionArgumentsCache.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Function<wbr/>Arguments<wbr/>Cache</span></a></li>
-<li><a href="../types/_comunica_types.IDataDestination.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IData<wbr/>Destination</span></a></li>
-<li><a href="../types/_comunica_types.IDataSource.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IData<wbr/>Source</span></a></li>
-<li><a href="../types/_comunica_types.IJoinEntryWithMetadata.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IJoin<wbr/>Entry<wbr/>With<wbr/>Metadata</span></a></li>
-<li><a href="../types/_comunica_types.IQueryOperationResult.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IQuery<wbr/>Operation<wbr/>Result</span></a></li>
-<li><a href="../types/_comunica_types.MetadataBindings.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Metadata<wbr/>Bindings</span></a></li>
-<li><a href="../types/_comunica_types.MetadataQuads.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Metadata<wbr/>Quads</span></a></li>
-<li><a href="../types/_comunica_types.QueryAlgebraContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Algebra<wbr/>Context</span></a></li>
-<li><a href="../types/_comunica_types.QueryBindings.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Bindings</span></a></li>
-<li><a href="../types/_comunica_types.QueryEnhanced.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Enhanced</span></a></li>
-<li><a href="../types/_comunica_types.QueryExplainMode.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Explain<wbr/>Mode</span></a></li>
-<li><a href="../types/_comunica_types.QueryFormatType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Format<wbr/>Type</span></a></li>
-<li><a href="../types/_comunica_types.QueryQuads.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Quads</span></a></li>
-<li><a href="../types/_comunica_types.QueryResultCardinality.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Result<wbr/>Cardinality</span></a></li>
-<li><a href="../types/_comunica_types.QueryStringContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>String<wbr/>Context</span></a></li>
-<li><a href="../types/_comunica_types.QueryType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Query<wbr/>Type</span></a></li>
-<li><a href="../types/_comunica_types.SourceType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Source<wbr/>Type</span></a></li>
-<li><a href="../types/_comunica_types.TermsOrder.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Terms<wbr/>Order</span></a></li></ul></div></details></li></ul></nav></div></div></div>
+<li><a href="../types/_comunica_types.Bindings.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-2097152"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Bindings</span></a></li>
+<li><a href="../types/_comunica_types.BindingsStream.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Bindings<wbr/>Stream</span></a></li>
+<li><a href="../types/_comunica_types.DataSources.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Data<wbr/>Sources</span></a></li>
+<li><a href="../types/_comunica_types.FunctionArgumentsCache.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Function<wbr/>Arguments<wbr/>Cache</span></a></li>
+<li><a href="../types/_comunica_types.IDataDestination.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>IData<wbr/>Destination</span></a></li>
+<li><a href="../types/_comunica_types.IDataSource.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>IData<wbr/>Source</span></a></li>
+<li><a href="../types/_comunica_types.IJoinEntryWithMetadata.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>IJoin<wbr/>Entry<wbr/>With<wbr/>Metadata</span></a></li>
+<li><a href="../types/_comunica_types.IQueryOperationResult.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>IQuery<wbr/>Operation<wbr/>Result</span></a></li>
+<li><a href="../types/_comunica_types.MetadataBindings.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Metadata<wbr/>Bindings</span></a></li>
+<li><a href="../types/_comunica_types.MetadataQuads.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Metadata<wbr/>Quads</span></a></li>
+<li><a href="../types/_comunica_types.QueryAlgebraContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Algebra<wbr/>Context</span></a></li>
+<li><a href="../types/_comunica_types.QueryBindings.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Bindings</span></a></li>
+<li><a href="../types/_comunica_types.QueryEnhanced.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Enhanced</span></a></li>
+<li><a href="../types/_comunica_types.QueryExplainMode.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Explain<wbr/>Mode</span></a></li>
+<li><a href="../types/_comunica_types.QueryFormatType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Format<wbr/>Type</span></a></li>
+<li><a href="../types/_comunica_types.QueryQuads.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Quads</span></a></li>
+<li><a href="../types/_comunica_types.QueryResultCardinality.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Result<wbr/>Cardinality</span></a></li>
+<li><a href="../types/_comunica_types.QueryStringContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>String<wbr/>Context</span></a></li>
+<li><a href="../types/_comunica_types.QueryType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Query<wbr/>Type</span></a></li>
+<li><a href="../types/_comunica_types.SourceType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Source<wbr/>Type</span></a></li>
+<li><a href="../types/_comunica_types.TermsOrder.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Terms<wbr/>Order</span></a></li></ul></div></details></li></ul></nav></div></div></div>
 <div class="tsd-generator">
-<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<p>Generated using <a href="https://typedoc.org/" rel="noopener" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div></body></html>
