@@ -88,7 +88,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   }
 
   public destroy(cause?: Error): void {
-    if (this.aggregatedStore === undefined) {
+    if (!this.aggregatedStore) {
       super.destroy(cause);
       return;
     }
