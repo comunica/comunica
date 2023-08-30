@@ -71,7 +71,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   // until the buffer of this iterator must be fully consumed, which will not always be the case.
 
   public close(): void {
-    if (this.aggregatedStore === undefined) {
+    if (!this.aggregatedStore) {
       super.close();
       return;
     }
