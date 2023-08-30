@@ -134,7 +134,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           this.startIterator(sourceState, true);
           done();
         })
-        .catch(error => this.destroy(error));
+        // Destroy should be async because it can be called before it is listened to
+        .catch(error => setTimeout(() => this.destroy(error)));
     } else {
       // Read from all current iterators
       for (const iterator of this.currentIterators) {
