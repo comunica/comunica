@@ -27,7 +27,7 @@ export interface ICompleteSharedContext {
 export class BaseExpressionEvaluator {
   public constructor(protected readonly termTransformer: ITermTransformer) { }
 
-  protected term(expr: E.Term, mapping: RDF.Bindings): E.Term {
+  protected term(expr: E.Term, _: RDF.Bindings): E.Term {
     return expr;
   }
 

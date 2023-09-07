@@ -69,7 +69,7 @@ export class OverloadTree {
 
   /**
    * Searches in a depth first way for the best matching overload. considering this a the tree's root.
-   * @param args:
+   * @param args the arguments to the function.
    * @param functionArgumentsCache
    * @param superTypeProvider
    */
@@ -193,6 +193,7 @@ export class OverloadTree {
 
   /**
    * @param arg term to try and match to possible overloads of this node.
+   * @param openWorldType interface allowing to discover relations between types.
    * @returns SearchStack a stack with top element the next node that should be asked for implementation or overload.
    */
   private getSubTreeWithArg(arg: E.TermExpression, openWorldType: ISuperTypeProvider): SearchStack {

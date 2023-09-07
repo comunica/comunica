@@ -89,7 +89,7 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
     return new E.BooleanLiteral(this.context.exists(expr.expression, mapping));
   }
 
-  private evalAggregate(expr: E.Aggregate, mapping: RDF.Bindings): E.Term {
+  private evalAggregate(expr: E.Aggregate, _: RDF.Bindings): E.Term {
     if (!this.context.aggregate) {
       throw new Err.NoAggregator();
     }
