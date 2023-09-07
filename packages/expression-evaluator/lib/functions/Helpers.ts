@@ -71,7 +71,7 @@ export class Builder {
 
   public onUnary<T extends Term>(type: ArgumentType, op: (context: ICompleteSharedContext) =>
   (val: T) => Term, addInvalidHandling = true): Builder {
-    return this.set([ type ], context => ([ val ]: [T]) => op(context)(val));
+    return this.set([ type ], context => ([ val ]: [T]) => op(context)(val), addInvalidHandling);
   }
 
   public onUnaryTyped<T extends ISerializable>(type: ArgumentType,
@@ -224,6 +224,8 @@ export class Builder {
    * Providing negative number to a function unary - for example should not
    * return a term of type negative number having a positive value.
    * @param op the numeric operator performed
+   * @param addInvalidHandling whether to add invalid handling,
+   *   whether to add @param op in @see wrapInvalidLexicalProtected
    */
   public numericConverter(op: (context: ICompleteSharedContext) => (val: number) => number,
     addInvalidHandling = true): Builder {
@@ -242,7 +244,7 @@ export class Builder {
   /**
    * !!! Be aware when using this function, it will create different overloads with different return types !!!
    * Arithmetic operators take 2 numeric arguments, and return a single numerical
-   * value. The type of the return value is heavily dependant on the types of the
+   * value. The type of the return value is heavily dependent on the types of the
    * input arguments. In JS everything is a double, but in SPARQL it is not.
    *
    * The different arguments are handled by type promotion and subtype substitution.
@@ -306,6 +308,7 @@ export class Builder {
           const result = test(context)(left.typedValue, right.typedValue);
           return bool(result);
         },
+        addInvalidHandling,
       );
   }
 
