@@ -36,7 +36,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     if (context.has(KeysRdfParseHtmlScript.processingHtmlScript) && mediaType !== 'application/ld+json') {
       throw new Error(`JSON-LD in script tags can only have media type 'application/ld+json'`);
     }
-    if (!(mediaType in this.mediaTypePriorities) && !mediaType.endsWith('+json')) {
+    if (!(mediaType in this.mediaTypePriorities) && !mediaType?.endsWith('+json')) {
       throw new Error(`Unrecognized media type: ${mediaType}`);
     }
     return await this.testHandleChecked(action);
