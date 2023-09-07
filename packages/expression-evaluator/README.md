@@ -4,7 +4,7 @@
 
 Previously called sparqlee - sparql expression evaluator. A simple spec-compliant SPARQL 1.1 expression evaluator package.
 
-**[Click here to learn more about the expression evaluator](https://comunica.dev/docs/modify/advanced/expression-evaluator/).**
+**[Learn more about the expression evaluator](https://comunica.dev/docs/modify/advanced/expression-evaluator/).**
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -42,7 +42,7 @@ $ yarn add @comunica/expression-evaluator
 
 ### Adding or fixing functions
 
-Functions are defined in the [functions directory](lib/functions/), and you can add or fix them there.
+Functions are defined in the [functions directory](lib/functions), and you can add or fix them there.
 All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
 
 Three kinds exists:
@@ -58,7 +58,7 @@ For regular functions, the sync and async evaluation is the same, to avoid overh
 ### Layout and control flow
 
 The only important external facing API is creating an Evaluator.
-When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [Transformation.ts](./lib/Transformation.ts)).
+When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [AlgebraTransformer.ts](./lib/transformers/AlgebraTransformer.ts)).
 This will build objects (see [expressions module](./lib/expressions)) that contain all the logic and data for evaluation,
 for example the implementations for SPARQL functions (see [functions module](./lib/functions)).
 After transformation, the evaluator will recursively evaluate all the expressions.
@@ -66,11 +66,11 @@ After transformation, the evaluator will recursively evaluate all the expression
 ### Testing
 
 The testing environment is set up to do a lot of tests with little code.
-The files responsible for fluent behaviour reside in `test/util`.  
-Most tests can be run by running the `runTestTable` method in `test/util/utils.ts`.
+The files responsible for fluent behaviour reside in the [`test/util`](./test/util) module.  
+Most tests can be run by running the `runTestTable` method in [utils](test/util/utils.ts).
 This method expects a TestTable. Multiple test are run over a TestTable (one for every line).
 A TestTable may contain aliases if the aliases are also provided
-(Some handy aliases reside in `test/util/Aliases.ts`).
+(Some handy aliases reside in [Aliases.ts](test/util/Aliases.ts)).
 This means that when testing something like `"3"^^xsd:integer equals "3"^^xsd:integer` is `"true"^^xsd:boolean`.
 We would write a small table (for this example some more tests are added) and test it like this:
 ```ts
@@ -116,6 +116,6 @@ runTestTable({
 When you don't care what the error is, you can just test for `''`.
 
 In case the tables are too restrictive for your test, and you need an evaluation.
-You should still use the `generalEvaluate` function from `test/util/generalEvaluation.ts`.
+You should still use the `generalEvaluate` function from [generalEvaluation.ts](test/util/generalEvaluation.ts).
 This function will automatically run both async and sync when possible.
 This increases your tests' coverage.
