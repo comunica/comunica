@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-bind",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "A multi-bind rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.8.2",
-    "@comunica/bus-rdf-join": "^2.8.2",
+    "@comunica/bus-query-operation": "^2.9.0",
+    "@comunica/bus-rdf-join": "^2.9.0",
     "@comunica/bus-rdf-join-entries-sort": "^2.8.2",
     "@comunica/context-entries": "^2.8.2",
     "@comunica/mediatortype-join-coefficients": "^2.8.2",

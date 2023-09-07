@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-sparql-endpoint",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "A sparql-endpoint query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -34,9 +34,9 @@
   "dependencies": {
     "@comunica/bindings-factory": "^2.7.0",
     "@comunica/bus-http": "^2.8.2",
-    "@comunica/bus-query-operation": "^2.8.2",
+    "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.8.2",
-    "@comunica/bus-rdf-update-quads": "^2.8.2",
+    "@comunica/bus-rdf-update-quads": "^2.9.0",
     "@comunica/context-entries": "^2.8.2",
     "@comunica/core": "^2.8.2",
     "@comunica/mediatortype-httprequests": "^2.8.2",

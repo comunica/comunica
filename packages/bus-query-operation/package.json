@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-operation",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "A comunica bus for query-operation events.",
   "lsd:module": true,
   "main": "lib/index.js",

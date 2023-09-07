@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-link",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "A path-link query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-path": "^2.8.2",
-    "@comunica/bus-query-operation": "^2.8.2",
+    "@comunica/actor-abstract-path": "^2.9.0",
+    "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/types": "^2.8.2",
     "sparqlalgebrajs": "^4.2.0"
   },

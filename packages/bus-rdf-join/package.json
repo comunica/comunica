@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-join",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "A comunica bus for rdf-join events.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.8.2",
+    "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/bus-rdf-join-selectivity": "^2.8.2",
     "@comunica/context-entries": "^2.8.2",
     "@comunica/core": "^2.8.2",

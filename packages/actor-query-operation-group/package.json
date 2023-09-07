@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-group",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "A group query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -34,9 +34,9 @@
   "dependencies": {
     "@comunica/bindings-factory": "^2.7.0",
     "@comunica/bus-hash-bindings": "^2.8.2",
-    "@comunica/bus-query-operation": "^2.8.2",
+    "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/core": "^2.8.2",
-    "@comunica/expression-evaluator": "^2.8.2",
+    "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",

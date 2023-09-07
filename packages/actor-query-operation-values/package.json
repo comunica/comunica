@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-values",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "A values query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.7.0",
-    "@comunica/bus-query-operation": "^2.8.2",
+    "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/core": "^2.8.2",
     "@comunica/metadata": "^2.8.2",
     "@comunica/types": "^2.8.2",

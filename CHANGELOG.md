@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.9.0"></a>
+## [v2.9.0](https://github.com/comunica/comunica/compare/v2.8.3...v2.9.0) - 2023-09-07
+
+### Changed
+* [Early close/destroy in hypermedia iterator when aggregatedStore is unused](https://github.com/comunica/comunica/commit/6560e4764b57734fe099ca4a2b739a097e94735b)
+* [Update dependency uuid to v9 (#1247)](https://github.com/comunica/comunica/commit/8d7bc5a44054cc98d60fbcea6b0d524d63ae5df8)
+* [Migrate sparqlee into Comunica](https://github.com/comunica/comunica/commit/76685e59cf6615fc2144c197a338ede8851525eb)
+
+### Fixed
+* [Enable SPARQL-star for update queries to endpoints](https://github.com/comunica/comunica/commit/01ed03e98e27a72c0077c17d634df4165692eda4)
+
 <a name="v2.8.3"></a>
 ## [v2.8.3](https://github.com/comunica/comunica/compare/v2.8.2...v2.8.3) - 2023-08-21
 
