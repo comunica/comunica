@@ -43,12 +43,16 @@ describe('ActorAbstractMediaTypedFixed', () => {
       return expect(actor.mediaTypePriorities).toEqual({ a: 0.25 });
     });
 
-    it('should testParse for a valid media type', () => {
+    it('should testHandle for a valid media type', () => {
       return expect(actor.testHandle(null, 'a')).resolves.toBeTruthy();
     });
 
-    it('should not testParse for an invalid media type', () => {
+    it('should not testHandle for an invalid media type', () => {
       return expect(actor.testHandle(null, 'b')).rejects.toBeTruthy();
+    });
+
+    it('should not testHandle for an undefined media type', () => {
+      return expect(actor.testHandle(null)).rejects.toBeTruthy();
     });
 
     it('should always testMediaType', () => {

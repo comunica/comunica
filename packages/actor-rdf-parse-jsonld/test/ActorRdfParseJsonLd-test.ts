@@ -232,14 +232,27 @@ describe('ActorRdfParseJsonLd', () => {
       it('should not test on N-Triples', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'application/n-triples', context }))
-          .rejects.toBeTruthy();
+          .rejects.toThrow(new Error('Unrecognized media type: application/n-triples'));
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/n-triples',
             context,
           }))
-          .rejects.toBeTruthy();
+          .rejects.toThrow(new Error('Unrecognized media type: application/n-triples'));
+      });
+
+      it('should not test on undefined', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: undefined, context }))
+          .rejects.toThrow(new Error('Unrecognized media type: undefined'));
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: undefined,
+            context,
+          }))
+          .rejects.toThrow(new Error('Unrecognized media type: undefined'));
       });
 
       it('should run', () => {
