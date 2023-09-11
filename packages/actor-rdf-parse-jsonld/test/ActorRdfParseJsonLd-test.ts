@@ -242,6 +242,19 @@ describe('ActorRdfParseJsonLd', () => {
           .rejects.toBeTruthy();
       });
 
+      it('should not test on undefined', async() => {
+        await expect(actor
+          .test({ handle: { data: input, context }, handleMediaType: undefined, context }))
+          .rejects.toBeTruthy();
+        await expect(actor
+          .test({
+            handle: { data: input, metadata: { baseIRI: '' }, context },
+            handleMediaType: undefined,
+            context,
+          }))
+          .rejects.toBeTruthy();
+      });
+
       it('should run', () => {
         return actor.run({
           handle: { data: input, metadata: { baseIRI: '' }, context },
