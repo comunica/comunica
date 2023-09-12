@@ -1,10 +1,5 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-// Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
-if (!globalThis.window) {
-  jest.unmock('follow-redirects');
-}
-
 import { KeysHttpWayback, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, QueryBindings, QueryStringContext } from '@comunica/types';
