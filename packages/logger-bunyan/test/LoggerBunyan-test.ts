@@ -1,3 +1,6 @@
+import { LoggerBunyan } from '../lib/LoggerBunyan';
+import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
+
 jest.mock('bunyan', () => {
   return {
     createLogger: (args: any) => ({
@@ -11,9 +14,6 @@ jest.mock('bunyan', () => {
     }),
   };
 });
-
-import { LoggerBunyan } from '../lib/LoggerBunyan';
-import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
 
 describe('LoggerBunyan', () => {
   it('should create streams from providers during construction', () => {
