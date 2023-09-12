@@ -35,7 +35,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
   }
 
   public static repeat(str: string, count: number): string {
-    return new Array(count + 1).join(str);
+    return str.repeat(count);
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
