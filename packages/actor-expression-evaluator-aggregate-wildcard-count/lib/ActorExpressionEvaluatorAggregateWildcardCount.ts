@@ -1,15 +1,37 @@
+import type {
+  IActionExpressionEvaluatorAggregate,
+  IActorExpressionEvaluatorAggregateOutput,
+  IActorExpressionEvaluatorAggregateArgs,
+} from '@comunica/bus-expression-evaluator-aggregate';
+import { ActorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
+import type { IActorTest } from '@comunica/core';
+import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import { AggregateEvaluator } from '@comunica/expression-evaluator';
+import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
-import { AggregateEvaluator } from '../evaluators/AggregateEvaluator';
-import { integer } from '../functions/Helpers';
-import { AsyncEvaluator } from '../evaluators/AsyncEvaluator';
 
 /**
- * Implementation of the COUNT aggregator on a wildcard.
- * We choose to make this is separate class, because it would pollute the code of the other aggregators.
+ * A comunica Wildcard Count Expression Evaluator Aggregate Actor.
  */
-export class WildcardCountAggregator extends AggregateEvaluator {
+export class ActorExpressionEvaluatorAggregateWildcardCount extends ActorExpressionEvaluatorAggregate {
+  public constructor(args: IActorExpressionEvaluatorAggregateArgs) {
+    super(args);
+  }
+
+  public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
+    return action.expr.aggregator === 'count' && action.expr.expression.expressionType === 'wildcard';
+  }
+
+  public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
+    return {
+      aggregator: new WildcardCountAggregator(action.expr, action.evaluator),
+    };
+  }
+}
+
+class WildcardCountAggregator extends AggregateEvaluator {
   // Key: string representation of a ',' separated list of terms.
   // Value: string representation of a ',' separated list of variables sorted by name.
   private readonly bindingValues: Map<string, Set<string>> = new Map();

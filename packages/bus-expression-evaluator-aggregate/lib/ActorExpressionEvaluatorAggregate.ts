@@ -43,5 +43,5 @@ IActionExpressionEvaluatorAggregate, IActorExpressionEvaluatorAggregateOutput>;
 export interface IAggregator {
   putBindings: (bindings: RDF.Bindings) => Promise<void>;
   result: () => RDF.Term | undefined;
-  emptyValue: () => RDF.Term;
+  emptyValue: () => RDF.Term | undefined;
 }
