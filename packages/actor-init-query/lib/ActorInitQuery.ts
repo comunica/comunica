@@ -4,7 +4,6 @@ import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ICliArgsHandler, IQueryContextCommon } from '@comunica/types';
 import type { Readable } from 'readable-stream';
-import yargs from 'yargs';
 import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
 import { ActorInitQueryBase } from './ActorInitQueryBase';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
@@ -12,6 +11,7 @@ import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import { QueryEngineBase } from './QueryEngineBase';
 
 const streamifyString = require('streamify-string');
+const yargs = require('yargs');
 
 /**
  * A comunica Query Init Actor.

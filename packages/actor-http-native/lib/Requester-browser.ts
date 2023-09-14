@@ -7,7 +7,7 @@
 import { EventEmitter } from 'events';
 import type { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Readable } from 'stream';
-import * as parseLink from 'parse-link-header';
+import parseLink = require('parse-link-header');
 
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, referer: true };

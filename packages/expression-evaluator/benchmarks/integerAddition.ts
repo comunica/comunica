@@ -7,8 +7,8 @@ import type * as RDF from '@rdfjs/types';
 import type { Event } from 'benchmark';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Suite } from 'benchmark';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as Benchmark from 'benchmark';
+
+import Benchmark = require('benchmark');
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import { SyncEvaluator } from '../lib';

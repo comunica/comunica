@@ -3,7 +3,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
-import * as stringifyStream from 'stream-to-string';
+import stringifyStream = require('stream-to-string');
 import 'cross-fetch/polyfill';
 
 const WAYBACK_URL = 'http://wayback.archive-it.org/';
