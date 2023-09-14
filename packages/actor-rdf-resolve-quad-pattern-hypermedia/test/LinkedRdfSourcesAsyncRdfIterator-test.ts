@@ -1,4 +1,3 @@
-import * as EventEmitter from 'events';
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -10,6 +9,8 @@ import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
+
+const EventEmitter = require('events');
 
 const DF = new DataFactory();
 const v = DF.variable('v');

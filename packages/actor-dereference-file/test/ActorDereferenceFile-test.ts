@@ -5,8 +5,9 @@ import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import * as streamToString from 'stream-to-string';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
+
+const streamToString = require('stream-to-string');
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replace(/\\/ug, '/');

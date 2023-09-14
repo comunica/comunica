@@ -2,7 +2,7 @@ import type { MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IActionContext } from '@comunica/types';
 import { FetchDocumentLoader } from 'jsonld-context-parser';
-import * as stringifyStream from 'stream-to-string';
+import stringifyStream = require('stream-to-string');
 
 /**
  * A JSON-LD document loader that fetches over an HTTP bus using a given mediator.

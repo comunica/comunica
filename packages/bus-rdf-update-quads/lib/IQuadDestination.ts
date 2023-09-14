@@ -1,7 +1,7 @@
 import { ActorHttp } from '@comunica/bus-http';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import * as stringifyStream from 'stream-to-string';
+import stringifyStream = require('stream-to-string');
 
 /**
  * A quad destination.
