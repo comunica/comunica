@@ -7,7 +7,15 @@ concurrency:
 
 jobs:
 
+  printref:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "${{ github.ref }}"
+          fail
+
   test:
+    needs: printref
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -63,7 +71,7 @@ jobs:
         run: npx lerna run integration --concurrency 1
 
   coveralls:
-    needs: test
+    needs: printref
     runs-on: ubuntu-latest
     steps:
       - name: Consolidate test coverage from different jobs
@@ -73,6 +81,7 @@ jobs:
           parallel-finished: true
 
   lint:
+    needs: printref
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -92,9 +101,7 @@ jobs:
         run: yarn run lint
 
   browser:
-    needs:
-      - test
-      - lint
+    needs: printref
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -119,9 +126,7 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT }}
 
   docker:
-    needs:
-      - test
-      - lint
+    needs: printref
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -149,6 +154,7 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   docs:
+    needs: printref
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
