@@ -19,7 +19,6 @@
     "strict": true,
     "strictFunctionTypes": false,
     "strictPropertyInitialization": false,
-
   },
   "include": [
     "engines/*/bin/**/*",
