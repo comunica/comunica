@@ -1,6 +1,9 @@
+import type { IAggregator, MediatorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import type { Algebra as Alg } from 'sparqlalgebrajs';
+import type { Algebra as Alg, Algebra } from 'sparqlalgebrajs';
+import { ExpressionType } from '../expressions';
 import type * as E from '../expressions/Expressions';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
 import type { IExpressionEvaluator } from '../Types';
@@ -22,6 +25,20 @@ export interface IAsyncEvaluatorContext extends ISharedContext {
 export class AsyncEvaluator {
   private readonly expr: E.Expression;
   private readonly evaluator: IExpressionEvaluator<E.Expression, Promise<E.TermExpression>>;
+  public readonly context: ICompleteAsyncEvaluatorContext;
+
+  private readonly mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
+
+  public async getAggregateEvaluator(context: IActionContext): Promise<IAggregator> {
+    if (this.expr.expressionType === ExpressionType.Aggregate) {
+      return (await this.mediatorExpressionEvaluatorAggregate.mediate({
+        expr: <Algebra.AggregateExpression> <unknown> this.expr,
+        evaluator: this,
+        context,
+      })).aggregator;
+    }
+    throw new Error(`Expression is not an aggregate expression: ${this.expr.expressionType}`);
+  }
 
   public static completeContext(context: IAsyncEvaluatorContext): ICompleteAsyncEvaluatorContext {
     const now = context.now || new Date(Date.now());
@@ -44,16 +61,16 @@ export class AsyncEvaluator {
   public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext = {}) {
     // eslint-disable-next-line unicorn/no-useless-undefined
     const creator = context.extensionFunctionCreator || (() => undefined);
-    const baseContext = AsyncEvaluator.completeContext(context);
+    this.context = AsyncEvaluator.completeContext(context);
 
     const transformer = new AlgebraTransformer({
       type: 'async',
       creator,
-      ...baseContext,
+      ...this.context,
     });
     this.expr = transformer.transformAlgebra(algExpr);
 
-    this.evaluator = new AsyncRecursiveEvaluator(baseContext, transformer);
+    this.evaluator = new AsyncRecursiveEvaluator(this.context, transformer);
   }
 
   public async evaluate(mapping: RDF.Bindings): Promise<RDF.Term> {

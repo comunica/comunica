@@ -1,8 +1,9 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IAggregator } from '@comunica/bus-expression-evaluator-aggregate';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
-import { AggregateEvaluator } from '@comunica/expression-evaluator';
-import type { Bindings } from '@comunica/types';
+import { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -22,7 +23,7 @@ export type BindingsHash = string;
  */
 export interface IGroup {
   bindings: Bindings;
-  aggregators: Record<string, AggregateEvaluator>;
+  aggregators: Record<string, IAggregator>;
 }
 
 /**
@@ -82,10 +83,11 @@ export class GroupsState {
     if (!groupInitializer) {
       // Initialize state for all aggregators for new group
       groupInitializer = (async() => {
-        const aggregators: Record<string, AggregateEvaluator> = {};
+        const aggregators: Record<string, IAggregator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = aggregate.variable.value;
-          aggregators[key] = new AggregateEvaluator(aggregate, this.sparqleeConfig);
+          aggregators[key] = await new AsyncEvaluator(aggregate, this.sparqleeConfig)
+            .getAggregateEvaluator(<IActionContext> <unknown> {});
           await aggregators[key].putBindings(bindings);
         }));
 
@@ -95,7 +97,7 @@ export class GroupsState {
         }
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
-        this.subtractWaitCounterAndCollect();
+        await this.subtractWaitCounterAndCollect();
         return group;
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
@@ -117,20 +119,20 @@ export class GroupsState {
           const variable = aggregate.variable.value;
           await group.aggregators[variable].putBindings(bindings);
         }));
-      })().then(() => {
-        this.subtractWaitCounterAndCollect();
-      });
+
+        await this.subtractWaitCounterAndCollect();
+      })();
     }
     return res;
   }
 
-  private subtractWaitCounterAndCollect(): void {
+  private async subtractWaitCounterAndCollect(): Promise<void> {
     if (--this.waitCounter === 0) {
-      this.handleResultCollection();
+      await this.handleResultCollection();
     }
   }
 
-  private handleResultCollection(): void {
+  private async handleResultCollection(): Promise<void> {
     // Collect groups
     let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
@@ -157,7 +159,8 @@ export class GroupsState {
       const single: [RDF.Variable, RDF.Term][] = [];
       for (const aggregate of this.pattern.aggregates) {
         const key = aggregate.variable;
-        const value = AggregateEvaluator.emptyValue(aggregate);
+        const value = (await new AsyncEvaluator(aggregate, this.sparqleeConfig)
+          .getAggregateEvaluator(<IActionContext> <unknown> {})).emptyValue();
         if (value !== undefined) {
           single.push([ key, value ]);
         }
@@ -179,7 +182,7 @@ export class GroupsState {
    * You can only call this method once, after calling this method,
    * calling any function on this will result in an error being thrown.
    */
-  public collectResults(): Promise<Bindings[]> {
+  public async collectResults(): Promise<Bindings[]> {
     const check = this.resultCheck<Bindings[]>();
     if (check) {
       return check;
@@ -188,7 +191,7 @@ export class GroupsState {
     const res = new Promise<Bindings[]>(resolve => {
       this.waitResolver = resolve;
     });
-    this.subtractWaitCounterAndCollect();
+    await this.subtractWaitCounterAndCollect();
     return res;
   }
 
