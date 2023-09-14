@@ -2,8 +2,9 @@ import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import type * as E from '../expressions';
-import type { ITermTransformer } from '../transformers/TermTransformer';
+import { TermTransformer } from '../transformers/TermTransformer';
 import { TypeAlias } from '../util/Consts';
+import { EmptyAggregateError } from '../util/Errors';
 import { isSubTypeOf } from '../util/TypeHandling';
 import type { AsyncEvaluator } from './AsyncEvaluator';
 
@@ -13,7 +14,7 @@ import type { AsyncEvaluator } from './AsyncEvaluator';
  */
 export abstract class AggregateEvaluator {
   private readonly expression: Algebra.AggregateExpression;
-  private readonly evaluator: AsyncEvaluator;
+  protected readonly evaluator: AsyncEvaluator;
 
   private readonly throwError: boolean;
   private errorOccurred = false;
@@ -33,8 +34,28 @@ export abstract class AggregateEvaluator {
     this.variableValues = new Set();
   }
 
-  protected abstract putTerm(term: RDF.Term): Promise<void>;
+  protected abstract putTerm(term: RDF.Term): void;
   protected abstract termResult(): RDF.Term;
+
+  public emptyValueTerm(): RDF.Term | undefined {
+    return undefined;
+  }
+
+  /**
+   * The spec says to throw an error when a set function is called on an empty
+   * set (unless explicitly mentioned otherwise like COUNT).
+   * However, aggregate error handling says to not bind the result in case of an
+   * error. So to simplify logic in the caller, we return undefined by default.
+   *
+   * @param throwError whether this function should respect the spec and throw an error if no empty value is defined
+   */
+  public emptyValue(throwError = false): RDF.Term | undefined {
+    const val = this.emptyValueTerm();
+    if (val === undefined && throwError) {
+      throw new EmptyAggregateError();
+    }
+    return val;
+  }
 
   /**
    * Base implementation of putBindings, that evaluates to a term and then calls putTerm.
@@ -53,7 +74,7 @@ export abstract class AggregateEvaluator {
 
       // Handle DISTINCT before putting the term
       if (!this.distinct || this.variableValues.has(RdfString.termToString(term))) {
-        await this.putTerm(term);
+        this.putTerm(term);
         if (this.distinct) {
           this.variableValues.add(RdfString.termToString(term));
         }
@@ -78,14 +99,14 @@ export abstract class AggregateEvaluator {
     }
   }
 
-  protected termToNumericOrError(termTransformer: ITermTransformer, term: RDF.Term): E.NumericLiteral {
+  protected termToNumericOrError(term: RDF.Term): E.NumericLiteral {
     if (term.termType !== 'Literal') {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
-      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, this.context.superTypeProvider)
+      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, this.evaluator.context.superTypeProvider)
     ) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
-    return <E.NumericLiteral> termTransformer.transformLiteral(term);
+    return <E.NumericLiteral> new TermTransformer(this.evaluator.context.superTypeProvider).transformLiteral(term);
   }
 }

@@ -1,8 +1,8 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { AsyncEvaluator } from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import {AsyncEvaluator} from "@comunica/expression-evaluator";
 
 /**
  * A comunica actor for expression-evaluator-aggregate events.
@@ -42,5 +42,6 @@ IActionExpressionEvaluatorAggregate, IActorExpressionEvaluatorAggregateOutput>;
 
 export interface IAggregator {
   putBindings: (bindings: RDF.Bindings) => Promise<void>;
-  result: () => RDF.Term;
+  result: () => RDF.Term | undefined;
+  emptyValue: () => RDF.Term;
 }
