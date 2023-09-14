@@ -34,8 +34,7 @@
   "dependencies": {
     "@comunica/core": "^2.8.2",
     "@comunica/bus-expression-evaluator-aggregate": "^1.0.0",
-    "@comunica/expression-evaluator": "^2.9.0",
-    "sparqlalgebrajs": "^4.2.0"
+    "@comunica/expression-evaluator": "^2.9.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

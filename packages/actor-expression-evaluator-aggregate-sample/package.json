@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-expression-evaluator-aggregate-average",
+  "name": "@comunica/actor-expression-evaluator-aggregate-sample",
   "version": "1.0.0",
-  "description": "A average expression-evaluator-aggregate actor",
+  "description": "A sample expression-evaluator-aggregate actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-expression-evaluator-aggregate-average"
+    "directory": "packages/actor-expression-evaluator-aggregate-sample"
   },
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "comunica",
     "actor",
     "expression-evaluator-aggregate",
-    "average"
+    "sample"
   ],
   "license": "MIT",
   "bugs": {

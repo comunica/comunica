@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-expression-evaluator-aggregate-average",
+  "name": "@comunica/actor-expression-evaluator-aggregate-wildcard-count",
   "version": "1.0.0",
-  "description": "A average expression-evaluator-aggregate actor",
+  "description": "A wildcard-count expression-evaluator-aggregate actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-expression-evaluator-aggregate-average"
+    "directory": "packages/actor-expression-evaluator-aggregate-wildcard-count"
   },
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "comunica",
     "actor",
     "expression-evaluator-aggregate",
-    "average"
+    "wildcard-count"
   ],
   "license": "MIT",
   "bugs": {
@@ -34,7 +34,8 @@
   "dependencies": {
     "@comunica/core": "^2.8.2",
     "@comunica/bus-expression-evaluator-aggregate": "^1.0.0",
-    "@comunica/expression-evaluator": "^2.9.0"
+    "@comunica/expression-evaluator": "^2.9.0",
+    "rdf-string": "^1.6.3"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
