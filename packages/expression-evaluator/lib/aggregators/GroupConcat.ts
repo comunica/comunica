@@ -1,14 +1,24 @@
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from 'sparqlalgebrajs';
+import { AggregateEvaluator } from '../evaluators/AggregateEvaluator';
+import type { AsyncEvaluator } from '../evaluators/AsyncEvaluator';
 import { string } from '../functions/Helpers';
-import { AggregatorComponent } from './Aggregator';
 
-export class GroupConcat extends AggregatorComponent {
+export class GroupConcat extends AggregateEvaluator {
   private state: string | undefined = undefined;
-  public static emptyValue(): RDF.Term {
+  private readonly separator: string;
+
+  public constructor(expr: Algebra.AggregateExpression,
+    evaluator: AsyncEvaluator, throwError?: boolean) {
+    super(expr, evaluator, throwError);
+    this.separator = expr.separator || ' ';
+  }
+
+  public emptyValue(): RDF.Term {
     return string('').toRDF();
   }
 
-  public put(term: RDF.Term): void {
+  public putTerm(term: RDF.Term): void {
     if (this.state === undefined) {
       this.state = term.value;
     } else {
@@ -16,9 +26,9 @@ export class GroupConcat extends AggregatorComponent {
     }
   }
 
-  public result(): RDF.Term {
+  public termResult(): RDF.Term {
     if (this.state === undefined) {
-      return GroupConcat.emptyValue();
+      return this.emptyValue();
     }
     return string(this.state).toRDF();
   }

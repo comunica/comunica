@@ -1,15 +1,22 @@
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from 'sparqlalgebrajs';
+import { AggregateEvaluator } from '../evaluators/AggregateEvaluator';
+import type { AsyncEvaluator } from '../evaluators/AsyncEvaluator';
 import type * as E from '../expressions';
 import { regularFunctions } from '../functions';
 import { integer } from '../functions/Helpers';
 import * as C from '../util/Consts';
-import { AggregatorComponent } from './Aggregator';
 
 type SumState = E.NumericLiteral;
 
-export class Sum extends AggregatorComponent {
+export class Sum extends AggregateEvaluator {
   private state: SumState | undefined = undefined;
   private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
+
+  public constructor(expr: Algebra.AggregateExpression,
+    evaluator: AsyncEvaluator, throwError?: boolean) {
+    super(expr, evaluator, throwError);
+  }
 
   public static emptyValue(): RDF.Term {
     return integer(0).toRDF();
@@ -20,7 +27,7 @@ export class Sum extends AggregatorComponent {
       this.state = this.termToNumericOrError(term);
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state = <E.NumericLiteral> this.summer.apply([ this.state, internalTerm ], this.sharedContext);
+      this.state = <E.NumericLiteral> this.summer.apply([ this.state, internalTerm ], this.evaluator.context);
     }
   }
 
