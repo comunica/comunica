@@ -35,7 +35,7 @@ export abstract class AggregateEvaluator {
   }
 
   protected abstract putTerm(term: RDF.Term): void;
-  protected abstract termResult(): RDF.Term;
+  protected abstract termResult(): RDF.Term | undefined;
 
   public emptyValueTerm(): RDF.Term | undefined {
     return undefined;

@@ -1,11 +1,17 @@
 import type * as RDF from '@rdfjs/types';
+import { AggregateEvaluator } from '../evaluators/AggregateEvaluator';
 import { orderTypes } from '../util/Ordering';
-import { AggregatorComponent } from './Aggregator';
+import {Algebra} from "sparqlalgebrajs";
+import { AsyncEvaluator } from '../evaluators/AsyncEvaluator';
 
-export class Max extends AggregatorComponent {
+export class Max extends AggregateEvaluator {
   private state: RDF.Term | undefined = undefined;
+  public constructor(expr: Algebra.AggregateExpression,
+    evaluator: AsyncEvaluator, throwError?: boolean) {
+    super(expr, evaluator, throwError);
+  }
 
-  public put(term: RDF.Term): void {
+  public putTerm(term: RDF.Term): void {
     if (term.termType !== 'Literal') {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a literal`);
     }
@@ -16,9 +22,9 @@ export class Max extends AggregatorComponent {
     }
   }
 
-  public result(): RDF.Term | undefined {
+  public termResult(): RDF.Term | undefined {
     if (this.state === undefined) {
-      return Max.emptyValue();
+      return this.emptyValue();
     }
     return this.state;
   }
