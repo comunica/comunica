@@ -3,7 +3,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
-import { AggregateEvaluator, AsyncAggregateEvaluator } from '../../../lib';
+import { AggregateEvaluator, AggregateEvaluator } from '../../../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -16,22 +16,22 @@ async function testCase({ expr, input, evalTogether }: TestCaseArgs): Promise<RD
 
   if (input.length === 0) {
     results.push(AggregateEvaluator.emptyValue(expr));
-    results.push(AsyncAggregateEvaluator.emptyValue(expr));
+    results.push(AggregateEvaluator.emptyValue(expr));
   }
 
   // Evaluate both sync and async while awaiting all
   const syncEvaluator = new AggregateEvaluator(expr, undefined, false);
-  const asyncEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
+  const asyncEvaluator = new AggregateEvaluator(expr, undefined, false);
   for (const bindings of input) {
-    syncEvaluator.put(bindings);
-    await asyncEvaluator.put(bindings);
+    syncEvaluator.putBindings(bindings);
+    await asyncEvaluator.putBindings(bindings);
   }
   results.push(syncEvaluator.result());
   results.push(asyncEvaluator.result());
   // If we can evaluate the aggregator all at once, we will test this to
   if (evalTogether) {
-    const togetherEvaluator = new AsyncAggregateEvaluator(expr, undefined, false);
-    await Promise.all(input.map(bindings => togetherEvaluator.put(bindings)));
+    const togetherEvaluator = new AggregateEvaluator(expr, undefined, false);
+    await Promise.all(input.map(bindings => togetherEvaluator.putBindings(bindings)));
     results.push(togetherEvaluator.result());
   }
 
@@ -56,7 +56,7 @@ function syncErrorTestCase({ expr, input }: TestCaseArgs) {
   } else {
     const syncEvaluator = new AggregateEvaluator(expr, undefined, true);
     for (const bindings of input) {
-      syncEvaluator.put(bindings);
+      syncEvaluator.putBindings(bindings);
     }
     syncEvaluator.result();
   }
@@ -64,11 +64,11 @@ function syncErrorTestCase({ expr, input }: TestCaseArgs) {
 
 async function asyncErrorTestCase({ expr, input }: TestCaseArgs) {
   if (input.length === 0) {
-    AsyncAggregateEvaluator.emptyValue(expr, true);
+    AggregateEvaluator.emptyValue(expr, true);
   } else {
-    const asyncEvaluator = new AsyncAggregateEvaluator(expr, undefined, true);
+    const asyncEvaluator = new AggregateEvaluator(expr, undefined, true);
     for (const bindings of input) {
-      await asyncEvaluator.put(bindings);
+      await asyncEvaluator.putBindings(bindings);
     }
     asyncEvaluator.result();
   }

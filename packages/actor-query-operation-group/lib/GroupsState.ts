@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
-import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
+import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -22,7 +22,7 @@ export type BindingsHash = string;
  */
 export interface IGroup {
   bindings: Bindings;
-  aggregators: Record<string, AsyncAggregateEvaluator>;
+  aggregators: Record<string, AggregateEvaluator>;
 }
 
 /**
@@ -82,11 +82,11 @@ export class GroupsState {
     if (!groupInitializer) {
       // Initialize state for all aggregators for new group
       groupInitializer = (async() => {
-        const aggregators: Record<string, AsyncAggregateEvaluator> = {};
+        const aggregators: Record<string, AggregateEvaluator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = aggregate.variable.value;
-          aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
-          await aggregators[key].put(bindings);
+          aggregators[key] = new AggregateEvaluator(aggregate, this.sparqleeConfig);
+          await aggregators[key].putBindings(bindings);
         }));
 
         if (this.distinctHashes) {
@@ -115,7 +115,7 @@ export class GroupsState {
           }
 
           const variable = aggregate.variable.value;
-          await group.aggregators[variable].put(bindings);
+          await group.aggregators[variable].putBindings(bindings);
         }));
       })().then(() => {
         this.subtractWaitCounterAndCollect();
@@ -157,7 +157,7 @@ export class GroupsState {
       const single: [RDF.Variable, RDF.Term][] = [];
       for (const aggregate of this.pattern.aggregates) {
         const key = aggregate.variable;
-        const value = AsyncAggregateEvaluator.emptyValue(aggregate);
+        const value = AggregateEvaluator.emptyValue(aggregate);
         if (value !== undefined) {
           single.push([ key, value ]);
         }

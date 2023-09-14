@@ -19,7 +19,7 @@ export class Average extends AggregatorComponent {
     return integer(0).toRDF();
   }
 
-  public put(term: RDF.Term): void {
+  public putTerm(term: RDF.Term): void {
     if (this.state === undefined) {
       const sum = this.termToNumericOrError(term);
       this.state = { sum, count: 1 };
