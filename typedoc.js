@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'Comunica',
+  name: 'Comunica :D',
   out: 'documentation',
   theme: 'default',
   entryPointStrategy: 'packages',
