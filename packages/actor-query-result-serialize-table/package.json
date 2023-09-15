@@ -38,7 +38,7 @@
     "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.3",
     "rdf-terms": "^1.11.0",
-    "readable-stream": "^4.2.0"
+    "readable-stream": "^4.4.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

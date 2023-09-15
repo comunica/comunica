@@ -38,7 +38,7 @@
     "@comunica/core": "^2.8.2",
     "@comunica/types": "^2.8.2",
     "process": "^0.11.10",
-    "readable-stream": "^4.2.0"
+    "readable-stream": "^4.4.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

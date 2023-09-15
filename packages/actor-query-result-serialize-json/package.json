@@ -35,7 +35,7 @@
     "@comunica/bus-query-result-serialize": "^2.8.2",
     "@comunica/types": "^2.8.2",
     "rdf-string": "^1.6.1",
-    "readable-stream": "^4.2.0"
+    "readable-stream": "^4.4.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

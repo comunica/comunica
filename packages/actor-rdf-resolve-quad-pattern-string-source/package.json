@@ -40,7 +40,7 @@
     "@rdfjs/types": "*",
     "lru-cache": "^10.0.0",
     "rdf-store-stream": "^2.0.0",
-    "readable-stream": "^4.2.0"
+    "readable-stream": "^4.4.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -38,7 +38,7 @@
     "@comunica/core": "^2.8.2",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
-    "readable-stream": "^4.2.0",
+    "readable-stream": "^4.4.2",
     "relative-to-absolute-iri": "^1.0.7"
   },
   "scripts": {
