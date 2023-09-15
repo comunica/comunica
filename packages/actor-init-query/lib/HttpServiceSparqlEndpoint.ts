@@ -17,10 +17,11 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 import type { IDynamicQueryEngineOptions } from '..';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
-
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('cluster');
 const process: NodeJS.Process = require('process/');
 const quad = require('rdf-quad');
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const yargs = require('yargs').default;
 
 // Force type on Cluster, because there are issues with the Node.js typings since v18

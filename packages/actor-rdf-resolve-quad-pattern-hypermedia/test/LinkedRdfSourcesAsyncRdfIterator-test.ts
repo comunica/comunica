@@ -10,6 +10,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const EventEmitter = require('events');
 
 const DF = new DataFactory();
