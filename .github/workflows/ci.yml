@@ -41,6 +41,8 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Build project
         run: yarn run build
+      - name: Build project -- esModuleInterop true
+        run: yarn run build:esmoduleinterop
       - name: Run depcheck
         run: yarn run depcheck
       - name: Run tests
