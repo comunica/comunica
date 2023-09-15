@@ -13,7 +13,7 @@ import type { AsyncEvaluator } from './AsyncEvaluator';
  * Only the wildcard count aggregator significantly differs from the others.
  */
 export abstract class AggregateEvaluator {
-  private readonly expression: Algebra.AggregateExpression;
+  protected readonly expr: E.Expression;
   protected readonly evaluator: AsyncEvaluator;
 
   private readonly throwError: boolean;
@@ -22,15 +22,15 @@ export abstract class AggregateEvaluator {
   protected readonly distinct: boolean;
   protected readonly variableValues: Set<string>;
 
-  protected constructor(private readonly expr: Algebra.AggregateExpression,
+  protected constructor(algExpr: Algebra.AggregateExpression,
     evaluator: AsyncEvaluator, throwError?: boolean) {
-    this.expression = expr;
+    this.expr = evaluator.internalize(algExpr);
     this.evaluator = evaluator;
 
     this.throwError = throwError || false;
     this.errorOccurred = false;
 
-    this.distinct = expr.distinct;
+    this.distinct = algExpr.distinct;
     this.variableValues = new Set();
   }
 
@@ -67,7 +67,7 @@ export abstract class AggregateEvaluator {
       return;
     }
     try {
-      const term = await this.evaluator.evaluate(bindings);
+      const term = await this.evaluator.evaluate(this.expr, bindings);
       if (!term || this.errorOccurred) {
         return;
       }

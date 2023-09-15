@@ -2,8 +2,7 @@ import type { IAggregator, MediatorExpressionEvaluatorAggregate } from '@comunic
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import type { Algebra as Alg, Algebra } from 'sparqlalgebrajs';
-import { ExpressionType } from '../expressions';
+import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type * as E from '../expressions/Expressions';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
 import type { IExpressionEvaluator } from '../Types';
@@ -22,22 +21,24 @@ export interface IAsyncEvaluatorContext extends ISharedContext {
   extensionFunctionCreator?: AsyncExtensionFunctionCreator;
 }
 
+export interface IAsyncEvaluatorOptions {
+  context: IAsyncEvaluatorContext;
+  mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
+}
+
 export class AsyncEvaluator {
-  private readonly expr: E.Expression;
+  private readonly transformer: AlgebraTransformer;
   private readonly evaluator: IExpressionEvaluator<E.Expression, Promise<E.TermExpression>>;
   public readonly context: ICompleteAsyncEvaluatorContext;
 
   private readonly mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
 
-  public async getAggregateEvaluator(context: IActionContext): Promise<IAggregator> {
-    if (this.expr.expressionType === ExpressionType.Aggregate) {
-      return (await this.mediatorExpressionEvaluatorAggregate.mediate({
-        expr: <Algebra.AggregateExpression> <unknown> this.expr,
-        evaluator: this,
-        context,
-      })).aggregator;
-    }
-    throw new Error(`Expression is not an aggregate expression: ${this.expr.expressionType}`);
+  public async getAggregateEvaluator(algExpr: Alg.AggregateExpression, context: IActionContext): Promise<IAggregator> {
+    return (await this.mediatorExpressionEvaluatorAggregate.mediate({
+      expr: algExpr,
+      evaluator: this,
+      context,
+    })).aggregator;
   }
 
   public static completeContext(context: IAsyncEvaluatorContext): ICompleteAsyncEvaluatorContext {
@@ -58,32 +59,37 @@ export class AsyncEvaluator {
     };
   }
 
-  public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext = {}) {
+  public constructor(args: IAsyncEvaluatorOptions) {
+    const { context = {}, mediatorExpressionEvaluatorAggregate } = args;
+    this.mediatorExpressionEvaluatorAggregate = mediatorExpressionEvaluatorAggregate;
     // eslint-disable-next-line unicorn/no-useless-undefined
     const creator = context.extensionFunctionCreator || (() => undefined);
     this.context = AsyncEvaluator.completeContext(context);
 
-    const transformer = new AlgebraTransformer({
+    this.transformer = new AlgebraTransformer({
       type: 'async',
       creator,
       ...this.context,
     });
-    this.expr = transformer.transformAlgebra(algExpr);
 
-    this.evaluator = new AsyncRecursiveEvaluator(this.context, transformer);
+    this.evaluator = new AsyncRecursiveEvaluator(this.context, this.transformer);
   }
 
-  public async evaluate(mapping: RDF.Bindings): Promise<RDF.Term> {
-    const result = await this.evaluator.evaluate(this.expr, mapping);
+  public internalize(expression: Alg.Expression): E.Expression {
+    return this.transformer.transformAlgebra(expression);
+  }
+
+  public async evaluate(expr: E.Expression, mapping: RDF.Bindings): Promise<RDF.Term> {
+    const result = await this.evaluator.evaluate(expr, mapping);
     return result.toRDF();
   }
 
-  public async evaluateAsEBV(mapping: RDF.Bindings): Promise<boolean> {
-    const result = await this.evaluator.evaluate(this.expr, mapping);
+  public async evaluateAsEBV(expr: E.Expression, mapping: RDF.Bindings): Promise<boolean> {
+    const result = await this.evaluator.evaluate(expr, mapping);
     return result.coerceEBV();
   }
 
-  public async evaluateAsInternal(mapping: RDF.Bindings): Promise<E.TermExpression> {
-    return await this.evaluator.evaluate(this.expr, mapping);
+  public async evaluateAsInternal(expr: E.Expression, mapping: RDF.Bindings): Promise<E.TermExpression> {
+    return await this.evaluator.evaluate(expr, mapping);
   }
 }

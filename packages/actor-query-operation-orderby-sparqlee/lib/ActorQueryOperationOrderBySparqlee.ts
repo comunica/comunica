@@ -3,7 +3,9 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/expression-evaluator';
+import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import { isExpressionError, orderTypes } from '@comunica/expression-evaluator';
+import type * as E from '@comunica/expression-evaluator/lib/expressions/Expressions';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
@@ -14,20 +16,20 @@ import { SortIterator } from './SortIterator';
  */
 export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
   private readonly window: number;
+  private readonly expressionEvaluator: AsyncEvaluator;
+  private expr: E.Expression | undefined;
 
   public constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
     super(args, 'orderby');
     this.window = args.window ?? Number.POSITIVE_INFINITY;
+    this.expressionEvaluator = args.expressionEvaluator;
   }
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
-      const _ = new AsyncEvaluator(
-        expr,
-        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation),
-      );
+      this.expr = this.expressionEvaluator.internalize(expr);
     }
     return true;
   }
@@ -38,7 +40,6 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.
@@ -47,7 +48,6 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
       // Transform the stream by annotating it with the expr result
-      const evaluator = new AsyncEvaluator(expr, sparqleeConfig);
       interface IAnnotatedBinding {
         bindings: Bindings; result: Term | undefined;
       }
@@ -55,7 +55,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       const transform = async(bindings: Bindings, next: any, push: (result: IAnnotatedBinding) => void):
       Promise<void> => {
         try {
-          const result = await evaluator.evaluate(bindings);
+          const result = await this.expressionEvaluator.evaluate(this.expr!, bindings);
           push({ bindings, result });
         } catch (error: unknown) {
           // We ignore all Expression errors.
@@ -121,4 +121,5 @@ export interface IActorQueryOperationOrderBySparqleeArgs extends IActorQueryOper
    * @range {integer}
    */
   window?: number;
+  expressionEvaluator: AsyncEvaluator;
 }
