@@ -15,6 +15,7 @@ import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('cluster');
 const EventEmitter = require('events');
 const querystring = require('querystring');

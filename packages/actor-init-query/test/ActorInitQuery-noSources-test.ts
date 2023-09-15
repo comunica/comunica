@@ -12,7 +12,7 @@ import { Factory } from 'sparqlalgebrajs';
 
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
-
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
 const DF = new DataFactory();

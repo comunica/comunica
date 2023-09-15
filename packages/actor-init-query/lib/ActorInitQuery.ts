@@ -11,6 +11,7 @@ import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import { QueryEngineBase } from './QueryEngineBase';
 
 const streamifyString = require('streamify-string');
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const yargs = require('yargs');
 
 /**
