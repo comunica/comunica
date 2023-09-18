@@ -1,0 +1,9 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/expression-evaluator/^2.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:expression-evaluator/evaluators#main",
+  "@type": "AsyncEvaluator",
+  "context": { },
+  "mediatorExpressionEvaluatorAggregate": { "@id": "urn:comunica:default:expression-evaluator/mediators#main" }
+}

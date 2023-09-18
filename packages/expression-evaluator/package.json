@@ -2,7 +2,7 @@
   "name": "@comunica/expression-evaluator",
   "version": "2.9.0",
   "description": "A simple SPARQL expression evaluator",
-  "lsd:module": false,
+  "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
@@ -45,7 +45,9 @@
     "uuid": "^9.0.0"
   },
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator",
     "bench": "node \"../../node_modules/typescript/bin/tsc\" && node benchmarks/*.js"
   }
 }

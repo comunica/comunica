@@ -33,14 +33,6 @@ export class AsyncEvaluator {
 
   private readonly mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
 
-  public async getAggregateEvaluator(algExpr: Alg.AggregateExpression, context: IActionContext): Promise<IAggregator> {
-    return (await this.mediatorExpressionEvaluatorAggregate.mediate({
-      expr: algExpr,
-      evaluator: this,
-      context,
-    })).aggregator;
-  }
-
   public static completeContext(context: IAsyncEvaluatorContext): ICompleteAsyncEvaluatorContext {
     const now = context.now || new Date(Date.now());
     return {
@@ -73,6 +65,14 @@ export class AsyncEvaluator {
     });
 
     this.evaluator = new AsyncRecursiveEvaluator(this.context, this.transformer);
+  }
+
+  public async getAggregateEvaluator(algExpr: Alg.AggregateExpression, context: IActionContext): Promise<IAggregator> {
+    return (await this.mediatorExpressionEvaluatorAggregate.mediate({
+      expr: algExpr,
+      evaluator: this,
+      context,
+    })).aggregator;
   }
 
   public internalize(expression: Alg.Expression): E.Expression {
