@@ -22,7 +22,6 @@ export interface IAsyncEvaluatorContext extends ISharedContext {
 }
 
 export interface IAsyncEvaluatorOptions {
-  context: IAsyncEvaluatorContext;
   mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
 }
 
@@ -52,7 +51,8 @@ export class AsyncEvaluator {
   }
 
   public constructor(args: IAsyncEvaluatorOptions) {
-    const { context = {}, mediatorExpressionEvaluatorAggregate } = args;
+    const { mediatorExpressionEvaluatorAggregate } = args;
+    const context: any = {};
     this.mediatorExpressionEvaluatorAggregate = mediatorExpressionEvaluatorAggregate;
     // eslint-disable-next-line unicorn/no-useless-undefined
     const creator = context.extensionFunctionCreator || (() => undefined);

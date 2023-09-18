@@ -4,6 +4,5 @@
   ],
   "@id": "urn:comunica:default:expression-evaluator/evaluators#main",
   "@type": "AsyncEvaluator",
-  "context": { },
-  "mediatorExpressionEvaluatorAggregate": { "@id": "urn:comunica:default:expression-evaluator/mediators#main" }
+  "args_mediatorExpressionEvaluatorAggregate": { "@id": "urn:comunica:default:expression-evaluator/mediators#main" }
 }

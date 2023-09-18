@@ -5,6 +5,8 @@
   "import": [
     "ccqs:config/context-preprocess/actors.json",
     "ccqs:config/context-preprocess/mediators.json",
+    "ccqs:config/expression-evaluator/evaluators.json",
+    "ccqs:config/expression-evaluator/mediators.json",
     "ccqs:config/hash-bindings/actors.json",
     "ccqs:config/hash-bindings/mediators.json",
     "ccqs:config/http/actors.json",
