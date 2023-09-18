@@ -1,5 +1,4 @@
-export { AsyncEvaluator, IAsyncEvaluatorContext } from './evaluators/AsyncEvaluator';
-export { ISharedContext } from './evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+export { AsyncEvaluator } from './evaluators/AsyncEvaluator';
 export { SyncEvaluator, ISyncEvaluatorContext } from './evaluators/SyncEvaluator';
 export { AggregateEvaluator } from './evaluators/AggregateEvaluator';
 
