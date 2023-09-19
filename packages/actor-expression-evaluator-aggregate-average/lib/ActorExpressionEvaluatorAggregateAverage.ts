@@ -27,7 +27,7 @@ export class ActorExpressionEvaluatorAggregateAverage extends ActorExpressionEva
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new AverageAggregator(action.factory.createEvaluator(action.expr, { actionContext: action.context })),
+      aggregator: new AverageAggregator(action.factory.createEvaluator(action.expr, action.context)),
     };
   }
 }

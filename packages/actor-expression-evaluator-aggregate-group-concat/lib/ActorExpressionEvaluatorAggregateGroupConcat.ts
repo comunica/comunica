@@ -5,11 +5,10 @@ import type {
 } from '@comunica/bus-expression-evaluator-aggregate';
 import { ActorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
 import type { IActorTest } from '@comunica/core';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import { string } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Group Concat Expression Evaluator Aggregate Actor.
@@ -25,7 +24,7 @@ export class ActorExpressionEvaluatorAggregateGroupConcat extends ActorExpressio
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new GroupConcatAggregator(action.expr, action.factory),
+      aggregator: new GroupConcatAggregator(action.factory.createEvaluator(action.expr, action.context)),
     };
   }
 }
@@ -34,10 +33,9 @@ class GroupConcatAggregator extends AggregateEvaluator {
   private state: string | undefined = undefined;
   private readonly separator: string;
 
-  public constructor(expr: Algebra.AggregateExpression,
-    evaluator: AsyncEvaluator, throwError?: boolean) {
-    super(expr, evaluator, throwError);
-    this.separator = expr.separator || ' ';
+  public constructor(evaluator: ExpressionEvaluator, throwError?: boolean) {
+    super(evaluator, throwError);
+    this.separator = evaluator.algExpr.separator || ' ';
   }
 
   public emptyValue(): RDF.Term {

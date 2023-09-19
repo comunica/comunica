@@ -42,7 +42,10 @@
     "relative-to-absolute-iri": "^1.0.6",
     "spark-md5": "^3.0.1",
     "sparqlalgebrajs": "^4.2.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "@comunica/bus-query-operation": "^2.9.0",
+    "@comunica/context-entries": "^2.8.2",
+    "@comunica/data-factory": "^2.7.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
