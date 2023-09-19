@@ -4,6 +4,7 @@ import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ICliArgsHandler, IQueryContextCommon } from '@comunica/types';
 import type { Readable } from 'readable-stream';
+import yargs from 'yargs';
 import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
 import { ActorInitQueryBase } from './ActorInitQueryBase';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
@@ -11,8 +12,6 @@ import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import { QueryEngineBase } from './QueryEngineBase';
 
 const streamifyString = require('streamify-string');
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const yargs = require('yargs');
 
 /**
  * A comunica Query Init Actor.
@@ -40,7 +39,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
     ];
 
     // Populate yargs arguments object
-    let argumentsBuilder = yargs({});
+    let argumentsBuilder = yargs([]);
     for (const cliArgsHandler of cliArgsHandlers) {
       argumentsBuilder = cliArgsHandler.populateYargs(argumentsBuilder);
     }
