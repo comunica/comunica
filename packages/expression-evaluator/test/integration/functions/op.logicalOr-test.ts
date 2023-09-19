@@ -23,7 +23,6 @@ describe('evaluation of "||" like', () => {
       true  invalidDateTime = true
       invalidDateTime true  = true
     `,
-    // TODO: why?
     errorTable: `
       false invalidDateTime = 'Cannot coerce term to EBV'
       invalidDateTime false = 'Cannot coerce term to EBV'
