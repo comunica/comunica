@@ -5,12 +5,11 @@ import type {
 } from '@comunica/bus-expression-evaluator-aggregate';
 import { ActorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
 import type { IActorTest } from '@comunica/core';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Wildcard Count Expression Evaluator Aggregate Actor.
@@ -26,7 +25,7 @@ export class ActorExpressionEvaluatorAggregateWildcardCount extends ActorExpress
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new WildcardCountAggregator(action.expr, action.factory),
+      aggregator: new WildcardCountAggregator(action.factory.createEvaluator(action.expr, action.context)),
     };
   }
 }
@@ -37,9 +36,8 @@ class WildcardCountAggregator extends AggregateEvaluator {
   private readonly bindingValues: Map<string, Set<string>> = new Map();
   private counter = 0;
 
-  public constructor(expr: Algebra.AggregateExpression,
-    evaluator: AsyncEvaluator, throwError?: boolean) {
-    super(expr, evaluator, throwError);
+  public constructor(evaluator: ExpressionEvaluator, throwError?: boolean) {
+    super(evaluator, throwError);
   }
 
   public putTerm(term: RDF.Term): void {

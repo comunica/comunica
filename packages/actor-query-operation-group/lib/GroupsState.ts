@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IAggregator } from '@comunica/bus-expression-evaluator-aggregate';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -43,7 +43,8 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly expressionEvaluator: AsyncEvaluator,
+    private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory,
+    private readonly context: IActionContext,
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -85,8 +86,7 @@ export class GroupsState {
         const aggregators: Record<string, IAggregator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = aggregate.variable.value;
-          aggregators[key] = await this.expressionEvaluator
-            .getAggregateEvaluator(aggregate, <IActionContext> <unknown> {});
+          aggregators[key] = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
           await aggregators[key].putBindings(bindings);
         }));
 
@@ -158,8 +158,8 @@ export class GroupsState {
       const single: [RDF.Variable, RDF.Term][] = [];
       for (const aggregate of this.pattern.aggregates) {
         const key = aggregate.variable;
-        const value = (await this.expressionEvaluator
-          .getAggregateEvaluator(aggregate, <IActionContext> <unknown> {})).emptyValue();
+        const value = (await this.expressionEvaluatorFactory
+          .createAggregator(aggregate, this.context)).emptyValue();
         if (value !== undefined) {
           single.push([ key, value ]);
         }

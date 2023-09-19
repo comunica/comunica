@@ -5,7 +5,7 @@ import type {
 } from '@comunica/bus-expression-evaluator-aggregate';
 import { ActorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
 import type { IActorTest } from '@comunica/core';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import type * as RDF from '@rdfjs/types';
@@ -26,16 +26,15 @@ export class ActorExpressionEvaluatorAggregateCount extends ActorExpressionEvalu
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new CountAggregator(action.expr, action.factory),
+      aggregator: new CountAggregator(action.factory.createEvaluator(action.expr, action.context)),
     };
   }
 }
 
 class CountAggregator extends AggregateEvaluator {
   private state: number | undefined = undefined;
-  public constructor(expr: Algebra.AggregateExpression,
-    evaluator: AsyncEvaluator, throwError?: boolean) {
-    super(expr, evaluator, throwError);
+  public constructor(evaluator: ExpressionEvaluator, throwError?: boolean) {
+    super(evaluator, throwError);
   }
 
   public emptyValue(): RDF.Term {

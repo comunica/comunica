@@ -4,7 +4,7 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -15,16 +15,16 @@ import type { Algebra } from 'sparqlalgebrajs';
  * See https://www.w3.org/TR/sparql11-query/#sparqlAlgebra;
  */
 export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<Algebra.Extend> {
-  private readonly expressionEvaluator: AsyncEvaluator;
+  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationExtendArgs) {
     super(args, 'extend');
-    this.expressionEvaluator = args.expressionEvaluator;
+    this.expressionEvaluatorFactory = args.expressionEvaluatorFactory;
   }
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operations
-    const _ = Boolean(this.expressionEvaluator.internalize(operation.expression));
+    const _ = Boolean(this.expressionEvaluatorFactory.createEvaluator(operation.expression, context));
     return true;
   }
 
@@ -41,12 +41,12 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
     }
 
-    const internalized = this.expressionEvaluator.internalize(expression);
+    const evaluator = this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
 
     // Transform the stream by extending each Bindings with the expression result
     const transform = async(bindings: Bindings, next: any, push: (pusbBindings: Bindings) => void): Promise<void> => {
       try {
-        const result = await this.expressionEvaluator.evaluate(internalized, bindings);
+        const result = await evaluator.evaluate(bindings);
         // Extend operation is undefined when the key already exists
         // We just override it here.
         const extended = bindings.set(variable, result);
@@ -77,5 +77,5 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
 }
 
 interface IActorQueryOperationExtendArgs extends IActorQueryOperationTypedMediatedArgs {
-  expressionEvaluator: AsyncEvaluator;
+  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 }

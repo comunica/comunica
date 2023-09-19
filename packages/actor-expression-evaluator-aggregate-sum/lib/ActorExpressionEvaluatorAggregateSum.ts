@@ -5,14 +5,13 @@ import type {
 } from '@comunica/bus-expression-evaluator-aggregate';
 import { ActorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
 import type { IActorTest } from '@comunica/core';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import { regularFunctions } from '@comunica/expression-evaluator/lib/functions';
 import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Sum Expression Evaluator Aggregate Actor.
@@ -28,7 +27,7 @@ export class ActorExpressionEvaluatorAggregateSum extends ActorExpressionEvaluat
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new SumAggregator(action.expr, action.factory),
+      aggregator: new SumAggregator(action.factory.createEvaluator(action.expr, action.context)),
     };
   }
 }
@@ -39,9 +38,8 @@ class SumAggregator extends AggregateEvaluator {
   private state: SumState | undefined = undefined;
   private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
 
-  public constructor(expr: Algebra.AggregateExpression,
-    evaluator: AsyncEvaluator, throwError?: boolean) {
-    super(expr, evaluator, throwError);
+  public constructor(evaluator: ExpressionEvaluator, throwError?: boolean) {
+    super(evaluator, throwError);
   }
 
   public emptyValue(): RDF.Term {

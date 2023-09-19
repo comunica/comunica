@@ -19,6 +19,7 @@ import type { ExpressionEvaluatorFactory } from './ExpressionEvaluatorFactory';
 export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
 export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => AsyncExtensionFunction | undefined;
 
+// TODO: make this fields of the EE
 export interface IAsyncEvaluatorContext {
   exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;

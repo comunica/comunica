@@ -2,9 +2,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
-import type * as E from '@comunica/expression-evaluator/lib/expressions/Expressions';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -13,12 +12,11 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
-  private readonly expressionEvaluator: AsyncEvaluator;
-  private expr: E.Expression | undefined;
+  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
-    this.expressionEvaluator = args.expressionEvaluator;
+    this.expressionEvaluatorFactory = args.expressionEvaluatorFactory;
   }
 
   public async testOperation(operation: Algebra.LeftJoin, context: IActionContext): Promise<IActorTest> {
@@ -43,9 +41,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     if (operationOriginal.expression) {
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
-      if (!this.expr) {
-        this.expr = this.expressionEvaluator.internalize(operationOriginal.expression);
-      }
+      const evaluator = this.expressionEvaluatorFactory.createEvaluator(operationOriginal.expression, context);
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,
@@ -57,7 +53,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
             }
 
             try {
-              const result = await this.expressionEvaluator.evaluateAsEBV(this.expr!, bindings);
+              const result = await evaluator.evaluateAsEBV(bindings);
               if (result) {
                 push(bindings);
               }
@@ -89,5 +85,5 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
    * A mediator for joining Bindings streams
    */
   mediatorJoin: MediatorRdfJoin;
-  expressionEvaluator: AsyncEvaluator;
+  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 }

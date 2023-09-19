@@ -1,7 +1,6 @@
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { IQueryOperationResult,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
@@ -13,14 +12,6 @@ import type { IQueryOperationResult,
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
-
-/**
- * A counter that keeps track blank node generated through BNODE() SPARQL
- * expressions.
- *
- * @type {number}
- */
-let bnodeCounter = 0;
 
 /**
  * A comunica actor for query-operation events.
@@ -120,56 +111,6 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
   }
 
-  protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
-    const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
-    const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
-    const functionArgumentsCache: FunctionArgumentsCache = context.get(KeysInitQuery.functionArgumentsCache) || {};
-
-    // Handle two variants of providing extension functions
-    if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
-      throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
-    }
-    let extensionFunctionCreator: ((functionNamedNode: RDF.NamedNode) =>
-    ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined) | undefined = context
-      .get(KeysInitQuery.extensionFunctionCreator);
-    // Convert dictionary-based variant to callback
-    const extensionFunctions: (Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>) | undefined = context
-      .get(KeysInitQuery.extensionFunctions);
-    if (extensionFunctions) {
-      extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
-    }
-
-    return { now, baseIRI, extensionFunctionCreator, functionArgumentsCache };
-  }
-
-  /**
-   * Create an options object that can be used to construct a expression-evaluator synchronous evaluator.
-   * @param context An action context.
-   * @param mediatorQueryOperation An optional query query operation mediator.
-   *                               If defined, the existence resolver will be defined as `exists`.
-   */
-  public static getExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
-  ISyncExpressionContext {
-    return {
-      ...this.getBaseExpressionContext(context),
-      bnode: (input?: string) => new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`),
-    };
-  }
-
-  /**
-   * Create an options object that can be used to construct a expression-evaluator asynchronous evaluator.
-   * @param context An action context.
-   * @param mediatorQueryOperation A query query operation mediator for resolving `exists`.
-   */
-  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
-  IAsyncExpressionContext {
-    return {
-      ...this.getBaseExpressionContext(context),
-      bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
-      exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation),
-    };
-  }
-
   /**
    * Create an existence resolver for usage within an expression context.
    * @param context An action context.
@@ -229,6 +170,7 @@ export interface IBaseExpressionContext {
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>
   ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
   functionArgumentsCache?: FunctionArgumentsCache;
+  actionContext: IActionContext;
 }
 
 export interface ISyncExpressionContext extends IBaseExpressionContext {
