@@ -24,7 +24,7 @@ export class ActorExpressionEvaluatorAggregateSample extends ActorExpressionEval
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new SampleAggregator(action.expr, action.evaluator),
+      aggregator: new SampleAggregator(action.expr, action.factory),
     };
   }
 }

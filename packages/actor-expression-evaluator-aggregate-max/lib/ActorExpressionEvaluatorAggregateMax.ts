@@ -24,7 +24,7 @@ export class ActorExpressionEvaluatorAggregateMax extends ActorExpressionEvaluat
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new MaxAggregator(action.expr, action.evaluator),
+      aggregator: new MaxAggregator(action.expr, action.factory),
     };
   }
 }

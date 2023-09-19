@@ -26,7 +26,7 @@ export class ActorExpressionEvaluatorAggregateCount extends ActorExpressionEvalu
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new CountAggregator(action.expr, action.evaluator),
+      aggregator: new CountAggregator(action.expr, action.factory),
     };
   }
 }

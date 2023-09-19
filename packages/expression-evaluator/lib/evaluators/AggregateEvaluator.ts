@@ -1,36 +1,28 @@
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
 import type * as E from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
 import { TypeAlias } from '../util/Consts';
 import { EmptyAggregateError } from '../util/Errors';
 import { isSubTypeOf } from '../util/TypeHandling';
-import type { AsyncEvaluator } from './AsyncEvaluator';
+import type { ExpressionEvaluator } from './ExpressionEvaluator';
 
 /**
  * Abstract aggregator actor. This is the base class for all aggregator actors.
  * Only the wildcard count aggregator significantly differs from the others.
  */
 export abstract class AggregateEvaluator {
-  protected readonly expr: E.Expression;
-  protected readonly evaluator: AsyncEvaluator;
-
   private readonly throwError: boolean;
   private errorOccurred = false;
 
   protected readonly distinct: boolean;
   protected readonly variableValues: Set<string>;
 
-  protected constructor(algExpr: Algebra.AggregateExpression,
-    evaluator: AsyncEvaluator, throwError?: boolean) {
-    this.expr = evaluator.internalize(algExpr);
-    this.evaluator = evaluator;
-
+  protected constructor(protected readonly evaluator: ExpressionEvaluator, throwError?: boolean) {
     this.throwError = throwError || false;
     this.errorOccurred = false;
 
-    this.distinct = algExpr.distinct;
+    this.distinct = evaluator.algExpr.distinct;
     this.variableValues = new Set();
   }
 
@@ -67,7 +59,7 @@ export abstract class AggregateEvaluator {
       return;
     }
     try {
-      const term = await this.evaluator.evaluate(this.expr, bindings);
+      const term = await this.evaluator.evaluate(bindings);
       if (!term || this.errorOccurred) {
         return;
       }

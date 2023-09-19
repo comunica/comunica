@@ -1,0 +1,189 @@
+import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { LRUCache } from 'lru-cache';
+import type { Algebra as Alg } from 'sparqlalgebrajs';
+import * as E from '../expressions';
+import { regularFunctions } from '../functions';
+import type { FunctionArgumentsCache } from '../functions/OverloadTree';
+import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
+import { TermTransformer } from '../transformers/TermTransformer';
+import * as C from '../util/Consts';
+import type { ITimeZoneRepresentation } from '../util/DateTimeHelpers';
+import { extractTimeZone } from '../util/DateTimeHelpers';
+import * as Err from '../util/Errors';
+import type { SuperTypeCallback, TypeCache } from '../util/TypeHandling';
+import type { ICompleteContext } from './evaluatorHelpers/AsyncRecursiveEvaluator';
+import { AsyncRecursiveEvaluator } from './evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { ExpressionEvaluatorFactory } from './ExpressionEvaluatorFactory';
+
+export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
+export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => AsyncExtensionFunction | undefined;
+
+export interface IAsyncEvaluatorContext {
+  exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
+  aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+  bnode?: (input?: string) => Promise<RDF.BlankNode>;
+  extensionFunctionCreator?: AsyncExtensionFunctionCreator;
+  now?: Date;
+  baseIRI?: string;
+  typeCache?: TypeCache;
+  getSuperType?: SuperTypeCallback;
+  functionArgumentsCache?: FunctionArgumentsCache;
+  defaultTimeZone?: ITimeZoneRepresentation;
+  actionContext: IActionContext;
+}
+
+export class ExpressionEvaluator {
+  private readonly transformer: AlgebraTransformer;
+  private readonly evaluator: AsyncRecursiveEvaluator;
+  public readonly context: ICompleteContext;
+  public readonly expr: E.Expression;
+
+  public static completeContext(context: IAsyncEvaluatorContext): ICompleteContext {
+    const now = context.now || new Date(Date.now());
+    return {
+      now,
+      baseIRI: context.baseIRI || undefined,
+      functionArgumentsCache: context.functionArgumentsCache || {},
+      superTypeProvider: {
+        cache: context.typeCache || new LRUCache({ max: 1_000 }),
+        discoverer: context.getSuperType || (() => 'term'),
+      },
+      extensionFunctionCreator: context.extensionFunctionCreator,
+      exists: context.exists,
+      aggregate: context.aggregate,
+      bnode: context.bnode,
+      defaultTimeZone: context.defaultTimeZone || extractTimeZone(now),
+      actionContext: context.actionContext,
+    };
+  }
+
+  public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext,
+    private readonly factory: ExpressionEvaluatorFactory) {
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    const creator = context.extensionFunctionCreator || (() => undefined);
+    this.context = ExpressionEvaluator.completeContext(context);
+
+    this.transformer = new AlgebraTransformer({
+      creator,
+      ...this.context,
+    });
+
+    this.evaluator = new AsyncRecursiveEvaluator(this.context, this.transformer);
+    this.expr = this.transformer.transformAlgebra(algExpr);
+  }
+
+  public async evaluate(mapping: RDF.Bindings): Promise<RDF.Term> {
+    const result = await this.evaluator.evaluate(this.expr, mapping);
+    return result.toRDF();
+  }
+
+  public async evaluateAsEBV(mapping: RDF.Bindings): Promise<boolean> {
+    const result = await this.evaluator.evaluate(this.expr, mapping);
+    return result.coerceEBV();
+  }
+
+  public async evaluateAsInternal(mapping: RDF.Bindings): Promise<E.TermExpression> {
+    return await this.evaluator.evaluate(this.expr, mapping);
+  }
+
+  // ==================================================================================================================
+  // ==================================================================================================================
+  // ==================================================================================================================
+  // Determine the relative numerical order of the two given terms.
+  // In accordance with https://www.w3.org/TR/sparql11-query/#modOrderBy
+  public orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefined, strict = false): -1 | 0 | 1 {
+    // Check if terms are the same by reference
+    if (termA === termB) {
+      return 0;
+    }
+
+    // We handle undefined that is lower than everything else.
+    if (termA === undefined) {
+      return -1;
+    }
+    if (termB === undefined) {
+      return 1;
+    }
+
+    //
+    if (termA.termType !== termB.termType) {
+      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
+    }
+
+    // Check exact term equality
+    if (termA.equals(termB)) {
+      return 0;
+    }
+
+    // Handle quoted triples
+    if (termA.termType === 'Quad' && termB.termType === 'Quad') {
+      const first = new E.Quad(termA, this.context.superTypeProvider);
+      const second = new E.Quad(termA, this.context.superTypeProvider);
+      const isGreater = regularFunctions[C.RegularOperator.GT];
+      const isEqual = regularFunctions[C.RegularOperator.EQUAL];
+
+      if ((<E.BooleanLiteral> isEqual.apply([ first, second ], this.context)).typedValue) {
+        return 0;
+      }
+      if ((<E.BooleanLiteral> isGreater.apply([ first, second ], this.context)).typedValue) {
+        return 1;
+      }
+      return -1;
+    }
+
+    // Handle literals
+    if (termA.termType === 'Literal') {
+      return this.orderLiteralTypes(termA, <RDF.Literal>termB, this.context);
+    }
+
+    // Handle all other types
+    if (strict) {
+      throw new Err.InvalidCompareArgumentTypes(termA, termB);
+    }
+    return this.comparePrimitives(termA.value, termB.value);
+  }
+
+  private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal, context: IAsyncEvaluatorContext): -1 | 0 | 1 {
+    const isGreater = regularFunctions[C.RegularOperator.GT];
+    const isEqual = regularFunctions[C.RegularOperator.EQUAL];
+
+    const completeContext = ExpressionEvaluator.completeContext(context);
+
+    const termTransformer = new TermTransformer(completeContext.superTypeProvider);
+    const myLitA = termTransformer.transformLiteral(litA);
+    const myLitB = termTransformer.transformLiteral(litB);
+
+    try {
+      if ((<E.BooleanLiteral> isEqual.apply([ myLitA, myLitB ], completeContext)).typedValue) {
+        return 0;
+      }
+      if ((<E.BooleanLiteral> isGreater.apply([ myLitA, myLitB ], completeContext)).typedValue) {
+        return 1;
+      }
+      return -1;
+    } catch {
+      // Fallback to string-based comparison
+      const compareType = this.comparePrimitives(myLitA.dataType, myLitB.dataType);
+      if (compareType !== 0) {
+        return compareType;
+      }
+      return this.comparePrimitives(myLitA.str(), myLitB.str());
+    }
+  }
+
+  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
+    // eslint-disable-next-line @typescript-eslint/no-extra-parens
+    return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+  }
+
+  // SPARQL specifies that blankNode < namedNode < literal.
+  private readonly _TERM_ORDERING_PRIORITY = {
+    Variable: 0,
+    BlankNode: 1,
+    NamedNode: 2,
+    Literal: 3,
+    Quad: 4,
+    DefaultGraph: 5,
+  };
+}

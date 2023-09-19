@@ -67,9 +67,7 @@
 
     "isExpressionError",
     "orderTypes",
-    "SyncEvaluator",
     "AggregateEvaluator",
-    "ISyncEvaluatorContext"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

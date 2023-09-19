@@ -4,7 +4,7 @@
  */
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
 import type { Literal, TermExpression, Quad, ISerializable } from '../expressions';
 import * as E from '../expressions';
 import { NonLexicalLiteral } from '../expressions';
@@ -43,7 +43,7 @@ export class Builder {
   }
 
   private static wrapInvalidLexicalProtected(func: ImplementationFunction): ImplementationFunction {
-    return (context: ICompleteSharedContext) => (args: TermExpression[]) => {
+    return (context: ICompleteContext) => (args: TermExpression[]) => {
       args.forEach((arg, index) => {
         if (arg instanceof NonLexicalLiteral) {
           throw new Err.InvalidLexicalForm(args[index].toRDF());
@@ -69,30 +69,30 @@ export class Builder {
     return this.set(to, impl);
   }
 
-  public onUnary<T extends Term>(type: ArgumentType, op: (context: ICompleteSharedContext) =>
+  public onUnary<T extends Term>(type: ArgumentType, op: (context: ICompleteContext) =>
   (val: T) => Term, addInvalidHandling = true): Builder {
     return this.set([ type ], context => ([ val ]: [T]) => op(context)(val), addInvalidHandling);
   }
 
   public onUnaryTyped<T extends ISerializable>(type: ArgumentType,
-    op: (context: ICompleteSharedContext) => (val: T) => Term, addInvalidHandling = true): Builder {
+    op: (context: ICompleteContext) => (val: T) => Term, addInvalidHandling = true): Builder {
     return this.set([ type ], context => ([ val ]: [E.Literal<T>]) => op(context)(val.typedValue), addInvalidHandling);
   }
 
   public onBinary<L extends Term, R extends Term>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
+    op: (context: ICompleteContext) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
     return this.set(types, context => ([ left, right ]: [L, R]) => op(context)(left, right), addInvalidHandling);
   }
 
   public onBinaryTyped<L extends ISerializable, R extends ISerializable>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
+    op: (context: ICompleteContext) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
     return this.set(types,
       context => ([ left, right ]: [E.Literal<L>, E.Literal<R>]) => op(context)(left.typedValue, right.typedValue),
       addInvalidHandling);
   }
 
   public onTernaryTyped<A1 extends ISerializable, A2 extends ISerializable, A3 extends ISerializable>(
-    types: ArgumentType[], op: (context: ICompleteSharedContext)
+    types: ArgumentType[], op: (context: ICompleteContext)
     => (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true,
   ): Builder {
     return this.set(types, context => ([ a1, a2, a3 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) =>
@@ -100,20 +100,20 @@ export class Builder {
   }
 
   public onTernary<A1 extends Term, A2 extends Term, A3 extends Term>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true): Builder {
+    op: (context: ICompleteContext) => (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true): Builder {
     return this.set(types, context => ([ a1, a2, a3 ]: [A1, A2, A3]) => op(context)(a1, a2, a3), addInvalidHandling);
   }
 
   public onQuaternaryTyped<A1 extends ISerializable, A2 extends ISerializable,
     A3 extends ISerializable, A4 extends ISerializable>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term,
+    op: (context: ICompleteContext) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term,
     addInvalidHandling = true): Builder {
     return this.set(types, context =>
       ([ a1, a2, a3, a4 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>, E.Literal<A4>]) =>
         op(context)(a1.typedValue, a2.typedValue, a3.typedValue, a4.typedValue), addInvalidHandling);
   }
 
-  public onTerm1(op: (context: ICompleteSharedContext) => (term: Term) => Term, addInvalidHandling = false): Builder {
+  public onTerm1(op: (context: ICompleteContext) => (term: Term) => Term, addInvalidHandling = false): Builder {
     return this.set(
       [ 'term' ],
       context => ([ term ]: [Term]) => op(context)(term),
@@ -121,16 +121,16 @@ export class Builder {
     );
   }
 
-  public onTerm3(op: (context: ICompleteSharedContext) => (t1: Term, t2: Term, t3: Term) => Term): Builder {
+  public onTerm3(op: (context: ICompleteContext) => (t1: Term, t2: Term, t3: Term) => Term): Builder {
     return this.set([ 'term', 'term', 'term' ],
       context => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(context)(t1, t2, t3));
   }
 
-  public onQuad1(op: (context: ICompleteSharedContext) => (term: Term & Quad) => Term): Builder {
+  public onQuad1(op: (context: ICompleteContext) => (term: Term & Quad) => Term): Builder {
     return this.set([ 'quad' ], context => ([ term ]: [Term & Quad]) => op(context)(term));
   }
 
-  public onLiteral1<T extends ISerializable>(op: (context: ICompleteSharedContext) => (lit: E.Literal<T>) => Term,
+  public onLiteral1<T extends ISerializable>(op: (context: ICompleteContext) => (lit: E.Literal<T>) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ 'literal' ],
@@ -139,7 +139,7 @@ export class Builder {
     );
   }
 
-  public onBoolean1(op: (context: ICompleteSharedContext) => (lit: E.BooleanLiteral) => Term,
+  public onBoolean1(op: (context: ICompleteContext) => (lit: E.BooleanLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],
@@ -148,7 +148,7 @@ export class Builder {
     );
   }
 
-  public onBoolean1Typed(op: (context: ICompleteSharedContext) => (lit: boolean) => Term,
+  public onBoolean1Typed(op: (context: ICompleteContext) => (lit: boolean) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],
@@ -157,7 +157,7 @@ export class Builder {
     );
   }
 
-  public onString1(op: (context: ICompleteSharedContext) => (lit: E.Literal<string>) => Term,
+  public onString1(op: (context: ICompleteContext) => (lit: E.Literal<string>) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_STRING ],
@@ -166,7 +166,7 @@ export class Builder {
     );
   }
 
-  public onString1Typed(op: (context: ICompleteSharedContext) => (lit: string) => Term,
+  public onString1Typed(op: (context: ICompleteContext) => (lit: string) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_STRING ],
@@ -175,7 +175,7 @@ export class Builder {
     );
   }
 
-  public onLangString1(op: (context: ICompleteSharedContext) => (lit: E.LangStringLiteral) => Term,
+  public onLangString1(op: (context: ICompleteContext) => (lit: E.LangStringLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.RDF_LANG_STRING ],
@@ -184,7 +184,7 @@ export class Builder {
     );
   }
 
-  public onStringly1(op: (context: ICompleteSharedContext) => (lit: E.Literal<string>) => Term,
+  public onStringly1(op: (context: ICompleteContext) => (lit: E.Literal<string>) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_STRINGLY ],
@@ -193,7 +193,7 @@ export class Builder {
     );
   }
 
-  public onStringly1Typed(op: (context: ICompleteSharedContext) => (lit: string) => Term,
+  public onStringly1Typed(op: (context: ICompleteContext) => (lit: string) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_STRINGLY ],
@@ -202,7 +202,7 @@ export class Builder {
     );
   }
 
-  public onNumeric1(op: (context: ICompleteSharedContext) => (val: E.NumericLiteral) => Term,
+  public onNumeric1(op: (context: ICompleteContext) => (val: E.NumericLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_NUMERIC ],
@@ -211,7 +211,7 @@ export class Builder {
     );
   }
 
-  public onDateTime1(op: (context: ICompleteSharedContext) => (date: E.DateTimeLiteral) => Term,
+  public onDateTime1(op: (context: ICompleteContext) => (date: E.DateTimeLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this
       .set([ C.TypeURL.XSD_DATE_TIME ],
@@ -227,9 +227,9 @@ export class Builder {
    * @param addInvalidHandling whether to add invalid handling,
    *   whether to add @param op in @see wrapInvalidLexicalProtected
    */
-  public numericConverter(op: (context: ICompleteSharedContext) => (val: number) => number,
+  public numericConverter(op: (context: ICompleteContext) => (val: number) => number,
     addInvalidHandling = true): Builder {
-    const evalHelper = (context: ICompleteSharedContext) => (arg: Term): number =>
+    const evalHelper = (context: ICompleteContext) => (arg: Term): number =>
       op(context)((<Literal<number>>arg).typedValue);
     return this.onBinary([ TypeURL.XSD_INTEGER ], context => arg =>
       integer(evalHelper(context)(arg)), addInvalidHandling)
@@ -252,9 +252,9 @@ export class Builder {
    * https://www.w3.org/TR/xpath20/#mapping
    * Above url is referenced in the sparql spec: https://www.w3.org/TR/sparql11-query/#OperatorMapping
    */
-  public arithmetic(op: (context: ICompleteSharedContext) => (left: number, right: number) => number,
+  public arithmetic(op: (context: ICompleteContext) => (left: number, right: number) => number,
     addInvalidHandling = true): Builder {
-    const evalHelper = (context: ICompleteSharedContext) => (left: Term, right: Term): number =>
+    const evalHelper = (context: ICompleteContext) => (left: Term, right: Term): number =>
       op(context)((<Literal<number>>left).typedValue, (<Literal<number>>right).typedValue);
     return this.onBinary([ TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ], context => (left, right) =>
       integer(evalHelper(context)(left, right)), addInvalidHandling)
@@ -266,14 +266,14 @@ export class Builder {
         double(evalHelper(context)(left, right)), addInvalidHandling);
   }
 
-  public numberTest(test: (context: ICompleteSharedContext) => (left: number, right: number) => boolean): Builder {
+  public numberTest(test: (context: ICompleteContext) => (left: number, right: number) => boolean): Builder {
     return this.numeric(context => ([ left, right ]: E.NumericLiteral[]) => {
       const result = test(context)(left.typedValue, right.typedValue);
       return bool(result);
     });
   }
 
-  public stringTest(test: (context: ICompleteSharedContext) => (left: string, right: string) => boolean,
+  public stringTest(test: (context: ICompleteContext) => (left: string, right: string) => boolean,
     addInvalidHandling = true): Builder {
     return this
       .set(
@@ -286,7 +286,7 @@ export class Builder {
       );
   }
 
-  public booleanTest(test: (context: ICompleteSharedContext) => (left: boolean, right: boolean) => boolean,
+  public booleanTest(test: (context: ICompleteContext) => (left: boolean, right: boolean) => boolean,
     addInvalidHandling = true): Builder {
     return this
       .set(
@@ -299,7 +299,7 @@ export class Builder {
       );
   }
 
-  public dateTimeTest(test: (context: ICompleteSharedContext)
+  public dateTimeTest(test: (context: ICompleteContext)
   => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean, addInvalidHandling = true): Builder {
     return this
       .set(
