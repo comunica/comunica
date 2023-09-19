@@ -31,7 +31,6 @@ describe('adjust time duration', () => {
         '${timeTyped('10:00:00-07:00')}' '${dayTimeDurationTyped('PT10H')}' = '${timeTyped('03:00:00+10:00')}'
         '${timeTyped('10:00:00')}' '' = '${timeTyped('10:00:00')}'
         '${timeTyped('10:00:00-07:00')}' '' = '${timeTyped('10:00:00')}'
-        
       `,
     });
   });
