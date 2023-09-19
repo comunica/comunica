@@ -24,7 +24,7 @@ describe('exists', () => {
     expect(hookMock).toBeCalledTimes(2);
     expect(evaluated.asyncResult).toEqual(DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
   });
-  it('rus with mock existence hooks and async calls but once', async() => {
+  it('runs with mock existence hooks and async calls but once', async() => {
     const hookMock = fn(() => Promise.resolve(true));
     const evaluated = await generalEvaluate({
       expression: template('EXISTS {?s ?p ?o}'),

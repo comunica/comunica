@@ -13,6 +13,7 @@ const config: ITestTableConfigBase = {
 
 describe('evaluation of "&&" like', () => {
   runTestTable({
+    // Test all cases of: https://www.w3.org/TR/sparql11-query/#evaluation
     ...config,
     testTable: `
       true  true  = true
