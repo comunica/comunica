@@ -76,7 +76,6 @@
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "tsc",
     "build:components": "componentsjs-generator engines/* packages/*",
-    "build:esmoduleinterop": "npm run build:ts -- --esModuleInterop true && npm run build:components",
     "build-watch": "nodemon -e ts --ignore '*.d.ts' --exec yarn run build",
     "build-watch:ts": "tsc --watch",
     "build-watch:components": "nodemon -e d.ts --exec yarn run build:components",
