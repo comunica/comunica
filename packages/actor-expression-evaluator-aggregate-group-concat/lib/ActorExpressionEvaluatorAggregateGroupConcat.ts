@@ -25,7 +25,7 @@ export class ActorExpressionEvaluatorAggregateGroupConcat extends ActorExpressio
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new GroupConcatAggregator(action.expr, action.evaluator),
+      aggregator: new GroupConcatAggregator(action.expr, action.factory),
     };
   }
 }

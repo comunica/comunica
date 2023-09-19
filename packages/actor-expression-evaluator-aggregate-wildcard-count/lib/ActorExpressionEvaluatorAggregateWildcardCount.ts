@@ -26,7 +26,7 @@ export class ActorExpressionEvaluatorAggregateWildcardCount extends ActorExpress
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new WildcardCountAggregator(action.expr, action.evaluator),
+      aggregator: new WildcardCountAggregator(action.expr, action.factory),
     };
   }
 }

@@ -24,7 +24,7 @@ export class ActorExpressionEvaluatorAggregateMin extends ActorExpressionEvaluat
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new MinAggregator(action.expr, action.evaluator),
+      aggregator: new MinAggregator(action.expr, action.factory),
     };
   }
 }

@@ -1,27 +1,34 @@
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
-import * as E from '../../expressions';
 import type { AsyncExtension } from '../../expressions';
+import * as E from '../../expressions';
 import type { EvalContextAsync } from '../../functions';
+import { expressionToVar } from '../../functions/Helpers';
+import type { FunctionArgumentsCache } from '../../functions/OverloadTree';
 import type { ITermTransformer } from '../../transformers/TermTransformer';
 import { TermTransformer } from '../../transformers/TermTransformer';
-import type { IExpressionEvaluator } from '../../Types';
+import type { ITimeZoneRepresentation } from '../../util/DateTimeHelpers';
 import * as Err from '../../util/Errors';
 import type { ISuperTypeProvider } from '../../util/TypeHandling';
-import type { AsyncExtensionFunctionCreator } from '../AsyncEvaluator';
-import { BaseExpressionEvaluator } from './BaseExpressionEvaluator';
-import type { ICompleteSharedContext } from './BaseExpressionEvaluator';
+import type { AsyncExtensionFunctionCreator } from '../ExpressionEvaluator';
 
-export interface ICompleteAsyncEvaluatorContext extends ICompleteSharedContext {
+export interface ICompleteContext {
   exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
   bnode?: (input?: string) => Promise<RDF.BlankNode>;
   extensionFunctionCreator?: AsyncExtensionFunctionCreator;
+  now: Date;
+  baseIRI?: string;
+  functionArgumentsCache: FunctionArgumentsCache;
+  superTypeProvider: ISuperTypeProvider;
+  defaultTimeZone: ITimeZoneRepresentation;
+  actionContext: IActionContext;
 }
 
-export class AsyncRecursiveEvaluator extends BaseExpressionEvaluator
-  implements IExpressionEvaluator<E.Expression, Promise<E.Term>> {
+export class AsyncRecursiveEvaluator {
   protected openWorldType: ISuperTypeProvider;
+  protected readonly termTransformer: ITermTransformer;
   private readonly subEvaluators: Record<string, (expr: E.Expression, mapping: RDF.Bindings) =>
   Promise<E.Term> | E.Term> = {
     // Shared
@@ -37,8 +44,20 @@ export class AsyncRecursiveEvaluator extends BaseExpressionEvaluator
       [E.ExpressionType.AsyncExtension]: this.evalAsyncExtension.bind(this),
     };
 
-  public constructor(private readonly context: ICompleteAsyncEvaluatorContext, termTransformer?: ITermTransformer) {
-    super(termTransformer || new TermTransformer(context.superTypeProvider));
+  public constructor(private readonly context: ICompleteContext, termTransformer?: ITermTransformer) {
+    this.termTransformer = termTransformer || new TermTransformer(context.superTypeProvider);
+  }
+
+  private term(expr: E.Term, _: RDF.Bindings): E.Term {
+    return expr;
+  }
+
+  private variable(expr: E.Variable, mapping: RDF.Bindings): E.Term {
+    const term = mapping.get(expressionToVar(expr));
+    if (!term) {
+      throw new Err.UnboundVariableError(expr.name, mapping);
+    }
+    return this.termTransformer.transformRDFTermUnsafe(term);
   }
 
   public async evaluate(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
@@ -69,6 +88,7 @@ export class AsyncRecursiveEvaluator extends BaseExpressionEvaluator
       evaluate,
       bnode: this.context.bnode,
       defaultTimeZone: this.context.defaultTimeZone,
+      actionContext: this.context.actionContext,
     };
     return expr.applyAsync(context);
   }

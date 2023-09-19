@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { AsyncEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -20,14 +20,14 @@ IActionExpressionEvaluatorAggregate, IActorTest, IActorExpressionEvaluatorAggreg
   /**
   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
   */
-  public constructor(args: IActorExpressionEvaluatorAggregateArgs) {
+  protected constructor(args: IActorExpressionEvaluatorAggregateArgs) {
     super(args);
   }
 }
 
 export interface IActionExpressionEvaluatorAggregate extends IAction {
   expr: Algebra.AggregateExpression;
-  evaluator: AsyncEvaluator;
+  factory: ExpressionEvaluatorFactory;
 }
 
 export interface IActorExpressionEvaluatorAggregateOutput extends IActorOutput {

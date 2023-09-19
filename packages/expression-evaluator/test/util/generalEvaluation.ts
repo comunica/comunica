@@ -4,7 +4,7 @@ import { termToString } from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { AsyncEvaluator, SyncEvaluator } from '../../lib';
-import type { IAsyncEvaluatorContext, AsyncExtensionFunctionCreator } from '../../lib/evaluators/AsyncEvaluator';
+import type { IAsyncEvaluatorContext, AsyncExtensionFunctionCreator } from '../../lib/evaluators/ExpressionEvaluator';
 import type { ISyncEvaluatorContext, SyncExtensionFunctionCreator } from '../../lib/evaluators/SyncEvaluator';
 
 const BF = new BindingsFactory();

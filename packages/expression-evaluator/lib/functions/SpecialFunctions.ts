@@ -4,7 +4,7 @@ import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import { bool, declare, expressionToVar, langString, string } from './Helpers';
-import type { EvalContextAsync, EvalContextSync, OverloadTree } from '.';
+import type { EvalContextAsync, OverloadTree } from '.';
 import { regularFunctions, specialFunctions } from '.';
 
 type Term = E.TermExpression;
@@ -23,9 +23,6 @@ type PTerm = Promise<E.TermExpression>;
 const bound: ISpecialDefinition = {
   arity: 1,
   async applyAsync({ args, mapping }: EvalContextAsync): PTerm {
-    return bound_({ args, mapping });
-  },
-  applySynchronously({ args, mapping }: EvalContextSync): Term {
     return bound_({ args, mapping });
   },
 };
@@ -54,13 +51,6 @@ const ifSPARQL: ISpecialDefinition = {
       evaluate(args[1], mapping) :
       evaluate(args[2], mapping);
   },
-  applySynchronously({ args, mapping, evaluate }: EvalContextSync): Term {
-    const valFirst = evaluate(args[0], mapping);
-    const ebv = valFirst.coerceEBV();
-    return ebv ?
-      evaluate(args[1], mapping) :
-      evaluate(args[2], mapping);
-  },
 };
 
 // COALESCE -------------------------------------------------------------------
@@ -76,17 +66,6 @@ const coalesce: ISpecialDefinition = {
     for (const expr of args) {
       try {
         return await evaluate(expr, mapping);
-      } catch (error: unknown) {
-        errors.push(<Error> error);
-      }
-    }
-    throw new Err.CoalesceError(errors);
-  },
-  applySynchronously({ args, mapping, evaluate }: EvalContextSync): Term {
-    const errors: Error[] = [];
-    for (const expr of args) {
-      try {
-        return evaluate(expr, mapping);
       } catch (error: unknown) {
         errors.push(<Error> error);
       }
@@ -116,26 +95,6 @@ const logicalOr: ISpecialDefinition = {
       return bool(right);
     } catch (error: unknown) {
       const rightErrorTerm = await evaluate(rightExpr, mapping);
-      const rightError = rightErrorTerm.coerceEBV();
-      if (!rightError) {
-        throw error;
-      }
-      return bool(true);
-    }
-  },
-  applySynchronously({ args, mapping, evaluate }: EvalContextSync): Term {
-    const [ leftExpr, rightExpr ] = args;
-    try {
-      const leftTerm = evaluate(leftExpr, mapping);
-      const left = leftTerm.coerceEBV();
-      if (left) {
-        return bool(true);
-      }
-      const rightTerm = evaluate(rightExpr, mapping);
-      const right = rightTerm.coerceEBV();
-      return bool(right);
-    } catch (error: unknown) {
-      const rightErrorTerm = evaluate(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (!rightError) {
         throw error;
@@ -173,26 +132,6 @@ const logicalAnd: ISpecialDefinition = {
       return bool(false);
     }
   },
-  applySynchronously({ args, mapping, evaluate }: EvalContextSync): Term {
-    const [ leftExpr, rightExpr ] = args;
-    try {
-      const leftTerm = evaluate(leftExpr, mapping);
-      const left = leftTerm.coerceEBV();
-      if (!left) {
-        return bool(false);
-      }
-      const rightTerm = evaluate(rightExpr, mapping);
-      const right = rightTerm.coerceEBV();
-      return bool(right);
-    } catch (error: unknown) {
-      const rightErrorTerm = evaluate(rightExpr, mapping);
-      const rightError = rightErrorTerm.coerceEBV();
-      if (rightError) {
-        throw error;
-      }
-      return bool(false);
-    }
-  },
 };
 
 // SameTerm -------------------------------------------------------------------
@@ -206,10 +145,6 @@ const sameTerm: ISpecialDefinition = {
   async applyAsync({ args, mapping, evaluate }: EvalContextAsync): PTerm {
     const [ leftExpr, rightExpr ] = args.map(arg => evaluate(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
-    return bool(left.toRDF().equals(right.toRDF()));
-  },
-  applySynchronously({ args, mapping, evaluate }: EvalContextSync): Term {
-    const [ left, right ] = args.map(arg => evaluate(arg, mapping));
     return bool(left.toRDF().equals(right.toRDF()));
   },
 };
@@ -230,12 +165,6 @@ const inSPARQL: ISpecialDefinition = {
     const [ leftExpr, ...remaining ] = args;
     const left = await evaluate(leftExpr, mapping);
     return inRecursiveAsync(left, { ...context, args: remaining }, []);
-  },
-  applySynchronously(context: EvalContextSync): Term {
-    const { args, mapping, evaluate } = context;
-    const [ leftExpr, ...remaining ] = args;
-    const left = evaluate(leftExpr, mapping);
-    return inRecursiveSync(left, { ...context, args: remaining }, []);
   },
 };
 
@@ -264,34 +193,6 @@ async function inRecursiveAsync(
   }
 }
 
-function inRecursiveSync(
-  needle: Term,
-  context: EvalContextSync,
-  results: (Error | false)[],
-): Term {
-  const { args, mapping, evaluate } = context;
-  if (args.length === 0) {
-    const noErrors = results.every(val => !val);
-    if (noErrors) {
-      return bool(false);
-    }
-    throw new Err.InError(results);
-  }
-
-  try {
-    const nextExpression = args.shift();
-    // We know this will not be undefined because we check args.length === 0
-    const next = evaluate(nextExpression!, mapping);
-    const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-    if ((<E.BooleanLiteral> isEqual.apply([ needle, next ], context)).typedValue) {
-      return bool(true);
-    }
-    return inRecursiveSync(needle, context, [ ...results, false ]);
-  } catch (error: unknown) {
-    return inRecursiveSync(needle, context, [ ...results, <Error> error ]);
-  }
-}
-
 // NOT IN ---------------------------------------------------------------------
 
 /**
@@ -306,11 +207,6 @@ const notInSPARQL: ISpecialDefinition = {
   async applyAsync(context: EvalContextAsync): PTerm {
     const _in = specialFunctions[C.SpecialOperator.IN];
     const isIn = await _in.applyAsync(context);
-    return bool(!(<E.BooleanLiteral> isIn).typedValue);
-  },
-  applySynchronously(context: EvalContextSync): Term {
-    const _in = specialFunctions[C.SpecialOperator.IN];
-    const isIn = _in.applySynchronously(context);
     return bool(!(<E.BooleanLiteral> isIn).typedValue);
   },
 };
@@ -344,23 +240,6 @@ const concat: ISpecialDefinition = {
         return <E.Literal<string>> operation(context)([ await pTerm ]);
       });
     const lits = await Promise.all(pLits);
-    const strings = lits.map(lit => lit.typedValue);
-    const joined = strings.join('');
-    const lang = langAllEqual(lits) ? lits[0].language : undefined;
-    return lang ? langString(joined, lang) : string(joined);
-  },
-
-  applySynchronously(context: EvalContextSync): Term {
-    const { args, mapping, evaluate, superTypeProvider, functionArgumentsCache } = context;
-    const lits = args
-      .map(expr => evaluate(expr, mapping))
-      .map(pTerm => {
-        const operation = concatTree.search([ pTerm ], superTypeProvider, functionArgumentsCache);
-        if (!operation) {
-          throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
-        }
-        return <E.Literal<string>> operation(context)([ pTerm ]);
-      });
     const strings = lits.map(lit => lit.typedValue);
     const joined = strings.join('');
     const lang = langAllEqual(lits) ? lits[0].language : undefined;
@@ -414,28 +293,6 @@ const BNODE: ISpecialDefinition = {
 
     return BNODE_(strInput);
   },
-  applySynchronously(context: EvalContextSync): Term {
-    const { args, mapping, evaluate, superTypeProvider, functionArgumentsCache } = context;
-    const input = args.length === 1 ?
-      evaluate(args[0], mapping) :
-      undefined;
-
-    let strInput: string | undefined;
-    if (input) {
-      const operation = bnodeTree.search([ input ], superTypeProvider, functionArgumentsCache);
-      if (!operation) {
-        throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
-      }
-      strInput = operation(context)([ input ]).str();
-    }
-
-    if (context.bnode) {
-      const bnode = context.bnode(strInput);
-      return new E.BlankNode(bnode);
-    }
-
-    return BNODE_(strInput);
-  },
 };
 
 function BNODE_(input?: string): E.BlankNode {
@@ -449,7 +306,6 @@ function BNODE_(input?: string): E.BlankNode {
 export interface ISpecialDefinition {
   arity: number;
   applyAsync: E.SpecialApplicationAsync;
-  applySynchronously: E.SpecialApplicationSync;
   checkArity?: (args: E.Expression[]) => boolean;
 }
 

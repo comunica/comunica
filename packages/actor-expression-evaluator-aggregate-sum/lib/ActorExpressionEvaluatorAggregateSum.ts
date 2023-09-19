@@ -28,7 +28,7 @@ export class ActorExpressionEvaluatorAggregateSum extends ActorExpressionEvaluat
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new SumAggregator(action.expr, action.evaluator),
+      aggregator: new SumAggregator(action.expr, action.factory),
     };
   }
 }

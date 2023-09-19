@@ -1,4 +1,4 @@
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
 import type * as E from '../expressions';
 import { isLiteralTermExpression } from '../expressions';
 import type { KnownLiteralTypes } from '../util/Consts';
@@ -13,7 +13,7 @@ import {
 import type { ArgumentType } from './Core';
 
 export type SearchStack = OverloadTree[];
-export type ImplementationFunction = (sharedContext: ICompleteSharedContext) => E.SimpleApplication;
+export type ImplementationFunction = (sharedContext: ICompleteContext) => E.SimpleApplication;
 interface IFunctionArgumentsCacheObj {
   func?: ImplementationFunction; cache?: FunctionArgumentsCache;
 }

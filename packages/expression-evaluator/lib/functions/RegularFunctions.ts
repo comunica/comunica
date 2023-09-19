@@ -6,7 +6,7 @@ import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
 import * as E from '../expressions';
 import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
@@ -26,7 +26,6 @@ import {
   yearMonthDurationsToMonths,
 } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
-import { orderTypes } from '../util/Ordering';
 import { addDurationToDateTime, elapsedDuration } from '../util/SpecAlgos';
 import type { IOverloadedDefinition } from './Core';
 import { RegularFunction } from './Core';
@@ -197,7 +196,8 @@ const equality = {
         return bool(
           (<E.BooleanLiteral> op.apply([ (<Quad> left).subject, (<Quad> right).subject ], context)).coerceEBV() &&
           (<E.BooleanLiteral> op.apply([ (<Quad> left).predicate, (<Quad> right).predicate ], context)).coerceEBV() &&
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).object, (<Quad> right).object ], context)).coerceEBV(),
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).object, (<Quad> right).object ], context)).coerceEBV() &&
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).graph, (<Quad> right).graph ], context)).coerceEBV(),
         );
       },
       false,
@@ -248,8 +248,25 @@ const lesserThan = {
     .stringTest(() => (left, right) => left.localeCompare(right) === -1)
     .booleanTest(() => (left, right) => left < right)
     .set(
+      // https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html#rdf-star-operator-mapping
       [ 'quad', 'quad' ],
-      () => ([ left, right ]) => bool(orderTypes(left.toRDF(), right.toRDF(), true) === -1),
+      context => ([ termA, termB ]: [E.Quad, E.Quad]) => {
+        const lessThan: RegularFunction = new RegularFunction(RegularOperator.LT, lesserThan);
+        const equal: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
+        if (!equal.apply([ termA.subject, termB.subject ], context).coerceEBV().valueOf()) {
+          return lessThan.apply([ termA.subject, termB.subject ], context);
+        }
+        if (!equal.apply([ termA.predicate, termB.predicate ], context).coerceEBV().valueOf()) {
+          return lessThan.apply([ termA.predicate, termB.predicate ], context);
+        }
+        if (!equal.apply([ termA.object, termB.object ], context).coerceEBV().valueOf()) {
+          return lessThan.apply([ termA.object, termB.object ], context);
+        }
+        if (!equal.apply([ termA.graph, termB.graph ], context).coerceEBV().valueOf()) {
+          return lessThan.apply([ termA.graph, termB.graph ], context);
+        }
+        return bool(false);
+      },
       false,
     )
     .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
@@ -677,9 +694,9 @@ const langmatches = {
     ).collect(),
 };
 
-const regex2: (context: ICompleteSharedContext) => (text: string, pattern: string) => E.BooleanLiteral =
+const regex2: (context: ICompleteContext) => (text: string, pattern: string) => E.BooleanLiteral =
   () => (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3: (context: ICompleteSharedContext) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
+const regex3: (context: ICompleteContext) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
   () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
@@ -791,7 +808,7 @@ const rand = {
  */
 const now = {
   arity: 0,
-  overloads: declare(C.RegularOperator.NOW).set([], (sharedContext: ICompleteSharedContext) => () =>
+  overloads: declare(C.RegularOperator.NOW).set([], (sharedContext: ICompleteContext) => () =>
     new E.DateTimeLiteral(toDateTimeRepresentation(
       { date: sharedContext.now, timeZone: sharedContext.defaultTimeZone },
     ))).collect(),
