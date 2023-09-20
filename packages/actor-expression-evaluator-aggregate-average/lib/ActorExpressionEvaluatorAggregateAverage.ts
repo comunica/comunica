@@ -22,7 +22,10 @@ export class ActorExpressionEvaluatorAggregateAverage extends ActorExpressionEva
   }
 
   public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
-    return action.expr.aggregator === 'avg';
+    if (action.expr.aggregator !== 'avg') {
+      throw new Error('This actor only supports the \'avg\' aggregator.');
+    }
+    return {};
   }
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {

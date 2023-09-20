@@ -18,7 +18,10 @@ export class ActorExpressionEvaluatorAggregateMax extends ActorExpressionEvaluat
   }
 
   public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
-    return action.expr.aggregator === 'max';
+    if (action.expr.aggregator !== 'max') {
+      throw new Error('This actor only supports the \'max\' aggregator.');
+    }
+    return {};
   }
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {

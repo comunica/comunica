@@ -18,7 +18,10 @@ export class ActorExpressionEvaluatorAggregateSample extends ActorExpressionEval
   }
 
   public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
-    return action.expr.aggregator === 'sample';
+    if (action.expr.aggregator !== 'sample') {
+      throw new Error('This actor only supports the \'sample\' aggregator.');
+    }
+    return {};
   }
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {

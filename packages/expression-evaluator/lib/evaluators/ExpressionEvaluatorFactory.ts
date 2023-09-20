@@ -21,6 +21,7 @@ export class ExpressionEvaluatorFactory {
 
   public constructor(args: IExpressionEvaluatorFactoryArgs) {
     this.mediatorExpressionEvaluatorAggregate = args.mediatorExpressionEvaluatorAggregate;
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
   }
 
   public createEvaluator(algExpr: Alg.Expression, context: IActionContext): ExpressionEvaluator {
@@ -44,4 +45,5 @@ export class ExpressionEvaluatorFactory {
 
 interface IExpressionEvaluatorFactoryArgs {
   mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
+  mediatorQueryOperation: MediatorQueryOperation;
 }

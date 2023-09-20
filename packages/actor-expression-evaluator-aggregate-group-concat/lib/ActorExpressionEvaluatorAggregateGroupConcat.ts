@@ -19,7 +19,10 @@ export class ActorExpressionEvaluatorAggregateGroupConcat extends ActorExpressio
   }
 
   public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
-    return action.expr.aggregator === 'group_concat';
+    if (action.expr.aggregator !== 'group_concat') {
+      throw new Error('This actor only supports the \'group_concat\' aggregator.');
+    }
+    return {};
   }
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {

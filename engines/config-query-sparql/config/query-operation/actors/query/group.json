@@ -12,7 +12,7 @@
       "@type": "ActorQueryOperationGroup",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
-      "expressionEvaluator": { "@id": "urn:comunica:default:expression-evaluator/evaluators#main" }
+      "expressionEvaluatorFactory": { "@id": "urn:comunica:default:expression-evaluator/evaluators#main" }
     }
   ]
 }
