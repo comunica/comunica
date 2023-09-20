@@ -20,8 +20,11 @@ export class ActorExpressionEvaluatorAggregateCount extends ActorExpressionEvalu
   }
 
   public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
-    return action.expr.aggregator === 'count' &&
-      action.expr.expression.expressionType !== Algebra.expressionTypes.WILDCARD;
+    if (action.expr.aggregator !== 'count' ||
+      action.expr.expression.expressionType === Algebra.expressionTypes.WILDCARD) {
+      throw new Error('This actor only supports the \'count\' aggregator without wildcard.');
+    }
+    return {};
   }
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {

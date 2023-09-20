@@ -22,7 +22,10 @@ export class ActorExpressionEvaluatorAggregateSum extends ActorExpressionEvaluat
   }
 
   public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
-    return action.expr.aggregator === 'sum';
+    if (action.expr.aggregator !== 'sum') {
+      throw new Error('This actor only supports the \'sum\' aggregator.');
+    }
+    return {};
   }
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {

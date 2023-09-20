@@ -18,7 +18,10 @@ export class ActorExpressionEvaluatorAggregateMin extends ActorExpressionEvaluat
   }
 
   public async test(action: IActionExpressionEvaluatorAggregate): Promise<IActorTest> {
-    return action.expr.aggregator === 'min';
+    if (action.expr.aggregator !== 'min') {
+      throw new Error('This actor only supports the \'min\' aggregator.');
+    }
+    return {};
   }
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {

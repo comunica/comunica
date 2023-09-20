@@ -66,8 +66,9 @@
     "LRUCache",
 
     "isExpressionError",
-    "orderTypes",
     "AggregateEvaluator",
+    "ExpressionEvaluator",
+    "AggregateEvaluator"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",
