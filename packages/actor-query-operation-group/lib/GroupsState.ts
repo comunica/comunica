@@ -96,7 +96,7 @@ export class GroupsState {
         }
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
-        await this.subtractWaitCounterAndCollect();
+        this.subtractWaitCounterAndCollect();
         return group;
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
@@ -118,22 +118,22 @@ export class GroupsState {
           const variable = aggregate.variable.value;
           await group.aggregators[variable].putBindings(bindings);
         }));
-
-        await this.subtractWaitCounterAndCollect();
-      })();
+      })().then(() => {
+        this.subtractWaitCounterAndCollect();
+      });
     }
     return res;
   }
 
-  private async subtractWaitCounterAndCollect(): Promise<void> {
+  private subtractWaitCounterAndCollect(): void {
     if (--this.waitCounter === 0) {
-      await this.handleResultCollection();
+      this.handleResultCollection();
     }
   }
 
-  private async handleResultCollection(): Promise<void> {
+  private handleResultCollection(): void {
     // Collect groups
-    let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
+    const rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
 
       // Collect aggregator bindings
@@ -156,17 +156,21 @@ export class GroupsState {
     // Result is a single Bindings
     if (rows.length === 0 && this.groupVariables.size === 0) {
       const single: [RDF.Variable, RDF.Term][] = [];
-      for (const aggregate of this.pattern.aggregates) {
+      Promise.all(this.pattern.aggregates.map(async aggregate => {
         const key = aggregate.variable;
-        const value = (await this.expressionEvaluatorFactory
-          .createAggregator(aggregate, this.context)).emptyValue();
+        const aggregator = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
+        const value = aggregator.emptyValue();
         if (value !== undefined) {
           single.push([ key, value ]);
         }
-      }
-      rows = [ BF.bindings(single) ];
+      })).then(() => {
+        this.waitResolver([ BF.bindings(single) ]);
+      }).catch(error => {
+        throw error;
+      });
+    } else {
+      this.waitResolver(rows);
     }
-    this.waitResolver(rows);
   }
 
   private resultCheck<T>(): Promise<T> | undefined {
@@ -181,7 +185,7 @@ export class GroupsState {
    * You can only call this method once, after calling this method,
    * calling any function on this will result in an error being thrown.
    */
-  public async collectResults(): Promise<Bindings[]> {
+  public collectResults(): Promise<Bindings[]> {
     const check = this.resultCheck<Bindings[]>();
     if (check) {
       return check;
@@ -190,7 +194,7 @@ export class GroupsState {
     const res = new Promise<Bindings[]>(resolve => {
       this.waitResolver = resolve;
     });
-    await this.subtractWaitCounterAndCollect();
+    this.subtractWaitCounterAndCollect();
     return res;
   }
 

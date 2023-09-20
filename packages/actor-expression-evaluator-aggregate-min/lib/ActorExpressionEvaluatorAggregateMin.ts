@@ -5,9 +5,11 @@ import type {
 } from '@comunica/bus-expression-evaluator-aggregate';
 import { ActorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
 import type { IActorTest } from '@comunica/core';
-import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Min Expression Evaluator Aggregate Actor.
@@ -26,15 +28,18 @@ export class ActorExpressionEvaluatorAggregateMin extends ActorExpressionEvaluat
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new MinAggregator(action.factory.createEvaluator(action.expr, action.context)),
+      aggregator: new MinAggregator(action.expr, action.factory, action.context),
     };
   }
 }
 
 class MinAggregator extends AggregateEvaluator {
   private state: RDF.Term | undefined = undefined;
-  public constructor(evaluator: ExpressionEvaluator, throwError?: boolean) {
-    super(evaluator, throwError);
+
+  public constructor(aggregateExpression: Algebra.AggregateExpression,
+    expressionEvaluatorFactory: ExpressionEvaluatorFactory, context: IActionContext,
+    throwError?: boolean) {
+    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
   }
 
   public putTerm(term: RDF.Term): void {

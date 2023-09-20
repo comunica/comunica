@@ -1,28 +1,35 @@
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
+import type { Algebra } from 'sparqlalgebrajs';
 import type * as E from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
 import { TypeAlias } from '../util/Consts';
 import { EmptyAggregateError } from '../util/Errors';
 import { isSubTypeOf } from '../util/TypeHandling';
 import type { ExpressionEvaluator } from './ExpressionEvaluator';
+import type { ExpressionEvaluatorFactory } from './ExpressionEvaluatorFactory';
 
 /**
  * Abstract aggregator actor. This is the base class for all aggregator actors.
  * Only the wildcard count aggregator significantly differs from the others.
  */
 export abstract class AggregateEvaluator {
+  protected readonly evaluator: ExpressionEvaluator;
   private readonly throwError: boolean;
   private errorOccurred = false;
 
   protected readonly distinct: boolean;
   protected readonly variableValues: Set<string>;
 
-  protected constructor(protected readonly evaluator: ExpressionEvaluator, throwError?: boolean) {
+  protected constructor(aggregateExpression: Algebra.AggregateExpression,
+    expressionEvaluatorFactory: ExpressionEvaluatorFactory, context: IActionContext,
+    throwError?: boolean) {
+    this.evaluator = expressionEvaluatorFactory.createEvaluator(aggregateExpression.expression, context);
     this.throwError = throwError || false;
     this.errorOccurred = false;
 
-    this.distinct = evaluator.algExpr.distinct;
+    this.distinct = aggregateExpression.distinct;
     this.variableValues = new Set();
   }
 
