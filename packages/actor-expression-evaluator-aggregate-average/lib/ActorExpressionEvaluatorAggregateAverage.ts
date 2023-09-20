@@ -5,13 +5,15 @@ import type {
 } from '@comunica/bus-expression-evaluator-aggregate';
 import { ActorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
 import type { IActorTest } from '@comunica/core';
-import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { regularFunctions } from '@comunica/expression-evaluator/lib/functions';
 import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Average Expression Evaluator Aggregate Actor.
@@ -30,7 +32,7 @@ export class ActorExpressionEvaluatorAggregateAverage extends ActorExpressionEva
 
   public async run(action: IActionExpressionEvaluatorAggregate): Promise<IActorExpressionEvaluatorAggregateOutput> {
     return {
-      aggregator: new AverageAggregator(action.factory.createEvaluator(action.expr, action.context)),
+      aggregator: new AverageAggregator(action.expr, action.factory, action.context),
     };
   }
 }
@@ -46,8 +48,10 @@ class AverageAggregator extends AggregateEvaluator {
   private readonly divider = regularFunctions[C.RegularOperator.DIVISION];
   private state: IAverageState | undefined = undefined;
 
-  public constructor(evaluator: ExpressionEvaluator, throwError?: boolean) {
-    super(evaluator, throwError);
+  public constructor(aggregateExpression: Algebra.AggregateExpression,
+    expressionEvaluatorFactory: ExpressionEvaluatorFactory, context: IActionContext,
+    throwError?: boolean) {
+    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
   }
 
   public emptyValue(): RDF.Term {

@@ -9,6 +9,7 @@
     "ccqs:config/expression-evaluator/aggregators/max.json",
     "ccqs:config/expression-evaluator/aggregators/min.json",
     "ccqs:config/expression-evaluator/aggregators/sample.json",
+    "ccqs:config/expression-evaluator/aggregators/sum.json",
     "ccqs:config/expression-evaluator/aggregators/wildcard-count.json"
   ]
 }
