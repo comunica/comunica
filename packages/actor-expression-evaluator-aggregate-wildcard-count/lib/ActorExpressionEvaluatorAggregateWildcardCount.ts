@@ -57,7 +57,7 @@ class WildcardCountAggregator extends AggregateEvaluator {
     }
   }
 
-  public static emptyValue(): RDF.Term {
+  public emptyValue(): RDF.Term {
     return integer(0).toRDF();
   }
 
