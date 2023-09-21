@@ -64,7 +64,7 @@ class AverageAggregator extends AggregateEvaluator {
       this.state = { sum, count: 1 };
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state.sum = <E.NumericLiteral> this.summer.apply([ this.state.sum, internalTerm ], this.evaluator.context);
+      this.state.sum = <E.NumericLiteral> this.summer.apply([ this.state.sum, internalTerm ], this.evaluator);
       this.state.count++;
     }
   }
@@ -74,7 +74,7 @@ class AverageAggregator extends AggregateEvaluator {
       return this.emptyValue();
     }
     const count = new E.IntegerLiteral(this.state.count);
-    const result = this.divider.apply([ this.state.sum, count ], this.evaluator.context);
+    const result = this.divider.apply([ this.state.sum, count ], this.evaluator);
     return result.toRDF();
   }
 }

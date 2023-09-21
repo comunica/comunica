@@ -80,7 +80,7 @@ export function asTermType(type: string): TermType | undefined {
   }
   return undefined;
 }
-export type TermType = 'namedNode' | 'literal' | 'blankNode' | 'quad';
+export type TermType = 'namedNode' | 'literal' | 'blankNode' | 'quad' | 'defaultGraph';
 export type TermExpression = IExpressionProps & {
   expressionType: ExpressionType.Term;
   termType: TermType;

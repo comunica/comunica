@@ -11,7 +11,7 @@ import { TermTransformer } from '../../transformers/TermTransformer';
 import type { ITimeZoneRepresentation } from '../../util/DateTimeHelpers';
 import * as Err from '../../util/Errors';
 import type { ISuperTypeProvider } from '../../util/TypeHandling';
-import type { AsyncExtensionFunctionCreator } from '../ExpressionEvaluator';
+import type { AsyncExtensionFunctionCreator, ExpressionEvaluator } from '../ExpressionEvaluator';
 
 export interface ICompleteContext {
   exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
@@ -44,7 +44,8 @@ export class AsyncRecursiveEvaluator {
       [E.ExpressionType.AsyncExtension]: this.evalAsyncExtension.bind(this),
     };
 
-  public constructor(private readonly context: ICompleteContext, termTransformer?: ITermTransformer) {
+  public constructor(private readonly context: ICompleteContext,
+    private readonly expressionEvaluator: ExpressionEvaluator, termTransformer?: ITermTransformer) {
     this.termTransformer = termTransformer || new TermTransformer(context.superTypeProvider);
   }
 
@@ -75,7 +76,6 @@ export class AsyncRecursiveEvaluator {
   }
 
   private async evalSpecialOperator(expr: E.SpecialOperator, mapping: RDF.Bindings): Promise<E.Term> {
-    const evaluate = this.evaluate.bind(this);
     const context: EvalContextAsync = {
       args: expr.args,
       mapping,
@@ -85,7 +85,7 @@ export class AsyncRecursiveEvaluator {
       baseIRI: this.context.baseIRI,
       functionArgumentsCache: this.context.functionArgumentsCache,
 
-      evaluate,
+      evaluate: this.expressionEvaluator,
       bnode: this.context.bnode,
       defaultTimeZone: this.context.defaultTimeZone,
       actionContext: this.context.actionContext,

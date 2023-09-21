@@ -1,6 +1,10 @@
 import { Algebra as Alg } from 'sparqlalgebrajs';
 import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
-import type { AsyncExtensionFunction, AsyncExtensionFunctionCreator } from '../evaluators/ExpressionEvaluator';
+import type {
+  AsyncExtensionFunction,
+  AsyncExtensionFunctionCreator,
+  ExpressionEvaluator,
+} from '../evaluators/ExpressionEvaluator';
 import type { AsyncExtensionApplication } from '../expressions';
 import * as E from '../expressions';
 import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
@@ -22,7 +26,8 @@ export interface IAlgebraTransformer extends ITermTransformer{
 
 export class AlgebraTransformer extends TermTransformer implements IAlgebraTransformer {
   private readonly creatorConfig: IFunctionCreatorConfig;
-  public constructor(protected readonly algebraConfig: AlgebraTransformConfig) {
+  public constructor(protected readonly algebraConfig: AlgebraTransformConfig,
+    private readonly expressionEvaluator: ExpressionEvaluator) {
     super(algebraConfig.superTypeProvider);
     this.creatorConfig = <IFunctionCreatorConfig> { creator: algebraConfig.creator };
   }
@@ -70,7 +75,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
     if (!AlgebraTransformer.hasCorrectArity(regularArgs, regularFunc.arity)) {
       throw new Err.InvalidArity(regularArgs, regularOp);
     }
-    return new E.Operator(regularArgs, args => regularFunc.apply(args, this.algebraConfig));
+    return new E.Operator(regularArgs, args => regularFunc.apply(args, this.expressionEvaluator));
   }
 
   private wrapAsyncFunction(func: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
@@ -93,7 +98,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       // Return a basic named expression
       const op = <C.NamedOperator>expr.name.value;
       const namedFunc = namedFunctions[op];
-      return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args, this.algebraConfig));
+      return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args, this.expressionEvaluator));
     }
     // The expression might be an extension function, check this.
     const asyncExtensionFunc = this.creatorConfig.creator(expr.name);

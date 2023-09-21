@@ -6,7 +6,7 @@ import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
 import * as E from '../expressions';
 import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
@@ -136,10 +136,12 @@ const subtraction = {
   arity: 2,
   overloads: declare(C.RegularOperator.SUBTRACTION)
     .arithmetic(() => (left, right) => new BigNumber(left).minus(right).toNumber())
-    .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], ({ defaultTimeZone }) =>
+    .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], exprEval =>
       ([ date1, date2 ]: [ E.DateTimeLiteral, E.DateTimeLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dateTimes;
-        new E.DayTimeDurationLiteral(elapsedDuration(date1.typedValue, date2.typedValue, defaultTimeZone)))
+        new E.DayTimeDurationLiteral(elapsedDuration(
+          date1.typedValue, date2.typedValue, exprEval.context.defaultTimeZone,
+        )))
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ]})
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_TIME, TypeURL.XSD_TIME ]})
     .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
@@ -182,8 +184,10 @@ const equality = {
     // Fall through: a TypeURL.XSD_STRING is never equal to a TypeURL.RDF_LANG_STRING.
     .set([ TypeAlias.SPARQL_STRINGLY, TypeAlias.SPARQL_STRINGLY ], () => () => bool(false))
     .booleanTest(() => (left, right) => left === right)
-    .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
-      toUTCDate(left, defaultTimeZone).getTime() === toUTCDate(right, defaultTimeZone).getTime())
+    .dateTimeTest(exprEval => (left, right) =>
+      toUTCDate(
+        left, exprEval.context.defaultTimeZone,
+      ).getTime() === toUTCDate(right, exprEval.context.defaultTimeZone).getTime())
     .copy({
       // https://www.w3.org/TR/xpath-functions/#func-date-equal
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
@@ -191,13 +195,13 @@ const equality = {
     })
     .set(
       [ 'quad', 'quad' ],
-      context => ([ left, right ]) => {
+      exprEval => ([ left, right ]) => {
         const op: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
         return bool(
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).subject, (<Quad> right).subject ], context)).coerceEBV() &&
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).predicate, (<Quad> right).predicate ], context)).coerceEBV() &&
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).object, (<Quad> right).object ], context)).coerceEBV() &&
-          (<E.BooleanLiteral> op.apply([ (<Quad> left).graph, (<Quad> right).graph ], context)).coerceEBV(),
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).subject, (<Quad> right).subject ], exprEval)).coerceEBV() &&
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).predicate, (<Quad> right).predicate ], exprEval)).coerceEBV() &&
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).object, (<Quad> right).object ], exprEval)).coerceEBV() &&
+          (<E.BooleanLiteral> op.apply([ (<Quad> left).graph, (<Quad> right).graph ], exprEval)).coerceEBV(),
         );
       },
       false,
@@ -213,11 +217,13 @@ const equality = {
           yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2.typedValue)) &&
           dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) ===
           dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
-    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], ({ defaultTimeZone }) =>
+    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], exprEval =>
       ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-equal
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), defaultTimeZone).getTime() ===
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
+        bool(
+          toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.context.defaultTimeZone).getTime() ===
+          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.context.defaultTimeZone).getTime(),
+        ))
     .collect(),
 };
 
@@ -234,10 +240,10 @@ function RDFTermEqual(_left: Term, _right: Term): boolean {
 const inequality = {
   arity: 2,
   overloads: declare(C.RegularOperator.NOT_EQUAL)
-    .set([ 'term', 'term' ], context =>
+    .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         bool(!(<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL]
-          .apply([ first, second ], context)).typedValue))
+          .apply([ first, second ], expressionEvaluator)).typedValue))
     .collect(),
 };
 
@@ -248,29 +254,13 @@ const lesserThan = {
     .stringTest(() => (left, right) => left.localeCompare(right) === -1)
     .booleanTest(() => (left, right) => left < right)
     .set(
-      // https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html#rdf-star-operator-mapping
       [ 'quad', 'quad' ],
-      context => ([ termA, termB ]: [E.Quad, E.Quad]) => {
-        const lessThan: RegularFunction = new RegularFunction(RegularOperator.LT, lesserThan);
-        const equal: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
-        if (!equal.apply([ termA.subject, termB.subject ], context).coerceEBV().valueOf()) {
-          return lessThan.apply([ termA.subject, termB.subject ], context);
-        }
-        if (!equal.apply([ termA.predicate, termB.predicate ], context).coerceEBV().valueOf()) {
-          return lessThan.apply([ termA.predicate, termB.predicate ], context);
-        }
-        if (!equal.apply([ termA.object, termB.object ], context).coerceEBV().valueOf()) {
-          return lessThan.apply([ termA.object, termB.object ], context);
-        }
-        if (!equal.apply([ termA.graph, termB.graph ], context).coerceEBV().valueOf()) {
-          return lessThan.apply([ termA.graph, termB.graph ], context);
-        }
-        return bool(false);
-      },
+      exprEval => ([ left, right ]) => bool(exprEval.orderTypes(left.toRDF(), right.toRDF(), true) === -1),
       false,
     )
-    .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
-      toUTCDate(left, defaultTimeZone).getTime() < toUTCDate(right, defaultTimeZone).getTime())
+    .dateTimeTest(exprEval => (left, right) =>
+      toUTCDate(left, exprEval.context.defaultTimeZone).getTime() <
+      toUTCDate(right, exprEval.context.defaultTimeZone).getTime())
     .copy({
       // https://www.w3.org/TR/xpath-functions/#func-date-less-than
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
@@ -286,35 +276,35 @@ const lesserThan = {
         // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
         bool(dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) <
           dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
-    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], ({ defaultTimeZone }) =>
+    .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], exprEval =>
       ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-less-than
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), defaultTimeZone).getTime() <
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), defaultTimeZone).getTime()))
+        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.context.defaultTimeZone).getTime() <
+          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.context.defaultTimeZone).getTime()))
     .collect(),
 };
 
 const greaterThan = {
   arity: 2,
   overloads: declare(C.RegularOperator.GT)
-    .set([ 'term', 'term' ], context =>
+    .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         // X < Y -> Y > X
-        regularFunctions[C.RegularOperator.LT].apply([ second, first ], context))
+        regularFunctions[C.RegularOperator.LT].apply([ second, first ], expressionEvaluator))
     .collect(),
 };
 
 const lesserThanEqual = {
   arity: 2,
   overloads: declare(C.RegularOperator.LTE)
-    .set([ 'term', 'term' ], context =>
+    .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X <= Y -> X < Y || X = Y
         // First check if the first is lesser than the second, then check if they are equal.
         // Doing this, the correct error will be thrown, each type that has a lesserThanEqual has a matching lesserThan.
         bool(
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].apply([ first, second ], context)).typedValue ||
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].apply([ first, second ], context)).typedValue,
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].apply([ first, second ], exprEval)).typedValue ||
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].apply([ first, second ], exprEval)).typedValue,
         ))
     .collect(),
 };
@@ -322,10 +312,10 @@ const lesserThanEqual = {
 const greaterThanEqual = {
   arity: 2,
   overloads: declare(C.RegularOperator.GTE)
-    .set([ 'term', 'term' ], context =>
+    .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X >= Y -> Y <= X
-        regularFunctions[C.RegularOperator.LTE].apply([ second, first ], context))
+        regularFunctions[C.RegularOperator.LTE].apply([ second, first ], exprEval))
     .collect(),
 };
 
@@ -411,13 +401,13 @@ const datatype = {
 const IRI = {
   arity: 1,
   overloads: declare(C.RegularOperator.IRI)
-    .set([ 'namedNode' ], context => args => {
+    .set([ 'namedNode' ], exprEval => args => {
       const lit = <E.NamedNode> args[0];
-      const iri = resolveRelativeIri(lit.str(), context.baseIRI || '');
+      const iri = resolveRelativeIri(lit.str(), exprEval.context.baseIRI || '');
       return new E.NamedNode(iri);
     })
-    .onString1(context => lit => {
-      const iri = resolveRelativeIri(lit.str(), context.baseIRI || '');
+    .onString1(exprEval => lit => {
+      const iri = resolveRelativeIri(lit.str(), exprEval.context.baseIRI || '');
       return new E.NamedNode(iri);
     })
     .collect(),
@@ -433,9 +423,9 @@ const STRDT = {
   arity: 2,
   overloads: declare(C.RegularOperator.STRDT).set(
     [ TypeURL.XSD_STRING, 'namedNode' ],
-    ({ superTypeProvider }) => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
+    exprEval => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
       const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
-      return new TermTransformer(superTypeProvider).transformLiteral(lit);
+      return new TermTransformer(exprEval.context.superTypeProvider).transformLiteral(lit);
     },
   ).collect(),
 };
@@ -694,9 +684,9 @@ const langmatches = {
     ).collect(),
 };
 
-const regex2: (context: ICompleteContext) => (text: string, pattern: string) => E.BooleanLiteral =
+const regex2: (exprEval: ExpressionEvaluator) => (text: string, pattern: string) => E.BooleanLiteral =
   () => (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3: (context: ICompleteContext) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
+const regex3: (exprEval: ExpressionEvaluator) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
   () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
@@ -808,9 +798,9 @@ const rand = {
  */
 const now = {
   arity: 0,
-  overloads: declare(C.RegularOperator.NOW).set([], (sharedContext: ICompleteContext) => () =>
+  overloads: declare(C.RegularOperator.NOW).set([], exprEval => () =>
     new E.DateTimeLiteral(toDateTimeRepresentation(
-      { date: sharedContext.now, timeZone: sharedContext.defaultTimeZone },
+      { date: exprEval.context.now, timeZone: exprEval.context.defaultTimeZone },
     ))).collect(),
 };
 
@@ -992,9 +982,9 @@ const triple = {
   arity: 3,
   overloads: declare(C.RegularOperator.TRIPLE)
     .onTerm3(
-      context => (...args) => new E.Quad(
+      exprEval => (...args) => new E.Quad(
         DF.quad(args[0].toRDF(), args[1].toRDF(), args[2].toRDF()),
-        context.superTypeProvider,
+        exprEval.context.superTypeProvider,
       ),
     )
     .collect(),
@@ -1143,6 +1133,8 @@ export const definitions: Record<C.RegularOperator, IOverloadedDefinition> = {
   // --------------------------------------------------------------------------
   // Functions for quoted triples
   // https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
+  // Additional operator mappings
+  // https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html#rdf-star-operator-mapping
   // --------------------------------------------------------------------------
   triple,
   subject,
