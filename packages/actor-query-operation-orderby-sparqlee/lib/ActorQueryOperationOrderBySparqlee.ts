@@ -25,7 +25,8 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    for (const expr of operation.expressions) {
+    for (let expr of operation.expressions) {
+      expr = this.extractSortExpression(expr);
       const _ = this.expressionEvaluatorFactory.createEvaluator(expr, context);
     }
     return true;
