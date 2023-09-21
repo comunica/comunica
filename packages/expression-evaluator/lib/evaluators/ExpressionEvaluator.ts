@@ -2,7 +2,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
-import * as E from '../expressions';
+import type * as E from '../expressions';
 import { regularFunctions } from '../functions';
 import type { FunctionArgumentsCache } from '../functions/OverloadTree';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
@@ -36,7 +36,7 @@ export interface IAsyncEvaluatorContext {
 
 export class ExpressionEvaluator {
   private readonly transformer: AlgebraTransformer;
-  private readonly evaluator: AsyncRecursiveEvaluator;
+  public readonly evaluator: AsyncRecursiveEvaluator;
   public readonly context: ICompleteContext;
   public readonly expr: E.Expression;
 
@@ -60,7 +60,7 @@ export class ExpressionEvaluator {
   }
 
   public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext,
-    private readonly factory: ExpressionEvaluatorFactory) {
+    public readonly factory: ExpressionEvaluatorFactory) {
     // eslint-disable-next-line unicorn/no-useless-undefined
     const creator = context.extensionFunctionCreator || (() => undefined);
     this.context = ExpressionEvaluator.completeContext(context);
@@ -68,9 +68,9 @@ export class ExpressionEvaluator {
     this.transformer = new AlgebraTransformer({
       creator,
       ...this.context,
-    });
+    }, this);
 
-    this.evaluator = new AsyncRecursiveEvaluator(this.context, this.transformer);
+    this.evaluator = new AsyncRecursiveEvaluator(this.context, this, this.transformer);
     this.expr = this.transformer.transformAlgebra(algExpr);
   }
 
@@ -119,18 +119,27 @@ export class ExpressionEvaluator {
 
     // Handle quoted triples
     if (termA.termType === 'Quad' && termB.termType === 'Quad') {
-      const first = new E.Quad(termA, this.context.superTypeProvider);
-      const second = new E.Quad(termA, this.context.superTypeProvider);
-      const isGreater = regularFunctions[C.RegularOperator.GT];
-      const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-
-      if ((<E.BooleanLiteral> isEqual.apply([ first, second ], this.context)).typedValue) {
-        return 0;
+      const orderSubject = this.orderTypes(
+        termA.subject, termB.subject, strict,
+      );
+      if (orderSubject !== 0) {
+        return orderSubject;
       }
-      if ((<E.BooleanLiteral> isGreater.apply([ first, second ], this.context)).typedValue) {
-        return 1;
+      const orderPredicate = this.orderTypes(
+        termA.predicate, termB.predicate, strict,
+      );
+      if (orderPredicate !== 0) {
+        return orderPredicate;
       }
-      return -1;
+      const orderObject = this.orderTypes(
+        termA.object, termB.object, strict,
+      );
+      if (orderObject !== 0) {
+        return orderObject;
+      }
+      return this.orderTypes(
+        termA.graph, termB.graph, strict,
+      );
     }
 
     // Handle literals
@@ -156,10 +165,10 @@ export class ExpressionEvaluator {
     const myLitB = termTransformer.transformLiteral(litB);
 
     try {
-      if ((<E.BooleanLiteral> isEqual.apply([ myLitA, myLitB ], completeContext)).typedValue) {
+      if ((<E.BooleanLiteral> isEqual.apply([ myLitA, myLitB ], this)).typedValue) {
         return 0;
       }
-      if ((<E.BooleanLiteral> isGreater.apply([ myLitA, myLitB ], completeContext)).typedValue) {
+      if ((<E.BooleanLiteral> isGreater.apply([ myLitA, myLitB ], this)).typedValue) {
         return 1;
       }
       return -1;
@@ -178,7 +187,7 @@ export class ExpressionEvaluator {
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
   }
 
-  // SPARQL specifies that blankNode < namedNode < literal.
+  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph
   private readonly _TERM_ORDERING_PRIORITY = {
     Variable: 0,
     BlankNode: 1,

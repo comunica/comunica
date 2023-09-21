@@ -1,5 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -11,7 +12,7 @@ export interface IEvalSharedContext extends ICompleteContext{
   mapping: RDF.Bindings;
 }
 export interface IEvalContext<Term> extends IEvalSharedContext {
-  evaluate: (expr: E.Expression, mapping: RDF.Bindings) => Term;
+  evaluate: ExpressionEvaluator;
 }
 
 export type EvalContextAsync = IEvalContext<Promise<E.TermExpression>>;
@@ -43,12 +44,12 @@ export abstract class BaseFunction<Operator> {
    * instance depending on the runtime types. We then just apply this function
    * to the args.
    */
-  public apply = (args: E.TermExpression[], context: ICompleteContext):
+  public apply = (args: E.TermExpression[], exprEval: ExpressionEvaluator):
   E.TermExpression => {
     const concreteFunction =
-      this.monomorph(args, context.superTypeProvider, context.functionArgumentsCache) ||
+      this.monomorph(args, exprEval.context.superTypeProvider, exprEval.context.functionArgumentsCache) ||
       this.handleInvalidTypes(args);
-    return concreteFunction(context)(args);
+    return concreteFunction(exprEval)(args);
   };
 
   protected abstract handleInvalidTypes(args: E.TermExpression[]): never;

@@ -115,6 +115,20 @@ export class Quad extends Term {
   }
 }
 
+export class DefaultGraph extends Term {
+  public termType: TermType = 'defaultGraph';
+  private readonly valueTerm: RDF.DefaultGraph;
+
+  public constructor(input: RDF.DefaultGraph) {
+    super();
+    this.valueTerm = input;
+  }
+
+  public toRDF(): RDF.DefaultGraph {
+    return this.valueTerm;
+  }
+}
+
 // Literals-- -----------------------------------------------------------------
 export function isLiteralTermExpression(expr: TermExpression): Literal<any> | undefined {
   if (expr.termType === 'literal') {
