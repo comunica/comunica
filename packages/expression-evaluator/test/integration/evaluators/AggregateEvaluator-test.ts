@@ -50,18 +50,6 @@ async function testCase({ expr, input, evalTogether }: TestCaseArgs): Promise<RD
   return results[0]!;
 }
 
-function syncErrorTestCase({ expr, input }: TestCaseArgs) {
-  if (input.length === 0) {
-    AggregateEvaluator.emptyValue(expr, true);
-  } else {
-    const syncEvaluator = new AggregateEvaluator(expr, undefined, true);
-    for (const bindings of input) {
-      syncEvaluator.putBindings(bindings);
-    }
-    syncEvaluator.result();
-  }
-}
-
 async function asyncErrorTestCase({ expr, input }: TestCaseArgs) {
   if (input.length === 0) {
     AggregateEvaluator.emptyValue(expr, true);
@@ -119,62 +107,6 @@ function date(value: string): RDF.Term {
 }
 
 describe('an aggregate evaluator should be able to', () => {
-  describe('count', () => {
-    let baseTestCaseArgs: IBaseTestCaseArgs;
-
-    beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('count'), evalTogether: true };
-    });
-    it('a list of bindings', async() => {
-      const result = testCase({
-        ...baseTestCaseArgs,
-        input: [
-          BF.bindings([[ DF.variable('x'), int('1') ]]),
-          BF.bindings([[ DF.variable('x'), int('2') ]]),
-          BF.bindings([[ DF.variable('x'), int('3') ]]),
-          BF.bindings([[ DF.variable('x'), int('4') ]]),
-        ],
-      });
-      expect(await result).toEqual(int('4'));
-    });
-
-    it('with respect to empty input', async() => {
-      const result = testCase({
-        ...baseTestCaseArgs,
-        input: [],
-      });
-      expect(await result).toEqual(int('0'));
-    });
-  });
-
-  describe('count distinct', () => {
-    let baseTestCaseArgs: IBaseTestCaseArgs;
-
-    beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('count', true), evalTogether: true };
-    });
-    it('a list of bindings', async() => {
-      const result = testCase({
-        ...baseTestCaseArgs,
-        input: [
-          BF.bindings([[ DF.variable('x'), int('1') ]]),
-          BF.bindings([[ DF.variable('x'), int('2') ]]),
-          BF.bindings([[ DF.variable('x'), int('1') ]]),
-          BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
-        ],
-      });
-      expect(await result).toEqual(int('2'));
-    });
-
-    it('with respect to empty input', async() => {
-      const result = testCase({
-        ...baseTestCaseArgs,
-        input: [],
-      });
-      expect(await result).toEqual(int('0'));
-    });
-  });
-
   describe('count wildcard', () => {
     let baseTestCaseArgs: IBaseTestCaseArgs;
 

@@ -4,8 +4,7 @@ import type { IActionContext } from './IActionContext';
 
 export interface IBindingAggregator {
   putBindings: (bindings: RDF.Bindings) => Promise<void>;
-  result: () => RDF.Term | undefined;
-  emptyValue: () => RDF.Term | undefined;
+  result: () => Promise<RDF.Term | undefined>;
 }
 
 export interface IExpressionEvaluatorFactory {

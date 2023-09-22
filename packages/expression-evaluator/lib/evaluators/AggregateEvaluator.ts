@@ -71,7 +71,7 @@ export abstract class AggregateEvaluator {
       }
 
       // Handle DISTINCT before putting the term
-      if (!this.distinct || this.variableValues.has(RdfString.termToString(term))) {
+      if (!this.distinct || !this.variableValues.has(RdfString.termToString(term))) {
         this.putTerm(term);
         if (this.distinct) {
           this.variableValues.add(RdfString.termToString(term));
@@ -82,7 +82,7 @@ export abstract class AggregateEvaluator {
     }
   }
 
-  public result(): RDF.Term | undefined {
+  public async result(): Promise<RDF.Term | undefined> {
     if (this.errorOccurred) {
       return undefined;
     }
@@ -101,7 +101,8 @@ export abstract class AggregateEvaluator {
     if (term.termType !== 'Literal') {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
-      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, (<ExpressionEvaluator> this.evaluator).context.superTypeProvider)
+      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, (<ExpressionEvaluator> this.evaluator)
+        .context.superTypeProvider)
     ) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
