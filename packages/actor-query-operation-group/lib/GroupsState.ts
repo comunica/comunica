@@ -126,20 +126,22 @@ export class GroupsState {
 
   private subtractWaitCounterAndCollect(): void {
     if (--this.waitCounter === 0) {
-      this.handleResultCollection();
+      this.handleResultCollection().catch(error => {
+        throw error;
+      });
     }
   }
 
-  private handleResultCollection(): void {
+  private async handleResultCollection(): Promise<void> {
     // Collect groups
-    const rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
+    let rows: Bindings[] = await Promise.all([ ...this.groups ].map(async([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
 
       // Collect aggregator bindings
       // If the aggregate errorred, the result will be undefined
       let returnBindings = groupBindings;
       for (const variable in aggregators) {
-        const value = aggregators[variable].result();
+        const value = await aggregators[variable].result();
         if (value) {
           // Filter undefined
           returnBindings = returnBindings.set(DF.variable(variable), value);
@@ -148,28 +150,25 @@ export class GroupsState {
 
       // Merge grouping bindings and aggregator bindings
       return returnBindings;
-    });
+    }));
 
     // Case: No Input
     // Some aggregators still define an output on the empty input
     // Result is a single Bindings
     if (rows.length === 0 && this.groupVariables.size === 0) {
       const single: [RDF.Variable, RDF.Term][] = [];
-      Promise.all(this.pattern.aggregates.map(async aggregate => {
+      await Promise.all(this.pattern.aggregates.map(async aggregate => {
         const key = aggregate.variable;
         const aggregator = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
-        const value = aggregator.emptyValue();
+        const value = await aggregator.result();
         if (value !== undefined) {
           single.push([ key, value ]);
         }
-      })).then(() => {
-        this.waitResolver([ BF.bindings(single) ]);
-      }).catch(error => {
-        throw error;
-      });
-    } else {
-      this.waitResolver(rows);
+      }));
+      rows = [ BF.bindings(single) ];
     }
+
+    this.waitResolver(rows);
   }
 
   private resultCheck<T>(): Promise<T> | undefined {

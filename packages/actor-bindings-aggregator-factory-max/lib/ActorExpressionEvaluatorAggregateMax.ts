@@ -1,5 +1,8 @@
-import type { IActionBindingsAggregatorFactory,
-  IActorBindingsAggregatorFactoryArgs, IActorBindingsAggregatorFactoryOutput } from '@comunica/bus-bindings-aggeregator-factory';
+import type {
+  IActionBindingsAggregatorFactory,
+  IActorBindingsAggregatorFactoryArgs,
+  IActorBindingsAggregatorFactoryOutput,
+} from '@comunica/bus-bindings-aggeregator-factory';
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';

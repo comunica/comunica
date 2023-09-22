@@ -1,5 +1,8 @@
-import type { IActionBindingsAggregatorFactory,
-  IActorBindingsAggregatorFactoryArgs, IActorBindingsAggregatorFactoryOutput } from '@comunica/bus-bindings-aggeregator-factory';
+import type {
+  IActionBindingsAggregatorFactory,
+  IActorBindingsAggregatorFactoryArgs,
+  IActorBindingsAggregatorFactoryOutput,
+} from '@comunica/bus-bindings-aggeregator-factory';
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
@@ -10,7 +13,7 @@ import { CountAggregator } from './CountAggregator';
 /**
  * A comunica Count Expression Evaluator Aggregate Actor.
  */
-export class ActorExpressionEvaluatorAggregateCount extends ActorBindingsAggregatorFactory {
+export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregatorFactory {
   public constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
   }

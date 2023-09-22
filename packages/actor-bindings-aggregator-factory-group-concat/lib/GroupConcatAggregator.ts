@@ -1,10 +1,10 @@
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import { string } from '@comunica/expression-evaluator/lib/functions/Helpers';
-import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
-export class GroupConcatAggregator extends AggregateEvaluator {
+export class GroupConcatAggregator extends AggregateEvaluator implements IBindingAggregator {
   private state: string | undefined = undefined;
   private readonly separator: string;
 
@@ -15,7 +15,7 @@ export class GroupConcatAggregator extends AggregateEvaluator {
     this.separator = aggregateExpression.separator || ' ';
   }
 
-  public emptyValue(): RDF.Term {
+  public emptyValueTerm(): RDF.Term {
     return string('').toRDF();
   }
 
@@ -27,7 +27,7 @@ export class GroupConcatAggregator extends AggregateEvaluator {
     }
   }
 
-  public termResult(): RDF.Term {
+  public termResult(): RDF.Term | undefined {
     if (this.state === undefined) {
       return this.emptyValue();
     }

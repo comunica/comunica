@@ -20,7 +20,7 @@ export class SumAggregator extends AggregateEvaluator {
     super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
   }
 
-  public emptyValue(): RDF.Term {
+  public emptyValueTerm(): RDF.Term {
     return integer(0).toRDF();
   }
 
@@ -34,7 +34,7 @@ export class SumAggregator extends AggregateEvaluator {
     }
   }
 
-  public termResult(): RDF.Term {
+  public termResult(): RDF.Term | undefined {
     if (this.state === undefined) {
       return this.emptyValue();
     }
