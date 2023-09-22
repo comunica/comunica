@@ -1,4 +1,4 @@
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -12,7 +12,7 @@ import type { ITimeZoneRepresentation } from '../util/DateTimeHelpers';
 import { extractTimeZone } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import type { SuperTypeCallback, TypeCache } from '../util/TypeHandling';
-import type { ICompleteContext } from './evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { ICompleteEEContext } from './evaluatorHelpers/AsyncRecursiveEvaluator';
 import { AsyncRecursiveEvaluator } from './evaluatorHelpers/AsyncRecursiveEvaluator';
 import type { ExpressionEvaluatorFactory } from './ExpressionEvaluatorFactory';
 
@@ -34,13 +34,13 @@ export interface IAsyncEvaluatorContext {
   actionContext: IActionContext;
 }
 
-export class ExpressionEvaluator {
+export class ExpressionEvaluator implements IExpressionEvaluator {
   private readonly transformer: AlgebraTransformer;
   public readonly evaluator: AsyncRecursiveEvaluator;
-  public readonly context: ICompleteContext;
+  public readonly context: ICompleteEEContext;
   public readonly expr: E.Expression;
 
-  public static completeContext(context: IAsyncEvaluatorContext): ICompleteContext {
+  public static completeContext(context: IAsyncEvaluatorContext): ICompleteEEContext {
     const now = context.now || new Date(Date.now());
     return {
       now,

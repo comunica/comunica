@@ -1,9 +1,9 @@
-import type { IAggregator, MediatorExpressionEvaluatorAggregate } from '@comunica/bus-expression-evaluator-aggregate';
+import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 
@@ -15,12 +15,12 @@ import { ExpressionEvaluator } from './ExpressionEvaluator';
  */
 let bnodeCounter = 0;
 
-export class ExpressionEvaluatorFactory {
-  public readonly mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
+export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
+  public readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
 
   public constructor(args: IExpressionEvaluatorFactoryArgs) {
-    this.mediatorExpressionEvaluatorAggregate = args.mediatorExpressionEvaluatorAggregate;
+    this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
   }
 
@@ -34,8 +34,8 @@ export class ExpressionEvaluatorFactory {
     }, this);
   }
 
-  public async createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext): Promise<IAggregator> {
-    return (await this.mediatorExpressionEvaluatorAggregate.mediate({
+  public async createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext): Promise<IBindingAggregator> {
+    return (await this.mediatorBindingsAggregatorFactory.mediate({
       expr: algExpr,
       factory: this,
       context,
@@ -44,6 +44,6 @@ export class ExpressionEvaluatorFactory {
 }
 
 interface IExpressionEvaluatorFactoryArgs {
-  mediatorExpressionEvaluatorAggregate: MediatorExpressionEvaluatorAggregate;
+  mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   mediatorQueryOperation: MediatorQueryOperation;
 }

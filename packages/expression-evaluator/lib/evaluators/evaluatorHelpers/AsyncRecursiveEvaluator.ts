@@ -13,7 +13,7 @@ import * as Err from '../../util/Errors';
 import type { ISuperTypeProvider } from '../../util/TypeHandling';
 import type { AsyncExtensionFunctionCreator, ExpressionEvaluator } from '../ExpressionEvaluator';
 
-export interface ICompleteContext {
+export interface ICompleteEEContext {
   exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
   bnode?: (input?: string) => Promise<RDF.BlankNode>;
@@ -44,7 +44,7 @@ export class AsyncRecursiveEvaluator {
       [E.ExpressionType.AsyncExtension]: this.evalAsyncExtension.bind(this),
     };
 
-  public constructor(private readonly context: ICompleteContext,
+  public constructor(private readonly context: ICompleteEEContext,
     private readonly expressionEvaluator: ExpressionEvaluator, termTransformer?: ITermTransformer) {
     this.termTransformer = termTransformer || new TermTransformer(context.superTypeProvider);
   }
