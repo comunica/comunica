@@ -1,8 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IAggregator } from '@comunica/bus-expression-evaluator-aggregate';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import type { Bindings, IActionContext } from '@comunica/types';
+import type { Bindings, IActionContext, IBindingAggregator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -22,7 +21,7 @@ export type BindingsHash = string;
  */
 export interface IGroup {
   bindings: Bindings;
-  aggregators: Record<string, IAggregator>;
+  aggregators: Record<string, IBindingAggregator>;
 }
 
 /**
@@ -83,7 +82,7 @@ export class GroupsState {
     if (!groupInitializer) {
       // Initialize state for all aggregators for new group
       groupInitializer = (async() => {
-        const aggregators: Record<string, IAggregator> = {};
+        const aggregators: Record<string, IBindingAggregator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = aggregate.variable.value;
           aggregators[key] = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);

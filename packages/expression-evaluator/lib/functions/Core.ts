@@ -1,5 +1,5 @@
 import type * as RDF from '@rdfjs/types';
-import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { ICompleteEEContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
 import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
@@ -7,7 +7,7 @@ import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
 import type { FunctionArgumentsCache, ImplementationFunction, OverloadTree } from './OverloadTree';
 
-export interface IEvalSharedContext extends ICompleteContext{
+export interface IEvalSharedContext extends ICompleteEEContext{
   args: E.Expression[];
   mapping: RDF.Bindings;
 }

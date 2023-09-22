@@ -12,3 +12,4 @@ export * from './IQueryContext';
 export * from './IQueryEngine';
 export * from './IQueryOperationResult';
 export * from './Logger';
+export * from './ExpressionEvaluator';

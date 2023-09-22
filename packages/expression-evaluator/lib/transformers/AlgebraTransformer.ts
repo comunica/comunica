@@ -1,5 +1,5 @@
 import { Algebra as Alg } from 'sparqlalgebrajs';
-import type { ICompleteContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { ICompleteEEContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
 import type {
   AsyncExtensionFunction,
   AsyncExtensionFunctionCreator,
@@ -18,7 +18,7 @@ interface IFunctionCreatorConfig {
   creator: AsyncExtensionFunctionCreator;
 }
 
-type AlgebraTransformConfig = ICompleteContext & IFunctionCreatorConfig;
+type AlgebraTransformConfig = ICompleteEEContext & IFunctionCreatorConfig;
 
 export interface IAlgebraTransformer extends ITermTransformer{
   transformAlgebra: (expr: Alg.Expression) => E.Expression;

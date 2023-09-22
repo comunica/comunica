@@ -1,4 +1,4 @@
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IExpressionEvaluator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -8,14 +8,13 @@ import { TypeAlias } from '../util/Consts';
 import { EmptyAggregateError } from '../util/Errors';
 import { isSubTypeOf } from '../util/TypeHandling';
 import type { ExpressionEvaluator } from './ExpressionEvaluator';
-import type { ExpressionEvaluatorFactory } from './ExpressionEvaluatorFactory';
 
 /**
  * Abstract aggregator actor. This is the base class for all aggregator actors.
  * Only the wildcard count aggregator significantly differs from the others.
  */
 export abstract class AggregateEvaluator {
-  protected readonly evaluator: ExpressionEvaluator;
+  protected readonly evaluator: IExpressionEvaluator;
   private readonly throwError: boolean;
   private errorOccurred = false;
 
@@ -23,7 +22,7 @@ export abstract class AggregateEvaluator {
   protected readonly variableValues: Set<string>;
 
   protected constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: ExpressionEvaluatorFactory, context: IActionContext,
+    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
     throwError?: boolean) {
     this.evaluator = expressionEvaluatorFactory.createEvaluator(aggregateExpression.expression, context);
     this.throwError = throwError || false;
@@ -102,10 +101,11 @@ export abstract class AggregateEvaluator {
     if (term.termType !== 'Literal') {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
-      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, this.evaluator.context.superTypeProvider)
+      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, (<ExpressionEvaluator> this.evaluator).context.superTypeProvider)
     ) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
-    return <E.NumericLiteral> new TermTransformer(this.evaluator.context.superTypeProvider).transformLiteral(term);
+    return <E.NumericLiteral> new TermTransformer((
+      <ExpressionEvaluator> this.evaluator).context.superTypeProvider).transformLiteral(term);
   }
 }
