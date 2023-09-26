@@ -1,1 +1,1 @@
-export * from './ActorExpressionEvaluatorAggregateSample';
+export * from './ActorBindingsAggregatorFactorySample';

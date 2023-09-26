@@ -1,1 +1,1 @@
-export * from './ActorExpressionEvaluatorAggregateGroupConcat';
+export * from './ActorBindingsAggregatorFactoryGroupConcat';

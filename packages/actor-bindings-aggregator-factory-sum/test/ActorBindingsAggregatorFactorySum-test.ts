@@ -2,12 +2,10 @@ import { ActionContext, Bus } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import type { IExpressionEvaluatorFactory } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
-import { Wildcard } from 'sparqljs';
-import { ActorBindingsAggregatorFactoryCount } from '../lib';
+import { ActorBindingsAggregatorFactorySum } from '../lib';
 import { BF, DF, makeAggregate } from './util';
 
-describe('ActorExpressionEvaluatorAggregateCount', () => {
+describe('ActorBindingsAggregatorFactorySum', () => {
   let bus: any;
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
 
@@ -33,54 +31,35 @@ describe('ActorExpressionEvaluatorAggregateCount', () => {
     });
   });
 
-  describe('An ActorBindingsAggregatorFactoryCount instance', () => {
-    let actor: ActorBindingsAggregatorFactoryCount;
+  describe('An ActorBindingsAggregatorFactoryMax instance', () => {
+    let actor: ActorBindingsAggregatorFactorySum;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryCount({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactorySum({ name: 'actor', bus });
     });
 
     describe('test', () => {
-      it('accepts count 1', () => {
-        return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
-          expr: makeAggregate('count', false),
-        })).resolves.toEqual({});
-      });
-
-      it('accepts count 2', () => {
-        return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
-          expr: makeAggregate('count', true),
-        })).resolves.toEqual({});
-      });
-
-      it('rejects wildcard', () => {
-        return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
-          expr: {
-            type: Algebra.types.EXPRESSION,
-            expressionType: Algebra.expressionTypes.AGGREGATE,
-            aggregator: 'count',
-            distinct: false,
-            separator: '',
-            expression: {
-              type: Algebra.types.EXPRESSION,
-              expressionType: Algebra.expressionTypes.WILDCARD,
-              wildcard: new Wildcard(),
-            },
-          },
-        })).rejects.toThrow();
-      });
-
-      it('rejects sum', () => {
+      it('accepts sum 1', () => {
         return expect(actor.test({
           factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('sum', false),
+        })).resolves.toEqual({});
+      });
+
+      it('accepts sum 2', () => {
+        return expect(actor.test({
+          factory: expressionEvaluatorFactory,
+          context: new ActionContext(),
+          expr: makeAggregate('sum', true),
+        })).resolves.toEqual({});
+      });
+
+      it('rejects count', () => {
+        return expect(actor.test({
+          factory: expressionEvaluatorFactory,
+          context: new ActionContext(),
+          expr: makeAggregate('count', false),
         })).rejects.toThrow();
       });
     });
@@ -89,7 +68,7 @@ describe('ActorExpressionEvaluatorAggregateCount', () => {
       return expect(actor.run({
         factory: expressionEvaluatorFactory,
         context: new ActionContext(),
-        expr: makeAggregate('count', false),
+        expr: makeAggregate('sum', false),
       })).resolves.toMatchObject({
         aggregator: expect.anything(),
       });

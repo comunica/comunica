@@ -9,7 +9,7 @@ import { SumAggregator } from './SumAggregator';
 /**
  * A comunica Sum Expression Evaluator Aggregate Actor.
  */
-export class ActorExpressionEvaluatorAggregateSum extends ActorBindingsAggregatorFactory {
+export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFactory {
   public constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
   }

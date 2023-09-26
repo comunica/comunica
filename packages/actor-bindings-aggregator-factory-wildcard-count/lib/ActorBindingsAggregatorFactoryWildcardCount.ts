@@ -9,7 +9,7 @@ import { WildcardCountAggregator } from './WildcardCountAggregator';
 /**
  * A comunica Wildcard Count Expression Evaluator Aggregate Actor.
  */
-export class ActorExpressionEvaluatorAggregateWildcardCount extends ActorBindingsAggregatorFactory {
+export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAggregatorFactory {
   public constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
   }

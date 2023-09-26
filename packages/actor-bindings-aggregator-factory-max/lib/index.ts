@@ -1,1 +1,1 @@
-export * from './ActorExpressionEvaluatorAggregateMax';
+export * from './ActorBindingsAggregatorFactoryMax';

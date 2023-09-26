@@ -7,26 +7,27 @@ import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IActorTest } from '@comunica/core';
-import { MaxAggregator } from './MaxAggregator';
+import { GroupConcatAggregator } from './GroupConcatAggregator';
 
 /**
- * A comunica Max Expression Evaluator Aggregate Actor.
+ * A comunica Group Concat Expression Evaluator Aggregate Actor.
  */
-export class ActorExpressionEvaluatorAggregateMax extends ActorBindingsAggregatorFactory {
+export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggregatorFactory {
   public constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
-    if (action.expr.aggregator !== 'max') {
-      throw new Error('This actor only supports the \'max\' aggregator.');
+    if (action.expr.aggregator !== 'group_concat') {
+      throw new Error('This actor only supports the \'group_concat\' aggregator.');
     }
     return {};
   }
 
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new MaxAggregator(action.expr, action.factory, action.context),
+      aggregator: new GroupConcatAggregator(action.expr, action.factory, action.context),
     };
   }
 }
+
