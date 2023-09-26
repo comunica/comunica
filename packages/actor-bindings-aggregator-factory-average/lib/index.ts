@@ -1,1 +1,1 @@
-export * from './ActorExpressionEvaluatorAggregateAverage';
+export * from './ActorBindingsAggregatorFactoryAverage';

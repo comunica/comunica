@@ -44,12 +44,10 @@ export abstract class AggregateEvaluator {
    * set (unless explicitly mentioned otherwise like COUNT).
    * However, aggregate error handling says to not bind the result in case of an
    * error. So to simplify logic in the caller, we return undefined by default.
-   *
-   * @param throwError whether this function should respect the spec and throw an error if no empty value is defined
    */
-  public emptyValue(throwError = false): RDF.Term | undefined {
+  public emptyValue(): RDF.Term | undefined {
     const val = this.emptyValueTerm();
-    if (val === undefined && throwError) {
+    if (val === undefined && this.throwError) {
       throw new EmptyAggregateError();
     }
     return val;

@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:expression-evaluator-aggregate/actors#sum",
-      "@type": "ActorExpressionEvaluatorAggregateSum"
+      "@type": "ActorBindingsAggregatorFactorySum"
     }
   ]
 }

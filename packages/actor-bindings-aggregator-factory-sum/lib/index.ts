@@ -1,1 +1,1 @@
-export * from './ActorExpressionEvaluatorAggregateSum';
+export * from './ActorBindingsAggregatorFactorySum';

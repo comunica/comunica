@@ -9,7 +9,7 @@ import { AverageAggregator } from './AverageAggregator';
 /**
  * A comunica Average Expression Evaluator Aggregate Actor.
  */
-export class ActorExpressionEvaluatorAggregateAverage extends ActorBindingsAggregatorFactory {
+export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregatorFactory {
   public constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
   }

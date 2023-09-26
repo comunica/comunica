@@ -1,1 +1,1 @@
-export * from './ActorExpressionEvaluatorAggregateMin';
+export * from './ActorBindingsAggregatorFactoryMin';

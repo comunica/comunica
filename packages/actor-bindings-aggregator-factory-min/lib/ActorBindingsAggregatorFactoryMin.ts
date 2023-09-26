@@ -7,26 +7,26 @@ import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IActorTest } from '@comunica/core';
-import { SampleAggregator } from './SampleAggregator';
+import { MinAggregator } from './MinAggregator';
 
 /**
- * A comunica Sample Expression Evaluator Aggregate Actor.
+ * A comunica Min Expression Evaluator Aggregate Actor.
  */
-export class ActorExpressionEvaluatorAggregateSample extends ActorBindingsAggregatorFactory {
+export class ActorBindingsAggregatorFactoryMin extends ActorBindingsAggregatorFactory {
   public constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
-    if (action.expr.aggregator !== 'sample') {
-      throw new Error('This actor only supports the \'sample\' aggregator.');
+    if (action.expr.aggregator !== 'min') {
+      throw new Error('This actor only supports the \'min\' aggregator.');
     }
     return {};
   }
 
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new SampleAggregator(action.expr, action.factory, action.context),
+      aggregator: new MinAggregator(action.expr, action.factory, action.context),
     };
   }
 }

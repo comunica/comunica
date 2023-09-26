@@ -7,26 +7,26 @@ import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IActorTest } from '@comunica/core';
-import { GroupConcatAggregator } from './GroupConcatAggregator';
+import { SampleAggregator } from './SampleAggregator';
 
 /**
- * A comunica Group Concat Expression Evaluator Aggregate Actor.
+ * A comunica Sample Expression Evaluator Aggregate Actor.
  */
-export class ActorExpressionEvaluatorAggregateGroupConcat extends ActorBindingsAggregatorFactory {
+export class ActorBindingsAggregatorFactorySample extends ActorBindingsAggregatorFactory {
   public constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
-    if (action.expr.aggregator !== 'group_concat') {
-      throw new Error('This actor only supports the \'group_concat\' aggregator.');
+    if (action.expr.aggregator !== 'sample') {
+      throw new Error('This actor only supports the \'sample\' aggregator.');
     }
     return {};
   }
 
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new GroupConcatAggregator(action.expr, action.factory, action.context),
+      aggregator: new SampleAggregator(action.expr, action.factory, action.context),
     };
   }
 }

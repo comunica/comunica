@@ -9,7 +9,7 @@ export class WildcardCountAggregator extends AggregateEvaluator implements IBind
   // Key: string representation of a ',' separated list of terms.
   // Valyue: string representation of a ',' separated list of variables sorted by name.
   private readonly bindingValues: Map<string, Set<string>> = new Map();
-  private counter = 0;
+  private state = 0;
 
   public constructor(aggregateExpression: Algebra.AggregateExpression,
     expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
@@ -23,7 +23,7 @@ export class WildcardCountAggregator extends AggregateEvaluator implements IBind
 
   public async putBindings(bindings: RDF.Bindings): Promise<void> {
     if (!this.handleDistinct(bindings)) {
-      this.counter += 1;
+      this.state += 1;
     }
   }
 
@@ -31,8 +31,11 @@ export class WildcardCountAggregator extends AggregateEvaluator implements IBind
     return integer(0).toRDF();
   }
 
-  public termResult(): RDF.Term {
-    return integer(this.counter).toRDF();
+  public termResult(): RDF.Term | undefined {
+    if (this.state === undefined) {
+      return this.emptyValue();
+    }
+    return integer(this.state).toRDF();
   }
 
   /**
