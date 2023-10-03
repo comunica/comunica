@@ -1,10 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
-import { SyncEvaluator } from '../../../lib/evaluators/SyncEvaluator';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
 import { generalEvaluate } from '../../util/generalEvaluation';
+import { getMockEEActionContext, getMockEEFactory } from '../../util/utils';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -29,7 +29,7 @@ describe('evaluation of \'bound\'', () => {
   });
 
   it('\'bound\' on term returns error', async() => {
-    const evaluator = new SyncEvaluator({
+    const evaluator = getMockEEFactory().createEvaluator({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'bound',
@@ -38,7 +38,7 @@ describe('evaluation of \'bound\'', () => {
         expressionType: expressionTypes.TERM,
         term: DF.namedNode('http://example.com'),
       }],
-    });
-    expect(() => evaluator.evaluate(BF.bindings())).toThrow(Err.InvalidArgumentTypes);
+    }, getMockEEActionContext());
+    await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
   });
 });

@@ -1,11 +1,10 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import type { IExpressionEvaluatorFactory } from '@comunica/types';
-import { ArrayIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
 import { ActorBindingsAggregatorFactoryCount } from '../lib';
-import { BF, DF, makeAggregate } from './util';
+import { makeAggregate } from './util';
 
 describe('ActorExpressionEvaluatorAggregateCount', () => {
   let bus: any;
@@ -15,16 +14,7 @@ describe('ActorExpressionEvaluatorAggregateCount', () => {
     bus = new Bus({ name: 'bus' });
 
     const mediatorQueryOperation: any = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('x') ]}),
-        operated: arg,
-        type: 'bindings',
-      }),
+      async mediate(arg: any) { return {}; },
     };
 
     expressionEvaluatorFactory = new ExpressionEvaluatorFactory({

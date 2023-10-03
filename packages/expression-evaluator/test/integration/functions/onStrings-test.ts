@@ -24,15 +24,12 @@ describe('string functions', () => {
     });
     runTestTable({
       ...baseConfig,
-      config: {
-        type: 'sync',
-        config: {
-          getSuperType(unknownType) {
-            if (unknownType.includes('specialString')) {
-              return 'https://example.org/string';
-            }
-            return TypeURL.XSD_STRING;
-          },
+      legacyContext: {
+        getSuperType(unknownType) {
+          if (unknownType.includes('specialString')) {
+            return 'https://example.org/string';
+          }
+          return TypeURL.XSD_STRING;
         },
       },
       testTable: `
@@ -171,11 +168,8 @@ describe('string functions', () => {
       arity: 'vary',
       operation: 'substr',
       notation: Notation.Function,
-      config: {
-        type: 'sync',
-        config: {
-          getSuperType: unknownType => TypeURL.XSD_STRING,
-        },
+      legacyContext: {
+        getSuperType: unknownType => TypeURL.XSD_STRING,
       },
       testTable: `
       "bar" 1 1 = "b"

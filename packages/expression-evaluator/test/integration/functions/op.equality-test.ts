@@ -40,18 +40,18 @@ describe('evaluation of \'=\'', () => {
          3f   NaN = false
       `,
     });
-    runTestTable({
-      ...config,
-      config: {
-        type: 'sync',
-        config: {
+
+    describe('with numeric and type discovery like', () => {
+      runTestTable({
+        ...config,
+        legacyContext: {
           getSuperType: unknownType => TypeURL.XSD_INTEGER,
         },
-      },
-      testTable: `         
+        testTable: `
          "2"^^example:int "2"^^example:int = true
          "2"^^example:int "3"^^example:int = false
       `,
+      });
     });
   });
 
