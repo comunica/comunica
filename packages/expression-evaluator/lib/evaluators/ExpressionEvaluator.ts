@@ -154,13 +154,11 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
     return this.comparePrimitives(termA.value, termB.value);
   }
 
-  private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal, context: IAsyncEvaluatorContext): -1 | 0 | 1 {
+  private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal, context: ICompleteEEContext): -1 | 0 | 1 {
     const isGreater = regularFunctions[C.RegularOperator.GT];
     const isEqual = regularFunctions[C.RegularOperator.EQUAL];
 
-    const completeContext = ExpressionEvaluator.completeContext(context);
-
-    const termTransformer = new TermTransformer(completeContext.superTypeProvider);
+    const termTransformer = new TermTransformer(context.superTypeProvider);
     const myLitA = termTransformer.transformLiteral(litA);
     const myLitB = termTransformer.transformLiteral(litB);
 

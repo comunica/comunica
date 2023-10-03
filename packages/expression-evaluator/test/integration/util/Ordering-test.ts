@@ -1,9 +1,9 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
-import { orderTypes } from '../../../lib';
 import { TypeURL, TypeURL as DT } from '../../../lib/util/Consts';
 import type { SuperTypeCallback } from '../../../lib/util/TypeHandling';
+import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '../../util/utils';
 
 const DF = new DataFactory();
 
@@ -33,8 +33,12 @@ function dateTime(value: string): RDF.Literal {
 
 function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
   typeDiscoveryCallback?: SuperTypeCallback) {
-  expect(orderTypes(litA, litB, false, typeDiscoveryCallback)).toEqual(-1);
-  expect(orderTypes(litB, litA, false, typeDiscoveryCallback)).toEqual(1);
+  const evaluator = getMockEEFactory()
+    .createEvaluator(getMockExpression('1+1'), getMockEEActionContext(), {
+      getSuperType: typeDiscoveryCallback,
+    });
+  expect(evaluator.orderTypes(litA, litB, false)).toEqual(-1);
+  expect(evaluator.orderTypes(litB, litA, false)).toEqual(1);
 }
 
 function genericOrderTestLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
@@ -43,8 +47,10 @@ function genericOrderTestLower(litA: RDF.Term | undefined, litB: RDF.Term | unde
 }
 
 function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined) {
-  expect(orderTypes(litA, litB)).toEqual(0);
-  expect(orderTypes(litB, litA)).toEqual(0);
+  const evaluator = getMockEEFactory()
+    .createEvaluator(getMockExpression('1+1'), getMockEEActionContext());
+  expect(evaluator.orderTypes(litA, litB)).toEqual(0);
+  expect(evaluator.orderTypes(litB, litA)).toEqual(0);
 }
 
 describe('terms order', () => {

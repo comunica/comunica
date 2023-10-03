@@ -5,6 +5,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
+import type { IAsyncEvaluatorContext } from './ExpressionEvaluator';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 
 /**
@@ -24,17 +25,21 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     this.mediatorQueryOperation = args.mediatorQueryOperation;
   }
 
-  public createEvaluator(algExpr: Alg.Expression, context: IActionContext): ExpressionEvaluator {
+  // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
+  public createEvaluator(algExpr: Alg.Expression, context: IActionContext,
+    legacyContext: Partial<IAsyncEvaluatorContext> = {}): ExpressionEvaluator {
     return new ExpressionEvaluator(algExpr, {
       now: context.get(KeysInitQuery.queryTimestamp),
       baseIRI: context.get(KeysInitQuery.baseIRI),
       actionContext: context,
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
       exists: ActorQueryOperation.createExistenceResolver(context, this.mediatorQueryOperation),
+      ...legacyContext,
     }, this);
   }
 
-  public async createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext): Promise<IBindingAggregator> {
+  public async createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext):
+  Promise<IBindingAggregator> {
     return (await this.mediatorBindingsAggregatorFactory.mediate({
       expr: algExpr,
       factory: this,

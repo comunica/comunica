@@ -117,15 +117,13 @@ export class Quad extends Term {
 
 export class DefaultGraph extends Term {
   public termType: TermType = 'defaultGraph';
-  private readonly valueTerm: RDF.DefaultGraph;
 
-  public constructor(input: RDF.DefaultGraph) {
+  public constructor() {
     super();
-    this.valueTerm = input;
   }
 
   public toRDF(): RDF.DefaultGraph {
-    return this.valueTerm;
+    return DF.defaultGraph();
   }
 }
 

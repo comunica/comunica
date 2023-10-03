@@ -83,7 +83,7 @@ describe('TermTransformer', () => {
     });
 
     it('default graph', () => {
-      expect(() => termTransformer.transformRDFTermUnsafe(DF.defaultGraph())).toThrow(Err.InvalidTermType);
+      expect(termTransformer.transformRDFTermUnsafe(DF.defaultGraph())).toEqual(new E.DefaultGraph());
     });
 
     it('null', () => {

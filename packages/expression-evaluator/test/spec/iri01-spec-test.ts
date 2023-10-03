@@ -1,10 +1,12 @@
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import { Notation } from '../util/TestTable';
 import type { ITestTableConfigBase } from '../util/utils';
 import { runTestTable } from '../util/utils';
 
 describe('We should respect the iri01 spec', () => {
   const config: ITestTableConfigBase = {
-    config: { type: 'sync', config: { baseIRI: 'http://example.org' }},
+    config: new ActionContext().set(KeysInitQuery.baseIRI, 'http://example.org'),
     arity: 1,
     operation: '',
     notation: Notation.Function,
