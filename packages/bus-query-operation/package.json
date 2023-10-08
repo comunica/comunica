@@ -34,7 +34,6 @@
     "@comunica/bindings-factory": "^2.7.0",
     "@comunica/context-entries": "^2.8.2",
     "@comunica/core": "^2.8.2",
-    "@comunica/data-factory": "^2.7.0",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",
