@@ -100,10 +100,6 @@ export class AsyncRecursiveEvaluator {
   }
 
   private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {
-    if (!this.context.exists) {
-      throw new Err.NoExistenceHook();
-    }
-
     return new E.BooleanLiteral(await this.context.exists(expr.expression, mapping));
   }
 

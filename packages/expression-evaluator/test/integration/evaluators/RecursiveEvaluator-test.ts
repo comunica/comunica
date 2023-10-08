@@ -26,8 +26,8 @@ describe('recursive evaluators', () => {
       expect(await evaluator.evaluate(new E.IntegerLiteral(1), BF.bindings())).toEqual(new E.IntegerLiteral(1));
     });
 
-    it('is not able to evaluate existence by default', async() => {
-      await expect(evaluator.evaluate(new E.Existence({
+    it('is able to evaluate existence by default', async() => {
+      expect(await evaluator.evaluate(new E.Existence({
         type: types.EXPRESSION,
         expressionType: expressionTypes.EXISTENCE,
         not: false,
@@ -36,17 +36,23 @@ describe('recursive evaluators', () => {
           variables: [],
           bindings: [],
         },
-      }), BF.bindings())).rejects.toThrow(Err.NoExistenceHook);
+      }), BF.bindings())).toEqual(new E.BooleanLiteral(false));
     });
 
     it('is able to evaluate existence if configured', async() => {
-      const customEvaluator = new AsyncRecursiveEvaluator(
-        getDefaultCompleteEEContext(getMockEEActionContext()),
-        getMockEEFactory().createEvaluator(translate('SELECT * WHERE { ?s ?p ?o FILTER (1 + 1)}').input.expression,
-          getMockEEActionContext()),
+      const customEvaluator = getMockEEFactory().createEvaluator(
+        translate('SELECT * WHERE { ?s ?p ?o FILTER (1 + 1)}').input.expression,
+        getMockEEActionContext(),
+        {
+          exists: async() => true,
+        },
+      );
+      const customAsyncRecursiveEvaluator = new AsyncRecursiveEvaluator(
+        customEvaluator.context,
+        customEvaluator,
       );
 
-      expect(await customEvaluator.evaluate(new E.Existence({
+      expect(await customAsyncRecursiveEvaluator.evaluate(new E.Existence({
         type: types.EXPRESSION,
         expressionType: expressionTypes.EXISTENCE,
         not: false,
@@ -73,13 +79,19 @@ describe('recursive evaluators', () => {
     });
 
     it('is able to evaluate aggregates if configured', async() => {
-      const customEvaluator = new AsyncRecursiveEvaluator(
-        getDefaultCompleteEEContext(getMockEEActionContext()),
-        getMockEEFactory().createEvaluator(translate('SELECT * WHERE { ?s ?p ?o FILTER (1 + 1)}').input.expression,
-          getMockEEActionContext()),
+      const customEvaluator = getMockEEFactory().createEvaluator(
+        translate('SELECT * WHERE { ?s ?p ?o FILTER (1 + 1)}').input.expression,
+        getMockEEActionContext(),
+        {
+          aggregate: async() => DF.literal('42'),
+        },
+      );
+      const customAsyncRecursiveEvaluator = new AsyncRecursiveEvaluator(
+        customEvaluator.context,
+        customEvaluator,
       );
 
-      expect(await customEvaluator.evaluate(new E.Aggregate('count', {
+      expect(await customAsyncRecursiveEvaluator.evaluate(new E.Aggregate('count', {
         type: types.EXPRESSION,
         expressionType: expressionTypes.AGGREGATE,
         aggregator: 'count',

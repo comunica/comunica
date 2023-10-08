@@ -3,7 +3,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { isExpressionError } from '@comunica/expression-evaluator';
+import { ExpressionEvaluatorFactory, isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -85,9 +85,23 @@ describe('ActorQueryOperationFilterSparqlee', () => {
   describe('An ActorQueryOperationFilterSparqlee instance', () => {
     let actor: ActorQueryOperationFilterSparqlee;
     let factory: Factory;
+    let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationFilterSparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+        mediatorQueryOperation,
+        mediatorBindingsAggregatorFactory: <any> {
+          mediate(arg: any) {
+            throw new Error('Not implemented');
+          },
+        },
+      });
+      actor = new ActorQueryOperationFilterSparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       factory = new Factory();
     });
 

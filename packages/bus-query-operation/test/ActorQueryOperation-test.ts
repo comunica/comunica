@@ -1,7 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
-import { ArrayIterator } from 'asynciterator';
 import { ActorQueryOperation } from '..';
 
 const BF = new BindingsFactory();
@@ -87,22 +86,6 @@ describe('ActorQueryOperation', () => {
 
     it('should error for non-boolean', () => {
       expect(() => ActorQueryOperation.validateQueryOutput(<any>{ type: 'no-boolean' }, 'boolean')).toThrow();
-    });
-  });
-
-  describe('#getAsyncExpressionContext', () => {
-    let mediatorQueryOperation: any;
-
-    beforeEach(() => {
-      mediatorQueryOperation = {
-        mediate: (arg: any) => Promise.resolve({
-          bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0 }),
-          operated: arg,
-          type: 'bindings',
-          variables: [ 'a' ],
-        }),
-      };
     });
   });
 });

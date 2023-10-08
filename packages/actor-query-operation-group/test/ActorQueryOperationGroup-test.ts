@@ -11,6 +11,22 @@ import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib';
 import { GroupsState } from '../lib/GroupsState';
 import '@comunica/jest';
+import type {
+  IActionBindingsAggregatorFactory,
+  IActorBindingsAggregatorFactoryOutput,
+} from '@comunica/bus-bindings-aggeregator-factory';
+import {
+  WildcardCountAggregator,
+} from '@comunica/actor-bindings-aggregator-factory-wildcard-count/lib/WildcardCountAggregator';
+import { CountAggregator } from '@comunica/actor-bindings-aggregator-factory-count/lib/CountAggregator';
+import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum/lib/SumAggregator';
+import { AverageAggregator } from '@comunica/actor-bindings-aggregator-factory-average/lib/AverageAggregator';
+import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min/lib/MinAggregator';
+import { MaxAggregator } from '@comunica/actor-bindings-aggregator-factory-max/lib/MaxAggregator';
+import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample/lib/SampleAggregator';
+import {
+  GroupConcatAggregator,
+} from '@comunica/actor-bindings-aggregator-factory-group-concat/lib/GroupConcatAggregator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -89,6 +105,45 @@ interface ICaseOutput {
   actor: ActorQueryOperationGroup; bus: any; mediatorQueryOperation: any; op: IActionQueryOperation;
 }
 
+function aggregatorFactory({ expr, factory, context }: IActionBindingsAggregatorFactory):
+IActorBindingsAggregatorFactoryOutput {
+  if (expr.aggregator === 'count') {
+    if (expr.expression.wildcard) {
+      return {
+        aggregator: new WildcardCountAggregator(expr, factory, context),
+      };
+    }
+    return {
+      aggregator: new CountAggregator(expr, factory, context),
+    };
+  } if (expr.aggregator === 'sum') {
+    return {
+      aggregator: new SumAggregator(expr, factory, context),
+    };
+  } if (expr.aggregator === 'avg') {
+    return {
+      aggregator: new AverageAggregator(expr, factory, context),
+    };
+  } if (expr.aggregator === 'min') {
+    return {
+      aggregator: new MinAggregator(expr, factory, context),
+    };
+  } if (expr.aggregator === 'max') {
+    return {
+      aggregator: new MaxAggregator(expr, factory, context),
+    };
+  } if (expr.aggregator === 'sample') {
+    return {
+      aggregator: new SampleAggregator(expr, factory, context),
+    };
+  } if (expr.aggregator === 'group_concat') {
+    return {
+      aggregator: new GroupConcatAggregator(expr, factory, context),
+    };
+  }
+  throw new Error(`Unsupported aggregator ${expr.aggregator}`);
+}
+
 function constructCase(
   { inputBindings, inputVariables = [], groupVariables = [], aggregates = [], inputOp }: ICaseOptions,
 ): ICaseOutput {
@@ -116,8 +171,9 @@ function constructCase(
   const expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
     mediatorQueryOperation,
     mediatorBindingsAggregatorFactory: <any> {
-      mediate(arg: any) {
-        throw new Error('Not implemented');
+      async mediate({ expr, factory, context }: IActionBindingsAggregatorFactory):
+      Promise<IActorBindingsAggregatorFactoryOutput> {
+        return aggregatorFactory({ expr, factory, context });
       },
     },
   });
@@ -166,8 +222,9 @@ describe('ActorQueryOperationGroup', () => {
     expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: <any> {
-        mediate(arg: any) {
-          throw new Error('Not implemented');
+        async mediate({ expr, factory, context }: IActionBindingsAggregatorFactory):
+        Promise<IActorBindingsAggregatorFactoryOutput> {
+          return aggregatorFactory({ expr, factory, context });
         },
       },
     });
