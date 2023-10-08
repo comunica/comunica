@@ -5,5 +5,5 @@
   "@id": "urn:comunica:default:expression-evaluator/evaluators#main",
   "@type": "ExpressionEvaluatorFactory",
   "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-  "mediatorExpressionEvaluatorAggregate": { "@id": "urn:comunica:default:expression-evaluator/mediators#main" }
+  "mediatorBindingsAggregatorFactory": { "@id": "urn:comunica:default:expression-evaluator/mediators#main" }
 }

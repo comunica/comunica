@@ -14,9 +14,9 @@ import type { ISuperTypeProvider } from '../../util/TypeHandling';
 import type { AsyncExtensionFunctionCreator, ExpressionEvaluator } from '../ExpressionEvaluator';
 
 export interface ICompleteEEContext {
-  exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
+  exists: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
-  bnode?: (input?: string) => Promise<RDF.BlankNode>;
+  bnode: (input?: string) => Promise<RDF.BlankNode>;
   extensionFunctionCreator?: AsyncExtensionFunctionCreator;
   now: Date;
   baseIRI?: string;
@@ -79,16 +79,9 @@ export class AsyncRecursiveEvaluator {
     const context: EvalContextAsync = {
       args: expr.args,
       mapping,
-
-      superTypeProvider: this.context.superTypeProvider,
-      now: this.context.now,
-      baseIRI: this.context.baseIRI,
-      functionArgumentsCache: this.context.functionArgumentsCache,
-
       evaluate: this.expressionEvaluator,
-      bnode: this.context.bnode,
-      defaultTimeZone: this.context.defaultTimeZone,
-      actionContext: this.context.actionContext,
+
+      ...this.context,
     };
     return expr.applyAsync(context);
   }

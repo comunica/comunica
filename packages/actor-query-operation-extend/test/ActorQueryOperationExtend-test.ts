@@ -2,13 +2,14 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
+import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import '@comunica/jest';
 
-import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
+import { ActorQueryOperationExtend } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -16,6 +17,7 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   const example = (expression: any) => ({
     type: 'extend',
@@ -81,6 +83,14 @@ describe('ActorQueryOperationExtend', () => {
         type: 'bindings',
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('The ActorQueryOperationExtend module', () => {
@@ -104,7 +114,7 @@ describe('ActorQueryOperationExtend', () => {
     let actor: ActorQueryOperationExtend;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation, expressionEvaluatorFactory });
     });
 
     it('should test on extend', () => {

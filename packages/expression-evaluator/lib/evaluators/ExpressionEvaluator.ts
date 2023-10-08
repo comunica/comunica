@@ -21,9 +21,9 @@ export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =
 
 // TODO: make this fields of the EE
 export interface IAsyncEvaluatorContext {
-  exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
+  exists: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
-  bnode?: (input?: string) => Promise<RDF.BlankNode>;
+  bnode: (input?: string) => Promise<RDF.BlankNode>;
   extensionFunctionCreator?: AsyncExtensionFunctionCreator;
   now?: Date;
   baseIRI?: string;

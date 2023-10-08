@@ -2,12 +2,12 @@ import { IntegerLiteral, isNonLexicalLiteral, NonLexicalLiteral } from '../../..
 import * as E from '../../../lib/expressions';
 import { TypeURL } from '../../../lib/util/Consts';
 import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
-import { getDefaultSharedContext } from '../../util/utils';
+import { getDefaultCompleteEEContext } from '../../util/utils';
 
 describe('Term', () => {
   describe('has isNonLexicalLiteral function', () => {
     it('detects nonLexicalLiterals', () => {
-      const openWorldType: ISuperTypeProvider = getDefaultSharedContext().superTypeProvider;
+      const openWorldType: ISuperTypeProvider = getDefaultCompleteEEContext().superTypeProvider;
       expect(isNonLexicalLiteral(new NonLexicalLiteral(undefined, TypeURL.XSD_DECIMAL, openWorldType, '1')))
         .toBeTruthy();
     });

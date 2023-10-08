@@ -2,11 +2,12 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
+import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
-import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
+import { ActorQueryOperationOrderBySparqlee } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -14,6 +15,7 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -43,6 +45,14 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance', () => {
@@ -51,7 +61,12 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
     let descOrderA: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -117,6 +132,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
 describe('ActorQueryOperationOrderBySparqlee', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -133,6 +149,14 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('The ActorQueryOperationOrderBySparqlee module', () => {
@@ -141,9 +165,19 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should be a ActorQueryOperationOrderBySparqlee constructor', () => {
-      expect(new (<any> ActorQueryOperationOrderBySparqlee)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationOrderBySparqlee)({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      }))
         .toBeInstanceOf(<any> ActorQueryOperationOrderBySparqlee);
-      expect(new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
@@ -160,7 +194,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     let orderA1: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -213,7 +252,13 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run with a window', async() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        window: 1,
+        expressionEvaluatorFactory,
+      });
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext() };
       const output = await actor.run(op);
@@ -285,6 +330,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -310,6 +356,14 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
         variables: [ DF.variable('a'), DF.variable('b') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance multiple comparators', () => {
@@ -322,7 +376,12 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     let orderB1: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -483,6 +542,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
 describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -505,6 +565,14 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance', () => {
@@ -513,7 +581,12 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     let descOrderA: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -564,6 +637,7 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
 describe('ActorQueryOperationOrderBySparqlee with double type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -586,6 +660,14 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
         variables: [ '?a' ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance', () => {
@@ -594,7 +676,12 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     let descOrderA: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -645,6 +732,7 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
 describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -667,6 +755,14 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance', () => {
@@ -675,7 +771,12 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     let descOrderA: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -726,6 +827,7 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
 describe('ActorQueryOperationOrderBySparqlee with float type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -748,6 +850,14 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance', () => {
@@ -756,7 +866,12 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     let descOrderA: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -807,6 +922,7 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
 describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -829,6 +945,14 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance', () => {
@@ -837,7 +961,12 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
     let descOrderA: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -888,6 +1017,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
 describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -910,6 +1040,14 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
   });
 
   describe('An ActorQueryOperationOrderBySparqlee instance', () => {
@@ -918,7 +1056,12 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
     let descOrderA: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationOrderBySparqlee({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        expressionEvaluatorFactory,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,

@@ -31,6 +31,7 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     return new ExpressionEvaluator(algExpr, {
       now: context.get(KeysInitQuery.queryTimestamp),
       baseIRI: context.get(KeysInitQuery.baseIRI),
+      functionArgumentsCache: context.get(KeysInitQuery.functionArgumentsCache),
       actionContext: context,
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
       exists: ActorQueryOperation.createExistenceResolver(context, this.mediatorQueryOperation),

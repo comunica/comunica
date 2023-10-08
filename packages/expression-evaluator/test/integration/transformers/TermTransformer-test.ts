@@ -7,7 +7,7 @@ import { isNonLexicalLiteral } from '../../../lib/expressions';
 import { TermTransformer } from '../../../lib/transformers/TermTransformer';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
-import { getDefaultSharedContext } from '../../util/utils';
+import { getDefaultCompleteEEContext } from '../../util/utils';
 
 function int(value: string): RDF.Literal {
   return DF.literal(value, DF.namedNode(DT.XSD_INTEGER));
@@ -38,7 +38,7 @@ const DF = new DataFactory();
 describe('TermTransformer', () => {
   let termTransformer: TermTransformer;
   beforeEach(() => {
-    termTransformer = new TermTransformer(getDefaultSharedContext().superTypeProvider);
+    termTransformer = new TermTransformer(getDefaultCompleteEEContext().superTypeProvider);
   });
 
   function simpleLiteralCreator(value: string, dataType?: string, language?: string): RDF.Literal {

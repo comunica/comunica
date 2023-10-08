@@ -1,17 +1,23 @@
-import type { ICompleteSharedContext } from '../../../lib/evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type { Builder } from '../../../lib/functions/Helpers';
 import { bool, declare } from '../../../lib/functions/Helpers';
 import { TypeURL } from '../../../lib/util/Consts';
-import { getDefaultSharedContext } from '../../util/utils';
+import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '../../util/utils';
 import fn = jest.fn;
+import type { ExpressionEvaluator } from '../../../lib';
+import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
+import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 
 describe('The function helper file', () => {
   describe('has a builder', () => {
     let builder: Builder;
-    let sharedContext: ICompleteSharedContext;
+    let expressionEvaluator: ExpressionEvaluator;
+    let superTypeProvider: ISuperTypeProvider;
+    let functionArgumentsCache: FunctionArgumentsCache;
     beforeEach(() => {
       builder = declare('non cacheable');
-      sharedContext = getDefaultSharedContext();
+      expressionEvaluator = getMockEEFactory().createEvaluator(getMockExpression('1+1'), getMockEEActionContext());
+      superTypeProvider = expressionEvaluator.context.superTypeProvider;
+      functionArgumentsCache = expressionEvaluator.context.functionArgumentsCache;
     });
 
     it('can only be collected once', () => {
@@ -28,7 +34,7 @@ describe('The function helper file', () => {
       const func = fn();
       const args = [ bool(true) ];
       builder.onUnaryTyped(TypeURL.XSD_BOOLEAN, () => func).collect()
-        .search(args, sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)(args);
+        .search(args, superTypeProvider, functionArgumentsCache)!(expressionEvaluator)(args);
       expect(func).toBeCalledTimes(1);
     });
 
@@ -36,7 +42,7 @@ describe('The function helper file', () => {
       const func = fn();
       const args = [ bool(true) ];
       builder.onBoolean1(() => func).collect()
-        .search(args, sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)(args);
+        .search(args, superTypeProvider, functionArgumentsCache)!(expressionEvaluator)(args);
       expect(func).toBeCalledTimes(1);
     });
   });
