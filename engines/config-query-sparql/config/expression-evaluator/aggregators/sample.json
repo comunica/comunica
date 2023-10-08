@@ -9,7 +9,7 @@
   "actors": [
     {
       "@id": "urn:comunica:default:expression-evaluator/aggregators#sample",
-      "@type": "ActorExpressionEvaluatorAggregateSample"
+      "@type": "ActorBindingsAggregatorFactorySample"
     }
   ]
 }
