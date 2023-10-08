@@ -2,7 +2,7 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-expression-evaluator-aggregate-average/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-bindings-aggregator-factory-average/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",

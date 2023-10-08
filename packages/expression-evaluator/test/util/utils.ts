@@ -1,4 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { IActionContext } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -96,7 +97,7 @@ export function runTestTable(arg: TestTableConfig): void {
   testTable.test();
 }
 
-export function getDefaultSharedContext(actionContext?: IActionContext): ICompleteEEContext {
+export function getDefaultCompleteEEContext(actionContext?: IActionContext): ICompleteEEContext {
   return {
     actionContext: actionContext || getMockEEActionContext(),
     now: new Date(),
@@ -106,6 +107,8 @@ export function getDefaultSharedContext(actionContext?: IActionContext): IComple
     },
     functionArgumentsCache: {},
     defaultTimeZone: { zoneMinutes: 0, zoneHours: 0 },
+    bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_0`)),
+    exists: () => Promise.resolve(false),
   };
 }
 

@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import { ExpressionEvaluatorFactory, isExpressionError } from '@comunica/expression-evaluator';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings, Bindings, IJoinEntry } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -16,6 +16,7 @@ describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorJoin: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -31,6 +32,14 @@ describe('ActorQueryOperationLeftJoin', () => {
         type: 'bindings',
       }),
     };
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory: <any> {
+        mediate(arg: any) {
+          throw new Error('Not implemented');
+        },
+      },
+    });
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
@@ -66,7 +75,13 @@ describe('ActorQueryOperationLeftJoin', () => {
     let actor: ActorQueryOperationLeftJoin;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationLeftJoin({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin });
+      actor = new ActorQueryOperationLeftJoin({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorJoin,
+        expressionEvaluatorFactory,
+      });
     });
 
     it('should test on leftjoin', () => {
