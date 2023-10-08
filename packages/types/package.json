@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@rdfjs/types": "*",
-    "@types/yargs": "^17.0.13",
+    "@types/yargs": "^17.0.24",
     "asynciterator": "^3.8.1",
     "sparqlalgebrajs": "^4.2.0"
   },

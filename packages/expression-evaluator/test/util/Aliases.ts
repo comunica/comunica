@@ -145,6 +145,9 @@ export const bool: AliasMap = {
 
 export const error: AliasMap = {
   invalidDateTime: '"not a dateTime"^^xsd:dateTime',
+  invalidBool: '"not a boolean"^^xsd:boolean',
+  invalidInt: '"not an integer"^^xsd:integer',
+  invalidShort: '"not a short"^^xsd:short',
 };
 
 export const numeric: AliasMap = {

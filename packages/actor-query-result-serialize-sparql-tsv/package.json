@@ -36,7 +36,7 @@
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
     "rdf-string-ttl": "^1.3.2",
-    "readable-stream": "^4.2.0"
+    "readable-stream": "^4.4.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

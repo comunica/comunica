@@ -21,6 +21,9 @@ describe('evaluation of \'+\' like', () => {
       -0f -0f =  0f
       -0f -1f = -1f
       -1f -2f = -3f
+      
+      0i 1d = 1d
+      1d 0i = 1d
     
        2i -1f = 1f
     

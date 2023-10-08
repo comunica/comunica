@@ -36,7 +36,7 @@
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",
-    "readable-stream": "^4.2.0",
+    "readable-stream": "^4.4.2",
     "shaclc-parse": "^1.4.0",
     "stream-to-string": "^1.2.0"
   },

@@ -6,7 +6,7 @@ import fn = jest.fn;
 const DF = new DataFactory();
 
 describe('exists', () => {
-  it('rus with mock existence hooks and async calls but once', async() => {
+  it('runs with mock existence hooks and async calls but once', async() => {
     const hookMock = fn(() => Promise.resolve(true));
     const evaluated = await generalEvaluate({
       expression: template('EXISTS {?s ?p ?o}'),

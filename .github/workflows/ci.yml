@@ -1,5 +1,10 @@
 name: "CI"
 on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   test:
@@ -21,7 +26,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Load cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             **/node_modules
@@ -33,7 +38,7 @@ jobs:
         with:
           firefox-version: 'latest'
       - name: Install dependencies
-        run: yarn install --pure-lockfile
+        run: yarn install --frozen-lockfile
       - name: Build project
         run: yarn run build
       - name: Run depcheck
@@ -77,12 +82,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Load cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-lint-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
-        run: yarn install --pure-lockfile
+        run: yarn install --frozen-lockfile
       - name: Run linter
         run: yarn run lint
 
@@ -99,12 +104,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Load cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-browser-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
-        run: yarn install --pure-lockfile
+        run: yarn install --frozen-lockfile
       - name: Build for browser
         run: npx lerna run browser --concurrency 1
       - name: Deploy browser build
@@ -126,12 +131,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Load cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
-        run: yarn install --pure-lockfile
+        run: yarn install --frozen-lockfile
       - name: Install Lerna Docker
         run: sh -c "`curl -fsSl https://raw.githubusercontent.com/rubensworks/lerna-docker/master/install.sh`"
       - name: Build Docker images
@@ -153,12 +158,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Load cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docs-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
-        run: yarn install --pure-lockfile
+        run: yarn install --frozen-lockfile
       - name: Build docs
         run: yarn run doc
       - name: Deploy TSDoc to GitHub Pages
