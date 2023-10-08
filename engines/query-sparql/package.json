@@ -171,7 +171,6 @@
     "@comunica/actor-rdf-update-hypermedia-sparql": "^2.9.0",
     "@comunica/actor-rdf-update-quads-hypermedia": "^2.9.0",
     "@comunica/actor-rdf-update-quads-rdfjs-store": "^2.9.0",
-    "@comunica/bus-bindings-aggeregator-factory": "^1.0.0",
     "@comunica/bus-http-invalidate": "^2.8.2",
     "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/config-query-sparql": "^2.7.0",

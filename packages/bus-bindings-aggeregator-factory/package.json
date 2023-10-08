@@ -31,7 +31,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.8.2"
+    "@comunica/core": "^2.8.2",
+    "@comunica/types": "^2.8.2",
+    "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
