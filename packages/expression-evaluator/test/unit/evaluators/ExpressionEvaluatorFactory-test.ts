@@ -2,19 +2,46 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { FunctionArgumentsCache } from '@comunica/types';
+import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import type { ExpressionEvaluator } from '../../../lib';
-import { getMockEEFactory, getMockExpression } from '../../util/utils';
+import { ExpressionEvaluatorFactory } from '../../../lib';
+import { getMockExpression } from '../../util/utils';
 
 const BF = new BindingsFactory();
 
 describe('The ExpressionEvaluatorFactory', () => {
+  let mediatorQueryOperation: any;
+  let mediatorBindingsAggregatorFactory: any;
+  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+
+  beforeEach(() => {
+    mediatorQueryOperation = {
+      mediate: (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
+        metadata: () => Promise.resolve({ cardinality: 0 }),
+        operated: arg,
+        type: 'bindings',
+        variables: [ 'a' ],
+      }),
+    };
+
+    mediatorBindingsAggregatorFactory = {
+      mediate: (arg: any) => Promise.reject(new Error('Not implemented')),
+    };
+
+    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      mediatorBindingsAggregatorFactory,
+      mediatorQueryOperation,
+    });
+  });
+
   describe('creates an evaluator with good defaults', () => {
     let evaluator: ExpressionEvaluator;
 
     beforeEach(() => {
-      evaluator = getMockEEFactory().createEvaluator(getMockExpression('1+1'), new ActionContext({}));
+      evaluator = expressionEvaluatorFactory.createEvaluator(getMockExpression('1+1'), new ActionContext({}));
     });
 
     it('empty contexts save for the bnode function', () => {
@@ -56,7 +83,7 @@ describe('The ExpressionEvaluatorFactory', () => {
       [KeysInitQuery.baseIRI.name]: 'http://base.org/',
       [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
     });
-    const evaluator = getMockEEFactory().createEvaluator(getMockExpression('1+1'), actionContext);
+    const evaluator = expressionEvaluatorFactory.createEvaluator(getMockExpression('1+1'), actionContext);
     expect(evaluator.context).toMatchObject({
       now: date,
       bnode: expect.any(Function),

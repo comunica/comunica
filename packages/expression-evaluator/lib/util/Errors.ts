@@ -210,12 +210,6 @@ export class NoAggregator extends Error {
   }
 }
 
-export class NoExistenceHook extends Error {
-  public constructor() {
-    super('EXISTS found, but no existence hook provided.');
-  }
-}
-
 function pp<T>(object: T): string {
   return JSON.stringify(object);
 }
