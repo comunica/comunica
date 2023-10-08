@@ -9,7 +9,7 @@
   "actors": [
     {
       "@id": "urn:comunica:default:expression-evaluator/aggregators#count",
-      "@type": "ActorExpressionEvaluatorAggregateCount"
+      "@type": "ActorBindingsAggregatorFactoryCount"
     }
   ]
 }
