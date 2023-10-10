@@ -6,6 +6,7 @@ import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
 import { QueryEngine } from '../lib/QueryEngine';
 
+ // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
 describe('System test: QuerySparqlFile', () => {
