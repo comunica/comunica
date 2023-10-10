@@ -53,7 +53,7 @@ export function runArgsInProcess(
 ): void {
   const argv = process.argv.slice(2);
   runArgs(
-    process.env.COMUNICA_CONFIG ? `${process.cwd()}/${process.env.COMUNICA_CONFIG}` : defaultConfigPath,
+    process.env.COMUNICA_CONFIG ?? defaultConfigPath,
     argv,
     process.stdin,
     process.stdout,
