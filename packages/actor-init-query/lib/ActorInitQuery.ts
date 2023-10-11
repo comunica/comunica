@@ -39,7 +39,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
     ];
 
     // Populate yargs arguments object
-    let argumentsBuilder = yargs({});
+    let argumentsBuilder = yargs([]);
     for (const cliArgsHandler of cliArgsHandlers) {
       argumentsBuilder = cliArgsHandler.populateYargs(argumentsBuilder);
     }

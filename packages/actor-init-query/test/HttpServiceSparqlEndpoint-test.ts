@@ -1,7 +1,4 @@
-import * as clusterUntyped from 'cluster';
 import type { Cluster } from 'cluster';
-import * as EventEmitter from 'events';
-import * as querystring from 'querystring';
 import { PassThrough } from 'stream';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
@@ -18,8 +15,12 @@ import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+const clusterUntyped = require('cluster');
+const EventEmitter = require('events');
+const querystring = require('querystring');
 // Force type on Cluster, because there are issues with the Node.js typings since v18
-const cluster: Cluster = <any> clusterUntyped;
+const cluster: Cluster = clusterUntyped;
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -512,13 +513,13 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connection
         const response1 = new EventEmitter();
-        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
 
         // Send shutdown message
         shutdownListener('shutdown');
 
-        expect((<any> response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
         await new Promise(setImmediate);
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
@@ -537,20 +538,20 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connections
         const response1 = new EventEmitter();
-        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
         const response2 = new EventEmitter();
-        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        (response2).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response2);
 
         // Send shutdown message
         shutdownListener('shutdown');
 
         await new Promise(setImmediate);
-        expect((<any> response1).end).toHaveBeenCalledTimes(1);
-        expect((<any> response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
-        expect((<any> response2).end).toHaveBeenCalledTimes(1);
-        expect((<any> response2).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        expect((response1).end).toHaveBeenCalledTimes(1);
+        expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        expect((response2).end).toHaveBeenCalledTimes(1);
+        expect((response2).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
 
@@ -568,18 +569,18 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connections
         const response1 = new EventEmitter();
-        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
         const response2 = new EventEmitter();
-        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        (response2).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response2);
         response2.emit('close');
 
         // Send shutdown message
         shutdownListener('shutdown');
 
-        expect((<any> response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
-        expect((<any> response2).end).not.toHaveBeenCalled();
+        expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        expect((response2).end).not.toHaveBeenCalled();
         await new Promise(setImmediate);
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
@@ -598,13 +599,13 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connection
         const response1 = new EventEmitter();
-        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
 
         // Send shutdown message
         shutdownListener('non-shutdown');
 
-        expect((<any> response1).end).not.toHaveBeenCalled();
+        expect((response1).end).not.toHaveBeenCalled();
         await new Promise(setImmediate);
         expect(process.exit).not.toHaveBeenCalled();
       });
@@ -623,20 +624,20 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connections
         const response1 = new EventEmitter();
-        (<any> response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
         const response2 = new EventEmitter();
-        (<any> response2).end = jest.fn((message, resolve) => resolve());
+        (response2).end = jest.fn((message, resolve) => resolve());
         server.emit('request', undefined, response2);
 
         // Send shutdown message
         uncaughtExceptionListener(new Error('sparql endpoint uncaught exception'));
 
         await new Promise(setImmediate);
-        expect((<any> response1).end).toHaveBeenCalledTimes(1);
-        expect((<any> response1).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
-        expect((<any> response2).end).toHaveBeenCalledTimes(1);
-        expect((<any> response2).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect((response1).end).toHaveBeenCalledTimes(1);
+        expect((response1).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
+        expect((response2).end).toHaveBeenCalledTimes(1);
+        expect((response2).end).toHaveBeenCalledWith('!ERROR!', expect.anything());
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
     });
@@ -664,7 +665,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker = new EventEmitter();
-        (<any> dummyWorker).process = {};
+        (dummyWorker).process = {};
         (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
@@ -679,8 +680,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker = new EventEmitter();
-        (<any> dummyWorker).exitedAfterDisconnect = true;
-        (<any> dummyWorker).process = {};
+        (dummyWorker).exitedAfterDisconnect = true;
+        (dummyWorker).process = {};
         (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
@@ -694,7 +695,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker = new EventEmitter();
-        (<any> dummyWorker).process = {};
+        (dummyWorker).process = {};
         (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
@@ -709,7 +710,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker = new EventEmitter();
-        (<any> dummyWorker).process = {};
+        (dummyWorker).process = {};
         (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event

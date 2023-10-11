@@ -3,7 +3,8 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import 'cross-fetch/polyfill';
-import * as parseLink from 'parse-link-header';
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+import parseLink = require('parse-link-header');
 
 /**
  * A comunica Memento Http Actor.

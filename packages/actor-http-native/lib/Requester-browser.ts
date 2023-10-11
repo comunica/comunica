@@ -7,7 +7,8 @@
 import { EventEmitter } from 'events';
 import type { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Readable } from 'stream';
-import * as parseLink from 'parse-link-header';
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+import parseLink = require('parse-link-header');
 
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, referer: true };
