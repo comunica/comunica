@@ -1,12 +1,12 @@
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { SampleAggregator } from '../lib/SampleAggregator';
 import { BF, DF, int, makeAggregate } from './util';
 
-async function runAggregator(aggregator: IBindingAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
+async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
     await aggregator.putBindings(bindings);
   }
@@ -40,7 +40,7 @@ describe('SampleAggregator', () => {
   });
 
   describe('non distinctive sample', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new SampleAggregator(
@@ -67,7 +67,7 @@ describe('SampleAggregator', () => {
   });
 
   describe('distinctive sample', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new SampleAggregator(

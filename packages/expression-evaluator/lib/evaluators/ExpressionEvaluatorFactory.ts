@@ -3,7 +3,7 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IAsyncEvaluatorContext } from './ExpressionEvaluator';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
@@ -36,11 +36,11 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
       exists: ActorQueryOperation.createExistenceResolver(context, this.mediatorQueryOperation),
       ...legacyContext,
-    }, this);
+    });
   }
 
   public async createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext):
-  Promise<IBindingAggregator> {
+  Promise<IBindingsAggregator> {
     return (await this.mediatorBindingsAggregatorFactory.mediate({
       expr: algExpr,
       factory: this,
