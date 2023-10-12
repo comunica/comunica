@@ -8,7 +8,7 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:bindings-aggregator-factory/aggregators#sample",
+      "@id": "urn:comunica:default:bindings-aggregator-factory/actors#sample",
       "@type": "ActorBindingsAggregatorFactorySample"
     }
   ]

@@ -8,7 +8,7 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:bindings-aggregator-factory/aggregators#wildcard-count",
+      "@id": "urn:comunica:default:bindings-aggregator-factory/actors#wildcard-count",
       "@type": "ActorBindingsAggregatorFactoryWildcardCount"
     }
   ]

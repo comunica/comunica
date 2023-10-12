@@ -1,8 +1,8 @@
-# Comunica Sample Expression Evaluator Aggregate Actor
+# Comunica Bindings Aggregator Factory Sample Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-expression-evaluator-aggregate-sample.svg)](https://www.npmjs.com/package/@comunica/actor-expression-evaluator-aggregate-sample)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-bindings-aggregator-factory-sample.svg)](https://www.npmjs.com/package/@comunica/actor-bindings-aggregator-factory-sample)
 
-A comunica Sample Expression Evaluator Aggregate Actor.
+A comunica bindings aggregator factory for the sample aggregator.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -22,20 +22,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-expression-evaluator-aggregate-sample/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-bindings-aggregator-factory-sample/^1.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:expression-evaluator-aggregate/actors#sample",
+      "@id": "urn:comunica:default:bindings-aggregator-factory/actors#sample",
       "@type": "ActorBindingsAggregatorFactorySample"
     }
   ]
 }
 ```
-
-### Config Parameters
-
-TODO: fill in parameters (this section can be removed if there are none)
-
-* `someParam`: Description of the param

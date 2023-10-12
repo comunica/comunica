@@ -1,8 +1,8 @@
-# Comunica Wildcard Count Expression Evaluator Aggregate Actor
+# Comunica Bindings Aggregator Factory WildcardCount Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-expression-evaluator-aggregate-wildcard-count.svg)](https://www.npmjs.com/package/@comunica/actor-expression-evaluator-aggregate-wildcard-count)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-bindings-aggregator-factory-wildcard-count.svg)](https://www.npmjs.com/package/@comunica/actor-bindings-aggregator-factory-wildcard-count)
 
-A comunica Wildcard Count Expression Evaluator Aggregate Actor.
+A comunica bindings aggregator factory for the wildcard-count aggregator.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -22,20 +22,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-expression-evaluator-aggregate-wildcard-count/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-bindings-aggregator-factory-wildcard-count/^1.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:expression-evaluator-aggregate/actors#wildcard-count",
+      "@id": "urn:comunica:default:bindings-aggregator-factory/actors#wildcard-count",
       "@type": "ActorBindingsAggregatorFactoryWildcardCount"
     }
   ]
 }
 ```
-
-### Config Parameters
-
-TODO: fill in parameters (this section can be removed if there are none)
-
-* `someParam`: Description of the param
