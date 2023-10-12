@@ -8,7 +8,7 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:expression-evaluator/aggregators#min",
+      "@id": "urn:comunica:default:bindings-aggregator-factory/aggregators#min",
       "@type": "ActorBindingsAggregatorFactoryMin"
     }
   ]
