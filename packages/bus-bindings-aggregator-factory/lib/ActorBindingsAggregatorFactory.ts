@@ -4,12 +4,12 @@ import type { IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
- * A comunica actor for creating Binding-Aggregators.
+ * A comunica actor for creating Binding-Aggregator-factories.
  *
  * Actor types:
- * * Input:  IActionExpressionEvaluatorAggregate:      TODO: fill in.
+ * * Input:  IActionBindingsAggregatorFactory:      A SPARQL expression and a factory for an expression evaluator.
  * * Test:   <none>
- * * Output: IActorExpressionEvaluatorAggregateOutput: TODO: fill in.
+ * * Output: IActorBindingsAggregatorFactoryOutput: An aggregator of RDF bindings.
  *
  * @see IActionBindingsAggregatorFactory
  * @see IActorBindingsAggregatorFactoryOutput
