@@ -8,7 +8,7 @@ import type { IActionContext } from './IActionContext';
  */
 export interface IBindingAggregator {
   /**
-   * Registers bindings to the aggregator. Each binding you put has the ability to change te result of aggregation.
+   * Registers bindings to the aggregator. Each binding you put has the ability to change the aggregation result.
    * @param bindings the bindings to put.
    */
   putBindings: (bindings: RDF.Bindings) => Promise<void>;
