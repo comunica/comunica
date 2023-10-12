@@ -24,4 +24,4 @@ $ yarn add @comunica/bus-bindings-aggregator-factory
 
 ## Creating actors on this bus
 
-Actors extending [`ActorBindingsAggregatorFactory`](TODO:jsdoc_url) are automatically subscribed to this bus.
+Actors extending [`ActorBindingsAggregatorFactory`](https://comunica.github.io/comunica/modules/_comunica_bus_bindings_aggregator_factory.html) are automatically subscribed to this bus.
