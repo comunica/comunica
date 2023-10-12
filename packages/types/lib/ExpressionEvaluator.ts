@@ -3,7 +3,7 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
 
 /**
- * Interface that performs a specific aggregation.
+ * Instances of this interface perform a specific aggregation of bindings.
  * You can put bindings and when all bindings have been put, request the result.
  */
 export interface IBindingAggregator {
