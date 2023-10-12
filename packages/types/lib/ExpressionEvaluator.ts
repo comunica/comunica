@@ -20,7 +20,7 @@ export interface IBindingAggregator {
 }
 
 /**
- * A factory able to create an expression evaluator and related types.
+ * A factory able to create objects for handling expressions.
  * It can be used as a way to group mediators in a single class, ready for later use.
  */
 export interface IExpressionEvaluatorFactory {
