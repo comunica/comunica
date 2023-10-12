@@ -14,7 +14,7 @@ import '@comunica/jest';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
-} from '@comunica/bus-bindings-aggeregator-factory';
+} from '../../bus-bindings-aggregator-factory';
 import {
   WildcardCountAggregator,
 } from '@comunica/actor-bindings-aggregator-factory-wildcard-count/lib/WildcardCountAggregator';

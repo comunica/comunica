@@ -8,7 +8,7 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:expression-evaluator/aggregators#max",
+      "@id": "urn:comunica:default:bindings-aggregator-factory/aggregators#max",
       "@type": "ActorBindingsAggregatorFactoryMax"
     }
   ]
