@@ -42,7 +42,7 @@ export interface IExpressionEvaluatorFactory {
 }
 
 /**
- * An RDF evaluator.
+ * An evaluator for RDF expressions.
  */
 export interface IExpressionEvaluator {
   /**
