@@ -4,7 +4,7 @@ import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { regularFunctions } from '@comunica/expression-evaluator/lib/functions';
 import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
-import type { IActionContext, IExpressionEvaluatorFactory, IBindingAggregator } from '@comunica/types';
+import type { IActionContext, IExpressionEvaluatorFactory, IBindingsAggregator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -13,7 +13,7 @@ interface IAverageState {
   count: number;
 }
 
-export class AverageAggregator extends AggregateEvaluator implements IBindingAggregator {
+export class AverageAggregator extends AggregateEvaluator implements IBindingsAggregator {
   // This will eventually be a mediator call.
   private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
   private readonly divider = regularFunctions[C.RegularOperator.DIVISION];

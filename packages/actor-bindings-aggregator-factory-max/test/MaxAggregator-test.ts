@@ -1,12 +1,12 @@
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { MaxAggregator } from '../lib/MaxAggregator';
 import { BF, date, DF, double, float, int, makeAggregate, nonLiteral, string } from './util';
 
-async function runAggregator(aggregator: IBindingAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
+async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
     await aggregator.putBindings(bindings);
   }
@@ -40,7 +40,7 @@ describe('MaxAggregator', () => {
   });
 
   describe('non distinctive max', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new MaxAggregator(
@@ -117,7 +117,7 @@ describe('MaxAggregator', () => {
   });
 
   describe('distinctive max', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new MaxAggregator(
@@ -145,7 +145,7 @@ describe('MaxAggregator', () => {
 
   // This describe actually tests the error handling of the base aggregator evaluator class
   describe('when we ask for throwing errors', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new MaxAggregator(

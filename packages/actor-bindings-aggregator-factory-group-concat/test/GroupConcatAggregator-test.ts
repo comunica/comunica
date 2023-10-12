@@ -1,12 +1,12 @@
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { GroupConcatAggregator } from '../lib/GroupConcatAggregator';
 import { BF, DF, int, makeAggregate } from './util';
 
-async function runAggregator(aggregator: IBindingAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
+async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
     await aggregator.putBindings(bindings);
   }
@@ -40,7 +40,7 @@ describe('CountAggregator', () => {
   });
 
   describe('non distinctive group_concat', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new GroupConcatAggregator(
@@ -67,7 +67,7 @@ describe('CountAggregator', () => {
   });
 
   describe('with custom separator', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new GroupConcatAggregator(
@@ -90,7 +90,7 @@ describe('CountAggregator', () => {
   });
 
   describe('distinctive group_concat', () => {
-    let aggregator: IBindingAggregator;
+    let aggregator: IBindingsAggregator;
 
     beforeEach(() => {
       aggregator = new GroupConcatAggregator(

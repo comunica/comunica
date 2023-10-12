@@ -1,10 +1,10 @@
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
-import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
-export class CountAggregator extends AggregateEvaluator implements IBindingAggregator {
+export class CountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: number | undefined = undefined;
   public constructor(aggregateExpression: Algebra.AggregateExpression,
     expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,

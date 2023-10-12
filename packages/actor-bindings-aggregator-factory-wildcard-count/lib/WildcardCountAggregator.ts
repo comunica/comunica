@@ -1,11 +1,11 @@
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
 import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
-import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 
-export class WildcardCountAggregator extends AggregateEvaluator implements IBindingAggregator {
+export class WildcardCountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   // Key: string representation of a ',' separated list of terms.
   // Valyue: string representation of a ',' separated list of variables sorted by name.
   private readonly bindingValues: Map<string, Set<string>> = new Map();

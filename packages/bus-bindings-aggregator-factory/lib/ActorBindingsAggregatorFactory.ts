@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -30,7 +30,7 @@ export interface IActionBindingsAggregatorFactory extends IAction {
 }
 
 export interface IActorBindingsAggregatorFactoryOutput extends IActorOutput {
-  aggregator: IBindingAggregator;
+  aggregator: IBindingsAggregator;
 }
 
 export type IActorBindingsAggregatorFactoryArgs = IActorArgs<

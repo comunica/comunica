@@ -14,7 +14,6 @@ import * as Err from '../util/Errors';
 import type { SuperTypeCallback, TypeCache } from '../util/TypeHandling';
 import type { ICompleteEEContext } from './evaluatorHelpers/AsyncRecursiveEvaluator';
 import { AsyncRecursiveEvaluator } from './evaluatorHelpers/AsyncRecursiveEvaluator';
-import type { ExpressionEvaluatorFactory } from './ExpressionEvaluatorFactory';
 
 export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
 export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => AsyncExtensionFunction | undefined;
@@ -59,8 +58,7 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
     };
   }
 
-  public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext,
-    public readonly factory: ExpressionEvaluatorFactory) {
+  public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext) {
     // eslint-disable-next-line unicorn/no-useless-undefined
     const creator = context.extensionFunctionCreator || (() => undefined);
     this.context = ExpressionEvaluator.completeContext(context);

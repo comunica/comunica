@@ -6,7 +6,7 @@ import type { IActionContext } from './IActionContext';
  * Interface that performs a specific aggregation.
  * You can put bindings and when all bindings have been put, request the result.
  */
-export interface IBindingAggregator {
+export interface IBindingsAggregator {
   /**
    * Registers bindings to the aggregator. Each binding you put has the ability to change te result of aggregation.
    * @param bindings the bindings to put.
@@ -19,10 +19,6 @@ export interface IBindingAggregator {
   result: () => Promise<RDF.Term | undefined>;
 }
 
-/**
- * A factory able to create an expression evaluator and related types.
- * It can be used as a way to group mediators in a single class, ready for later use.
- */
 export interface IExpressionEvaluatorFactory {
   /**
    * Create an Expression Evaluator given an expression and the action context,
@@ -38,7 +34,7 @@ export interface IExpressionEvaluatorFactory {
    * @param algExpr The SPARQL expression.
    * @param context the actionContext to extract engine config settings from.
    */
-  createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingAggregator>;
+  createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingsAggregator>;
 }
 
 /**
@@ -65,9 +61,4 @@ export interface IExpressionEvaluator {
    * @param strict whether to throw an error (true), or compare by value (false) if no other compare rules match.
    */
   orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined, strict: boolean | undefined) => -1 | 0 | 1;
-
-  /**
-   * The factory that created this Expression Evaluator.
-   */
-  factory: IExpressionEvaluatorFactory;
 }

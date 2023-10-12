@@ -1,9 +1,9 @@
 import { AggregateEvaluator } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
-export class SampleAggregator extends AggregateEvaluator implements IBindingAggregator {
+export class SampleAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: RDF.Term | undefined = undefined;
 
   public constructor(aggregateExpression: Algebra.AggregateExpression,
