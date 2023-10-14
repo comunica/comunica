@@ -1,4 +1,5 @@
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import type { IActionContext, DataSources, IDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
@@ -35,10 +36,11 @@ export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source
  * @param {IDataSource} dataSource The source or undefined.
  */
 export function getDataSourceContext(dataSource: IDataSource, context: IActionContext): IActionContext {
-  if (typeof dataSource === 'string' || 'match' in dataSource || !dataSource.context) {
+  if (isDataSourceRawType(dataSource) || !dataSource.context) {
     return context;
   }
-  return context.merge(dataSource.context);
+
+  return context.merge(ActionContext.ensureActionContext(dataSource.context));
 }
 
 /**
