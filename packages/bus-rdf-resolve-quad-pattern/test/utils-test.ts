@@ -96,6 +96,15 @@ describe("utils", () => {
       );
     });
 
+    it("should accept object as data source context", () => {
+      return expect(
+        getDataSourceContext(
+          { type: "type", value: "value", context: { "key2": "value2" } },
+          context
+        )
+      ).toEqual(new ActionContext({key: "value", key2: "value2"}));
+    });
+
     it("should return on an object source", () => {
       const sourceContext = new ActionContext({ auth: "username:passwd" });
       return expect(
