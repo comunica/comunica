@@ -22,7 +22,7 @@ describe('utils', () => {
 
     it('should return on an object source', () => {
       return expect(isDataSourceRawType({ type: 'T', value: 'abc' })).toEqual(
-        false
+        false,
       );
     });
   });
@@ -38,19 +38,19 @@ describe('utils', () => {
 
     it('should return on an object source', () => {
       return expect(getDataSourceType({ type: 'T', value: 'abc' })).toEqual(
-        'T'
+        'T',
       );
     });
 
     it('should return on an object source with implicit rdfjs source', () => {
       return expect(getDataSourceType({ value: rdfjsSource })).toEqual(
-        undefined
+        undefined,
       );
     });
 
     it('should return on an object source with explicit rdfjs source', () => {
       return expect(
-        getDataSourceType({ type: 'rdfjsSource', value: rdfjsSource })
+        getDataSourceType({ type: 'rdfjsSource', value: rdfjsSource }),
       ).toEqual('rdfjsSource');
     });
   });
@@ -66,19 +66,19 @@ describe('utils', () => {
 
     it('should return on an object source', () => {
       return expect(getDataSourceValue({ type: 'T', value: 'abc' })).toEqual(
-        'abc'
+        'abc',
       );
     });
 
     it('should return on an object source with implicit rdfjs source', () => {
       return expect(getDataSourceValue({ value: rdfjsSource })).toEqual(
-        rdfjsSource
+        rdfjsSource,
       );
     });
 
     it('should return on an object source with explicit rdfjs source', () => {
       return expect(
-        getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource })
+        getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource }),
       ).toEqual(rdfjsSource);
     });
   });
@@ -92,17 +92,17 @@ describe('utils', () => {
 
     it('should return on a rdfjs source source', () => {
       return expect(getDataSourceContext(rdfjsSource, context)).toEqual(
-        context
+        context,
       );
     });
 
     it('should accept object as data source context', () => {
       return expect(
         getDataSourceContext(
-          { type: 'type', value: 'value', context: { 'key2': 'value2' } },
-          context
-        )
-      ).toEqual(new ActionContext({key: 'value', key2: 'value2'}));
+          { type: 'type', value: 'value', context: { key2: 'value2' } },
+          context,
+        ),
+      ).toEqual(new ActionContext({ key: 'value', key2: 'value2' }));
     });
 
     it('should return on an object source', () => {
@@ -110,8 +110,8 @@ describe('utils', () => {
       return expect(
         getDataSourceContext(
           { value: 'http://google.com', context: sourceContext },
-          context
-        )
+          context,
+        ),
       ).toEqual(context.merge(sourceContext));
     });
   });
@@ -124,7 +124,7 @@ describe('utils', () => {
             type: 'a-type',
             value: 'a-value',
           },
-        })
+        }),
       );
       return expect(source).toEqual({ type: 'a-type', value: 'a-value' });
     });
@@ -135,7 +135,7 @@ describe('utils', () => {
           '@comunica/bus-rdf-resolve-quad-pattern:sources': [
             { type: 'a-type', value: 'a-value' },
           ],
-        })
+        }),
       );
       return expect(source).toEqual({ type: 'a-type', value: 'a-value' });
     });
@@ -147,7 +147,7 @@ describe('utils', () => {
             { type: 'a-type', value: 'a-value' },
             { type: 'a-type', value: 'a-value' },
           ],
-        })
+        }),
       );
       return expect(source).toEqual(undefined);
     });
@@ -156,7 +156,7 @@ describe('utils', () => {
       const source = getContextSourceFirst(
         new ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:sources': [],
-        })
+        }),
       );
       return expect(source).toEqual(undefined);
     });

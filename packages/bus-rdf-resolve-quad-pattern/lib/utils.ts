@@ -33,9 +33,12 @@ export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source
 /**
  * Get the data source from the given context.
  * @param {ActionContext} context An optional context.
- * @param {IDataSource} dataSource The source or undefined.
+ * @param {IDataSource | IDataSourceRaw} dataSource The source or undefined.
  */
-export function getDataSourceContext(dataSource: IDataSource | IDataSourceRaw, context: IActionContext): IActionContext {
+export function getDataSourceContext(
+  dataSource: IDataSource | IDataSourceRaw,
+  context: IActionContext
+): IActionContext {
   if (isDataSourceRawType(dataSource) || !dataSource.context) {
     return context;
   }
