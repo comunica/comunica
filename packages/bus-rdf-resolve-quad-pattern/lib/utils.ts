@@ -37,7 +37,7 @@ export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source
  */
 export function getDataSourceContext(
   dataSource: IDataSource | IDataSourceRaw,
-  context: IActionContext
+  context: IActionContext,
 ): IActionContext {
   if (isDataSourceRawType(dataSource) || !dataSource.context) {
     return context;
