@@ -1,7 +1,7 @@
-import { AggregateEvaluator } from '@comunica/expression-evaluator';
-import { string } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import { AggregateEvaluator, TypeURL } from '@comunica/expression-evaluator';
 import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 
 export class GroupConcatAggregator extends AggregateEvaluator implements IBindingsAggregator {
@@ -16,7 +16,7 @@ export class GroupConcatAggregator extends AggregateEvaluator implements IBindin
   }
 
   public emptyValueTerm(): RDF.Term {
-    return string('').toRDF();
+    return new DataFactory().literal('', TypeURL.XSD_STRING);
   }
 
   public putTerm(term: RDF.Term): void {
@@ -31,6 +31,6 @@ export class GroupConcatAggregator extends AggregateEvaluator implements IBindin
     if (this.state === undefined) {
       return this.emptyValue();
     }
-    return string(this.state).toRDF();
+    return new DataFactory().literal(this.state, TypeURL.XSD_STRING);
   }
 }
