@@ -1,10 +1,10 @@
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { BF, DF, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { WildcardCountAggregator } from '../lib/WildcardCountAggregator';
-import { BF, DF, int, makeAggregate } from './util';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
@@ -44,7 +44,7 @@ describe('WildcardCountAggregator', () => {
 
     beforeEach(() => {
       aggregator = new WildcardCountAggregator(
-        makeAggregate('count', false, true),
+        makeAggregate('count', false, undefined, true),
         expressionEvaluatorFactory,
         context,
       );
@@ -64,6 +64,13 @@ describe('WildcardCountAggregator', () => {
     it('with respect to empty input', async() => {
       expect(await runAggregator(aggregator, [])).toEqual(int('0'));
     });
+
+    it('extends the AggregateEvaluator', () => {
+      expect((<WildcardCountAggregator> aggregator).termResult).toBeInstanceOf(Function);
+      expect((<WildcardCountAggregator> aggregator).putTerm).toBeInstanceOf(Function);
+      // Put term does nothing
+      expect(() => (<WildcardCountAggregator> aggregator).putTerm(<any> undefined)).not.toThrow();
+    });
   });
 
   describe('distinctive count-wildcard', () => {
@@ -71,7 +78,7 @@ describe('WildcardCountAggregator', () => {
 
     beforeEach(() => {
       aggregator = new WildcardCountAggregator(
-        makeAggregate('count', true, true),
+        makeAggregate('count', true, undefined, true),
         expressionEvaluatorFactory,
         context,
       );

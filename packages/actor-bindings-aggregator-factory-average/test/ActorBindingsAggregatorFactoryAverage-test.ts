@@ -1,9 +1,9 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { BF, DF, makeAggregate } from '@comunica/jest';
 import type { IExpressionEvaluatorFactory } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
-import { BF, DF, makeAggregate } from './util';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {
   let bus: any;
