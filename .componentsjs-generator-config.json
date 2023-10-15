@@ -71,7 +71,8 @@
     "AggregateEvaluator",
     "Expression",
     "TypeURL",
-    "RegularOperator"
+    "RegularOperator",
+    "typedLiteral"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",
