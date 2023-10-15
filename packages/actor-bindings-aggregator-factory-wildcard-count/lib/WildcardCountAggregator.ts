@@ -1,7 +1,7 @@
-import { AggregateEvaluator } from '@comunica/expression-evaluator';
-import { integer } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import { AggregateEvaluator, TypeURL } from '@comunica/expression-evaluator';
 import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -29,14 +29,14 @@ export class WildcardCountAggregator extends AggregateEvaluator implements IBind
   }
 
   public emptyValueTerm(): RDF.Term {
-    return integer(0).toRDF();
+    return new DataFactory().literal('0', TypeURL.XSD_INT);
   }
 
   public termResult(): RDF.Term | undefined {
     if (this.state === undefined) {
       return this.emptyValue();
     }
-    return integer(this.state).toRDF();
+    return new DataFactory().literal(String(this.state), TypeURL.XSD_INT);
   }
 
   /**
