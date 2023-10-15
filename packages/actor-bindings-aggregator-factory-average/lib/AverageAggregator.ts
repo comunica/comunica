@@ -1,10 +1,9 @@
 import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
-import { AggregateEvaluator, RegularOperator, TypeURL } from '@comunica/expression-evaluator';
+import { AggregateEvaluator, RegularOperator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { regularFunctions } from '@comunica/expression-evaluator/lib/functions';
 import type { IActionContext, IExpressionEvaluatorFactory, IBindingsAggregator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 
 interface IAverageState {
@@ -25,7 +24,7 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
   }
 
   public emptyValueTerm(): RDF.Term {
-    return new DataFactory().literal('0', TypeURL.XSD_INT);
+    return typedLiteral('0', TypeURL.XSD_INTEGER);
   }
 
   public putTerm(term: RDF.Term): void {
