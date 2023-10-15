@@ -1,10 +1,10 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { makeAggregate } from '@comunica/jest';
 import type { IExpressionEvaluatorFactory } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
 import { ActorBindingsAggregatorFactoryCount } from '../lib';
-import { makeAggregate } from './util';
 
 describe('ActorExpressionEvaluatorAggregateCount', () => {
   let bus: any;

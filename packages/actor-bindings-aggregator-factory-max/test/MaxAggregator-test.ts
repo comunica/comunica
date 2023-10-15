@@ -1,10 +1,10 @@
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { BF, date, DF, double, float, int, makeAggregate, nonLiteral, string } from '@comunica/jest';
 import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { MaxAggregator } from '../lib/MaxAggregator';
-import { BF, date, DF, double, float, int, makeAggregate, nonLiteral, string } from './util';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {

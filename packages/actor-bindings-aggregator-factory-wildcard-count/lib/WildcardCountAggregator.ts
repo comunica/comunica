@@ -6,10 +6,8 @@ import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 
 export class WildcardCountAggregator extends AggregateEvaluator implements IBindingsAggregator {
-  // Key: string representation of a ',' separated list of terms.
-  // Valyue: string representation of a ',' separated list of variables sorted by name.
   private readonly bindingValues: Map<string, Set<string>> = new Map();
-  private state = 0;
+  private state: number | undefined = undefined;
 
   public constructor(aggregateExpression: Algebra.AggregateExpression,
     expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
@@ -23,6 +21,9 @@ export class WildcardCountAggregator extends AggregateEvaluator implements IBind
 
   public async putBindings(bindings: RDF.Bindings): Promise<void> {
     if (!this.handleDistinct(bindings)) {
+      if (this.state === undefined) {
+        this.state = 0;
+      }
       this.state += 1;
     }
   }

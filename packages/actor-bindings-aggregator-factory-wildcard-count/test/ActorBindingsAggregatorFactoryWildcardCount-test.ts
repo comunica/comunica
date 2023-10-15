@@ -1,9 +1,9 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { BF, DF, makeAggregate } from '@comunica/jest';
 import type { IExpressionEvaluatorFactory } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryWildcardCount } from '../lib';
-import { BF, DF, makeAggregate } from './util';
 
 describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
   let bus: any;
@@ -59,7 +59,7 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
         return expect(actor.test({
           factory: expressionEvaluatorFactory,
           context: new ActionContext(),
-          expr: makeAggregate('count', false, true),
+          expr: makeAggregate('count', false, undefined, true),
         })).resolves.toEqual({});
       });
 
@@ -67,7 +67,7 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
         return expect(actor.test({
           factory: expressionEvaluatorFactory,
           context: new ActionContext(),
-          expr: makeAggregate('count', true, true),
+          expr: makeAggregate('count', true, undefined, true),
         })).resolves.toEqual({});
       });
 
@@ -84,7 +84,7 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
       return expect(actor.run({
         factory: expressionEvaluatorFactory,
         context: new ActionContext(),
-        expr: makeAggregate('count', false, true),
+        expr: makeAggregate('count', false, undefined, true),
       })).resolves.toMatchObject({
         aggregator: expect.anything(),
       });
