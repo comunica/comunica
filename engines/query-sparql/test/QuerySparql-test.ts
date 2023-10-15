@@ -341,6 +341,7 @@ describe('System test: QuerySparql', () => {
           });
       });
 
+      // eslint-disable-next-line mocha/no-skipped-tests
       describe.skip('extension function', () => {
         let funcAllow: string;
         let store: Store;

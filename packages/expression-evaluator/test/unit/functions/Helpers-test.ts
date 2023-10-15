@@ -1,11 +1,11 @@
+import type { ExpressionEvaluator } from '../../../lib';
 import type { Builder } from '../../../lib/functions/Helpers';
 import { bool, declare } from '../../../lib/functions/Helpers';
+import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 import { TypeURL } from '../../../lib/util/Consts';
+import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
 import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '../../util/utils';
 import fn = jest.fn;
-import type { ExpressionEvaluator } from '../../../lib';
-import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
-import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 
 describe('The function helper file', () => {
   describe('has a builder', () => {

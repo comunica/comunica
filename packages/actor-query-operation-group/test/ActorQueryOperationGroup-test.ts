@@ -1,4 +1,16 @@
+import { AverageAggregator } from '@comunica/actor-bindings-aggregator-factory-average';
+import { CountAggregator } from '@comunica/actor-bindings-aggregator-factory-count';
+import { GroupConcatAggregator } from '@comunica/actor-bindings-aggregator-factory-group-concat';
+import { MaxAggregator } from '@comunica/actor-bindings-aggregator-factory-max';
+import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
+import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample';
+import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
+import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type {
+  IActionBindingsAggregatorFactory,
+  IActorBindingsAggregatorFactoryOutput,
+} from '@comunica/bus-bindings-aggeregator-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
@@ -11,22 +23,6 @@ import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib';
 import { GroupsState } from '../lib/GroupsState';
 import '@comunica/jest';
-import type {
-  IActionBindingsAggregatorFactory,
-  IActorBindingsAggregatorFactoryOutput,
-} from '../../bus-bindings-aggregator-factory';
-import {
-  WildcardCountAggregator,
-} from '@comunica/actor-bindings-aggregator-factory-wildcard-count/lib/WildcardCountAggregator';
-import { CountAggregator } from '@comunica/actor-bindings-aggregator-factory-count/lib/CountAggregator';
-import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum/lib/SumAggregator';
-import { AverageAggregator } from '@comunica/actor-bindings-aggregator-factory-average/lib/AverageAggregator';
-import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min/lib/MinAggregator';
-import { MaxAggregator } from '@comunica/actor-bindings-aggregator-factory-max/lib/MaxAggregator';
-import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample/lib/SampleAggregator';
-import {
-  GroupConcatAggregator,
-} from '@comunica/actor-bindings-aggregator-factory-group-concat/lib/GroupConcatAggregator';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
