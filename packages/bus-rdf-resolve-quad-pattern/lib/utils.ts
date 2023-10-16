@@ -7,8 +7,10 @@ import type * as RDF from '@rdfjs/types';
  * Check if the given data source is a string or RDF store.
  * @param dataSource A data source.
  */
-export function isDataSourceRawType(dataSource: IDataSource | IDataSourceRawContext): dataSource is string | RDF.Source {
-  return typeof dataSource === 'string' || 'match' in dataSource;
+export function isDataSourceRawType(
+  dataSource: IDataSource | IDataSourceRawContext
+): dataSource is string | RDF.Source {
+  return typeof dataSource === "string" || "match" in dataSource;
 }
 
 /**
