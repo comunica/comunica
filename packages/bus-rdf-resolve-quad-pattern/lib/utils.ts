@@ -8,9 +8,9 @@ import type * as RDF from '@rdfjs/types';
  * @param dataSource A data source.
  */
 export function isDataSourceRawType(
-  dataSource: IDataSource | IDataSourceRawContext
+  dataSource: IDataSource | IDataSourceRawContext,
 ): dataSource is string | RDF.Source {
-  return typeof dataSource === "string" || "match" in dataSource;
+  return typeof dataSource === 'string' || 'match' in dataSource;
 }
 
 /**
