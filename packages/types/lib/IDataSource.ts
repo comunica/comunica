@@ -14,6 +14,12 @@ export interface IDataSourceExpanded {
   context?: IActionContext;
 }
 
+export interface IDataSourceRawContext{
+  type?: string;
+  value: string | RDF.Source;
+  context?: object;
+}
+
 export type IDataSource = string | RDF.Source | IDataSourceExpanded | IDataSourceSerialized;
 
 export type DataSources = IDataSource[];
