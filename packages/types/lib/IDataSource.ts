@@ -14,7 +14,7 @@ export interface IDataSourceExpanded {
   context?: IActionContext;
 }
 
-export interface IDataSourceRaw {
+export interface  IDataSourceRawContext{
   type?: string;
   value: string | RDF.Source;
   context?: object;
