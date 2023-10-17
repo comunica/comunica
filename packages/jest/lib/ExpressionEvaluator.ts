@@ -1,10 +1,13 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
 
-const DF = new DataFactory<Quad>();
+export const DF = new DataFactory<Quad>();
+
+export const BF = new BindingsFactory();
 
 export function makeAggregate(aggregator: string, distinct = false, separator?: string, wildcard = false):
 Algebra.AggregateExpression {
