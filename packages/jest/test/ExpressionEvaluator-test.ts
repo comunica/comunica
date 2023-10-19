@@ -1,7 +1,7 @@
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
-import { date, decimal, DF, double, float, int, makeAggregate, nonLiteral, string } from '../lib/ExpressionEvaluator';
+import { date, decimal, DF, double, float, int, makeAggregate, nonLiteral, string } from '../lib/expressions';
 
 describe('The Expression evaluator util function', () => {
   describe('makeAggregate', () => {

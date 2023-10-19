@@ -29,7 +29,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:query-operation/actors#filter",
       "@type": "ActorQueryOperationFilterSparqlee",
-      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "expressionEvaluatorFactory": { "@id": "urn:comunica:default:expression-evaluator/evaluators#main" }
     }
   ]
 }
