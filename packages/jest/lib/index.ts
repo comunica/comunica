@@ -1,7 +1,7 @@
 import type * as RDF from '@rdfjs/types';
 import matchers from './matchers';
 
-export * from './ExpressionEvaluator';
+export * from './expressions';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

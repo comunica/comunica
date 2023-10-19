@@ -30,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
       "@id": "urn:comunica:default:query-operation/actors#group",
       "@type": "ActorQueryOperationGroup",
       "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
-      "mediatorHashBindings": { "@id": "#mediatorHashBindings" }
+      "mediatorHashBindings": { "@id": "#mediatorHashBindings" },
+      "expressionEvaluatorFactory": { "@id": "urn:comunica:default:expression-evaluator/evaluators#main" }
     }
   ]
 }
