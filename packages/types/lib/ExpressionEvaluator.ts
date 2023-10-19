@@ -3,12 +3,12 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
 
 /**
- * Interface that performs a specific aggregation.
+ * Instances of this interface perform a specific aggregation of bindings.
  * You can put bindings and when all bindings have been put, request the result.
  */
 export interface IBindingsAggregator {
   /**
-   * Registers bindings to the aggregator. Each binding you put has the ability to change te result of aggregation.
+   * Registers bindings to the aggregator. Each binding you put has the ability to change the aggregation result.
    * @param bindings the bindings to put.
    */
   putBindings: (bindings: RDF.Bindings) => Promise<void>;
@@ -19,6 +19,9 @@ export interface IBindingsAggregator {
   result: () => Promise<RDF.Term | undefined>;
 }
 
+/**
+ * A factory able to create objects for handling expressions.
+ */
 export interface IExpressionEvaluatorFactory {
   /**
    * Create an Expression Evaluator given an expression and the action context,
@@ -38,7 +41,7 @@ export interface IExpressionEvaluatorFactory {
 }
 
 /**
- * An RDF evaluator.
+ * An evaluator for RDF expressions.
  */
 export interface IExpressionEvaluator {
   /**
