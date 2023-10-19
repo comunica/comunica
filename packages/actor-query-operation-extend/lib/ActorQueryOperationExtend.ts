@@ -54,7 +54,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
           // Errors silently don't actually extend according to the spec
           push(bindings);
           // But let's warn anyway
-          this.logWarn(context, `Expression error for extend operation with bindings '${bindingsToString(bindings)}\n${error}'`);
+          this.logWarn(context, `Expression error for extend operation with bindings '${bindingsToString(bindings)}\n${error.name}:\n${error.message}'`);
         } else {
           bindingsStream.emit('error', error);
         }
