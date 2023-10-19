@@ -1,10 +1,8 @@
 /* eslint-disable import/no-nodejs-modules */
-import * as clusterUntyped from 'cluster';
 import type { Cluster } from 'cluster';
 import type { EventEmitter } from 'events';
 import * as http from 'http';
 import type { IncomingMessage, ServerResponse } from 'http';
-
 import * as querystring from 'querystring';
 import type { Writable } from 'stream';
 import * as url from 'url';
@@ -13,20 +11,23 @@ import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+
 import yargs from 'yargs';
 // eslint-disable-next-line import/no-useless-path-segments
-import { QueryEngineBase, QueryEngineFactoryBase } from '..';
-// eslint-disable-next-line import/no-useless-path-segments
 import type { IDynamicQueryEngineOptions } from '..';
+// eslint-disable-next-line import/no-useless-path-segments
+import { QueryEngineBase, QueryEngineFactoryBase } from '..';
+
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+const clusterUntyped = require('cluster');
 const process: NodeJS.Process = require('process/');
-
 const quad = require('rdf-quad');
 
 // Force type on Cluster, because there are issues with the Node.js typings since v18
-const cluster: Cluster = <any> clusterUntyped;
+const cluster: Cluster = clusterUntyped;
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
@@ -117,7 +118,7 @@ export class HttpServiceSparqlEndpoint {
       new CliArgsHandlerHttp(),
       ...cliArgsHandlers,
     ];
-    let argumentsBuilder = yargs({});
+    let argumentsBuilder = yargs([]);
     for (const cliArgsHandler of cliArgsHandlers) {
       argumentsBuilder = cliArgsHandler.populateYargs(argumentsBuilder);
     }

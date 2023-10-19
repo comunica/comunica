@@ -5,7 +5,8 @@ import { ActorHttp } from '@comunica/bus-http';
 import type { IActorTest } from '@comunica/core';
 import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
-import * as stringifyStream from 'stream-to-string';
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+import stringifyStream = require('stream-to-string');
 
 const REGEX_MEDIATYPE = /^[^ ;]*/u;
 
