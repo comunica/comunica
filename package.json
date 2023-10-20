@@ -90,7 +90,8 @@
     "depcheck": "lerna-script depcheckTask",
     "depcheck:fix": "lerna-script depfixTask",
     "ncu:all": "lerna-script updateTask",
-    "ncu:major:all": "lerna-script updateTaskMajor"
+    "ncu:major:all": "lerna-script updateTaskMajor",
+    "clean": "git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/lib/\" | grep \"\\.\\(\\(js\\)\\|\\(d\\.ts\\)\\|\\(js\\.map\\)\\)$\" | xargs rm && git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/components/\" | xargs rm"
   },
   "resolutions": {
     "@rdfjs/types": "1.1.0"

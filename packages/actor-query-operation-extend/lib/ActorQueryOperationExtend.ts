@@ -4,6 +4,7 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
+import type { ExpressionError } from '@comunica/expression-evaluator';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -54,7 +55,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
           // Errors silently don't actually extend according to the spec
           push(bindings);
           // But let's warn anyway
-          this.logWarn(context, `Expression error for extend operation with bindings '${bindingsToString(bindings)}'`);
+          this.logWarn(context, `Expression error for extend operation (${(<ExpressionError> error).message})` +
+            `with bindings '${bindingsToString(bindings)}'`);
         } else {
           bindingsStream.emit('error', error);
         }
