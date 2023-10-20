@@ -1,4 +1,4 @@
-import { dateTyped, int } from '../../util/Aliases';
+import { dateTimeTyped, dateTyped, int } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import { runTestTable } from '../../util/utils';
 
@@ -12,6 +12,7 @@ describe('evaluation of \'YEAR\'', () => {
     '${dateTyped('2010-12-21-08:00')}' = '${int('2010')}'
     '${dateTyped('2008-06-20Z')}' = '${int('2008')}'
     '${dateTyped('2011-02-01')}' = '${int('2011')}'
+    '${dateTimeTyped('1954-01-01T00:00:00Z')}' = '${int('1954')}'
   `,
   });
 });
