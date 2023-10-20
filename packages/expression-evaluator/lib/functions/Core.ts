@@ -1,22 +1,21 @@
 import type * as RDF from '@rdfjs/types';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+import type { ICompleteEEContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
-import type { ImplementationFunction, OverloadTree, FunctionArgumentsCache } from './OverloadTree';
+import type { FunctionArgumentsCache, ImplementationFunction, OverloadTree } from './OverloadTree';
 
-export interface IEvalSharedContext extends ICompleteSharedContext{
+export interface IEvalSharedContext extends ICompleteEEContext{
   args: E.Expression[];
   mapping: RDF.Bindings;
 }
-export interface IEvalContext<Term, BNode> extends IEvalSharedContext {
-  bnode?: (input?: string) => BNode;
-  evaluate: (expr: E.Expression, mapping: RDF.Bindings) => Term;
+export interface IEvalContext<Term> extends IEvalSharedContext {
+  evaluate: ExpressionEvaluator;
 }
 
-export type EvalContextAsync = IEvalContext<Promise<E.TermExpression>, Promise<RDF.BlankNode>>;
-export type EvalContextSync = IEvalContext<E.TermExpression, RDF.BlankNode>;
+export type EvalContextAsync = IEvalContext<Promise<E.TermExpression>>;
 
 // ----------------------------------------------------------------------------
 // Overloaded Functions
@@ -45,12 +44,12 @@ export abstract class BaseFunction<Operator> {
    * instance depending on the runtime types. We then just apply this function
    * to the args.
    */
-  public apply = (args: E.TermExpression[], context: ICompleteSharedContext):
+  public apply = (args: E.TermExpression[], exprEval: ExpressionEvaluator):
   E.TermExpression => {
     const concreteFunction =
-      this.monomorph(args, context.superTypeProvider, context.functionArgumentsCache) ||
+      this.monomorph(args, exprEval.context.superTypeProvider, exprEval.context.functionArgumentsCache) ||
       this.handleInvalidTypes(args);
-    return concreteFunction(context)(args);
+    return concreteFunction(exprEval)(args);
   };
 
   protected abstract handleInvalidTypes(args: E.TermExpression[]): never;
@@ -136,13 +135,11 @@ export class NamedFunction extends BaseFunction<C.NamedOperator> {
 export class SpecialFunction {
   public functionClass = <const> 'special';
   public arity: number;
-  public applySynchronously: E.SpecialApplicationSync;
   public applyAsync: E.SpecialApplicationAsync;
   public checkArity: (args: E.Expression[]) => boolean;
 
   public constructor(public operator: C.SpecialOperator, definition: ISpecialDefinition) {
     this.arity = definition.arity;
-    this.applySynchronously = definition.applySynchronously;
     this.applyAsync = definition.applyAsync;
     this.checkArity = definition.checkArity || defaultArityCheck(this.arity);
   }
@@ -162,6 +159,5 @@ function defaultArityCheck(arity: number): (args: E.Expression[]) => boolean {
 export interface ISpecialDefinition {
   arity: number;
   applyAsync: E.SpecialApplicationAsync;
-  applySynchronously: E.SpecialApplicationSync;
   checkArity?: (args: E.Expression[]) => boolean;
 }

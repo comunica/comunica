@@ -143,11 +143,8 @@ describe('evaluation of \'<=\'', () => {
       arity: 2,
       notation: Notation.Infix,
       aliases: bool,
-      config: {
-        config: {
-          defaultTimeZone: { zoneHours: -5, zoneMinutes: 0 },
-        },
-        type: 'sync',
+      legacyContext: {
+        defaultTimeZone: { zoneHours: -5, zoneMinutes: 0 },
       },
       testTable: `
         '${timeTyped('12:00:00')}' '${timeTyped('23:00:00+06:00')}' = true

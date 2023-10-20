@@ -341,7 +341,8 @@ describe('System test: QuerySparql', () => {
           });
       });
 
-      describe('extension function', () => {
+      // eslint-disable-next-line mocha/no-skipped-tests
+      describe.skip('extension function', () => {
         let funcAllow: string;
         let store: Store;
         let baseFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;

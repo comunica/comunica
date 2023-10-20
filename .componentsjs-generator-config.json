@@ -12,8 +12,7 @@
     "packages/data-factory",
     "packages/jest",
     "packages/packager",
-    "packages/runner-cli",
-    "packages/expression-evaluator"
+    "packages/runner-cli"
   ],
   "ignoreComponents": [
     "Error",
@@ -64,7 +63,16 @@
     "Factory",
 
     "UriTemplate",
-    "LRUCache"
+    "LRUCache",
+
+    "isExpressionError",
+    "AggregateEvaluator",
+    "ExpressionEvaluator",
+    "AggregateEvaluator",
+    "Expression",
+    "TypeURL",
+    "RegularOperator",
+    "typedLiteral"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

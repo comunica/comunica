@@ -1,6 +1,5 @@
 import type { Expression,
   SpecialApplicationAsync,
-  SpecialApplicationSync,
   SpecialOperatorExpression } from './Expressions';
 import {
   ExpressionType,
@@ -12,6 +11,5 @@ export class SpecialOperator implements SpecialOperatorExpression {
   public constructor(
     public args: Expression[],
     public applyAsync: SpecialApplicationAsync,
-    public applySynchronously: SpecialApplicationSync,
   ) { }
 }

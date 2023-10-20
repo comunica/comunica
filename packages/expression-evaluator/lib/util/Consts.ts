@@ -1,3 +1,6 @@
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
+
 export type KnownLiteralTypes = TypeAlias | TypeURL;
 
 export enum TypeAlias {
@@ -11,6 +14,11 @@ export enum TypeAlias {
    * Reasons for this are mentioned here: w3c/sparql-12#112
    */
   SPARQL_STRINGLY = 'SPARQL_STRINGLY',
+}
+
+const DF = new DataFactory();
+export function typedLiteral(value: string, type: TypeURL): RDF.Literal {
+  return DF.literal(value, DF.namedNode(type));
 }
 
 export enum TypeURL {

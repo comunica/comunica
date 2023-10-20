@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { EvalContextAsync, EvalContextSync } from '../functions';
+import type { EvalContextAsync } from '../functions';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',
@@ -71,7 +71,6 @@ export type SpecialOperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.SpecialOperator;
   args: Expression[];
   applyAsync: SpecialApplicationAsync;
-  applySynchronously: SpecialApplicationSync;
 };
 
 // TODO: Create alias Term = TermExpression
@@ -81,7 +80,7 @@ export function asTermType(type: string): TermType | undefined {
   }
   return undefined;
 }
-export type TermType = 'namedNode' | 'literal' | 'blankNode' | 'quad';
+export type TermType = 'namedNode' | 'literal' | 'blankNode' | 'quad' | 'defaultGraph';
 export type TermExpression = IExpressionProps & {
   expressionType: ExpressionType.Term;
   termType: TermType;
@@ -100,5 +99,3 @@ export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
 
 export type SpecialApplicationAsync = (context: EvalContextAsync) => Promise<TermExpression>;
-
-export type SpecialApplicationSync = (context: EvalContextSync) => TermExpression;

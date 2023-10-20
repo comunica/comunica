@@ -1,8 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
-import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
-import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
-import type { Bindings } from '@comunica/types';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import type { Bindings, IActionContext, IBindingsAggregator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -22,7 +21,7 @@ export type BindingsHash = string;
  */
 export interface IGroup {
   bindings: Bindings;
-  aggregators: Record<string, AsyncAggregateEvaluator>;
+  aggregators: Record<string, IBindingsAggregator>;
 }
 
 /**
@@ -43,7 +42,8 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly sparqleeConfig: IAsyncEvaluatorContext,
+    private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory,
+    private readonly context: IActionContext,
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -82,11 +82,11 @@ export class GroupsState {
     if (!groupInitializer) {
       // Initialize state for all aggregators for new group
       groupInitializer = (async() => {
-        const aggregators: Record<string, AsyncAggregateEvaluator> = {};
+        const aggregators: Record<string, IBindingsAggregator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = aggregate.variable.value;
-          aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
-          await aggregators[key].put(bindings);
+          aggregators[key] = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
+          await aggregators[key].putBindings(bindings);
         }));
 
         if (this.distinctHashes) {
@@ -115,7 +115,7 @@ export class GroupsState {
           }
 
           const variable = aggregate.variable.value;
-          await group.aggregators[variable].put(bindings);
+          await group.aggregators[variable].putBindings(bindings);
         }));
       })().then(() => {
         this.subtractWaitCounterAndCollect();
@@ -126,20 +126,22 @@ export class GroupsState {
 
   private subtractWaitCounterAndCollect(): void {
     if (--this.waitCounter === 0) {
-      this.handleResultCollection();
+      this.handleResultCollection().catch(error => {
+        throw error;
+      });
     }
   }
 
-  private handleResultCollection(): void {
+  private async handleResultCollection(): Promise<void> {
     // Collect groups
-    let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
+    let rows: Bindings[] = await Promise.all([ ...this.groups ].map(async([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
 
       // Collect aggregator bindings
       // If the aggregate errorred, the result will be undefined
       let returnBindings = groupBindings;
       for (const variable in aggregators) {
-        const value = aggregators[variable].result();
+        const value = await aggregators[variable].result();
         if (value) {
           // Filter undefined
           returnBindings = returnBindings.set(DF.variable(variable), value);
@@ -148,22 +150,24 @@ export class GroupsState {
 
       // Merge grouping bindings and aggregator bindings
       return returnBindings;
-    });
+    }));
 
     // Case: No Input
     // Some aggregators still define an output on the empty input
     // Result is a single Bindings
     if (rows.length === 0 && this.groupVariables.size === 0) {
       const single: [RDF.Variable, RDF.Term][] = [];
-      for (const aggregate of this.pattern.aggregates) {
+      await Promise.all(this.pattern.aggregates.map(async aggregate => {
         const key = aggregate.variable;
-        const value = AsyncAggregateEvaluator.emptyValue(aggregate);
+        const aggregator = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
+        const value = await aggregator.result();
         if (value !== undefined) {
           single.push([ key, value ]);
         }
-      }
+      }));
       rows = [ BF.bindings(single) ];
     }
+
     this.waitResolver(rows);
   }
 

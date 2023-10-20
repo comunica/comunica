@@ -94,6 +94,10 @@ export class Quad extends Term {
     return this.transformer.transformRDFTermUnsafe(this.RDFobject);
   }
 
+  public get graph(): Term {
+    return this.transformer.transformRDFTermUnsafe(this.RDFgraph);
+  }
+
   public get RDFsubject(): RDF.Term {
     return this.toRDF().subject;
   }
@@ -104,6 +108,22 @@ export class Quad extends Term {
 
   public get RDFobject(): RDF.Term {
     return this.toRDF().object;
+  }
+
+  public get RDFgraph(): RDF.Term {
+    return this.toRDF().graph;
+  }
+}
+
+export class DefaultGraph extends Term {
+  public termType: TermType = 'defaultGraph';
+
+  public constructor() {
+    super();
+  }
+
+  public toRDF(): RDF.DefaultGraph {
+    return DF.defaultGraph();
   }
 }
 

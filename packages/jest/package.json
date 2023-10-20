@@ -37,6 +37,9 @@
     "@comunica/bindings-factory": "^2.7.0",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
+    "rdf-data-factory": "^1.1.2",
+    "sparqlalgebrajs": "^4.2.0",
+    "sparqljs": "^3.7.1",
     "arrayify-stream": "^2.0.1"
   },
   "scripts": {

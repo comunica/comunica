@@ -1,11 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { FunctionArgumentsCache } from '@comunica/types';
-import { ArrayIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from '..';
 
 const BF = new BindingsFactory();
@@ -91,88 +86,6 @@ describe('ActorQueryOperation', () => {
 
     it('should error for non-boolean', () => {
       expect(() => ActorQueryOperation.validateQueryOutput(<any>{ type: 'no-boolean' }, 'boolean')).toThrow();
-    });
-  });
-
-  describe('#getExpressionContext', () => {
-    describe('without mediatorQueryOperation', () => {
-      it('should create an object for an empty contexts save for the bnode function', () => {
-        expect(ActorQueryOperation.getExpressionContext(new ActionContext()).bnode)
-          .toEqual(expect.any(Function));
-      });
-
-      it('the bnode function should synchronously return a blank node', () => {
-        const context = ActorQueryOperation.getExpressionContext(new ActionContext());
-        const blankNode = context.bnode();
-        expect(blankNode).toBeDefined();
-        expect(blankNode).toHaveProperty('termType');
-        expect(blankNode.termType).toEqual('BlankNode');
-      });
-    });
-  });
-
-  describe('#getAsyncExpressionContext', () => {
-    let mediatorQueryOperation: any;
-
-    beforeEach(() => {
-      mediatorQueryOperation = {
-        mediate: (arg: any) => Promise.resolve({
-          bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0 }),
-          operated: arg,
-          type: 'bindings',
-          variables: [ 'a' ],
-        }),
-      };
-    });
-
-    it('should create an object for an empty contexts save for the bnode function', () => {
-      expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation).bnode)
-        .toEqual(expect.any(Function));
-    });
-
-    it('the bnode function should asynchronously return a blank node', async() => {
-      const context = ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation);
-      const blankNodePromise = context.bnode();
-      expect(blankNodePromise).toBeInstanceOf(Promise);
-      const blankNode = await blankNodePromise;
-      expect(blankNode).toBeDefined();
-      expect(blankNode).toHaveProperty('termType');
-      expect(blankNode.termType).toEqual('BlankNode');
-    });
-
-    it('should create an non-empty object for a filled context', () => {
-      const date = new Date();
-      const functionArgumentsCache: FunctionArgumentsCache = { apple: {}};
-      expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext({
-        [KeysInitQuery.queryTimestamp.name]: date,
-        [KeysInitQuery.baseIRI.name]: 'http://base.org/',
-        [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
-      }), mediatorQueryOperation)).toEqual({
-        now: date,
-        bnode: expect.any(Function),
-        baseIRI: 'http://base.org/',
-        functionArgumentsCache,
-        exists: expect.anything(),
-      });
-    });
-
-    it('should create an object with a resolver', () => {
-      const resolver = (<any>ActorQueryOperation
-        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation)).exists;
-      expect(resolver).toBeTruthy();
-    });
-
-    it('should allow a resolver to be invoked', async() => {
-      const resolver = (<any>ActorQueryOperation
-        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation)).exists;
-      const factory = new Factory();
-      const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-        true,
-        factory.createBgp([]),
-      );
-      const result = resolver(expr, BF.bindings());
-      expect(await result).toBe(true);
     });
   });
 });

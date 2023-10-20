@@ -58,11 +58,8 @@ describe('evaluation of \'+\' like', () => {
   });
   runTestTable({
     ...baseConfig,
-    config: {
-      type: 'sync',
-      config: {
-        getSuperType: unknownType => TypeURL.XSD_INTEGER,
-      },
+    legacyContext: {
+      getSuperType: unknownType => TypeURL.XSD_INTEGER,
     },
     testTable: `
       "2"^^example:int "3"^^example:int = ${int('5')}

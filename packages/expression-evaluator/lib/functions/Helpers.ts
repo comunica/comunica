@@ -4,7 +4,7 @@
  */
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
 import type { Literal, TermExpression, Quad, ISerializable } from '../expressions';
 import * as E from '../expressions';
 import { NonLexicalLiteral } from '../expressions';
@@ -43,13 +43,13 @@ export class Builder {
   }
 
   private static wrapInvalidLexicalProtected(func: ImplementationFunction): ImplementationFunction {
-    return (context: ICompleteSharedContext) => (args: TermExpression[]) => {
+    return (expressionEvaluator: ExpressionEvaluator) => (args: TermExpression[]) => {
       args.forEach((arg, index) => {
         if (arg instanceof NonLexicalLiteral) {
           throw new Err.InvalidLexicalForm(args[index].toRDF());
         }
       });
-      return func(context)(args);
+      return func(expressionEvaluator)(args);
     };
   }
 
@@ -69,153 +69,160 @@ export class Builder {
     return this.set(to, impl);
   }
 
-  public onUnary<T extends Term>(type: ArgumentType, op: (context: ICompleteSharedContext) =>
+  public onUnary<T extends Term>(type: ArgumentType, op: (expressionEvaluator: ExpressionEvaluator) =>
   (val: T) => Term, addInvalidHandling = true): Builder {
-    return this.set([ type ], context => ([ val ]: [T]) => op(context)(val), addInvalidHandling);
+    return this.set([ type ], expressionEvaluator =>
+      ([ val ]: [T]) => op(expressionEvaluator)(val), addInvalidHandling);
   }
 
   public onUnaryTyped<T extends ISerializable>(type: ArgumentType,
-    op: (context: ICompleteSharedContext) => (val: T) => Term, addInvalidHandling = true): Builder {
-    return this.set([ type ], context => ([ val ]: [E.Literal<T>]) => op(context)(val.typedValue), addInvalidHandling);
+    op: (expressionEvaluator: ExpressionEvaluator) => (val: T) => Term, addInvalidHandling = true): Builder {
+    return this.set([ type ], expressionEvaluator => ([ val ]: [E.Literal<T>]) =>
+      op(expressionEvaluator)(val.typedValue), addInvalidHandling);
   }
 
   public onBinary<L extends Term, R extends Term>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
-    return this.set(types, context => ([ left, right ]: [L, R]) => op(context)(left, right), addInvalidHandling);
+    op: (expressionEvaluator: ExpressionEvaluator) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
+    return this.set(types, expressionEvaluator =>
+      ([ left, right ]: [L, R]) => op(expressionEvaluator)(left, right), addInvalidHandling);
   }
 
   public onBinaryTyped<L extends ISerializable, R extends ISerializable>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
+    op: (expressionEvaluator: ExpressionEvaluator) => (left: L, right: R) => Term, addInvalidHandling = true): Builder {
     return this.set(types,
-      context => ([ left, right ]: [E.Literal<L>, E.Literal<R>]) => op(context)(left.typedValue, right.typedValue),
+      expressionEvaluator =>
+        ([ left, right ]: [E.Literal<L>, E.Literal<R>]) => op(expressionEvaluator)(left.typedValue, right.typedValue),
       addInvalidHandling);
   }
 
   public onTernaryTyped<A1 extends ISerializable, A2 extends ISerializable, A3 extends ISerializable>(
-    types: ArgumentType[], op: (context: ICompleteSharedContext)
+    types: ArgumentType[], op: (expressionEvaluator: ExpressionEvaluator)
     => (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true,
   ): Builder {
-    return this.set(types, context => ([ a1, a2, a3 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) =>
-      op(context)(a1.typedValue, a2.typedValue, a3.typedValue), addInvalidHandling);
+    return this.set(types, expressionEvaluator => ([ a1, a2, a3 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) =>
+      op(expressionEvaluator)(a1.typedValue, a2.typedValue, a3.typedValue), addInvalidHandling);
   }
 
   public onTernary<A1 extends Term, A2 extends Term, A3 extends Term>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true): Builder {
-    return this.set(types, context => ([ a1, a2, a3 ]: [A1, A2, A3]) => op(context)(a1, a2, a3), addInvalidHandling);
+    op: (expressionEvaluator: ExpressionEvaluator) =>
+    (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true): Builder {
+    return this.set(types, expressionEvaluator =>
+      ([ a1, a2, a3 ]: [A1, A2, A3]) => op(expressionEvaluator)(a1, a2, a3), addInvalidHandling);
   }
 
   public onQuaternaryTyped<A1 extends ISerializable, A2 extends ISerializable,
     A3 extends ISerializable, A4 extends ISerializable>(types: ArgumentType[],
-    op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term,
+    op: (expressionEvaluator: ExpressionEvaluator) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term,
     addInvalidHandling = true): Builder {
-    return this.set(types, context =>
+    return this.set(types, expressionEvaluator =>
       ([ a1, a2, a3, a4 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>, E.Literal<A4>]) =>
-        op(context)(a1.typedValue, a2.typedValue, a3.typedValue, a4.typedValue), addInvalidHandling);
+        op(expressionEvaluator)(a1.typedValue, a2.typedValue, a3.typedValue, a4.typedValue), addInvalidHandling);
   }
 
-  public onTerm1(op: (context: ICompleteSharedContext) => (term: Term) => Term, addInvalidHandling = false): Builder {
+  public onTerm1(op: (expressionEvaluator: ExpressionEvaluator) =>
+  (term: Term) => Term, addInvalidHandling = false): Builder {
     return this.set(
       [ 'term' ],
-      context => ([ term ]: [Term]) => op(context)(term),
+      expressionEvaluator => ([ term ]: [Term]) => op(expressionEvaluator)(term),
       addInvalidHandling,
     );
   }
 
-  public onTerm3(op: (context: ICompleteSharedContext) => (t1: Term, t2: Term, t3: Term) => Term): Builder {
+  public onTerm3(op: (expressionEvaluator: ExpressionEvaluator) => (t1: Term, t2: Term, t3: Term) => Term): Builder {
     return this.set([ 'term', 'term', 'term' ],
-      context => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(context)(t1, t2, t3));
+      expressionEvaluator => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(expressionEvaluator)(t1, t2, t3));
   }
 
-  public onQuad1(op: (context: ICompleteSharedContext) => (term: Term & Quad) => Term): Builder {
-    return this.set([ 'quad' ], context => ([ term ]: [Term & Quad]) => op(context)(term));
+  public onQuad1(op: (expressionEvaluator: ExpressionEvaluator) => (term: Term & Quad) => Term): Builder {
+    return this.set([ 'quad' ], expressionEvaluator => ([ term ]: [Term & Quad]) => op(expressionEvaluator)(term));
   }
 
-  public onLiteral1<T extends ISerializable>(op: (context: ICompleteSharedContext) => (lit: E.Literal<T>) => Term,
-    addInvalidHandling = true): Builder {
+  public onLiteral1<T extends ISerializable>(op: (expressionEvaluator: ExpressionEvaluator) =>
+  (lit: E.Literal<T>) => Term, addInvalidHandling = true): Builder {
     return this.set(
       [ 'literal' ],
-      context => ([ term ]: [E.Literal<T>]) => op(context)(term),
+      expressionEvaluator => ([ term ]: [E.Literal<T>]) => op(expressionEvaluator)(term),
       addInvalidHandling,
     );
   }
 
-  public onBoolean1(op: (context: ICompleteSharedContext) => (lit: E.BooleanLiteral) => Term,
+  public onBoolean1(op: (expressionEvaluator: ExpressionEvaluator) => (lit: E.BooleanLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],
-      context => ([ lit ]: [E.BooleanLiteral]) => op(context)(lit),
+      expressionEvaluator => ([ lit ]: [E.BooleanLiteral]) => op(expressionEvaluator)(lit),
       addInvalidHandling,
     );
   }
 
-  public onBoolean1Typed(op: (context: ICompleteSharedContext) => (lit: boolean) => Term,
+  public onBoolean1Typed(op: (expressionEvaluator: ExpressionEvaluator) => (lit: boolean) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],
-      context => ([ lit ]: [E.BooleanLiteral]) => op(context)(lit.typedValue),
+      expressionEvaluator => ([ lit ]: [E.BooleanLiteral]) => op(expressionEvaluator)(lit.typedValue),
       addInvalidHandling,
     );
   }
 
-  public onString1(op: (context: ICompleteSharedContext) => (lit: E.Literal<string>) => Term,
+  public onString1(op: (expressionEvaluator: ExpressionEvaluator) => (lit: E.Literal<string>) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_STRING ],
-      context => ([ lit ]: [E.Literal<string>]) => op(context)(lit),
+      expressionEvaluator => ([ lit ]: [E.Literal<string>]) => op(expressionEvaluator)(lit),
       addInvalidHandling,
     );
   }
 
-  public onString1Typed(op: (context: ICompleteSharedContext) => (lit: string) => Term,
+  public onString1Typed(op: (expressionEvaluator: ExpressionEvaluator) => (lit: string) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_STRING ],
-      context => ([ lit ]: [E.Literal<string>]) => op(context)(lit.typedValue),
+      expressionEvaluator => ([ lit ]: [E.Literal<string>]) => op(expressionEvaluator)(lit.typedValue),
       addInvalidHandling,
     );
   }
 
-  public onLangString1(op: (context: ICompleteSharedContext) => (lit: E.LangStringLiteral) => Term,
+  public onLangString1(op: (expressionEvaluator: ExpressionEvaluator) => (lit: E.LangStringLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.RDF_LANG_STRING ],
-      context => ([ lit ]: [E.LangStringLiteral]) => op(context)(lit),
+      expressionEvaluator => ([ lit ]: [E.LangStringLiteral]) => op(expressionEvaluator)(lit),
       addInvalidHandling,
     );
   }
 
-  public onStringly1(op: (context: ICompleteSharedContext) => (lit: E.Literal<string>) => Term,
+  public onStringly1(op: (expressionEvaluator: ExpressionEvaluator) => (lit: E.Literal<string>) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_STRINGLY ],
-      context => ([ lit ]: [E.Literal<string>]) => op(context)(lit),
+      expressionEvaluator => ([ lit ]: [E.Literal<string>]) => op(expressionEvaluator)(lit),
       addInvalidHandling,
     );
   }
 
-  public onStringly1Typed(op: (context: ICompleteSharedContext) => (lit: string) => Term,
+  public onStringly1Typed(op: (expressionEvaluator: ExpressionEvaluator) => (lit: string) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_STRINGLY ],
-      context => ([ lit ]: [E.Literal<string>]) => op(context)(lit.typedValue),
+      expressionEvaluator => ([ lit ]: [E.Literal<string>]) => op(expressionEvaluator)(lit.typedValue),
       addInvalidHandling,
     );
   }
 
-  public onNumeric1(op: (context: ICompleteSharedContext) => (val: E.NumericLiteral) => Term,
+  public onNumeric1(op: (expressionEvaluator: ExpressionEvaluator) => (val: E.NumericLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_NUMERIC ],
-      context => ([ val ]: [E.NumericLiteral]) => op(context)(val),
+      expressionEvaluator => ([ val ]: [E.NumericLiteral]) => op(expressionEvaluator)(val),
       addInvalidHandling,
     );
   }
 
-  public onDateTime1(op: (context: ICompleteSharedContext) => (date: E.DateTimeLiteral) => Term,
+  public onDateTime1(op: (expressionEvaluator: ExpressionEvaluator) => (date: E.DateTimeLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this
       .set([ C.TypeURL.XSD_DATE_TIME ],
-        context => ([ val ]: [E.DateTimeLiteral]) => op(context)(val),
+        expressionEvaluator => ([ val ]: [E.DateTimeLiteral]) => op(expressionEvaluator)(val),
         addInvalidHandling);
   }
 
@@ -227,18 +234,18 @@ export class Builder {
    * @param addInvalidHandling whether to add invalid handling,
    *   whether to add @param op in @see wrapInvalidLexicalProtected
    */
-  public numericConverter(op: (context: ICompleteSharedContext) => (val: number) => number,
+  public numericConverter(op: (expressionEvaluator: ExpressionEvaluator) => (val: number) => number,
     addInvalidHandling = true): Builder {
-    const evalHelper = (context: ICompleteSharedContext) => (arg: Term): number =>
-      op(context)((<Literal<number>>arg).typedValue);
-    return this.onBinary([ TypeURL.XSD_INTEGER ], context => arg =>
-      integer(evalHelper(context)(arg)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_DECIMAL ], context => arg =>
-        decimal(evalHelper(context)(arg)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_FLOAT ], context => arg =>
-        float(evalHelper(context)(arg)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_DOUBLE ], context => arg =>
-        double(evalHelper(context)(arg)), addInvalidHandling);
+    const evalHelper = (expressionEvaluator: ExpressionEvaluator) => (arg: Term): number =>
+      op(expressionEvaluator)((<Literal<number>>arg).typedValue);
+    return this.onBinary([ TypeURL.XSD_INTEGER ], expressionEvaluator => arg =>
+      integer(evalHelper(expressionEvaluator)(arg)), addInvalidHandling)
+      .onBinary([ TypeURL.XSD_DECIMAL ], expressionEvaluator => arg =>
+        decimal(evalHelper(expressionEvaluator)(arg)), addInvalidHandling)
+      .onBinary([ TypeURL.XSD_FLOAT ], expressionEvaluator => arg =>
+        float(evalHelper(expressionEvaluator)(arg)), addInvalidHandling)
+      .onBinary([ TypeURL.XSD_DOUBLE ], expressionEvaluator => arg =>
+        double(evalHelper(expressionEvaluator)(arg)), addInvalidHandling);
   }
 
   /**
@@ -252,60 +259,61 @@ export class Builder {
    * https://www.w3.org/TR/xpath20/#mapping
    * Above url is referenced in the sparql spec: https://www.w3.org/TR/sparql11-query/#OperatorMapping
    */
-  public arithmetic(op: (context: ICompleteSharedContext) => (left: number, right: number) => number,
+  public arithmetic(op: (expressionEvaluator: ExpressionEvaluator) => (left: number, right: number) => number,
     addInvalidHandling = true): Builder {
-    const evalHelper = (context: ICompleteSharedContext) => (left: Term, right: Term): number =>
-      op(context)((<Literal<number>>left).typedValue, (<Literal<number>>right).typedValue);
-    return this.onBinary([ TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ], context => (left, right) =>
-      integer(evalHelper(context)(left, right)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_DECIMAL, TypeURL.XSD_DECIMAL ], context => (left, right) =>
-        decimal(evalHelper(context)(left, right)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_FLOAT, TypeURL.XSD_FLOAT ], context => (left, right) =>
-        float(evalHelper(context)(left, right)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_DOUBLE, TypeURL.XSD_DOUBLE ], context => (left, right) =>
-        double(evalHelper(context)(left, right)), addInvalidHandling);
+    const evalHelper = (expressionEvaluator: ExpressionEvaluator) => (left: Term, right: Term): number =>
+      op(expressionEvaluator)((<Literal<number>>left).typedValue, (<Literal<number>>right).typedValue);
+    return this.onBinary([ TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ], expressionEvaluator => (left, right) =>
+      integer(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling)
+      .onBinary([ TypeURL.XSD_DECIMAL, TypeURL.XSD_DECIMAL ], expressionEvaluator => (left, right) =>
+        decimal(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling)
+      .onBinary([ TypeURL.XSD_FLOAT, TypeURL.XSD_FLOAT ], expressionEvaluator => (left, right) =>
+        float(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling)
+      .onBinary([ TypeURL.XSD_DOUBLE, TypeURL.XSD_DOUBLE ], expressionEvaluator => (left, right) =>
+        double(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling);
   }
 
-  public numberTest(test: (context: ICompleteSharedContext) => (left: number, right: number) => boolean): Builder {
-    return this.numeric(context => ([ left, right ]: E.NumericLiteral[]) => {
-      const result = test(context)(left.typedValue, right.typedValue);
+  public numberTest(test: (expressionEvaluator: ExpressionEvaluator) => (left: number, right: number) => boolean):
+  Builder {
+    return this.numeric(expressionEvaluator => ([ left, right ]: E.NumericLiteral[]) => {
+      const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
       return bool(result);
     });
   }
 
-  public stringTest(test: (context: ICompleteSharedContext) => (left: string, right: string) => boolean,
+  public stringTest(test: (expressionEvaluator: ExpressionEvaluator) => (left: string, right: string) => boolean,
     addInvalidHandling = true): Builder {
     return this
       .set(
         [ C.TypeURL.XSD_STRING, C.TypeURL.XSD_STRING ],
-        context => ([ left, right ]: E.StringLiteral[]) => {
-          const result = test(context)(left.typedValue, right.typedValue);
+        expressionEvaluator => ([ left, right ]: E.StringLiteral[]) => {
+          const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
           return bool(result);
         },
         addInvalidHandling,
       );
   }
 
-  public booleanTest(test: (context: ICompleteSharedContext) => (left: boolean, right: boolean) => boolean,
+  public booleanTest(test: (expressionEvaluator: ExpressionEvaluator) => (left: boolean, right: boolean) => boolean,
     addInvalidHandling = true): Builder {
     return this
       .set(
         [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],
-        context => ([ left, right ]: E.BooleanLiteral[]) => {
-          const result = test(context)(left.typedValue, right.typedValue);
+        expressionEvaluator => ([ left, right ]: E.BooleanLiteral[]) => {
+          const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
           return bool(result);
         },
         addInvalidHandling,
       );
   }
 
-  public dateTimeTest(test: (context: ICompleteSharedContext)
+  public dateTimeTest(test: (expressionEvaluator: ExpressionEvaluator)
   => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean, addInvalidHandling = true): Builder {
     return this
       .set(
         [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
-        context => ([ left, right ]: E.DateTimeLiteral[]) => {
-          const result = test(context)(left.typedValue, right.typedValue);
+        expressionEvaluator => ([ left, right ]: E.DateTimeLiteral[]) => {
+          const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
           return bool(result);
         },
         addInvalidHandling,

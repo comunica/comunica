@@ -2,7 +2,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
-import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -11,9 +12,11 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
+  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
+    this.expressionEvaluatorFactory = args.expressionEvaluatorFactory;
   }
 
   public async testOperation(operation: Algebra.LeftJoin, context: IActionContext): Promise<IActorTest> {
@@ -38,8 +41,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     if (operationOriginal.expression) {
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
-      const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
-      const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
+      const evaluator = this.expressionEvaluatorFactory.createEvaluator(operationOriginal.expression, context);
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,
@@ -83,4 +85,5 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
    * A mediator for joining Bindings streams
    */
   mediatorJoin: MediatorRdfJoin;
+  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 }

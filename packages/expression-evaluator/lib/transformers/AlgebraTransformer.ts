@@ -1,9 +1,12 @@
 import { Algebra as Alg } from 'sparqlalgebrajs';
-import type { AsyncExtensionFunction, AsyncExtensionFunctionCreator } from '../evaluators/AsyncEvaluator';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type { SyncExtensionFunction, SyncExtensionFunctionCreator } from '../evaluators/SyncEvaluator';
+import type { ICompleteEEContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
+import type {
+  AsyncExtensionFunction,
+  AsyncExtensionFunctionCreator,
+  ExpressionEvaluator,
+} from '../evaluators/ExpressionEvaluator';
+import type { AsyncExtensionApplication } from '../expressions';
 import * as E from '../expressions';
-import type { AsyncExtensionApplication, SimpleApplication } from '../expressions';
 import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -11,20 +14,22 @@ import { ExtensionFunctionError } from '../util/Errors';
 import type { ITermTransformer } from './TermTransformer';
 import { TermTransformer } from './TermTransformer';
 
-type FunctionCreatorConfig = { type: 'sync'; creator: SyncExtensionFunctionCreator } |
-{ type: 'async'; creator: AsyncExtensionFunctionCreator };
+interface IFunctionCreatorConfig {
+  creator: AsyncExtensionFunctionCreator;
+}
 
-type AlgebraTransformConfig = ICompleteSharedContext & FunctionCreatorConfig;
+type AlgebraTransformConfig = ICompleteEEContext & IFunctionCreatorConfig;
 
 export interface IAlgebraTransformer extends ITermTransformer{
   transformAlgebra: (expr: Alg.Expression) => E.Expression;
 }
 
 export class AlgebraTransformer extends TermTransformer implements IAlgebraTransformer {
-  private readonly creatorConfig: FunctionCreatorConfig;
-  public constructor(protected readonly algebraConfig: AlgebraTransformConfig) {
+  private readonly creatorConfig: IFunctionCreatorConfig;
+  public constructor(protected readonly algebraConfig: AlgebraTransformConfig,
+    private readonly expressionEvaluator: ExpressionEvaluator) {
     super(algebraConfig.superTypeProvider);
-    this.creatorConfig = <FunctionCreatorConfig> { type: algebraConfig.type, creator: algebraConfig.creator };
+    this.creatorConfig = <IFunctionCreatorConfig> { creator: algebraConfig.creator };
   }
 
   public transformAlgebra(expr: Alg.Expression): E.Expression {
@@ -59,7 +64,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       if (!specialFunc.checkArity(specialArgs)) {
         throw new Err.InvalidArity(specialArgs, specialOp);
       }
-      return new E.SpecialOperator(specialArgs, specialFunc.applyAsync, specialFunc.applySynchronously);
+      return new E.SpecialOperator(specialArgs, specialFunc.applyAsync);
     }
     if (!C.Operators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
@@ -70,18 +75,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
     if (!AlgebraTransformer.hasCorrectArity(regularArgs, regularFunc.arity)) {
       throw new Err.InvalidArity(regularArgs, regularOp);
     }
-    return new E.Operator(regularArgs, args => regularFunc.apply(args, this.algebraConfig));
-  }
-
-  private wrapSyncFunction(func: SyncExtensionFunction, name: string): SimpleApplication {
-    return args => {
-      try {
-        const res = func(args.map(arg => arg.toRDF()));
-        return this.transformRDFTermUnsafe(res);
-      } catch (error: unknown) {
-        throw new ExtensionFunctionError(name, error);
-      }
-    };
+    return new E.Operator(regularArgs, args => regularFunc.apply(args, this.expressionEvaluator));
   }
 
   private wrapAsyncFunction(func: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
@@ -104,22 +98,13 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       // Return a basic named expression
       const op = <C.NamedOperator>expr.name.value;
       const namedFunc = namedFunctions[op];
-      return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args, this.algebraConfig));
+      return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args, this.expressionEvaluator));
     }
-    if (this.creatorConfig.type === 'sync') {
-      // Expression might be extension function, check this for the sync
-      const syncExtensionFunc = this.creatorConfig.creator(expr.name);
-      if (syncExtensionFunc) {
-        const simpleAppl = this.wrapSyncFunction(syncExtensionFunc, expr.name.value);
-        return new E.SyncExtension(expr.name, namedArgs, simpleAppl);
-      }
-    } else {
-      // The expression might be an extension function, check this for the async case
-      const asyncExtensionFunc = this.creatorConfig.creator(expr.name);
-      if (asyncExtensionFunc) {
-        const asyncAppl = this.wrapAsyncFunction(asyncExtensionFunc, expr.name.value);
-        return new E.AsyncExtension(expr.name, namedArgs, asyncAppl);
-      }
+    // The expression might be an extension function, check this.
+    const asyncExtensionFunc = this.creatorConfig.creator(expr.name);
+    if (asyncExtensionFunc) {
+      const asyncAppl = this.wrapAsyncFunction(asyncExtensionFunc, expr.name.value);
+      return new E.AsyncExtension(expr.name, namedArgs, asyncAppl);
     }
     throw new Err.UnknownNamedOperator(expr.name.value);
   }

@@ -41,11 +41,8 @@ describe('evaluation of \'/\' like', () => {
   });
   runTestTable({
     ...config,
-    config: {
-      type: 'sync',
-      config: {
-        getSuperType: unknownType => TypeURL.XSD_INTEGER,
-      },
+    legacyContext: {
+      getSuperType: unknownType => TypeURL.XSD_INTEGER,
     },
     testTable: `
       "2"^^example:int "2"^^example:int = ${decimal('1')}

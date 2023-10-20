@@ -4,7 +4,12 @@ import { Wildcard } from 'sparqljs';
 import * as E from '../../../lib/expressions';
 import { AlgebraTransformer } from '../../../lib/transformers/AlgebraTransformer';
 import * as Err from '../../../lib/util/Errors';
-import { getDefaultSharedContext } from '../../util/utils';
+import {
+  getDefaultCompleteEEContext,
+  getMockEEActionContext,
+  getMockEEFactory,
+  getMockExpression,
+} from '../../util/utils';
 
 const DF = new DataFactory();
 
@@ -12,10 +17,9 @@ describe('AlgebraTransformer', () => {
   let algebraTransformer: AlgebraTransformer;
   beforeEach(() => {
     algebraTransformer = new AlgebraTransformer({
-      creator: _ => args => DF.namedNode('http://example.com'),
-      type: 'sync',
-      ...getDefaultSharedContext(),
-    });
+      creator: _ => async args => DF.namedNode('http://example.com'),
+      ...getDefaultCompleteEEContext(),
+    }, getMockEEFactory().createEvaluator(getMockExpression('1+1'), getMockEEActionContext()));
   });
 
   it('transform term', () => {

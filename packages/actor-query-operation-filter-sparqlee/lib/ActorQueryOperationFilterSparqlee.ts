@@ -5,7 +5,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
+import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -13,14 +14,16 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A comunica Filter Sparqlee Query Operation Actor.
  */
 export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedMediated<Algebra.Filter> {
-  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+
+  public constructor(args: IActorQueryOperationFilterSparqleeArgs) {
     super(args, 'filter');
+    this.expressionEvaluatorFactory = args.expressionEvaluatorFactory;
   }
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
-    const _ = new AsyncEvaluator(operation.expression, config);
+    const _ = this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
     return true;
   }
 
@@ -30,8 +33,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
-    const evaluator = new AsyncEvaluator(operation.expression, config);
+    const evaluator = this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {
@@ -63,4 +65,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform, autoStart: false });
     return { type: 'bindings', bindingsStream, metadata: output.metadata };
   }
+}
+
+interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
+  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 }
