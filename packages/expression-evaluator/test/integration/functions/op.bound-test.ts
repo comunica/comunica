@@ -7,7 +7,7 @@ import * as Err from '../../../lib/util/Errors';
 import { generalEvaluate } from '../../util/generalEvaluation';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory({});
 
 describe('evaluation of \'bound\'', () => {
   it('\'bound\' on bounded variable returns true', async() => {

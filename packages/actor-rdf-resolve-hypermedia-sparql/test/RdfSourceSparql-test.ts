@@ -441,7 +441,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory({});
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
 
       const stream = source.match(
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),

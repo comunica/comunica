@@ -6,8 +6,6 @@ import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
 import { QueryEngine } from '../lib/QueryEngine';
 
-const stringifyStream = require('stream-to-string');
-
 describe('System test: QuerySparqlFile', () => {
   let engine: QueryEngine;
   let spyQueryOrExplain: any;

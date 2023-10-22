@@ -9,7 +9,7 @@ import { ExpressionType } from '../../../lib/expressions';
 import * as E from '../../../lib/expressions';
 import * as Err from '../../../lib/util/Errors';
 
-const BF = new BindingsFactory();
+const BF = new BindingsFactory({});
 const DF = new DataFactory();
 
 describe('recursive evaluators', () => {

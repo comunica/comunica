@@ -7,7 +7,7 @@ import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory({});
 const two = DF.literal('2', DF.namedNode(DT.XSD_INTEGER));
 
 function parse(expr: string) {

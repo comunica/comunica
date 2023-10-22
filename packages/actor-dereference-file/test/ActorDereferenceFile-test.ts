@@ -7,6 +7,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const streamToString = require('stream-to-string');
 
 function fileUrl(str: string): string {

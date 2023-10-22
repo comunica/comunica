@@ -33,9 +33,10 @@
   ],
   "dependencies": {
     "@comunica/bindings-factory": "^2.7.0",
-    "@comunica/bus-query-operation": "^2.8.1",
     "@comunica/bus-merge-binding-factory": "^2.0.0",
+    "@comunica/bus-query-operation": "^2.8.1",
     "@comunica/core": "^2.8.1",
+    "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/types": "^2.8.1",
     "sparqlalgebrajs": "^4.2.0",
     "sparqlee": "^3.0.0"

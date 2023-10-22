@@ -7,7 +7,7 @@ import { AsyncEvaluator, SyncEvaluator } from '../../lib';
 import type { IAsyncEvaluatorContext, AsyncExtensionFunctionCreator } from '../../lib/evaluators/AsyncEvaluator';
 import type { ISyncEvaluatorContext, SyncExtensionFunctionCreator } from '../../lib/evaluators/SyncEvaluator';
 
-const BF = new BindingsFactory();
+const BF = new BindingsFactory({});
 
 export type GeneralEvaluationConfig = { type: 'sync'; config: ISyncEvaluatorContext } |
 { type: 'async'; config: IAsyncEvaluatorContext };

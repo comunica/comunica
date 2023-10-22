@@ -17,7 +17,7 @@ import { template } from '../test/util/Aliases';
 
 const benchSuite = new Suite();
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory({});
 
 function integerTerm(int: number): RDF.Term {
   return DF.literal(int.toString(), DF.namedNode(TypeURL.XSD_INTEGER));

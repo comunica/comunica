@@ -43,7 +43,7 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly sparqleeConfig: AsyncEvaluatorConfig,
+    private readonly sparqleeConfig: IAsyncEvaluatorContext,
     BF: BindingsFactory,
   ) {
     this.groups = new Map();

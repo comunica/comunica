@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bindings_factory_1 = require("@comunica/bindings-factory");
 // eslint-disable-next-line import/no-extraneous-dependencies
 const benchmark_1 = require("benchmark");
-// eslint-disable-next-line import/no-extraneous-dependencies
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const Benchmark = require("benchmark");
 const rdf_data_factory_1 = require("rdf-data-factory");
 const sparqlalgebrajs_1 = require("sparqlalgebrajs");
@@ -15,7 +15,7 @@ const Consts_1 = require("../lib/util/Consts");
 const Aliases_1 = require("../test/util/Aliases");
 const benchSuite = new benchmark_1.Suite();
 const DF = new rdf_data_factory_1.DataFactory();
-const BF = new bindings_factory_1.BindingsFactory();
+const BF = new bindings_factory_1.BindingsFactory({});
 function integerTerm(int) {
     return DF.literal(int.toString(), DF.namedNode(Consts_1.TypeURL.XSD_INTEGER));
 }

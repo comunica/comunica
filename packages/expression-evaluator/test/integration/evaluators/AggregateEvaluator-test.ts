@@ -6,7 +6,7 @@ import { Wildcard } from 'sparqljs';
 import { AggregateEvaluator, AsyncAggregateEvaluator } from '../../../lib';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory({});
 
 interface IBaseTestCaseArgs { expr: Algebra.AggregateExpression; evalTogether?: boolean }
 type TestCaseArgs = IBaseTestCaseArgs & { input: RDF.Bindings[] };

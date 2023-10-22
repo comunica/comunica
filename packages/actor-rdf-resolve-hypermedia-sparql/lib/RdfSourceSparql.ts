@@ -139,7 +139,7 @@ export class RdfSourceSparql implements IQuadSource {
    * @return {BindingsStream} A stream of bindings.
    */
   public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
-    const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
+    const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map((rawData: Record<string, RDF.Term>) => this.BF.bindings(Object.entries(rawData)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
@@ -156,24 +156,11 @@ export class RdfSourceSparql implements IQuadSource {
     const selectQuery: string = RdfSourceSparql.patternToSelectQuery(pattern);
 
     // Emit metadata containing the estimated count (reject is never called)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    new Promise<RDF.QueryResultCardinality>(async resolve => {
-      const cachedCardinality = this.cache?.get(countQuery);
-      if (cachedCardinality !== undefined) {
-        return resolve(cachedCardinality);
-      }
-
-      const bindingsStream: BindingsStream = await this.queryBindings(this.url, countQuery);
-      bindingsStream.on('data', (bindings: Bindings) => {
-        const count = bindings.get(VAR_COUNT);
-        const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
-        if (count) {
-          const cardinalityValue: number = Number.parseInt(count.value, 10);
-          if (!Number.isNaN(cardinalityValue)) {
-            cardinality.type = 'exact';
-            cardinality.value = cardinalityValue;
-            this.cache?.set(countQuery, cardinality);
-          }
+    new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
+      try {
+        const cachedCardinality = this.cache?.get(countQuery);
+        if (cachedCardinality !== undefined) {
+          return resolve(cachedCardinality);
         }
 
         const bindingsStream: BindingsStream = await this.queryBindings(this.url, countQuery);

@@ -8,7 +8,7 @@ import { generalEvaluate } from '../../util/generalEvaluation';
 import { Notation } from '../../util/TestTable';
 import { runTestTable } from '../../util/utils';
 
-const BF = new BindingsFactory();
+const BF = new BindingsFactory({});
 
 describe('extension functions:', () => {
   describe('term-equal', () => {
