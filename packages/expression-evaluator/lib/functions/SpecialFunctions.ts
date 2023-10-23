@@ -1,4 +1,4 @@
-import type { IEvalContext } from '@comunica/types';
+import type { IEvalContext, IFunctionExpression } from '@comunica/types';
 import * as uuid from 'uuid';
 import * as E from '../expressions';
 import * as C from '../util/Consts';
@@ -7,8 +7,22 @@ import { bool, declare, expressionToVar, langString, string } from './Helpers';
 import type { OverloadTree } from '.';
 import { regularFunctions, specialFunctions } from '.';
 
-type Term = E.TermExpression;
-type PTerm = Promise<E.TermExpression>;
+export abstract class SparqlFunction implements IFunctionExpression {
+  protected abstract readonly arity: number;
+  public abstract apply(evalContext: IEvalContext): Promise<E.TermExpression>;
+
+  public checkArity(args: E.Expression[]): boolean {
+    if (Array.isArray(this.arity)) {
+      return this.arity.includes(args.length);
+    }
+    if (this.arity === Number.POSITIVE_INFINITY) {
+      // Infinity is used to represent var-args, so it's always correct.
+      return true;
+    }
+
+    return args.length === this.arity;
+  }
+}
 
 // ----------------------------------------------------------------------------
 // Functional forms
@@ -20,17 +34,18 @@ type PTerm = Promise<E.TermExpression>;
  * https://www.w3.org/TR/sparql11-query/#func-bound
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const bound: ISpecialDefinition = {
-  arity: 1,
-  async applyAsync({ args, mapping }: IEvalContext): PTerm {
+class Bound extends SparqlFunction {
+  protected arity = 1;
+
+  public async apply({ args, mapping }: IEvalContext): Promise<E.TermExpression> {
     const variable = <E.VariableExpression> args[0];
     if (variable.expressionType !== E.ExpressionType.Variable) {
       throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
     }
     const val = mapping.has(expressionToVar(variable));
     return bool(val);
-  },
-};
+  }
+}
 
 // IF -------------------------------------------------------------------------
 
@@ -38,16 +53,17 @@ const bound: ISpecialDefinition = {
  * https://www.w3.org/TR/sparql11-query/#func-if
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const ifSPARQL: ISpecialDefinition = {
-  arity: 3,
-  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
+class IfSPARQL extends SparqlFunction {
+  protected arity = 3;
+
+  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
     const valFirst = await exprEval.evaluator.evaluate(args[0], mapping);
     const ebv = valFirst.coerceEBV();
     return ebv ?
       exprEval.evaluator.evaluate(args[1], mapping) :
       exprEval.evaluator.evaluate(args[2], mapping);
-  },
-};
+  }
+}
 
 // COALESCE -------------------------------------------------------------------
 
@@ -55,9 +71,10 @@ const ifSPARQL: ISpecialDefinition = {
  * https://www.w3.org/TR/sparql11-query/#func-coalesce
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const coalesce: ISpecialDefinition = {
-  arity: Number.POSITIVE_INFINITY,
-  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
+class Coalesce extends SparqlFunction {
+  protected arity = Number.POSITIVE_INFINITY;
+
+  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
     const errors: Error[] = [];
     for (const expr of args) {
       try {
@@ -67,8 +84,8 @@ const coalesce: ISpecialDefinition = {
       }
     }
     throw new Err.CoalesceError(errors);
-  },
-};
+  }
+}
 
 // Logical-or (||) ------------------------------------------------------------
 
@@ -76,9 +93,9 @@ const coalesce: ISpecialDefinition = {
  * https://www.w3.org/TR/sparql11-query/#func-logical-or
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const logicalOr: ISpecialDefinition = {
-  arity: 2,
-  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
+class LogicalOr extends SparqlFunction {
+  protected arity = 2;
+  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
     const [ leftExpr, rightExpr ] = args;
     try {
       const leftTerm = await exprEval.evaluator.evaluate(leftExpr, mapping);
@@ -97,8 +114,8 @@ const logicalOr: ISpecialDefinition = {
       }
       return bool(true);
     }
-  },
-};
+  }
+}
 
 // Logical-and (&&) -----------------------------------------------------------
 
@@ -106,9 +123,10 @@ const logicalOr: ISpecialDefinition = {
  * https://www.w3.org/TR/sparql11-query/#func-logical-and
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const logicalAnd: ISpecialDefinition = {
-  arity: 2,
-  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
+class LogicalAnd extends SparqlFunction {
+  protected arity = 2;
+
+  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
     const [ leftExpr, rightExpr ] = args;
     try {
       const leftTerm = await exprEval.evaluator.evaluate(leftExpr, mapping);
@@ -127,23 +145,24 @@ const logicalAnd: ISpecialDefinition = {
       }
       return bool(false);
     }
-  },
-};
+  }
+}
 
 // SameTerm -------------------------------------------------------------------
 
 /**
+ * TODO: why is this a special function?
  * https://www.w3.org/TR/sparql11-query/#func-sameTerm
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const sameTerm: ISpecialDefinition = {
-  arity: 2,
-  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
+class SameTerm extends SparqlFunction {
+  protected arity = 2;
+  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
     const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluator.evaluate(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
     return bool(left.toRDF().equals(right.toRDF()));
-  },
-};
+  }
+}
 
 // IN -------------------------------------------------------------------------
 
@@ -151,41 +170,43 @@ const sameTerm: ISpecialDefinition = {
  * https://www.w3.org/TR/sparql11-query/#func-in
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const inSPARQL: ISpecialDefinition = {
-  arity: Number.POSITIVE_INFINITY,
-  checkArity(args: E.Expression[]) {
+class InSPARQL extends SparqlFunction {
+  protected arity = Number.POSITIVE_INFINITY;
+
+  public checkArity(args: E.Expression[]): boolean {
     return args.length > 0;
-  },
-  async applyAsync(context: IEvalContext): PTerm {
+  }
+
+  public async apply(context: IEvalContext): Promise<E.TermExpression> {
+    async function inRecursive(
+      needle: E.TermExpression,
+      context: IEvalContext,
+      results: (Error | false)[],
+    ): Promise<E.TermExpression> {
+      const { args, mapping, exprEval } = context;
+      if (args.length === 0) {
+        const noErrors = results.every(val => !val);
+        return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
+      }
+
+      try {
+        // We know this will not be undefined because we check args.length === 0
+        const nextExpression = args.shift()!;
+        const next = await exprEval.evaluator.evaluate(nextExpression, mapping);
+        const isEqual = regularFunctions[C.RegularOperator.EQUAL];
+        if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
+          return bool(true);
+        }
+        return inRecursive(needle, context, [ ...results, false ]);
+      } catch (error: unknown) {
+        return inRecursive(needle, context, [ ...results, <Error> error ]);
+      }
+    }
+
     const { args, mapping, exprEval } = context;
     const [ leftExpr, ...remaining ] = args;
     const left = await exprEval.evaluator.evaluate(leftExpr, mapping);
-    return inRecursiveAsync(left, { ...context, args: remaining }, []);
-  },
-};
-
-async function inRecursiveAsync(
-  needle: Term,
-  context: IEvalContext,
-  results: (Error | false)[],
-): PTerm {
-  const { args, mapping, exprEval } = context;
-  if (args.length === 0) {
-    const noErrors = results.every(val => !val);
-    return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
-  }
-
-  try {
-    // We know this will not be undefined because we check args.length === 0
-    const nextExpression = args.shift()!;
-    const next = await exprEval.evaluator.evaluate(nextExpression, mapping);
-    const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-    if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
-      return bool(true);
-    }
-    return inRecursiveAsync(needle, context, [ ...results, false ]);
-  } catch (error: unknown) {
-    return inRecursiveAsync(needle, context, [ ...results, <Error> error ]);
+    return await inRecursive(left, { ...context, args: remaining }, []);
   }
 }
 
@@ -195,17 +216,19 @@ async function inRecursiveAsync(
  * https://www.w3.org/TR/sparql11-query/#func-not-in
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-const notInSPARQL: ISpecialDefinition = {
-  arity: Number.POSITIVE_INFINITY,
-  checkArity(args: E.Expression[]) {
+class NotInSPARQL extends SparqlFunction {
+  protected arity = Number.POSITIVE_INFINITY;
+
+  public checkArity(args: E.Expression[]): boolean {
     return args.length > 0;
-  },
-  async applyAsync(context: IEvalContext): PTerm {
+  }
+
+  public async apply(context: IEvalContext): Promise<E.TermExpression> {
     const _in = specialFunctions[C.SpecialOperator.IN];
     const isIn = await _in.apply(context);
     return bool(!(<E.BooleanLiteral> isIn).typedValue);
-  },
-};
+  }
+}
 
 // ----------------------------------------------------------------------------
 // Annoying functions
@@ -222,9 +245,10 @@ const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1((
 /**
  * https://www.w3.org/TR/sparql11-query/#func-concat
  */
-const concat: ISpecialDefinition = {
-  arity: Number.POSITIVE_INFINITY,
-  async applyAsync(context: IEvalContext): PTerm {
+class Concat extends SparqlFunction {
+  protected arity = Number.POSITIVE_INFINITY;
+
+  public async apply(context: IEvalContext): Promise<E.TermExpression> {
     const { args, mapping, exprEval, functionArgumentsCache, superTypeProvider } = context;
     const pLits: Promise<E.Literal<string>>[] = args
       .map(async expr => exprEval.evaluator.evaluate(expr, mapping))
@@ -240,8 +264,8 @@ const concat: ISpecialDefinition = {
     const joined = strings.join('');
     const lang = langAllEqual(lits) ? lits[0].language : undefined;
     return lang ? langString(joined, lang) : string(joined);
-  },
-};
+  }
+}
 
 function langAllEqual(lits: E.Literal<string>[]): boolean {
   return lits.length > 0 && lits.every(lit => lit.language === lits[0].language);
@@ -262,12 +286,13 @@ const bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).c
  * https://www.w3.org/TR/sparql11-query/#func-bnode
  * id has to be distinct over all id's in dataset
  */
-const BNODE: ISpecialDefinition = {
-  arity: Number.POSITIVE_INFINITY,
-  checkArity(args: E.Expression[]) {
+class BNode extends SparqlFunction {
+  protected arity = Number.POSITIVE_INFINITY;
+  public checkArity(args: E.Expression[]): boolean {
     return args.length === 0 || args.length === 1;
-  },
-  async applyAsync(context: IEvalContext): PTerm {
+  }
+
+  public async apply(context: IEvalContext): Promise<E.TermExpression> {
     const { args, mapping, exprEval, superTypeProvider, functionArgumentsCache } = context;
     const input = args.length === 1 ?
       await exprEval.evaluator.evaluate(args[0], mapping) :
@@ -288,8 +313,8 @@ const BNODE: ISpecialDefinition = {
     }
 
     return BNODE_(strInput);
-  },
-};
+  }
+}
 
 function BNODE_(input?: string): E.BlankNode {
   return new E.BlankNode(input || uuid.v4());
@@ -299,29 +324,23 @@ function BNODE_(input?: string): E.BlankNode {
 // Wrap these declarations into functions
 // ----------------------------------------------------------------------------
 
-export interface ISpecialDefinition {
-  arity: number;
-  applyAsync: E.SpecialApplicationAsync;
-  checkArity?: (args: E.Expression[]) => boolean;
-}
-
-export const specialDefinitions: Record<C.SpecialOperator, ISpecialDefinition> = {
+export const specialDefinitions: Record<C.SpecialOperator, SparqlFunction> = {
   // --------------------------------------------------------------------------
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms
   // --------------------------------------------------------------------------
-  bound,
-  if: ifSPARQL,
-  coalesce,
-  '&&': logicalAnd,
-  '||': logicalOr,
-  sameterm: sameTerm,
-  in: inSPARQL,
-  notin: notInSPARQL,
+  bound: new Bound(),
+  if: new IfSPARQL(),
+  coalesce: new Coalesce(),
+  '&&': new LogicalAnd(),
+  '||': new LogicalOr(),
+  sameterm: new SameTerm(),
+  in: new InSPARQL(),
+  notin: new NotInSPARQL(),
 
   // Annoying functions
-  concat,
+  concat: new Concat(),
 
   // Context dependent functions
-  bnode: BNODE,
+  bnode: new BNode(),
 };

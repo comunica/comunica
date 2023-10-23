@@ -29,9 +29,12 @@ export abstract class BaseFunction<Operator> implements IFunctionExpression {
   }
 
   public checkArity(args: E.Expression[]): boolean {
-    // If the function has overloaded arity, the actual arity needs to be present.
     if (Array.isArray(this.arity)) {
       return this.arity.includes(args.length);
+    }
+    if (this.arity === Number.POSITIVE_INFINITY) {
+      // Infinity is used to represent var-args, so it's always correct.
+      return true;
     }
 
     return args.length === this.arity;
@@ -114,49 +117,4 @@ export class NamedFunction extends BaseFunction<C.NamedOperator> {
   protected handleInvalidTypes(args: E.TermExpression[]): never {
     throw new Err.InvalidArgumentTypes(args, this.operator);
   }
-}
-
-// Special Functions ----------------------------------------------------------
-/**
- * Special Functions are those that don't really fit in sensible categories and
- * have extremely heterogeneous signatures that make them impossible to abstract
- * over. They are small in number, and their behaviour is often complex and open
- * for multiple correct implementations with different trade-offs.
- *
- * Due to their varying nature, they need all available information present
- * during evaluation. This reflects in the signature of the apply() method.
- *
- * They need access to an evaluator to be able to even implement their logic.
- * Especially relevant for IF, and the logical connectives.
- *
- * They can have both sync and async implementations, and both would make sense
- * in some contexts.
- */
-export class SpecialFunction implements IFunctionExpression {
-  public arity: number;
-  public apply: E.SpecialApplicationAsync;
-  public checkArity: (args: E.Expression[]) => boolean;
-
-  public constructor(public operator: C.SpecialOperator, definition: ISpecialDefinition) {
-    this.arity = definition.arity;
-    this.apply = definition.applyAsync;
-    this.checkArity = definition.checkArity || defaultArityCheck(this.arity);
-  }
-}
-
-function defaultArityCheck(arity: number): (args: E.Expression[]) => boolean {
-  return (args: E.Expression[]): boolean => {
-    // Infinity is used to represent var-args, so it's always correct.
-    if (arity === Number.POSITIVE_INFINITY) {
-      return true;
-    }
-
-    return args.length === arity;
-  };
-}
-
-export interface ISpecialDefinition {
-  arity: number;
-  applyAsync: E.SpecialApplicationAsync;
-  checkArity?: (args: E.Expression[]) => boolean;
 }

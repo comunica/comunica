@@ -3,10 +3,10 @@ import type * as C from '../util/Consts';
 import {
   NamedFunction,
   RegularFunction,
-  SpecialFunction,
 } from './Core';
 import { namedDefinitions } from './NamedFunctions';
 import { definitions } from './RegularFunctions';
+import type { SparqlFunction } from './SpecialFunctions';
 import { specialDefinitions } from './SpecialFunctions';
 
 export * from './Core';
@@ -17,10 +17,8 @@ export const regularFunctions: RegularFunctionMap = <RegularFunctionMap> Object.
     [ key, new RegularFunction(<C.RegularOperator>key, val) ]),
 );
 
-export type SpecialFunctionAsyncMap = Record<C.SpecialOperator, SpecialFunction>;
-export const specialFunctions: SpecialFunctionAsyncMap = <SpecialFunctionAsyncMap>Object.fromEntries(
-  Object.entries(specialDefinitions).map(([ key, val ]) => [ key, new SpecialFunction(<C.SpecialOperator>key, val) ]),
-);
+export type SpecialFunctionAsyncMap = Record<C.SpecialOperator, SparqlFunction>;
+export const specialFunctions: SpecialFunctionAsyncMap = specialDefinitions;
 
 export type NamedFunctionMap = Record<C.NamedOperator, NamedFunction>;
 export const namedFunctions: NamedFunctionMap = <NamedFunctionMap> Object.fromEntries(

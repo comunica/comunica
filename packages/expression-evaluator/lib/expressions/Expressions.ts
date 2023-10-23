@@ -1,4 +1,4 @@
-import type { IEvalContext, FunctionApplication } from '@comunica/types';
+import type { FunctionApplication } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -98,5 +98,3 @@ export type VariableExpression = IExpressionProps & {
 // Export type Application = SimpleApplication | SpecialApplication;
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
-
-export type SpecialApplicationAsync = (context: IEvalContext) => Promise<TermExpression>;
