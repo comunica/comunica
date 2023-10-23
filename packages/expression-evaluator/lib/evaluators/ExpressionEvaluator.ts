@@ -161,10 +161,10 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
     const myLitB = termTransformer.transformLiteral(litB);
 
     try {
-      if ((<E.BooleanLiteral> isEqual.syncApply([ myLitA, myLitB ], this)).typedValue) {
+      if ((<E.BooleanLiteral> isEqual.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
         return 0;
       }
-      if ((<E.BooleanLiteral> isGreater.syncApply([ myLitA, myLitB ], this)).typedValue) {
+      if ((<E.BooleanLiteral> isGreater.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
         return 1;
       }
       return -1;

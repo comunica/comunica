@@ -180,7 +180,7 @@ async function inRecursiveAsync(
     const nextExpression = args.shift()!;
     const next = await exprEval.evaluator.evaluate(nextExpression, mapping);
     const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-    if ((<E.BooleanLiteral> isEqual.syncApply([ needle, next ], exprEval)).typedValue) {
+    if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
       return bool(true);
     }
     return inRecursiveAsync(needle, context, [ ...results, false ]);

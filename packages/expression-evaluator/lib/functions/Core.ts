@@ -42,15 +42,18 @@ export abstract class BaseFunction<Operator> implements IFunctionExpression {
    * instance depending on the runtime types. We then just apply this function
    * to the args.
    */
-  public syncApply(args: E.TermExpression[], exprEval: ExpressionEvaluator): E.TermExpression {
+  public applyOnTerms(args: E.TermExpression[], exprEval: ExpressionEvaluator): E.TermExpression {
     const concreteFunction =
       this.monomorph(args, exprEval.context.superTypeProvider, exprEval.context.functionArgumentsCache) ||
       this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
   }
 
-  public async apply({ args, exprEval }: IEvalContext): Promise<E.TermExpression> {
-    return this.syncApply(<E.TermExpression[]> args, exprEval);
+  public async apply({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> {
+    return this.applyOnTerms(
+      await Promise.all(args.map(arg => exprEval.evaluator.evaluate(arg, mapping))),
+      exprEval,
+    );
   }
 
   protected abstract handleInvalidTypes(args: E.TermExpression[]): never;

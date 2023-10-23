@@ -33,7 +33,7 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
       this.state = { sum, count: 1 };
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state.sum = <E.NumericLiteral> this.summer.syncApply([ this.state.sum, internalTerm ],
+      this.state.sum = <E.NumericLiteral> this.summer.applyOnTerms([ this.state.sum, internalTerm ],
         <ExpressionEvaluator> this.evaluator);
       this.state.count++;
     }
@@ -44,7 +44,7 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
       return this.emptyValue();
     }
     const count = new E.IntegerLiteral(this.state.count);
-    const result = this.divider.syncApply([ this.state.sum, count ], <ExpressionEvaluator> this.evaluator);
+    const result = this.divider.applyOnTerms([ this.state.sum, count ], <ExpressionEvaluator> this.evaluator);
     return result.toRDF();
   }
 }

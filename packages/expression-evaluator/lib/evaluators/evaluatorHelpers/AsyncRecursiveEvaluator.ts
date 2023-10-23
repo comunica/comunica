@@ -70,7 +70,7 @@ export class AsyncRecursiveEvaluator {
 
   private async evalOperator(expr: E.Operator, mapping: RDF.Bindings): Promise<E.Term> {
     const context: IEvalContext = {
-      args: await Promise.all(expr.args.map(arg => this.evaluate(arg, mapping))),
+      args: expr.args,
       mapping,
       exprEval: this.expressionEvaluator,
 
@@ -90,15 +90,10 @@ export class AsyncRecursiveEvaluator {
     return expr.apply(context);
   }
 
-  private async _evalAsyncArgs(args: E.Expression[], mapping: RDF.Bindings): Promise<E.TermExpression[]> {
-    const argPromises = args.map(arg => this.evaluate(arg, mapping));
-    return await Promise.all(argPromises);
-  }
-
   private async evalNamed(expr: E.Named, mapping: RDF.Bindings): Promise<E.Term> {
     return expr.apply(
       {
-        args: await this._evalAsyncArgs(expr.args, mapping),
+        args: expr.args,
         mapping,
         exprEval: this.expressionEvaluator,
 
@@ -109,7 +104,7 @@ export class AsyncRecursiveEvaluator {
 
   private async evalAsyncExtension(expr: AsyncExtension, mapping: RDF.Bindings): Promise<E.Term> {
     return await expr.apply({
-      args: await this._evalAsyncArgs(expr.args, mapping),
+      args: expr.args,
       mapping,
       exprEval: this.expressionEvaluator,
 

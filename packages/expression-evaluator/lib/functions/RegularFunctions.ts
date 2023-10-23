@@ -198,10 +198,10 @@ const equality = {
       exprEval => ([ left, right ]) => {
         const op: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
         return bool(
-          (<E.BooleanLiteral> op.syncApply([ (<Quad> left).subject, (<Quad> right).subject ], exprEval)).coerceEBV() &&
-          (<E.BooleanLiteral> op.syncApply([ (<Quad> left).predicate, (<Quad> right).predicate ], exprEval)).coerceEBV() &&
-          (<E.BooleanLiteral> op.syncApply([ (<Quad> left).object, (<Quad> right).object ], exprEval)).coerceEBV() &&
-          (<E.BooleanLiteral> op.syncApply([ (<Quad> left).graph, (<Quad> right).graph ], exprEval)).coerceEBV(),
+          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).subject, (<Quad> right).subject ], exprEval)).coerceEBV() &&
+          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).predicate, (<Quad> right).predicate ], exprEval)).coerceEBV() &&
+          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).object, (<Quad> right).object ], exprEval)).coerceEBV() &&
+          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).graph, (<Quad> right).graph ], exprEval)).coerceEBV(),
         );
       },
       false,
@@ -243,7 +243,7 @@ const inequality = {
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         bool(!(<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL]
-          .syncApply([ first, second ], expressionEvaluator)).typedValue))
+          .applyOnTerms([ first, second ], expressionEvaluator)).typedValue))
     .collect(),
 };
 
@@ -290,7 +290,7 @@ const greaterThan = {
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         // X < Y -> Y > X
-        regularFunctions[C.RegularOperator.LT].syncApply([ second, first ], expressionEvaluator))
+        regularFunctions[C.RegularOperator.LT].applyOnTerms([ second, first ], expressionEvaluator))
     .collect(),
 };
 
@@ -303,8 +303,8 @@ const lesserThanEqual = {
         // First check if the first is lesser than the second, then check if they are equal.
         // Doing this, the correct error will be thrown, each type that has a lesserThanEqual has a matching lesserThan.
         bool(
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].syncApply([ first, second ], exprEval)).typedValue ||
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].syncApply([ first, second ], exprEval)).typedValue,
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].applyOnTerms([ first, second ], exprEval)).typedValue ||
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].applyOnTerms([ first, second ], exprEval)).typedValue,
         ))
     .collect(),
 };
@@ -315,7 +315,7 @@ const greaterThanEqual = {
     .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X >= Y -> Y <= X
-        regularFunctions[C.RegularOperator.LTE].syncApply([ second, first ], exprEval))
+        regularFunctions[C.RegularOperator.LTE].applyOnTerms([ second, first ], exprEval))
     .collect(),
 };
 
