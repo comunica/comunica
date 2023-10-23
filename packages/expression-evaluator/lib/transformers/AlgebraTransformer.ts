@@ -64,7 +64,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       if (!specialFunc.checkArity(specialArgs)) {
         throw new Err.InvalidArity(specialArgs, specialOp);
       }
-      return new E.SpecialOperator(specialArgs, specialFunc.applyAsync);
+      return new E.SpecialOperator(specialArgs, specialFunc.apply);
     }
     if (!C.Operators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
@@ -72,10 +72,10 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
     const regularOp = <C.RegularOperator>operator;
     const regularArgs = expr.args.map(arg => this.transformAlgebra(arg));
     const regularFunc = regularFunctions[regularOp];
-    if (!AlgebraTransformer.hasCorrectArity(regularArgs, regularFunc.arity)) {
+    if (!regularFunc.checkArity(regularArgs)) {
       throw new Err.InvalidArity(regularArgs, regularOp);
     }
-    return new E.Operator(regularArgs, args => regularFunc.syncApply(args, this.expressionEvaluator));
+    return new E.Operator(regularArgs, args => regularFunc.apply(args));
   }
 
   private wrapAsyncFunction(func: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
@@ -98,24 +98,16 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       // Return a basic named expression
       const op = <C.NamedOperator>expr.name.value;
       const namedFunc = namedFunctions[op];
-      return new E.Named(expr.name, namedArgs, args => namedFunc.syncApply(args, this.expressionEvaluator));
+      return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args));
     }
     // The expression might be an extension function, check this.
-    const asyncExtensionFunc = this.creatorConfig.creator(expr.name);
-    if (asyncExtensionFunc) {
-      const asyncAppl = this.wrapAsyncFunction(asyncExtensionFunc, expr.name.value);
-      return new E.AsyncExtension(expr.name, namedArgs, asyncAppl);
-    }
+    // TODO: this should be done using the correct mediator?
+    // const asyncExtensionFunc = this.creatorConfig.creator(expr.name);
+    // if (asyncExtensionFunc) {
+    //   const asyncAppl = this.wrapAsyncFunction(asyncExtensionFunc, expr.name.value);
+    //   return new E.AsyncExtension(expr.name, namedArgs, asyncAppl);
+    // }
     throw new Err.UnknownNamedOperator(expr.name.value);
-  }
-
-  private static hasCorrectArity(args: E.Expression[], arity: number | number[]): boolean {
-    // If the function has overloaded arity, the actual arity needs to be present.
-    if (Array.isArray(arity)) {
-      return arity.includes(args.length);
-    }
-
-    return args.length === arity;
   }
 
   public static transformAggregate(expr: Alg.AggregateExpression): E.Aggregate {

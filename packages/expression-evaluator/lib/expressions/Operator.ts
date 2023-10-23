@@ -1,6 +1,6 @@
+import type { FunctionApplication } from '@comunica/types';
 import type { Expression,
-  OperatorExpression,
-  SimpleApplication } from './Expressions';
+  OperatorExpression } from './Expressions';
 import {
   ExpressionType,
 } from './Expressions';
@@ -8,5 +8,5 @@ import {
 export class Operator implements OperatorExpression {
   public expressionType: ExpressionType.Operator = ExpressionType.Operator;
 
-  public constructor(public args: Expression[], public apply: SimpleApplication) { }
+  public constructor(public args: Expression[], public apply: FunctionApplication) { }
 }

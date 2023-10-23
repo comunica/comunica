@@ -1,6 +1,6 @@
+import type { IEvalContext, FunctionApplication } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { EvalContextAsync } from '../functions';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',
@@ -43,34 +43,35 @@ export type ExistenceExpression = IExpressionProps & {
 export type NamedExpression = IExpressionProps & {
   expressionType: ExpressionType.Named;
   name: RDF.NamedNode;
-  apply: SimpleApplication;
+  apply: FunctionApplication;
   args: Expression[];
 };
 
+// TODO: this can go since we will have an indexed bus to fund functions?
 export type AsyncExtensionExpression = IExpressionProps & {
   expressionType: ExpressionType.AsyncExtension;
   name: RDF.NamedNode;
-  apply: AsyncExtensionApplication;
+  apply: FunctionApplication;
   args: Expression[];
 };
 
 export type SyncExtensionExpression = IExpressionProps & {
   expressionType: ExpressionType.SyncExtension;
   name: RDF.NamedNode;
-  apply: SimpleApplication;
+  apply: FunctionApplication;
   args: Expression[];
 };
 
 export type OperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.Operator;
   args: Expression[];
-  apply: SimpleApplication;
+  apply: FunctionApplication;
 };
 
 export type SpecialOperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.SpecialOperator;
   args: Expression[];
-  applyAsync: SpecialApplicationAsync;
+  apply: FunctionApplication;
 };
 
 // TODO: Create alias Term = TermExpression
@@ -98,4 +99,4 @@ export type VariableExpression = IExpressionProps & {
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
 
-export type SpecialApplicationAsync = (context: EvalContextAsync) => Promise<TermExpression>;
+export type SpecialApplicationAsync = (context: IEvalContext) => Promise<TermExpression>;

@@ -1,10 +1,10 @@
-import type * as RDF from '@rdfjs/types';
+import type { IEvalContext } from '@comunica/types';
 import * as uuid from 'uuid';
 import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import { bool, declare, expressionToVar, langString, string } from './Helpers';
-import type { EvalContextAsync, OverloadTree } from '.';
+import type { OverloadTree } from '.';
 import { regularFunctions, specialFunctions } from '.';
 
 type Term = E.TermExpression;
@@ -22,19 +22,15 @@ type PTerm = Promise<E.TermExpression>;
  */
 const bound: ISpecialDefinition = {
   arity: 1,
-  async applyAsync({ args, mapping }: EvalContextAsync): PTerm {
-    return bound_({ args, mapping });
+  async applyAsync({ args, mapping }: IEvalContext): PTerm {
+    const variable = <E.VariableExpression> args[0];
+    if (variable.expressionType !== E.ExpressionType.Variable) {
+      throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
+    }
+    const val = mapping.has(expressionToVar(variable));
+    return bool(val);
   },
 };
-
-function bound_({ args, mapping }: { args: E.Expression[]; mapping: RDF.Bindings }): E.BooleanLiteral {
-  const variable = <E.VariableExpression> args[0];
-  if (variable.expressionType !== E.ExpressionType.Variable) {
-    throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
-  }
-  const val = mapping.has(expressionToVar(variable));
-  return bool(val);
-}
 
 // IF -------------------------------------------------------------------------
 
@@ -44,12 +40,12 @@ function bound_({ args, mapping }: { args: E.Expression[]; mapping: RDF.Bindings
  */
 const ifSPARQL: ISpecialDefinition = {
   arity: 3,
-  async applyAsync({ args, mapping, evaluate }: EvalContextAsync): PTerm {
-    const valFirst = await evaluate.evaluator.evaluate(args[0], mapping);
+  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
+    const valFirst = await exprEval.evaluator.evaluate(args[0], mapping);
     const ebv = valFirst.coerceEBV();
     return ebv ?
-      evaluate.evaluator.evaluate(args[1], mapping) :
-      evaluate.evaluator.evaluate(args[2], mapping);
+      exprEval.evaluator.evaluate(args[1], mapping) :
+      exprEval.evaluator.evaluate(args[2], mapping);
   },
 };
 
@@ -61,11 +57,11 @@ const ifSPARQL: ISpecialDefinition = {
  */
 const coalesce: ISpecialDefinition = {
   arity: Number.POSITIVE_INFINITY,
-  async applyAsync({ args, mapping, evaluate }: EvalContextAsync): PTerm {
+  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
     const errors: Error[] = [];
     for (const expr of args) {
       try {
-        return await evaluate.evaluator.evaluate(expr, mapping);
+        return await exprEval.evaluator.evaluate(expr, mapping);
       } catch (error: unknown) {
         errors.push(<Error> error);
       }
@@ -82,19 +78,19 @@ const coalesce: ISpecialDefinition = {
  */
 const logicalOr: ISpecialDefinition = {
   arity: 2,
-  async applyAsync({ args, mapping, evaluate }: EvalContextAsync): PTerm {
+  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await evaluate.evaluator.evaluate(leftExpr, mapping);
+      const leftTerm = await exprEval.evaluator.evaluate(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (left) {
         return bool(true);
       }
-      const rightTerm = await evaluate.evaluator.evaluate(rightExpr, mapping);
+      const rightTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await evaluate.evaluator.evaluate(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (!rightError) {
         throw error;
@@ -112,19 +108,19 @@ const logicalOr: ISpecialDefinition = {
  */
 const logicalAnd: ISpecialDefinition = {
   arity: 2,
-  async applyAsync({ args, mapping, evaluate }: EvalContextAsync): PTerm {
+  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await evaluate.evaluator.evaluate(leftExpr, mapping);
+      const leftTerm = await exprEval.evaluator.evaluate(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (!left) {
         return bool(false);
       }
-      const rightTerm = await evaluate.evaluator.evaluate(rightExpr, mapping);
+      const rightTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await evaluate.evaluator.evaluate(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (rightError) {
         throw error;
@@ -142,8 +138,8 @@ const logicalAnd: ISpecialDefinition = {
  */
 const sameTerm: ISpecialDefinition = {
   arity: 2,
-  async applyAsync({ args, mapping, evaluate }: EvalContextAsync): PTerm {
-    const [ leftExpr, rightExpr ] = args.map(arg => evaluate.evaluator.evaluate(arg, mapping));
+  async applyAsync({ args, mapping, exprEval }: IEvalContext): PTerm {
+    const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluator.evaluate(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
     return bool(left.toRDF().equals(right.toRDF()));
   },
@@ -160,31 +156,31 @@ const inSPARQL: ISpecialDefinition = {
   checkArity(args: E.Expression[]) {
     return args.length > 0;
   },
-  async applyAsync(context: EvalContextAsync): PTerm {
-    const { args, mapping, evaluate } = context;
+  async applyAsync(context: IEvalContext): PTerm {
+    const { args, mapping, exprEval } = context;
     const [ leftExpr, ...remaining ] = args;
-    const left = await evaluate.evaluator.evaluate(leftExpr, mapping);
+    const left = await exprEval.evaluator.evaluate(leftExpr, mapping);
     return inRecursiveAsync(left, { ...context, args: remaining }, []);
   },
 };
 
 async function inRecursiveAsync(
   needle: Term,
-  context: EvalContextAsync,
+  context: IEvalContext,
   results: (Error | false)[],
 ): PTerm {
-  const { args, mapping, evaluate } = context;
+  const { args, mapping, exprEval } = context;
   if (args.length === 0) {
     const noErrors = results.every(val => !val);
     return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
   }
 
   try {
-    const nextExpression = args.shift();
     // We know this will not be undefined because we check args.length === 0
-    const next = await evaluate.evaluator.evaluate(nextExpression!, mapping);
+    const nextExpression = args.shift()!;
+    const next = await exprEval.evaluator.evaluate(nextExpression, mapping);
     const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-    if ((<E.BooleanLiteral> isEqual.syncApply([ needle, next ], evaluate)).typedValue) {
+    if ((<E.BooleanLiteral> isEqual.syncApply([ needle, next ], exprEval)).typedValue) {
       return bool(true);
     }
     return inRecursiveAsync(needle, context, [ ...results, false ]);
@@ -204,9 +200,9 @@ const notInSPARQL: ISpecialDefinition = {
   checkArity(args: E.Expression[]) {
     return args.length > 0;
   },
-  async applyAsync(context: EvalContextAsync): PTerm {
+  async applyAsync(context: IEvalContext): PTerm {
     const _in = specialFunctions[C.SpecialOperator.IN];
-    const isIn = await _in.applyAsync(context);
+    const isIn = await _in.apply(context);
     return bool(!(<E.BooleanLiteral> isIn).typedValue);
   },
 };
@@ -228,16 +224,16 @@ const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1((
  */
 const concat: ISpecialDefinition = {
   arity: Number.POSITIVE_INFINITY,
-  async applyAsync(context: EvalContextAsync): PTerm {
-    const { args, mapping, evaluate, functionArgumentsCache, superTypeProvider } = context;
+  async applyAsync(context: IEvalContext): PTerm {
+    const { args, mapping, exprEval, functionArgumentsCache, superTypeProvider } = context;
     const pLits: Promise<E.Literal<string>>[] = args
-      .map(async expr => evaluate.evaluator.evaluate(expr, mapping))
+      .map(async expr => exprEval.evaluator.evaluate(expr, mapping))
       .map(async pTerm => {
         const operation = concatTree.search([ await pTerm ], superTypeProvider, functionArgumentsCache);
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
         }
-        return <E.Literal<string>> operation(context.evaluate)([ await pTerm ]);
+        return <E.Literal<string>> operation(exprEval)([ await pTerm ]);
       });
     const lits = await Promise.all(pLits);
     const strings = lits.map(lit => lit.typedValue);
@@ -271,10 +267,10 @@ const BNODE: ISpecialDefinition = {
   checkArity(args: E.Expression[]) {
     return args.length === 0 || args.length === 1;
   },
-  async applyAsync(context: EvalContextAsync): PTerm {
-    const { args, mapping, evaluate, superTypeProvider, functionArgumentsCache } = context;
+  async applyAsync(context: IEvalContext): PTerm {
+    const { args, mapping, exprEval, superTypeProvider, functionArgumentsCache } = context;
     const input = args.length === 1 ?
-      await evaluate.evaluator.evaluate(args[0], mapping) :
+      await exprEval.evaluator.evaluate(args[0], mapping) :
       undefined;
 
     let strInput: string | undefined;
@@ -283,7 +279,7 @@ const BNODE: ISpecialDefinition = {
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
       }
-      strInput = operation(context.evaluate)([ input ]).str();
+      strInput = operation(exprEval)([ input ]).str();
     }
 
     if (context.bnode) {

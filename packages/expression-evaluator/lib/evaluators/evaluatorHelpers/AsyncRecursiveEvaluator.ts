@@ -1,9 +1,8 @@
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IEvalContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { AsyncExtension } from '../../expressions';
 import * as E from '../../expressions';
-import type { EvalContextAsync } from '../../functions';
 import { expressionToVar } from '../../functions/Helpers';
 import type { FunctionArgumentsCache } from '../../functions/OverloadTree';
 import type { ITermTransformer } from '../../transformers/TermTransformer';
@@ -70,20 +69,25 @@ export class AsyncRecursiveEvaluator {
   }
 
   private async evalOperator(expr: E.Operator, mapping: RDF.Bindings): Promise<E.Term> {
-    const argPromises = expr.args.map(arg => this.evaluate(arg, mapping));
-    const argResults = await Promise.all(argPromises);
-    return expr.apply(argResults);
-  }
-
-  private async evalSpecialOperator(expr: E.SpecialOperator, mapping: RDF.Bindings): Promise<E.Term> {
-    const context: EvalContextAsync = {
-      args: expr.args,
+    const context: IEvalContext = {
+      args: await Promise.all(expr.args.map(arg => this.evaluate(arg, mapping))),
       mapping,
-      evaluate: this.expressionEvaluator,
+      exprEval: this.expressionEvaluator,
 
       ...this.context,
     };
-    return expr.applyAsync(context);
+    return expr.apply(context);
+  }
+
+  private async evalSpecialOperator(expr: E.SpecialOperator, mapping: RDF.Bindings): Promise<E.Term> {
+    const context: IEvalContext = {
+      args: expr.args,
+      mapping,
+      exprEval: this.expressionEvaluator,
+
+      ...this.context,
+    };
+    return expr.apply(context);
   }
 
   private async _evalAsyncArgs(args: E.Expression[], mapping: RDF.Bindings): Promise<E.TermExpression[]> {
@@ -92,11 +96,25 @@ export class AsyncRecursiveEvaluator {
   }
 
   private async evalNamed(expr: E.Named, mapping: RDF.Bindings): Promise<E.Term> {
-    return expr.apply(await this._evalAsyncArgs(expr.args, mapping));
+    return expr.apply(
+      {
+        args: await this._evalAsyncArgs(expr.args, mapping),
+        mapping,
+        exprEval: this.expressionEvaluator,
+
+        ...this.context,
+      },
+    );
   }
 
   private async evalAsyncExtension(expr: AsyncExtension, mapping: RDF.Bindings): Promise<E.Term> {
-    return await expr.apply(await this._evalAsyncArgs(expr.args, mapping));
+    return await expr.apply({
+      args: await this._evalAsyncArgs(expr.args, mapping),
+      mapping,
+      exprEval: this.expressionEvaluator,
+
+      ...this.context,
+    });
   }
 
   private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {

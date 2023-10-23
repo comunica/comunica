@@ -1,5 +1,5 @@
+import type { FunctionApplication } from '@comunica/types';
 import type { Expression,
-  SpecialApplicationAsync,
   SpecialOperatorExpression } from './Expressions';
 import {
   ExpressionType,
@@ -10,6 +10,6 @@ export class SpecialOperator implements SpecialOperatorExpression {
 
   public constructor(
     public args: Expression[],
-    public applyAsync: SpecialApplicationAsync,
+    public apply: FunctionApplication,
   ) { }
 }

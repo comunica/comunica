@@ -1,8 +1,8 @@
+import type { FunctionApplication } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 import type { Expression,
-  NamedExpression,
-  SimpleApplication } from './Expressions';
+  NamedExpression } from './Expressions';
 import {
   ExpressionType,
 } from './Expressions';
@@ -13,6 +13,6 @@ export class Named implements NamedExpression {
   public constructor(
     public name: RDF.NamedNode,
     public args: Expression[],
-    public apply: SimpleApplication,
+    public apply: FunctionApplication,
   ) { }
 }

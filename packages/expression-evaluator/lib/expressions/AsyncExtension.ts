@@ -1,5 +1,6 @@
+import type { FunctionApplication } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncExtensionApplication, AsyncExtensionExpression, Expression } from './Expressions';
+import type { AsyncExtensionExpression, Expression } from './Expressions';
 import { ExpressionType } from './Expressions';
 
 export class AsyncExtension implements AsyncExtensionExpression {
@@ -8,6 +9,6 @@ export class AsyncExtension implements AsyncExtensionExpression {
   public constructor(
     public name: RDF.NamedNode,
     public args: Expression[],
-    public apply: AsyncExtensionApplication,
+    public apply: FunctionApplication,
   ) { }
 }

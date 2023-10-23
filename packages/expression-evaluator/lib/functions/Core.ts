@@ -1,19 +1,10 @@
-import type * as RDF from '@rdfjs/types';
-import type { ICompleteEEContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
+import type { IEvalContext, IFunctionExpression } from '@comunica/types';
 import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
 import type { FunctionArgumentsCache, ImplementationFunction, OverloadTree } from './OverloadTree';
-
-export interface IEvalContext extends ICompleteEEContext {
-  args: E.Expression[];
-  mapping: RDF.Bindings;
-  evaluate: ExpressionEvaluator;
-}
-
-export type EvalContextAsync = IEvalContext;
 
 // ----------------------------------------------------------------------------
 // Overloaded Functions
@@ -28,13 +19,22 @@ export interface IOverloadedDefinition {
   overloads: OverloadTree;
 }
 
-export abstract class BaseFunction<Operator> {
-  public arity: number | number[];
+export abstract class BaseFunction<Operator> implements IFunctionExpression {
+  private readonly arity: number | number[];
   private readonly overloads: OverloadTree;
 
   protected constructor(public operator: Operator, definition: IOverloadedDefinition) {
     this.arity = definition.arity;
     this.overloads = definition.overloads;
+  }
+
+  public checkArity(args: E.Expression[]): boolean {
+    // If the function has overloaded arity, the actual arity needs to be present.
+    if (Array.isArray(this.arity)) {
+      return this.arity.includes(args.length);
+    }
+
+    return args.length === this.arity;
   }
 
   /**
@@ -49,8 +49,8 @@ export abstract class BaseFunction<Operator> {
     return concreteFunction(exprEval)(args);
   }
 
-  public async apply(args: E.TermExpression[], exprEval: ExpressionEvaluator): Promise<E.TermExpression> {
-    return this.syncApply(args, exprEval);
+  public async apply({ args, exprEval }: IEvalContext): Promise<E.TermExpression> {
+    return this.syncApply(<E.TermExpression[]> args, exprEval);
   }
 
   protected abstract handleInvalidTypes(args: E.TermExpression[]): never;
@@ -93,8 +93,6 @@ export abstract class BaseFunction<Operator> {
  * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
  */
 export class RegularFunction extends BaseFunction<C.RegularOperator> {
-  protected functionClass = <const> 'regular';
-
   public constructor(op: C.RegularOperator, definition: IOverloadedDefinition) {
     super(op, definition);
   }
@@ -106,8 +104,6 @@ export class RegularFunction extends BaseFunction<C.RegularOperator> {
 
 // Named Functions ------------------------------------------------------------
 export class NamedFunction extends BaseFunction<C.NamedOperator> {
-  protected functionClass = <const> 'named';
-
   public constructor(op: C.NamedOperator, definition: IOverloadedDefinition) {
     super(op, definition);
   }
@@ -133,15 +129,14 @@ export class NamedFunction extends BaseFunction<C.NamedOperator> {
  * They can have both sync and async implementations, and both would make sense
  * in some contexts.
  */
-export class SpecialFunction {
-  public functionClass = <const> 'special';
+export class SpecialFunction implements IFunctionExpression {
   public arity: number;
-  public applyAsync: E.SpecialApplicationAsync;
+  public apply: E.SpecialApplicationAsync;
   public checkArity: (args: E.Expression[]) => boolean;
 
   public constructor(public operator: C.SpecialOperator, definition: ISpecialDefinition) {
     this.arity = definition.arity;
-    this.applyAsync = definition.applyAsync;
+    this.apply = definition.applyAsync;
     this.checkArity = definition.checkArity || defaultArityCheck(this.arity);
   }
 }
