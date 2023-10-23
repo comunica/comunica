@@ -13,10 +13,8 @@ import { parseDate,
   parseYearMonthDuration,
   parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '../util/Parsing';
 
-import type { IOverloadedDefinition } from './Core';
+import { NamedFunction } from './Core';
 import { bool, dateTime, decimal, declare, double, float, integer, string } from './Helpers';
-
-type Term = E.TermExpression;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -32,18 +30,24 @@ type Term = E.TermExpression;
 /**
  * https://www.w3.org/TR/xpath-functions/#casting-to-string
  */
-const xsdToString = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_STRING)
+class XsdToString extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_STRING;
+
+  protected overloads = declare(TypeURL.XSD_STRING)
     .onNumeric1(() => (val: E.NumericLiteral) => string(float(val.typedValue).str()))
     .onBoolean1Typed(() => val => string(bool(val).str()))
     .onTerm1(() => (val: E.StringLiteral) => string(val.str()))
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToFloat = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_FLOAT)
+class XsdToFloat extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_FLOAT;
+
+  protected overloads = declare(TypeURL.XSD_FLOAT)
     .onNumeric1(() => (val: E.NumericLiteral) => float(val.typedValue))
     .onBoolean1Typed(() => val => float(val ? 1 : 0))
     .onUnary(TypeURL.XSD_STRING, () => (val: E.StringLiteral) => {
@@ -53,12 +57,15 @@ const xsdToFloat = {
       }
       return float(result);
     }, false)
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToDouble = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_DOUBLE)
+class XsdToDouble extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_DOUBLE;
+
+  protected overloads = declare(TypeURL.XSD_DOUBLE)
     .onNumeric1(() => (val: E.NumericLiteral) => double(val.typedValue))
     .onBoolean1Typed(() => val => double(val ? 1 : 0))
     .onUnary(TypeURL.XSD_STRING, () => (val: E.Term) => {
@@ -68,12 +75,15 @@ const xsdToDouble = {
       }
       return double(result);
     }, false)
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToDecimal = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_DECIMAL)
+class XsdToDecimal extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_DECIMAL;
+
+  protected overloads = declare(TypeURL.XSD_DECIMAL)
     .onNumeric1(() => (val: E.Term) => {
       const result = parseXSDDecimal(val.str());
       if (result === undefined) {
@@ -90,12 +100,15 @@ const xsdToDecimal = {
       return decimal(result);
     }, false)
     .onBoolean1Typed(() => val => decimal(val ? 1 : 0))
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToInteger = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_INTEGER)
+class XsdToInteger extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_INTEGER;
+
+  protected overloads = declare(TypeURL.XSD_INTEGER)
     .onBoolean1Typed(() => val => integer(val ? 1 : 0))
     .onNumeric1(() => (val: E.Term) => {
       const result = parseXSDInteger(val.str());
@@ -112,26 +125,32 @@ const xsdToInteger = {
       }
       return integer(result);
     })
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToDatetime = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_DATE_TIME)
+class XsdToDatetime extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_DATE_TIME;
+
+  protected overloads = declare(TypeURL.XSD_DATE_TIME)
     .onUnary(TypeURL.XSD_DATE_TIME, () => (val: E.DateTimeLiteral) => val)
-    .onUnary(TypeURL.XSD_STRING, () => (val: Term) =>
+    .onUnary(TypeURL.XSD_STRING, () => (val: E.TermExpression) =>
       dateTime(parseDateTime(val.str()), val.str()), false)
     .onUnary(TypeURL.XSD_DATE, () => (val: E.DateLiteral) =>
       new E.DateTimeLiteral({ ...val.typedValue, hours: 0, minutes: 0, seconds: 0 }))
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToBoolean = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_BOOLEAN)
+class XsdToBoolean extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_BOOLEAN;
+
+  protected overloads = declare(TypeURL.XSD_BOOLEAN)
     .onNumeric1(() => (val: E.NumericLiteral) => bool(val.coerceEBV()), true)
-    .onUnary(TypeURL.XSD_BOOLEAN, () => (val: Term) => bool(val.coerceEBV()), true)
-    .onUnary(TypeURL.XSD_STRING, () => (val: Term) => {
+    .onUnary(TypeURL.XSD_BOOLEAN, () => (val: E.TermExpression) => bool(val.coerceEBV()), true)
+    .onUnary(TypeURL.XSD_STRING, () => (val: E.TermExpression) => {
       switch (val.str()) {
         case 'true':
           return bool(true);
@@ -145,8 +164,8 @@ const xsdToBoolean = {
           throw new Err.CastError(val, TypeURL.XSD_BOOLEAN);
       }
     }, false)
-    .collect(),
-};
+    .collect();
+}
 
 // End definitions.
 // ----------------------------------------------------------------------------
@@ -155,77 +174,92 @@ const xsdToBoolean = {
 
 // Additional definitions to implement https://github.com/w3c/sparql-12/blob/main/SEP/SEP-0002/sep-0002.md
 // The additional casts are listed in https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive
-const xsdToTime = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_TIME)
+class XsdToTime extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_TIME;
+
+  protected overloads = declare(TypeURL.XSD_TIME)
     .onUnary(TypeURL.XSD_TIME, () => (val: TimeLiteral) => new E.TimeLiteral(val.typedValue, val.strValue))
     .onUnary(TypeURL.XSD_DATE_TIME, () => (val: DateTimeLiteral) =>
       new E.TimeLiteral(val.typedValue))
-    .onStringly1(() => (val: Term) => new E.TimeLiteral(parseTime(val.str())))
-    .collect(),
-};
+    .onStringly1(() => (val: E.TermExpression) => new E.TimeLiteral(parseTime(val.str())))
+    .collect();
+}
 
-const xsdToDate = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_DATE)
+class XsdToDate extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_DATE;
+
+  protected overloads = declare(TypeURL.XSD_DATE)
     .onUnary(TypeURL.XSD_DATE, () => (val: DateLiteral) => new E.DateLiteral(val.typedValue, val.strValue))
     .onUnary(TypeURL.XSD_DATE_TIME, () => (val: DateTimeLiteral) =>
       new E.DateLiteral(val.typedValue))
     .onStringly1(() => (val: E.Term) => new E.DateLiteral(parseDate(val.str())))
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToDuration = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_DURATION)
+class XsdToDuration extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_DAY_TIME_DURATION;
+
+  protected overloads = declare(TypeURL.XSD_DURATION)
     // https://www.w3.org/TR/xpath-functions/#casting-to-durations
     .onUnary(TypeURL.XSD_DURATION, () => (val: E.DurationLiteral) =>
       // Copy is needed to make sure the dataType is changed, even when the provided type was a subtype
       new E.DurationLiteral(val.typedValue, val.strValue))
-    .onStringly1(() => (val: Term) =>
+    .onStringly1(() => (val: E.TermExpression) =>
       new DurationLiteral(parseDuration(val.str())))
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToDayTimeDuration = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_DAY_TIME_DURATION)
+class XsdToDayTimeDuration extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_DAY_TIME_DURATION;
+
+  protected overloads = declare(TypeURL.XSD_DAY_TIME_DURATION)
     // https://www.w3.org/TR/xpath-functions/#casting-to-durations
     .onUnary(TypeURL.XSD_DURATION, () => (val: E.DurationLiteral) =>
       // Copy is needed to make sure the dataType is changed, even when the provided type was a subtype
       new E.DayTimeDurationLiteral(trimToDayTimeDuration(val.typedValue)))
-    .onStringly1(() => (val: Term) =>
+    .onStringly1(() => (val: E.TermExpression) =>
       new E.DayTimeDurationLiteral(parseDayTimeDuration(val.str())))
-    .collect(),
-};
+    .collect();
+}
 
-const xsdToYearMonthDuration = {
-  arity: 1,
-  overloads: declare(TypeURL.XSD_YEAR_MONTH_DURATION)
+class XsdToYearMonthDuration extends NamedFunction {
+  protected arity = 1;
+
+  public operator: C.NamedOperator = TypeURL.XSD_YEAR_MONTH_DURATION;
+
+  protected overloads = declare(TypeURL.XSD_YEAR_MONTH_DURATION)
     // https://www.w3.org/TR/xpath-functions/#casting-to-durations
     .onUnary(TypeURL.XSD_DURATION, () => (val: E.DurationLiteral) =>
       // Copy is needed to make sure the dataType is changed, even when the provided type was a subtype
       new E.YearMonthDurationLiteral(trimToYearMonthDuration(val.typedValue)))
-    .onStringly1(() => (val: Term) =>
+    .onStringly1(() => (val: E.TermExpression) =>
       new E.YearMonthDurationLiteral(parseYearMonthDuration(val.str())))
-    .collect(),
-};
+    .collect();
+}
 
-export const namedDefinitions: Record<C.NamedOperator, IOverloadedDefinition> = {
+export const namedFunctions: Record<C.NamedOperator, NamedFunction> = {
   // --------------------------------------------------------------------------
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
   // --------------------------------------------------------------------------
-  [TypeURL.XSD_STRING]: xsdToString,
-  [TypeURL.XSD_FLOAT]: xsdToFloat,
-  [TypeURL.XSD_DOUBLE]: xsdToDouble,
-  [TypeURL.XSD_DECIMAL]: xsdToDecimal,
-  [TypeURL.XSD_INTEGER]: xsdToInteger,
-  [TypeURL.XSD_DATE_TIME]: xsdToDatetime,
-  [TypeURL.XSD_DATE]: xsdToDate,
-  [TypeURL.XSD_BOOLEAN]: xsdToBoolean,
-  [TypeURL.XSD_TIME]: xsdToTime,
-  [TypeURL.XSD_DURATION]: xsdToDuration,
-  [TypeURL.XSD_DAY_TIME_DURATION]: xsdToDayTimeDuration,
-  [TypeURL.XSD_YEAR_MONTH_DURATION]: xsdToYearMonthDuration,
+  [TypeURL.XSD_STRING]: new XsdToString(),
+  [TypeURL.XSD_FLOAT]: new XsdToFloat(),
+  [TypeURL.XSD_DOUBLE]: new XsdToDouble(),
+  [TypeURL.XSD_DECIMAL]: new XsdToDecimal(),
+  [TypeURL.XSD_INTEGER]: new XsdToInteger(),
+  [TypeURL.XSD_DATE_TIME]: new XsdToDatetime(),
+  [TypeURL.XSD_DATE]: new XsdToDate(),
+  [TypeURL.XSD_BOOLEAN]: new XsdToBoolean(),
+  [TypeURL.XSD_TIME]: new XsdToTime(),
+  [TypeURL.XSD_DURATION]: new XsdToDuration(),
+  [TypeURL.XSD_DAY_TIME_DURATION]: new XsdToDayTimeDuration(),
+  [TypeURL.XSD_YEAR_MONTH_DURATION]: new XsdToYearMonthDuration(),
 };

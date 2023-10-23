@@ -1,7 +1,7 @@
 import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
-import type * as E from '../expressions';
 import { isLiteralTermExpression } from '../expressions';
-import type { KnownLiteralTypes } from '../util/Consts';
+import type * as E from '../expressions';
+import type * as C from '../util/Consts';
 import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling';
 import {
   asGeneralType,
@@ -10,7 +10,10 @@ import {
   getSuperTypes,
   superTypeDictTable, typePromotion,
 } from '../util/TypeHandling';
-import type { ArgumentType } from './Core';
+
+// Function and operator arguments are 'flattened' in the SPARQL spec.
+// If the argument is a literal, the datatype often also matters.
+export type ArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
 
 export type SearchStack = OverloadTree[];
 export type ImplementationFunction = (expressionEvaluator: ExpressionEvaluator) => E.SimpleApplication;
@@ -223,7 +226,7 @@ export class OverloadTree {
       }
       const matches: [number, OverloadTree][] = this.literalOverLoads.filter(([ matchType, _ ]) =>
         matchType in subExtensionTable)
-        .map(([ matchType, tree ]) => [ subExtensionTable[<KnownLiteralTypes> matchType], tree ]);
+        .map(([ matchType, tree ]) => [ subExtensionTable[<C.KnownLiteralTypes> matchType], tree ]);
       matches.sort(([ prioA, matchTypeA ], [ prioB, matchTypeB ]) => prioA - prioB);
       res.push(...matches.map(([ _, sortedType ]) => sortedType));
     }

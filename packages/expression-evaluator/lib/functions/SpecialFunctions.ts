@@ -1,28 +1,12 @@
-import type { IEvalContext, IFunctionExpression } from '@comunica/types';
+import type { IEvalContext } from '@comunica/types';
 import * as uuid from 'uuid';
 import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
+import { SparqlFunction } from './Core';
 import { bool, declare, expressionToVar, langString, string } from './Helpers';
-import type { OverloadTree } from '.';
-import { regularFunctions, specialFunctions } from '.';
-
-export abstract class SparqlFunction implements IFunctionExpression {
-  protected abstract readonly arity: number;
-  public abstract apply(evalContext: IEvalContext): Promise<E.TermExpression>;
-
-  public checkArity(args: E.Expression[]): boolean {
-    if (Array.isArray(this.arity)) {
-      return this.arity.includes(args.length);
-    }
-    if (this.arity === Number.POSITIVE_INFINITY) {
-      // Infinity is used to represent var-args, so it's always correct.
-      return true;
-    }
-
-    return args.length === this.arity;
-  }
-}
+import type { OverloadTree } from './OverloadTree';
+import { regularFunctions } from './RegularFunctions';
 
 // ----------------------------------------------------------------------------
 // Functional forms
@@ -180,10 +164,10 @@ class InSPARQL extends SparqlFunction {
   public async apply(context: IEvalContext): Promise<E.TermExpression> {
     async function inRecursive(
       needle: E.TermExpression,
-      context: IEvalContext,
+      innerContext: IEvalContext,
       results: (Error | false)[],
     ): Promise<E.TermExpression> {
-      const { args, mapping, exprEval } = context;
+      const { args, mapping, exprEval } = innerContext;
       if (args.length === 0) {
         const noErrors = results.every(val => !val);
         return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
@@ -197,9 +181,9 @@ class InSPARQL extends SparqlFunction {
         if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
           return bool(true);
         }
-        return inRecursive(needle, context, [ ...results, false ]);
+        return inRecursive(needle, innerContext, [ ...results, false ]);
       } catch (error: unknown) {
-        return inRecursive(needle, context, [ ...results, <Error> error ]);
+        return inRecursive(needle, innerContext, [ ...results, <Error> error ]);
       }
     }
 
@@ -324,7 +308,7 @@ function BNODE_(input?: string): E.BlankNode {
 // Wrap these declarations into functions
 // ----------------------------------------------------------------------------
 
-export const specialDefinitions: Record<C.SpecialOperator, SparqlFunction> = {
+export const specialFunctions: Record<C.SpecialOperator, SparqlFunction> = {
   // --------------------------------------------------------------------------
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms

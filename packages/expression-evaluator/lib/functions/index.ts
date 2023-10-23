@@ -1,29 +1,7 @@
-import type * as C from '../util/Consts';
-
-import {
-  NamedFunction,
-  RegularFunction,
-} from './Core';
-import { namedDefinitions } from './NamedFunctions';
-import { definitions } from './RegularFunctions';
-import type { SparqlFunction } from './SpecialFunctions';
-import { specialDefinitions } from './SpecialFunctions';
-
 export * from './Core';
+export * from './RegularFunctions';
+export * from './SpecialFunctions';
+export * from './NamedFunctions';
 
-export type RegularFunctionMap = Record<C.RegularOperator, RegularFunction>;
-export const regularFunctions: RegularFunctionMap = <RegularFunctionMap> Object.fromEntries(
-  Object.entries(definitions).map(([ key, val ]) =>
-    [ key, new RegularFunction(<C.RegularOperator>key, val) ]),
-);
-
-export type SpecialFunctionAsyncMap = Record<C.SpecialOperator, SparqlFunction>;
-export const specialFunctions: SpecialFunctionAsyncMap = specialDefinitions;
-
-export type NamedFunctionMap = Record<C.NamedOperator, NamedFunction>;
-export const namedFunctions: NamedFunctionMap = <NamedFunctionMap> Object.fromEntries(
-  Object.entries(namedDefinitions).map(([ key, val ]) =>
-    [ key, new NamedFunction(<C.NamedOperator>key, val) ]),
-);
 export { SearchStack } from './OverloadTree';
 export { OverloadTree } from './OverloadTree';

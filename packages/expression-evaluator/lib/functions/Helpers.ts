@@ -12,8 +12,7 @@ import * as C from '../util/Consts';
 import { TypeURL } from '../util/Consts';
 import type { IDateTimeRepresentation } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
-import type { ArgumentType } from './Core';
-import type { ImplementationFunction } from './OverloadTree';
+import type { ArgumentType, ImplementationFunction } from './OverloadTree';
 import { OverloadTree } from './OverloadTree';
 
 type Term = E.TermExpression;

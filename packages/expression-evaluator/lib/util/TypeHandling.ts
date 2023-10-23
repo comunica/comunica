@@ -1,8 +1,8 @@
 import type { LRUCache } from 'lru-cache';
 import type * as E from '../expressions';
 import { asTermType } from '../expressions';
-import type { ArgumentType } from '../functions';
 import { double, float, string } from '../functions/Helpers';
+import type { ArgumentType } from '../functions/OverloadTree';
 import type { KnownLiteralTypes } from './Consts';
 import { TypeAlias, TypeURL } from './Consts';
 

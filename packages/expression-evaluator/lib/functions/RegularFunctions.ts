@@ -11,7 +11,7 @@ import * as E from '../expressions';
 import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
 import * as C from '../util/Consts';
-import { RegularOperator, TypeAlias, TypeURL } from '../util/Consts';
+import { TypeAlias, TypeURL } from '../util/Consts';
 import type { IDayTimeDurationRepresentation } from '../util/DateTimeHelpers';
 import {
   dayTimeDurationsToSeconds,
@@ -27,15 +27,11 @@ import {
 } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import { addDurationToDateTime, elapsedDuration } from '../util/SpecAlgos';
-import type { IOverloadedDefinition } from './Core';
 import { RegularFunction } from './Core';
 import { bool, decimal, declare, double, integer, langString, string } from './Helpers';
 import * as X from './XPathFunctions';
-import { regularFunctions } from '.';
 
 const DF = new DataFactory<RDF.BaseQuad>();
-
-type Term = E.TermExpression;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -47,37 +43,52 @@ type Term = E.TermExpression;
 // https://www.w3.org/TR/sparql11-query/#OperatorMapping
 // ----------------------------------------------------------------------------
 
-const not = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.NOT)
+class Not extends RegularFunction {
+  protected arity = 1;
+
+  public operator = C.RegularOperator.NOT;
+
+  protected overloads = declare(C.RegularOperator.NOT)
     .onTerm1(() => val => bool(!val.coerceEBV()))
-    .collect(),
-};
+    .collect();
+}
 
-const unaryPlus = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.UPLUS)
+class UnaryPlus extends RegularFunction {
+  protected arity = 1;
+
+  public operator = C.RegularOperator.UPLUS;
+
+  protected overloads = declare(C.RegularOperator.UPLUS)
     .numericConverter(() => val => val)
-    .collect(),
-};
+    .collect();
+}
 
-const unaryMinus = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.UMINUS)
+class UnaryMinus extends RegularFunction {
+  protected arity = 1;
+
+  public operator = C.RegularOperator.UMINUS;
+
+  protected overloads = declare(C.RegularOperator.UMINUS)
     .numericConverter(() => val => -val)
-    .collect(),
-};
+    .collect();
+}
 
-const multiplication = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.MULTIPLICATION)
+class Multiplication extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.MULTIPLICATION;
+
+  protected overloads = declare(C.RegularOperator.MULTIPLICATION)
     .arithmetic(() => (left, right) => new BigNumber(left).times(right).toNumber())
-    .collect(),
-};
+    .collect();
+}
 
-const division = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.DIVISION)
+class Division extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.DIVISION;
+
+  protected overloads = declare(C.RegularOperator.DIVISION)
     .arithmetic(() => (left, right) => new BigNumber(left).div(right).toNumber())
     .onBinaryTyped(
       [ TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
@@ -88,12 +99,15 @@ const division = {
         return decimal(new BigNumber(left).div(right).toNumber());
       },
     )
-    .collect(),
-};
+    .collect();
+}
 
-const addition = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.ADDITION)
+class Addition extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.ADDITION;
+
+  protected overloads = declare(C.RegularOperator.ADDITION)
     .arithmetic(() => (left, right) => new BigNumber(left).plus(right).toNumber())
     .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
       ([ date, dur ]: [ E.DateTimeLiteral, E.DayTimeDurationLiteral ]) =>
@@ -129,12 +143,15 @@ const addition = {
       from: [ TypeURL.XSD_TIME, TypeURL.XSD_DAY_TIME_DURATION ],
       to: [ TypeURL.XSD_TIME, TypeURL.XSD_YEAR_MONTH_DURATION ],
     })
-    .collect(),
-};
+    .collect();
+}
 
-const subtraction = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.SUBTRACTION)
+class Subtraction extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.SUBTRACTION;
+
+  protected overloads = declare(C.RegularOperator.SUBTRACTION)
     .arithmetic(() => (left, right) => new BigNumber(left).minus(right).toNumber())
     .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], exprEval =>
       ([ date1, date2 ]: [ E.DateTimeLiteral, E.DateTimeLiteral ]) =>
@@ -167,13 +184,16 @@ const subtraction = {
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dayTimeDuration-from-date
         new E.TimeLiteral(addDurationToDateTime(defaultedDateTimeRepresentation(time.typedValue),
           defaultedDurationRepresentation(negateDuration(dur.typedValue)))))
-    .collect(),
-};
+    .collect();
+}
 
 // https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal
-const equality = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.EQUAL)
+class Equality extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.EQUAL;
+
+  protected overloads = declare(C.RegularOperator.EQUAL)
     .numberTest(() => (left, right) => left === right)
     .stringTest(() => (left, right) => left.localeCompare(right) === 0)
     .set(
@@ -195,20 +215,31 @@ const equality = {
     })
     .set(
       [ 'quad', 'quad' ],
-      exprEval => ([ left, right ]) => {
-        const op: RegularFunction = new RegularFunction(RegularOperator.EQUAL, equality);
-        return bool(
-          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).subject, (<Quad> right).subject ], exprEval)).coerceEBV() &&
-          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).predicate, (<Quad> right).predicate ], exprEval)).coerceEBV() &&
-          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).object, (<Quad> right).object ], exprEval)).coerceEBV() &&
-          (<E.BooleanLiteral> op.applyOnTerms([ (<Quad> left).graph, (<Quad> right).graph ], exprEval)).coerceEBV(),
-        );
-      },
+      exprEval => ([ left, right ]) =>
+        bool(
+          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).subject, (<Quad> right).subject ], exprEval))
+            .coerceEBV() &&
+          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).predicate, (<Quad> right).predicate ], exprEval))
+            .coerceEBV() &&
+          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).object, (<Quad> right).object ], exprEval))
+            .coerceEBV() &&
+          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).graph, (<Quad> right).graph ], exprEval))
+            .coerceEBV(),
+        )
+      ,
       false,
     )
     .set(
       [ 'term', 'term' ],
-      () => ([ left, right ]) => bool(RDFTermEqual(left, right)),
+      () => ([ _left, _right ]) => {
+        const left = _left.toRDF();
+        const right = _right.toRDF();
+        const val = left.equals(right);
+        if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
+          throw new Err.RDFEqualTypeError([ _left, _right ]);
+        }
+        return bool(val);
+      },
       false,
     )
     .set([ TypeURL.XSD_DURATION, TypeURL.XSD_DURATION ], () =>
@@ -224,32 +255,28 @@ const equality = {
           toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.context.defaultTimeZone).getTime() ===
           toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.context.defaultTimeZone).getTime(),
         ))
-    .collect(),
-};
-
-function RDFTermEqual(_left: Term, _right: Term): boolean {
-  const left = _left.toRDF();
-  const right = _right.toRDF();
-  const val = left.equals(right);
-  if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
-    throw new Err.RDFEqualTypeError([ _left, _right ]);
-  }
-  return val;
+    .collect();
 }
 
-const inequality = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.NOT_EQUAL)
+class Inequality extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.NOT_EQUAL;
+
+  protected overloads = declare(C.RegularOperator.NOT_EQUAL)
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         bool(!(<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL]
           .applyOnTerms([ first, second ], expressionEvaluator)).typedValue))
-    .collect(),
-};
+    .collect();
+}
 
-const lesserThan = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.LT)
+class LesserThan extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.LT;
+
+  protected overloads = declare(C.RegularOperator.LT)
     .numberTest(() => (left, right) => left < right)
     .stringTest(() => (left, right) => left.localeCompare(right) === -1)
     .booleanTest(() => (left, right) => left < right)
@@ -281,43 +308,51 @@ const lesserThan = {
         // https://www.w3.org/TR/xpath-functions/#func-time-less-than
         bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.context.defaultTimeZone).getTime() <
           toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.context.defaultTimeZone).getTime()))
-    .collect(),
-};
+    .collect();
+}
 
-const greaterThan = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.GT)
+class GreaterThan extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.GT;
+
+  protected overloads = declare(C.RegularOperator.GT)
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         // X < Y -> Y > X
         regularFunctions[C.RegularOperator.LT].applyOnTerms([ second, first ], expressionEvaluator))
-    .collect(),
-};
+    .collect();
+}
 
-const lesserThanEqual = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.LTE)
+class LesserThanEqual extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.LTE;
+  protected overloads = declare(C.RegularOperator.LTE)
     .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X <= Y -> X < Y || X = Y
         // First check if the first is lesser than the second, then check if they are equal.
         // Doing this, the correct error will be thrown, each type that has a lesserThanEqual has a matching lesserThan.
         bool(
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].applyOnTerms([ first, second ], exprEval)).typedValue ||
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].applyOnTerms([ first, second ], exprEval)).typedValue,
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].applyOnTerms([ first, second ], exprEval))
+            .typedValue ||
+          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].applyOnTerms([ first, second ], exprEval))
+            .typedValue,
         ))
-    .collect(),
-};
+    .collect();
+}
 
-const greaterThanEqual = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.GTE)
+class GreaterThanEqual extends RegularFunction {
+  protected arity = 2;
+
+  public operator = C.RegularOperator.GTE;
+  protected overloads = declare(C.RegularOperator.GTE)
     .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X >= Y -> Y <= X
         regularFunctions[C.RegularOperator.LTE].applyOnTerms([ second, first ], exprEval))
-    .collect(),
-};
+    .collect();
+}
 
 // ----------------------------------------------------------------------------
 // Functions on RDF Terms
@@ -327,80 +362,93 @@ const greaterThanEqual = {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-isIRI
  */
-const isIRI = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.IS_IRI)
+class IsIRI extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.IS_IRI;
+  protected overloads = declare(C.RegularOperator.IS_IRI)
     .onTerm1(() => term => bool(term.termType === 'namedNode'))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-isBlank
  */
-const isBlank = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.IS_BLANK)
+class IsBlank extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.IS_BLANK;
+
+  protected overloads = declare(C.RegularOperator.IS_BLANK)
     .onTerm1(() => term => bool(term.termType === 'blankNode'))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-isLiteral
  */
-const isLiteral = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.IS_LITERAL)
+class IsLiteral extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.IS_LITERAL;
+  protected overloads = declare(C.RegularOperator.IS_LITERAL)
     .onTerm1(() => term => bool(term.termType === 'literal'))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-isNumeric
  */
-const isNumeric = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.IS_NUMERIC)
+class IsNumeric extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.IS_NUMERIC;
+
+  protected overloads = declare(C.RegularOperator.IS_NUMERIC)
     .onNumeric1(() => () => bool(true))
     .onTerm1(() => () => bool(false))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-str
  */
-const STR = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.STR)
+class STR extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.STR;
+  protected overloads = declare(C.RegularOperator.STR)
     .onTerm1(() => term => string(term.str()))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-lang
  */
-const lang = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.LANG)
+class Lang extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.LANG;
+
+  protected overloads = declare(C.RegularOperator.LANG)
     .onLiteral1(() => lit => string(lit.language || ''))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-datatype
  */
-const datatype = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.DATATYPE)
+class Datatype extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.DATATYPE;
+
+  protected overloads = declare(C.RegularOperator.DATATYPE)
     .onLiteral1(() => lit => new E.NamedNode(lit.dataType))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-iri
  */
-const IRI = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.IRI)
+class IRI extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.IRI;
+
+  protected overloads = declare(C.RegularOperator.IRI)
     .set([ 'namedNode' ], exprEval => args => {
       const lit = <E.NamedNode> args[0];
       const iri = resolveRelativeIri(lit.str(), exprEval.context.baseIRI || '');
@@ -410,57 +458,65 @@ const IRI = {
       const iri = resolveRelativeIri(lit.str(), exprEval.context.baseIRI || '');
       return new E.NamedNode(iri);
     })
-    .collect(),
-};
+    .collect();
+}
 
 // See special functions
-// const BNODE = {};
+// class BNODE extends RegularFunction {};
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strdt
  */
-const STRDT = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.STRDT).set(
+class STRDT extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.STRDT;
+
+  protected overloads = declare(C.RegularOperator.STRDT).set(
     [ TypeURL.XSD_STRING, 'namedNode' ],
     exprEval => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
       const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
       return new TermTransformer(exprEval.context.superTypeProvider).transformLiteral(lit);
     },
-  ).collect(),
-};
+  ).collect();
+}
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strlang
  */
-const STRLANG = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.STRLANG)
+class STRLANG extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.STRLANG;
+
+  protected overloads = declare(C.RegularOperator.STRLANG)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (val: string, language: string) => new E.LangStringLiteral(val, language.toLowerCase()),
     )
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-uuid
  */
-const UUID = {
-  arity: 0,
-  overloads: declare(C.RegularOperator.UUID)
+class UUID extends RegularFunction {
+  protected arity = 0;
+  public operator = C.RegularOperator.UUID;
+
+  protected overloads = declare(C.RegularOperator.UUID)
     .set([], () => () => new E.NamedNode(`urn:uuid:${uuid.v4()}`))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-struuid
  */
-const STRUUID = {
-  arity: 0,
-  overloads: declare(C.RegularOperator.STRUUID)
+class STRUUID extends RegularFunction {
+  protected arity = 0;
+  public operator = C.RegularOperator.STRUUID;
+
+  protected overloads = declare(C.RegularOperator.STRUUID)
     .set([], () => () => string(uuid.v4()))
-    .collect(),
-};
+    .collect();
+}
 
 // ----------------------------------------------------------------------------
 // Functions on strings
@@ -470,19 +526,23 @@ const STRUUID = {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strlen
  */
-const STRLEN = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.STRLEN)
+class STRLEN extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.STRLEN;
+
+  protected overloads = declare(C.RegularOperator.STRLEN)
     .onStringly1(() => str => integer([ ...str.typedValue ].length))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-substr
  */
-const SUBSTR = {
-  arity: [ 2, 3 ],
-  overloads: declare(C.RegularOperator.SUBSTR)
+class SUBSTR extends RegularFunction {
+  protected arity = [ 2, 3 ];
+  public operator = C.RegularOperator.SUBSTR;
+
+  protected overloads = declare(C.RegularOperator.SUBSTR)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_INTEGER ],
       () => (source: string, startingLoc: number) => string([ ...source ].slice(startingLoc - 1).join('')),
@@ -503,39 +563,45 @@ const SUBSTR = {
           length.typedValue + startingLoc.typedValue - 1).join('');
         return langString(sub, source.language);
       })
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-ucase
  */
-const UCASE = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.UCASE)
+class UCASE extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.UCASE;
+
+  protected overloads = declare(C.RegularOperator.UCASE)
     .onString1Typed(() => lit => string(lit.toUpperCase()))
     .onLangString1(() => lit => langString(lit.typedValue.toUpperCase(), lit.language))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-lcase
  */
-const LCASE = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.LCASE)
+class LCASE extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.LCASE;
+
+  protected overloads = declare(C.RegularOperator.LCASE)
     .onString1Typed(() => lit => string(lit.toLowerCase()))
     .onLangString1(() => lit => langString(lit.typedValue.toLowerCase(), lit.language))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strstarts
  * for this and the following functions you'll see (string, langstring) is not allowed. This behaviour is defined in:
  * https://www.w3.org/TR/sparql11-query/#func-arg-compatibility
  */
-const STRSTARTS = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.STRSTARTS)
+class STRSTARTS extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.STRSTARTS;
+
+  protected overloads = declare(C.RegularOperator.STRSTARTS)
     .onBinaryTyped(
       [ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => bool(arg1.startsWith(arg2)),
@@ -549,15 +615,17 @@ const STRSTARTS = {
         return bool(arg1.typedValue.startsWith(arg2.typedValue));
       },
     )
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strends
  */
-const STRENDS = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.STRENDS)
+class STRENDS extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.STRENDS;
+
+  protected overloads = declare(C.RegularOperator.STRENDS)
     .onBinaryTyped(
       [ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => bool(arg1.endsWith(arg2)),
@@ -571,15 +639,17 @@ const STRENDS = {
         return bool(arg1.typedValue.endsWith(arg2.typedValue));
       },
     )
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-contains
  */
-const CONTAINS = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.CONTAINS)
+class CONTAINS extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.CONTAINS;
+
+  protected overloads = declare(C.RegularOperator.CONTAINS)
     .onBinaryTyped(
       [ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
@@ -593,15 +663,17 @@ const CONTAINS = {
         return bool(arg1.typedValue.includes(arg2.typedValue));
       },
     )
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strbefore
  */
-const STRBEFORE = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.STRBEFORE)
+class STRBEFORE extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.STRBEFORE;
+
+  protected overloads = declare(C.RegularOperator.STRBEFORE)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => string(arg1.slice(0, Math.max(0, arg1.indexOf(arg2)))),
@@ -625,15 +697,17 @@ const STRBEFORE = {
         return sub || !a2 ? langString(sub, arg1.language) : string(sub);
       },
     )
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strafter
  */
-const STRAFTER = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.STRAFTER)
+class STRAFTER extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.STRAFTER;
+
+  protected overloads = declare(C.RegularOperator.STRAFTER)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => string(arg1.slice(arg1.indexOf(arg2)).slice(arg2.length)),
@@ -657,32 +731,36 @@ const STRAFTER = {
         return sub || !a2 ? langString(sub, arg1.language) : string(sub);
       },
     )
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-encode
  */
-const ENCODE_FOR_URI = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.ENCODE_FOR_URI)
-    .onStringly1Typed(() => val => string(encodeURI(val))).collect(),
-};
+class ENCODE_FOR_URI extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.ENCODE_FOR_URI;
+
+  protected overloads = declare(C.RegularOperator.ENCODE_FOR_URI)
+    .onStringly1Typed(() => val => string(encodeURI(val))).collect();
+}
 
 // See special operators
-// const CONCAT = {}
+// class CONCAT extends RegularFunction {}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-langMatches
  */
-const langmatches = {
-  arity: 2,
-  overloads: declare(C.RegularOperator.LANG_MATCHES)
+class Langmatches extends RegularFunction {
+  protected arity = 2;
+  public operator = C.RegularOperator.LANG_MATCHES;
+
+  protected overloads = declare(C.RegularOperator.LANG_MATCHES)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (tag: string, range: string) => bool(X.langMatches(tag, range)),
-    ).collect(),
-};
+    ).collect();
+}
 
 const regex2: (exprEval: ExpressionEvaluator) => (text: string, pattern: string) => E.BooleanLiteral =
   () => (text: string, pattern: string) => bool(X.matches(text, pattern));
@@ -691,20 +769,24 @@ const regex3: (exprEval: ExpressionEvaluator) => (text: string, pattern: string,
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
  */
-const REGEX = {
-  arity: [ 2, 3 ],
-  overloads: declare(C.RegularOperator.REGEX)
+class REGEX extends RegularFunction {
+  protected arity = [ 2, 3 ];
+  public operator = C.RegularOperator.REGEX;
+
+  protected overloads = declare(C.RegularOperator.REGEX)
     .onBinaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ], regex2)
     .onTernaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING, TypeURL.XSD_STRING ], regex3)
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-replace
  */
-const REPLACE = {
-  arity: [ 3, 4 ],
-  overloads: declare(C.RegularOperator.REPLACE)
+class REPLACE extends RegularFunction {
+  protected arity = [ 3, 4 ];
+  public operator = C.RegularOperator.REPLACE;
+
+  protected overloads = declare(C.RegularOperator.REPLACE)
     .onTernaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg: string, pattern: string, replacement: string) =>
@@ -730,8 +812,8 @@ const REPLACE = {
         return langString(result, arg.language);
       },
     )
-    .collect(),
-};
+    .collect();
+}
 
 // ----------------------------------------------------------------------------
 // Functions on numerics
@@ -741,52 +823,62 @@ const REPLACE = {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-abs
  */
-const abs = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.ABS)
+class Abs extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.ABS;
+
+  protected overloads = declare(C.RegularOperator.ABS)
     .numericConverter(() => num => Math.abs(num))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-round
  */
-const round = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.ROUND)
+class Round extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.ROUND;
+
+  protected overloads = declare(C.RegularOperator.ROUND)
     .numericConverter(() => num => Math.round(num))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-ceil
  */
-const ceil = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.CEIL)
+class Ceil extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.CEIL;
+
+  protected overloads = declare(C.RegularOperator.CEIL)
     .numericConverter(() => num => Math.ceil(num))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-floor
  */
-const floor = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.FLOOR)
+class Floor extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.FLOOR;
+
+  protected overloads = declare(C.RegularOperator.FLOOR)
     .numericConverter(() => num => Math.floor(num))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#idp2130040
  */
-const rand = {
-  arity: 0,
-  overloads: declare(C.RegularOperator.RAND)
+class Rand extends RegularFunction {
+  protected arity = 0;
+  public operator = C.RegularOperator.RAND;
+
+  protected overloads = declare(C.RegularOperator.RAND)
     .set([], () => () => double(Math.random()))
-    .collect(),
-};
+    .collect();
+}
 
 // ----------------------------------------------------------------------------
 // Functions on Dates and Times
@@ -796,94 +888,110 @@ const rand = {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-now
  */
-const now = {
-  arity: 0,
-  overloads: declare(C.RegularOperator.NOW).set([], exprEval => () =>
+class Now extends RegularFunction {
+  protected arity = 0;
+  public operator = C.RegularOperator.NOW;
+
+  protected overloads = declare(C.RegularOperator.NOW).set([], exprEval => () =>
     new E.DateTimeLiteral(toDateTimeRepresentation(
       { date: exprEval.context.now, timeZone: exprEval.context.defaultTimeZone },
-    ))).collect(),
-};
+    ))).collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-year
  */
-const year = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.YEAR)
+class Year extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.YEAR;
+
+  protected overloads = declare(C.RegularOperator.YEAR)
     .onDateTime1(
       () => date => integer(date.typedValue.year),
     )
     .set([ TypeURL.XSD_DATE ], () => ([ date ]: [E.DateLiteral ]) => integer(date.typedValue.year))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-month
  */
-const month = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.MONTH)
+class Month extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.MONTH;
+
+  protected overloads = declare(C.RegularOperator.MONTH)
     .onDateTime1(
       () => date => integer(date.typedValue.month),
     )
     .set([ TypeURL.XSD_DATE ], () => ([ date ]: [ E.DateLiteral]) => integer(date.typedValue.month))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-day
  */
-const day = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.DAY)
+class Day extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.DAY;
+
+  protected overloads = declare(C.RegularOperator.DAY)
     .onDateTime1(
       () => date => integer(date.typedValue.day),
     )
     .set([ TypeURL.XSD_DATE ], () => ([ date ]: [ E.DateLiteral]) => integer(date.typedValue.day))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-hours
  */
-const hours = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.HOURS)
+class Hours extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.HOURS;
+
+  protected overloads = declare(C.RegularOperator.HOURS)
     .onDateTime1(
       () => date => integer(date.typedValue.hours),
     )
     .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ E.TimeLiteral]) => integer(time.typedValue.hours))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-minutes
  */
-const minutes = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.MINUTES)
+class Minutes extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.MINUTES;
+
+  protected overloads = declare(C.RegularOperator.MINUTES)
     .onDateTime1(() => date => integer(date.typedValue.minutes))
     .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ E.TimeLiteral]) => integer(time.typedValue.minutes))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-seconds
  */
-const seconds = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.SECONDS)
+class Seconds extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.SECONDS;
+
+  protected overloads = declare(C.RegularOperator.SECONDS)
     .onDateTime1(() => date => decimal(date.typedValue.seconds))
     .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ E.TimeLiteral]) => integer(time.typedValue.seconds))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-timezone
  */
-const timezone = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.TIMEZONE)
+class Timezone extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.TIMEZONE;
+
+  protected overloads = declare(C.RegularOperator.TIMEZONE)
     .onDateTime1(
       () => date => {
         const duration: Partial<IDayTimeDurationRepresentation> = {
@@ -898,22 +1006,24 @@ const timezone = {
     )
     .copy({ from: [ TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_DATE ]})
     .copy({ from: [ TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_TIME ]})
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-tz
  */
-const tz = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.TZ)
+class TZ extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.TZ;
+
+  protected overloads = declare(C.RegularOperator.TZ)
     .onDateTime1(
       () => date => string(extractRawTimeZone(date.str())),
     )
     .copy({ from: [ TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_DATE ]})
     .copy({ from: [ TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_TIME ]})
-    .collect(),
-};
+    .collect();
+}
 
 // ----------------------------------------------------------------------------
 // Hash functions
@@ -923,52 +1033,62 @@ const tz = {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-md5
  */
-const MD5 = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.MD5)
+class MD5 extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.MD5;
+
+  protected overloads = declare(C.RegularOperator.MD5)
     .onString1Typed(() => str => string(md5(str)))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha1
  */
-const SHA1 = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.SHA1)
+class SHA1 extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.SHA1;
+
+  protected overloads = declare(C.RegularOperator.SHA1)
     .onString1Typed(() => str => string(sha1().update(str).digest('hex')))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha256
  */
-const SHA256 = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.SHA256)
+class SHA256 extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.SHA256;
+
+  protected overloads = declare(C.RegularOperator.SHA256)
     .onString1Typed(() => str => string(sha256().update(str).digest('hex')))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha384
  */
-const SHA384 = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.SHA384)
+class SHA384 extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.SHA384;
+
+  protected overloads = declare(C.RegularOperator.SHA384)
     .onString1Typed(() => str => string(sha384().update(str).digest('hex')))
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha512
  */
-const SHA512 = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.SHA512)
+class SHA512 extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.SHA512;
+
+  protected overloads = declare(C.RegularOperator.SHA512)
     .onString1Typed(() => str => string(sha512().update(str).digest('hex')))
-    .collect(),
-};
+    .collect();
+}
 
 // ----------------------------------------------------------------------------
 // Functions for quoted triples
@@ -978,57 +1098,67 @@ const SHA512 = {
 /**
  * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
  */
-const triple = {
-  arity: 3,
-  overloads: declare(C.RegularOperator.TRIPLE)
+class Triple extends RegularFunction {
+  protected arity = 3;
+  public operator = C.RegularOperator.TRIPLE;
+
+  protected overloads = declare(C.RegularOperator.TRIPLE)
     .onTerm3(
       exprEval => (...args) => new E.Quad(
         DF.quad(args[0].toRDF(), args[1].toRDF(), args[2].toRDF()),
         exprEval.context.superTypeProvider,
       ),
     )
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#subject
  */
-const subject = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.SUBJECT)
+class Subject extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.SUBJECT;
+
+  protected overloads = declare(C.RegularOperator.SUBJECT)
     .onQuad1(() => quad => quad.subject)
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#predicate
  */
-const predicate = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.PREDICATE)
+class Predicate extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.PREDICATE;
+
+  protected overloads = declare(C.RegularOperator.PREDICATE)
     .onQuad1(() => quad => quad.predicate)
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#object
  */
-const object = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.OBJECT)
+class ObjectSparqlFunction extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.OBJECT;
+
+  protected overloads = declare(C.RegularOperator.OBJECT)
     .onQuad1(() => quad => quad.object)
-    .collect(),
-};
+    .collect();
+}
 
 /**
  * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#istriple
  */
-const istriple = {
-  arity: 1,
-  overloads: declare(C.RegularOperator.IS_TRIPLE)
+class Istriple extends RegularFunction {
+  protected arity = 1;
+  public operator = C.RegularOperator.IS_TRIPLE;
+
+  protected overloads = declare(C.RegularOperator.IS_TRIPLE)
     .onTerm1(() => term => bool(term.termType === 'quad'))
-    .collect(),
-};
+    .collect();
+}
 
 // End definitions.
 // ----------------------------------------------------------------------------
@@ -1038,97 +1168,97 @@ const istriple = {
 /**
  * Collect all the definitions from above into an object
  */
-export const definitions: Record<C.RegularOperator, IOverloadedDefinition> = {
+export const regularFunctions: Record<C.RegularOperator, RegularFunction> = {
   // --------------------------------------------------------------------------
   // Operator Mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   // --------------------------------------------------------------------------
-  '!': not,
-  uplus: unaryPlus,
-  uminus: unaryMinus,
-  '*': multiplication,
-  '/': division,
-  '+': addition,
-  '-': subtraction,
-  '=': equality,
-  '!=': inequality,
-  '<': lesserThan,
-  '>': greaterThan,
-  '<=': lesserThanEqual,
-  '>=': greaterThanEqual,
+  '!': new Not(),
+  uplus: new UnaryPlus(),
+  uminus: new UnaryMinus(),
+  '*': new Multiplication(),
+  '/': new Division(),
+  '+': new Addition(),
+  '-': new Subtraction(),
+  '=': new Equality(),
+  '!=': new Inequality(),
+  '<': new LesserThan(),
+  '>': new GreaterThan(),
+  '<=': new LesserThanEqual(),
+  '>=': new GreaterThanEqual(),
 
   // --------------------------------------------------------------------------
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   // --------------------------------------------------------------------------
-  isiri: isIRI,
-  isuri: isIRI,
-  isblank: isBlank,
-  isliteral: isLiteral,
-  isnumeric: isNumeric,
-  str: STR,
-  lang,
-  datatype,
-  iri: IRI,
-  uri: IRI,
+  isiri: new IsIRI(),
+  isuri: new IsIRI(),
+  isblank: new IsBlank(),
+  isliteral: new IsLiteral(),
+  isnumeric: new IsNumeric(),
+  str: new STR(),
+  lang: new Lang(),
+  datatype: new Datatype(),
+  iri: new IRI(),
+  uri: new IRI(),
   // 'BNODE': BNODE (see special operators),
-  strdt: STRDT,
-  strlang: STRLANG,
-  uuid: UUID,
-  struuid: STRUUID,
+  strdt: new STRDT(),
+  strlang: new STRLANG(),
+  uuid: new UUID(),
+  struuid: new STRUUID(),
 
   // --------------------------------------------------------------------------
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-forms
   // --------------------------------------------------------------------------
-  strlen: STRLEN,
-  substr: SUBSTR,
-  ucase: UCASE,
-  lcase: LCASE,
-  strstarts: STRSTARTS,
-  strends: STRENDS,
-  contains: CONTAINS,
-  strbefore: STRBEFORE,
-  strafter: STRAFTER,
-  encode_for_uri: ENCODE_FOR_URI,
+  strlen: new STRLEN(),
+  substr: new SUBSTR(),
+  ucase: new UCASE(),
+  lcase: new LCASE(),
+  strstarts: new STRSTARTS(),
+  strends: new STRENDS(),
+  contains: new CONTAINS(),
+  strbefore: new STRBEFORE(),
+  strafter: new STRAFTER(),
+  encode_for_uri: new ENCODE_FOR_URI(),
   // 'concat': CONCAT (see special operators)
-  langmatches,
-  regex: REGEX,
-  replace: REPLACE,
+  langmatches: new Langmatches(),
+  regex: new REGEX(),
+  replace: new REPLACE(),
 
   // --------------------------------------------------------------------------
   // Functions on numerics
   // https://www.w3.org/TR/sparql11-query/#func-numerics
   // --------------------------------------------------------------------------
-  abs,
-  round,
-  ceil,
-  floor,
-  rand,
+  abs: new Abs(),
+  round: new Round(),
+  ceil: new Ceil(),
+  floor: new Floor(),
+  rand: new Rand(),
 
   // --------------------------------------------------------------------------
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
   // --------------------------------------------------------------------------
-  now,
-  year,
-  month,
-  day,
-  hours,
-  minutes,
-  seconds,
-  timezone,
-  tz,
+  now: new Now(),
+  year: new Year(),
+  month: new Month(),
+  day: new Day(),
+  hours: new Hours(),
+  minutes: new Minutes(),
+  seconds: new Seconds(),
+  timezone: new Timezone(),
+  tz: new TZ(),
 
   // --------------------------------------------------------------------------
   // Hash functions
   // https://www.w3.org/TR/sparql11-query/#func-hash
   // --------------------------------------------------------------------------
-  md5: MD5,
-  sha1: SHA1,
-  sha256: SHA256,
-  sha384: SHA384,
-  sha512: SHA512,
+  md5: new MD5(),
+  sha1: new SHA1(),
+  sha256: new SHA256(),
+  sha384: new SHA384(),
+  sha512: new SHA512(),
 
   // --------------------------------------------------------------------------
   // Functions for quoted triples
@@ -1136,9 +1266,9 @@ export const definitions: Record<C.RegularOperator, IOverloadedDefinition> = {
   // Additional operator mappings
   // https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html#rdf-star-operator-mapping
   // --------------------------------------------------------------------------
-  triple,
-  subject,
-  predicate,
-  object,
-  istriple,
+  triple: new Triple(),
+  subject: new Subject(),
+  predicate: new Predicate(),
+  object: new ObjectSparqlFunction(),
+  istriple: new Istriple(),
 };
