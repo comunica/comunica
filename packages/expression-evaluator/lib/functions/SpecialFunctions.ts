@@ -161,36 +161,36 @@ class InSPARQL extends SparqlFunction {
   }
 
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
-    async function inRecursive(
-      needle: E.TermExpression,
-      innerContext: IEvalContext,
-      results: (Error | false)[],
-    ): Promise<E.TermExpression> {
-      const { args, mapping, exprEval } = innerContext;
-      if (args.length === 0) {
-        const noErrors = results.every(val => !val);
-        return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
-      }
-
-      try {
-        // We know this will not be undefined because we check args.length === 0
-        const nextExpression = args.shift()!;
-        const next = await exprEval.evaluateAsInternal(nextExpression, mapping);
-        const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-        if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
-          return bool(true);
-        }
-        return inRecursive(needle, innerContext, [ ...results, false ]);
-      } catch (error: unknown) {
-        return inRecursive(needle, innerContext, [ ...results, <Error> error ]);
-      }
-    }
-
     const { args, mapping, exprEval } = context;
     const [ leftExpr, ...remaining ] = args;
     const left = await exprEval.evaluateAsInternal(leftExpr, mapping);
-    return await inRecursive(left, { ...context, args: remaining }, []);
+    return await this.inRecursive(left, { ...context, args: remaining }, []);
   };
+
+  private async inRecursive(
+    needle: E.TermExpression,
+    context: IEvalContext,
+    results: (Error | false)[],
+  ): Promise<E.TermExpression> {
+    const { args, mapping, exprEval } = context;
+    if (args.length === 0) {
+      const noErrors = results.every(val => !val);
+      return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
+    }
+
+    try {
+      // We know this will not be undefined because we check args.length === 0
+      const nextExpression = args.shift()!;
+      const next = await exprEval.evaluateAsInternal(nextExpression, mapping);
+      const isEqual = regularFunctions[C.RegularOperator.EQUAL];
+      if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
+        return bool(true);
+      }
+      return this.inRecursive(needle, context, [ ...results, false ]);
+    } catch (error: unknown) {
+      return this.inRecursive(needle, context, [ ...results, <Error> error ]);
+    }
+  }
 }
 
 // NOT IN ---------------------------------------------------------------------
