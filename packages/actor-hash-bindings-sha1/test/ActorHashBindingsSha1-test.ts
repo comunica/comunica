@@ -72,6 +72,13 @@ describe('ActorHashBindingsSha1', () => {
         [ DF.variable('b'), DF.namedNode('ex:b') ],
       ])));
       expect(result.hashFunction(BF.bindings([
+        [ DF.variable('b'), DF.namedNode('ex:b') ],
+        [ DF.variable('a'), DF.namedNode('ex:a') ],
+      ]))).toEqual(result.hashFunction(BF.bindings([
+        [ DF.variable('a'), DF.namedNode('ex:a') ],
+        [ DF.variable('b'), DF.namedNode('ex:b') ],
+      ])));
+      expect(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('b'), DF.namedNode('ex:b') ],
       ]))).not.toEqual(result.hashFunction(BF.bindings([
