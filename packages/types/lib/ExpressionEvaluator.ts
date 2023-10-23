@@ -1,7 +1,4 @@
 import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
-import type {
-  ICompleteEEContext,
-} from '@comunica/expression-evaluator/lib/evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -71,7 +68,7 @@ export interface IExpressionEvaluator {
   orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined, strict: boolean | undefined) => -1 | 0 | 1;
 }
 
-export interface IEvalContext extends ICompleteEEContext {
+export interface IEvalContext {
   args: E.Expression[];
   mapping: RDF.Bindings;
   exprEval: ExpressionEvaluator;

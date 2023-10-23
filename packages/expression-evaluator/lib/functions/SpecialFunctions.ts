@@ -1,5 +1,4 @@
 import type { IEvalContext } from '@comunica/types';
-import * as uuid from 'uuid';
 import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -21,14 +20,14 @@ import { regularFunctions } from './RegularFunctions';
 class Bound extends SparqlFunction {
   protected arity = 1;
 
-  public async apply({ args, mapping }: IEvalContext): Promise<E.TermExpression> {
+  public apply = async({ args, mapping }: IEvalContext): Promise<E.TermExpression> => {
     const variable = <E.VariableExpression> args[0];
     if (variable.expressionType !== E.ExpressionType.Variable) {
       throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
     }
     const val = mapping.has(expressionToVar(variable));
     return bool(val);
-  }
+  };
 }
 
 // IF -------------------------------------------------------------------------
@@ -40,13 +39,13 @@ class Bound extends SparqlFunction {
 class IfSPARQL extends SparqlFunction {
   protected arity = 3;
 
-  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
-    const valFirst = await exprEval.evaluator.evaluate(args[0], mapping);
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
+    const valFirst = await exprEval.evaluateAsInternal(args[0], mapping);
     const ebv = valFirst.coerceEBV();
     return ebv ?
-      exprEval.evaluator.evaluate(args[1], mapping) :
-      exprEval.evaluator.evaluate(args[2], mapping);
-  }
+      exprEval.evaluateAsInternal(args[1], mapping) :
+      exprEval.evaluateAsInternal(args[2], mapping);
+  };
 }
 
 // COALESCE -------------------------------------------------------------------
@@ -58,17 +57,17 @@ class IfSPARQL extends SparqlFunction {
 class Coalesce extends SparqlFunction {
   protected arity = Number.POSITIVE_INFINITY;
 
-  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const errors: Error[] = [];
     for (const expr of args) {
       try {
-        return await exprEval.evaluator.evaluate(expr, mapping);
+        return await exprEval.evaluateAsInternal(expr, mapping);
       } catch (error: unknown) {
         errors.push(<Error> error);
       }
     }
     throw new Err.CoalesceError(errors);
-  }
+  };
 }
 
 // Logical-or (||) ------------------------------------------------------------
@@ -79,26 +78,26 @@ class Coalesce extends SparqlFunction {
  */
 class LogicalOr extends SparqlFunction {
   protected arity = 2;
-  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await exprEval.evaluator.evaluate(leftExpr, mapping);
+      const leftTerm = await exprEval.evaluateAsInternal(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (left) {
         return bool(true);
       }
-      const rightTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
+      const rightTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (!rightError) {
         throw error;
       }
       return bool(true);
     }
-  }
+  };
 }
 
 // Logical-and (&&) -----------------------------------------------------------
@@ -110,26 +109,26 @@ class LogicalOr extends SparqlFunction {
 class LogicalAnd extends SparqlFunction {
   protected arity = 2;
 
-  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await exprEval.evaluator.evaluate(leftExpr, mapping);
+      const leftTerm = await exprEval.evaluateAsInternal(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (!left) {
         return bool(false);
       }
-      const rightTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
+      const rightTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await exprEval.evaluator.evaluate(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (rightError) {
         throw error;
       }
       return bool(false);
     }
-  }
+  };
 }
 
 // SameTerm -------------------------------------------------------------------
@@ -141,11 +140,11 @@ class LogicalAnd extends SparqlFunction {
  */
 class SameTerm extends SparqlFunction {
   protected arity = 2;
-  public async apply({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> {
-    const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluator.evaluate(arg, mapping));
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
+    const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluateAsInternal(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
     return bool(left.toRDF().equals(right.toRDF()));
-  }
+  };
 }
 
 // IN -------------------------------------------------------------------------
@@ -161,7 +160,7 @@ class InSPARQL extends SparqlFunction {
     return args.length > 0;
   }
 
-  public async apply(context: IEvalContext): Promise<E.TermExpression> {
+  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     async function inRecursive(
       needle: E.TermExpression,
       innerContext: IEvalContext,
@@ -176,7 +175,7 @@ class InSPARQL extends SparqlFunction {
       try {
         // We know this will not be undefined because we check args.length === 0
         const nextExpression = args.shift()!;
-        const next = await exprEval.evaluator.evaluate(nextExpression, mapping);
+        const next = await exprEval.evaluateAsInternal(nextExpression, mapping);
         const isEqual = regularFunctions[C.RegularOperator.EQUAL];
         if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
           return bool(true);
@@ -189,9 +188,9 @@ class InSPARQL extends SparqlFunction {
 
     const { args, mapping, exprEval } = context;
     const [ leftExpr, ...remaining ] = args;
-    const left = await exprEval.evaluator.evaluate(leftExpr, mapping);
+    const left = await exprEval.evaluateAsInternal(leftExpr, mapping);
     return await inRecursive(left, { ...context, args: remaining }, []);
-  }
+  };
 }
 
 // NOT IN ---------------------------------------------------------------------
@@ -207,11 +206,11 @@ class NotInSPARQL extends SparqlFunction {
     return args.length > 0;
   }
 
-  public async apply(context: IEvalContext): Promise<E.TermExpression> {
+  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     const _in = specialFunctions[C.SpecialOperator.IN];
     const isIn = await _in.apply(context);
     return bool(!(<E.BooleanLiteral> isIn).typedValue);
-  }
+  };
 }
 
 // ----------------------------------------------------------------------------
@@ -232,12 +231,16 @@ const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1((
 class Concat extends SparqlFunction {
   protected arity = Number.POSITIVE_INFINITY;
 
-  public async apply(context: IEvalContext): Promise<E.TermExpression> {
-    const { args, mapping, exprEval, functionArgumentsCache, superTypeProvider } = context;
+  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
+    const { args, mapping, exprEval } = context;
     const pLits: Promise<E.Literal<string>>[] = args
-      .map(async expr => exprEval.evaluator.evaluate(expr, mapping))
+      .map(async expr => exprEval.evaluateAsInternal(expr, mapping))
       .map(async pTerm => {
-        const operation = concatTree.search([ await pTerm ], superTypeProvider, functionArgumentsCache);
+        const operation = concatTree.search(
+          [ await pTerm ],
+          exprEval.superTypeProvider,
+          exprEval.functionArgumentsCache,
+        );
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
         }
@@ -248,7 +251,7 @@ class Concat extends SparqlFunction {
     const joined = strings.join('');
     const lang = langAllEqual(lits) ? lits[0].language : undefined;
     return lang ? langString(joined, lang) : string(joined);
-  }
+  };
 }
 
 function langAllEqual(lits: E.Literal<string>[]): boolean {
@@ -276,32 +279,28 @@ class BNode extends SparqlFunction {
     return args.length === 0 || args.length === 1;
   }
 
-  public async apply(context: IEvalContext): Promise<E.TermExpression> {
-    const { args, mapping, exprEval, superTypeProvider, functionArgumentsCache } = context;
+  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
+    const { args, mapping, exprEval } = context;
     const input = args.length === 1 ?
-      await exprEval.evaluator.evaluate(args[0], mapping) :
+      await exprEval.evaluateAsInternal(args[0], mapping) :
       undefined;
 
     let strInput: string | undefined;
     if (input) {
-      const operation = bnodeTree.search([ input ], superTypeProvider, functionArgumentsCache);
+      const operation = bnodeTree.search(
+        [ input ],
+        exprEval.superTypeProvider,
+        exprEval.functionArgumentsCache,
+      );
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
       }
       strInput = operation(exprEval)([ input ]).str();
     }
 
-    if (context.bnode) {
-      const bnode = await context.bnode(strInput);
-      return new E.BlankNode(bnode);
-    }
-
-    return BNODE_(strInput);
-  }
-}
-
-function BNODE_(input?: string): E.BlankNode {
-  return new E.BlankNode(input || uuid.v4());
+    const bnode = await exprEval.bnode(strInput);
+    return new E.BlankNode(bnode);
+  };
 }
 
 // ----------------------------------------------------------------------------

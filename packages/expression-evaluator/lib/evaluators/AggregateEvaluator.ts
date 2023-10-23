@@ -10,8 +10,8 @@ import { isSubTypeOf } from '../util/TypeHandling';
 import type { ExpressionEvaluator } from './ExpressionEvaluator';
 
 /**
- * Abstract aggregator actor. This is the base class for all aggregator actors.
- * Only the wildcard count aggregator significantly differs from the others.
+ * This is the base class for all aggregators.
+ * NOTE: The wildcard count aggregator significantly differs from the others and overloads parts of this class.
  */
 export abstract class AggregateEvaluator {
   protected readonly evaluator: IExpressionEvaluator;
@@ -100,11 +100,11 @@ export abstract class AggregateEvaluator {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
       !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, (<ExpressionEvaluator> this.evaluator)
-        .context.superTypeProvider)
+        .superTypeProvider)
     ) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
     return <E.NumericLiteral> new TermTransformer((
-      <ExpressionEvaluator> this.evaluator).context.superTypeProvider).transformLiteral(term);
+      <ExpressionEvaluator> this.evaluator).superTypeProvider).transformLiteral(term);
   }
 }

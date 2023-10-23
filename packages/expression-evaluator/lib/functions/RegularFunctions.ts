@@ -157,7 +157,7 @@ class Subtraction extends RegularFunction {
       ([ date1, date2 ]: [ E.DateTimeLiteral, E.DateTimeLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dateTimes;
         new E.DayTimeDurationLiteral(elapsedDuration(
-          date1.typedValue, date2.typedValue, exprEval.context.defaultTimeZone,
+          date1.typedValue, date2.typedValue, exprEval.defaultTimeZone,
         )))
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ]})
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_TIME, TypeURL.XSD_TIME ]})
@@ -206,8 +206,8 @@ class Equality extends RegularFunction {
     .booleanTest(() => (left, right) => left === right)
     .dateTimeTest(exprEval => (left, right) =>
       toUTCDate(
-        left, exprEval.context.defaultTimeZone,
-      ).getTime() === toUTCDate(right, exprEval.context.defaultTimeZone).getTime())
+        left, exprEval.defaultTimeZone,
+      ).getTime() === toUTCDate(right, exprEval.defaultTimeZone).getTime())
     .copy({
       // https://www.w3.org/TR/xpath-functions/#func-date-equal
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
@@ -252,8 +252,8 @@ class Equality extends RegularFunction {
       ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-equal
         bool(
-          toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.context.defaultTimeZone).getTime() ===
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.context.defaultTimeZone).getTime(),
+          toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.defaultTimeZone).getTime() ===
+          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.defaultTimeZone).getTime(),
         ))
     .collect();
 }
@@ -286,8 +286,8 @@ class LesserThan extends RegularFunction {
       false,
     )
     .dateTimeTest(exprEval => (left, right) =>
-      toUTCDate(left, exprEval.context.defaultTimeZone).getTime() <
-      toUTCDate(right, exprEval.context.defaultTimeZone).getTime())
+      toUTCDate(left, exprEval.defaultTimeZone).getTime() <
+      toUTCDate(right, exprEval.defaultTimeZone).getTime())
     .copy({
       // https://www.w3.org/TR/xpath-functions/#func-date-less-than
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
@@ -306,8 +306,8 @@ class LesserThan extends RegularFunction {
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], exprEval =>
       ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-less-than
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.context.defaultTimeZone).getTime() <
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.context.defaultTimeZone).getTime()))
+        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.defaultTimeZone).getTime() <
+          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.defaultTimeZone).getTime()))
     .collect();
 }
 
@@ -451,11 +451,11 @@ class IRI extends RegularFunction {
   protected overloads = declare(C.RegularOperator.IRI)
     .set([ 'namedNode' ], exprEval => args => {
       const lit = <E.NamedNode> args[0];
-      const iri = resolveRelativeIri(lit.str(), exprEval.context.baseIRI || '');
+      const iri = resolveRelativeIri(lit.str(), exprEval.baseIRI || '');
       return new E.NamedNode(iri);
     })
     .onString1(exprEval => lit => {
-      const iri = resolveRelativeIri(lit.str(), exprEval.context.baseIRI || '');
+      const iri = resolveRelativeIri(lit.str(), exprEval.baseIRI || '');
       return new E.NamedNode(iri);
     })
     .collect();
@@ -475,7 +475,7 @@ class STRDT extends RegularFunction {
     [ TypeURL.XSD_STRING, 'namedNode' ],
     exprEval => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
       const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
-      return new TermTransformer(exprEval.context.superTypeProvider).transformLiteral(lit);
+      return new TermTransformer(exprEval.superTypeProvider).transformLiteral(lit);
     },
   ).collect();
 }
@@ -894,7 +894,7 @@ class Now extends RegularFunction {
 
   protected overloads = declare(C.RegularOperator.NOW).set([], exprEval => () =>
     new E.DateTimeLiteral(toDateTimeRepresentation(
-      { date: exprEval.context.now, timeZone: exprEval.context.defaultTimeZone },
+      { date: exprEval.now, timeZone: exprEval.defaultTimeZone },
     ))).collect();
 }
 
@@ -1106,7 +1106,7 @@ class Triple extends RegularFunction {
     .onTerm3(
       exprEval => (...args) => new E.Quad(
         DF.quad(args[0].toRDF(), args[1].toRDF(), args[2].toRDF()),
-        exprEval.context.superTypeProvider,
+        exprEval.superTypeProvider,
       ),
     )
     .collect();

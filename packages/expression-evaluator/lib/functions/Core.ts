@@ -11,7 +11,7 @@ import type { OverloadTree } from './OverloadTree';
 
 export abstract class SparqlFunction implements IFunctionExpression {
   protected abstract readonly arity: number | number[];
-  public abstract apply(evalContext: IEvalContext): Promise<E.TermExpression>;
+  public abstract apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
 
   public checkArity(args: E.Expression[]): boolean {
     if (Array.isArray(this.arity)) {
@@ -50,17 +50,15 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
 
   public applyOnTerms(args: E.TermExpression[], exprEval: ExpressionEvaluator): E.TermExpression {
     const concreteFunction =
-      this.overloads.search(args, exprEval.context.superTypeProvider, exprEval.context.functionArgumentsCache) ||
+      this.overloads.search(args, exprEval.superTypeProvider, exprEval.functionArgumentsCache) ||
       this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
   }
 
-  public async apply({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> {
-    return this.applyOnTerms(
-      await Promise.all(args.map(arg => exprEval.evaluator.evaluate(arg, mapping))),
-      exprEval,
-    );
-  }
+  public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> => this.applyOnTerms(
+    await Promise.all(args.map(arg => exprEval.evaluateAsInternal(arg, mapping))),
+    exprEval,
+  );
 
   protected handleInvalidTypes(args: E.TermExpression[]): never {
     throw new Err.InvalidArgumentTypes(args, this.operator);

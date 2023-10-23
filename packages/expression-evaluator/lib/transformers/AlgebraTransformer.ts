@@ -1,35 +1,20 @@
 import { Algebra as Alg } from 'sparqlalgebrajs';
-import type { ICompleteEEContext } from '../evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
-import type {
-  AsyncExtensionFunction,
-  AsyncExtensionFunctionCreator,
-  ExpressionEvaluator,
-} from '../evaluators/ExpressionEvaluator';
-import type { AsyncExtensionApplication } from '../expressions';
+
 import * as E from '../expressions';
 import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
-import { ExtensionFunctionError } from '../util/Errors';
+import type { ISuperTypeProvider } from '../util/TypeHandling';
 import type { ITermTransformer } from './TermTransformer';
 import { TermTransformer } from './TermTransformer';
-
-interface IFunctionCreatorConfig {
-  creator: AsyncExtensionFunctionCreator;
-}
-
-type AlgebraTransformConfig = ICompleteEEContext & IFunctionCreatorConfig;
 
 export interface IAlgebraTransformer extends ITermTransformer{
   transformAlgebra: (expr: Alg.Expression) => E.Expression;
 }
 
 export class AlgebraTransformer extends TermTransformer implements IAlgebraTransformer {
-  private readonly creatorConfig: IFunctionCreatorConfig;
-  public constructor(protected readonly algebraConfig: AlgebraTransformConfig,
-    private readonly expressionEvaluator: ExpressionEvaluator) {
-    super(algebraConfig.superTypeProvider);
-    this.creatorConfig = <IFunctionCreatorConfig> { creator: algebraConfig.creator };
+  public constructor(superTypeProvided: ISuperTypeProvider) {
+    super(superTypeProvided);
   }
 
   public transformAlgebra(expr: Alg.Expression): E.Expression {
@@ -76,17 +61,6 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       throw new Err.InvalidArity(regularArgs, regularOp);
     }
     return new E.Operator(regularArgs, args => regularFunc.apply(args));
-  }
-
-  private wrapAsyncFunction(func: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
-    return async args => {
-      try {
-        const res = await func(args.map(arg => arg.toRDF()));
-        return this.transformRDFTermUnsafe(res);
-      } catch (error: unknown) {
-        throw new ExtensionFunctionError(name, error);
-      }
-    };
   }
 
   // TODO: Support passing functions to override default behaviour;
