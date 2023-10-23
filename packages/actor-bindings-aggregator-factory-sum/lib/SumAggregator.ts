@@ -27,7 +27,7 @@ export class SumAggregator extends AggregateEvaluator {
       this.state = this.termToNumericOrError(term);
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state = <E.NumericLiteral> this.summer.apply([ this.state, internalTerm ],
+      this.state = <E.NumericLiteral> this.summer.syncApply([ this.state, internalTerm ],
         <ExpressionEvaluator> this.evaluator);
     }
   }

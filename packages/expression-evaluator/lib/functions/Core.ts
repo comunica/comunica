@@ -7,15 +7,13 @@ import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
 import type { FunctionArgumentsCache, ImplementationFunction, OverloadTree } from './OverloadTree';
 
-export interface IEvalSharedContext extends ICompleteEEContext{
+export interface IEvalContext extends ICompleteEEContext {
   args: E.Expression[];
   mapping: RDF.Bindings;
-}
-export interface IEvalContext<Term> extends IEvalSharedContext {
   evaluate: ExpressionEvaluator;
 }
 
-export type EvalContextAsync = IEvalContext<Promise<E.TermExpression>>;
+export type EvalContextAsync = IEvalContext;
 
 // ----------------------------------------------------------------------------
 // Overloaded Functions
@@ -44,13 +42,16 @@ export abstract class BaseFunction<Operator> {
    * instance depending on the runtime types. We then just apply this function
    * to the args.
    */
-  public apply = (args: E.TermExpression[], exprEval: ExpressionEvaluator):
-  E.TermExpression => {
+  public syncApply(args: E.TermExpression[], exprEval: ExpressionEvaluator): E.TermExpression {
     const concreteFunction =
       this.monomorph(args, exprEval.context.superTypeProvider, exprEval.context.functionArgumentsCache) ||
       this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
-  };
+  }
+
+  public async apply(args: E.TermExpression[], exprEval: ExpressionEvaluator): Promise<E.TermExpression> {
+    return this.syncApply(args, exprEval);
+  }
 
   protected abstract handleInvalidTypes(args: E.TermExpression[]): never;
 

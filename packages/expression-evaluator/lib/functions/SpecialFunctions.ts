@@ -184,7 +184,7 @@ async function inRecursiveAsync(
     // We know this will not be undefined because we check args.length === 0
     const next = await evaluate.evaluator.evaluate(nextExpression!, mapping);
     const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-    if ((<E.BooleanLiteral> isEqual.apply([ needle, next ], evaluate)).typedValue) {
+    if ((<E.BooleanLiteral> isEqual.syncApply([ needle, next ], evaluate)).typedValue) {
       return bool(true);
     }
     return inRecursiveAsync(needle, context, [ ...results, false ]);

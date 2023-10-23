@@ -98,16 +98,16 @@ describe('OverloadTree', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
     expect(functionArgumentsCache['+']).toBeUndefined();
-    const res = regularFunctions['+'].apply([ one, two ], expressionEvaluator);
+    const res = regularFunctions['+'].syncApply([ one, two ], expressionEvaluator);
     expect(res.str()).toEqual('3');
     // One time lookup + one time add
     expect(functionArgumentsCache['+']).not.toBeUndefined();
-    regularFunctions['+'].apply([ two, one ], expressionEvaluator);
+    regularFunctions['+'].syncApply([ two, one ], expressionEvaluator);
 
     const innerSpy = jest.fn();
     const spy = jest.fn(() => innerSpy);
     functionArgumentsCache['+']!.cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER]!.func = spy;
-    regularFunctions['+'].apply([ one, two ], expressionEvaluator);
+    regularFunctions['+'].syncApply([ one, two ], expressionEvaluator);
     expect(spy).toHaveBeenCalled();
     expect(innerSpy).toHaveBeenCalled();
   });
@@ -117,7 +117,7 @@ describe('OverloadTree', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
     expect(functionArgumentsCache.substr).toBeUndefined();
-    expect(regularFunctions.substr.apply([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
+    expect(regularFunctions.substr.syncApply([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
 
     expect(functionArgumentsCache.substr).toBeDefined();
     const interestCache = functionArgumentsCache.substr
@@ -125,7 +125,7 @@ describe('OverloadTree', () => {
     expect(interestCache.func).toBeUndefined();
     expect(interestCache.cache![TypeURL.XSD_INTEGER]).toBeDefined();
 
-    expect(regularFunctions.substr.apply([ apple, one ], expressionEvaluator).str()).toBe(String('apple'));
+    expect(regularFunctions.substr.syncApply([ apple, one ], expressionEvaluator).str()).toBe(String('apple'));
     const interestCacheNew = functionArgumentsCache.substr
       .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
     expect(interestCacheNew).toBeDefined();

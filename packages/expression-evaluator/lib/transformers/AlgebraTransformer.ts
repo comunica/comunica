@@ -75,7 +75,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
     if (!AlgebraTransformer.hasCorrectArity(regularArgs, regularFunc.arity)) {
       throw new Err.InvalidArity(regularArgs, regularOp);
     }
-    return new E.Operator(regularArgs, args => regularFunc.apply(args, this.expressionEvaluator));
+    return new E.Operator(regularArgs, args => regularFunc.syncApply(args, this.expressionEvaluator));
   }
 
   private wrapAsyncFunction(func: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
@@ -98,7 +98,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       // Return a basic named expression
       const op = <C.NamedOperator>expr.name.value;
       const namedFunc = namedFunctions[op];
-      return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args, this.expressionEvaluator));
+      return new E.Named(expr.name, namedArgs, args => namedFunc.syncApply(args, this.expressionEvaluator));
     }
     // The expression might be an extension function, check this.
     const asyncExtensionFunc = this.creatorConfig.creator(expr.name);
