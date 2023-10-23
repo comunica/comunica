@@ -20,4 +20,16 @@ describe('bindingsToString', () => {
   "c": "ex:c"
 }`);
   });
+
+  it('should stringify non-empty bindings consistently', () => {
+    expect(bindingsToString(new BindingsFactory().bindings([
+      [ DF.variable('c'), DF.namedNode('ex:c') ],
+      [ DF.variable('a'), DF.namedNode('ex:a') ],
+      [ DF.variable('b'), DF.namedNode('ex:b') ],
+    ]))).toEqual(`{
+  "c": "ex:c",
+  "a": "ex:a",
+  "b": "ex:b"
+}`);
+  });
 });
