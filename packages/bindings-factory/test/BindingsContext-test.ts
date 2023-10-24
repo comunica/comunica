@@ -25,19 +25,19 @@ describe('Binding context mergehandler', () => {
     ]), {});
   });
   it('Should set context when key is not in context and context exists', () => {
-    bindings.setContextEntry(new ActionContextKey('testEntry'), true);
+    bindings = bindings.setContextEntry(new ActionContextKey('testEntry'), true);
     expect(bindings.context).toBeDefined();
     expect(bindings.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ], testEntry: true }));
   });
 
   it('Should create context with new entry if context does not exist ', () => {
-    bindingsNoContext.setContextEntry(new ActionContextKey('testEntry'), true);
+    bindingsNoContext = bindingsNoContext.setContextEntry(new ActionContextKey('testEntry'), true);
     expect(bindingsNoContext.context).toBeDefined();
     expect(bindingsNoContext.context).toEqual(new ActionContext({ testEntry: true }));
   });
 
   it('Should override context entry when setting existing entry', () => {
-    bindings.setContextEntry(new ActionContextKey('source'), [ 'ex:S1O', 'ex:S2O' ]);
+    bindings = bindings.setContextEntry(new ActionContextKey('source'), [ 'ex:S1O', 'ex:S2O' ]);
     expect(bindings.context).toBeDefined();
     expect(bindings.context).toEqual(new ActionContext({ source: [ 'ex:S1O', 'ex:S2O' ]}));
   });
@@ -59,13 +59,13 @@ describe('Binding context mergehandler', () => {
   });
 
   it('Should delete appropriate context key', () => {
-    bindings.deleteContextEntry(new ActionContextKey('source'));
+    bindings = bindings.deleteContextEntry(new ActionContextKey('source'));
     expect(bindings.context).toBeDefined();
     expect(bindings.context).toEqual(new ActionContext());
   });
 
   it('Should work on undefined context', () => {
-    bindingsNoContext.deleteContextEntry(new ActionContextKey('source'));
+    bindingsNoContext = bindingsNoContext.deleteContextEntry(new ActionContextKey('source'));
     expect(bindingsNoContext.context).toBeUndefined();
   });
 });

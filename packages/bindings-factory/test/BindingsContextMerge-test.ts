@@ -72,7 +72,6 @@ describe('Binding context mergehandler', () => {
     expect(bindingsNew).toBeDefined();
     expect(bindingsNew.context).toEqual(new ActionContext({}));
   });
-
   it('should merge with itself with context', () => {
     const bindingsNew = bindings.merge(bindings)!;
     expect(bindingsNew).toBeDefined();
