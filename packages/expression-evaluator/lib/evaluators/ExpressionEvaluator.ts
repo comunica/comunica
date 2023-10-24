@@ -97,7 +97,6 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
   // ==================================================================================================================
   // ==================================================================================================================
   // ==================================================================================================================
-  // TODO: make this order function a seperate class(it will be an actor)/ term comparator bus
   // Determine the relative numerical order of the two given terms.
   // In accordance with https://www.w3.org/TR/sparql11-query/#modOrderBy
   public orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefined): -1 | 0 | 1 {
@@ -124,20 +123,45 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
       return 0;
     }
 
+    // Handle quoted triples
+    if (termA.termType === 'Quad' && termB.termType === 'Quad') {
+      const orderSubject = this.orderTypes(
+        termA.subject, termB.subject,
+      );
+      if (orderSubject !== 0) {
+        return orderSubject;
+      }
+      const orderPredicate = this.orderTypes(
+        termA.predicate, termB.predicate,
+      );
+      if (orderPredicate !== 0) {
+        return orderPredicate;
+      }
+      const orderObject = this.orderTypes(
+        termA.object, termB.object,
+      );
+      if (orderObject !== 0) {
+        return orderObject;
+      }
+      return this.orderTypes(
+        termA.graph, termB.graph,
+      );
+    }
+
     // Handle literals
-    if (termA.termType === 'Literal' || termA.termType === 'Quad') {
-      return this.orderUsingSparqlFunctions(termA, <RDF.Literal | RDF.BaseQuad> termB);
+    if (termA.termType === 'Literal') {
+      return this.orderLiteralTypes(termA, <RDF.Literal>termB);
     }
 
     return this.comparePrimitives(termA.value, termB.value);
   }
 
-  private orderUsingSparqlFunctions(litA: RDF.Literal | RDF.BaseQuad, litB: RDF.Literal | RDF.BaseQuad): -1 | 0 | 1 {
+  private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal): -1 | 0 | 1 {
     const isGreater = regularFunctions[C.RegularOperator.GT];
     const isEqual = regularFunctions[C.RegularOperator.EQUAL];
 
-    const myLitA: E.Term = this.transformer.transformRDFTermUnsafe(litA);
-    const myLitB: E.Term = this.transformer.transformRDFTermUnsafe(litB);
+    const myLitA = this.transformer.transformLiteral(litA);
+    const myLitB = this.transformer.transformLiteral(litB);
 
     try {
       if ((<E.BooleanLiteral> isEqual.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
@@ -148,13 +172,10 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
       }
       return -1;
     } catch {
-      if (litA.termType === 'Literal') {
-        // Fallback to string-based comparison
-        const compareType = this.comparePrimitives((<E.Literal<any>> myLitA).dataType,
-          (<E.Literal<any>> myLitB).dataType);
-        if (compareType !== 0) {
-          return compareType;
-        }
+      // Fallback to string-based comparison
+      const compareType = this.comparePrimitives(myLitA.dataType, myLitB.dataType);
+      if (compareType !== 0) {
+        return compareType;
       }
       return this.comparePrimitives(myLitA.str(), myLitB.str());
     }

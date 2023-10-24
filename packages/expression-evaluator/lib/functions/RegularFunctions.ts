@@ -276,37 +276,27 @@ class LesserThan extends RegularFunction {
 
   public operator = C.RegularOperator.LT;
 
+  private quadComponentTest(left: E.Term, right: E.Term, exprEval: ExpressionEvaluator): boolean | undefined {
+    const eq = regularFunctions[C.RegularOperator.EQUAL];
+
+    // If components are equal, we don't have an answer
+    const subjectEqual = eq.applyOnTerms(
+      [ left, right ], exprEval,
+    );
+    if ((<E.BooleanLiteral> subjectEqual).typedValue) {
+      return undefined;
+    }
+
+    const subjectLess = this.applyOnTerms(
+      [ left, right ], exprEval,
+    );
+    return (<E.BooleanLiteral>subjectLess).typedValue;
+  }
+
   protected overloads = declare(C.RegularOperator.LT)
     .numberTest(() => (left, right) => left < right)
     .stringTest(() => (left, right) => left.localeCompare(right) === -1)
     .booleanTest(() => (left, right) => left < right)
-    .set(
-      [ 'quad', 'quad' ],
-      exprEval => ([ left, right ]: [E.Quad, E.Quad]) => {
-        const orderSubject = this.applyOnTerms(
-          [ left.subject, right.subject ], exprEval,
-        );
-        if (orderSubject.coerceEBV()) {
-          return orderSubject;
-        }
-        const orderPredicate = this.applyOnTerms(
-          [ left.predicate, right.predicate ], exprEval,
-        );
-        if (orderPredicate.coerceEBV()) {
-          return orderPredicate;
-        }
-        const orderObject = this.applyOnTerms(
-          [ left.object, right.object ], exprEval,
-        );
-        if (orderObject.coerceEBV()) {
-          return orderObject;
-        }
-        return this.applyOnTerms(
-          [ left.graph, right.graph ], exprEval,
-        );
-      },
-      false,
-    )
     .dateTimeTest(exprEval => (left, right) =>
       toUTCDate(left, exprEval.defaultTimeZone).getTime() <
       toUTCDate(right, exprEval.defaultTimeZone).getTime())
@@ -330,6 +320,25 @@ class LesserThan extends RegularFunction {
         // https://www.w3.org/TR/xpath-functions/#func-time-less-than
         bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.defaultTimeZone).getTime() <
           toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.defaultTimeZone).getTime()))
+    .set(
+      [ 'quad', 'quad' ],
+      exprEval => ([ left, right ]: [E.Quad, E.Quad]) => {
+        const subjectTest = this.quadComponentTest(left.subject, right.subject, exprEval);
+        if (subjectTest !== undefined) {
+          return bool(subjectTest);
+        }
+        const predicateTest = this.quadComponentTest(left.predicate, right.predicate, exprEval);
+        if (predicateTest !== undefined) {
+          return bool(predicateTest);
+        }
+        const objectTest = this.quadComponentTest(left.object, right.object, exprEval);
+        if (objectTest !== undefined) {
+          return bool(objectTest);
+        }
+        return bool(this.quadComponentTest(left.graph, right.graph, exprEval) || false);
+      },
+      false,
+    )
     .collect();
 }
 
