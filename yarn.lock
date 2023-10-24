@@ -2292,10 +2292,17 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.6.1.tgz#8b589bba9b2af0128796461a0979764562687e6f"
   integrity sha512-4LcJvuXQlv4lTHnxwyHQZ3uR9Zw2j7m1C9DfuwoTFQQP4Pmu04O6IfLYgMmHoOCt0nosItLLZAH+sOrRE0Bo8g==
 
-"@types/node@^18.0.0", "@types/node@^18.14.6":
+"@types/node@^18.0.0":
   version "18.17.16"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.17.16.tgz#ee7b103d102787fb1530bfc6d4a1e15014f10938"
   integrity sha512-e0zgs7qe1XH/X3KEPnldfkD07LH9O1B9T31U8qoO7lqGSjj3/IrBuvqMeJ1aYejXRK3KOphIUDw6pLIplEW17A==
+
+"@types/node@^20.0.0":
+  version "20.8.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.8.tgz#adee050b422061ad5255fc38ff71b2bb96ea2a0e"
+  integrity sha512-YRsdVxq6OaLfmR9Hy816IMp33xOBjfyOgUd77ehqg96CFywxAPbDbXvAsuN2KVg2HOT8Eh6uAfU+l4WffwPVrQ==
+  dependencies:
+    undici-types "~5.25.1"
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -2317,18 +2324,18 @@
   resolved "https://registry.yarnpkg.com/@types/parse-link-header/-/parse-link-header-2.0.1.tgz#be4b412eb36e5d6bffc481e3f6e38b7706a4c9ee"
   integrity sha512-BrKNSrRTqn3UkMXvdVtr/znJch0PMBpEvEP8oBkxDx7eEGntuFLI+WpA5HGsNHK4SlqyhaMa+Ks0ViwyixQB5w==
 
-"@types/readable-stream@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@types/readable-stream/-/readable-stream-4.0.0.tgz#9bcb888b9c77478b02490365d3e0c34fd8b6d5ae"
-  integrity sha512-s6YqDV111kwuFsT9SwFC+FmZ5n1SEp4H9DXGg6Zqag0lPGeEvBGP9UaLJYpX4cxY7fAFnx2avy1QVvft0LLb7g==
-  dependencies:
-    "@types/node" "*"
-    safe-buffer "~5.1.1"
-
 "@types/readable-stream@^2.3.11", "@types/readable-stream@^2.3.13", "@types/readable-stream@^2.3.15":
   version "2.3.15"
   resolved "https://registry.yarnpkg.com/@types/readable-stream/-/readable-stream-2.3.15.tgz#3d79c9ceb1b6a57d5f6e6976f489b9b5384321ae"
   integrity sha512-oM5JSKQCcICF1wvGgmecmHldZ48OZamtMxcGGVICOJA8o8cahXC1zEVAif8iwoc5j8etxFaRFnf095+CDsuoFQ==
+  dependencies:
+    "@types/node" "*"
+    safe-buffer "~5.1.1"
+
+"@types/readable-stream@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/readable-stream/-/readable-stream-4.0.0.tgz#9bcb888b9c77478b02490365d3e0c34fd8b6d5ae"
+  integrity sha512-s6YqDV111kwuFsT9SwFC+FmZ5n1SEp4H9DXGg6Zqag0lPGeEvBGP9UaLJYpX4cxY7fAFnx2avy1QVvft0LLb7g==
   dependencies:
     "@types/node" "*"
     safe-buffer "~5.1.1"
@@ -12336,6 +12343,11 @@ undefsafe@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/undefsafe/-/undefsafe-2.0.5.tgz#38733b9327bdcd226db889fb723a6efd162e6e2c"
   integrity sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==
+
+undici-types@~5.25.1:
+  version "5.25.3"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.25.3.tgz#e044115914c85f0bcbb229f346ab739f064998c3"
+  integrity sha512-Ga1jfYwRn7+cP9v8auvEXN1rX3sWqlayd4HP7OKk4mZWylEmu3KzXDUGrQUN6Ol7qo1gPvB2e5gX6udnyEPgdA==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
