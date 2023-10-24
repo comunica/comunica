@@ -56,7 +56,12 @@ export class TermTransformer implements ITermTransformer {
       case 'BlankNode':
         return new E.BlankNode(term.term.value);
       case 'Quad':
-        return new E.Quad(term.term, this.superTypeProvider);
+        return new E.Quad(
+          this.transformRDFTermUnsafe(term.term.subject),
+          this.transformRDFTermUnsafe(term.term.predicate),
+          this.transformRDFTermUnsafe(term.term.object),
+          this.transformRDFTermUnsafe(term.term.graph),
+        );
       case 'DefaultGraph':
         return new E.DefaultGraph();
       default:

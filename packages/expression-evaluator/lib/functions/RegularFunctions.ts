@@ -282,7 +282,29 @@ class LesserThan extends RegularFunction {
     .booleanTest(() => (left, right) => left < right)
     .set(
       [ 'quad', 'quad' ],
-      exprEval => ([ left, right ]) => bool(exprEval.orderTypes(left.toRDF(), right.toRDF(), true) === -1),
+      exprEval => ([ left, right ]: [E.Quad, E.Quad]) => {
+        const orderSubject = this.applyOnTerms(
+          [ left.subject, right.subject ], exprEval,
+        );
+        if (orderSubject.coerceEBV()) {
+          return orderSubject;
+        }
+        const orderPredicate = this.applyOnTerms(
+          [ left.predicate, right.predicate ], exprEval,
+        );
+        if (orderPredicate.coerceEBV()) {
+          return orderPredicate;
+        }
+        const orderObject = this.applyOnTerms(
+          [ left.object, right.object ], exprEval,
+        );
+        if (orderObject.coerceEBV()) {
+          return orderObject;
+        }
+        return this.applyOnTerms(
+          [ left.graph, right.graph ], exprEval,
+        );
+      },
       false,
     )
     .dateTimeTest(exprEval => (left, right) =>
@@ -1104,9 +1126,8 @@ class Triple extends RegularFunction {
 
   protected overloads = declare(C.RegularOperator.TRIPLE)
     .onTerm3(
-      exprEval => (...args) => new E.Quad(
-        DF.quad(args[0].toRDF(), args[1].toRDF(), args[2].toRDF()),
-        exprEval.superTypeProvider,
+      _ => (...args) => new E.Quad(
+        args[0], args[1], args[2], new E.DefaultGraph(),
       ),
     )
     .collect();
