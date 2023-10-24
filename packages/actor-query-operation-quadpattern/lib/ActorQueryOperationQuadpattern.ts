@@ -3,7 +3,7 @@ import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-fa
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped, ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysBindingContext, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { BindingsStream,
   IQueryOperationResult,
@@ -32,6 +32,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   implements IActorQueryOperationQuadpatternArgs {
   public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
   public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly addSourceToBindingContext: boolean;
   public readonly unionDefaultGraph: boolean;
 
   public constructor(args: IActorQueryOperationQuadpatternArgs) {
@@ -220,7 +221,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
     // Resolve the quad pattern
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern: patternInner, context });
-
     // Collect all variables from the pattern
     const variables = ActorQueryOperationQuadpattern.getVariables(pattern);
 
@@ -269,17 +269,29 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         });
       }
       const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
-      return filteredOutput.map(quad => BF.bindings(Object.keys(elementVariables).map(key => {
-        const keys: QuadTermName[] = <any>key.split('_');
-        const variable = elementVariables[key];
-        const term = getValueNestedPath(quad, keys);
-        return [ DF.variable(variable), term ];
-      })));
+      return filteredOutput.map(quad => {
+        if (!this.addSourceToBindingContext) {
+          return BF.bindings(Object.keys(elementVariables).map(key => {
+            const keys: QuadTermName[] = <any>key.split('_');
+            const variable = elementVariables[key];
+            const term = getValueNestedPath(quad, keys);
+            return [ DF.variable(variable), term ];
+          }));
+        }
+        // Add the quad graph source to context of binding
+        const binding = BF.bindings(Object.keys(elementVariables).map(key => {
+          const keys: QuadTermName[] = <any>key.split('_');
+          const variable = elementVariables[key];
+          const term = getValueNestedPath(quad, keys);
+          return [ DF.variable(variable), term ];
+        })).setContextEntry(KeysBindingContext.sourceBinding, quad.graph.value);
+        // Console.log(binding);
+        return binding;
+      });
     }, {
       autoStart: false,
       onClose: () => result.data.destroy(),
     });
-
     return { type: 'bindings', bindingsStream, metadata };
   }
 }
@@ -296,6 +308,10 @@ export interface IActorQueryOperationQuadpatternArgs extends
    * @default {false}
    */
   unionDefaultGraph: boolean;
+  /**
+   * Whether we should add source graph to context of bindings
+   */
+  addSourceToBindingContext: boolean;
   /**
    * A mediator for creating binding context merge handlers
    */

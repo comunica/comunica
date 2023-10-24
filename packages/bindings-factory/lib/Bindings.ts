@@ -95,7 +95,32 @@ export class Bindings implements RDF.Bindings {
         return false;
       }
     }
+    if (!this.contextEquals(<Bindings> other)) {
+      return false;
+    }
 
+    return true;
+  }
+
+  public contextEquals(other: Bindings): boolean {
+    // If both undefined return true, else if either one is undefined and other isn't return false
+    if (this.context === undefined) {
+      if (other.context === undefined) {
+        return true;
+      }
+      return false;
+    }
+    if (other.context === undefined) {
+      return false;
+    }
+    if (this.context.keys().length !== other.context.keys().length) {
+      return false;
+    }
+    for (const key of this.context.keys()) {
+      if (!(this.context.get(key) === other.context.get(key))) {
+        return false;
+      }
+    }
     return true;
   }
 
