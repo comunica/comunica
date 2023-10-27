@@ -777,6 +777,49 @@ SELECT * WHERE {
         expect(called).toEqual(0);
       });
     });
+
+    describe('property paths', () => {
+      it('should handle zero-or-more paths with lists', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'stringSource',
+              value: `
+PREFIX fhir: <http://hl7.org/fhir/>
+
+<http://hl7.org/fhir/Observation/58671>
+  fhir:id [ fhir:v "58671" ];
+  fhir:value [
+    fhir:coding ( [
+      a <http://snomed.info/id/8517006>;
+    ] )
+  ];
+  fhir:component ( [
+    fhir:value [
+      fhir:coding [] # comment this line
+    ];
+  ] ).
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        expect((await arrayifyStream(await engine.queryBindings(`
+PREFIX fhir: <http://hl7.org/fhir/>
+SELECT ?obsId {
+  ?obs
+    fhir:id [ fhir:v ?obsId ].
+  ?obs fhir:value [
+      fhir:coding [ rdf:rest*/rdf:first [
+        a <http://snomed.info/id/8517006> ;
+      ] ]
+    ].
+}
+`, context))).length).toEqual(1);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
