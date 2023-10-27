@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-hash",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "A hash rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-join": "^2.9.0",
-    "@comunica/mediatortype-join-coefficients": "^2.8.2",
-    "@comunica/types": "^2.8.2",
+    "@comunica/bus-rdf-join": "^2.10.0",
+    "@comunica/mediatortype-join-coefficients": "^2.10.0",
+    "@comunica/types": "^2.10.0",
     "asyncjoin": "^1.1.1"
   },
   "scripts": {

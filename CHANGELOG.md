@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.10.0"></a>
+## [v2.10.0](https://github.com/comunica/comunica/compare/v2.9.0...v2.10.0) - 2023-10-27
+
+### Added
+* [Convert raw source contexts to ActionContexts](https://github.com/comunica/comunica/commit/8f685d844477145996b3685ceb500b1b84d9448e)
+* [Support relative and absolute paths for COMUNICA_CONFIG](https://github.com/comunica/comunica/commit/304dd8e97bd8cb1f487cd5012ccbb79b3ca8d0e9)
+
+### Changed
+* [Log expression error messages](https://github.com/comunica/comunica/commit/402524c62ce1002db7142aa4fd4b2724e5d98153)
+* [Print log levels in different colors](https://github.com/comunica/comunica/commit/4e931fd606e3bf7cdb9cc3a7dd6529e638a11b18)
+* [Update readable-stream, yargs, lerna, typescript and eslint (#1271)](https://github.com/comunica/comunica/commit/05d1bd362b1ef28de7020ad17f88afa57ea59254)
+
+### Fixed
+* [Fix wrong cardinality for zero-or-one paths with one variable](https://github.com/comunica/comunica/commit/058f27728459c5305868c8dfe40fc1794222aa04)
+* [Support building with esModuleInterop TS flag](https://github.com/comunica/comunica/commit/29c308fcf84ac8a598df5c8cb8cda41c0212e6a3)
+* [Skip calling endsWith on mediaType when mediaType is undefined](https://github.com/comunica/comunica/commit/5d5fb8324b7281fad1e03bde01763d426c0a7987)
+
 <a name="v2.9.0"></a>
 ## [v2.9.0](https://github.com/comunica/comunica/compare/v2.8.3...v2.9.0) - 2023-09-07
 

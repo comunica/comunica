@@ -1,6 +1,6 @@
 {
   "name": "@comunica/expression-evaluator",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "A simple SPARQL expression evaluator",
   "lsd:module": false,
   "main": "lib/index.js",
