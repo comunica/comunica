@@ -1,5 +1,6 @@
 import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import type { SparqlFunction } from '@comunica/expression-evaluator/lib/functions';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
@@ -83,3 +84,6 @@ export interface IFunctionExpression {
    */
   checkArity: (args: E.Expression[]) => boolean;
 }
+
+export type FunctionBusType = (arg: { functionName: string; arguments: Alg.Expression[] }) =>
+Promise<SparqlFunction>;

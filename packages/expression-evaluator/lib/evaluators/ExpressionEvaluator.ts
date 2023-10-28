@@ -3,7 +3,8 @@ import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import * as E from '../expressions';
-import { regularFunctions } from '../functions';
+import type { SparqlFunction } from '../functions';
+import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
 import { expressionToVar } from '../functions/Helpers';
 import type { FunctionArgumentsCache } from '../functions/OverloadTree';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
@@ -56,6 +57,11 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
   public readonly superTypeProvider: ISuperTypeProvider;
   public readonly defaultTimeZone: ITimeZoneRepresentation;
   public readonly actionContext: IActionContext;
+  public readonly functions: Record<C.NamedOperator | C.Operator, SparqlFunction> = {
+    ...namedFunctions,
+    ...specialFunctions,
+    ...regularFunctions,
+  };
 
   public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext) {
     this.now = context.now || new Date(Date.now());
@@ -72,7 +78,16 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
     this.defaultTimeZone = context.defaultTimeZone || extractTimeZone(this.now);
     this.actionContext = context.actionContext;
 
-    this.transformer = new AlgebraTransformer(this.superTypeProvider);
+    this.transformer = new AlgebraTransformer(
+      this.superTypeProvider,
+      async({ functionName }) => {
+        const res: SparqlFunction | undefined = this.functions[<C.NamedOperator | C.Operator> functionName];
+        if (res) {
+          return res;
+        }
+        throw new Error('nah!');
+      },
+    );
     this.expr = this.transformer.transformAlgebra(algExpr);
   }
 

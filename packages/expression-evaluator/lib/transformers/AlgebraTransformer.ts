@@ -1,7 +1,7 @@
+import type { FunctionBusType } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import * as E from '../expressions';
-import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
@@ -9,24 +9,26 @@ import type { ITermTransformer } from './TermTransformer';
 import { TermTransformer } from './TermTransformer';
 
 export interface IAlgebraTransformer extends ITermTransformer{
-  transformAlgebra: (expr: Alg.Expression) => E.Expression;
+  transformAlgebra: (expr: Alg.Expression) => Promise<E.Expression>;
 }
 
 export class AlgebraTransformer extends TermTransformer implements IAlgebraTransformer {
-  public constructor(superTypeProvided: ISuperTypeProvider) {
+  private readonly functions: FunctionBusType;
+  public constructor(superTypeProvided: ISuperTypeProvider, functions: FunctionBusType) {
     super(superTypeProvided);
+    this.functions = functions;
   }
 
-  public transformAlgebra(expr: Alg.Expression): E.Expression {
+  public async transformAlgebra(expr: Alg.Expression): Promise<E.Expression> {
     const types = Alg.expressionTypes;
 
     switch (expr.expressionType) {
       case types.TERM:
         return this.transformTerm(expr);
       case types.OPERATOR:
-        return this.transformOperator(expr);
+        return await this.transformOperator(expr);
       case types.NAMED:
-        return this.transformNamed(expr);
+        return await this.transformNamed(expr);
       case types.EXISTENCE:
         return AlgebraTransformer.transformExistence(expr);
       case types.AGGREGATE:
@@ -40,38 +42,30 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
     return new E.NamedNode(term.wildcard.value);
   }
 
-  private transformOperator(expr: Alg.OperatorExpression): E.OperatorExpression | E.SpecialOperatorExpression {
+  private async transformOperator(expr: Alg.OperatorExpression):
+  Promise<E.OperatorExpression | E.SpecialOperatorExpression> {
     const operator = expr.operator.toLowerCase();
-    if (C.SpecialOperators.has(operator)) {
-      const specialOp = <C.SpecialOperator>operator;
-      const specialArgs = expr.args.map(arg => this.transformAlgebra(arg));
-      const specialFunc = specialFunctions[specialOp];
-      if (!specialFunc.checkArity(specialArgs)) {
-        throw new Err.InvalidArity(specialArgs, specialOp);
-      }
-      return new E.SpecialOperator(specialArgs, specialFunc.apply);
-    }
     if (!C.Operators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
     }
-    const regularOp = <C.RegularOperator>operator;
-    const regularArgs = expr.args.map(arg => this.transformAlgebra(arg));
-    const regularFunc = regularFunctions[regularOp];
-    if (!regularFunc.checkArity(regularArgs)) {
-      throw new Err.InvalidArity(regularArgs, regularOp);
+    const operatorFunc = await this.functions({ functionName: operator, arguments: expr.args });
+    const operatorArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
+    if (!operatorFunc.checkArity(operatorArgs)) {
+      throw new Err.InvalidArity(operatorArgs, <C.Operator> operator);
     }
-    return new E.Operator(regularArgs, args => regularFunc.apply(args));
+    if (C.SpecialOperators.has(operator)) {
+      return new E.SpecialOperator(operatorArgs, operatorFunc.apply);
+    }
+    return new E.Operator(operatorArgs, operatorFunc.apply);
   }
 
-  // TODO: Support passing functions to override default behaviour;
-  private transformNamed(expr: Alg.NamedExpression):
-  E.NamedExpression | E.AsyncExtensionExpression | E.SyncExtensionExpression {
+  private async transformNamed(expr: Alg.NamedExpression): Promise<E.NamedExpression> {
     const funcName = expr.name.value;
-    const namedArgs = expr.args.map(arg => this.transformAlgebra(arg));
+    const namedArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     if (C.NamedOperators.has(<C.NamedOperator>funcName)) {
       // Return a basic named expression
       const op = <C.NamedOperator>expr.name.value;
-      const namedFunc = namedFunctions[op];
+      const namedFunc = await this.functions({ functionName: op, arguments: expr.args });
       return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args));
     }
     // The expression might be an extension function, check this.
