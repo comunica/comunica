@@ -1,4 +1,6 @@
-import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
+import type {
+  InternalizedExpressionEvaluator,
+} from '@comunica/expression-evaluator/lib/evaluators/InternalizedExpressionEvaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { SparqlFunction } from '@comunica/expression-evaluator/lib/functions';
 import type * as RDF from '@rdfjs/types';
@@ -72,7 +74,7 @@ export interface IExpressionEvaluator {
 export interface IEvalContext {
   args: E.Expression[];
   mapping: RDF.Bindings;
-  exprEval: ExpressionEvaluator;
+  exprEval: InternalizedExpressionEvaluator;
 }
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;
