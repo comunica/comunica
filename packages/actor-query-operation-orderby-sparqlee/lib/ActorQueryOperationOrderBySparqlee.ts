@@ -41,12 +41,14 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.
+    const orderByEvaluator = await this.expressionEvaluatorFactory.createOrderByEvaluator(context);
+
     for (let i = operation.expressions.length - 1; i >= 0; i--) {
       let expr = operation.expressions[i];
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
       // Transform the stream by annotating it with the expr result
-      const evaluator = this.expressionEvaluatorFactory.createEvaluator(expr, context);
+      const evaluator = await this.expressionEvaluatorFactory.createEvaluator(expr, context);
       interface IAnnotatedBinding {
         bindings: Bindings; result: Term | undefined;
       }
@@ -72,7 +74,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       // Sort the annoted stream
       const sortedStream = new SortIterator(transformedStream,
         (left, right) => {
-          let compare = evaluator.orderTypes(left.result, right.result);
+          let compare = orderByEvaluator.orderTypes(left.result, right.result);
           if (!isAscending) {
             compare *= -1;
           }

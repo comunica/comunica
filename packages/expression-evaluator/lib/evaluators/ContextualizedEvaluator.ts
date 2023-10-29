@@ -1,14 +1,13 @@
-import type { IActionContext } from '@comunica/types';
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
+import type { FunctionBusType, IActionContext, TermFunctionBusType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import * as E from '../expressions';
-import type { SparqlFunction } from '../functions';
-import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
 import { expressionToVar } from '../functions/Helpers';
 import type { FunctionArgumentsCache } from '../functions/OverloadTree';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
-import type * as C from '../util/Consts';
 import type { ITimeZoneRepresentation } from '../util/DateTimeHelpers';
 import { extractTimeZone } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
@@ -18,8 +17,6 @@ export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
 export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => AsyncExtensionFunction | undefined;
 
 export interface IAsyncEvaluatorContext {
-  exists: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
-  bnode: (input?: string) => Promise<RDF.BlankNode>;
   extensionFunctionCreator?: AsyncExtensionFunctionCreator;
   now?: Date;
   baseIRI?: string;
@@ -28,9 +25,16 @@ export interface IAsyncEvaluatorContext {
   functionArgumentsCache?: FunctionArgumentsCache;
   defaultTimeZone?: ITimeZoneRepresentation;
   actionContext: IActionContext;
+  mediatorQueryOperation: MediatorQueryOperation;
+  mediatorTermFunction: TermFunctionBusType;
+  mediatorFunction: FunctionBusType;
 }
 
-export class InternalizedExpressionEvaluator {
+/**
+ * This class provides evaluation functionality to already transformed expressions.
+ * It also holds all context items needed for evaluating functions.
+ */
+export class ContextualizedEvaluator {
   protected readonly transformer: AlgebraTransformer;
 
   private readonly subEvaluators: Record<string,
@@ -47,8 +51,6 @@ export class InternalizedExpressionEvaluator {
       };
 
   // Context items
-  public readonly exists: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => Promise<boolean>;
-  public readonly bnode: (input?: string) => Promise<RDF.BlankNode>;
   public readonly extensionFunctionCreator?: AsyncExtensionFunctionCreator;
   public readonly now: Date;
   public readonly baseIRI?: string;
@@ -56,13 +58,11 @@ export class InternalizedExpressionEvaluator {
   public readonly superTypeProvider: ISuperTypeProvider;
   public readonly defaultTimeZone: ITimeZoneRepresentation;
   public readonly actionContext: IActionContext;
-  public readonly functions: Record<C.NamedOperator | C.Operator, SparqlFunction> = {
-    ...namedFunctions,
-    ...specialFunctions,
-    ...regularFunctions,
-  };
+  public readonly mediatorQueryOperation: MediatorQueryOperation;
+  public readonly mediatorTermFunction: TermFunctionBusType;
+  public readonly mediatorFunction: FunctionBusType;
 
-  public constructor(public algExpr: Alg.Expression, context: IAsyncEvaluatorContext) {
+  public constructor(context: IAsyncEvaluatorContext) {
     this.now = context.now || new Date(Date.now());
     this.baseIRI = context.baseIRI || undefined;
     this.functionArgumentsCache = context.functionArgumentsCache || {};
@@ -72,21 +72,20 @@ export class InternalizedExpressionEvaluator {
     };
     // eslint-disable-next-line unicorn/no-useless-undefined
     this.extensionFunctionCreator = context.extensionFunctionCreator || (() => undefined);
-    this.exists = context.exists;
-    this.bnode = context.bnode;
     this.defaultTimeZone = context.defaultTimeZone || extractTimeZone(this.now);
     this.actionContext = context.actionContext;
+    this.mediatorQueryOperation = context.mediatorQueryOperation;
+    this.mediatorTermFunction = context.mediatorTermFunction;
+    this.mediatorFunction = context.mediatorFunction;
 
     this.transformer = new AlgebraTransformer(
       this.superTypeProvider,
-      async({ functionName }) => {
-        const res: SparqlFunction | undefined = this.functions[<C.NamedOperator | C.Operator> functionName];
-        if (res) {
-          return res;
-        }
-        throw new Error('nah!');
-      },
+      this.mediatorFunction,
     );
+  }
+
+  public translate(algExpr: Alg.Expression): Promise<E.Expression> {
+    return this.transformer.transformAlgebra(algExpr);
   }
 
   public async evaluateAsInternal(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
@@ -119,7 +118,27 @@ export class InternalizedExpressionEvaluator {
   }
 
   private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {
-    return new E.BooleanLiteral(await this.exists(expr.expression, mapping));
+    const operation = materializeOperation(expr.expression.input, mapping);
+
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.actionContext });
+    const output = ActorQueryOperation.getSafeBindings(outputRaw);
+
+    return await new Promise(
+      (resolve, reject) => {
+        output.bindingsStream.on('end', () => {
+          resolve(false);
+        });
+
+        output.bindingsStream.on('error', reject);
+
+        output.bindingsStream.on('data', () => {
+          output.bindingsStream.close();
+          resolve(true);
+        });
+      },
+    )
+      .then((exists: boolean) => expr.expression.not ? !exists : exists)
+      .then((exists: boolean) => new E.BooleanLiteral(exists));
   }
 
   private evalAggregate(): never {

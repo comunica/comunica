@@ -1,8 +1,6 @@
-import type {
-  InternalizedExpressionEvaluator,
-} from '@comunica/expression-evaluator/lib/evaluators/InternalizedExpressionEvaluator';
+import type { ContextualizedEvaluator } from '@comunica/expression-evaluator/lib/evaluators/ContextualizedEvaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { SparqlFunction } from '@comunica/expression-evaluator/lib/functions';
+import type { SparqlFunction, TermSparqlFunction } from '@comunica/expression-evaluator/lib/functions';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
@@ -34,7 +32,7 @@ export interface IExpressionEvaluatorFactory {
    * @param algExpr The SPARQL expression.
    * @param context the actionContext to extract engine config settings from.
    */
-  createEvaluator: (algExpr: Alg.Expression, context: IActionContext) => IExpressionEvaluator;
+  createEvaluator: (algExpr: Alg.Expression, context: IActionContext) => Promise<IExpressionEvaluator>;
 
   /**
    * Creates a bindings aggregator given an expression and the action context,
@@ -43,6 +41,11 @@ export interface IExpressionEvaluatorFactory {
    * @param context the actionContext to extract engine config settings from.
    */
   createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingsAggregator>;
+
+  createTermFunction: (arg: { functionName: string; arguments?: E.TermExpression[] })
+  => Promise<TermSparqlFunction<any>>;
+
+  createOrderByEvaluator: (context: IActionContext) => Promise<IOrderByEvaluator>;
 }
 
 /**
@@ -61,20 +64,21 @@ export interface IExpressionEvaluator {
    * @param mapping the RDF bindings to evaluate against.
    */
   evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
+}
 
+export interface IOrderByEvaluator {
   /**
    * Orders two RDF terms according to: https://www.w3.org/TR/sparql11-query/#modOrderBy
    * @param termA the first term
    * @param termB the second term
-   * @param strict whether to throw an error (true), or compare by value (false) if no other compare rules match.
    */
-  orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined, strict: boolean | undefined) => -1 | 0 | 1;
+  orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined) => -1 | 0 | 1;
 }
 
 export interface IEvalContext {
   args: E.Expression[];
   mapping: RDF.Bindings;
-  exprEval: InternalizedExpressionEvaluator;
+  exprEval: ContextualizedEvaluator;
 }
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;
@@ -89,3 +93,5 @@ export interface IFunctionExpression {
 
 export type FunctionBusType = (arg: { functionName: string; arguments: Alg.Expression[] }) =>
 Promise<SparqlFunction>;
+export type TermFunctionBusType = (arg: { functionName: string; arguments?: E.TermExpression[] }) =>
+Promise<TermSparqlFunction<any>>;

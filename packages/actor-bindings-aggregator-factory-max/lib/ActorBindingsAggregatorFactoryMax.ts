@@ -26,7 +26,11 @@ export class ActorBindingsAggregatorFactoryMax extends ActorBindingsAggregatorFa
 
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new MaxAggregator(action.expr, action.factory, action.context),
+      aggregator: new MaxAggregator(
+        await action.factory.createEvaluator(action.expr, action.context),
+        action.expr.distinct,
+        await action.factory.createOrderByEvaluator(action.context),
+      ),
     };
   }
 }

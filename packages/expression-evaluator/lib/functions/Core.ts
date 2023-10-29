@@ -1,5 +1,5 @@
 import type { IEvalContext, IFunctionExpression } from '@comunica/types';
-import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
+import type { ContextualizedEvaluator } from '../evaluators/ContextualizedEvaluator';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -48,7 +48,7 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
   protected abstract readonly overloads: OverloadTree;
   public abstract operator: O;
 
-  public applyOnTerms(args: E.TermExpression[], exprEval: ExpressionEvaluator): E.TermExpression {
+  public applyOnTerms(args: E.TermExpression[], exprEval: ContextualizedEvaluator): E.TermExpression {
     const concreteFunction =
       this.overloads.search(args, exprEval.superTypeProvider, exprEval.functionArgumentsCache) ||
       this.handleInvalidTypes(args);

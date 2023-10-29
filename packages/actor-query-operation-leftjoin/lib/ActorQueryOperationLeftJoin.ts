@@ -41,7 +41,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     if (operationOriginal.expression) {
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
-      const evaluator = this.expressionEvaluatorFactory.createEvaluator(operationOriginal.expression, context);
+      const evaluator = await this.expressionEvaluatorFactory.createEvaluator(operationOriginal.expression, context);
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,

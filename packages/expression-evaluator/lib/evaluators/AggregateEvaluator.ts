@@ -1,7 +1,6 @@
-import type { IActionContext, IExpressionEvaluator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
 import type * as E from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
 import { TypeAlias } from '../util/Consts';
@@ -14,21 +13,17 @@ import type { ExpressionEvaluator } from './ExpressionEvaluator';
  * NOTE: The wildcard count aggregator significantly differs from the others and overloads parts of this class.
  */
 export abstract class AggregateEvaluator {
-  protected readonly evaluator: IExpressionEvaluator;
   private readonly throwError: boolean;
   private errorOccurred = false;
 
-  protected readonly distinct: boolean;
   protected readonly variableValues: Set<string>;
 
-  protected constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
+  protected constructor(protected readonly evaluator: IExpressionEvaluator,
+    protected readonly distinct: boolean,
     throwError?: boolean) {
-    this.evaluator = expressionEvaluatorFactory.createEvaluator(aggregateExpression.expression, context);
     this.throwError = throwError || false;
     this.errorOccurred = false;
 
-    this.distinct = aggregateExpression.distinct;
     this.variableValues = new Set();
   }
 
@@ -100,11 +95,12 @@ export abstract class AggregateEvaluator {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
       !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, (<ExpressionEvaluator> this.evaluator)
+        .internalizedExpressionEvaluator
         .superTypeProvider)
     ) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
     return <E.NumericLiteral> new TermTransformer((
-      <ExpressionEvaluator> this.evaluator).superTypeProvider).transformLiteral(term);
+      <ExpressionEvaluator> this.evaluator).internalizedExpressionEvaluator.superTypeProvider).transformLiteral(term);
   }
 }

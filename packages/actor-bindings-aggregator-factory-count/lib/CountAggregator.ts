@@ -1,14 +1,11 @@
 import { AggregateEvaluator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IBindingsAggregator, IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 export class CountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: number | undefined = undefined;
-  public constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
-    throwError?: boolean) {
-    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
+  public constructor(evaluator: IExpressionEvaluator, distinct: boolean, throwError?: boolean) {
+    super(evaluator, distinct, throwError);
   }
 
   public emptyValueTerm(): RDF.Term {

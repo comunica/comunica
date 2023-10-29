@@ -1,10 +1,9 @@
 import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
-import { AggregateEvaluator, RegularOperator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
+import { AggregateEvaluator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
-import { regularFunctions } from '@comunica/expression-evaluator/lib/functions';
-import type { IActionContext, IExpressionEvaluatorFactory, IBindingsAggregator } from '@comunica/types';
+import type { RegularFunction } from '@comunica/expression-evaluator/lib/functions';
+import type { IBindingsAggregator, IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 interface IAverageState {
   sum: E.NumericLiteral;
@@ -12,15 +11,16 @@ interface IAverageState {
 }
 
 export class AverageAggregator extends AggregateEvaluator implements IBindingsAggregator {
-  // This will eventually be a mediator call.
-  private readonly summer = regularFunctions[RegularOperator.ADDITION];
-  private readonly divider = regularFunctions[RegularOperator.DIVISION];
   private state: IAverageState | undefined = undefined;
 
-  public constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
-    throwError?: boolean) {
-    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
+  public constructor(
+    evaluator: IExpressionEvaluator,
+    distinct: boolean,
+    private readonly additionFunction: RegularFunction,
+    private readonly divisionFunction: RegularFunction,
+    throwError?: boolean,
+  ) {
+    super(evaluator, distinct, throwError);
   }
 
   public emptyValueTerm(): RDF.Term {
@@ -33,8 +33,8 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
       this.state = { sum, count: 1 };
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state.sum = <E.NumericLiteral> this.summer.applyOnTerms([ this.state.sum, internalTerm ],
-        <ExpressionEvaluator> this.evaluator);
+      this.state.sum = <E.NumericLiteral> this.additionFunction.applyOnTerms([ this.state.sum, internalTerm ],
+        (<ExpressionEvaluator> this.evaluator).internalizedExpressionEvaluator);
       this.state.count++;
     }
   }
@@ -44,7 +44,8 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
       return this.emptyValue();
     }
     const count = new E.IntegerLiteral(this.state.count);
-    const result = this.divider.applyOnTerms([ this.state.sum, count ], <ExpressionEvaluator> this.evaluator);
+    const result = this.divisionFunction.applyOnTerms([ this.state.sum, count ],
+      (<ExpressionEvaluator> this.evaluator).internalizedExpressionEvaluator);
     return result.toRDF();
   }
 }

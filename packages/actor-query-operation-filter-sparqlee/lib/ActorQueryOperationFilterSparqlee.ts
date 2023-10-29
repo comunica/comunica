@@ -33,7 +33,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const evaluator = this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
+    const evaluator = await this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {

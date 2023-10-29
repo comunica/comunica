@@ -26,7 +26,10 @@ export class ActorBindingsAggregatorFactorySample extends ActorBindingsAggregato
 
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new SampleAggregator(action.expr, action.factory, action.context),
+      aggregator: new SampleAggregator(
+        await action.factory.createEvaluator(action.expr, action.context),
+        action.expr.distinct,
+      ),
     };
   }
 }

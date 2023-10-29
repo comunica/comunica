@@ -1,21 +1,20 @@
 import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
-import { AggregateEvaluator, RegularOperator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
+import { AggregateEvaluator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import { regularFunctions } from '@comunica/expression-evaluator/lib/functions';
-import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { RegularFunction } from '@comunica/expression-evaluator/lib/functions';
+import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 type SumState = E.NumericLiteral;
 
 export class SumAggregator extends AggregateEvaluator {
   private state: SumState | undefined = undefined;
-  private readonly summer = regularFunctions[RegularOperator.ADDITION];
 
-  public constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
+  public constructor(evaluator: IExpressionEvaluator,
+    distinct: boolean,
+    private readonly additionFunction: RegularFunction,
     throwError?: boolean) {
-    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
+    super(evaluator, distinct, throwError);
   }
 
   public emptyValueTerm(): RDF.Term {
@@ -27,8 +26,8 @@ export class SumAggregator extends AggregateEvaluator {
       this.state = this.termToNumericOrError(term);
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state = <E.NumericLiteral> this.summer.applyOnTerms([ this.state, internalTerm ],
-        <ExpressionEvaluator> this.evaluator);
+      this.state = <E.NumericLiteral> this.additionFunction.applyOnTerms([ this.state, internalTerm ],
+        (<ExpressionEvaluator> this.evaluator).internalizedExpressionEvaluator);
     }
   }
 

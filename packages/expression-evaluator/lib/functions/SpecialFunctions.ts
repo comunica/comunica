@@ -1,3 +1,4 @@
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { IEvalContext } from '@comunica/types';
 import * as E from '../expressions';
 import * as C from '../util/Consts';
@@ -5,7 +6,6 @@ import * as Err from '../util/Errors';
 import { SparqlFunction } from './Core';
 import { bool, declare, expressionToVar, langString, string } from './Helpers';
 import type { OverloadTree } from './OverloadTree';
-import { regularFunctions } from './RegularFunctions';
 
 // ----------------------------------------------------------------------------
 // Functional forms
@@ -182,7 +182,10 @@ class InSPARQL extends SparqlFunction {
       // We know this will not be undefined because we check args.length === 0
       const nextExpression = args.shift()!;
       const next = await exprEval.evaluateAsInternal(nextExpression, mapping);
-      const isEqual = regularFunctions[C.RegularOperator.EQUAL];
+      const isEqual = await exprEval.mediatorTermFunction({
+        functionName: C.RegularOperator.EQUAL,
+        arguments: [ needle, next ],
+      });
       if ((<E.BooleanLiteral> isEqual.applyOnTerms([ needle, next ], exprEval)).typedValue) {
         return bool(true);
       }
@@ -274,6 +277,12 @@ const bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).c
  * id has to be distinct over all id's in dataset
  */
 class BNode extends SparqlFunction {
+  /**
+   * A counter that keeps track blank node generated through BNODE() SPARQL
+   * expressions.
+   */
+  private bnodeCounter = 0;
+
   protected arity = Number.POSITIVE_INFINITY;
   public checkArity(args: E.Expression[]): boolean {
     return args.length === 0 || args.length === 1;
@@ -298,7 +307,7 @@ class BNode extends SparqlFunction {
       strInput = operation(exprEval)([ input ]).str();
     }
 
-    const bnode = await exprEval.bnode(strInput);
+    const bnode = new BlankNodeBindingsScoped(strInput || `BNODE_${this.bnodeCounter++}`);
     return new E.BlankNode(bnode);
   };
 }

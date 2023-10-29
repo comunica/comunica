@@ -4,6 +4,7 @@ import type {
 } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IActorTest } from '@comunica/core';
+import { RegularOperator } from '@comunica/expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
 
 /**
@@ -23,7 +24,12 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
 
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new AverageAggregator(action.expr, action.factory, action.context),
+      aggregator: new AverageAggregator(
+        await action.factory.createEvaluator(action.expr, action.context),
+        action.expr.distinct,
+        await action.factory.createTermFunction({ functionName: RegularOperator.ADDITION }),
+        await action.factory.createTermFunction({ functionName: RegularOperator.DIVISION }),
+      ),
     };
   }
 }

@@ -1,14 +1,13 @@
 import type * as RDF from '@rdfjs/types';
-import * as E from '../expressions';
-import { regularFunctions } from '../functions';
-import { expressionToVar } from '../functions/Helpers';
-import * as C from '../util/Consts';
-import * as Err from '../util/Errors';
-import type { IAsyncEvaluatorContext } from './ExpressionEvaluator';
-import { InternalizedExpressionEvaluator } from './InternalizedExpressionEvaluator';
+import type * as E from '../expressions';
+import type { RegularFunction } from '../functions';
+import type { IAsyncEvaluatorContext } from './ContextualizedEvaluator';
+import { ContextualizedEvaluator } from './ContextualizedEvaluator';
 
-export class OrderByEvaluator extends InternalizedExpressionEvaluator {
-  public constructor(context: IAsyncEvaluatorContext) {
+export class OrderByEvaluator extends ContextualizedEvaluator {
+  public constructor(context: IAsyncEvaluatorContext,
+    private readonly equalityFunction: RegularFunction,
+    private readonly lessThanFunction: RegularFunction) {
     super(context);
   }
 
@@ -72,20 +71,17 @@ export class OrderByEvaluator extends InternalizedExpressionEvaluator {
   }
 
   private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal): -1 | 0 | 1 {
-    const isGreater = regularFunctions[C.RegularOperator.GT];
-    const isEqual = regularFunctions[C.RegularOperator.EQUAL];
-
     const myLitA = this.transformer.transformLiteral(litA);
     const myLitB = this.transformer.transformLiteral(litB);
 
     try {
-      if ((<E.BooleanLiteral> isEqual.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
+      if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
         return 0;
       }
-      if ((<E.BooleanLiteral> isGreater.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
-        return 1;
+      if ((<E.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
+        return -1;
       }
-      return -1;
+      return 1;
     } catch {
       // Fallback to string-based comparison
       const compareType = this.comparePrimitives(myLitA.dataType, myLitB.dataType);
@@ -110,34 +106,4 @@ export class OrderByEvaluator extends InternalizedExpressionEvaluator {
     Quad: 4,
     DefaultGraph: 5,
   };
-
-  // ======================================= Sub evaluators ==========================================================
-  private term(expr: E.Term, _: RDF.Bindings): E.Term {
-    return expr;
-  }
-
-  private variable(expr: E.Variable, mapping: RDF.Bindings): E.Term {
-    const term = mapping.get(expressionToVar(expr));
-    if (!term) {
-      throw new Err.UnboundVariableError(expr.name, mapping);
-    }
-    return this.transformer.transformRDFTermUnsafe(term);
-  }
-
-  private async evalFunction(expr: E.Operator | E.SpecialOperator | E.Named | E.AsyncExtension, mapping: RDF.Bindings):
-  Promise<E.Term> {
-    return expr.apply({
-      args: expr.args,
-      mapping,
-      exprEval: this,
-    });
-  }
-
-  private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {
-    return new E.BooleanLiteral(await this.exists(expr.expression, mapping));
-  }
-
-  private evalAggregate(): never {
-    throw new Err.NoAggregator();
-  }
 }

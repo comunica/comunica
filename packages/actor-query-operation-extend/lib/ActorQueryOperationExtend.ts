@@ -41,7 +41,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
     }
 
-    const evaluator = this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
+    const evaluator = await this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
 
     // Transform the stream by extending each Bindings with the expression result
     const transform = async(bindings: Bindings, next: any, push: (pusbBindings: Bindings) => void): Promise<void> => {

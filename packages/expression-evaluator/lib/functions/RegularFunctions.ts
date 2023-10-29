@@ -6,7 +6,7 @@ import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
+import type { ContextualizedEvaluator } from '../evaluators/ContextualizedEvaluator';
 import * as E from '../expressions';
 import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
@@ -272,15 +272,18 @@ class Inequality extends RegularFunction {
 }
 
 class LesserThan extends RegularFunction {
+  // TODO: when all is done, this should be injected in some way!
+  public constructor(private readonly equalityFunction: RegularFunction) {
+    super();
+  }
+
   protected arity = 2;
 
   public operator = C.RegularOperator.LT;
 
-  private quadComponentTest(left: E.Term, right: E.Term, exprEval: ExpressionEvaluator): boolean | undefined {
-    const eq = regularFunctions[C.RegularOperator.EQUAL];
-
+  private quadComponentTest(left: E.Term, right: E.Term, exprEval: ContextualizedEvaluator): boolean | undefined {
     // If components are equal, we don't have an answer
-    const subjectEqual = eq.applyOnTerms(
+    const subjectEqual = this.equalityFunction.applyOnTerms(
       [ left, right ], exprEval,
     );
     if ((<E.BooleanLiteral> subjectEqual).typedValue) {
@@ -793,9 +796,9 @@ class Langmatches extends RegularFunction {
     ).collect();
 }
 
-const regex2: (exprEval: ExpressionEvaluator) => (text: string, pattern: string) => E.BooleanLiteral =
+const regex2: (exprEval: ContextualizedEvaluator) => (text: string, pattern: string) => E.BooleanLiteral =
   () => (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3: (exprEval: ExpressionEvaluator) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
+const regex3: (exprEval: ContextualizedEvaluator) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
   () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
@@ -1195,6 +1198,7 @@ class Istriple extends RegularFunction {
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
+const equality = new Equality();
 /**
  * Collect all the definitions from above into an object
  */
@@ -1210,9 +1214,9 @@ export const regularFunctions: Record<C.RegularOperator, RegularFunction> = {
   '/': new Division(),
   '+': new Addition(),
   '-': new Subtraction(),
-  '=': new Equality(),
+  '=': equality,
   '!=': new Inequality(),
-  '<': new LesserThan(),
+  '<': new LesserThan(equality),
   '>': new GreaterThan(),
   '<=': new LesserThanEqual(),
   '>=': new GreaterThanEqual(),
