@@ -10,8 +10,6 @@ export enum ExpressionType {
   SpecialOperator = 'specialOperator',
   Term = 'term',
   Variable = 'variable',
-  AsyncExtension = 'asyncExtension',
-  SyncExtension = 'syncExtension',
 }
 
 export type Expression =
@@ -21,9 +19,7 @@ export type Expression =
   OperatorExpression |
   SpecialOperatorExpression |
   TermExpression |
-  VariableExpression |
-  AsyncExtensionExpression |
-  SyncExtensionExpression;
+  VariableExpression;
 
 export interface IExpressionProps {
   expressionType: ExpressionType;
@@ -42,21 +38,6 @@ export type ExistenceExpression = IExpressionProps & {
 
 export type NamedExpression = IExpressionProps & {
   expressionType: ExpressionType.Named;
-  name: RDF.NamedNode;
-  apply: FunctionApplication;
-  args: Expression[];
-};
-
-// TODO: this can go since we will have an indexed bus to fund functions?
-export type AsyncExtensionExpression = IExpressionProps & {
-  expressionType: ExpressionType.AsyncExtension;
-  name: RDF.NamedNode;
-  apply: FunctionApplication;
-  args: Expression[];
-};
-
-export type SyncExtensionExpression = IExpressionProps & {
-  expressionType: ExpressionType.SyncExtension;
   name: RDF.NamedNode;
   apply: FunctionApplication;
   args: Expression[];
@@ -95,6 +76,4 @@ export type VariableExpression = IExpressionProps & {
   name: string;
 };
 
-// Export type Application = SimpleApplication | SpecialApplication;
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
-export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;

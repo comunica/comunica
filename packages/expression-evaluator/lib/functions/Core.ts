@@ -1,4 +1,4 @@
-import type { IEvalContext, IFunctionExpression } from '@comunica/types';
+import type { IEvalContext, IExpressionFunction, ITermFunction } from '@comunica/types';
 import type { ContextualizedEvaluator } from '../evaluators/ContextualizedEvaluator';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
@@ -9,7 +9,7 @@ import type { OverloadTree } from './OverloadTree';
 // Overloaded Functions
 // ----------------------------------------------------------------------------
 
-export abstract class SparqlFunction implements IFunctionExpression {
+abstract class BaseFunctionDefinition {
   protected abstract readonly arity: number | number[];
   public abstract apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
 
@@ -24,6 +24,10 @@ export abstract class SparqlFunction implements IFunctionExpression {
 
     return args.length === this.arity;
   }
+}
+
+export abstract class FunctionDefinition extends BaseFunctionDefinition implements IExpressionFunction {
+  public readonly definitionType = 'onExpression';
 }
 
 /**
@@ -41,10 +45,12 @@ export abstract class SparqlFunction implements IFunctionExpression {
  *  - Bool operators such as: =, !=, <=, <, ...
  *  - Functions such as: str, IRI
  *
- * See also: https://www.w3.org/TR/sparql11-query/#func-rdfTerms
+ * See also: https://www.w3.org/TR/definitionTypesparql11-query/#func-rdfTerms
  * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
  */
-export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOperator> extends SparqlFunction {
+export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOperator>
+  extends BaseFunctionDefinition implements ITermFunction {
+  public readonly definitionType = 'onTerm';
   protected abstract readonly overloads: OverloadTree;
   public abstract operator: O;
 

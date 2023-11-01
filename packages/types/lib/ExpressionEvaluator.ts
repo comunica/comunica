@@ -1,6 +1,6 @@
+import type { IAction } from '@comunica/core';
 import type { ContextualizedEvaluator } from '@comunica/expression-evaluator/lib/evaluators/ContextualizedEvaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { SparqlFunction, TermSparqlFunction } from '@comunica/expression-evaluator/lib/functions';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
@@ -42,10 +42,9 @@ export interface IExpressionEvaluatorFactory {
    */
   createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingsAggregator>;
 
-  createTermFunction: (arg: { functionName: string; arguments?: E.TermExpression[] })
-  => Promise<TermSparqlFunction<any>>;
-
   createOrderByEvaluator: (context: IActionContext) => Promise<IOrderByEvaluator>;
+
+  createFunction: FunctionBusType;
 }
 
 /**
@@ -83,7 +82,10 @@ export interface IEvalContext {
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;
 
-export interface IFunctionExpression {
+export type FunctionExpression = IExpressionFunction | ITermFunction;
+
+export interface IExpressionFunction {
+  definitionType: 'onExpression';
   apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
   /**
    * Makes you able to error in the termTransformer.
@@ -91,7 +93,25 @@ export interface IFunctionExpression {
   checkArity: (args: E.Expression[]) => boolean;
 }
 
-export type FunctionBusType = (arg: { functionName: string; arguments: Alg.Expression[] }) =>
-Promise<SparqlFunction>;
-export type TermFunctionBusType = (arg: { functionName: string; arguments?: E.TermExpression[] }) =>
-Promise<TermSparqlFunction<any>>;
+export interface ITermFunction {
+  definitionType: 'onTerm';
+  apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
+  /**
+   * Makes you able to error in the termTransformer.
+   */
+  checkArity: (args: E.Expression[]) => boolean;
+  applyOnTerms: (args: E.TermExpression[], exprEval: ContextualizedEvaluator) => E.TermExpression;
+}
+
+export interface IFunctionBusActionContext {
+  functionName: string;
+  arguments?: Alg.Expression[];
+  definitionType?: 'onExpression' | 'onTerm';
+}
+
+export type FunctionBusType = (arg: IFunctionBusActionContext & IAction) => Promise<FunctionExpression>;
+
+export interface IOrderByBusActionContext {
+  context: IActionContext;
+}
+export type OrderByBus = (arg: IOrderByBusActionContext & IAction) => Promise<IOrderByEvaluator>;

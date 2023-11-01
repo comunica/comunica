@@ -137,7 +137,7 @@ export const KeysInitQuery = {
    * The dictionary-based extensionFunctions context entry may be used instead, but not simultaneously.
    */
   extensionFunctionCreator: new ActionContextKey<
-  (functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined
+  (functionNamedNode: RDF.NamedNode) => Promise<((args: RDF.Term[]) => Promise<RDF.Term>) | undefined>
   // eslint-disable-next-line @typescript-eslint/no-extra-parens
   >('@comunica/actor-init-query:extensionFunctionCreator'),
   /**

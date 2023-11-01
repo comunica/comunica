@@ -1,22 +1,19 @@
-import type { FunctionBusType } from '@comunica/types';
+import type { FunctionExpression } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
-import type { ITermTransformer } from './TermTransformer';
 import { TermTransformer } from './TermTransformer';
 
-export interface IAlgebraTransformer extends ITermTransformer{
-  transformAlgebra: (expr: Alg.Expression) => Promise<E.Expression>;
-}
-
-export class AlgebraTransformer extends TermTransformer implements IAlgebraTransformer {
-  private readonly functions: FunctionBusType;
-  public constructor(superTypeProvided: ISuperTypeProvider, functions: FunctionBusType) {
+export class AlgebraTransformer extends TermTransformer {
+  public constructor(
+    superTypeProvided: ISuperTypeProvider,
+    private readonly functions: (args: { functionName: string; arguments?: Alg.Expression[] }) =>
+    Promise<FunctionExpression>,
+  ) {
     super(superTypeProvided);
-    this.functions = functions;
   }
 
   public async transformAlgebra(expr: Alg.Expression): Promise<E.Expression> {
@@ -68,13 +65,6 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
       const namedFunc = await this.functions({ functionName: op, arguments: expr.args });
       return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args));
     }
-    // The expression might be an extension function, check this.
-    // TODO: this should be done using the correct mediator?
-    // const asyncExtensionFunc = this.creatorConfig.creator(expr.name);
-    // if (asyncExtensionFunc) {
-    //   const asyncAppl = this.wrapAsyncFunction(asyncExtensionFunc, expr.name.value);
-    //   return new E.AsyncExtension(expr.name, namedArgs, asyncAppl);
-    // }
     throw new Err.UnknownNamedOperator(expr.name.value);
   }
 

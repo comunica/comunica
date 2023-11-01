@@ -8,6 +8,7 @@ import {
 } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
+import type { ITermFunction } from '@comunica/types';
 import { SumAggregator } from './SumAggregator';
 
 /**
@@ -25,12 +26,17 @@ export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFa
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ factory, expr, context }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new SumAggregator(
-        await action.factory.createEvaluator(action.expr, action.context),
-        action.expr.distinct,
-        await action.factory.createTermFunction({ functionName: RegularOperator.ADDITION }),
+        await factory.createEvaluator(expr, context),
+        expr.distinct,
+        <ITermFunction> await factory.createFunction({
+          functionName: RegularOperator.ADDITION,
+          context,
+          definitionType: 'onTerm',
+        }),
       ),
     };
   }

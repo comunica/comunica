@@ -1,8 +1,7 @@
 import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { AggregateEvaluator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { RegularFunction } from '@comunica/expression-evaluator/lib/functions';
-import type { IBindingsAggregator, IExpressionEvaluator } from '@comunica/types';
+import type { IBindingsAggregator, IExpressionEvaluator, ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 interface IAverageState {
@@ -16,8 +15,8 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
   public constructor(
     evaluator: IExpressionEvaluator,
     distinct: boolean,
-    private readonly additionFunction: RegularFunction,
-    private readonly divisionFunction: RegularFunction,
+    private readonly additionFunction: ITermFunction,
+    private readonly divisionFunction: ITermFunction,
     throwError?: boolean,
   ) {
     super(evaluator, distinct, throwError);

@@ -1,8 +1,7 @@
 import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { AggregateEvaluator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { RegularFunction } from '@comunica/expression-evaluator/lib/functions';
-import type { IExpressionEvaluator } from '@comunica/types';
+import type { IExpressionEvaluator, ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 type SumState = E.NumericLiteral;
@@ -12,7 +11,7 @@ export class SumAggregator extends AggregateEvaluator {
 
   public constructor(evaluator: IExpressionEvaluator,
     distinct: boolean,
-    private readonly additionFunction: RegularFunction,
+    private readonly additionFunction: ITermFunction,
     throwError?: boolean) {
     super(evaluator, distinct, throwError);
   }

@@ -1,12 +1,12 @@
+import type { ExpressionEvaluator } from '@comunica/expression-evaluator/lib/evaluators/ExpressionEvaluator';
+import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
+import { TypeAlias } from '@comunica/expression-evaluator/lib/util/Consts';
+import { EmptyAggregateError } from '@comunica/expression-evaluator/lib/util/Errors';
+import { isSubTypeOf } from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
-import type * as E from '../expressions';
-import { TermTransformer } from '../transformers/TermTransformer';
-import { TypeAlias } from '../util/Consts';
-import { EmptyAggregateError } from '../util/Errors';
-import { isSubTypeOf } from '../util/TypeHandling';
-import type { ExpressionEvaluator } from './ExpressionEvaluator';
 
 /**
  * This is the base class for all aggregators.

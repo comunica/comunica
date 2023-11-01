@@ -1,14 +1,13 @@
+import type { ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type * as E from '../expressions';
-import type { RegularFunction } from '../functions';
-import type { IAsyncEvaluatorContext } from './ContextualizedEvaluator';
-import { ContextualizedEvaluator } from './ContextualizedEvaluator';
+import type { ContextualizedEvaluator } from './ContextualizedEvaluator';
 
-export class OrderByEvaluator extends ContextualizedEvaluator {
-  public constructor(context: IAsyncEvaluatorContext,
-    private readonly equalityFunction: RegularFunction,
-    private readonly lessThanFunction: RegularFunction) {
-    super(context);
+// TODO: this is its own actor!
+export class OrderByEvaluator {
+  public constructor(private readonly contextualizedEvaluator: ContextualizedEvaluator,
+    private readonly equalityFunction: ITermFunction,
+    private readonly lessThanFunction: ITermFunction) {
   }
 
   // Determine the relative numerical order of the two given terms.
@@ -71,14 +70,16 @@ export class OrderByEvaluator extends ContextualizedEvaluator {
   }
 
   private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal): -1 | 0 | 1 {
-    const myLitA = this.transformer.transformLiteral(litA);
-    const myLitB = this.transformer.transformLiteral(litB);
+    const myLitA = this.contextualizedEvaluator.transformer.transformLiteral(litA);
+    const myLitB = this.contextualizedEvaluator.transformer.transformLiteral(litB);
 
     try {
-      if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
+      if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this.contextualizedEvaluator))
+        .typedValue) {
         return 0;
       }
-      if ((<E.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this)).typedValue) {
+      if ((<E.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this.contextualizedEvaluator))
+        .typedValue) {
         return -1;
       }
       return 1;
