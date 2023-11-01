@@ -29,7 +29,7 @@ export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregator
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new CountAggregator(
-        await action.factory.createEvaluator(action.expr, action.context),
+        await action.factory.createEvaluator(action.expr.expression, action.context),
         action.expr.distinct,
       ),
     };

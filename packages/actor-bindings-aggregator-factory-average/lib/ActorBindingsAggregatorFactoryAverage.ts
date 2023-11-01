@@ -27,7 +27,7 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
   Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new AverageAggregator(
-        await factory.createEvaluator(expr, context),
+        await factory.createEvaluator(expr.expression, context),
         expr.distinct,
         <ITermFunction> await factory.createFunction({
           functionName: RegularOperator.ADDITION,

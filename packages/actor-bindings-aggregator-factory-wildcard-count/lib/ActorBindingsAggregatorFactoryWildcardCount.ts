@@ -27,7 +27,7 @@ export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAg
   public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new WildcardCountAggregator(
-        await action.factory.createEvaluator(action.expr, action.context),
+        await action.factory.createEvaluator(action.expr.expression, action.context),
         action.expr.distinct,
       ),
     };

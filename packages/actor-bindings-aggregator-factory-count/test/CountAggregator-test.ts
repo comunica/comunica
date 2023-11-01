@@ -4,7 +4,7 @@ import { BF, DF, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { CountAggregator } from '../lib/CountAggregator';
+import { CountAggregator } from '../lib';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
@@ -42,11 +42,12 @@ describe('CountAggregator', () => {
   describe('non distinctive count', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
+    beforeEach(async() => {
       aggregator = new CountAggregator(
-        makeAggregate('count', false),
-        expressionEvaluatorFactory,
-        context,
+        await expressionEvaluatorFactory.createEvaluator(
+          makeAggregate('count', false), new ActionContext({}),
+        ),
+        false,
       );
     });
 
@@ -69,11 +70,12 @@ describe('CountAggregator', () => {
   describe('distinctive count', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
+    beforeEach(async() => {
       aggregator = new CountAggregator(
-        makeAggregate('count', true),
-        expressionEvaluatorFactory,
-        context,
+        await expressionEvaluatorFactory.createEvaluator(
+          makeAggregate('count', true), new ActionContext({}),
+        ),
+        true,
       );
     });
 

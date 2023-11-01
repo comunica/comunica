@@ -13,15 +13,13 @@ import * as RdfString from 'rdf-string';
  * NOTE: The wildcard count aggregator significantly differs from the others and overloads parts of this class.
  */
 export abstract class AggregateEvaluator {
-  private readonly throwError: boolean;
   private errorOccurred = false;
 
   protected readonly variableValues: Set<string>;
 
   protected constructor(protected readonly evaluator: IExpressionEvaluator,
     protected readonly distinct: boolean,
-    throwError?: boolean) {
-    this.throwError = throwError || false;
+    private readonly throwError: boolean = false) {
     this.errorOccurred = false;
 
     this.variableValues = new Set();
