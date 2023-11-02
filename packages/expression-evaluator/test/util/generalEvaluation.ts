@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { translate } from 'sparqlalgebrajs';
-import type { IAsyncEvaluatorContext } from '../../lib/evaluators/ExpressionEvaluator';
+import type { ContextualizedEvaluator } from '../../lib/evaluators/ContextualizedEvaluator';
 import { getMockEEActionContext, getMockEEFactory } from './utils';
 
 const BF = new BindingsFactory();
@@ -18,7 +18,7 @@ export interface IGeneralEvaluationArg {
   expectEquality?: boolean;
 
   // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
-  legacyContext?: Partial<IAsyncEvaluatorContext>;
+  legacyContext?: Partial<ContextualizedEvaluator>;
 }
 
 export async function generalEvaluate(arg: IGeneralEvaluationArg):
@@ -55,8 +55,9 @@ function parse(query: string) {
   return sparqlQuery.input.expression;
 }
 
-function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext,
-  legacyContext?: Partial<IAsyncEvaluatorContext>): Promise<RDF.Term> {
-  const evaluator = getMockEEFactory().createEvaluator(parse(expr), actionContext, legacyContext);
+async function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext,
+  legacyContext?: Partial<ContextualizedEvaluator>): Promise<RDF.Term> {
+  const evaluator = await getMockEEFactory()
+    .createEvaluator(parse(expr), actionContext, undefined, legacyContext);
   return evaluator.evaluate(bindings);
 }

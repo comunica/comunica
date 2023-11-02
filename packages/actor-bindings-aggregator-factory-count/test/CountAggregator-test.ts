@@ -13,6 +13,17 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
+async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+}): Promise<CountAggregator> {
+  return new CountAggregator(
+    await expressionEvaluatorFactory.createEvaluator(makeAggregate('count', distinct).expression, context),
+    distinct,
+  );
+}
+
 describe('CountAggregator', () => {
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
   let context: IActionContext;
@@ -43,12 +54,7 @@ describe('CountAggregator', () => {
     let aggregator: IBindingsAggregator;
 
     beforeEach(async() => {
-      aggregator = new CountAggregator(
-        await expressionEvaluatorFactory.createEvaluator(
-          makeAggregate('count', false), new ActionContext({}),
-        ),
-        false,
-      );
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -71,12 +77,7 @@ describe('CountAggregator', () => {
     let aggregator: IBindingsAggregator;
 
     beforeEach(async() => {
-      aggregator = new CountAggregator(
-        await expressionEvaluatorFactory.createEvaluator(
-          makeAggregate('count', true), new ActionContext({}),
-        ),
-        true,
-      );
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

@@ -13,6 +13,19 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
+async function createAggregator({ expressionEvaluatorFactory, context, distinct, throwError }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+  throwError?: boolean;
+}): Promise<MinAggregator> {
+  return new MinAggregator(
+    await expressionEvaluatorFactory.createEvaluator(makeAggregate('min', distinct).expression, context),
+    distinct,
+    await expressionEvaluatorFactory.createOrderByEvaluator(context),
+    throwError,
+  );
+}
 describe('MinAggregator', () => {
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
   let context: IActionContext;
@@ -42,12 +55,8 @@ describe('MinAggregator', () => {
   describe('non distinctive min', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new MinAggregator(
-        makeAggregate('min', false),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -119,12 +128,8 @@ describe('MinAggregator', () => {
   describe('distinctive Min', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new MinAggregator(
-        makeAggregate('min', true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

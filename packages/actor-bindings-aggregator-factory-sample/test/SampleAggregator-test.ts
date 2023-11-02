@@ -1,10 +1,10 @@
+import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { BF, DF, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { SampleAggregator } from '../lib/SampleAggregator';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
@@ -13,6 +13,17 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
+async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+}): Promise<MinAggregator> {
+  return new MinAggregator(
+    await expressionEvaluatorFactory.createEvaluator(makeAggregate('sample', distinct).expression, context),
+    distinct,
+    await expressionEvaluatorFactory.createOrderByEvaluator(context),
+  );
+}
 describe('SampleAggregator', () => {
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
   let context: IActionContext;
@@ -42,12 +53,8 @@ describe('SampleAggregator', () => {
   describe('non distinctive sample', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new SampleAggregator(
-        makeAggregate('sample', false),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -69,12 +76,8 @@ describe('SampleAggregator', () => {
   describe('distinctive sample', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new SampleAggregator(
-        makeAggregate('sample', true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

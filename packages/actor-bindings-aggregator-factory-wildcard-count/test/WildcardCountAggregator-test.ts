@@ -13,6 +13,19 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
+async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+}): Promise<WildcardCountAggregator> {
+  return new WildcardCountAggregator(
+    await expressionEvaluatorFactory.createEvaluator(
+      makeAggregate('count', distinct, undefined, true).expression, context,
+    ),
+    distinct,
+  );
+}
+
 describe('WildcardCountAggregator', () => {
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
   let context: IActionContext;
@@ -42,12 +55,8 @@ describe('WildcardCountAggregator', () => {
   describe('non distinctive count-wildcard', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new WildcardCountAggregator(
-        makeAggregate('count', false, undefined, true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -76,12 +85,8 @@ describe('WildcardCountAggregator', () => {
   describe('distinctive count-wildcard', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new WildcardCountAggregator(
-        makeAggregate('count', true, undefined, true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

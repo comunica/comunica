@@ -13,6 +13,20 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
+async function createAggregator({ expressionEvaluatorFactory, context, distinct, separator }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+  separator?: string;
+}): Promise<GroupConcatAggregator> {
+  return new GroupConcatAggregator(
+    await expressionEvaluatorFactory.createEvaluator(
+      makeAggregate('group_concat', distinct, separator).expression, context,
+    ),
+    distinct,
+    separator,
+  );
+}
 describe('CountAggregator', () => {
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
   let context: IActionContext;
@@ -42,12 +56,8 @@ describe('CountAggregator', () => {
   describe('non distinctive group_concat', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new GroupConcatAggregator(
-        makeAggregate('group_concat', false),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -69,12 +79,8 @@ describe('CountAggregator', () => {
   describe('with custom separator', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new GroupConcatAggregator(
-        makeAggregate('count', false, ';'),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false, separator: ';' });
     });
 
     it('uses separator', async() => {
@@ -92,12 +98,8 @@ describe('CountAggregator', () => {
   describe('distinctive group_concat', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new GroupConcatAggregator(
-        makeAggregate('group_concat', true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

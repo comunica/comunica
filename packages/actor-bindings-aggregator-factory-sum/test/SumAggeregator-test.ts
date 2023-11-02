@@ -1,10 +1,10 @@
 import { ActionContext } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { ExpressionEvaluatorFactory, RegularOperator } from '@comunica/expression-evaluator';
 import { BF, decimal, DF, float, int, makeAggregate, nonLiteral } from '@comunica/jest';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory, ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { SumAggregator } from '../lib/SumAggregator';
+import { SumAggregator } from '../lib';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
@@ -13,7 +13,23 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
-describe('SampleAggregator', () => {
+async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+}): Promise<SumAggregator> {
+  return new SumAggregator(
+    await expressionEvaluatorFactory.createEvaluator(makeAggregate('sum', distinct).expression, context),
+    distinct,
+    <ITermFunction> await expressionEvaluatorFactory.createFunction({
+      context,
+      functionName: RegularOperator.ADDITION,
+      definitionType: 'onTerm',
+    }),
+  );
+}
+
+describe('SumAggregator', () => {
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
   let context: IActionContext;
 
@@ -42,12 +58,8 @@ describe('SampleAggregator', () => {
   describe('non distinctive sum', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new SumAggregator(
-        makeAggregate('sum', false),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -112,12 +124,8 @@ describe('SampleAggregator', () => {
   describe('distinctive sum', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new SumAggregator(
-        makeAggregate('sum', true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

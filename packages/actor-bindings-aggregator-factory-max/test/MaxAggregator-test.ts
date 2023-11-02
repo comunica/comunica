@@ -4,13 +4,27 @@ import { BF, date, DF, double, float, int, makeAggregate, nonLiteral, string } f
 import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { MaxAggregator } from '../lib/MaxAggregator';
+import { MaxAggregator } from '../lib';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
     await aggregator.putBindings(bindings);
   }
   return aggregator.result();
+}
+
+async function createAggregator({ expressionEvaluatorFactory, context, distinct, throwError }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+  throwError?: boolean;
+}): Promise<MaxAggregator> {
+  return new MaxAggregator(
+    await expressionEvaluatorFactory.createEvaluator(makeAggregate('max', distinct).expression, context),
+    distinct,
+    await expressionEvaluatorFactory.createOrderByEvaluator(context),
+    throwError,
+  );
 }
 
 describe('MaxAggregator', () => {
@@ -42,12 +56,8 @@ describe('MaxAggregator', () => {
   describe('non distinctive max', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new MaxAggregator(
-        makeAggregate('max', false),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -119,12 +129,8 @@ describe('MaxAggregator', () => {
   describe('distinctive max', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new MaxAggregator(
-        makeAggregate('max', true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {
@@ -147,13 +153,8 @@ describe('MaxAggregator', () => {
   describe('when we ask for throwing errors', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new MaxAggregator(
-        makeAggregate('max', true),
-        expressionEvaluatorFactory,
-        context,
-        true,
-      );
+    beforeEach(async() => {
+      aggregator = aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false, throwError: true });
     });
     it('and the input is empty', async() => {
       const input: RDF.Bindings[] = [];

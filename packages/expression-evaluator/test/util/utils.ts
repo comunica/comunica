@@ -1,12 +1,9 @@
 import { ActionContext, Bus } from '@comunica/core';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { IActionContext } from '@comunica/types';
-import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { ExpressionEvaluatorFactory } from '../../lib';
-import type { ICompleteEEContext } from '../../lib/evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
-import type { IAsyncEvaluatorContext } from '../../lib/evaluators/ExpressionEvaluator';
+import type { IAsyncEvaluatorContext } from '../../lib/evaluators/ContextualizedEvaluator';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
@@ -30,6 +27,16 @@ export function getMockEEFactory(): ExpressionEvaluatorFactory {
 
 export function getMockExpression(expr: string): Alg.Expression {
   return translate(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`).input.expression;
+}
+
+export function getMockEvaluatorContext() {
+  const factory = getMockEEFactory();
+
+  return {
+    actionContext: getMockEEActionContext(),
+    mediatorQueryOperation: factory.mediatorQueryOperation,
+    mediatorFunction: factory.createFunction,
+  };
 }
 
 export interface ITestTableConfigBase {
@@ -96,19 +103,3 @@ export function runTestTable(arg: TestTableConfig): void {
 
   testTable.test();
 }
-
-export function getDefaultCompleteEEContext(actionContext?: IActionContext): ICompleteEEContext {
-  return {
-    actionContext: actionContext || getMockEEActionContext(),
-    now: new Date(),
-    superTypeProvider: {
-      cache: new LRUCache({ max: 1_000 }),
-      discoverer: () => 'term',
-    },
-    functionArgumentsCache: {},
-    defaultTimeZone: { zoneMinutes: 0, zoneHours: 0 },
-    bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_0`)),
-    exists: () => Promise.resolve(false),
-  };
-}
-
