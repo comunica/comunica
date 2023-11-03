@@ -57,15 +57,15 @@ export class AlgebraTransformer extends TermTransformer {
   }
 
   private async transformNamed(expr: Alg.NamedExpression): Promise<E.NamedExpression> {
-    const funcName = expr.name.value;
     const namedArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
-    if (C.NamedOperators.has(<C.NamedOperator>funcName)) {
-      // Return a basic named expression
-      const op = <C.NamedOperator>expr.name.value;
+    // Return a basic named expression
+    const op = <C.NamedOperator>expr.name.value;
+    try {
       const namedFunc = await this.functions({ functionName: op, arguments: expr.args });
       return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args));
+    } catch {
+      throw new Err.UnknownNamedOperator(expr.name.value);
     }
-    throw new Err.UnknownNamedOperator(expr.name.value);
   }
 
   public static transformAggregate(expr: Alg.AggregateExpression): E.Aggregate {

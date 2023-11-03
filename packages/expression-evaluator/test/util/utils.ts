@@ -1,9 +1,11 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { ExpressionEvaluatorFactory } from '../../lib';
 import type { IAsyncEvaluatorContext } from '../../lib/evaluators/ContextualizedEvaluator';
+import type { GeneralSuperTypeDict, ISuperTypeProvider } from '../../lib/util/TypeHandling';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
@@ -36,6 +38,13 @@ export function getMockEvaluatorContext() {
     actionContext: getMockEEActionContext(),
     mediatorQueryOperation: factory.mediatorQueryOperation,
     mediatorFunction: factory.createFunction,
+  };
+}
+
+export function getMockSuperTypeProvider(): ISuperTypeProvider {
+  return {
+    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+    discoverer: _ => 'term',
   };
 }
 

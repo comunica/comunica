@@ -1,55 +1,63 @@
+import type { FunctionExpression } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
 import * as E from '../../../lib/expressions';
+import { namedFunctions, regularFunctions, specialFunctions } from '../../../lib/functions';
+import { NamedExtension } from '../../../lib/functions/NamedExtension';
 import { AlgebraTransformer } from '../../../lib/transformers/AlgebraTransformer';
+import type * as C from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
-import {
-  getDefaultCompleteEEContext,
-  getMockEEActionContext,
-  getMockEEFactory,
-  getMockExpression,
-} from '../../util/utils';
+import { getMockSuperTypeProvider } from '../../util/utils';
 
 const DF = new DataFactory();
 
 describe('AlgebraTransformer', () => {
   let algebraTransformer: AlgebraTransformer;
   beforeEach(() => {
-    algebraTransformer = new AlgebraTransformer({
-      creator: _ => async args => DF.namedNode('http://example.com'),
-      ...getDefaultCompleteEEContext(),
-    }, getMockEEFactory().createEvaluator(getMockExpression('1+1'), getMockEEActionContext()));
+    algebraTransformer = new AlgebraTransformer(getMockSuperTypeProvider(),
+      // This basically requires the function bus.
+      async({ functionName }) => {
+        const res: FunctionExpression | undefined = {
+          ...regularFunctions,
+          ...specialFunctions,
+          ...namedFunctions,
+        }[<C.NamedOperator | C.Operator> functionName];
+        if (res) {
+          return res;
+        }
+        return new NamedExtension(functionName, async() => DF.namedNode('http://example.com'));
+      });
   });
 
-  it('transform term', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform term', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.namedNode('http://example.com'),
     })).toEqual(new E.NamedNode('http://example.com'));
 
-    expect(algebraTransformer.transformAlgebra({
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.blankNode('foo'),
     })).toEqual(new E.BlankNode('foo'));
 
-    expect(algebraTransformer.transformAlgebra({
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.literal('foo'),
     })).toEqual(new E.StringLiteral('foo'));
 
-    expect(algebraTransformer.transformAlgebra({
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.variable('foo'),
     })).toEqual(new E.Variable('?foo'));
   });
 
-  it('transform special operator upper case', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform special operator upper case', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'BNODE',
@@ -57,8 +65,8 @@ describe('AlgebraTransformer', () => {
     })).toBeInstanceOf(E.SpecialOperator);
   });
 
-  it('transform special operator lower case', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform special operator lower case', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'bnode',
@@ -66,17 +74,17 @@ describe('AlgebraTransformer', () => {
     })).toBeInstanceOf(E.SpecialOperator);
   });
 
-  it('transform special operator bad arity', () => {
-    expect(() => algebraTransformer.transformAlgebra({
+  it('transform special operator bad arity', async() => {
+    await expect(() => algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'if',
       args: [],
-    })).toThrow(Err.InvalidArity);
+    })).rejects.toThrow(Err.InvalidArity);
   });
 
-  it('transform special operator infinite arity', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform special operator infinite arity', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'coalesce',
@@ -84,8 +92,8 @@ describe('AlgebraTransformer', () => {
     })).toBeInstanceOf(E.SpecialOperator);
   });
 
-  it('transform regular operator lower case', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform regular operator lower case', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'uminus',
@@ -97,8 +105,8 @@ describe('AlgebraTransformer', () => {
     })).toBeInstanceOf(E.Operator);
   });
 
-  it('transform regular operator upper case', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform regular operator upper case', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'UMINUS',
@@ -110,26 +118,26 @@ describe('AlgebraTransformer', () => {
     })).toBeInstanceOf(E.Operator);
   });
 
-  it('transform regular operator bad arity', () => {
-    expect(() => algebraTransformer.transformAlgebra({
+  it('transform regular operator bad arity', async() => {
+    await expect(() => algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: '!',
       args: [],
-    })).toThrow(Err.InvalidArity);
+    })).rejects.toThrow(Err.InvalidArity);
   });
 
-  it('transform not existing operator bad arity', () => {
-    expect(() => algebraTransformer.transformAlgebra({
+  it('transform not existing operator bad arity', async() => {
+    await expect(() => algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'foo',
       args: [],
-    })).toThrow(Err.UnknownOperator);
+    })).rejects.toThrow(Err.UnknownOperator);
   });
 
-  it('transform existence', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform existence', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.EXISTENCE,
       not: false,
@@ -150,8 +158,8 @@ describe('AlgebraTransformer', () => {
     }));
   });
 
-  it('transform aggregate', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform aggregate', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.AGGREGATE,
       aggregator: 'count',
@@ -174,8 +182,8 @@ describe('AlgebraTransformer', () => {
     }));
   });
 
-  it('transform wildcard', () => {
-    expect(algebraTransformer.transformAlgebra({
+  it('transform wildcard', async() => {
+    expect(await algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.WILDCARD,
       wildcard: new Wildcard(),

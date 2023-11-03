@@ -21,17 +21,17 @@ describe('evaluators', () => {
 
   describe('evaluate', () => {
     it('is able to evaluate', async() => {
-      const evaluator = factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
+      const evaluator = await factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
       expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
     });
 
     it('has proper default extended XSD type support', async() => {
-      const evaluator = factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
+      const evaluator = await factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
       expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
     });
 
     it('has proper extended XSD type support', async() => {
-      const evaluator = factory.createEvaluator(getMockExpression('1 + "1"^^<http://example.com>'),
+      const evaluator = await factory.createEvaluator(getMockExpression('1 + "1"^^<http://example.com>'),
         actionContext);
       await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
     });
@@ -39,19 +39,19 @@ describe('evaluators', () => {
 
   describe('evaluateAsEBV', () => {
     it('is able to evaluate to true', async() => {
-      const evaluator = factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
+      const evaluator = await factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
       expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(true);
     });
 
     it('is able to evaluate to false', async() => {
-      const evaluator = factory.createEvaluator(getMockExpression('0'), actionContext);
+      const evaluator = await factory.createEvaluator(getMockExpression('0'), actionContext);
       expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(false);
     });
   });
 
   describe('evaluateAsInternal', () => {
     it('is able to evaluate', async() => {
-      const evaluator = factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
+      const evaluator = await factory.createEvaluator(getMockExpression('1 + 1'), actionContext);
       expect(await evaluator.evaluateAsInternal(BF.bindings())).toEqual(new IntegerLiteral(2));
     });
   });

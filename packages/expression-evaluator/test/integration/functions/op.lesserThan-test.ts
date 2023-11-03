@@ -149,7 +149,8 @@ describe('evaluation of \'<\'', () => {
     runTestTable({
       ...config,
       errorArray: [
-        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:c> <ex:d> 123 >>', `Compared argument types are supported: 'NamedNode' and 'NamedNode'` ],
+        // Named nodes cannot be compared.
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:c> <ex:d> 123 >>', 'Argument types not valid for operator:' ],
       ],
     });
   });

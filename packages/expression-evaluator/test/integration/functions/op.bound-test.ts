@@ -29,7 +29,7 @@ describe('evaluation of \'bound\'', () => {
   });
 
   it('\'bound\' on term returns error', async() => {
-    const evaluator = getMockEEFactory().createEvaluator({
+    const evaluator = await getMockEEFactory().createEvaluator({
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'bound',

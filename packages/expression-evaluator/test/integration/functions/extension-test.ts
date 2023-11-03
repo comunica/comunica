@@ -1,10 +1,9 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type {
-  AsyncExtensionFunctionCreator,
-  IAsyncEvaluatorContext,
-} from '../../../lib/evaluators/ExpressionEvaluator';
+import type { AsyncExtensionFunctionCreator } from '../../../lib/evaluators/ContextualizedEvaluator';
 import { bool, merge, numeric } from '../../util/Aliases';
 import { generalEvaluate } from '../../util/generalEvaluation';
 import { Notation } from '../../util/TestTable';
@@ -14,7 +13,7 @@ const BF = new BindingsFactory();
 
 describe('extension functions:', () => {
   describe('term-equal', () => {
-    const extensionFunctions: AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => {
+    const extensionFunctions: AsyncExtensionFunctionCreator = async(functionNamedNode: RDF.NamedNode) => {
       if (functionNamedNode.value === 'https://example.org/functions#equal') {
         return async(args: RDF.Term[]) => {
           const res = args[0].equals(args[1]);
@@ -38,9 +37,9 @@ describe('extension functions:', () => {
         arity: 2,
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
-        legacyContext: {
-          extensionFunctionCreator: extensionFunctions,
-        },
+        config: new ActionContext({
+          [KeysInitQuery.extensionFunctionCreator.name]: extensionFunctions,
+        }),
         aliases: merge(numeric, bool),
         testTable: `
           3i 3i = true
@@ -102,14 +101,13 @@ describe('extension functions:', () => {
     });
 
     describe('throws error when providing a failing implementation', () => {
-      const legacyContext: Partial<IAsyncEvaluatorContext> = {
-        extensionFunctionCreator: extensionFunctions,
-      };
       runTestTable({
         arity: 1,
         notation: Notation.Function,
         operation: '<https://example.org/functions#bad>',
-        legacyContext,
+        config: new ActionContext({
+          [KeysInitQuery.extensionFunctionCreator.name]: extensionFunctions,
+        }),
         aliases: merge(numeric, bool),
         errorTable: `
           3i = 'Error thrown in https://example.org/functions#bad'
@@ -135,11 +133,13 @@ describe('extension functions:', () => {
       const bindings = BF.bindings([
         [ DF.variable('o'), DF.literal('AppLe', stringType) ],
       ]);
-      const legacyContext: Partial<IAsyncEvaluatorContext> = {
-        extensionFunctionCreator: creator,
-      };
       const evaluated = await generalEvaluate({
-        expression: complexQuery, expectEquality: true, legacyContext, bindings,
+        expression: complexQuery,
+        expectEquality: true,
+        bindings,
+        generalEvaluationConfig: new ActionContext({
+          [KeysInitQuery.extensionFunctionCreator.name]: creator,
+        }),
       });
       expect(evaluated.asyncResult).toEqual(DF.literal('APPLE', stringType));
     });

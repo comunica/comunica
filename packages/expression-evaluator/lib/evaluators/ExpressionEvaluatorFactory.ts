@@ -6,16 +6,15 @@ import type { IActionContext,
   IExpressionEvaluator,
   IExpressionEvaluatorFactory,
   FunctionBusType, IOrderByEvaluator,
-  FunctionExpression, ITermFunction, OrderByBus,
-  IEvalContext } from '@comunica/types';
+  FunctionExpression, ITermFunction, OrderByBus, IOrderByBusActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
-import type * as E from '../expressions';
-import { FunctionDefinition, namedFunctions, regularFunctions, specialFunctions } from '../functions';
+import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
+import { NamedExtension } from '../functions/NamedExtension';
 import type * as C from '../util/Consts';
 import { RegularOperator } from '../util/Consts';
-import type { IAsyncEvaluatorContext, AsyncExtensionFunction } from './ContextualizedEvaluator';
+import type { IAsyncEvaluatorContext } from './ContextualizedEvaluator';
 import { ContextualizedEvaluator } from './ContextualizedEvaluator';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 import { OrderByEvaluator } from './OrderByEvaluator';
@@ -38,7 +37,7 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     if (extensionFinder) {
       const definition = await extensionFinder(new DataFactory<RDF.Quad>().namedNode(functionName));
       if (definition) {
-        return new NamedExtension(definition);
+        return new NamedExtension(functionName, definition);
       }
     }
     const extensionMap: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>> | undefined =
@@ -46,13 +45,13 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     if (extensionMap) {
       const definition = extensionMap[functionName];
       if (definition) {
-        return new NamedExtension(definition);
+        return new NamedExtension(functionName, definition);
       }
     }
-    throw new Error('nah!');
+    throw new Error('No Function Actor Replied');
   };
 
-  public readonly orderByBus: OrderByBus = async({ context }) =>
+  public readonly orderByBus: OrderByBus = async({ context, getSuperType }) =>
     new OrderByEvaluator(new ContextualizedEvaluator({
       now: context.get(KeysInitQuery.queryTimestamp),
       baseIRI: context.get(KeysInitQuery.baseIRI),
@@ -60,6 +59,7 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
       actionContext: context,
       mediatorQueryOperation: this.mediatorQueryOperation,
       mediatorFunction: this.functionsBus,
+      getSuperType,
     }),
     <ITermFunction> await this.functionsBus({ functionName: RegularOperator.EQUAL, context, definitionType: 'onTerm' }),
     <ITermFunction> await this.functionsBus({ functionName: RegularOperator.LT, context, definitionType: 'onTerm' }));
@@ -99,34 +99,13 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
 
   public createFunction = this.functionsBus;
 
-  public async createOrderByEvaluator(context: IActionContext):
+  public async createOrderByEvaluator(orderAction: IOrderByBusActionContext):
   Promise<IOrderByEvaluator> {
-    return this.orderByBus({ context });
+    return this.orderByBus(orderAction);
   }
 }
 
 interface IExpressionEvaluatorFactoryArgs {
   mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   mediatorQueryOperation: MediatorQueryOperation;
-}
-
-// TODO: this thing will be it's own actor but it's just a little special.
-//  It will also be the only consumer of the context items:
-//  KeysInitQuery.extensionFunctions and KeysInitQuery.extensionFunctionCreator
-class NamedExtension extends FunctionDefinition {
-  // TODO: the context should be checked in the test part of the actor.
-  //  The fact that this can be done is async now is a nice feature!
-  //  It means that named function definitions could be queried over the web!
-  // TODO: when all is done, this should be injected in some way!
-  protected arity = Number.POSITIVE_INFINITY;
-  public constructor(private readonly functionDefinition: AsyncExtensionFunction) {
-    super();
-  }
-
-  public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> => {
-    const evaluatedArgs: E.Term[] = await Promise.all(args.map(arg => exprEval.evaluateAsInternal(arg, mapping)));
-    return exprEval.transformer.transformRDFTermUnsafe(
-      await this.functionDefinition(evaluatedArgs.map(term => term.toRDF())),
-    );
-  };
 }

@@ -18,4 +18,8 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
     const result = await this.internalizedExpressionEvaluator.evaluateAsInternal(this.expr, mapping);
     return result.coerceEBV();
   }
+
+  public evaluateAsInternal(mapping: RDF.Bindings): Promise<E.Expression> {
+    return this.internalizedExpressionEvaluator.evaluateAsInternal(this.expr, mapping);
+  }
 }

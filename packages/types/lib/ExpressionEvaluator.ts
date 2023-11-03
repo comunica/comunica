@@ -1,6 +1,7 @@
 import type { IAction } from '@comunica/core';
 import type { ContextualizedEvaluator } from '@comunica/expression-evaluator/lib/evaluators/ContextualizedEvaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import type { SuperTypeCallback } from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
@@ -42,7 +43,7 @@ export interface IExpressionEvaluatorFactory {
    */
   createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingsAggregator>;
 
-  createOrderByEvaluator: (context: IActionContext) => Promise<IOrderByEvaluator>;
+  createOrderByEvaluator: (orderAction: IOrderByBusActionContext) => Promise<IOrderByEvaluator>;
 
   createFunction: FunctionBusType;
 }
@@ -63,6 +64,8 @@ export interface IExpressionEvaluator {
    * @param mapping the RDF bindings to evaluate against.
    */
   evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
+
+  evaluateAsInternal: (mapping: RDF.Bindings) => Promise<E.Expression>;
 }
 
 export interface IOrderByEvaluator {
@@ -111,7 +114,7 @@ export interface IFunctionBusActionContext {
 
 export type FunctionBusType = (arg: IFunctionBusActionContext & IAction) => Promise<FunctionExpression>;
 
-export interface IOrderByBusActionContext {
-  context: IActionContext;
+export interface IOrderByBusActionContext extends IAction{
+  getSuperType?: SuperTypeCallback;
 }
-export type OrderByBus = (arg: IOrderByBusActionContext & IAction) => Promise<IOrderByEvaluator>;
+export type OrderByBus = (arg: IOrderByBusActionContext) => Promise<IOrderByEvaluator>;
