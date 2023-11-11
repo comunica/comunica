@@ -6,7 +6,7 @@ import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-import type { ContextualizedEvaluator } from '../evaluators/ContextualizedEvaluator';
+import type { MaterializedEvaluatorContext } from '../evaluators/MaterializedEvaluatorContext';
 import * as E from '../expressions';
 import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
@@ -281,7 +281,7 @@ class LesserThan extends RegularFunction {
 
   public operator = C.RegularOperator.LT;
 
-  private quadComponentTest(left: E.Term, right: E.Term, exprEval: ContextualizedEvaluator): boolean | undefined {
+  private quadComponentTest(left: E.Term, right: E.Term, exprEval: MaterializedEvaluatorContext): boolean | undefined {
     // If components are equal, we don't have an answer
     const subjectEqual = this.equalityFunction.applyOnTerms(
       [ left, right ], exprEval,
@@ -796,9 +796,9 @@ class Langmatches extends RegularFunction {
     ).collect();
 }
 
-const regex2: (exprEval: ContextualizedEvaluator) => (text: string, pattern: string) => E.BooleanLiteral =
+const regex2: (exprEval: MaterializedEvaluatorContext) => (text: string, pattern: string) => E.BooleanLiteral =
   () => (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3: (exprEval: ContextualizedEvaluator) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
+const regex3: (exprEval: MaterializedEvaluatorContext) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
   () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex

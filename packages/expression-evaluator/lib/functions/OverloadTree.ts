@@ -1,4 +1,4 @@
-import type { ContextualizedEvaluator } from '../evaluators/ContextualizedEvaluator';
+import type { MaterializedEvaluatorContext } from '../evaluators/MaterializedEvaluatorContext';
 import { isLiteralTermExpression } from '../expressions';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
@@ -16,7 +16,7 @@ import {
 export type ArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
 
 export type SearchStack = OverloadTree[];
-export type ImplementationFunction = (expressionEvaluator: ContextualizedEvaluator) => E.SimpleApplication;
+export type ImplementationFunction = (expressionEvaluator: MaterializedEvaluatorContext) => E.SimpleApplication;
 interface IFunctionArgumentsCacheObj {
   func?: ImplementationFunction; cache?: FunctionArgumentsCache;
 }

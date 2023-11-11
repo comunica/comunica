@@ -32,7 +32,7 @@ export interface IAsyncEvaluatorContext {
  * This class provides evaluation functionality to already transformed expressions.
  * It also holds all context items needed for evaluating functions.
  */
-export class ContextualizedEvaluator {
+export class MaterializedEvaluatorContext {
   public readonly transformer: AlgebraTransformer;
 
   private readonly subEvaluators: Record<string,

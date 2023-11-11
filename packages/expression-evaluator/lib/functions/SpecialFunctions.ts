@@ -4,7 +4,7 @@ import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { RegularFunction } from './Core';
-import { FunctionDefinition } from './Core';
+import { BaseFunctionDefinition } from './Core';
 import { bool, declare, expressionToVar, langString, string } from './Helpers';
 import type { OverloadTree } from './OverloadTree';
 import { regularFunctions } from './RegularFunctions';
@@ -19,7 +19,7 @@ import { regularFunctions } from './RegularFunctions';
  * https://www.w3.org/TR/sparql11-query/#func-bound
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class Bound extends FunctionDefinition {
+class Bound extends BaseFunctionDefinition {
   protected arity = 1;
 
   public apply = async({ args, mapping }: IEvalContext): Promise<E.TermExpression> => {
@@ -38,7 +38,7 @@ class Bound extends FunctionDefinition {
  * https://www.w3.org/TR/sparql11-query/#func-if
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class IfSPARQL extends FunctionDefinition {
+class IfSPARQL extends BaseFunctionDefinition {
   protected arity = 3;
 
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
@@ -56,7 +56,7 @@ class IfSPARQL extends FunctionDefinition {
  * https://www.w3.org/TR/sparql11-query/#func-coalesce
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class Coalesce extends FunctionDefinition {
+class Coalesce extends BaseFunctionDefinition {
   protected arity = Number.POSITIVE_INFINITY;
 
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
@@ -78,7 +78,7 @@ class Coalesce extends FunctionDefinition {
  * https://www.w3.org/TR/sparql11-query/#func-logical-or
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class LogicalOr extends FunctionDefinition {
+class LogicalOr extends BaseFunctionDefinition {
   protected arity = 2;
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
@@ -108,7 +108,7 @@ class LogicalOr extends FunctionDefinition {
  * https://www.w3.org/TR/sparql11-query/#func-logical-and
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class LogicalAnd extends FunctionDefinition {
+class LogicalAnd extends BaseFunctionDefinition {
   protected arity = 2;
 
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
@@ -140,7 +140,7 @@ class LogicalAnd extends FunctionDefinition {
  * https://www.w3.org/TR/sparql11-query/#func-sameTerm
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class SameTerm extends FunctionDefinition {
+class SameTerm extends BaseFunctionDefinition {
   protected arity = 2;
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluateAsInternal(arg, mapping));
@@ -155,7 +155,7 @@ class SameTerm extends FunctionDefinition {
  * https://www.w3.org/TR/sparql11-query/#func-in
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class InSPARQL extends FunctionDefinition {
+class InSPARQL extends BaseFunctionDefinition {
   // TODO: when all is done, this should be injected in some way!
   public constructor(private readonly equalityFunction: RegularFunction) {
     super();
@@ -205,7 +205,7 @@ class InSPARQL extends FunctionDefinition {
  * https://www.w3.org/TR/sparql11-query/#func-not-in
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
-class NotInSPARQL extends FunctionDefinition {
+class NotInSPARQL extends BaseFunctionDefinition {
   protected arity = Number.POSITIVE_INFINITY;
 
   public checkArity(args: E.Expression[]): boolean {
@@ -234,7 +234,7 @@ const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1((
 /**
  * https://www.w3.org/TR/sparql11-query/#func-concat
  */
-class Concat extends FunctionDefinition {
+class Concat extends BaseFunctionDefinition {
   protected arity = Number.POSITIVE_INFINITY;
 
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
@@ -279,7 +279,7 @@ const bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).c
  * https://www.w3.org/TR/sparql11-query/#func-bnode
  * id has to be distinct over all id's in dataset
  */
-class BNode extends FunctionDefinition {
+class BNode extends BaseFunctionDefinition {
   /**
    * A counter that keeps track blank node generated through BNODE() SPARQL
    * expressions.
@@ -319,7 +319,7 @@ class BNode extends FunctionDefinition {
 // Wrap these declarations into functions
 // ----------------------------------------------------------------------------
 
-export const specialFunctions: Record<C.SpecialOperator, FunctionDefinition> = {
+export const specialFunctions: Record<C.SpecialOperator, BaseFunctionDefinition> = {
   // --------------------------------------------------------------------------
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms

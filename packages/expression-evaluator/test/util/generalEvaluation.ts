@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { translate } from 'sparqlalgebrajs';
-import type { ContextualizedEvaluator } from '../../lib/evaluators/ContextualizedEvaluator';
+import type { MaterializedEvaluatorContext } from '../../lib/evaluators/MaterializedEvaluatorContext';
 import { getMockEEActionContext, getMockEEFactory } from './utils';
 
 const BF = new BindingsFactory();
@@ -18,7 +18,7 @@ export interface IGeneralEvaluationArg {
   expectEquality?: boolean;
 
   // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
-  legacyContext?: Partial<ContextualizedEvaluator>;
+  legacyContext?: Partial<MaterializedEvaluatorContext>;
 }
 
 export async function generalEvaluate(arg: IGeneralEvaluationArg):
@@ -56,8 +56,8 @@ function parse(query: string) {
 }
 
 async function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext,
-  legacyContext?: Partial<ContextualizedEvaluator>): Promise<RDF.Term> {
+  legacyContext?: Partial<MaterializedEvaluatorContext>): Promise<RDF.Term> {
   const evaluator = await getMockEEFactory()
-    .createEvaluator(parse(expr), actionContext, undefined, legacyContext);
+    .createEvaluator(parse(expr), actionContext, legacyContext);
   return evaluator.evaluate(bindings);
 }

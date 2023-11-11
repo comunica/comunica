@@ -34,7 +34,7 @@ function dateTime(value: string): RDF.Literal {
 async function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
   typeDiscoveryCallback?: SuperTypeCallback) {
   const evaluator = await getMockEEFactory()
-    .createOrderByEvaluator({
+    .createTermComparator({
       context: getMockEEActionContext(),
       getSuperType: typeDiscoveryCallback,
     });
@@ -49,7 +49,7 @@ async function genericOrderTestLower(litA: RDF.Term | undefined, litB: RDF.Term 
 
 async function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined) {
   const evaluator = await getMockEEFactory()
-    .createOrderByEvaluator({
+    .createTermComparator({
       context: getMockEEActionContext(),
     });
   expect(evaluator.orderTypes(litA, litB)).toEqual(0);

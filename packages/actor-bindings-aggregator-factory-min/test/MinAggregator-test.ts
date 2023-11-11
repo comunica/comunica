@@ -22,7 +22,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct,
   return new MinAggregator(
     await expressionEvaluatorFactory.createEvaluator(makeAggregate('min', distinct).expression, context),
     distinct,
-    await expressionEvaluatorFactory.createOrderByEvaluator(context),
+    await expressionEvaluatorFactory.createTermComparator(context),
     throwError,
   );
 }

@@ -1,11 +1,11 @@
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type * as E from '../expressions';
-import type { ContextualizedEvaluator } from './ContextualizedEvaluator';
+import type { MaterializedEvaluatorContext } from './MaterializedEvaluatorContext';
 
 export class ExpressionEvaluator implements IExpressionEvaluator {
   public constructor(
-    public readonly internalizedExpressionEvaluator: ContextualizedEvaluator,
+    public readonly internalizedExpressionEvaluator: MaterializedEvaluatorContext,
     public readonly expr: E.Expression,
   ) { }
 

@@ -21,7 +21,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct 
   return new MinAggregator(
     await expressionEvaluatorFactory.createEvaluator(makeAggregate('sample', distinct).expression, context),
     distinct,
-    await expressionEvaluatorFactory.createOrderByEvaluator(context),
+    await expressionEvaluatorFactory.createTermComparator(context),
   );
 }
 describe('SampleAggregator', () => {

@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
-import { ContextualizedEvaluator } from '../../../lib/evaluators/ContextualizedEvaluator';
+import { MaterializedEvaluatorContext } from '../../../lib/evaluators/MaterializedEvaluatorContext';
 import * as E from '../../../lib/expressions';
 import * as Err from '../../../lib/util/Errors';
 import { getMockEvaluatorContext } from '../../util/utils';
@@ -12,7 +12,7 @@ const DF = new DataFactory();
 
 describe('recursive evaluators', () => {
   describe('AsyncRecursiveEvaluator', () => {
-    const evaluator = new ContextualizedEvaluator(getMockEvaluatorContext());
+    const evaluator = new MaterializedEvaluatorContext(getMockEvaluatorContext());
 
     it('is able to evaluate operator', async() => {
       expect(await evaluator.evaluateAsInternal(new E.IntegerLiteral(1), BF.bindings()))

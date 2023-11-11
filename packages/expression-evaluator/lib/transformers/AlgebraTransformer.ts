@@ -1,4 +1,4 @@
-import type { FunctionExpression } from '@comunica/types';
+import type { IExpressionFunction } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import * as E from '../expressions';
@@ -11,7 +11,7 @@ export class AlgebraTransformer extends TermTransformer {
   public constructor(
     superTypeProvided: ISuperTypeProvider,
     private readonly functions: (args: { functionName: string; arguments?: Alg.Expression[] }) =>
-    Promise<FunctionExpression>,
+    Promise<IExpressionFunction>,
   ) {
     super(superTypeProvided);
   }

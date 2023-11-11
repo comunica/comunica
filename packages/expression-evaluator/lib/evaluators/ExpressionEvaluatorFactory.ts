@@ -1,12 +1,17 @@
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActionContext,
+import type {
+  FunctionBusType,
+  IActionContext,
   IBindingsAggregator,
   IExpressionEvaluator,
   IExpressionEvaluatorFactory,
-  FunctionBusType, IOrderByEvaluator,
-  FunctionExpression, ITermFunction, OrderByBus, IOrderByBusActionContext } from '@comunica/types';
+  IExpressionFunction,
+  IOrderByEvaluator,
+  ITermComparatorBusActionContext,
+  OrderByBus,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -14,16 +19,16 @@ import { namedFunctions, regularFunctions, specialFunctions } from '../functions
 import { NamedExtension } from '../functions/NamedExtension';
 import type * as C from '../util/Consts';
 import { RegularOperator } from '../util/Consts';
-import type { IAsyncEvaluatorContext } from './ContextualizedEvaluator';
-import { ContextualizedEvaluator } from './ContextualizedEvaluator';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
-import { OrderByEvaluator } from './OrderByEvaluator';
+import type { IAsyncEvaluatorContext } from './MaterializedEvaluatorContext';
+import { MaterializedEvaluatorContext } from './MaterializedEvaluatorContext';
+import { TermComparator } from './TermComparator';
 
 export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
   public readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly functionsBus: FunctionBusType = async({ functionName, context }) => {
-    const res: FunctionExpression | undefined = {
+  public readonly functionsBus = <FunctionBusType> (async({ functionName, context }) => {
+    const res: IExpressionFunction | undefined = {
       ...regularFunctions,
       ...specialFunctions,
       ...namedFunctions,
@@ -49,10 +54,10 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
       }
     }
     throw new Error('No Function Actor Replied');
-  };
+  });
 
-  public readonly orderByBus: OrderByBus = async({ context, getSuperType }) =>
-    new OrderByEvaluator(new ContextualizedEvaluator({
+  public readonly termComparatorBus: OrderByBus = async({ context, getSuperType }) =>
+    new TermComparator(new MaterializedEvaluatorContext({
       now: context.get(KeysInitQuery.queryTimestamp),
       baseIRI: context.get(KeysInitQuery.baseIRI),
       functionArgumentsCache: context.get(KeysInitQuery.functionArgumentsCache),
@@ -61,8 +66,8 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
       mediatorFunction: this.functionsBus,
       getSuperType,
     }),
-    <ITermFunction> await this.functionsBus({ functionName: RegularOperator.EQUAL, context, definitionType: 'onTerm' }),
-    <ITermFunction> await this.functionsBus({ functionName: RegularOperator.LT, context, definitionType: 'onTerm' }));
+    await this.createFunction({ functionName: RegularOperator.EQUAL, context, requireTermExpression: true }),
+    await this.createFunction({ functionName: RegularOperator.LT, context, requireTermExpression: true }));
 
   public constructor(args: IExpressionEvaluatorFactoryArgs) {
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
@@ -71,21 +76,17 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
 
   // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
   public async createEvaluator(algExpr: Alg.Expression, context: IActionContext,
-    contextEval?: ContextualizedEvaluator,
     legacyContext: Partial<IAsyncEvaluatorContext> = {}): Promise<IExpressionEvaluator> {
-    if (!contextEval) {
-      const defContextEval = new ContextualizedEvaluator({
-        now: context.get(KeysInitQuery.queryTimestamp),
-        baseIRI: context.get(KeysInitQuery.baseIRI),
-        functionArgumentsCache: context.get(KeysInitQuery.functionArgumentsCache),
-        actionContext: context,
-        mediatorQueryOperation: this.mediatorQueryOperation,
-        mediatorFunction: this.functionsBus,
-        ...legacyContext,
-      });
-      return new ExpressionEvaluator(defContextEval, await defContextEval.transformer.transformAlgebra(algExpr));
-    }
-    return new ExpressionEvaluator(contextEval, await contextEval.transformer.transformAlgebra(algExpr));
+    const defContextEval = new MaterializedEvaluatorContext({
+      now: context.get(KeysInitQuery.queryTimestamp),
+      baseIRI: context.get(KeysInitQuery.baseIRI),
+      functionArgumentsCache: context.get(KeysInitQuery.functionArgumentsCache),
+      actionContext: context,
+      mediatorQueryOperation: this.mediatorQueryOperation,
+      mediatorFunction: this.functionsBus,
+      ...legacyContext,
+    });
+    return new ExpressionEvaluator(defContextEval, await defContextEval.transformer.transformAlgebra(algExpr));
   }
 
   public async createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext):
@@ -99,9 +100,9 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
 
   public createFunction = this.functionsBus;
 
-  public async createOrderByEvaluator(orderAction: IOrderByBusActionContext):
+  public async createTermComparator(orderAction: ITermComparatorBusActionContext):
   Promise<IOrderByEvaluator> {
-    return this.orderByBus(orderAction);
+    return this.termComparatorBus(orderAction);
   }
 }
 

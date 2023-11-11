@@ -1,5 +1,5 @@
 import type { IEvalContext, IExpressionFunction, ITermFunction } from '@comunica/types';
-import type { ContextualizedEvaluator } from '../evaluators/ContextualizedEvaluator';
+import type { MaterializedEvaluatorContext } from '../evaluators/MaterializedEvaluatorContext';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -9,7 +9,7 @@ import type { OverloadTree } from './OverloadTree';
 // Overloaded Functions
 // ----------------------------------------------------------------------------
 
-abstract class BaseFunctionDefinition {
+export abstract class BaseFunctionDefinition implements IExpressionFunction {
   protected abstract readonly arity: number | number[];
   public abstract apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
 
@@ -24,10 +24,6 @@ abstract class BaseFunctionDefinition {
 
     return args.length === this.arity;
   }
-}
-
-export abstract class FunctionDefinition extends BaseFunctionDefinition implements IExpressionFunction {
-  public readonly definitionType = 'onExpression';
 }
 
 /**
@@ -50,11 +46,11 @@ export abstract class FunctionDefinition extends BaseFunctionDefinition implemen
  */
 export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOperator>
   extends BaseFunctionDefinition implements ITermFunction {
-  public readonly definitionType = 'onTerm';
+  public readonly supportsTermExpressions = true;
   protected abstract readonly overloads: OverloadTree;
   public abstract operator: O;
 
-  public applyOnTerms(args: E.TermExpression[], exprEval: ContextualizedEvaluator): E.TermExpression {
+  public applyOnTerms(args: E.TermExpression[], exprEval: MaterializedEvaluatorContext): E.TermExpression {
     const concreteFunction =
       this.overloads.search(args, exprEval.superTypeProvider, exprEval.functionArgumentsCache) ||
       this.handleInvalidTypes(args);

@@ -4,7 +4,7 @@
  */
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type { ContextualizedEvaluator } from '../evaluators/ContextualizedEvaluator';
+import type { MaterializedEvaluatorContext } from '../evaluators/MaterializedEvaluatorContext';
 import type { Literal, TermExpression, Quad, ISerializable } from '../expressions';
 import * as E from '../expressions';
 import { NonLexicalLiteral } from '../expressions';
@@ -42,7 +42,7 @@ export class Builder {
   }
 
   private static wrapInvalidLexicalProtected(func: ImplementationFunction): ImplementationFunction {
-    return (expressionEvaluator: ContextualizedEvaluator) => (args: TermExpression[]) => {
+    return (expressionEvaluator: MaterializedEvaluatorContext) => (args: TermExpression[]) => {
       args.forEach((arg, index) => {
         if (arg instanceof NonLexicalLiteral) {
           throw new Err.InvalidLexicalForm(args[index].toRDF());
@@ -68,27 +68,27 @@ export class Builder {
     return this.set(to, impl);
   }
 
-  public onUnary<T extends Term>(type: ArgumentType, op: (expressionEvaluator: ContextualizedEvaluator) =>
+  public onUnary<T extends Term>(type: ArgumentType, op: (expressionEvaluator: MaterializedEvaluatorContext) =>
   (val: T) => Term, addInvalidHandling = true): Builder {
     return this.set([ type ], expressionEvaluator =>
       ([ val ]: [T]) => op(expressionEvaluator)(val), addInvalidHandling);
   }
 
   public onUnaryTyped<T extends ISerializable>(type: ArgumentType,
-    op: (expressionEvaluator: ContextualizedEvaluator) => (val: T) => Term, addInvalidHandling = true): Builder {
+    op: (expressionEvaluator: MaterializedEvaluatorContext) => (val: T) => Term, addInvalidHandling = true): Builder {
     return this.set([ type ], expressionEvaluator => ([ val ]: [E.Literal<T>]) =>
       op(expressionEvaluator)(val.typedValue), addInvalidHandling);
   }
 
   public onBinary<L extends Term, R extends Term>(types: ArgumentType[],
-    op: (expressionEvaluator: ContextualizedEvaluator) => (left: L, right: R) => Term, addInvalidHandling = true):
+    op: (expressionEvaluator: MaterializedEvaluatorContext) => (left: L, right: R) => Term, addInvalidHandling = true):
     Builder {
     return this.set(types, expressionEvaluator =>
       ([ left, right ]: [L, R]) => op(expressionEvaluator)(left, right), addInvalidHandling);
   }
 
   public onBinaryTyped<L extends ISerializable, R extends ISerializable>(types: ArgumentType[],
-    op: (expressionEvaluator: ContextualizedEvaluator) => (left: L, right: R) => Term, addInvalidHandling = true):
+    op: (expressionEvaluator: MaterializedEvaluatorContext) => (left: L, right: R) => Term, addInvalidHandling = true):
     Builder {
     return this.set(types,
       expressionEvaluator =>
@@ -97,7 +97,7 @@ export class Builder {
   }
 
   public onTernaryTyped<A1 extends ISerializable, A2 extends ISerializable, A3 extends ISerializable>(
-    types: ArgumentType[], op: (expressionEvaluator: ContextualizedEvaluator)
+    types: ArgumentType[], op: (expressionEvaluator: MaterializedEvaluatorContext)
     => (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true,
   ): Builder {
     return this.set(types, expressionEvaluator => ([ a1, a2, a3 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) =>
@@ -105,7 +105,7 @@ export class Builder {
   }
 
   public onTernary<A1 extends Term, A2 extends Term, A3 extends Term>(types: ArgumentType[],
-    op: (expressionEvaluator: ContextualizedEvaluator) =>
+    op: (expressionEvaluator: MaterializedEvaluatorContext) =>
     (a1: A1, a2: A2, a3: A3) => Term, addInvalidHandling = true): Builder {
     return this.set(types, expressionEvaluator =>
       ([ a1, a2, a3 ]: [A1, A2, A3]) => op(expressionEvaluator)(a1, a2, a3), addInvalidHandling);
@@ -113,14 +113,14 @@ export class Builder {
 
   public onQuaternaryTyped<A1 extends ISerializable, A2 extends ISerializable,
     A3 extends ISerializable, A4 extends ISerializable>(types: ArgumentType[],
-    op: (expressionEvaluator: ContextualizedEvaluator) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term,
+    op: (expressionEvaluator: MaterializedEvaluatorContext) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term,
     addInvalidHandling = true): Builder {
     return this.set(types, expressionEvaluator =>
       ([ a1, a2, a3, a4 ]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>, E.Literal<A4>]) =>
         op(expressionEvaluator)(a1.typedValue, a2.typedValue, a3.typedValue, a4.typedValue), addInvalidHandling);
   }
 
-  public onTerm1(op: (expressionEvaluator: ContextualizedEvaluator) =>
+  public onTerm1(op: (expressionEvaluator: MaterializedEvaluatorContext) =>
   (term: Term) => Term, addInvalidHandling = false): Builder {
     return this.set(
       [ 'term' ],
@@ -129,17 +129,17 @@ export class Builder {
     );
   }
 
-  public onTerm3(op: (expressionEvaluator: ContextualizedEvaluator) => (t1: Term, t2: Term, t3: Term) => Term):
+  public onTerm3(op: (expressionEvaluator: MaterializedEvaluatorContext) => (t1: Term, t2: Term, t3: Term) => Term):
   Builder {
     return this.set([ 'term', 'term', 'term' ],
       expressionEvaluator => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(expressionEvaluator)(t1, t2, t3));
   }
 
-  public onQuad1(op: (expressionEvaluator: ContextualizedEvaluator) => (term: Term & Quad) => Term): Builder {
+  public onQuad1(op: (expressionEvaluator: MaterializedEvaluatorContext) => (term: Term & Quad) => Term): Builder {
     return this.set([ 'quad' ], expressionEvaluator => ([ term ]: [Term & Quad]) => op(expressionEvaluator)(term));
   }
 
-  public onLiteral1<T extends ISerializable>(op: (expressionEvaluator: ContextualizedEvaluator) =>
+  public onLiteral1<T extends ISerializable>(op: (expressionEvaluator: MaterializedEvaluatorContext) =>
   (lit: E.Literal<T>) => Term, addInvalidHandling = true): Builder {
     return this.set(
       [ 'literal' ],
@@ -148,7 +148,7 @@ export class Builder {
     );
   }
 
-  public onBoolean1(op: (expressionEvaluator: ContextualizedEvaluator) => (lit: E.BooleanLiteral) => Term,
+  public onBoolean1(op: (expressionEvaluator: MaterializedEvaluatorContext) => (lit: E.BooleanLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],
@@ -157,7 +157,7 @@ export class Builder {
     );
   }
 
-  public onBoolean1Typed(op: (expressionEvaluator: ContextualizedEvaluator) => (lit: boolean) => Term,
+  public onBoolean1Typed(op: (expressionEvaluator: MaterializedEvaluatorContext) => (lit: boolean) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],
@@ -166,7 +166,7 @@ export class Builder {
     );
   }
 
-  public onString1(op: (expressionEvaluator: ContextualizedEvaluator) => (lit: E.Literal<string>) => Term,
+  public onString1(op: (expressionEvaluator: MaterializedEvaluatorContext) => (lit: E.Literal<string>) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_STRING ],
@@ -175,7 +175,7 @@ export class Builder {
     );
   }
 
-  public onString1Typed(op: (expressionEvaluator: ContextualizedEvaluator) => (lit: string) => Term,
+  public onString1Typed(op: (expressionEvaluator: MaterializedEvaluatorContext) => (lit: string) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.XSD_STRING ],
@@ -184,7 +184,7 @@ export class Builder {
     );
   }
 
-  public onLangString1(op: (expressionEvaluator: ContextualizedEvaluator) => (lit: E.LangStringLiteral) => Term,
+  public onLangString1(op: (expressionEvaluator: MaterializedEvaluatorContext) => (lit: E.LangStringLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeURL.RDF_LANG_STRING ],
@@ -193,7 +193,7 @@ export class Builder {
     );
   }
 
-  public onStringly1(op: (expressionEvaluator: ContextualizedEvaluator) => (lit: E.Literal<string>) => Term,
+  public onStringly1(op: (expressionEvaluator: MaterializedEvaluatorContext) => (lit: E.Literal<string>) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_STRINGLY ],
@@ -202,7 +202,7 @@ export class Builder {
     );
   }
 
-  public onStringly1Typed(op: (expressionEvaluator: ContextualizedEvaluator) => (lit: string) => Term,
+  public onStringly1Typed(op: (expressionEvaluator: MaterializedEvaluatorContext) => (lit: string) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_STRINGLY ],
@@ -211,7 +211,7 @@ export class Builder {
     );
   }
 
-  public onNumeric1(op: (expressionEvaluator: ContextualizedEvaluator) => (val: E.NumericLiteral) => Term,
+  public onNumeric1(op: (expressionEvaluator: MaterializedEvaluatorContext) => (val: E.NumericLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this.set(
       [ C.TypeAlias.SPARQL_NUMERIC ],
@@ -220,7 +220,7 @@ export class Builder {
     );
   }
 
-  public onDateTime1(op: (expressionEvaluator: ContextualizedEvaluator) => (date: E.DateTimeLiteral) => Term,
+  public onDateTime1(op: (expressionEvaluator: MaterializedEvaluatorContext) => (date: E.DateTimeLiteral) => Term,
     addInvalidHandling = true): Builder {
     return this
       .set([ C.TypeURL.XSD_DATE_TIME ],
@@ -236,9 +236,9 @@ export class Builder {
    * @param addInvalidHandling whether to add invalid handling,
    *   whether to add @param op in @see wrapInvalidLexicalProtected
    */
-  public numericConverter(op: (expressionEvaluator: ContextualizedEvaluator) => (val: number) => number,
+  public numericConverter(op: (expressionEvaluator: MaterializedEvaluatorContext) => (val: number) => number,
     addInvalidHandling = true): Builder {
-    const evalHelper = (expressionEvaluator: ContextualizedEvaluator) => (arg: Term): number =>
+    const evalHelper = (expressionEvaluator: MaterializedEvaluatorContext) => (arg: Term): number =>
       op(expressionEvaluator)((<Literal<number>>arg).typedValue);
     return this.onBinary([ TypeURL.XSD_INTEGER ], expressionEvaluator => arg =>
       integer(evalHelper(expressionEvaluator)(arg)), addInvalidHandling)
@@ -261,9 +261,9 @@ export class Builder {
    * https://www.w3.org/TR/xpath20/#mapping
    * Above url is referenced in the sparql spec: https://www.w3.org/TR/sparql11-query/#OperatorMapping
    */
-  public arithmetic(op: (expressionEvaluator: ContextualizedEvaluator) => (left: number, right: number) => number,
+  public arithmetic(op: (expressionEvaluator: MaterializedEvaluatorContext) => (left: number, right: number) => number,
     addInvalidHandling = true): Builder {
-    const evalHelper = (expressionEvaluator: ContextualizedEvaluator) => (left: Term, right: Term): number =>
+    const evalHelper = (expressionEvaluator: MaterializedEvaluatorContext) => (left: Term, right: Term): number =>
       op(expressionEvaluator)((<Literal<number>>left).typedValue, (<Literal<number>>right).typedValue);
     return this.onBinary([ TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ], expressionEvaluator => (left, right) =>
       integer(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling)
@@ -275,7 +275,7 @@ export class Builder {
         double(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling);
   }
 
-  public numberTest(test: (expressionEvaluator: ContextualizedEvaluator) => (left: number, right: number) => boolean):
+  public numberTest(test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: number, right: number) => boolean):
   Builder {
     return this.numeric(expressionEvaluator => ([ left, right ]: E.NumericLiteral[]) => {
       const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
@@ -283,7 +283,7 @@ export class Builder {
     });
   }
 
-  public stringTest(test: (expressionEvaluator: ContextualizedEvaluator) => (left: string, right: string) => boolean,
+  public stringTest(test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: string, right: string) => boolean,
     addInvalidHandling = true): Builder {
     return this
       .set(
@@ -296,7 +296,7 @@ export class Builder {
       );
   }
 
-  public booleanTest(test: (expressionEvaluator: ContextualizedEvaluator) => (left: boolean, right: boolean) => boolean,
+  public booleanTest(test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: boolean, right: boolean) => boolean,
     addInvalidHandling = true): Builder {
     return this
       .set(
@@ -309,7 +309,7 @@ export class Builder {
       );
   }
 
-  public dateTimeTest(test: (expressionEvaluator: ContextualizedEvaluator)
+  public dateTimeTest(test: (expressionEvaluator: MaterializedEvaluatorContext)
   => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean, addInvalidHandling = true): Builder {
     return this
       .set(

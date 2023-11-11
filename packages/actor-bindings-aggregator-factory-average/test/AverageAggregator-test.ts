@@ -1,7 +1,7 @@
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory, RegularOperator } from '@comunica/expression-evaluator';
 import { BF, decimal, DF, double, float, int, makeAggregate } from '@comunica/jest';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory, ITermFunction } from '@comunica/types';
+import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { AverageAggregator } from '../lib/AverageAggregator';
@@ -21,15 +21,15 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct 
   return new AverageAggregator(
     await expressionEvaluatorFactory.createEvaluator(makeAggregate('avg', distinct).expression, context),
     distinct,
-    <ITermFunction> await expressionEvaluatorFactory.createFunction({
+    await expressionEvaluatorFactory.createFunction({
       context,
       functionName: RegularOperator.ADDITION,
-      definitionType: 'onTerm',
+      requireTermExpression: true,
     }),
-    <ITermFunction> await expressionEvaluatorFactory.createFunction({
+    await expressionEvaluatorFactory.createFunction({
       context,
       functionName: RegularOperator.DIVISION,
-      definitionType: 'onTerm',
+      requireTermExpression: true,
     }),
   );
 }

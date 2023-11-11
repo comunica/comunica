@@ -4,7 +4,7 @@ import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { ExpressionEvaluatorFactory } from '../../lib';
-import type { IAsyncEvaluatorContext } from '../../lib/evaluators/ContextualizedEvaluator';
+import type { IAsyncEvaluatorContext } from '../../lib/evaluators/MaterializedEvaluatorContext';
 import type { GeneralSuperTypeDict, ISuperTypeProvider } from '../../lib/util/TypeHandling';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';

@@ -22,7 +22,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct,
   return new MaxAggregator(
     await expressionEvaluatorFactory.createEvaluator(makeAggregate('max', distinct).expression, context),
     distinct,
-    await expressionEvaluatorFactory.createOrderByEvaluator(context),
+    await expressionEvaluatorFactory.createTermComparator(context),
     throwError,
   );
 }

@@ -1,5 +1,6 @@
 import type { IAction } from '@comunica/core';
-import type { ContextualizedEvaluator } from '@comunica/expression-evaluator/lib/evaluators/ContextualizedEvaluator';
+import type { MaterializedEvaluatorContext } from
+  '@comunica/expression-evaluator/lib/evaluators/MaterializedEvaluatorContext';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { SuperTypeCallback } from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import type * as RDF from '@rdfjs/types';
@@ -43,7 +44,7 @@ export interface IExpressionEvaluatorFactory {
    */
   createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingsAggregator>;
 
-  createOrderByEvaluator: (orderAction: IOrderByBusActionContext) => Promise<IOrderByEvaluator>;
+  createTermComparator: (orderAction: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;
 
   createFunction: FunctionBusType;
 }
@@ -80,15 +81,12 @@ export interface IOrderByEvaluator {
 export interface IEvalContext {
   args: E.Expression[];
   mapping: RDF.Bindings;
-  exprEval: ContextualizedEvaluator;
+  exprEval: MaterializedEvaluatorContext;
 }
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;
 
-export type FunctionExpression = IExpressionFunction | ITermFunction;
-
 export interface IExpressionFunction {
-  definitionType: 'onExpression';
   apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
   /**
    * Makes you able to error in the termTransformer.
@@ -96,25 +94,21 @@ export interface IExpressionFunction {
   checkArity: (args: E.Expression[]) => boolean;
 }
 
-export interface ITermFunction {
-  definitionType: 'onTerm';
-  apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
-  /**
-   * Makes you able to error in the termTransformer.
-   */
-  checkArity: (args: E.Expression[]) => boolean;
-  applyOnTerms: (args: E.TermExpression[], exprEval: ContextualizedEvaluator) => E.TermExpression;
+export interface ITermFunction extends IExpressionFunction{
+  supportsTermExpressions: true;
+  applyOnTerms: (args: E.TermExpression[], exprEval: MaterializedEvaluatorContext) => E.TermExpression;
 }
 
 export interface IFunctionBusActionContext {
   functionName: string;
   arguments?: Alg.Expression[];
-  definitionType?: 'onExpression' | 'onTerm';
+  requireTermExpression?: boolean;
 }
 
-export type FunctionBusType = (arg: IFunctionBusActionContext & IAction) => Promise<FunctionExpression>;
+export type FunctionBusType = <T extends IFunctionBusActionContext>(arg: T & IAction) =>
+Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction>;
 
-export interface IOrderByBusActionContext extends IAction{
+export interface ITermComparatorBusActionContext extends IAction{
   getSuperType?: SuperTypeCallback;
 }
-export type OrderByBus = (arg: IOrderByBusActionContext) => Promise<IOrderByEvaluator>;
+export type OrderByBus = (arg: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;

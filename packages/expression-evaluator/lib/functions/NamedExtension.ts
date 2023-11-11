@@ -2,12 +2,12 @@
 //  It will also be the only consumer of the context items:
 //  KeysInitQuery.extensionFunctions and KeysInitQuery.extensionFunctionCreator
 import type { IEvalContext } from '@comunica/types';
-import type { AsyncExtensionFunction } from '../evaluators/ContextualizedEvaluator';
+import type { AsyncExtensionFunction } from '../evaluators/MaterializedEvaluatorContext';
 import type * as E from '../expressions';
 import { ExtensionFunctionError } from '../util/Errors';
-import { FunctionDefinition } from './Core';
+import { BaseFunctionDefinition } from './Core';
 
-export class NamedExtension extends FunctionDefinition {
+export class NamedExtension extends BaseFunctionDefinition {
   // TODO: the context should be checked in the test part of the actor.
   //  The fact that this can be done is async now is a nice feature!
   //  It means that named function definitions could be queried over the web!

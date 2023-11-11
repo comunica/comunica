@@ -41,7 +41,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.
-    const orderByEvaluator = await this.expressionEvaluatorFactory.createOrderByEvaluator(context);
+    const orderByEvaluator = await this.expressionEvaluatorFactory.createTermComparator({ context });
 
     for (let i = operation.expressions.length - 1; i >= 0; i--) {
       let expr = operation.expressions[i];
