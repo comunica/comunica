@@ -14,7 +14,7 @@ import type {
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { ExpressionEvaluatorFactory, RegularOperator } from '@comunica/expression-evaluator';
 import type { Bindings } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -101,40 +101,73 @@ interface ICaseOutput {
   actor: ActorQueryOperationGroup; bus: any; mediatorQueryOperation: any; op: IActionQueryOperation;
 }
 
-function aggregatorFactory({ expr, factory, context }: IActionBindingsAggregatorFactory):
-IActorBindingsAggregatorFactoryOutput {
+async function aggregatorFactory({ expr, factory, context }: IActionBindingsAggregatorFactory):
+Promise<IActorBindingsAggregatorFactoryOutput> {
   if (expr.aggregator === 'count') {
     if (expr.expression.wildcard) {
       return {
-        aggregator: new WildcardCountAggregator(expr, factory, context),
+        aggregator: new WildcardCountAggregator(await factory.createEvaluator(expr.expression, context), expr.distinct),
       };
     }
     return {
-      aggregator: new CountAggregator(expr, factory, context),
+      aggregator: new CountAggregator(await factory.createEvaluator(expr.expression, context), expr.distinct),
     };
   } if (expr.aggregator === 'sum') {
     return {
-      aggregator: new SumAggregator(expr, factory, context),
+      aggregator: new SumAggregator(
+        await factory.createEvaluator(expr.expression, context),
+        expr.distinct,
+        await factory.createFunction({
+          functionName: RegularOperator.ADDITION,
+          context,
+          requireTermExpression: true,
+        }),
+      ),
     };
   } if (expr.aggregator === 'avg') {
     return {
-      aggregator: new AverageAggregator(expr, factory, context),
+      aggregator: new AverageAggregator(
+        await factory.createEvaluator(expr.expression, context),
+        expr.distinct,
+        await factory.createFunction({
+          functionName: RegularOperator.ADDITION,
+          context,
+          requireTermExpression: true,
+        }),
+        await factory.createFunction({
+          functionName: RegularOperator.DIVISION,
+          context,
+          requireTermExpression: true,
+        }),
+      ),
     };
   } if (expr.aggregator === 'min') {
     return {
-      aggregator: new MinAggregator(expr, factory, context),
+      aggregator: new MinAggregator(
+        await factory.createEvaluator(expr.expression, context),
+        expr.distinct,
+        await factory.createTermComparator({ context }),
+      ),
     };
   } if (expr.aggregator === 'max') {
     return {
-      aggregator: new MaxAggregator(expr, factory, context),
+      aggregator: new MaxAggregator(
+        await factory.createEvaluator(expr.expression, context),
+        expr.distinct,
+        await factory.createTermComparator({ context }),
+      ),
     };
   } if (expr.aggregator === 'sample') {
     return {
-      aggregator: new SampleAggregator(expr, factory, context),
+      aggregator: new SampleAggregator(await factory.createEvaluator(expr.expression, context), expr.distinct),
     };
   } if (expr.aggregator === 'group_concat') {
     return {
-      aggregator: new GroupConcatAggregator(expr, factory, context),
+      aggregator: new GroupConcatAggregator(
+        await factory.createEvaluator(expr.expression, context),
+        expr.distinct,
+        expr.separator,
+      ),
     };
   }
   throw new Error(`Unsupported aggregator ${expr.aggregator}`);
@@ -169,7 +202,7 @@ function constructCase(
     mediatorBindingsAggregatorFactory: <any> {
       async mediate({ expr, factory, context }: IActionBindingsAggregatorFactory):
       Promise<IActorBindingsAggregatorFactoryOutput> {
-        return aggregatorFactory({ expr, factory, context });
+        return await aggregatorFactory({ expr, factory, context });
       },
     },
   });
@@ -220,7 +253,7 @@ describe('ActorQueryOperationGroup', () => {
       mediatorBindingsAggregatorFactory: <any> {
         async mediate({ expr, factory, context }: IActionBindingsAggregatorFactory):
         Promise<IActorBindingsAggregatorFactoryOutput> {
-          return aggregatorFactory({ expr, factory, context });
+          return await aggregatorFactory({ expr, factory, context });
         },
       },
     });

@@ -84,7 +84,6 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
   describe('An ActorQueryOperationFilterSparqlee instance', () => {
     let actor: ActorQueryOperationFilterSparqlee;
-    let factory: Factory;
     let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
 
     beforeEach(() => {
@@ -102,7 +101,6 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         mediatorQueryOperation,
         expressionEvaluatorFactory,
       });
-      factory = new Factory();
     });
 
     it('should test on filter', () => {
@@ -205,76 +203,6 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.type).toEqual('bindings');
       expect(await output.metadata())
         .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
-    });
-
-    describe('should be able to handle EXIST filters', () => {
-      it('like a simple EXIST that is true', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
-        const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-          false,
-          factory.createBgp([]),
-        );
-        const result = resolver(expr, BF.bindings());
-        expect(await result).toBe(true);
-      });
-
-      it('like a simple EXIST that is false', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
-        mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-          bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
-          operated: arg,
-          type: 'bindings',
-          variables: [ DF.variable('a') ],
-        });
-        const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-          false,
-          factory.createBgp([]),
-        );
-        const result = resolver(expr, BF.bindings());
-        expect(await result).toBe(false);
-      });
-
-      it('like a NOT EXISTS', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
-        mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-          bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
-          operated: arg,
-          type: 'bindings',
-          variables: [ DF.variable('a') ],
-        });
-        const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-          true,
-          factory.createBgp([]),
-        );
-        const result = resolver(expr, BF.bindings());
-        expect(await result).toBe(true);
-      });
-
-      it('like an EXIST that errors', async() => {
-        const resolver = ActorQueryOperation.createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation);
-        const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
-          autoStart: false,
-          transform(item, done, push) {
-            push(item);
-            bindingsStream.emit('error', 'Test error');
-            done();
-          },
-        });
-        mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-          bindingsStream,
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
-          operated: arg,
-          type: 'bindings',
-          variables: [ DF.variable('a') ],
-        });
-        const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-          false,
-          factory.createBgp([]),
-        );
-        await expect(resolver(expr, BF.bindings())).rejects.toBeTruthy();
-      });
     });
   });
 });

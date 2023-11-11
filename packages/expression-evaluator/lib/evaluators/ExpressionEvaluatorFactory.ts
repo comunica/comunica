@@ -8,8 +8,7 @@ import type {
   IExpressionEvaluator,
   IExpressionEvaluatorFactory,
   IExpressionFunction,
-  IOrderByEvaluator,
-  ITermComparatorBusActionContext,
+  IOrderByEvaluator, ITermComparatorBusActionContext,
   OrderByBus,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';

@@ -23,7 +23,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
-      const _ = this.expressionEvaluatorFactory.createEvaluator(aggregate.expression, context);
+      const _ = await this.expressionEvaluatorFactory.createEvaluator(aggregate.expression, context);
     }
     return true;
   }

@@ -24,7 +24,8 @@ export class ActorBindingsAggregatorFactoryMax extends ActorBindingsAggregatorFa
     return {};
   }
 
-  public async run({ expr, context, factory }: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ expr, context, factory }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new MaxAggregator(
         await factory.createEvaluator(expr.expression, context),

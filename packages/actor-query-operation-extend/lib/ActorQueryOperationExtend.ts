@@ -24,7 +24,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operations
-    const _ = Boolean(this.expressionEvaluatorFactory.createEvaluator(operation.expression, context));
+    const _ = Boolean(await this.expressionEvaluatorFactory.createEvaluator(operation.expression, context));
     return true;
   }
 
