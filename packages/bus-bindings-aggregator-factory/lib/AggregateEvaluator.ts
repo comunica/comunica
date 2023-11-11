@@ -93,12 +93,12 @@ export abstract class AggregateEvaluator {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
       !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, (<ExpressionEvaluator> this.evaluator)
-        .internalizedExpressionEvaluator
+        .materializedEvaluatorContext
         .superTypeProvider)
     ) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
     return <E.NumericLiteral> new TermTransformer((
-      <ExpressionEvaluator> this.evaluator).internalizedExpressionEvaluator.superTypeProvider).transformLiteral(term);
+      <ExpressionEvaluator> this.evaluator).materializedEvaluatorContext.superTypeProvider).transformLiteral(term);
   }
 }

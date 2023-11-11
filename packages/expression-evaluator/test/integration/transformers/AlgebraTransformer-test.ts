@@ -1,4 +1,4 @@
-import type { FunctionExpression } from '@comunica/types';
+import type { IExpressionFunction } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
@@ -18,7 +18,7 @@ describe('AlgebraTransformer', () => {
     algebraTransformer = new AlgebraTransformer(getMockSuperTypeProvider(),
       // This basically requires the function bus.
       async({ functionName }) => {
-        const res: FunctionExpression | undefined = {
+        const res: IExpressionFunction | undefined = {
           ...regularFunctions,
           ...specialFunctions,
           ...namedFunctions,

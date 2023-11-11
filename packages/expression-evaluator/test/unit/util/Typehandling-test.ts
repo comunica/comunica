@@ -8,7 +8,7 @@ import {
   isInternalSubType,
   isSubTypeOf,
 } from '../../../lib/util/TypeHandling';
-import { getDefaultCompleteEEContext } from '../../util/utils';
+import { getMockSuperTypeProvider } from '../../util/utils';
 
 describe('TypeHandling', () => {
   describe('has isTypeAlias function', () => {
@@ -70,7 +70,7 @@ describe('TypeHandling', () => {
         [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ], [ TypeURL.XSD_SHORT, TypeURL.XSD_INT ],
       ];
       expect(testArray.every(([ baseType, argumentType ]) =>
-        isSubTypeOf(baseType, argumentType, getDefaultCompleteEEContext().superTypeProvider))).toBeTruthy();
+        isSubTypeOf(baseType, argumentType, getMockSuperTypeProvider()))).toBeTruthy();
     });
     it('can say no', () => {
       const testArray: [OverrideType, KnownLiteralTypes][] = [
@@ -78,7 +78,7 @@ describe('TypeHandling', () => {
         [ TypeURL.XSD_BOOLEAN, TypeURL.XSD_DOUBLE ], [ TypeURL.XSD_FLOAT, TypeURL.XSD_DOUBLE ],
       ];
       expect(testArray.every(([ baseType, argumentType ]) =>
-        !isSubTypeOf(baseType, argumentType, getDefaultCompleteEEContext().superTypeProvider))).toBeTruthy();
+        !isSubTypeOf(baseType, argumentType, getMockSuperTypeProvider()))).toBeTruthy();
     });
   });
 });
