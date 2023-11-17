@@ -4,12 +4,14 @@ import type { IQueryContextCommon } from '@comunica/types';
 
 const engineDefault = require('../engine-default.js');
 
+
 /**
  * A Comunica SPARQL query engine.
  */
 export class QueryEngine<QueryContext extends IQueryContextCommon = IQueryContextCommon>
   extends QueryEngineBase<QueryContext> {
   public constructor(engine: ActorInitQueryBase<QueryContext> = engineDefault) {
+    console.log("LOCAL query engine!");
     super(engine);
   }
 }
