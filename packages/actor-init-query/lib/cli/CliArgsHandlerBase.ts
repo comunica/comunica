@@ -251,6 +251,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     if (args.unionDefaultGraph) {
       context[KeysQueryOperation.unionDefaultGraph.name] = true;
     }
+
+    // Define union default graph
+    if (args.cache === false) {
+      context[KeysInitQuery.disableHttpCache.name] = true;
+    }
   }
 }
 /* eslint-enable import/no-nodejs-modules */
