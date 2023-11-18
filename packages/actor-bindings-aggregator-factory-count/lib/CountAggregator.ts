@@ -1,4 +1,5 @@
-import { AggregateEvaluator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
+import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory/lib/AggregateEvaluator';
+import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import type { IBindingsAggregator, IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 

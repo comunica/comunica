@@ -1,6 +1,8 @@
 export { ExpressionEvaluatorFactory } from './evaluators/ExpressionEvaluatorFactory';
 export { ExpressionEvaluator } from './evaluators/ExpressionEvaluator';
-export { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory/lib/AggregateEvaluator';
 
-export { ExpressionError, isExpressionError } from './util/Errors';
-export { typedLiteral, TypeURL, RegularOperator } from './util/Consts';
+export { TermTransformer } from './transformers/TermTransformer';
+export { ExpressionError, isExpressionError, EmptyAggregateError } from './util/Errors';
+export { typedLiteral, TypeURL, TypeAlias, RegularOperator } from './util/Consts';
+export { isSubTypeOf } from './util/TypeHandling';
+

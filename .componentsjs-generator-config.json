@@ -72,7 +72,10 @@
     "Expression",
     "TypeURL",
     "RegularOperator",
-    "typedLiteral"
+    "typedLiteral",
+    "TypeAlias",
+    "isSubTypeOf",
+    "TermTransformer"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

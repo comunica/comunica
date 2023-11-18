@@ -798,8 +798,8 @@ class Langmatches extends RegularFunction {
 
 const regex2: (exprEval: MaterializedEvaluatorContext) => (text: string, pattern: string) => E.BooleanLiteral =
   () => (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3: (exprEval: MaterializedEvaluatorContext) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
-  () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
+const regex3: (exprEval: MaterializedEvaluatorContext) => (text: string, pattern: string, flags: string) =>
+E.BooleanLiteral = () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
  */

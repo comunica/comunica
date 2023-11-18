@@ -154,7 +154,12 @@ describe('MaxAggregator', () => {
     let aggregator: IBindingsAggregator;
 
     beforeEach(async() => {
-      aggregator = aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false, throwError: true });
+      aggregator = aggregator = await createAggregator({
+        expressionEvaluatorFactory,
+        context,
+        distinct: false,
+        throwError: true,
+      });
     });
     it('and the input is empty', async() => {
       const input: RDF.Bindings[] = [];

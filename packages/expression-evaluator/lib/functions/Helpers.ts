@@ -275,16 +275,19 @@ export class Builder {
         double(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling);
   }
 
-  public numberTest(test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: number, right: number) => boolean):
-  Builder {
+  public numberTest(
+    test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: number, right: number) => boolean,
+  ): Builder {
     return this.numeric(expressionEvaluator => ([ left, right ]: E.NumericLiteral[]) => {
       const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
       return bool(result);
     });
   }
 
-  public stringTest(test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: string, right: string) => boolean,
-    addInvalidHandling = true): Builder {
+  public stringTest(
+    test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: string, right: string) => boolean,
+    addInvalidHandling = true,
+  ): Builder {
     return this
       .set(
         [ C.TypeURL.XSD_STRING, C.TypeURL.XSD_STRING ],
@@ -296,8 +299,10 @@ export class Builder {
       );
   }
 
-  public booleanTest(test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: boolean, right: boolean) => boolean,
-    addInvalidHandling = true): Builder {
+  public booleanTest(
+    test: (expressionEvaluator: MaterializedEvaluatorContext) => (left: boolean, right: boolean) => boolean,
+    addInvalidHandling = true,
+  ): Builder {
     return this
       .set(
         [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],

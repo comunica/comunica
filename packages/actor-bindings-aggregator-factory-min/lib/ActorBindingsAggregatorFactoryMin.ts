@@ -24,7 +24,8 @@ export class ActorBindingsAggregatorFactoryMin extends ActorBindingsAggregatorFa
     return {};
   }
 
-  public async run({ factory, context, expr }: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ factory, context, expr }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new MinAggregator(
         await factory.createEvaluator(expr.expression, context),

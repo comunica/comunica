@@ -1,4 +1,4 @@
-import { AggregateEvaluator } from '@comunica/expression-evaluator';
+import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IBindingsAggregator,
   IExpressionEvaluator,
   IOrderByEvaluator } from '@comunica/types';
