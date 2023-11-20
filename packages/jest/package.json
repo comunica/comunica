@@ -34,6 +34,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
+    "@comunica/core": "^2.8.2",
+    "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/bindings-factory": "^2.7.0",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",

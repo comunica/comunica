@@ -14,7 +14,9 @@ class EmptyEvaluator extends AggregateEvaluator {
     super(evaluator, distinct, throwError);
   }
 
-  public putTerm(_: RDF.Term): void { }
+  public putTerm(_: RDF.Term): void {
+    // Empty
+  }
 
   protected termResult(): RDF.Term | undefined {
     return undefined;
