@@ -1,3 +1,4 @@
+import { getMockEEFactory } from '@comunica/jest';
 import type { ExpressionEvaluator } from '../../../lib';
 import type { ISerializable } from '../../../lib/expressions';
 import { IntegerLiteral, isLiteralTermExpression, Literal, StringLiteral } from '../../../lib/expressions';
@@ -6,7 +7,7 @@ import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree
 import type { KnownLiteralTypes } from '../../../lib/util/Consts';
 import { TypeURL } from '../../../lib/util/Consts';
 import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
-import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '../../util/utils';
+import { getMockEEActionContext, getMockExpression } from '../../util/utils';
 
 describe('OverloadTree', () => {
   let emptyTree: OverloadTree;

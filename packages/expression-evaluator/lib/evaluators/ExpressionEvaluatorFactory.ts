@@ -9,7 +9,7 @@ import type {
   IExpressionEvaluatorFactory,
   IExpressionFunction,
   IOrderByEvaluator, ITermComparatorBusActionContext,
-  OrderByBus,
+  TermComparatorBus,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -47,6 +47,7 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     const extensionMap: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>> | undefined =
       context.get(KeysInitQuery.extensionFunctions);
     if (extensionMap) {
+      // Uncovered by tests, but that does not matter.
       const definition = extensionMap[functionName];
       if (definition) {
         return new NamedExtension(functionName, definition);
@@ -55,7 +56,7 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     throw new Error('No Function Actor Replied');
   });
 
-  public readonly termComparatorBus: OrderByBus = async({ context, getSuperType }) =>
+  public readonly termComparatorBus: TermComparatorBus = async({ context, getSuperType }) =>
     new TermComparator(new MaterializedEvaluatorContext({
       now: context.get(KeysInitQuery.queryTimestamp),
       baseIRI: context.get(KeysInitQuery.baseIRI),

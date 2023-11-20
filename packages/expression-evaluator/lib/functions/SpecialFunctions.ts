@@ -271,15 +271,15 @@ function langAllEqual(lits: E.Literal<string>[]): boolean {
 // BNODE ---------------------------------------------------------------------
 
 /**
- * This OverloadTree with the constant function will handle both type promotion and subtype-substitution
- */
-const bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).collect();
-
-/**
  * https://www.w3.org/TR/sparql11-query/#func-bnode
  * id has to be distinct over all id's in dataset
  */
 class BNode extends BaseFunctionDefinition {
+  /**
+   * This OverloadTree with the constant function will handle both type promotion and subtype-substitution
+   */
+  private static readonly bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).collect();
+
   /**
    * A counter that keeps track blank node generated through BNODE() SPARQL
    * expressions.
@@ -299,7 +299,7 @@ class BNode extends BaseFunctionDefinition {
 
     let strInput: string | undefined;
     if (input) {
-      const operation = bnodeTree.search(
+      const operation = BNode.bnodeTree.search(
         [ input ],
         exprEval.superTypeProvider,
         exprEval.functionArgumentsCache,

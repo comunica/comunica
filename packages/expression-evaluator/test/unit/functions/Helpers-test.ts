@@ -1,10 +1,12 @@
+import { getMockEEFactory } from '@comunica/jest';
 import type { ExpressionEvaluator } from '../../../lib';
 import { TypeURL } from '../../../lib';
 import type { Builder } from '../../../lib/functions/Helpers';
 import { bool, declare } from '../../../lib/functions/Helpers';
 import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
-import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '../../util/utils';
+import { getMockEEActionContext, getMockExpression } from '../../util/utils';
+
 import fn = jest.fn;
 
 describe('The function helper file', () => {

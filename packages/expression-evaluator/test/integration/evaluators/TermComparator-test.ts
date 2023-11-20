@@ -1,9 +1,10 @@
+import { getMockEEFactory } from '@comunica/jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
 import { TypeURL, TypeURL as DT } from '../../../lib/util/Consts';
 import type { SuperTypeCallback } from '../../../lib/util/TypeHandling';
-import { getMockEEActionContext, getMockEEFactory } from '../../util/utils';
+import { getMockEEActionContext } from '../../util/utils';
 
 const DF = new DataFactory();
 

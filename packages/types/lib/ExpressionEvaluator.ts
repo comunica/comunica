@@ -111,4 +111,4 @@ Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionF
 export interface ITermComparatorBusActionContext extends IAction{
   getSuperType?: SuperTypeCallback;
 }
-export type OrderByBus = (arg: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;
+export type TermComparatorBus = (arg: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;

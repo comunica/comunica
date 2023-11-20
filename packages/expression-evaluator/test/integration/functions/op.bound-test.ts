@@ -1,10 +1,11 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { getMockEEFactory } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
 import { generalEvaluate } from '../../util/generalEvaluation';
-import { getMockEEActionContext, getMockEEFactory } from '../../util/utils';
+import { getMockEEActionContext } from '../../util/utils';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();

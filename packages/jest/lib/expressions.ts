@@ -1,4 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { Bus } from '@comunica/core';
+import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
@@ -58,4 +60,19 @@ export function double(value: string): RDF.Term {
 
 export function nonLiteral(): RDF.Term {
   return DF.namedNode('http://example.org/');
+}
+
+export function getMockEEFactory(): ExpressionEvaluatorFactory {
+  const bus: any = new Bus({ name: 'bus' });
+
+  const mediatorQueryOperation: any = {
+    async mediate(arg: any) {
+      return {};
+    },
+  };
+
+  return new ExpressionEvaluatorFactory({
+    mediatorQueryOperation,
+    mediatorBindingsAggregatorFactory: mediatorQueryOperation,
+  });
 }

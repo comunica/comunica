@@ -283,17 +283,17 @@ class LesserThan extends RegularFunction {
 
   private quadComponentTest(left: E.Term, right: E.Term, exprEval: MaterializedEvaluatorContext): boolean | undefined {
     // If components are equal, we don't have an answer
-    const subjectEqual = this.equalityFunction.applyOnTerms(
+    const componentEqual = this.equalityFunction.applyOnTerms(
       [ left, right ], exprEval,
     );
-    if ((<E.BooleanLiteral> subjectEqual).typedValue) {
+    if ((<E.BooleanLiteral> componentEqual).typedValue) {
       return undefined;
     }
 
-    const subjectLess = this.applyOnTerms(
+    const componentLess = this.applyOnTerms(
       [ left, right ], exprEval,
     );
-    return (<E.BooleanLiteral>subjectLess).typedValue;
+    return (<E.BooleanLiteral>componentLess).typedValue;
   }
 
   protected overloads = declare(C.RegularOperator.LT)

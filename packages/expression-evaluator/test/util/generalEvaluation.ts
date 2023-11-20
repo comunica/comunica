@@ -1,9 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { translate } from 'sparqlalgebrajs';
 import type { MaterializedEvaluatorContext } from '../../lib/evaluators/MaterializedEvaluatorContext';
-import { getMockEEActionContext, getMockEEFactory } from './utils';
+import { getMockEEActionContext } from './utils';
 
 const BF = new BindingsFactory();
 

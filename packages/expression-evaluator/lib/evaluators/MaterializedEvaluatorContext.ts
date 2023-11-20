@@ -35,7 +35,7 @@ export interface IAsyncEvaluatorContext {
 export class MaterializedEvaluatorContext {
   public readonly transformer: AlgebraTransformer;
 
-  private readonly subEvaluators: Record<string,
+  private readonly subEvaluators: Record<E.ExpressionType,
   (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term> | E.Term> =
       {
         [E.ExpressionType.Term]: this.term.bind(this),
@@ -79,9 +79,6 @@ export class MaterializedEvaluatorContext {
 
   public async evaluateAsInternal(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
     const evaluator = this.subEvaluators[expr.expressionType];
-    if (!evaluator) {
-      throw new Err.InvalidExpressionType(expr);
-    }
     return evaluator.bind(this)(expr, mapping);
   }
 

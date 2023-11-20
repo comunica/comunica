@@ -1,9 +1,9 @@
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
+import { getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-import { ExpressionEvaluatorFactory } from '../../lib';
 import type { IAsyncEvaluatorContext } from '../../lib/evaluators/MaterializedEvaluatorContext';
 import type { GeneralSuperTypeDict, ISuperTypeProvider } from '../../lib/util/TypeHandling';
 import type { AliasMap } from './Aliases';
@@ -12,19 +12,6 @@ import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable'
 
 export function getMockEEActionContext(): IActionContext {
   return new ActionContext({});
-}
-
-export function getMockEEFactory(): ExpressionEvaluatorFactory {
-  const bus: any = new Bus({ name: 'bus' });
-
-  const mediatorQueryOperation: any = {
-    async mediate(arg: any) { return {}; },
-  };
-
-  return new ExpressionEvaluatorFactory({
-    mediatorQueryOperation,
-    mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-  });
 }
 
 export function getMockExpression(expr: string): Alg.Expression {

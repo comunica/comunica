@@ -64,8 +64,6 @@ export class TermTransformer implements ITermTransformer {
         );
       case 'DefaultGraph':
         return new E.DefaultGraph();
-      default:
-        throw new Err.InvalidTermType(term);
     }
   }
 

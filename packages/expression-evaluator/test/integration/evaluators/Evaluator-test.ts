@@ -1,11 +1,12 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext } from '@comunica/core';
+import { getMockEEFactory } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 import type { ExpressionEvaluatorFactory } from '../../../lib';
 import { IntegerLiteral } from '../../../lib/expressions';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
-import { getMockEEFactory, getMockExpression } from '../../util/utils';
+import { getMockExpression } from '../../util/utils';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
