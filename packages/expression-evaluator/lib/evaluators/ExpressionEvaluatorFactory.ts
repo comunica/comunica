@@ -23,6 +23,7 @@ import type { IAsyncEvaluatorContext } from './MaterializedEvaluatorContext';
 import { MaterializedEvaluatorContext } from './MaterializedEvaluatorContext';
 import { TermComparator } from './TermComparator';
 
+// TODO: This should be a single actor on a bus, and the utils should be classes with that bus.
 export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
   public readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   public readonly mediatorQueryOperation: MediatorQueryOperation;

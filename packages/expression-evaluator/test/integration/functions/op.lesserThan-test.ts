@@ -140,6 +140,8 @@ describe('evaluation of \'<\'', () => {
         [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123.0 >>', 'false' ],
         [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
         [ '<< << <ex:a> <ex:b> 123 >> <ex:q> 999 >>', '<< << <ex:a> <ex:b> 123.0 >> <ex:q> 999 >>', 'false' ],
+        [ '<< << <ex:a> <ex:b> 9 >> <ex:q> 999 >>', '<< << <ex:a> <ex:b> 123.0 >> <ex:q> 999 >>', 'true' ],
+        // [ '<< <ex:q> << <ex:a> <ex:b> 9 >> 999 >>', '<< <ex:q> << <ex:a> <ex:b> 123.0 >> 999 >>', 'true' ],
         [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
         [ '<< <ex:a> <ex:b> 123e0 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
         [ '<< <ex:a> <ex:b> 9 >>', '<< <ex:a> <ex:b> 123 >>', 'true' ],

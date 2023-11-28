@@ -67,6 +67,8 @@ export interface IExpressionEvaluator {
   evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
 
   evaluateAsInternal: (mapping: RDF.Bindings) => Promise<E.Expression>;
+
+  // TODO: context: IActionContext;
 }
 
 export interface IOrderByEvaluator {
