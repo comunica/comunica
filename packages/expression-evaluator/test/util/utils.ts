@@ -4,7 +4,6 @@ import type { IActionContext } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-import type { IAsyncEvaluatorContext } from '../../lib/evaluators/InternalEvaluator';
 import type { GeneralSuperTypeDict, ISuperTypeProvider } from '../../lib/util/TypeHandling';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
@@ -14,18 +13,14 @@ export function getMockEEActionContext(): IActionContext {
   return new ActionContext({});
 }
 
-export function getMockExpression(expr: string): Alg.Expression {
+export function getMockExpression(expr = '1+1'): Alg.Expression {
   return translate(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`).input.expression;
 }
 
-export function getMockEvaluatorContext() {
+export function getMockEvaluatorContext(): IActionContext {
   const factory = getMockEEFactory();
 
-  return {
-    actionContext: getMockEEActionContext(),
-    mediatorQueryOperation: factory.mediatorQueryOperation,
-    mediatorFunction: factory.createFunction,
-  };
+  return factory.prepareEvaluatorActionContext(getMockEEActionContext());
 }
 
 export function getMockSuperTypeProvider(): ISuperTypeProvider {
@@ -51,8 +46,6 @@ export interface ITestTableConfigBase {
    * If the type is sync, the test will be preformed both sync and async.
    */
   config?: IActionContext;
-  // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
-  legacyContext?: Partial<IAsyncEvaluatorContext>;
   aliases?: AliasMap;
   /**
    * Additional prefixes can be provided if the defaultPrefixes in ./Aliases.ts are not enough.

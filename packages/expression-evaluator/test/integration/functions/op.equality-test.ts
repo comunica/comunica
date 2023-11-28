@@ -1,3 +1,6 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import { LRUCache } from 'lru-cache';
 import { TypeURL } from '../../../lib/util/Consts';
 import { bool, dateTime, dateTyped, merge, numeric, str, timeTyped } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
@@ -44,9 +47,10 @@ describe('evaluation of \'=\'', () => {
     describe('with numeric and type discovery like', () => {
       runTestTable({
         ...config,
-        legacyContext: {
-          getSuperType: unknownType => TypeURL.XSD_INTEGER,
-        },
+        config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+          cache: new LRUCache<string, any>({ max: 1_000 }),
+          discoverer: () => TypeURL.XSD_INTEGER,
+        }),
         testTable: `
          "2"^^example:int "2"^^example:int = true
          "2"^^example:int "3"^^example:int = false

@@ -1,3 +1,4 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { getMockEEFactory } from '@comunica/jest';
 import type { ExpressionEvaluator } from '../../../lib';
 import type { ISerializable } from '../../../lib/expressions';
@@ -20,8 +21,8 @@ describe('OverloadTree', () => {
     expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().createEvaluator(
       getMockExpression('1+1'), getMockEEActionContext(),
     );
-    superTypeProvider = expressionEvaluator.materializedEvaluatorContext.superTypeProvider;
-    functionArgumentsCache = expressionEvaluator.materializedEvaluatorContext.functionArgumentsCache;
+    superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
+    functionArgumentsCache = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache);
   });
 
   function typePromotionTest<T extends ISerializable>(tree: OverloadTree, promoteFrom: KnownLiteralTypes,
@@ -30,7 +31,7 @@ describe('OverloadTree', () => {
     const arg = new Literal<T>(value, promoteFrom);
     const res = isLiteralTermExpression(tree
       .search([ arg ], superTypeProvider, functionArgumentsCache)!(
-      expressionEvaluator.materializedEvaluatorContext,
+      expressionEvaluator,
     )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(promoteTo);
@@ -43,7 +44,7 @@ describe('OverloadTree', () => {
     const arg = new Literal<T>(value, argumentType);
     const res = isLiteralTermExpression(tree
       .search([ arg ], superTypeProvider, functionArgumentsCache)!(
-      expressionEvaluator.materializedEvaluatorContext,
+      expressionEvaluator,
     )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(argumentType);
@@ -84,7 +85,7 @@ describe('OverloadTree', () => {
     const arg = new Literal<number>(0, TypeURL.XSD_SHORT);
     const res = isLiteralTermExpression(emptyTree
       .search([ arg ], superTypeProvider, functionArgumentsCache)!(
-      expressionEvaluator.materializedEvaluatorContext,
+      expressionEvaluator,
     )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(TypeURL.XSD_DOUBLE);
@@ -98,7 +99,7 @@ describe('OverloadTree', () => {
     const arg = new Literal<string>(litValue, dataType);
     const res = isLiteralTermExpression(emptyTree
       .search([ arg ], superTypeProvider, functionArgumentsCache)!(
-      expressionEvaluator.materializedEvaluatorContext,
+      expressionEvaluator,
     )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(dataType);
@@ -110,18 +111,18 @@ describe('OverloadTree', () => {
     const two = new IntegerLiteral(2);
     expect(functionArgumentsCache['+']).toBeUndefined();
     const res = regularFunctions['+'].applyOnTerms([ one, two ],
-      expressionEvaluator.materializedEvaluatorContext);
+      expressionEvaluator);
     expect(res.str()).toEqual('3');
     // One time lookup + one time add
     expect(functionArgumentsCache['+']).not.toBeUndefined();
     regularFunctions['+'].applyOnTerms([ two, one ],
-      expressionEvaluator.materializedEvaluatorContext);
+      expressionEvaluator);
 
     const innerSpy = jest.fn();
     const spy = jest.fn(() => innerSpy);
     functionArgumentsCache['+']!.cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER]!.func = spy;
     regularFunctions['+'].applyOnTerms([ one, two ],
-      expressionEvaluator.materializedEvaluatorContext);
+      expressionEvaluator);
     expect(spy).toHaveBeenCalled();
     expect(innerSpy).toHaveBeenCalled();
   });
@@ -132,7 +133,7 @@ describe('OverloadTree', () => {
     const two = new IntegerLiteral(2);
     expect(functionArgumentsCache.substr).toBeUndefined();
     expect(regularFunctions.substr.applyOnTerms([ apple, one, two ],
-      expressionEvaluator.materializedEvaluatorContext).str()).toBe('ap');
+      expressionEvaluator).str()).toBe('ap');
 
     expect(functionArgumentsCache.substr).toBeDefined();
     const interestCache = functionArgumentsCache.substr
@@ -141,7 +142,7 @@ describe('OverloadTree', () => {
     expect(interestCache.cache![TypeURL.XSD_INTEGER]).toBeDefined();
 
     expect(regularFunctions.substr.applyOnTerms([ apple, one ],
-      expressionEvaluator.materializedEvaluatorContext).str()).toBe(String('apple'));
+      expressionEvaluator).str()).toBe(String('apple'));
     const interestCacheNew = functionArgumentsCache.substr
       .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
     expect(interestCacheNew).toBeDefined();

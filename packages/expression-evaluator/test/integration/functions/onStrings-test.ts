@@ -1,3 +1,6 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import { LRUCache } from 'lru-cache';
 import { TypeURL } from '../../../lib/util/Consts';
 import { bool, int, numeric } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
@@ -24,14 +27,15 @@ describe('string functions', () => {
     });
     runTestTable({
       ...baseConfig,
-      legacyContext: {
-        getSuperType(unknownType) {
+      config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+        cache: new LRUCache<string, any>({ max: 1_000 }),
+        discoverer(unknownType: string) {
           if (unknownType.includes('specialString')) {
             return 'https://example.org/string';
           }
           return TypeURL.XSD_STRING;
         },
-      },
+      }),
       testTable: `
       '"custom type"^^example:string' = ${int('11')}
       "apple"^^example:specialString = ${int('5')}
@@ -168,9 +172,10 @@ describe('string functions', () => {
       arity: 'vary',
       operation: 'substr',
       notation: Notation.Function,
-      legacyContext: {
-        getSuperType: unknownType => TypeURL.XSD_STRING,
-      },
+      config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+        cache: new LRUCache<string, any>({ max: 1_000 }),
+        discoverer: () => TypeURL.XSD_STRING,
+      }),
       testTable: `
       "bar" 1 1 = "b"
       "bar" 2 = "ar"

@@ -1,3 +1,6 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import { LRUCache } from 'lru-cache';
 import { TypeURL } from '../../../lib/util/Consts';
 import { decimal, numeric } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
@@ -41,9 +44,10 @@ describe('evaluation of \'/\' like', () => {
   });
   runTestTable({
     ...config,
-    legacyContext: {
-      getSuperType: unknownType => TypeURL.XSD_INTEGER,
-    },
+    config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+      cache: new LRUCache<string, any>({ max: 1_000 }),
+      discoverer: () => TypeURL.XSD_INTEGER,
+    }),
     testTable: `
       "2"^^example:int "2"^^example:int = ${decimal('1')}
     `,

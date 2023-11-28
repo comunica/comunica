@@ -1,6 +1,5 @@
 import type { IAction } from '@comunica/core';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { SuperTypeCallback } from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import type * as RDF from '@rdfjs/types';
 
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -45,7 +44,8 @@ export interface IExpressionEvaluatorFactory {
 
   createTermComparator: (orderAction: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;
 
-  createFunction: FunctionBusType;
+  createFunction: <T extends IFunctionBusActionContext>(arg: T & IAction) =>
+  Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction>;
 }
 
 export interface IInternalEvaluator {
@@ -110,10 +110,16 @@ export interface IFunctionBusActionContext {
   requireTermExpression?: boolean;
 }
 
-export type FunctionBusType = <T extends IFunctionBusActionContext>(arg: T & IAction) =>
-Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction>;
-
-export interface ITermComparatorBusActionContext extends IAction{
-  getSuperType?: SuperTypeCallback;
+export interface IMediatorFunctions {
+  mediate: <T extends IFunctionBusActionContext>(arg: T & IAction) =>
+  Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction>;
 }
-export type TermComparatorBus = (arg: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;
+
+export interface ITermComparatorBusActionContext extends IAction{}
+
+/**
+ * Does expect you to set KeysExpressionEvaluator.superTypeProvider if needed
+ */
+export interface IMediatorTermComparator {
+  mediate: (arg: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;
+}

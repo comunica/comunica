@@ -1,17 +1,15 @@
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
-import type {
-  FunctionBusType,
+import type { IAction } from '@comunica/core';
+import type { IMediatorFunctions,
   IActionContext,
   IBindingsAggregator,
   IExpressionEvaluator,
   IExpressionEvaluatorFactory,
-  IExpressionFunction,
   IOrderByEvaluator, ITermComparatorBusActionContext,
-  TermComparatorBus,
-} from '@comunica/types';
+  IMediatorTermComparator,
+  IExpressionFunction, IFunctionBusActionContext, ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
@@ -19,11 +17,11 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
 import { NamedExtension } from '../functions/NamedExtension';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
-import type * as C from '../util/Consts';
 import { RegularOperator } from '../util/Consts';
+import type * as C from '../util/Consts';
 import { extractTimeZone } from '../util/DateTimeHelpers';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
-import type { AsyncExtensionFunction } from './InternalEvaluator';
+import type { AsyncExtensionFunction, AsyncExtensionFunctionCreator } from './InternalEvaluator';
 import { InternalEvaluator } from './InternalEvaluator';
 import { TermComparator } from './TermComparator';
 
@@ -31,43 +29,17 @@ import { TermComparator } from './TermComparator';
 export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
   public readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly functionsBus = <FunctionBusType> (async({ functionName, context }) => {
-    const res: IExpressionFunction | undefined = {
-      ...regularFunctions,
-      ...specialFunctions,
-      ...namedFunctions,
-    }[<C.NamedOperator | C.Operator> functionName];
-    if (res) {
-      return res;
-    }
-    const extensionFinder: ((functionNamedNode: RDF.NamedNode) =>
-    Promise<((args: RDF.Term[]) => Promise<RDF.Term>) | undefined>) | undefined =
-      context.get(KeysInitQuery.extensionFunctionCreator);
-    if (extensionFinder) {
-      const definition = await extensionFinder(new DataFactory<RDF.Quad>().namedNode(functionName));
-      if (definition) {
-        return new NamedExtension(functionName, definition);
-      }
-    }
-    const extensionMap: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>> | undefined =
-      context.get(KeysInitQuery.extensionFunctions);
-    if (extensionMap) {
-      // Uncovered by tests, but that does not matter.
-      const definition = extensionMap[functionName];
-      if (definition) {
-        return new NamedExtension(functionName, definition);
-      }
-    }
-    throw new Error('No Function Actor Replied');
-  });
+  public readonly mediatorFunctions: IMediatorFunctions;
+  public readonly termComparatorBus: IMediatorTermComparator;
 
-  private prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
-    const context = new ActionContext(orgContext);
+  public prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
+    let context = orgContext;
 
-    context.set(KeysExpressionEvaluator.now, context.get(KeysInitQuery.queryTimestamp) || new Date(Date.now()));
+    context =
+      context.set(KeysExpressionEvaluator.now, context.get(KeysInitQuery.queryTimestamp) || new Date(Date.now()));
 
-    context.set(KeysExpressionEvaluator.baseIRI, context.get(KeysInitQuery.baseIRI));
-    context.set(
+    context = context.set(KeysExpressionEvaluator.baseIRI, context.get(KeysInitQuery.baseIRI));
+    context = context.set(
       KeysExpressionEvaluator.functionArgumentsCache,
       context.get(KeysInitQuery.functionArgumentsCache) || {},
     );
@@ -77,7 +49,7 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
       throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
     }
     if (context.has(KeysInitQuery.extensionFunctionCreator)) {
-      context.set(
+      context = context.set(
         KeysExpressionEvaluator.extensionFunctionCreator,
         context.get(KeysInitQuery.extensionFunctionCreator),
       );
@@ -85,20 +57,22 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
       const extensionFunctions: Record<string, AsyncExtensionFunction> = context.getSafe(
         KeysInitQuery.extensionFunctions,
       );
-      context.set(KeysExpressionEvaluator.extensionFunctionCreator,
+      context = context.set(KeysExpressionEvaluator.extensionFunctionCreator,
         async(functionNamedNode: RDF.NamedNode) => extensionFunctions[functionNamedNode.value]);
+    } else {
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      context = context.setDefault(KeysExpressionEvaluator.extensionFunctionCreator, async() => undefined);
     }
 
-    context.set(
+    context = context.setDefault(
       KeysExpressionEvaluator.defaultTimeZone,
-      context.get(KeysExpressionEvaluator.defaultTimeZone ||
-        extractTimeZone(context.getSafe(KeysExpressionEvaluator.now))),
+      extractTimeZone(context.getSafe(KeysExpressionEvaluator.now)),
     );
 
-    context.set(KeysExpressionEvaluator.mediatorQueryOperation, this.mediatorQueryOperation);
-    context.set(KeysExpressionEvaluator.mediatorFunction, this.functionsBus);
+    context = context.set(KeysExpressionEvaluator.mediatorQueryOperation, this.mediatorQueryOperation);
+    context = context.set(KeysExpressionEvaluator.mediatorFunction, this.mediatorFunctions);
 
-    context.set(KeysExpressionEvaluator.superTypeProvider, {
+    context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, {
       cache: new LRUCache({ max: 1_000 }),
       discoverer: () => 'term',
     });
@@ -106,14 +80,34 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     return context;
   }
 
-  public readonly termComparatorBus: TermComparatorBus = async({ context, getSuperType }) =>
-    new TermComparator(new InternalEvaluator(this.prepareEvaluatorActionContext(context)),
-      await this.createFunction({ functionName: RegularOperator.EQUAL, context, requireTermExpression: true }),
-      await this.createFunction({ functionName: RegularOperator.LT, context, requireTermExpression: true }));
-
   public constructor(args: IExpressionEvaluatorFactoryArgs) {
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
+    this.mediatorFunctions = args.mediatorFunctions || <IMediatorFunctions> {
+      async mediate({ functionName, context }) {
+        const res: IExpressionFunction | undefined = {
+          ...regularFunctions,
+          ...specialFunctions,
+          ...namedFunctions,
+        }[<C.NamedOperator | C.Operator> functionName];
+        if (res) {
+          return res;
+        }
+
+        const extensionFinder: AsyncExtensionFunctionCreator =
+          context.getSafe(KeysExpressionEvaluator.extensionFunctionCreator);
+        const definition = await extensionFinder(new DataFactory<RDF.Quad>().namedNode(functionName));
+        if (definition) {
+          return new NamedExtension(functionName, definition);
+        }
+      },
+    };
+    this.termComparatorBus = args.mediatorTermComparator || <IMediatorTermComparator> {
+      mediate: async({ context }) =>
+        new TermComparator(new InternalEvaluator(this.prepareEvaluatorActionContext(context)),
+          await this.createFunction({ functionName: RegularOperator.EQUAL, context, requireTermExpression: true }),
+          await this.createFunction({ functionName: RegularOperator.LT, context, requireTermExpression: true })),
+    };
   }
 
   public async createEvaluator(algExpr: Alg.Expression, context: IActionContext): Promise<IExpressionEvaluator> {
@@ -121,8 +115,7 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     return new ExpressionEvaluator(
       fullContext,
       await new AlgebraTransformer(
-        context.getSafe(KeysExpressionEvaluator.superTypeProvider),
-        this.functionsBus,
+        fullContext,
       ).transformAlgebra(algExpr),
     );
   }
@@ -136,15 +129,20 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     })).aggregator;
   }
 
-  public createFunction = this.functionsBus;
+  public createFunction<T extends IFunctionBusActionContext>(arg: T & IAction):
+  Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction> {
+    return this.mediatorFunctions.mediate(arg);
+  }
 
   public async createTermComparator(orderAction: ITermComparatorBusActionContext):
   Promise<IOrderByEvaluator> {
-    return this.termComparatorBus(orderAction);
+    return this.termComparatorBus.mediate(orderAction);
   }
 }
 
 interface IExpressionEvaluatorFactoryArgs {
   mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   mediatorQueryOperation: MediatorQueryOperation;
+  mediatorFunctions?: IMediatorFunctions;
+  mediatorTermComparator?: IMediatorTermComparator;
 }

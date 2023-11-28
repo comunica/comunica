@@ -1,9 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { FunctionArgumentsCache } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import type { ExpressionEvaluator } from '../../../lib';
 import { ExpressionEvaluatorFactory } from '../../../lib';
 import { getMockExpression } from '../../util/utils';
 
@@ -44,10 +43,10 @@ describe('The ExpressionEvaluatorFactory', () => {
       [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
     });
     const evaluator = await expressionEvaluatorFactory.createEvaluator(getMockExpression('1+1'), actionContext);
-    expect((<ExpressionEvaluator> evaluator).materializedEvaluatorContext).toMatchObject({
-      now: date,
-      baseIRI: 'http://base.org/',
-      functionArgumentsCache,
+    expect(evaluator.context.toJS()).toMatchObject({
+      [KeysExpressionEvaluator.now.name]: date,
+      [KeysExpressionEvaluator.baseIRI.name]: 'http://base.org/',
+      [KeysExpressionEvaluator.functionArgumentsCache.name]: functionArgumentsCache,
     });
   });
 });

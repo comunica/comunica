@@ -1,6 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { Bus } from '@comunica/core';
+import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import type { IMediatorFunctions, IMediatorTermComparator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
@@ -62,17 +64,27 @@ export function nonLiteral(): RDF.Term {
   return DF.namedNode('http://example.org/');
 }
 
-export function getMockEEFactory(): ExpressionEvaluatorFactory {
-  const bus: any = new Bus({ name: 'bus' });
-
-  const mediatorQueryOperation: any = {
-    async mediate(arg: any) {
-      return {};
-    },
-  };
-
+export function getMockEEFactory({ mediatorQueryOperation,
+  mediatorBindingsAggregatorFactory,
+  mediatorFunctions,
+  mediatorTermComparator }: {
+  mediatorQueryOperation?: MediatorQueryOperation;
+  mediatorBindingsAggregatorFactory?: MediatorBindingsAggregatorFactory;
+  mediatorFunctions?: IMediatorFunctions;
+  mediatorTermComparator?: IMediatorTermComparator;
+} = {}): ExpressionEvaluatorFactory {
   return new ExpressionEvaluatorFactory({
-    mediatorQueryOperation,
-    mediatorBindingsAggregatorFactory: mediatorQueryOperation,
+    mediatorQueryOperation: mediatorQueryOperation || <any> {
+      async mediate(arg: any) {
+        return {};
+      },
+    },
+    mediatorBindingsAggregatorFactory: mediatorBindingsAggregatorFactory || <any> {
+      async mediate(arg: any) {
+        return {};
+      },
+    },
+    mediatorFunctions,
+    mediatorTermComparator,
   });
 }

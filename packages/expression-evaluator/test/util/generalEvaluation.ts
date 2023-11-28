@@ -29,7 +29,6 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
     arg.expression,
     bindings,
     arg.generalEvaluationConfig || getMockEEActionContext(),
-    arg.legacyContext,
   );
   return { asyncResult };
 }
@@ -42,7 +41,6 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined > {
       arg.expression,
       bindings,
       arg.generalEvaluationConfig || getMockEEActionContext(),
-      arg.legacyContext,
     );
     return undefined;
   } catch (error: unknown) {
@@ -56,9 +54,8 @@ function parse(query: string) {
   return sparqlQuery.input.expression;
 }
 
-async function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext,
-  legacyContext?: Partial<InternalEvaluator>): Promise<RDF.Term> {
+async function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext): Promise<RDF.Term> {
   const evaluator = await getMockEEFactory()
-    .createEvaluator(parse(expr), actionContext, legacyContext);
+    .createEvaluator(parse(expr), actionContext);
   return evaluator.evaluate(bindings);
 }

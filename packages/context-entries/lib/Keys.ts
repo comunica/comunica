@@ -14,7 +14,7 @@ import type { Bindings,
   IDataSource,
   IDataDestination,
   MetadataBindings, FunctionArgumentsCache,
-  IAggregatedStore, FunctionBusType, IActionContext } from '@comunica/types';
+  IAggregatedStore, IMediatorFunctions, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -181,7 +181,7 @@ export const KeysInitQuery = {
 };
 
 export const KeysExpressionEvaluator = {
-  extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator | undefined>(
+  extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
     '@comunica/expression-evaluator:extensionFunctionCreator',
   ),
   now: new ActionContextKey<Date>('@comunica/expression-evaluator:now'),
@@ -195,7 +195,7 @@ export const KeysExpressionEvaluator = {
   mediatorQueryOperation: new ActionContextKey<MediatorQueryOperation>(
     '@comunica/expression-evaluator:mediatorQueryOperation',
   ),
-  mediatorFunction: new ActionContextKey<FunctionBusType>('@comunica/expression-evaluator:mediatorFunction'),
+  mediatorFunction: new ActionContextKey<IMediatorFunctions>('@comunica/expression-evaluator:mediatorFunction'),
 };
 
 export const KeysQueryOperation = {

@@ -1,7 +1,7 @@
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import type { FunctionBusType, IActionContext } from '@comunica/types';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as E from '../expressions';
 import { expressionToVar } from '../functions/Helpers';
@@ -32,11 +32,7 @@ export class InternalEvaluator {
 
   public constructor(public readonly context: IActionContext) {
     this.transformer = new AlgebraTransformer(
-      context.getSafe(KeysExpressionEvaluator.superTypeProvider),
-      args => {
-        const mediator: FunctionBusType = context.getSafe(KeysExpressionEvaluator.mediatorFunction);
-        return mediator({ ...args, context });
-      },
+      context,
     );
   }
 

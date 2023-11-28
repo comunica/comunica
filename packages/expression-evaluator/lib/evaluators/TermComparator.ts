@@ -5,7 +5,7 @@ import type { InternalEvaluator } from './InternalEvaluator';
 
 // TODO: this is its own actor!
 export class TermComparator {
-  public constructor(private readonly contextualizedEvaluator: InternalEvaluator,
+  public constructor(private readonly internalEvaluator: InternalEvaluator,
     private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction) {
   }
@@ -70,15 +70,15 @@ export class TermComparator {
   }
 
   private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal): -1 | 0 | 1 {
-    const myLitA = this.contextualizedEvaluator.transformer.transformLiteral(litA);
-    const myLitB = this.contextualizedEvaluator.transformer.transformLiteral(litB);
+    const myLitA = this.internalEvaluator.transformer.transformLiteral(litA);
+    const myLitB = this.internalEvaluator.transformer.transformLiteral(litB);
 
     try {
-      if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this.contextualizedEvaluator))
+      if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
         .typedValue) {
         return 0;
       }
-      if ((<E.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this.contextualizedEvaluator))
+      if ((<E.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
         .typedValue) {
         return -1;
       }

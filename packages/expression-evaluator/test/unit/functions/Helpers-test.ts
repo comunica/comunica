@@ -1,3 +1,4 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { getMockEEFactory } from '@comunica/jest';
 import type { ExpressionEvaluator } from '../../../lib';
 import { TypeURL } from '../../../lib';
@@ -20,8 +21,8 @@ describe('The function helper file', () => {
       expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().createEvaluator(
         getMockExpression('1+1'), getMockEEActionContext(),
       );
-      superTypeProvider = expressionEvaluator.materializedEvaluatorContext.superTypeProvider;
-      functionArgumentsCache = expressionEvaluator.materializedEvaluatorContext.functionArgumentsCache;
+      superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
+      functionArgumentsCache = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache);
     });
 
     it('can only be collected once', () => {
@@ -39,7 +40,7 @@ describe('The function helper file', () => {
       const args = [ bool(true) ];
       builder.onUnaryTyped(TypeURL.XSD_BOOLEAN, () => func).collect()
         .search(args, superTypeProvider, functionArgumentsCache)!(
-        expressionEvaluator.materializedEvaluatorContext,
+        expressionEvaluator,
       )(args);
       expect(func).toBeCalledTimes(1);
     });
@@ -49,7 +50,7 @@ describe('The function helper file', () => {
       const args = [ bool(true) ];
       builder.onBoolean1(() => func).collect()
         .search(args, superTypeProvider, functionArgumentsCache)!(
-        expressionEvaluator.materializedEvaluatorContext,
+        expressionEvaluator,
       )(args);
       expect(func).toBeCalledTimes(1);
     });

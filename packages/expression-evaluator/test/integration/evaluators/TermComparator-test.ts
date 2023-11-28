@@ -1,5 +1,7 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { getMockEEFactory } from '@comunica/jest';
 import type * as RDF from '@rdfjs/types';
+import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 
 import { TypeURL, TypeURL as DT } from '../../../lib/util/Consts';
@@ -36,8 +38,12 @@ async function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | und
   typeDiscoveryCallback?: SuperTypeCallback) {
   const evaluator = await getMockEEFactory()
     .createTermComparator({
-      context: getMockEEActionContext(),
-      getSuperType: typeDiscoveryCallback,
+      context: typeDiscoveryCallback ?
+        getMockEEActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+          discoverer: typeDiscoveryCallback,
+          cache: new LRUCache<string, any>({ max: 1_000 }),
+        }) :
+        getMockEEActionContext(),
     });
   expect(evaluator.orderTypes(litA, litB)).toEqual(-1);
   expect(evaluator.orderTypes(litB, litA)).toEqual(1);

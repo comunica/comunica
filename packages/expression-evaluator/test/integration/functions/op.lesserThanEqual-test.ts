@@ -1,3 +1,5 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import {
   bool,
   dateTime,
@@ -143,9 +145,7 @@ describe('evaluation of \'<=\'', () => {
       arity: 2,
       notation: Notation.Infix,
       aliases: bool,
-      legacyContext: {
-        defaultTimeZone: { zoneHours: -5, zoneMinutes: 0 },
-      },
+      config: new ActionContext().set(KeysExpressionEvaluator.defaultTimeZone, { zoneHours: -5, zoneMinutes: 0 }),
       testTable: `
         '${timeTyped('12:00:00')}' '${timeTyped('23:00:00+06:00')}' = true
         '${timeTyped('11:00:00')}' '${timeTyped('17:00:00Z')}' = true

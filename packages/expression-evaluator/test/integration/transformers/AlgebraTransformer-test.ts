@@ -1,4 +1,6 @@
-import type { IExpressionFunction } from '@comunica/types';
+import { ActionContext } from '@comunica/core';
+import { getMockEEFactory } from '@comunica/jest';
+import type { IExpressionFunction, IMediatorFunctions } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
@@ -8,26 +10,28 @@ import { NamedExtension } from '../../../lib/functions/NamedExtension';
 import { AlgebraTransformer } from '../../../lib/transformers/AlgebraTransformer';
 import type * as C from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
-import { getMockSuperTypeProvider } from '../../util/utils';
 
 const DF = new DataFactory();
 
 describe('AlgebraTransformer', () => {
   let algebraTransformer: AlgebraTransformer;
   beforeEach(() => {
-    algebraTransformer = new AlgebraTransformer(getMockSuperTypeProvider(),
+    algebraTransformer = new AlgebraTransformer(
       // This basically requires the function bus.
-      async({ functionName }) => {
-        const res: IExpressionFunction | undefined = {
-          ...regularFunctions,
-          ...specialFunctions,
-          ...namedFunctions,
-        }[<C.NamedOperator | C.Operator> functionName];
-        if (res) {
-          return res;
-        }
-        return new NamedExtension(functionName, async() => DF.namedNode('http://example.com'));
-      });
+      getMockEEFactory({ mediatorFunctions: <IMediatorFunctions> {
+        async mediate({ functionName }) {
+          const res: IExpressionFunction | undefined = {
+            ...regularFunctions,
+            ...specialFunctions,
+            ...namedFunctions,
+          }[<C.NamedOperator | C.Operator> functionName];
+          if (res) {
+            return res;
+          }
+          return new NamedExtension(functionName, async() => DF.namedNode('http://example.com'));
+        },
+      }}).prepareEvaluatorActionContext(new ActionContext()),
+    );
   });
 
   it('transform term', async() => {

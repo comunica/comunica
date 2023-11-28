@@ -37,9 +37,7 @@ describe('extension functions:', () => {
         arity: 2,
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
-        config: new ActionContext({
-          [KeysInitQuery.extensionFunctionCreator.name]: extensionFunctions,
-        }),
+        config: new ActionContext().set(KeysInitQuery.extensionFunctionCreator, extensionFunctions),
         aliases: merge(numeric, bool),
         testTable: `
           3i 3i = true
